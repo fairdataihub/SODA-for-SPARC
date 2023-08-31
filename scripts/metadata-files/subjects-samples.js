@@ -289,11 +289,13 @@ const hideForm = (type) => {
 };
 
 const validateSubSamID = (ev) => {
-  var regex = /^[a-zA-Z0-9-_]+$/;
   var id = $(ev).prop("id");
   var value = $("#" + id).val();
   //Validate TextBox value against the Regex.
-  var isValid = regex.test(value);
+  var isValid = evaluateStringAgainstSdsRequirements(
+    value,
+    "string-adheres-to-identifier-conventions"
+  );
   if (!isValid && value.trim() !== "") {
     $(ev).addClass("invalid");
     $("#para-" + id).css("display", "block");

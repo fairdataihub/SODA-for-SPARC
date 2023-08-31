@@ -7182,11 +7182,6 @@ const isNumberBetween = (number, minVal, maxVal) => {
   return !isNaN(parseFloat(number)) && isFinite(number) && number >= minVal && number <= maxVal;
 };
 
-const subSamInputIsValid = (subSamInput) => {
-  const subSamInputPattern = /^[a-z]+-[0-9A-Za-z-]+$/;
-  return subSamInputPattern.test(subSamInput);
-};
-
 const generateAlertElement = (alertType, warningMessageText) => {
   return `
       <div class="alert alert-${alertType} guided--alert mr-2" role="alert">
@@ -10322,7 +10317,11 @@ const specifySubject = (event, subjectNameInput) => {
       trashCanElement.style.display = "block";
 
       if (subjectName.length > 0) {
-        if (!subSamInputIsValid(subjectName)) {
+        const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+          subjectName,
+          "string-adheres-to-identifier-conventions"
+        );
+        if (!subjectNameIsValid) {
           generateAlertMessage(subjectNameInput);
           return;
         }
@@ -10380,7 +10379,11 @@ const specifySample = (event, sampleNameInput) => {
       const subjectToAddSampleTo = subjectSampleAdditionTable.find(".samples-subject-name").text();
 
       if (sampleName.length > 0) {
-        if (!subSamInputIsValid(sampleName)) {
+        const sampleNameIsValid = evaluateStringAgainstSdsRequirements(
+          subjectName,
+          "string-adheres-to-identifier-conventions"
+        );
+        if (!sampleNameIsValid) {
           //show alert message below pool name input if input is invalid and abort function
           generateAlertMessage(sampleNameInput);
           return;
@@ -10448,7 +10451,11 @@ const specifyPool = (event, poolNameInput) => {
       const poolIdCellToAddNameTo = poolNameInput.parent();
       let poolsTable = $("#pools-table");
       if (poolName !== "pool-") {
-        if (!subSamInputIsValid(poolName)) {
+        const poolNameIsValid = evaluateStringAgainstSdsRequirements(
+          poolName,
+          "string-adheres-to-identifier-conventions"
+        );
+        if (!poolNameIsValid) {
           notyf.open({
             duration: "3000",
             type: "error",
@@ -15363,15 +15370,16 @@ $("#guided-new-folder").on("click", () => {
         $(".swal2-confirm").attr("id", "add-new-folder-button");
         $("#add-new-folder-input").keyup(function () {
           var val = $("#add-new-folder-input").val();
-          let folderNameCheck = checkIrregularNameBoolean(val);
-          if (folderNameCheck === false) {
-            Swal.showValidationMessage(
-              `The folder name contains non-allowed characters. To follow SPARC Data Standards, please create a folder name with only alphanumberic characters and hyphens '-'`
-            );
+          const folderNameIsValid = evaluateStringAgainstSdsRequirements(
+            val,
+            "folder-and-file-name-is-valid"
+          );
+          if (folderNameIsValid) {
+            $("#add-new-folder-button").attr("disabled", false);
+          } else {
+            Swal.showValidationMessage(`The folder name contains non-allowed characters.`);
             $("#add-new-folder-button").attr("disabled", true);
             return;
-          } else {
-            $("#add-new-folder-button").attr("disabled", false);
           }
         });
       },

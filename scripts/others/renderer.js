@@ -3993,14 +3993,6 @@ const selectOptionColor = (mylist) => {
   mylist.style.color = mylist.options[mylist.selectedIndex].style.color;
 };
 
-const sdsRegexTest = (regexToTest, regexCase) => {
-  const regexCases = {
-    "dataset-name": /^[a-zA-Z0-9_]+$/,
-    "dataset-description": /^[a-zA-Z0-9_]+$/,
-    "dataset-identifier": /^[a-zA-Z0-9_]+$/,
-  };
-  return regexCases[regexCase].test(regexToTest);
-};
 ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -4360,15 +4352,16 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
         $(".swal2-confirm").attr("id", "add-new-folder-button");
         $("#add-new-folder-input").keyup(function () {
           let val = $("#add-new-folder-input").val();
-          let folderNameCheck = checkIrregularNameBoolean(val);
-          if (folderNameCheck === true) {
-            Swal.showValidationMessage(
-              `The folder name contains non-allowed characters. To follow the SPARC Data Standards, please create a folder name with only alphanumberic characters and hyphens '-'`
-            );
+          const folderNameIsValid = evaluateStringAgainstSdsRequirements(
+            val,
+            "folder-and-file-name-is-valid"
+          );
+          if (folderNameIsValid) {
+            $("#add-new-folder-button").attr("disabled", false);
+          } else {
+            Swal.showValidationMessage(`The folder name contains non-allowed characters.`);
             $("#add-new-folder-button").attr("disabled", true);
             return;
-          } else {
-            $("#add-new-folder-button").attr("disabled", false);
           }
         });
       },
@@ -4823,12 +4816,7 @@ organizeDSaddFolders.addEventListener("click", function () {
 
 // Event listener for when folder(s) are imported into the file explorer
 ipcRenderer.on("selected-folders-organize-datasets", async (event, importedFolders) => {
-  const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['dataset_root', 'code']
-  /*const currentContentsAtDatasetPath = getRecursivePath(
-    currentPathArray.slice(1),
-    datasetStructureJSONObj
-  ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')*/
-
+  // Add the imported folders to the dataset structure
   await addDataArrayToDatasetStructureAtPath(importedFolders);
 });
 
@@ -4848,7 +4836,8 @@ const getNestedObjectsFromDatasetStructureByPath = (datasetStructure, path) => {
 const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
-    if (checkStringAgainstSdsRequirements(fileKey, "file-is-hidden")) {
+    const fileIsHidden = evaluateStringAgainstSdsRequirements(fileKey, "file-is-hidden");
+    if (fileIsHidden) {
       delete datasetStructure["files"][fileKey];
     }
   }
@@ -4860,23 +4849,20 @@ const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
 };
 
 const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
-  console.log(datasetStructure);
   const currentFoldersAtPath = Object.keys(datasetStructure.folders);
   for (const folderKey of currentFoldersAtPath) {
-    console.log(folderKey);
-    if (checkStringAgainstSdsRequirements(folderKey, "folder-and-file-name-is-valid")) {
+    const folderNameIsValid = evaluateStringAgainstSdsRequirements(
+      folderKey,
+      "folder-and-file-name-is-valid"
+    );
+    if (!folderNameIsValid) {
       const newFolderName = folderKey.replace(sparcFolderAndFileRegex, "-");
-      console.log(newFolderName);
-
       const newFolderObj = { ...datasetStructure["folders"][folderKey] };
-      console.log(newFolderObj);
       if (!newFolderObj["action"].includes("renamed")) {
         newFolderObj["action"].push("renamed");
       }
       datasetStructure["folders"][newFolderName] = newFolderObj;
       delete datasetStructure["folders"][folderKey];
-
-      console.log(Object.keys(datasetStructure.folders));
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][newFolderName]);
     }
   }
@@ -4885,7 +4871,11 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
 const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
-    if (checkStringAgainstSdsRequirements(fileKey, "folder-and-file-name-is-valid")) {
+    const fileNameIsValid = evaluateStringAgainstSdsRequirements(
+      fileKey,
+      "folder-and-file-name-is-valid"
+    );
+    if (!fileNameIsValid) {
       const newFileName = fileKey.replace("@", "-");
       const newFileObj = { ...datasetStructure["files"][fileKey] };
       if (!newFileObj["action"].includes("renamed")) {
@@ -4904,7 +4894,11 @@ const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
 const deleteProblematicFilesFromDatasetStructure = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
-    if (checkStringAgainstSdsRequirements(fileKey, "folder-and-file-name-is-valid")) {
+    const fileNameIsValid = evaluateStringAgainstSdsRequirements(
+      fileKey,
+      "folder-and-file-name-is-valid"
+    );
+    if (!fileNameIsValid) {
       delete datasetStructure["files"][fileKey];
     }
   }
@@ -4990,12 +4984,14 @@ const namesOfForbiddenFiles = {
 };
 
 const sparcFolderAndFileRegex = /[\+&\%#]/g;
+const identifierConventionsRegex = /^[a-zA-Z0-9-_]+$/;
 
-const checkStringAgainstSdsRequirements = (stringToTest, stringCase) => {
+const evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
   const testCases = {
-    "folder-and-file-name-is-valid": sparcFolderAndFileRegex.test(stringToTest),
-    "file-is-hidden": stringToTest.startsWith("."),
-    "file-is-in-forbidden-files-list": namesOfForbiddenFiles?.[stringToTest],
+    "folder-and-file-name-is-valid": !sparcFolderAndFileRegex.test(stringToTest), // returns true if the string is valid
+    "file-is-hidden": stringToTest.startsWith("."), // returns true if the string is hidden
+    "file-is-in-forbidden-files-list": namesOfForbiddenFiles?.[stringToTest], // returns true if the string is in the forbidden files list
+    "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest), // returns true if the string adheres to the identifier conventions
   };
   return testCases[stringCase];
 };
@@ -5069,10 +5065,16 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
 
       if (fsStatsObj.isDirectory()) {
         const folderName = path.basename(pathToExplore);
-        if (checkStringAgainstSdsRequirements(folderName, "folder-and-file-name-is-valid")) {
+
+        const folderNameIsValid = evaluateStringAgainstSdsRequirements(
+          folderName,
+          "folder-and-file-name-is-valid"
+        );
+        if (!folderNameIsValid) {
           problematicFolderNames.push(`${currentStructurePath}${folderName}`);
         }
 
+        // Add the folder to the JSON structure
         currentStructure["folders"][folderName] = {
           path: pathToExplore,
           type: "local",
@@ -5103,15 +5105,29 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
           fileName: fileName,
         };
 
-        if (checkStringAgainstSdsRequirements(fileName, "file-is-in-forbidden-files-list")) {
+        const fileIsInForbiddenFilesList = evaluateStringAgainstSdsRequirements(
+          fileName,
+          "file-is-in-forbidden-files-list"
+        );
+
+        if (fileIsInForbiddenFilesList) {
           forbiddenFileNames.push(fileObject);
         } else {
-          if (checkStringAgainstSdsRequirements(fileName, "folder-and-file-name-is-valid")) {
+          // Check if the file name has any characters that do not comply with SPARC naming requirements
+          const fileNameIsValid = evaluateStringAgainstSdsRequirements(
+            fileName,
+            "folder-and-file-name-is-valid"
+          );
+          if (!fileNameIsValid) {
             problematicFileNames.push(fileObject);
           }
-          if (checkStringAgainstSdsRequirements(fileName, "file-is-hidden")) {
+
+          const fileIsHidden = evaluateStringAgainstSdsRequirements(fileName, "file-is-hidden");
+          if (fileIsHidden) {
             hiddenItems.push(fileObject);
           }
+
+          // Add the file to the current structure
           currentStructure["files"][fileName] = {
             path: pathToExplore,
             type: "local",
@@ -5123,6 +5139,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
         }
       }
     } catch (error) {
+      console.log("Error accessing path", pathToExplore, error);
       // If the path is inaccessible by Node, add it to the inaccessibleItems array
       inaccessibleItems.push(pathToExplore);
     }
@@ -5147,6 +5164,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   }
 
   if (forbiddenFileNames.length > 0) {
+    console.log("forbiddenFileNames", forbiddenFileNames);
     await swalFileListSingleAction(
       forbiddenFileNames.map((file) => file.relativePath),
       "Forbidden file names were found in your import",
@@ -5331,13 +5349,17 @@ const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath)
 };
 
 const addDataArrayToDatasetStructureAtPath = async (importedData) => {
+  // If no data was imported ()
+  const numberOfItemsToImport = importedData.length;
+  if (numberOfItemsToImport === 0) {
+    notyf.open({
+      type: "info",
+      message: "No folders/files were selected to import",
+      duration: 4000,
+    });
+    return;
+  }
   try {
-    const numberOfItemsToImport = importedData.length;
-    // Throw an error if there are no importable items
-    // This can sometimes happen is the user imports atypical items
-    if (numberOfItemsToImport === 0) {
-      throw new Error("No importable items found");
-    }
     // STEP 1: Build the JSON object from the imported data
     // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
     const currentFileExplorerPath = organizeDSglobalPath.value.trim();
