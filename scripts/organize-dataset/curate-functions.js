@@ -1269,61 +1269,48 @@ const moveItems = async (ev, category) => {
       }).then(() => {
         // action to move and delete here
         // multiple files/folders
-        let split = selectedPath.split("/");
-        let datasetCopy = datasetStructureJSONObj;
         let splitSelectedPath = selectedPath.split("/");
         let datasetStructureCopy = datasetStructureJSONObj;
-
-        console.log(`div.single-item.selected-item: ${$("div.single-item.selected-item")}`);
-        console.log(`div.single-item.selected-item: ${$("div.single-item.selected-item").toArray()}`);
-        console.log(`div.single-item.selected-item: ${$("div.single-item.selected-item").toArray().length}`);
 
         if ($("div.single-item.selected-item").toArray().length > 1) {
           // Moving multiple items
           $("div.single-item.selected-item")
             .toArray()
             .forEach((element) => {
-              console.log(`element: ${element}`);
-              datasetCopy = datasetStructureJSONObj;
+              console.log(element);
+              datasetStructureCopy = datasetStructureJSONObj;
               let itemToMove = element.textContent;
               let itemType = "";
-              
+
               if ($(element.firstElementChild).hasClass("myFile")) {
-                itemType = "file";
+                itemType = "files";
               } else if ($(element.firstElementChild).hasClass("myFol")) {
-                itemType = "folder";
+                itemType = "folders";
               }
               console.log(`Item type was decided to be: ${itemType}`);
-              //do a check here
-              //store duplicates into array and then skip
-              //let user know which ones were duplicates
-              for (let i = 1; i < split.length; i++) {
-                if (datasetCopy["folders"].hasOwnProperty(split[i])) {
-                  datasetCopy = datasetCopy["folders"][split[i]];
+
+              for (let i = 1; i < splitSelectedPath.length; i++) {
+                if (datasetStructureCopy["folders"].hasOwnProperty(splitSelectedPath[i])) {
+                  // Traverse to the necessary subfolder based on the path length (amount of subfolders)
+                  datasetStructureCopy = datasetStructureCopy["folders"][splitSelectedPath[i]];
                 }
               }
 
-              if (itemType == "file") {
-                datasetCopy = datasetCopy["files"];
-              } else {
-                datasetCopy = datasetCopy["folders"];
-              }
-
-              if (datasetCopy.hasOwnProperty(itemToMove)) {
-                if (itemType == "folder") {
+              //Enter files or folders based on the itemType
+              datasetStructureCopy = datasetStructureCopy[itemType];
+              if (datasetStructureCopy.hasOwnProperty(itemToMove)) {
+                // There is already an item with the same name in the destination folder
+                if (itemType == "folders") {
                   itemToMove += "/";
                 }
                 duplicateItems.push(`<li style="font-size: large;">${itemToMove}</li>`);
               } else {
-                console.log(`Moving ${itemToMove} to ${selectedPath}`)
                 moveItemsHelper(itemToMove, selectedPath, itemType, organizeDSglobalPath);
-                console.log(`Removing ${element.parentElement}`);
-                console.log(`Remove ev.parentElement: ${ev.parentElement}`)
-                ev.parentElement.remove();
+                element.remove();
               }
             });
+            
           duplicateItems.push(`</ul>`);
-
           if (duplicateItems.length > 2) {
             Swal.fire({
               backdrop: "rgba(0,0,0, 0.4)",
@@ -1336,44 +1323,38 @@ const moveItems = async (ev, category) => {
               },
             });
           }
-          // only 1 file/folder
         } else {
-          console.log("single file move only")
-          console.log(`ev: ${ev}`);
+          // only 1 file/folder
           let itemToMove = ev.parentElement.textContent;
           let itemType = "";
 
           if ($(ev).hasClass("myFile")) {
-            itemType = "file";
+            itemType = "files";
           } else if ($(ev).hasClass("myFol")) {
-            itemType = "folder";
+            itemType = "folders";
           }
 
-          for (let i = 1; i < split.length; i++) {
-            if (split[i] in datasetCopy["folders"]) {
-              datasetCopy = datasetCopy["folders"][split[i]];
+          for (let i = 1; i < splitSelectedPath.length; i++) {
+            if (splitSelectedPath[i] in datasetStructureCopy["folders"]) {
+              // Traverse to the necessary subfolder based on the path length (amount of subfolders)
+              datasetStructureCopy = datasetStructureCopy["folders"][splitSelectedPath[i]];
             }
           }
 
-          if (itemType == "file") {
-            datasetCopy = datasetCopy["files"];
-          } else {
-            datasetCopy = datasetCopy["folders"];
-          }
-
-          if (datasetCopy.hasOwnProperty(itemToMove)) {
+          // Enter files or folders based on the itemType
+          datasetStructureCopy = datasetStructureCopy[itemType];
+          if (datasetStructureCopy.hasOwnProperty(itemToMove)) {
             Swal.fire({
               backdrop: "rgba(0,0,0, 0.4)",
               heightAuto: false,
               icon: "error",
-              title: `The ${itemType} is already in the folder destination!`,
+              title: `The ${itemType.substring(0, itemType.length - 1)} is already in the folder destination!`,
               html: `<ul style="text-align: center;"><li>${itemToMove}</li></ul>`,
               didOpen: () => {
                 Swal.hideLoading();
               },
             });
           } else {
-            // return selectedPath;
             moveItemsHelper(itemToMove, selectedPath, itemType, organizeDSglobalPath);
             ev.parentElement.remove();
             Swal.fire({
@@ -1389,23 +1370,18 @@ const moveItems = async (ev, category) => {
         }
 
         // Rerender the file view again
-        let pathAsArray = selectedPath.split("/");
         listItems(myPath, "#items", 500);
         getInFolder(".single-item", "#items", organizeDSglobalPath, myPath);
 
-        // if moved into an empty folder we need to remove the class 'empty'
-        // from the folder destination
-        let folderDestinationName = pathAsArray[pathAsArray.length - 1];
-        console.log(`folderDestinationName: ${folderDestinationName}`);
+        // if moved into an empty folder we need to remove the class 'empty' from the folder destination
+        let folderDestinationName = splitSelectedPath[splitSelectedPath.length - 1];
         if (
           myPath?.["folders"]?.[folderDestinationName] != undefined &&
           Object.keys(myPath?.["folders"]?.[folderDestinationName]).length > 0
         ) {
           let listedItems = document.getElementsByClassName("folder_desc");
-          console.log(`listedItems: ${listedItems}`);
-          console.log("about to loop through listedItems");
           for (let i = 0; i < listedItems.length; i++) {
-            console.log(`listedItems[i].innerText: ${listedItems[i].innerText}`);
+            // Find the folder in the list of folders and remove the empty class
             if (listedItems[i].innerText === folderDestinationName) {
               listedItems[i].parentElement.children[0].classList.remove("empty");
             }
@@ -1417,30 +1393,31 @@ const moveItems = async (ev, category) => {
 };
 
 const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
-  var filtered = getGlobalPath(currentDatasetPath);
-  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  var selectedNodeList = destination.split("/").slice(1);
-  var destinationPath = getRecursivePath(selectedNodeList, datasetStructureJSONObj);
+  let filtered = getGlobalPath(currentDatasetPath);
+  let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+  let selectedNodeList = destination.split("/").slice(1);
+  let destinationPath = getRecursivePath(selectedNodeList, datasetStructureJSONObj);
 
   // handle duplicates in destination folder
-  if (category === "file") {
-    category = "files";
-    var uiFiles = {};
+  if (category === "files") {
+    let uiFiles = {};
     if (JSON.stringify(destinationPath["files"]) !== "{}") {
-      for (var file in destinationPath["files"]) {
+      for (let file in destinationPath["files"]) {
         uiFiles[path.parse(file).base] = 1;
       }
     }
-    var fileBaseName = path.basename(item);
-    var originalFileNameWithoutExt = path.parse(fileBaseName).name;
-    var fileNameWithoutExt = originalFileNameWithoutExt;
-    var j = 1;
+    let fileBaseName = path.basename(item);
+    let originalFileNameWithoutExt = path.parse(fileBaseName).name;
+    let fileNameWithoutExt = originalFileNameWithoutExt;
+    let j = 1;
 
     while (fileBaseName in uiFiles) {
       fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
       fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext;
       j++;
     }
+
+    // Add moved action to file in SODA JSON
     if ("action" in myPath[category][item]) {
       if (!myPath[category][item]["action"].includes("moved")) {
         myPath[category][item]["action"].push("moved");
@@ -1455,21 +1432,22 @@ const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
       }
     }
     destinationPath[category][fileBaseName] = myPath[category][item];
-  } else if (category === "folder") {
-    category = "folders";
-    var uiFolders = {};
+  } else if (category === "folders") {
+    let uiFolders = {};
     if (JSON.stringify(destinationPath["folders"]) !== "{}") {
       for (var folder in destinationPath["folders"]) {
         uiFolders[folder] = 1;
       }
     }
-    var originalFolderName = path.basename(item);
-    var renamedFolderName = originalFolderName;
-    var j = 1;
+    let originalFolderName = path.basename(item);
+    let renamedFolderName = originalFolderName;
+    let j = 1;
     while (renamedFolderName in uiFolders) {
       renamedFolderName = `${originalFolderName} (${j})`;
       j++;
     }
+    
+    // Add moved action to folder in SODA JSON
     if ("action" in myPath[category][item]) {
       myPath[category][item]["action"].push("moved");
       addMovedRecursively(myPath[category][item]);
@@ -1487,17 +1465,6 @@ const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
   }
   //delete item from the original location
   delete myPath[category][item];
-  listItems(myPath, "#items");
-  getInFolder(".single-item", "#items", currentDatasetPath, datasetStructureJSONObj);
-
-  // log moving multiple files/folders successfully
-  logCurationForAnalytics(
-    "Success",
-    PrepareDatasetsAnalyticsPrefix.CURATE,
-    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-    ["Step 3", "Move", category === "files" ? "File" : "Folder"],
-    determineDatasetLocation()
-  );
 };
 
 const updateManifestLabelColor = (el) => {
