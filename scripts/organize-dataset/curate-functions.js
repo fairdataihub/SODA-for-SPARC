@@ -1211,21 +1211,20 @@ const moveItems = async (ev, category) => {
       if (!selectedPath) {
         Swal.showValidationMessage("Please select a folder destination!");
         return undefined;
+      } else if (selectedNode === "dataset_root") {
+        Swal.showValidationMessage("Items cannot be moved to this level of the dataset!");
+        return undefined;
+      } else if (selectedNode === selectedItem) {
+        Swal.showValidationMessage("Items cannot be moved into themselves!");
+        return undefined;
       } else {
-        if (selectedNode === "dataset_root") {
-          Swal.showValidationMessage("Items cannot be moved to this level of the dataset!");
-          return undefined;
-        } else if (selectedNode === selectedItem) {
-          Swal.showValidationMessage("Items cannot be moved into themselves!");
-          return undefined;
-        } else {
-          return selectedPath;
-        }
+        return selectedPath;
       }
     },
   });
 
   if (folderDestination) {
+    // Confirm with user if they want to move the item(s)
     const { value: confirm } = await Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
