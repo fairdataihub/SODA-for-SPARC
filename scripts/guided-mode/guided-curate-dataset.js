@@ -15713,6 +15713,26 @@ const createTestDataset = (
     return;
   }
 
+  const maxDepth = 5;
+  if (depth > maxDepth) {
+    console.log(`Depth must be less than or equal to ${maxDepth}`);
+    return;
+  }
+
+  const maxNumberOfFilesInEachFolder = 30;
+  if (numberOfFilesInEachFolder > maxNumberOfFilesInEachFolder) {
+    console.log(
+      `Number of files in each folder must be less than or equal to ${maxNumberOfFilesInEachFolder}`
+    );
+    return;
+  }
+
+  const maxNumberOfFolders = 50;
+  if (numberOfFolders > maxNumberOfFolders) {
+    console.log(`Number of folders must be less than or equal to ${maxNumberOfFolders}`);
+    return;
+  }
+
   const testDatasetsPath = path.join(homeDirectory, "SODA", "test-datasets");
 
   // return if the root directory does not exist
