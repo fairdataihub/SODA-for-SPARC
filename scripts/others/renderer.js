@@ -5242,10 +5242,10 @@ const mergeLocalAndRemoteDatasetStructure = async (
 
     for (const folder of foldersBeingMergedToPath) {
       if (ExistingFoldersAtPath.includes(folder)) {
-        // Maybe we don't have to do anything here because the folder already exists
+        // If the folder already exists, leave it as is...
       } else {
+        // Otherwise add a new folder to the existing dataset structure
         existingDatasetJsonAtPath["folders"][folder] = {
-          path: "Not/sure/what/path/to/use/here",
           type: "local",
           files: {},
           folders: {},
