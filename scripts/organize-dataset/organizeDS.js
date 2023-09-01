@@ -612,11 +612,10 @@ const loadFileFolder = (myPath) => {
       continue;
     }
   }
-  if (count < 100) {
-    if (!folder_elem.includes(appendString)) {
-      folder_elem.push(appendString);
-      count = 0;
-    }
+  
+  if (count < 100 && !folder_elem.includes(appendString)) {
+    folder_elem.push(appendString);
+    count = 0;
   }
 
   count = 0;
@@ -666,11 +665,9 @@ const loadFileFolder = (myPath) => {
       continue;
     }
   }
-  if (count < 100) {
-    if (!file_elem.includes(appendString)) {
-      file_elem.push(appendString);
-      count = 0;
-    }
+  if (count < 100 && !file_elem.includes(appendString)) {
+    file_elem.push(appendString);
+    count = 0;
   }
   if (folder_elem[0] === "") {
     folder_elem.splice(0, 1);
@@ -679,8 +676,7 @@ const loadFileFolder = (myPath) => {
     file_elem.splice(0, 1);
   }
 
-  let items = [folder_elem, file_elem];
-  return items;
+  return [folder_elem, file_elem];
 };
 
 const getRecursivePath = (filteredList, inputObj) => {
