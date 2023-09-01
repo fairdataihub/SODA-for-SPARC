@@ -5216,7 +5216,6 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
       "Do not import the hidden files",
       "What would you like to do with the hidden files?"
     );
-    // If the user
     if (!keepHiddenFiles) {
       removeHiddenFilesFromDatasetStructure(datasetStructure);
     }
