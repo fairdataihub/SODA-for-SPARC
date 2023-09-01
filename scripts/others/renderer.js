@@ -236,26 +236,24 @@ contact_us_lottie_observer.observe(contact_section, {
 
 document.getElementById("guided_mode_view").click();
 
-let firstLaunch = nodeStorage.getItem("freshLaunch");
-console.log("First launch from storage value: ", firstLaunch);
-// if firstlaunch is undefined then it is a fresh install of the app; so set first launch to true
-if (firstLaunch === undefined || firstLaunch === null) firstLaunch = true;
-// if launchAnnouncements is undefined then announcements havent been launched yet; so set launchAnnouncements to true
-let launchAnnouncement = nodeStorage.getItem("launchAnnouncements");
-console.log("Launch announcements from storage value: ", launchAnnouncement);
-if (launchAnnouncement === undefined || firstLaunch === null) launchAnnouncement = true;
+ipcRenderer.on("checkForAnnouncements", () => {
+  console.log("CHecking for announcements");
+});
 
-console.log(process.platform);
-
-// first launch on MacOS seems to cause a reload; so only set launch announcements to false if it isnt first launch
-if (!firstLaunch) {
-  // NOTE: launchAnnouncements is only set to true during the auto update process
-  nodeStorage.setItem("launchAnnouncements", false);
+// check for announcements on startup; if the user is in the auto update workflow do not check for announcements
+// Rationale: The auto update workflow involves refreshing the DOM which will cause a re-run of
+//            the renderer process. One potential outcome of this is the renderer reaches this code block before the refresh
+//            and sets the launch_announcements flag to false. On the second run, the one which the user will have time to see announcements
+//            before the DOM reloads, the announcements will not be checked or displayed at all.
+let autoUpdateLaunch = nodeStorage.getItem("auto_update_launch");
+let launchAnnouncement = nodeStorage.getItem("launch_announcements");
+if (autoUpdateLaunch == false || autoUpdateLaunch == null || autoUpdateLaunch == undefined) {
+  // if launchAnnouncements is undefined/null then announcements havent been launched yet; set launch_announcements to true
+  // later code will reference this flag to determine if announcements should be checked for
+  if (launchAnnouncement === undefined || launchAnnouncement === null) launchAnnouncement = true;
+  // do not check for announcements on the next launch
+  nodeStorage.setItem("launch_announcements", false); // NOTE: launch_announcements is only set to true during the auto update process ( see main.js )
 }
-nodeStorage.setItem("freshLaunch", false);
-
-console.log("First launch: ", firstLaunch);
-console.log("Launch announcements: ", launchAnnouncement);
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -525,6 +523,24 @@ const startupServerAndApiCheck = async () => {
     nodeStorage.setItem("announcements", false);
   }
 
+  // get apps base path
+  const basepath = app.getAppPath();
+  const { resourcesPath } = process;
+
+  // set the templates path
+  try {
+    await client.put("prepare_metadata/template_paths", {
+      basepath: basepath,
+      resourcesPath: resourcesPath,
+    });
+  } catch (error) {
+    clientError(error);
+    ipcRenderer.send("track-event", "Error", "Setting Templates Path");
+    return;
+  }
+
+  ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+
   apiVersionChecked = true;
 };
 
@@ -546,24 +562,6 @@ ipcRenderer.on("start_pre_flight_checks", async (event, arg) => {
   await run_pre_flight_checks();
 
   log.info("Running pre flight checks finished");
-
-  // get apps base path
-  const basepath = app.getAppPath();
-  const { resourcesPath } = process;
-
-  // set the templates path
-  try {
-    await client.put("prepare_metadata/template_paths", {
-      basepath: basepath,
-      resourcesPath: resourcesPath,
-    });
-  } catch (error) {
-    clientError(error);
-    ipcRenderer.send("track-event", "Error", "Setting Templates Path");
-    return;
-  }
-
-  ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 });
 
 const getPennsieveAgentPath = () => {
@@ -3993,14 +3991,6 @@ const selectOptionColor = (mylist) => {
   mylist.style.color = mylist.options[mylist.selectedIndex].style.color;
 };
 
-const sdsRegexTest = (regexToTest, regexCase) => {
-  const regexCases = {
-    "dataset-name": /^[a-zA-Z0-9_]+$/,
-    "dataset-description": /^[a-zA-Z0-9_]+$/,
-    "dataset-identifier": /^[a-zA-Z0-9_]+$/,
-  };
-  return regexCases[regexCase].test(regexToTest);
-};
 ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -4360,15 +4350,16 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
         $(".swal2-confirm").attr("id", "add-new-folder-button");
         $("#add-new-folder-input").keyup(function () {
           let val = $("#add-new-folder-input").val();
-          let folderNameCheck = checkIrregularNameBoolean(val);
-          if (folderNameCheck === true) {
-            Swal.showValidationMessage(
-              `The folder name contains non-allowed characters. To follow the SPARC Data Standards, please create a folder name with only alphanumberic characters and hyphens '-'`
-            );
+          const folderNameIsValid = evaluateStringAgainstSdsRequirements(
+            val,
+            "folder-and-file-name-is-valid"
+          );
+          if (folderNameIsValid) {
+            $("#add-new-folder-button").attr("disabled", false);
+          } else {
+            Swal.showValidationMessage(`The folder name contains non-allowed characters.`);
             $("#add-new-folder-button").attr("disabled", true);
             return;
-          } else {
-            $("#add-new-folder-button").attr("disabled", false);
           }
         });
       },
@@ -4823,12 +4814,7 @@ organizeDSaddFolders.addEventListener("click", function () {
 
 // Event listener for when folder(s) are imported into the file explorer
 ipcRenderer.on("selected-folders-organize-datasets", async (event, importedFolders) => {
-  const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['dataset_root', 'code']
-  /*const currentContentsAtDatasetPath = getRecursivePath(
-    currentPathArray.slice(1),
-    datasetStructureJSONObj
-  ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')*/
-
+  // Add the imported folders to the dataset structure
   await addDataArrayToDatasetStructureAtPath(importedFolders);
 });
 
@@ -4848,7 +4834,8 @@ const getNestedObjectsFromDatasetStructureByPath = (datasetStructure, path) => {
 const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
-    if (checkStringAgainstSdsRequirements(fileKey, "file-is-hidden")) {
+    const fileIsHidden = evaluateStringAgainstSdsRequirements(fileKey, "file-is-hidden");
+    if (fileIsHidden) {
       delete datasetStructure["files"][fileKey];
     }
   }
@@ -4860,23 +4847,20 @@ const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
 };
 
 const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
-  console.log(datasetStructure);
   const currentFoldersAtPath = Object.keys(datasetStructure.folders);
   for (const folderKey of currentFoldersAtPath) {
-    console.log(folderKey);
-    if (checkStringAgainstSdsRequirements(folderKey, "folder-and-file-name-is-valid")) {
+    const folderNameIsValid = evaluateStringAgainstSdsRequirements(
+      folderKey,
+      "folder-and-file-name-is-valid"
+    );
+    if (!folderNameIsValid) {
       const newFolderName = folderKey.replace(sparcFolderAndFileRegex, "-");
-      console.log(newFolderName);
-
       const newFolderObj = { ...datasetStructure["folders"][folderKey] };
-      console.log(newFolderObj);
       if (!newFolderObj["action"].includes("renamed")) {
         newFolderObj["action"].push("renamed");
       }
       datasetStructure["folders"][newFolderName] = newFolderObj;
       delete datasetStructure["folders"][folderKey];
-
-      console.log(Object.keys(datasetStructure.folders));
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][newFolderName]);
     }
   }
@@ -4885,7 +4869,11 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
 const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
-    if (checkStringAgainstSdsRequirements(fileKey, "folder-and-file-name-is-valid")) {
+    const fileNameIsValid = evaluateStringAgainstSdsRequirements(
+      fileKey,
+      "folder-and-file-name-is-valid"
+    );
+    if (!fileNameIsValid) {
       const newFileName = fileKey.replace("@", "-");
       const newFileObj = { ...datasetStructure["files"][fileKey] };
       if (!newFileObj["action"].includes("renamed")) {
@@ -4904,7 +4892,11 @@ const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
 const deleteProblematicFilesFromDatasetStructure = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
-    if (checkStringAgainstSdsRequirements(fileKey, "folder-and-file-name-is-valid")) {
+    const fileNameIsValid = evaluateStringAgainstSdsRequirements(
+      fileKey,
+      "folder-and-file-name-is-valid"
+    );
+    if (!fileNameIsValid) {
       delete datasetStructure["files"][fileKey];
     }
   }
@@ -4990,12 +4982,14 @@ const namesOfForbiddenFiles = {
 };
 
 const sparcFolderAndFileRegex = /[\+&\%#]/g;
+const identifierConventionsRegex = /^[a-zA-Z0-9-_]+$/;
 
-const checkStringAgainstSdsRequirements = (stringToTest, stringCase) => {
+const evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
   const testCases = {
-    "folder-and-file-name-is-valid": sparcFolderAndFileRegex.test(stringToTest),
-    "file-is-hidden": stringToTest.startsWith("."),
-    "file-is-in-forbidden-files-list": namesOfForbiddenFiles?.[stringToTest],
+    "folder-and-file-name-is-valid": !sparcFolderAndFileRegex.test(stringToTest), // returns true if the string is valid
+    "file-is-hidden": stringToTest.startsWith("."), // returns true if the string is hidden
+    "file-is-in-forbidden-files-list": namesOfForbiddenFiles?.[stringToTest], // returns true if the string is in the forbidden files list
+    "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest), // returns true if the string adheres to the identifier conventions
   };
   return testCases[stringCase];
 };
@@ -5069,10 +5063,16 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
 
       if (fsStatsObj.isDirectory()) {
         const folderName = path.basename(pathToExplore);
-        if (checkStringAgainstSdsRequirements(folderName, "folder-and-file-name-is-valid")) {
+
+        const folderNameIsValid = evaluateStringAgainstSdsRequirements(
+          folderName,
+          "folder-and-file-name-is-valid"
+        );
+        if (!folderNameIsValid) {
           problematicFolderNames.push(`${currentStructurePath}${folderName}`);
         }
 
+        // Add the folder to the JSON structure
         currentStructure["folders"][folderName] = {
           path: pathToExplore,
           type: "local",
@@ -5103,15 +5103,29 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
           fileName: fileName,
         };
 
-        if (checkStringAgainstSdsRequirements(fileName, "file-is-in-forbidden-files-list")) {
+        const fileIsInForbiddenFilesList = evaluateStringAgainstSdsRequirements(
+          fileName,
+          "file-is-in-forbidden-files-list"
+        );
+
+        if (fileIsInForbiddenFilesList) {
           forbiddenFileNames.push(fileObject);
         } else {
-          if (checkStringAgainstSdsRequirements(fileName, "folder-and-file-name-is-valid")) {
+          // Check if the file name has any characters that do not comply with SPARC naming requirements
+          const fileNameIsValid = evaluateStringAgainstSdsRequirements(
+            fileName,
+            "folder-and-file-name-is-valid"
+          );
+          if (!fileNameIsValid) {
             problematicFileNames.push(fileObject);
           }
-          if (checkStringAgainstSdsRequirements(fileName, "file-is-hidden")) {
+
+          const fileIsHidden = evaluateStringAgainstSdsRequirements(fileName, "file-is-hidden");
+          if (fileIsHidden) {
             hiddenItems.push(fileObject);
           }
+
+          // Add the file to the current structure
           currentStructure["files"][fileName] = {
             path: pathToExplore,
             type: "local",
@@ -5123,6 +5137,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
         }
       }
     } catch (error) {
+      console.log("Error accessing path", pathToExplore, error);
       // If the path is inaccessible by Node, add it to the inaccessibleItems array
       inaccessibleItems.push(pathToExplore);
     }
@@ -5147,6 +5162,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   }
 
   if (forbiddenFileNames.length > 0) {
+    console.log("forbiddenFileNames", forbiddenFileNames);
     await swalFileListSingleAction(
       forbiddenFileNames.map((file) => file.relativePath),
       "Forbidden file names were found in your import",
@@ -5181,7 +5197,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
       You may choose to either keep them as is, or replace the characters with '-'.
       `,
       "Replace the special characters with '-'",
-      "Keep the folder names as they are",
+      "Keep the file names as they are",
       "Would you like to import your files with special characters?"
     );
     if (replaceFileNames) {
@@ -5198,7 +5214,6 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
       "Do not import the hidden files",
       "What would you like to do with the hidden files?"
     );
-    // If the user
     if (!keepHiddenFiles) {
       removeHiddenFilesFromDatasetStructure(datasetStructure);
     }
@@ -5227,10 +5242,10 @@ const mergeLocalAndRemoteDatasetStructure = async (
 
     for (const folder of foldersBeingMergedToPath) {
       if (ExistingFoldersAtPath.includes(folder)) {
-        // Maybe we don't have to do anything here because the folder already exists
+        // If the folder already exists, leave it as is...
       } else {
+        // Otherwise add a new folder to the existing dataset structure
         existingDatasetJsonAtPath["folders"][folder] = {
-          path: "Not/sure/what/path/to/use/here",
           type: "local",
           files: {},
           folders: {},
@@ -5331,13 +5346,17 @@ const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath)
 };
 
 const addDataArrayToDatasetStructureAtPath = async (importedData) => {
+  // If no data was imported ()
+  const numberOfItemsToImport = importedData.length;
+  if (numberOfItemsToImport === 0) {
+    notyf.open({
+      type: "info",
+      message: "No folders/files were selected to import",
+      duration: 4000,
+    });
+    return;
+  }
   try {
-    const numberOfItemsToImport = importedData.length;
-    // Throw an error if there are no importable items
-    // This can sometimes happen is the user imports atypical items
-    if (numberOfItemsToImport === 0) {
-      throw new Error("No importable items found");
-    }
     // STEP 1: Build the JSON object from the imported data
     // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
     const currentFileExplorerPath = organizeDSglobalPath.value.trim();

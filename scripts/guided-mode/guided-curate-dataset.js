@@ -1523,6 +1523,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
+      sodaJSONObj["last-confirmed-bf-account-details"] = defaultBfAccount;
       sodaJSONObj["last-confirmed-pennsieve-workspace-details"] = userSelectedWorkSpace;
     }
 
@@ -7182,11 +7183,6 @@ const isNumberBetween = (number, minVal, maxVal) => {
   return !isNaN(parseFloat(number)) && isFinite(number) && number >= minVal && number <= maxVal;
 };
 
-const subSamInputIsValid = (subSamInput) => {
-  const subSamInputPattern = /^[a-z]+-[0-9A-Za-z-]+$/;
-  return subSamInputPattern.test(subSamInput);
-};
-
 const generateAlertElement = (alertType, warningMessageText) => {
   return `
       <div class="alert alert-${alertType} guided--alert mr-2" role="alert">
@@ -7237,6 +7233,33 @@ const newEmptyFolderObj = () => {
   };
 };
 
+const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
+  if (!sodaJSONObj["completed-tabs"].includes("guided-pennsieve-intro-tab")) {
+    return false;
+  }
+  // If the user has changed their Pennsieve account, they need to confirm their new Pennsieve account and workspace
+  if (sodaJSONObj?.["last-confirmed-bf-account-details"] !== defaultBfAccount) {
+    if (sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
+      delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
+    }
+    if (sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
+      delete sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+    }
+    return true;
+  }
+  // If the user has changed their Pennsieve workspace, they need to confirm their new workspace
+  if (
+    guidedGetCurrentUserWorkSpace() != sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]
+  ) {
+    if (sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
+      delete sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+    }
+    return true;
+  }
+  // Return false if the user does not need to reconfirm their account details
+  return false;
+};
+
 const guidedGetPageToReturnTo = (sodaJSONObj) => {
   // Set by openPage function
   const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
@@ -7256,6 +7279,11 @@ const guidedGetPageToReturnTo = (sodaJSONObj) => {
     // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
     return firstPageID;
   }
+  console.log(guidedCheckIfUserNeedsToReconfirmAccountDetails());
+  if (guidedCheckIfUserNeedsToReconfirmAccountDetails() === true) {
+    return "guided-pennsieve-intro-tab";
+  }
+
   // If the page the user was last on no longer exists, return them to the first page
   if (!document.getElementById(usersPageBeforeExit)) {
     return firstPageID;
@@ -7539,15 +7567,6 @@ const guidedResumeProgress = async (datasetNameToResume) => {
 
     //patches the sodajsonobj if it was created in a previous version of guided mode
     await patchPreviousGuidedModeVersions();
-
-    // Delete the button status for the Pennsieve account confirmation section
-    // So the user has to confirm their Pennsieve account before uploading
-    if (sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
-      delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
-    }
-    if (sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
-      delete sodaJSONObj["button-config"]["organization-has-been-confirmed"];
-    }
 
     // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
     const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
@@ -10322,7 +10341,11 @@ const specifySubject = (event, subjectNameInput) => {
       trashCanElement.style.display = "block";
 
       if (subjectName.length > 0) {
-        if (!subSamInputIsValid(subjectName)) {
+        const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+          subjectName,
+          "string-adheres-to-identifier-conventions"
+        );
+        if (!subjectNameIsValid) {
           generateAlertMessage(subjectNameInput);
           return;
         }
@@ -10380,7 +10403,11 @@ const specifySample = (event, sampleNameInput) => {
       const subjectToAddSampleTo = subjectSampleAdditionTable.find(".samples-subject-name").text();
 
       if (sampleName.length > 0) {
-        if (!subSamInputIsValid(sampleName)) {
+        const sampleNameIsValid = evaluateStringAgainstSdsRequirements(
+          sampleName,
+          "string-adheres-to-identifier-conventions"
+        );
+        if (!sampleNameIsValid) {
           //show alert message below pool name input if input is invalid and abort function
           generateAlertMessage(sampleNameInput);
           return;
@@ -10411,6 +10438,7 @@ const specifySample = (event, sampleNameInput) => {
         }
       }
     } catch (error) {
+      console.log(error);
       notyf.open({
         duration: "3000",
         type: "error",
@@ -10448,7 +10476,11 @@ const specifyPool = (event, poolNameInput) => {
       const poolIdCellToAddNameTo = poolNameInput.parent();
       let poolsTable = $("#pools-table");
       if (poolName !== "pool-") {
-        if (!subSamInputIsValid(poolName)) {
+        const poolNameIsValid = evaluateStringAgainstSdsRequirements(
+          poolName,
+          "string-adheres-to-identifier-conventions"
+        );
+        if (!poolNameIsValid) {
           notyf.open({
             duration: "3000",
             type: "error",
@@ -15363,15 +15395,16 @@ $("#guided-new-folder").on("click", () => {
         $(".swal2-confirm").attr("id", "add-new-folder-button");
         $("#add-new-folder-input").keyup(function () {
           var val = $("#add-new-folder-input").val();
-          let folderNameCheck = checkIrregularNameBoolean(val);
-          if (folderNameCheck === false) {
-            Swal.showValidationMessage(
-              `The folder name contains non-allowed characters. To follow SPARC Data Standards, please create a folder name with only alphanumberic characters and hyphens '-'`
-            );
+          const folderNameIsValid = evaluateStringAgainstSdsRequirements(
+            val,
+            "folder-and-file-name-is-valid"
+          );
+          if (folderNameIsValid) {
+            $("#add-new-folder-button").attr("disabled", false);
+          } else {
+            Swal.showValidationMessage(`The folder name contains non-allowed characters.`);
             $("#add-new-folder-button").attr("disabled", true);
             return;
-          } else {
-            $("#add-new-folder-button").attr("disabled", false);
           }
         });
       },
@@ -15590,4 +15623,136 @@ const guidedSaveParticipantInformation = () => {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["numSubjects"] = numSubjects;
     sodaJSONObj["dataset-metadata"]["description-metadata"]["numSamples"] = numSamples;
   }
+};
+
+const generateRandomFolderName = () => {
+  // create a random string of 20 characters
+  let text = "";
+  const randomString =
+    Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  return randomString;
+};
+
+const generateFileText = (fileSize) => {
+  let text = "";
+  let numberOfLines = 0;
+
+  if (fileSize == "small") {
+    numberOfLines = 100;
+  } else if (fileSize == "medium") {
+    numberOfLines = 1000;
+  } else if (fileSize == "large") {
+    numberOfLines = 10000;
+  }
+
+  for (let i = 0; i < numberOfLines; i++) {
+    text += "The quick brown fox jumped over the lazy dog\n";
+  }
+
+  return text;
+};
+
+const createRandomFiles = (folderPath, numberOfFilesInEachFolder, fileSize) => {
+  for (let i = 0; i < numberOfFilesInEachFolder; i++) {
+    const fileFormat = "txt"; // Always create a text file
+    const filePath = path.join(folderPath, `${generateRandomFolderName()}.${fileFormat}`);
+    createRandomFile(filePath, fileSize); // Generating a text file with random data
+  }
+};
+
+const createRandomFile = (filePath, fileSize) => {
+  const fileText = generateFileText(fileSize);
+  fs.writeFileSync(filePath, fileText);
+};
+
+const createNestedFolders = (
+  baseDirectory,
+  numberOfFolders,
+  depth,
+  fileSize,
+  numberOfFilesInEachFolder
+) => {
+  if (depth === 0) {
+    return;
+  }
+  for (let i = 0; i < numberOfFolders; i++) {
+    const folderPath = path.join(baseDirectory, generateRandomFolderName());
+    fs.mkdirSync(folderPath);
+    // Add the random files to the folder
+    createRandomFiles(folderPath, numberOfFilesInEachFolder, fileSize); // Creating multiple files in the folder
+    // Recursively create more folders inside of the current folder
+    createNestedFolders(
+      folderPath,
+      numberOfFolders,
+      depth - 1,
+      fileSize,
+      numberOfFilesInEachFolder
+    );
+  }
+};
+/*
+ * Creates a test dataset with the given parameters
+ * @param {string} datasetName - The name of the dataset (must be unique)
+ * @param {number} numberOfFolders - The number of folders to create in each folder
+ * @param {number} depth - The depth of the folder structure (eg. 3 = 5 folders in root, with 5 folders (and files), with 5 folders (and files) in each of those folders)
+ * @param {string} fileSize - The size of the text files to create
+ * @param {number} numberOfFilesInEachFolder - The number of files to create in each folder
+ * @example
+ * createTestDataset("test-dataset", 5, 3, "small", 5);
+ */
+const createTestDataset = (
+  datasetName,
+  numberOfFolders,
+  depth,
+  fileSize,
+  numberOfFilesInEachFolder
+) => {
+  const fileSizeOptions = ["small", "medium", "large"];
+  if (!fileSizeOptions.includes(fileSize)) {
+    console.log("File size must be small medium or large");
+    return;
+  }
+
+  const maxDepth = 5;
+  if (depth > maxDepth) {
+    console.log(`Depth must be less than or equal to ${maxDepth}`);
+    return;
+  }
+
+  const maxNumberOfFilesInEachFolder = 30;
+  if (numberOfFilesInEachFolder > maxNumberOfFilesInEachFolder) {
+    console.log(
+      `Number of files in each folder must be less than or equal to ${maxNumberOfFilesInEachFolder}`
+    );
+    return;
+  }
+
+  const maxNumberOfFolders = 50;
+  if (numberOfFolders > maxNumberOfFolders) {
+    console.log(`Number of folders must be less than or equal to ${maxNumberOfFolders}`);
+    return;
+  }
+
+  const testDatasetsPath = path.join(homeDirectory, "SODA", "test-datasets");
+
+  // return if the root directory does not exist
+  if (!fs.existsSync(testDatasetsPath)) {
+    fs.mkdirSync(testDatasetsPath);
+  }
+  const newTestDatasetPath = path.join(testDatasetsPath, datasetName);
+  if (fs.existsSync(newTestDatasetPath)) {
+    console.log("A test dataset with this name already exists please choose a different name");
+    return;
+  }
+  // Create the test datasets folder
+  fs.mkdirSync(newTestDatasetPath);
+
+  const rootFolders = ["primary", "source", "derivative", "docs", "code", "protocol"];
+  // Add folders to each of the high level folders
+  for (const folder of rootFolders) {
+    const folderPath = path.join(newTestDatasetPath, folder);
+    fs.mkdirSync(folderPath);
+    createNestedFolders(folderPath, numberOfFolders, depth, fileSize, numberOfFilesInEachFolder);
+  }
+  console.log("Test dataset created successfully");
 };
