@@ -1523,6 +1523,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
+      sodaJSONObj["last-confirmed-bf-account-details"] = defaultBfAccount;
       sodaJSONObj["last-confirmed-pennsieve-workspace-details"] = userSelectedWorkSpace;
     }
 
@@ -7232,6 +7233,35 @@ const newEmptyFolderObj = () => {
   };
 };
 
+const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
+  if (!sodaJSONObj["completed-tabs"].includes("guided-pennsieve-intro-tab")) {
+    return false;
+  }
+  // If the user has changed their Pennsieve account, they need to confirm their new Pennsieve account and workspace
+  if (sodaJSONObj?.["last-confirmed-bf-account-details"] !== defaultBfAccount) {
+    if (sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
+      delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
+    }
+    if (sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
+      delete sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+    }
+    console.log("User needs to reconfirm their account details");
+    return true;
+  }
+  // If the user has changed their Pennsieve workspace, they need to confirm their new workspace
+  if (
+    guidedGetCurrentUserWorkSpace() != sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]
+  ) {
+    if (sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
+      delete sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+    }
+    console.log("User needs to reconfirm their workspace details");
+    return true;
+  }
+  // Return false if the user does not need to reconfirm their account details
+  return false;
+};
+
 const guidedGetPageToReturnTo = (sodaJSONObj) => {
   // Set by openPage function
   const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
@@ -7251,6 +7281,11 @@ const guidedGetPageToReturnTo = (sodaJSONObj) => {
     // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
     return firstPageID;
   }
+  console.log(guidedCheckIfUserNeedsToReconfirmAccountDetails());
+  if (guidedCheckIfUserNeedsToReconfirmAccountDetails() === true) {
+    return "guided-pennsieve-intro-tab";
+  }
+
   // If the page the user was last on no longer exists, return them to the first page
   if (!document.getElementById(usersPageBeforeExit)) {
     return firstPageID;
@@ -7534,15 +7569,6 @@ const guidedResumeProgress = async (datasetNameToResume) => {
 
     //patches the sodajsonobj if it was created in a previous version of guided mode
     await patchPreviousGuidedModeVersions();
-
-    // Delete the button status for the Pennsieve account confirmation section
-    // So the user has to confirm their Pennsieve account before uploading
-    if (sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
-      delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
-    }
-    if (sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
-      delete sodaJSONObj["button-config"]["organization-has-been-confirmed"];
-    }
 
     // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
     const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
