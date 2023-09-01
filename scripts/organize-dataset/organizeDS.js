@@ -515,6 +515,8 @@ const renameFolder = (
               Swal.showValidationMessage(
                 `The ${promptVar} name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
               );
+
+              // Add styling to the error message
               let swal_message = document.getElementsByClassName("swal2-validation-message")[0];
               swal_message.style.margin = "1rem";
               $("#rename-folder-button").attr("disabled", true);
@@ -579,16 +581,6 @@ const renameFolder = (
             myPath[type][returnedName]["action"] = [];
             myPath[type][returnedName]["action"].push("renamed");
           }
-          /// list items again with updated JSON obj
-          // start = 0;
-          // listItems(myPath, "#items", 500);
-          // getInFolder(
-          //   singleUIItem,
-          //   uiItem,
-          //   organizeCurrentLocation,
-          //   inputGlobal
-          // );
-          // beginScrollListen();
         }
       }
     });
@@ -598,10 +590,9 @@ const renameFolder = (
 const getGlobalPath = (path) => {
   let currentPath = path.value.trim();
   let jsonPathArray = currentPath.split("/");
-  let filtered = jsonPathArray.filter((el) => {
+  return jsonPathArray.filter((el) => {
     return el != "";
   });
-  return filtered;
 };
 
 const getGlobalPathFromString = (pathString) => {
