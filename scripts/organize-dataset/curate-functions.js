@@ -1309,7 +1309,7 @@ const moveItems = async (ev, category) => {
                 element.remove();
               }
             });
-            
+
           duplicateItems.push(`</ul>`);
           if (duplicateItems.length > 2) {
             Swal.fire({
@@ -1348,7 +1348,10 @@ const moveItems = async (ev, category) => {
               backdrop: "rgba(0,0,0, 0.4)",
               heightAuto: false,
               icon: "error",
-              title: `The ${itemType.substring(0, itemType.length - 1)} is already in the folder destination!`,
+              title: `The ${itemType.substring(
+                0,
+                itemType.length - 1
+              )} is already in the folder destination!`,
               html: `<ul style="text-align: center;"><li>${itemToMove}</li></ul>`,
               didOpen: () => {
                 Swal.hideLoading();
@@ -1446,7 +1449,7 @@ const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
       renamedFolderName = `${originalFolderName} (${j})`;
       j++;
     }
-    
+
     // Add moved action to folder in SODA JSON
     if ("action" in myPath[category][item]) {
       myPath[category][item]["action"].push("moved");

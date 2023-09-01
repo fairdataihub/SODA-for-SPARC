@@ -612,7 +612,7 @@ const loadFileFolder = (myPath) => {
       continue;
     }
   }
-  
+
   if (count < 100 && !folder_elem.includes(appendString)) {
     folder_elem.push(appendString);
     count = 0;
