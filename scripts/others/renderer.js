@@ -5197,7 +5197,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
       You may choose to either keep them as is, or replace the characters with '-'.
       `,
       "Replace the special characters with '-'",
-      "Keep the folder names as they are",
+      "Keep the file names as they are",
       "Would you like to import your files with special characters?"
     );
     if (replaceFileNames) {
@@ -5214,7 +5214,6 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
       "Do not import the hidden files",
       "What would you like to do with the hidden files?"
     );
-    // If the user
     if (!keepHiddenFiles) {
       removeHiddenFilesFromDatasetStructure(datasetStructure);
     }

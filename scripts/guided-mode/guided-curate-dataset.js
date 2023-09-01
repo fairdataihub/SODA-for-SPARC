@@ -10380,7 +10380,7 @@ const specifySample = (event, sampleNameInput) => {
 
       if (sampleName.length > 0) {
         const sampleNameIsValid = evaluateStringAgainstSdsRequirements(
-          subjectName,
+          sampleName,
           "string-adheres-to-identifier-conventions"
         );
         if (!sampleNameIsValid) {
@@ -10414,6 +10414,7 @@ const specifySample = (event, sampleNameInput) => {
         }
       }
     } catch (error) {
+      console.log(error);
       notyf.open({
         duration: "3000",
         type: "error",
