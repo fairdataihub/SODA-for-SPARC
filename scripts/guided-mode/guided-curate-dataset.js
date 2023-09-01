@@ -7245,7 +7245,6 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
     if (sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
       delete sodaJSONObj["button-config"]["organization-has-been-confirmed"];
     }
-    console.log("User needs to reconfirm their account details");
     return true;
   }
   // If the user has changed their Pennsieve workspace, they need to confirm their new workspace
@@ -7255,7 +7254,6 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
     if (sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
       delete sodaJSONObj["button-config"]["organization-has-been-confirmed"];
     }
-    console.log("User needs to reconfirm their workspace details");
     return true;
   }
   // Return false if the user does not need to reconfirm their account details
@@ -15625,4 +15623,136 @@ const guidedSaveParticipantInformation = () => {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["numSubjects"] = numSubjects;
     sodaJSONObj["dataset-metadata"]["description-metadata"]["numSamples"] = numSamples;
   }
+};
+
+const generateRandomFolderName = () => {
+  // create a random string of 20 characters
+  let text = "";
+  const randomString =
+    Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  return randomString;
+};
+
+const generateFileText = (fileSize) => {
+  let text = "";
+  let numberOfLines = 0;
+
+  if (fileSize == "small") {
+    numberOfLines = 100;
+  } else if (fileSize == "medium") {
+    numberOfLines = 1000;
+  } else if (fileSize == "large") {
+    numberOfLines = 10000;
+  }
+
+  for (let i = 0; i < numberOfLines; i++) {
+    text += "The quick brown fox jumped over the lazy dog\n";
+  }
+
+  return text;
+};
+
+const createRandomFiles = (folderPath, numberOfFilesInEachFolder, fileSize) => {
+  for (let i = 0; i < numberOfFilesInEachFolder; i++) {
+    const fileFormat = "txt"; // Always create a text file
+    const filePath = path.join(folderPath, `${generateRandomFolderName()}.${fileFormat}`);
+    createRandomFile(filePath, fileSize); // Generating a text file with random data
+  }
+};
+
+const createRandomFile = (filePath, fileSize) => {
+  const fileText = generateFileText(fileSize);
+  fs.writeFileSync(filePath, fileText);
+};
+
+const createNestedFolders = (
+  baseDirectory,
+  numberOfFolders,
+  depth,
+  fileSize,
+  numberOfFilesInEachFolder
+) => {
+  if (depth === 0) {
+    return;
+  }
+  for (let i = 0; i < numberOfFolders; i++) {
+    const folderPath = path.join(baseDirectory, generateRandomFolderName());
+    fs.mkdirSync(folderPath);
+    // Add the random files to the folder
+    createRandomFiles(folderPath, numberOfFilesInEachFolder, fileSize); // Creating multiple files in the folder
+    // Recursively create more folders inside of the current folder
+    createNestedFolders(
+      folderPath,
+      numberOfFolders,
+      depth - 1,
+      fileSize,
+      numberOfFilesInEachFolder
+    );
+  }
+};
+/*
+ * Creates a test dataset with the given parameters
+ * @param {string} datasetName - The name of the dataset (must be unique)
+ * @param {number} numberOfFolders - The number of folders to create in each folder
+ * @param {number} depth - The depth of the folder structure (eg. 3 = 5 folders in root, with 5 folders (and files), with 5 folders (and files) in each of those folders)
+ * @param {string} fileSize - The size of the text files to create
+ * @param {number} numberOfFilesInEachFolder - The number of files to create in each folder
+ * @example
+ * createTestDataset("test-dataset", 5, 3, "small", 5);
+ */
+const createTestDataset = (
+  datasetName,
+  numberOfFolders,
+  depth,
+  fileSize,
+  numberOfFilesInEachFolder
+) => {
+  const fileSizeOptions = ["small", "medium", "large"];
+  if (!fileSizeOptions.includes(fileSize)) {
+    console.log("File size must be small medium or large");
+    return;
+  }
+
+  const maxDepth = 5;
+  if (depth > maxDepth) {
+    console.log(`Depth must be less than or equal to ${maxDepth}`);
+    return;
+  }
+
+  const maxNumberOfFilesInEachFolder = 30;
+  if (numberOfFilesInEachFolder > maxNumberOfFilesInEachFolder) {
+    console.log(
+      `Number of files in each folder must be less than or equal to ${maxNumberOfFilesInEachFolder}`
+    );
+    return;
+  }
+
+  const maxNumberOfFolders = 50;
+  if (numberOfFolders > maxNumberOfFolders) {
+    console.log(`Number of folders must be less than or equal to ${maxNumberOfFolders}`);
+    return;
+  }
+
+  const testDatasetsPath = path.join(homeDirectory, "SODA", "test-datasets");
+
+  // return if the root directory does not exist
+  if (!fs.existsSync(testDatasetsPath)) {
+    fs.mkdirSync(testDatasetsPath);
+  }
+  const newTestDatasetPath = path.join(testDatasetsPath, datasetName);
+  if (fs.existsSync(newTestDatasetPath)) {
+    console.log("A test dataset with this name already exists please choose a different name");
+    return;
+  }
+  // Create the test datasets folder
+  fs.mkdirSync(newTestDatasetPath);
+
+  const rootFolders = ["primary", "source", "derivative", "docs", "code", "protocol"];
+  // Add folders to each of the high level folders
+  for (const folder of rootFolders) {
+    const folderPath = path.join(newTestDatasetPath, folder);
+    fs.mkdirSync(folderPath);
+    createNestedFolders(folderPath, numberOfFolders, depth, fileSize, numberOfFilesInEachFolder);
+  }
+  console.log("Test dataset created successfully");
 };
