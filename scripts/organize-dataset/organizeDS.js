@@ -336,8 +336,8 @@ const checkValidRenameInput = (
   ];
 
   var duplicate = false;
-  // if renaming a file
   if (type === "files") {
+    // if renaming a file
     let double_ext_present = false;
     for (let index in double_extensions) {
       if (oldName.search(double_extensions[index]) != -1) {
@@ -366,17 +366,9 @@ const checkValidRenameInput = (
         heightAuto: false,
       });
       newName = "";
-      // log the error
-      logCurationForAnalytics(
-        "Error",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        ["Step 3", "Rename", "File"],
-        determineDatasetLocation()
-      );
     }
-    //// if renaming a folder
   } else {
+    //// if renaming a folder
     newName = input.trim();
     // check for duplicate folder as shown in the UI
     for (var i = 0; i < itemElement.length; i++) {
@@ -396,15 +388,6 @@ const checkValidRenameInput = (
         heightAuto: false,
       });
       newName = "";
-
-      // log the error
-      logCurationForAnalytics(
-        "Error",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        ["Step 3", "Rename", "Folder"],
-        determineDatasetLocation()
-      );
     }
   }
   return newName;
@@ -554,32 +537,26 @@ const renameFolder = (
             },
           });
 
-          // log the success
-          logCurationForAnalytics(
-            "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            ["Step 3", "Rename", promptVar],
-            determineDatasetLocation()
-          );
-
-          /// assign new name to folder or file in the UI
-          event1.parentElement.children[1].innerText = returnedName;
-          /// get location of current file or folder in JSON obj
+          // get location of current item in SODA JSON
           let filtered = getGlobalPath(organizeCurrentLocation);
           let myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+
+          // update UI with new name
+          event1.parentElement.children[1].innerText = returnedName;
+
           /// update jsonObjGlobal with the new name
           storedValue = myPath[type][currentName];
           delete myPath[type][currentName];
           myPath[type][returnedName] = storedValue;
           myPath[type][returnedName]["basename"] = returnedName;
+
+          // Add in the action key if it doesn't exist, then add that it has been renamed
           if ("action" in myPath[type][returnedName]) {
             if (!myPath[type][returnedName]["action"].includes("renamed")) {
               myPath[type][returnedName]["action"].push("renamed");
             }
           } else {
-            myPath[type][returnedName]["action"] = [];
-            myPath[type][returnedName]["action"].push("renamed");
+            myPath[type][returnedName]["action"] = ["renamed"];
           }
         }
       }
