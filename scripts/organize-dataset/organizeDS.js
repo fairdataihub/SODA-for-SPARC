@@ -592,13 +592,12 @@ const loadFileFolder = (myPath) => {
   for (let item in sortedObj["folders"]) {
     let emptyFolder = "";
     count += 1;
-    if (!highLevelFolders.includes(item)) {
-      if (
-        JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
-        JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
-      ) {
-        emptyFolder = " empty";
-      }
+    if (
+      !highLevelFolders.includes(item) &&
+      JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
+      JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
+    ) {
+      emptyFolder = " empty";
     }
     appendString =
       appendString +
