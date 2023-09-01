@@ -513,7 +513,7 @@ const renameFolder = (
           for (let char of nonAllowedCharacters) {
             if (val.includes(char)) {
               Swal.showValidationMessage(
-                `The folder name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
+                `The ${promptVar} name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
               );
               let swal_message = document.getElementsByClassName("swal2-validation-message")[0];
               swal_message.style.margin = "1rem";
