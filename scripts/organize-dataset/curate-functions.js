@@ -1752,7 +1752,6 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
       //spreadsheet reply contained results
       ipcRenderer.removeAllListeners("spreadsheet-reply");
       saveManifestFiles = true;
-      // guidedManifestTable = result;
       if (saveManifestFiles) {
         //if additional metadata or description gets added for a file then add to json as well
         sodaJSONObj["manifest-files"]["auto-generated"] = true;
@@ -1766,10 +1765,12 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
           highlevelFolderName
         );
         let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+
         if (!fs.existsSync(localFolderPath)) {
           fs.mkdirSync(localFolderPath);
           fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
         }
+
         jsonManifest = excelToJson({
           sourceFile: selectedManifestFilePath,
           columnToKey: {
@@ -1783,6 +1784,10 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
         //Update the metadata in json object
         for (let i = 0; i < savedData.length; i++) {
           let fileName = savedData[i][0];
+          if (fileName == "" || fileName == undefined) {
+            // fileName is blank if user accidentally creates a new row and does not remove it
+            continue;
+          }
           let cleanedFileName = "";
           let fileNameSplit = fileName.split("/");
           let description = savedData[i][2];
