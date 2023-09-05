@@ -15729,6 +15729,7 @@ const createNestedFolders = (
  * @param {number} depth - The depth of the folder structure (eg. 3 = 5 folders in root, with 5 folders (and files), with 5 folders (and files) in each of those folders)
  * @param {string} fileSize - The size of the text files to create
  * @param {number} numberOfFilesInEachFolder - The number of files to create in each folder
+ * @param {boolean} boolIncludeProblematicFileNames - Whether or not to include problematic characters in the file names
  * @example
  * createTestDataset("test-dataset", 5, 3, "small", 5);
  */
@@ -15738,7 +15739,7 @@ const createTestDataset = (
   depth,
   fileSize,
   numberOfFilesInEachFolder,
-  boolIncludeProblematicFileNames
+  boolIncludeProblematicFileNames = false
 ) => {
   const fileSizeOptions = ["small", "medium", "large"];
   if (!fileSizeOptions.includes(fileSize)) {
