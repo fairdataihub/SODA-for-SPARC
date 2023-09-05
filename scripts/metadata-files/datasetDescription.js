@@ -1566,9 +1566,10 @@ const checkBFImportDD = async () => {
   } catch (error) {
     clientError(error);
     Swal.fire({
+      title: `Failed to load existing dataset_description.xslx file`,
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
-      icon: "error",
+      icon: "warning",
       text: error.response.data.message,
     });
 

@@ -2521,9 +2521,10 @@ const checkBFImportSubjects = async () => {
   } catch (error) {
     clientError(error);
     Swal.fire({
+      title: `Failed to load existing subjects.xlsx file`,
       backdrop: "rgba(0, 0, 0, 0.4)",
       heightAuto: false,
-      icon: "error",
+      icon: "warning",
       text: error.response.data.message,
     });
 
@@ -2586,9 +2587,10 @@ const checkBFImportSamples = async () => {
   } catch (error) {
     clientError(error);
     Swal.fire({
+      title: `Failed to load existing samples.xslx file`,
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
-      icon: "error",
+      icon: "warning",
       text: error.response.data.message,
     });
 

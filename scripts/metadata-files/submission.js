@@ -1227,11 +1227,11 @@ const checkBFImportSubmission = async () => {
     loadSubmissionFileToUI(res, "bf");
   } catch (error) {
     clientError(error);
-
     Swal.fire({
+      title: `Failed to load existing submission.xlsx file`,
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
-      icon: "error",
+      icon: "warning",
       html: error.response.data.message,
     });
     logMetadataForAnalytics(

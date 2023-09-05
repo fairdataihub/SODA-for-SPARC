@@ -1614,7 +1614,6 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
                 if item in ["manifest.xslx", "manifest.csv"]:
                     continue
                 if "folderpath" not in folder["files"][item]:
-                    namespace_logger.info(f"FOLDERPATH FOR FILE (path[:]) for recursive_item_path_create: {path[:]}")
                     folder["files"][item]["folderpath"] = path[:]
 
         if "folders" in folder.keys():
@@ -1622,7 +1621,6 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
                 if "folderpath" not in folder["folders"][item]:
                     folder["folders"][item]["folderpath"] = path[:]
                     folder["folders"][item]["folderpath"].append(item)
-                namespace_logger.info(f"FOLDERPATH FOR FOLDER (path[:]) for recursive_item_path_create: {folder['folders'][item]['folderpath'][:]}")
                 recursive_item_path_create(
                     folder["folders"][item], folder["folders"][item]["folderpath"][:]
                 )
@@ -1654,6 +1652,12 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
             }
 
         index += 1
+        # check if path exists for folder, if not then folder has not been created on Pennsieve yet, so create it and add it to the path key
+        if "path" not in current_folder_structure["folders"][folder].keys() or current_folder_structure["folders"][folder]["type"] != "bf":
+            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder, current_folder_structure["path"], ds['content']['id']))
+            r.raise_for_status()
+            new_folder_id = r.json()["content"]["id"]
+            current_folder_structure["folders"][folder]["path"] = new_folder_id
 
         if index < len(folderpath):
             return recursive_check_and_create_ps_file_path(
@@ -1934,7 +1938,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                         total_manifest_files += 1
                         main_total_generate_dataset_size += getsize(manifestpath)
 
-            namespace_logger.info(f"list_manifest_files: {list_manifest_files}")
             return list_manifest_files
 
         def gather_metadata_files(soda_json_structure, ):
@@ -2472,7 +2475,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     list_of_files_to_rename[folder_name][basename(first_file_local_path)] = {
                         "final_file_name": first_final_name,
                         "id": "",
-                    },
+                    }
                     renamed_files_counter += 1
 
             manifest_data = ps.manifest.create(first_file_local_path, folder_name)
@@ -2503,7 +2506,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     # Add files to manfiest"
                     final_files_index = 1 if index_skip else 0
                     index_skip = False
-                    namespace_logger.info(f"files folder names: {folder_name}")
                     for file_path in list_file_paths:
                         file_file_name = final_file_name_list[final_files_index]
                         if file_file_name != basename(file_path):
@@ -2609,7 +2611,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
         time.sleep(1)
 
         # 6. Rename files
-        namespace_logger.info("===========================BEGINNING OF RENAME FILES===========================")
         renaming_files_flow = True
         if list_of_files_to_rename:
             namespace_logger.info("ps_create_new_dataset (optional) step 8 rename files")
@@ -2620,8 +2621,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps))
             r.raise_for_status()
             dataset_content = r.json()["children"]
-
-            namespace_logger.info(f"FIRST INITIAL FETCH: {dataset_content}")
 
             if dataset_content == []:
                 while dataset_content == []:
@@ -2636,9 +2635,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     # high lvl folders' ids are stored to be used to find the file IDS
                     if item["content"]["packageType"] == "Collection":
                         collections_found = True
-                        collection_ids[item["content"]["name"]] = {
-                            "id": item["content"]["nodeId"],
-                        }
+                        collection_ids[item["content"]["name"]] = {"id": item["content"]["nodeId"]}
+
 
                 if not collections_found:
                     # No collections were found, metadata files were processed but not the high level folders
@@ -2655,13 +2653,9 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 subfolder_level = 0
                 subfolder_amount = len(relative_path) - 1
 
-                namespace_logger.info(f"subfolder_amount FOR {key}: {subfolder_amount}")
-                namespace_logger.info(f"subfolder_level FOR {key}: {subfolder_level}")
-                namespace_logger.info(f"relative_path list FOR {key}: {relative_path}")
-                namespace_logger.info(f"last folder needed FOR {key}: {last_folder_name}")
-
                 if high_lvl_folder_name in collection_ids:
                     # subfolder_amount will be the amount of subfolders we need to call until we can get the file ID to rename
+
                     high_lvl_folder_id = collection_ids[high_lvl_folder_name]["id"]
                     r = requests.get(f"{PENNSIEVE_URL}/packages/{high_lvl_folder_id}", headers=create_request_headers(ps))
                     r.raise_for_status()
@@ -2688,6 +2682,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                 file_id = item["content"]["nodeId"]
 
                                 if file_name in list_of_files_to_rename[key]:
+                                    # name
                                     # store the package id for now
                                     list_of_files_to_rename[key][file_name]["id"] = file_id
                     else:
@@ -2710,9 +2705,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                     if folder_name in relative_path:
                                         # we have found the folder we need to iterate through
                                         subfolder_level += 1
-                                        namespace_logger.info(f"folder_name we are gonna get content from (in relative path): {folder_name}")
-                                        namespace_logger.info(f"relative_path: {relative_path}, we need folder level: {subfolder_level}")
-                                        namespace_logger.info(f"folder id for {folder_name}: {folder_id}")
                                         r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps))
                                         r.raise_for_status()
 
@@ -2725,9 +2717,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                                     r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps))
                                                     r.raise_for_status()
                                                     dataset_content = r.json()["children"]
-                                            namespace_logger.info(f"subfolder_amount: {subfolder_amount}")
-                                            namespace_logger.info(f"subfolder_level: {subfolder_level}")
-                                            namespace_logger.info(f"subfolder id for {folder_name}: {subfolder_id}")
                                             subfolder_id = folder_id
                                             break
                                         else:
@@ -2747,7 +2736,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                         continue
 
             # 8.5 Rename files - All or most ids have been fetched now rename the files or gather the ids again if not all files have been processed at this time
-            namespace_logger.info(f"list of files to rename after: {list_of_files_to_rename}")
             main_curate_progress_message = "Renaming files..."
             main_generated_dataset_size = 0
             main_total_generate_dataset_size = renamed_files_counter
@@ -2796,7 +2784,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                         all_ids_found = True
                                         break
 
-        namespace_logger.info("===========================END OF RENAME FILES===========================")
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
         end = timer()
         namespace_logger.info(f"Time for ps_upload_to_dataset function: {timedelta(seconds=end - start)}")
@@ -2997,7 +2984,6 @@ def clean_json_structure(soda_json_structure):
         for folder_item in list(folder["folders"]):
             if folder["folders"][folder_item]["type"] == "bf":
                 if "deleted" in folder["folders"][folder_item]["action"]:
-                    namespace_logger.info(f"Deleting folder {folder_item}")
                     del folder["folders"][folder_item]
                 else:
                     recursive_folder_delete(folder["folders"][folder_item])
@@ -3206,7 +3192,6 @@ def main_curate_function(soda_json_structure):
                 ]
                 if generate_option == "existing-bf":
                     # make an api request to pennsieve to get the dataset details
-                    namespace_logger.info(f"this is the selected_dataset_id for existing-bf {selected_dataset_id}")
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
                     r.raise_for_status()
                     myds = r.json()
@@ -3470,8 +3455,6 @@ def generate_manifest_file_data(dataset_structure_obj):
 
                 # The name of the file eg "file.txt"
                 file_name = os.path.basename(local_path_to_file)
-                namespace_logger.info(f"file_name based on file path: {file_name}")
-                namespace_logger.info(f"file name based on key: {item}")
                 if file_name != item:
                     file_name = item
                 if len(ds_struct_path) > 0:

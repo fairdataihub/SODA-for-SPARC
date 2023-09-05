@@ -336,8 +336,8 @@ const checkValidRenameInput = (
   ];
 
   var duplicate = false;
-  // if renaming a file
   if (type === "files") {
+    // if renaming a file
     let double_ext_present = false;
     for (let index in double_extensions) {
       if (oldName.search(double_extensions[index]) != -1) {
@@ -366,17 +366,9 @@ const checkValidRenameInput = (
         heightAuto: false,
       });
       newName = "";
-      // log the error
-      logCurationForAnalytics(
-        "Error",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        ["Step 3", "Rename", "File"],
-        determineDatasetLocation()
-      );
     }
-    //// if renaming a folder
   } else {
+    //// if renaming a folder
     newName = input.trim();
     // check for duplicate folder as shown in the UI
     for (var i = 0; i < itemElement.length; i++) {
@@ -396,15 +388,6 @@ const checkValidRenameInput = (
         heightAuto: false,
       });
       newName = "";
-
-      // log the error
-      logCurationForAnalytics(
-        "Error",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        ["Step 3", "Rename", "Folder"],
-        determineDatasetLocation()
-      );
     }
   }
   return newName;
@@ -510,11 +493,14 @@ const renameFolder = (
         swal_popup.style.width = "42rem";
         $("#rename-folder-input").keyup(function () {
           let val = $("#rename-folder-input").val();
+          console.log(val);
           for (let char of nonAllowedCharacters) {
             if (val.includes(char)) {
               Swal.showValidationMessage(
-                `The folder name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
+                `The ${promptVar} name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
               );
+
+              // Add styling to the error message
               let swal_message = document.getElementsByClassName("swal2-validation-message")[0];
               swal_message.style.margin = "1rem";
               $("#rename-folder-button").attr("disabled", true);
@@ -538,6 +524,8 @@ const renameFolder = (
           newName,
           itemElement
         );
+
+        console.log(returnedName);
         if (returnedName !== "") {
           Swal.fire({
             icon: "success",
@@ -552,43 +540,27 @@ const renameFolder = (
             },
           });
 
-          // log the success
-          logCurationForAnalytics(
-            "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            ["Step 3", "Rename", promptVar],
-            determineDatasetLocation()
-          );
-
-          /// assign new name to folder or file in the UI
-          event1.parentElement.children[1].innerText = returnedName;
-          /// get location of current file or folder in JSON obj
+          // get location of current item in SODA JSON
           let filtered = getGlobalPath(organizeCurrentLocation);
           let myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+
+          // update UI with new name
+          event1.parentElement.children[1].innerText = returnedName;
+
           /// update jsonObjGlobal with the new name
           storedValue = myPath[type][currentName];
           delete myPath[type][currentName];
           myPath[type][returnedName] = storedValue;
           myPath[type][returnedName]["basename"] = returnedName;
+
+          // Add in the action key if it doesn't exist, then add that it has been renamed
           if ("action" in myPath[type][returnedName]) {
             if (!myPath[type][returnedName]["action"].includes("renamed")) {
               myPath[type][returnedName]["action"].push("renamed");
             }
           } else {
-            myPath[type][returnedName]["action"] = [];
-            myPath[type][returnedName]["action"].push("renamed");
+            myPath[type][returnedName]["action"] = ["renamed"];
           }
-          /// list items again with updated JSON obj
-          // start = 0;
-          // listItems(myPath, "#items", 500);
-          // getInFolder(
-          //   singleUIItem,
-          //   uiItem,
-          //   organizeCurrentLocation,
-          //   inputGlobal
-          // );
-          // beginScrollListen();
         }
       }
     });
@@ -598,10 +570,9 @@ const renameFolder = (
 const getGlobalPath = (path) => {
   let currentPath = path.value.trim();
   let jsonPathArray = currentPath.split("/");
-  let filtered = jsonPathArray.filter((el) => {
+  return jsonPathArray.filter((el) => {
     return el != "";
   });
-  return filtered;
 };
 
 const getGlobalPathFromString = (pathString) => {
@@ -621,13 +592,12 @@ const loadFileFolder = (myPath) => {
   for (let item in sortedObj["folders"]) {
     let emptyFolder = "";
     count += 1;
-    if (!highLevelFolders.includes(item)) {
-      if (
-        JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
-        JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
-      ) {
-        emptyFolder = " empty";
-      }
+    if (
+      !highLevelFolders.includes(item) &&
+      JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
+      JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
+    ) {
+      emptyFolder = " empty";
     }
     appendString =
       appendString +
@@ -642,11 +612,10 @@ const loadFileFolder = (myPath) => {
       continue;
     }
   }
-  if (count < 100) {
-    if (!folder_elem.includes(appendString)) {
-      folder_elem.push(appendString);
-      count = 0;
-    }
+
+  if (count < 100 && !folder_elem.includes(appendString)) {
+    folder_elem.push(appendString);
+    count = 0;
   }
 
   count = 0;
@@ -696,11 +665,9 @@ const loadFileFolder = (myPath) => {
       continue;
     }
   }
-  if (count < 100) {
-    if (!file_elem.includes(appendString)) {
-      file_elem.push(appendString);
-      count = 0;
-    }
+  if (count < 100 && !file_elem.includes(appendString)) {
+    file_elem.push(appendString);
+    count = 0;
   }
   if (folder_elem[0] === "") {
     folder_elem.splice(0, 1);
@@ -709,8 +676,7 @@ const loadFileFolder = (myPath) => {
     file_elem.splice(0, 1);
   }
 
-  let items = [folder_elem, file_elem];
-  return items;
+  return [folder_elem, file_elem];
 };
 
 const getRecursivePath = (filteredList, inputObj) => {

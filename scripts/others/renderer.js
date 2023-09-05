@@ -7836,6 +7836,9 @@ const initiate_generate = async () => {
 
     if (start_generate === 1) {
       var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
+      console.log(value);
+      console.log(main_generated_dataset_size);
+      console.log(main_total_generate_dataset_size);
       generateProgressBar.value = value;
       statusMeter.value = value;
       if (main_total_generate_dataset_size < displaySize) {
