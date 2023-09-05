@@ -14114,7 +14114,7 @@ const guidedUploadDatasetToPennsieve = async () => {
     }
   };
   // Progress tracking function for main curate
-  var timerProgress = setInterval(guidedUpdateUploadStatus, 1000);
+  var timerProgress = setInterval(guidedUpdateUploadStatus, 3000);
 
   // when generating a new dataset we need to add its ID to the ID -> Name mapping
   // we need to do this only once
