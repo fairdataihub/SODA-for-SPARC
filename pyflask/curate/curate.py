@@ -2611,8 +2611,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
         time.sleep(1)
 
         # 6. Rename files
-        renaming_files_flow = True
         if list_of_files_to_rename:
+            renaming_files_flow = True
             namespace_logger.info("ps_create_new_dataset (optional) step 8 rename files")
             main_curate_progress_message = ("Preparing files to be renamed...")
             dataset_id = ds["content"]["id"]
