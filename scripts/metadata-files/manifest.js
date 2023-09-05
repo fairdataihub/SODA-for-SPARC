@@ -534,7 +534,7 @@ $(document).ready(function () {
               fs.mkdirSync(localFolderPath);
               fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
             }
-            
+
             jsonManifest = excelToJson({
               sourceFile: selectedManifestFilePath,
               columnToKey: {
@@ -552,7 +552,7 @@ $(document).ready(function () {
               if (fileName == "" || fileName == undefined) {
                 // fileName is blank if user accidentally adds a new row and does not remove it
                 continue;
-              };
+              }
               let cleanedFileName = "";
               let fileNameSplit = fileName.split("/");
               let description = savedData[i][2];

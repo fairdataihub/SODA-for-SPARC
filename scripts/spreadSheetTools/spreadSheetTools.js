@@ -1,6 +1,6 @@
 // this function runs when the DOM is ready, i.e. when the document has been parsed
 document.addEventListener("DOMContentLoaded", function () {
-  const {ipcRenderer} = require("electron");
+  const { ipcRenderer } = require("electron");
 
   //Request the spreadsheet data from main
   ipcRenderer.once("requested-spreadsheet", async (ev, spreadsheet) => {
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // iterate through savedData and remove any rows that are empty
-        breakOut = 0
+        breakOut = 0;
         for (let i = savedData.length - 1; i >= 0; i--) {
           if (breakOut > 2) {
             // After 2 rows of not being emtpy, break out of the loop
