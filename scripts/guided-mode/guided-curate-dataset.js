@@ -15625,11 +15625,35 @@ const guidedSaveParticipantInformation = () => {
   }
 };
 
-const generateRandomFolderName = () => {
+const generateRandomFolderOrFileName = (boolIncludeProblematicFileNames) => {
   // create a random string of 20 characters
-  let text = "";
-  const randomString =
+  let randomString =
     Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+  if (boolIncludeProblematicFileNames && Math.random() < 0.5) {
+    // convert the string to an array to modify it
+    const randomStringArray = randomString.split("");
+
+    // add problematic characters to random positions in the array
+    const problematicCharacters = ["&", "%"];
+    for (let i = 0; i < 5; i++) {
+      if (Math.random() > 0.5) {
+        // Choose a random problematic character
+        const problematicCharacter =
+          problematicCharacters[Math.floor(Math.random() * problematicCharacters.length)];
+
+        // Choose a random index to replace
+        const replaceIndex = Math.floor(Math.random() * randomStringArray.length);
+
+        // Replace the character at the chosen index
+        randomStringArray[replaceIndex] = problematicCharacter;
+      }
+    }
+
+    // convert the array back to a string
+    randomString = randomStringArray.join("");
+  }
+
   return randomString;
 };
 
@@ -15652,17 +15676,21 @@ const generateFileText = (fileSize) => {
   return text;
 };
 
-const createRandomFiles = (folderPath, numberOfFilesInEachFolder, fileSize) => {
+const createRandomFiles = (
+  folderPath,
+  numberOfFilesInEachFolder,
+  fileSize,
+  boolIncludeProblematicFileNames
+) => {
   for (let i = 0; i < numberOfFilesInEachFolder; i++) {
     const fileFormat = "txt"; // Always create a text file
-    const filePath = path.join(folderPath, `${generateRandomFolderName()}.${fileFormat}`);
-    createRandomFile(filePath, fileSize); // Generating a text file with random data
+    const filePath = path.join(
+      folderPath,
+      `${generateRandomFolderOrFileName(boolIncludeProblematicFileNames)}.${fileFormat}`
+    );
+    const fileText = generateFileText(fileSize);
+    fs.writeFileSync(filePath, fileText);
   }
-};
-
-const createRandomFile = (filePath, fileSize) => {
-  const fileText = generateFileText(fileSize);
-  fs.writeFileSync(filePath, fileText);
 };
 
 const createNestedFolders = (
@@ -15670,13 +15698,17 @@ const createNestedFolders = (
   numberOfFolders,
   depth,
   fileSize,
-  numberOfFilesInEachFolder
+  numberOfFilesInEachFolder,
+  boolIncludeProblematicFileNames
 ) => {
   if (depth === 0) {
     return;
   }
   for (let i = 0; i < numberOfFolders; i++) {
-    const folderPath = path.join(baseDirectory, generateRandomFolderName());
+    const folderPath = path.join(
+      baseDirectory,
+      generateRandomFolderOrFileName(boolIncludeProblematicFileNames)
+    );
     fs.mkdirSync(folderPath);
     // Add the random files to the folder
     createRandomFiles(folderPath, numberOfFilesInEachFolder, fileSize); // Creating multiple files in the folder
@@ -15705,7 +15737,8 @@ const createTestDataset = (
   numberOfFolders,
   depth,
   fileSize,
-  numberOfFilesInEachFolder
+  numberOfFilesInEachFolder,
+  boolIncludeProblematicFileNames
 ) => {
   const fileSizeOptions = ["small", "medium", "large"];
   if (!fileSizeOptions.includes(fileSize)) {
@@ -15752,7 +15785,14 @@ const createTestDataset = (
   for (const folder of rootFolders) {
     const folderPath = path.join(newTestDatasetPath, folder);
     fs.mkdirSync(folderPath);
-    createNestedFolders(folderPath, numberOfFolders, depth, fileSize, numberOfFilesInEachFolder);
+    createNestedFolders(
+      folderPath,
+      numberOfFolders,
+      depth,
+      fileSize,
+      numberOfFilesInEachFolder,
+      boolIncludeProblematicFileNames
+    );
   }
   console.log("Test dataset created successfully");
 };
