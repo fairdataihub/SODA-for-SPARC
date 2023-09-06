@@ -5451,7 +5451,7 @@ const drop = async (ev) => {
       return;
     } else {
       const importAccessibleItemsOnly = await swalFileListConfirmAction(
-        accessibleItems,
+        inaccessibleItems,
         "SODA was unable to import some of your dropped files/folders",
         "A list of the folders/files that SODA was not able to import is shown below:",
         "Yes, continue with the import",
