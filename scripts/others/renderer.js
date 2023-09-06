@@ -7488,11 +7488,14 @@ const initiate_generate = async () => {
   }
 
   if ("manifest-files" in sodaJSONObj) {
-    if ("auto-generated" in sodaJSONObj["manifest-files"] && sodaJSONObj["manifest-files"]["auto-generated"] === true) {
-        delete_imported_manifest();
+    if (
+      "auto-generated" in sodaJSONObj["manifest-files"] &&
+      sodaJSONObj["manifest-files"]["auto-generated"] === true
+    ) {
+      delete_imported_manifest();
     } else if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
-        manifest_files_requested = true;
-        delete_imported_manifest();
+      manifest_files_requested = true;
+      delete_imported_manifest();
     }
   }
 
