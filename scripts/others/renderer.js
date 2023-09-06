@@ -7460,7 +7460,11 @@ const initiate_generate = async () => {
   document.getElementById("div-new-curate-progress").style.display = "block";
   document.getElementById("div-generate-comeback").style.display = "none";
 
+  // Create the progress bar clone for the navigation bar
   let organizeDataset = document.getElementById("organize_dataset_btn");
+  let curateAndShareNavButton = document.getElementById("guided_mode_view");
+  let documentationNavButton = document.getElementById("documentation-view");
+  let contactNavButton = document.getElementById("contact-us-view");
   let uploadLocally = document.getElementById("upload_local_dataset_btn");
   let guidedModeHomePageButton = document.getElementById("button-homepage-guided-mode");
   let organizeDataset_option_buttons = document.getElementById("div-generate-comeback");
@@ -7493,8 +7497,12 @@ const initiate_generate = async () => {
   returnButton.id = "returnButton";
   returnButton.innerHTML = "Return to progress";
 
+  // Event handler for navigation menu's progress bar clone
   returnButton.onclick = function () {
     organizeDataset.disabled = false;
+    contactNavButton.classList.remove("is-selected");
+    documentationNavButton.classList.remove("is-selected");
+    curateAndShareNavButton.classList.add("is-selected");
     organizeDataset.className = "content-button is-selected";
     organizeDataset.style = "background-color: #fff";
     organizeDataset.click();
@@ -7510,7 +7518,6 @@ const initiate_generate = async () => {
     organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
   };
 
-  //document.body.appendChild(statusBarClone);
   let sparc_container = document.getElementById("sparc-logo-container");
   sparc_container.style.display = "none";
   navContainer.appendChild(statusBarClone);
@@ -7523,17 +7530,15 @@ const initiate_generate = async () => {
     sodaJSONObj["manifest-files"]["auto-generated"] = true;
   }
 
-  //dissmisButton.addEventListener("click", dismiss('status-bar-curate-progress'));
   if ("manifest-files" in sodaJSONObj) {
-    if ("auto-generated" in sodaJSONObj["manifest-files"]) {
-      if (sodaJSONObj["manifest-files"]["auto-generated"] === true) {
-        delete_imported_manifest();
-      }
-    } else {
-      if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
-        manifest_files_requested = true;
-        delete_imported_manifest();
-      }
+    if (
+      "auto-generated" in sodaJSONObj["manifest-files"] &&
+      sodaJSONObj["manifest-files"]["auto-generated"] === true
+    ) {
+      delete_imported_manifest();
+    } else if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
+      manifest_files_requested = true;
+      delete_imported_manifest();
     }
   }
 
@@ -7545,9 +7550,6 @@ const initiate_generate = async () => {
   let uploadedBytes = 0;
   let increaseInFileSize = 0;
   let generated_dataset_id = undefined;
-  // when generating a new dataset we need to add its ID to the ID -> Name mapping
-  // we need to do this only once
-  // TODO: Integrate into modified analytics tracking
   let loggedDatasetNameToIdMapping = false;
 
   // determine where the dataset will be generated/uploaded
