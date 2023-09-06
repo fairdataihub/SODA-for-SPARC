@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Curate and Share button's icon has been updated to be more intuitive. Changing color when it is selected.
 - Return to progress button that appears in the nav bar will correctly update the navigation menu depending where the user navigates.
 - Move item pop up has a max height preventing users from endlessly scrolling to confirm their move.
+- Disseminate calender does not hide anymore when checkbox to awknowledge sharing with the curation team. (Should only be modified by the embargo checkbox)
+- Sweet alert icons for Prepare Metadata -> No 'metadata' file found in root directory will all be the same icon.
 
 ## Removed:
 
