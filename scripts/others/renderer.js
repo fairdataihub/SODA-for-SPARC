@@ -5415,6 +5415,10 @@ const drop = async (ev) => {
     return;
   }
   const itemsDroppedInFileExplorer = ev.dataTransfer.files;
+
+  const testArray = Array.from(itemsDroppedInFileExplorer);
+  console.log(testArray);
+
   // Create an array of paths for the items dropped in the file explorer
   const itemPaths = Array.from(itemsDroppedInFileExplorer).map((item) => item.path);
   // Add the items to the dataset structure (This handles problematic files/folders, duplicate files etc)
