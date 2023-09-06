@@ -5403,6 +5403,8 @@ const allowDrop = (ev) => {
 };
 // This function is called when the user drops files into the file explorer
 const drop = async (ev) => {
+  ev.preventDefault();
+
   // If the user is trying to drag/drop files at the root level of the dataset, show an error
   const slashCount = getPathSlashCount();
   if (slashCount === 1) {
@@ -5415,14 +5417,55 @@ const drop = async (ev) => {
     return;
   }
   const itemsDroppedInFileExplorer = ev.dataTransfer.files;
+  // Convert the FileList object to an array of paths
+  const droppedItemsArray = Array.from(itemsDroppedInFileExplorer).map((item) => item.path);
 
-  const testArray = Array.from(itemsDroppedInFileExplorer);
-  console.log(testArray);
+  if (droppedItemsArray.length === 0) {
+    notyf.open({
+      duration: "4000",
+      type: "error",
+      message: "No folders/files were able to be imported",
+    });
+    return;
+  }
 
-  // Create an array of paths for the items dropped in the file explorer
-  const itemPaths = Array.from(itemsDroppedInFileExplorer).map((item) => item.path);
+  let accessibleItems = [];
+  let inaccessibleItems = [];
+  for (const path of droppedItemsArray) {
+    try {
+      fs.statSync(path);
+      accessibleItems.push(path);
+    } catch (error) {
+      inaccessibleItems.push(path);
+    }
+  }
+
+  if (inaccessibleItems.length > 0) {
+    if (accessibleItems.length === 0) {
+      await swalFileListSingleAction(
+        inaccessibleItems,
+        "SODA was unable import your dropped files/folders",
+        "The files listed below will not be imported into SODA. If this issue persists, please try importing the folders/files via the import button.",
+        false
+      );
+      return;
+    } else {
+      const importAccessibleItemsOnly = await swalFileListConfirmAction(
+        accessibleItems,
+        "SODA was unable to import some of your dropped files/folders",
+        "A list of the folders/files that SODA was not able to import is shown below:",
+        "Yes, continue with the import",
+        "No, cancel the import",
+        "Would you like to continue the import without these folders/files?"
+      );
+      if (!importAccessibleItemsOnly) {
+        return;
+      }
+    }
+  }
+
   // Add the items to the dataset structure (This handles problematic files/folders, duplicate files etc)
-  await addDataArrayToDatasetStructureAtPath(itemPaths);
+  await addDataArrayToDatasetStructureAtPath(accessibleItems);
 };
 
 var irregularFolderArray = [];

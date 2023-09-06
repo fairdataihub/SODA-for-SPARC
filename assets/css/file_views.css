@@ -5,6 +5,7 @@
   align-items: center;
   height: 300px;
   overflow-y: auto;
+  margin-bottom: 5px;
 }
 
 .swal-file-row {
