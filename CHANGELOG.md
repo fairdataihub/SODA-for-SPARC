@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - SODA for SPARC now uploads files/folders to existing datasets on an average of 47% faster than before!
 - SODA for SPARC also uploads new SODA created datasets onto Pennsieve are also on average 48% faster than before!
 - Importing datasets from Pennsieve have been slightly improved on average by 10%.
+
 ## Bug fixes:
 
 - Fixed an issue where announcements for new SODA for SPARC features did not display on a fresh install or after an auto update.
