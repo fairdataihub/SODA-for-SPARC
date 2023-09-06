@@ -4874,7 +4874,7 @@ const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
       "folder-and-file-name-is-valid"
     );
     if (!fileNameIsValid) {
-      const newFileName = fileKey.replace("@", "-");
+      const newFileName = fileKey.replace(sparcFolderAndFileRegex, "-");
       const newFileObj = { ...datasetStructure["files"][fileKey] };
       if (!newFileObj["action"].includes("renamed")) {
         newFileObj["action"].push("renamed");
