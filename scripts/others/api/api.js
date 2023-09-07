@@ -163,7 +163,6 @@ const reserveDOI = async (account, dataset) => {
   } catch (err) {
     let errorMessage = userErrorMessage(err);
     clientError(err);
-    console.log(errorMessage);
     if (errorMessage.includes("is locked")) {
       return "locked";
     }
@@ -188,7 +187,6 @@ const getLockStatus = async (datasetNameOrId) => {
     let lockStatusResponse = await client.get(`/datasets/${datasetNameOrId}/lock-status`);
     return lockStatusResponse.data;
   } catch (err) {
-    console.log(err);
     clientError(err);
     userErrorMessage(err);
   }

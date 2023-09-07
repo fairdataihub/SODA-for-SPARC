@@ -493,7 +493,6 @@ const renameFolder = (
         swal_popup.style.width = "42rem";
         $("#rename-folder-input").keyup(function () {
           let val = $("#rename-folder-input").val();
-          console.log(val);
           for (let char of nonAllowedCharacters) {
             if (val.includes(char)) {
               Swal.showValidationMessage(
@@ -524,8 +523,6 @@ const renameFolder = (
           newName,
           itemElement
         );
-
-        console.log(returnedName);
         if (returnedName !== "") {
           Swal.fire({
             icon: "success",

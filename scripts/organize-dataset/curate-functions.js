@@ -1224,7 +1224,6 @@ const moveItems = async (ev, category) => {
   });
 
   if (folderDestination) {
-    console.log(`Folder destination: ${folderDestination}`);
     // Confirm with user if they want to move the item(s)
     const { value: confirm } = await Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
@@ -1287,7 +1286,6 @@ const moveItems = async (ev, category) => {
               } else if ($(element.firstElementChild).hasClass("myFol")) {
                 itemType = "folders";
               }
-              console.log(`Item type was decided to be: ${itemType}`);
 
               for (let i = 1; i < splitSelectedPath.length; i++) {
                 if (datasetStructureCopy["folders"].hasOwnProperty(splitSelectedPath[i])) {
