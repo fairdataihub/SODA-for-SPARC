@@ -18,5 +18,17 @@
 }
 
 .swal-file-text {
-  font-size: 14px;
+  font-size: 12px;
+}
+
+.swal-confirm-button {
+  background-color: var(--color-light-green) !important;
+}
+
+.swal-deny-button {
+  background-color: #757575 !important;
+}
+
+.swal-cancel-button {
+  background-color: red !important;
 }
