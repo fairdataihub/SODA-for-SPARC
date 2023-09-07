@@ -4097,7 +4097,9 @@ const pageIsSkipped = (pageId) => {
 };
 
 const folderIsEmpty = (folder) => {
-  if (!folder) return true;
+  if (!folder) {
+    return true;
+  }
 
   return Object.keys(folder.folders).length === 0 && Object.keys(folder.files).length === 0;
 };

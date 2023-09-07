@@ -968,9 +968,8 @@ def import_ps_manifest_file(soda_json_structure, bfdataset):
 
     # get the count of the total number of high level folders in soda_json_structure
     for folder in list(dataset_structure["folders"]):
-        if folder in high_level_folders:
-            if dataset_structure["folders"][folder]["files"] == {} and dataset_structure["folders"][folder]["folders"] == {}:
-                manifest_progress["total_manifest_files"] += 1
+        if folder in high_level_folders and (dataset_structure["folders"][folder]["files"] == {} and dataset_structure["folders"][folder]["folders"] == {}):
+            manifest_progress["total_manifest_files"] += 1
 
     # create the path to the dataset files and folders on Pennsieve and add them to the dataset structure stored in soda_json_structure
     recursive_item_path_create(dataset_structure, [])

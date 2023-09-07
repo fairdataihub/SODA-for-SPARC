@@ -3473,11 +3473,11 @@ def generate_manifest_file_data(dataset_structure_obj):
                 )
                 timestamp_entry = last_mod_time.isoformat().replace(".", ",").replace("+00:00", "Z")
 
-                if(filename_entry[0:1] == "/"):
+                if filename_entry[:1] == "/":
                     file_manifest_template_data.append(filename_entry[:1])
                 else:
                     file_manifest_template_data.append(filename_entry)
-                
+
                 file_manifest_template_data.append(timestamp_entry)
                 file_manifest_template_data.append(item_description)
                 file_manifest_template_data.append(file_type_entry)
@@ -3527,11 +3527,11 @@ def generate_manifest_file_data(dataset_structure_obj):
                     last_mod_time = datetime.fromtimestamp(mtime, tz=local_timezone).fromtimestamp(mtime).astimezone(local_timezone)
                     timestamp_entry = last_mod_time.isoformat().replace(".", ",").replace("+00:00", "Z")
 
-                
+
                 filename_entry = "/".join(ds_struct_path) + "/" + file_name
                 file_type_entry = get_name_extension(file_name)
 
-                if(filename_entry[0:1] == "/"):
+                if filename_entry[:1] == "/":
                     file_manifest_template_data.append(filename_entry[1:])
                 else:
                     file_manifest_template_data.append(filename_entry)
