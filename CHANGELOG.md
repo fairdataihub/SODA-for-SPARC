@@ -5,7 +5,7 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v.12.3.0 - 2023-09-05
+## v.12.3.0 - 2023-09-07
 
 ## Feature Additions:
 
@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - SODA for SPARC now uploads files/folders to existing datasets on an average of 47% faster than before!
 - SODA for SPARC also uploads new SODA created datasets onto Pennsieve are also on average 48% faster than before!
 - Importing datasets from Pennsieve have been slightly improved on average by 10%.
+- Enhanced the user experience when importing folders and files into SODA.
 
 ## Bug fixes:
 
