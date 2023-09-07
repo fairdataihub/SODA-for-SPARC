@@ -34,15 +34,19 @@ const checkForAnnouncements = async (state) => {
           <div style="text-align: justify; overflow-y: auto; max-height: 350px;">
             <div style="margin-bottom: 1rem;">
               <label style="font-weight: 700; font-size: 17px;">Feature Additions:<br></label>
-              ${features.map((feature) => {
-                console.log(feature);
-                return `<li style="margin: .5rem 0 .5rem 0;">${feature}</li>`;
-              }).join("")}
+              ${features
+                .map((feature) => {
+                  console.log(feature);
+                  return `<li style="margin: .5rem 0 .5rem 0;">${feature}</li>`;
+                })
+                .join("")}
 
               <label style="font-weight: 700; font-size: 17px;">Bug Fixes:<br></label>
-              ${bugFixes.map((bugfix) => {
-                return `<li style="margin: .5rem 0 .5rem 0;">${bugfix}</li>`;
-              }).join("")}
+              ${bugFixes
+                .map((bugfix) => {
+                  return `<li style="margin: .5rem 0 .5rem 0;">${bugfix}</li>`;
+                })
+                .join("")}
             </div>
           </div>
           `;
