@@ -7279,7 +7279,7 @@ const guidedGetPageToReturnTo = (sodaJSONObj) => {
     // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
     return firstPageID;
   }
-  console.log(guidedCheckIfUserNeedsToReconfirmAccountDetails());
+
   if (guidedCheckIfUserNeedsToReconfirmAccountDetails() === true) {
     return "guided-pennsieve-intro-tab";
   }

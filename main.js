@@ -244,9 +244,6 @@ let user_restart_confirmed = false;
 let updatechecked = false;
 let window_reloaded = false;
 function initialize() {
-  const checkForAnnouncements = () => {
-    mainWindow.webContents.send("checkForAnnouncements");
-  };
   sendUserAnalytics();
   makeSingleInstance();
   loadDemos();

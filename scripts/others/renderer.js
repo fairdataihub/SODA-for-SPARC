@@ -236,10 +236,6 @@ contact_us_lottie_observer.observe(contact_section, {
 
 document.getElementById("guided_mode_view").click();
 
-ipcRenderer.on("checkForAnnouncements", () => {
-  console.log("CHecking for announcements");
-});
-
 // check for announcements on startup; if the user is in the auto update workflow do not check for announcements
 // Rationale: The auto update workflow involves refreshing the DOM which will cause a re-run of
 //            the renderer process. One potential outcome of this is the renderer reaches this code block before the refresh
@@ -523,10 +519,7 @@ const startupServerAndApiCheck = async () => {
     app.exit();
   }
 
-  // let nodeStorage = new JSONStorage(app.getPath("userData"));
-  // launchAnnouncement = nodeStorage.getItem("announcements");
   if (launchAnnouncement) {
-    // nodeStorage.setItem("announcements", false);
     console.log("Checking for announcements on base startup");
     await checkForAnnouncements("announcements");
     launchAnnouncement = false;
@@ -1006,11 +999,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       }
     }
 
-    // let nodeStorage = new JSONStorage(app.getPath("userData"));
-    // launchAnnouncement = nodeStorage.getItem("announcements");
     if (launchAnnouncement) {
-      // nodeStorage.setItem("announcements", false);
-      console.log("Checking for announcements on base startup");
       await checkForAnnouncements("announcements");
       launchAnnouncement = false;
     }
@@ -1391,7 +1380,6 @@ ipcRenderer.on("update_downloaded", async () => {
   update_downloaded_notification.on("click", async ({ target, event }) => {
     restartApp();
     //a sweet alert will pop up announcing user to manually update if SODA fails to restart
-    console.log("Checking for announcements on auto update startup");
     checkForAnnouncements("update");
   });
 });
@@ -4969,7 +4957,11 @@ const swalFileListDoubleAction = async (
     html: `
       ${helpText}
       <div class="swal-file-list">
-        ${fileList.map((file) => `<div class="swal-file-row">${file}</div>`).join("")}
+        ${fileList
+          .map(
+            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+          )
+          .join("")}
       </div>
       <b>${confirmationText}</b>
     `,
@@ -5000,7 +4992,11 @@ const swalFileListTripleAction = async (
     html: `
       ${helpText}
       <div class="swal-file-list">
-        ${fileList.map((file) => `<div class="swal-file-row">${file}</div>`).join("")}
+        ${fileList
+          .map(
+            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+          )
+          .join("")}
       </div>
       <b>${confirmationText}</b>
     `,
@@ -5220,7 +5216,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
     console.log("forbiddenFileNames", forbiddenFileNames);
     await swalFileListSingleAction(
       forbiddenFileNames.map((file) => file.relativePath),
-      "Forbidden file names were found in your import",
+      "Forbidden file names detected",
       "The files listed below do not comply with the SPARC data standards and will not be imported:",
       false
     );
@@ -5229,7 +5225,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   if (problematicFolderNames.length > 0) {
     const userResponse = await swalFileListTripleAction(
       problematicFolderNames,
-      "<p>Folders that do not comply with the SPARC data standards were found in your import</p>",
+      "<p>Folder name modifications</p>",
       `The folders listed below contain the special characters "#", "&", "%", or "+"
       which are typically not recommended per the SPARC data standards.
       You may choose to either keep them as is, or replace the characters with '-'.
@@ -5240,7 +5236,6 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
       "What would you like to do with the folders with special characters?"
     );
     if (userResponse === "confirm") {
-      console.log("replace problematic folders with SDS compliant names");
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure);
     }
     // If the userResponse is "deny", nothing needs to be done
@@ -5252,7 +5247,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   if (problematicFileNames.length > 0) {
     const userResponse = await swalFileListTripleAction(
       problematicFileNames.map((file) => file.relativePath),
-      "<p>Files that do not comply with the SPARC data standards were found in your import</p>",
+      "<p>File name modifications</p>",
       `The files listed below contain the special characters "#", "&", "%", or "+"
       which are typically not recommended per the SPARC data standards.
       You may choose to either keep them as is, or replace the characters with '-'.
@@ -5274,7 +5269,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   if (hiddenItems.length > 0) {
     const userResponse = await swalFileListTripleAction(
       hiddenItems.map((file) => file.relativePath),
-      "<p>Hidden files were found in your import</p>",
+      "<p>Hidden files detected</p>",
       `Hidden files are typically not recommend per the SPARC data standards, but you can choose to keep them if you wish.`,
       "Import the hidden files into SODA",
       "Do not import the hidden files",
@@ -5290,8 +5285,11 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
     }
   }
 
-  // Throw if the dataset structure generated does not contain folders or files
-  if (!datasetStructure?.["folders"] || !datasetStructure?.["files"]) {
+  // If the dataset structure is empty after processing the imported files and folders, throw an error
+  if (
+    Object.keys(datasetStructure?.["folders"]).length === 0 &&
+    Object.keys(datasetStructure?.["files"]).length === 0
+  ) {
     throw new Error("Error building dataset structure");
   }
 
@@ -5361,7 +5359,7 @@ const mergeLocalAndRemoteDatasetStructure = async (
   if (duplicateFiles.length > 0) {
     const userConfirmedFileOverwrite = await swalFileListDoubleAction(
       duplicateFiles.map((file) => `${file.virtualFilePath}${file.fileName}`),
-      "Some files being imported already exist in your dataset",
+      "Duplicate files detected",
       ` 
         You have two options for the duplicate files:
         <br />
@@ -5377,7 +5375,6 @@ const mergeLocalAndRemoteDatasetStructure = async (
       `,
       "Overwrite the existing files",
       "Skip the duplicate files",
-      "Cancel import",
       "What would you like to do with the duplicate files?"
     );
     if (userConfirmedFileOverwrite) {
@@ -5535,15 +5532,15 @@ const drop = async (ev) => {
       );
       return;
     } else {
-      const importAccessibleItemsOnly = await swalFileListTripleAction(
-        inaccessibleItems,
+      const importAccessibleItemsOnly = await swalFileListDoubleAction(
+        accessibleItems,
         "<p>SODA was unable to import some of your dropped files/folders</p>",
         "A list of the folders/files that SODA was not able to import is shown below:",
         "Yes, continue with the import",
         "No, cancel the import",
-        "Cancel import",
         "Would you like to continue the import without these folders/files?"
       );
+
       if (!importAccessibleItemsOnly) {
         return;
       }
