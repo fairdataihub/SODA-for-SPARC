@@ -4957,7 +4957,7 @@ const swalFileListConfirmAction = async (
   const { value: action } = await Swal.fire({
     title: title,
     html: `
-      <p>${helpText}</p>
+      ${helpText}
       <div class="swal-file-list">
         ${fileList.map((file) => `<div class="swal-file-row">${file}</div>`).join("")}
       </div>
@@ -5174,14 +5174,14 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   if (problematicFolderNames.length > 0) {
     const replaceFolderNames = await swalFileListConfirmAction(
       problematicFolderNames,
-      "Folders that do not comply with the SPARC data standards were found in your import",
-      `The folders listed below contain the characters '(#&%+)'
+      "<p>Folders that do not comply with the SPARC data standards were found in your import</p>",
+      `The folders listed below contain the special characters "#", "&", "%", or "+"
       which are typically not recommended per the SPARC data standards.
       You may choose to either keep them as is, or replace the characters with '-'.
       `,
       "Replace the special characters with '-'",
       "Keep the folder names as they are",
-      "Would you like to import your folders with special characters?"
+      "What would you like to do with the folders with special characters?"
     );
     if (replaceFolderNames) {
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure);
@@ -5191,14 +5191,14 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   if (problematicFileNames.length > 0) {
     const replaceFileNames = await swalFileListConfirmAction(
       problematicFileNames.map((file) => file.relativePath),
-      "Files that do not comply with the SPARC data standards were found in your import",
-      `The files listed below contain the characters '(#&%+)'
+      "<p>Files that do not comply with the SPARC data standards were found in your import</p>",
+      `The files listed below contain the special characters "#", "&", "%", or "+"
       which are typically not recommended per the SPARC data standards.
       You may choose to either keep them as is, or replace the characters with '-'.
       `,
       "Replace the special characters with '-'",
       "Keep the file names as they are",
-      "Would you like to import your files with special characters?"
+      "What would you like to do with the files with special characters?"
     );
     if (replaceFileNames) {
       replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
@@ -5208,7 +5208,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   if (hiddenItems.length > 0) {
     const keepHiddenFiles = await swalFileListConfirmAction(
       hiddenItems.map((file) => file.relativePath),
-      "Hidden files were found in your import",
+      "<p>Hidden files were found in your import</p>",
       `Hidden files are typically not recommend per the SPARC data standards, but you can choose to keep them if you wish.`,
       "Import the hidden files into SODA",
       "Do not import the hidden files",
@@ -5286,9 +5286,21 @@ const mergeLocalAndRemoteDatasetStructure = async (
     const userConfirmedFileOverwrite = await swalFileListConfirmAction(
       duplicateFiles.map((file) => `${file.virtualFilePath}${file.fileName}`),
       "Some files being imported already exist in your dataset",
-      "Choosing to overwrite the existing files will replace existing local files as well as files on Pennsieve with the newly imported files. Choosing to skip the duplicate files will keep the existing files and not import the duplicate files.",
-      "Overwrite existing files",
-      "Skip duplicate files",
+      ` 
+        You have two options for the duplicate files:
+        <br />
+        <span
+          class="text-left"
+          style="display: flex; flex-direction: column; margin-bottom: 1em">
+          <b>Overwrite the existing files:</b> This option will completely replace existing files with the files being imported.
+          This option is recommended if the files have changed since they were last imported into SODA.
+          <br />
+          <b>Skip the duplicate files:</b> This option will not import the duplicate files into SODA.
+          This option is recommended if the files have not changed since they were last imported into SODA.
+        </span>
+      `,
+      "Overwrite the existing files",
+      "Skip the duplicate files",
       "What would you like to do with the duplicate files?"
     );
     if (userConfirmedFileOverwrite) {
@@ -5452,7 +5464,7 @@ const drop = async (ev) => {
     } else {
       const importAccessibleItemsOnly = await swalFileListConfirmAction(
         inaccessibleItems,
-        "SODA was unable to import some of your dropped files/folders",
+        "<p>SODA was unable to import some of your dropped files/folders</p>",
         "A list of the folders/files that SODA was not able to import is shown below:",
         "Yes, continue with the import",
         "No, cancel the import",
