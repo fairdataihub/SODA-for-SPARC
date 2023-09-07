@@ -15745,19 +15745,19 @@ const createTestDataset = (
 ) => {
   const fileSizeOptions = ["small", "medium", "large"];
   if (!fileSizeOptions.includes(fileSize)) {
-    console.log("File size must be small medium or large");
+    console.error("File size must be small medium or large");
     return;
   }
 
   const maxDepth = 5;
   if (depth > maxDepth) {
-    console.log(`Depth must be less than or equal to ${maxDepth}`);
+    console.error(`Depth must be less than or equal to ${maxDepth}`);
     return;
   }
 
   const maxNumberOfFilesInEachFolder = 30;
   if (numberOfFilesInEachFolder > maxNumberOfFilesInEachFolder) {
-    console.log(
+    console.error(
       `Number of files in each folder must be less than or equal to ${maxNumberOfFilesInEachFolder}`
     );
     return;
@@ -15765,7 +15765,7 @@ const createTestDataset = (
 
   const maxNumberOfFolders = 50;
   if (numberOfFolders > maxNumberOfFolders) {
-    console.log(`Number of folders must be less than or equal to ${maxNumberOfFolders}`);
+    console.error(`Number of folders must be less than or equal to ${maxNumberOfFolders}`);
     return;
   }
 
@@ -15777,7 +15777,7 @@ const createTestDataset = (
   }
   const newTestDatasetPath = path.join(testDatasetsPath, datasetName);
   if (fs.existsSync(newTestDatasetPath)) {
-    console.log("A test dataset with this name already exists please choose a different name");
+    console.error("A test dataset with this name already exists please choose a different name");
     return;
   }
   // Create the test datasets folder
@@ -15797,5 +15797,4 @@ const createTestDataset = (
       boolIncludeProblematicFileNames
     );
   }
-  console.log("Test dataset created successfully");
 };
