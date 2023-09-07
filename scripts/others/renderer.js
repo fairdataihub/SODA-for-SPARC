@@ -236,10 +236,6 @@ contact_us_lottie_observer.observe(contact_section, {
 
 document.getElementById("guided_mode_view").click();
 
-ipcRenderer.on("checkForAnnouncements", () => {
-  console.log("CHecking for announcements");
-});
-
 // check for announcements on startup; if the user is in the auto update workflow do not check for announcements
 // Rationale: The auto update workflow involves refreshing the DOM which will cause a re-run of
 //            the renderer process. One potential outcome of this is the renderer reaches this code block before the refresh
@@ -373,6 +369,16 @@ const notyf = new Notyf({
         color: "white",
       },
       duration: 3000,
+    },
+
+    {
+      type: "info-grey",
+      background: "grey",
+      icon: {
+        className: "fas fa-info-circle",
+        tagName: "i",
+        color: "white",
+      },
     },
 
     {
@@ -513,10 +519,7 @@ const startupServerAndApiCheck = async () => {
     app.exit();
   }
 
-  // let nodeStorage = new JSONStorage(app.getPath("userData"));
-  // launchAnnouncement = nodeStorage.getItem("announcements");
   if (launchAnnouncement) {
-    // nodeStorage.setItem("announcements", false);
     console.log("Checking for announcements on base startup");
     await checkForAnnouncements("announcements");
     launchAnnouncement = false;
@@ -996,11 +999,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       }
     }
 
-    // let nodeStorage = new JSONStorage(app.getPath("userData"));
-    // launchAnnouncement = nodeStorage.getItem("announcements");
     if (launchAnnouncement) {
-      // nodeStorage.setItem("announcements", false);
-      console.log("Checking for announcements on base startup");
       await checkForAnnouncements("announcements");
       launchAnnouncement = false;
     }
@@ -1381,7 +1380,6 @@ ipcRenderer.on("update_downloaded", async () => {
   update_downloaded_notification.on("click", async ({ target, event }) => {
     restartApp();
     //a sweet alert will pop up announcing user to manually update if SODA fails to restart
-    console.log("Checking for announcements on auto update startup");
     checkForAnnouncements("update");
   });
 });
@@ -4946,7 +4944,7 @@ const swalFileListSingleAction = async (fileList, title, helpText, postActionTex
   });
 };
 
-const swalFileListConfirmAction = async (
+const swalFileListDoubleAction = async (
   fileList,
   title,
   helpText,
@@ -4959,7 +4957,11 @@ const swalFileListConfirmAction = async (
     html: `
       ${helpText}
       <div class="swal-file-list">
-        ${fileList.map((file) => `<div class="swal-file-row">${file}</div>`).join("")}
+        ${fileList
+          .map(
+            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+          )
+          .join("")}
       </div>
       <b>${confirmationText}</b>
     `,
@@ -4974,6 +4976,57 @@ const swalFileListConfirmAction = async (
     cancelButtonText: cancelButtonText,
   });
   return action;
+};
+
+const swalFileListTripleAction = async (
+  fileList,
+  title,
+  helpText,
+  confirmButtonText,
+  denyButtonText,
+  cancelButtonText,
+  confirmationText
+) => {
+  const { value: action } = await Swal.fire({
+    title: title,
+    html: `
+      ${helpText}
+      <div class="swal-file-list">
+        ${fileList
+          .map(
+            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+          )
+          .join("")}
+      </div>
+      <b>${confirmationText}</b>
+    `,
+    width: 800,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showCloseButton: false,
+    showCancelButton: true,
+    showDenyButton: true,
+    confirmButtonText: confirmButtonText,
+    denyButtonText: denyButtonText,
+    cancelButtonText: cancelButtonText,
+    customClass: {
+      confirmButton: "swal-confirm-button",
+      denyButton: "swal-deny-button",
+      cancelButton: "swal-cancel-button",
+    },
+  });
+  if (action === true) {
+    console.log("confirmed");
+    return "confirm";
+  } else if (action === false) {
+    console.log("denied");
+    return "deny";
+  } else {
+    console.log("cancelled");
+    return "cancel";
+  }
 };
 
 const namesOfForbiddenFiles = {
@@ -5137,8 +5190,6 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
         }
       }
     } catch (error) {
-      console.log("Error accessing path", pathToExplore, error);
-      // If the path is inaccessible by Node, add it to the inaccessibleItems array
       inaccessibleItems.push(pathToExplore);
     }
   };
@@ -5165,58 +5216,81 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
     console.log("forbiddenFileNames", forbiddenFileNames);
     await swalFileListSingleAction(
       forbiddenFileNames.map((file) => file.relativePath),
-      "Forbidden file names were found in your import",
+      "Forbidden file names detected",
       "The files listed below do not comply with the SPARC data standards and will not be imported:",
       false
     );
   }
 
   if (problematicFolderNames.length > 0) {
-    const replaceFolderNames = await swalFileListConfirmAction(
+    const userResponse = await swalFileListTripleAction(
       problematicFolderNames,
-      "<p>Folders that do not comply with the SPARC data standards were found in your import</p>",
+      "<p>Folder name modifications</p>",
       `The folders listed below contain the special characters "#", "&", "%", or "+"
       which are typically not recommended per the SPARC data standards.
       You may choose to either keep them as is, or replace the characters with '-'.
       `,
       "Replace the special characters with '-'",
       "Keep the folder names as they are",
+      "Cancel import",
       "What would you like to do with the folders with special characters?"
     );
-    if (replaceFolderNames) {
+    if (userResponse === "confirm") {
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure);
+    }
+    // If the userResponse is "deny", nothing needs to be done
+    if (userResponse === "cancel") {
+      throw new Error("Importation cancelled");
     }
   }
 
   if (problematicFileNames.length > 0) {
-    const replaceFileNames = await swalFileListConfirmAction(
+    const userResponse = await swalFileListTripleAction(
       problematicFileNames.map((file) => file.relativePath),
-      "<p>Files that do not comply with the SPARC data standards were found in your import</p>",
+      "<p>File name modifications</p>",
       `The files listed below contain the special characters "#", "&", "%", or "+"
       which are typically not recommended per the SPARC data standards.
       You may choose to either keep them as is, or replace the characters with '-'.
       `,
       "Replace the special characters with '-'",
       "Keep the file names as they are",
+      "Cancel import",
       "What would you like to do with the files with special characters?"
     );
-    if (replaceFileNames) {
+    if (userResponse === "confirm") {
       replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
+    }
+    // If the userResponse is "deny", nothing needs to be done
+    if (userResponse === "cancel") {
+      throw new Error("Importation cancelled");
     }
   }
 
   if (hiddenItems.length > 0) {
-    const keepHiddenFiles = await swalFileListConfirmAction(
+    const userResponse = await swalFileListTripleAction(
       hiddenItems.map((file) => file.relativePath),
-      "<p>Hidden files were found in your import</p>",
+      "<p>Hidden files detected</p>",
       `Hidden files are typically not recommend per the SPARC data standards, but you can choose to keep them if you wish.`,
       "Import the hidden files into SODA",
       "Do not import the hidden files",
+      "Cancel import",
       "What would you like to do with the hidden files?"
     );
-    if (!keepHiddenFiles) {
+    // If the userResponse is "confirm", nothing needs to be done
+    if (userResponse === "deny") {
       removeHiddenFilesFromDatasetStructure(datasetStructure);
     }
+    if (userResponse === "cancel") {
+      throw new Error("Importation cancelled");
+    }
+  }
+
+  // If the dataset structure is empty after processing the imported files and folders, throw an error
+  if (
+    Object.keys(datasetStructure?.["folders"]).length === 0 &&
+    Object.keys(datasetStructure?.["files"]).length === 0
+  ) {
+    throw new Error("Error building dataset structure");
   }
 
   return datasetStructure;
@@ -5283,9 +5357,9 @@ const mergeLocalAndRemoteDatasetStructure = async (
   closeFileImportLoadingSweetAlert();
 
   if (duplicateFiles.length > 0) {
-    const userConfirmedFileOverwrite = await swalFileListConfirmAction(
+    const userConfirmedFileOverwrite = await swalFileListDoubleAction(
       duplicateFiles.map((file) => `${file.virtualFilePath}${file.fileName}`),
-      "Some files being imported already exist in your dataset",
+      "Duplicate files detected",
       ` 
         You have two options for the duplicate files:
         <br />
@@ -5372,14 +5446,11 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
     // STEP 1: Build the JSON object from the imported data
     // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
     const currentFileExplorerPath = organizeDSglobalPath.value.trim();
+
     const builtDatasetStructure = await buildDatasetStructureJsonFromImportedData(
       importedData,
       currentFileExplorerPath
     );
-    // Throw if the dataset structure generated does not contain folders or files
-    if (!builtDatasetStructure?.["folders"] || !builtDatasetStructure?.["files"]) {
-      throw new Error("Error building dataset structure");
-    }
 
     // Step 2: Add the imported data to the dataset structure (This function handles duplicate files, etc)
     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
@@ -5400,11 +5471,10 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
       duration: 3000,
     });
   } catch (error) {
-    console.log(error);
     closeFileImportLoadingSweetAlert();
     notyf.open({
-      type: "error",
-      message: `Error importing data`,
+      type: error.message === "Importation cancelled" ? "info-grey" : "error",
+      message: error.message || "Error importing data",
       duration: 3000,
     });
   }
@@ -5462,14 +5532,15 @@ const drop = async (ev) => {
       );
       return;
     } else {
-      const importAccessibleItemsOnly = await swalFileListConfirmAction(
-        inaccessibleItems,
+      const importAccessibleItemsOnly = await swalFileListDoubleAction(
+        accessibleItems,
         "<p>SODA was unable to import some of your dropped files/folders</p>",
         "A list of the folders/files that SODA was not able to import is shown below:",
         "Yes, continue with the import",
         "No, cancel the import",
         "Would you like to continue the import without these folders/files?"
       );
+
       if (!importAccessibleItemsOnly) {
         return;
       }
