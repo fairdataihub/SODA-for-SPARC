@@ -182,10 +182,12 @@ def bf_add_account_api_key(keyname, key, secret):
     try:
         org_id = get_user_information(token)["preferredOrganization"]
 
+        ''' Commented out as users should be able to sign in to non-sparc organizations using an API key
         if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
             abort(403,
                 "Please check that your account is within the SPARC Organization"
             )
+        '''
 
         if not config.has_section("global"):
             config.add_section("global")
