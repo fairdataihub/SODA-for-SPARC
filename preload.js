@@ -995,7 +995,35 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
         document.getElementsByClassName("swal2-popup")[0].style.width = "43rem";
         div_footer.style.flexDirection = "column";
         div_footer.style.alignItems = "center";
-        if (verifyingOrganization) {
+        if (!verifyingOrganization) {
+          let swal_actions = document.getElementsByClassName("swal2-actions")[0];
+          let api_button = document.createElement("button");
+          let api_arrow = document.createElement("i");
+          let helpText = document.createElement("p")
+          helpText.innerText = "Recommended only if you sign in to Pennsieve with your ORCID iD."
+          helpText.classList.add("tip-content");
+          // set margin to auto
+          helpText.style.margin = "auto";
+
+          api_button.innerText = "Connect with API key instead";
+          // set length to 270 
+          api_button.setAttribute("onclick", "showBFAddAccountSweetalert()");
+          api_arrow.classList.add("fas");
+          api_arrow.classList.add("fa-arrow-right");
+          api_arrow.style.marginLeft = "10px";
+          api_button.type = "button";
+          api_button.style.border = "";
+          api_button.id = "api_connect_btn";
+          api_button.classList.add("transition-btn");
+          api_button.classList.add("api_key-btn");
+          api_button.classList.add("back");
+          api_button.style.display = "inline";
+          api_button.appendChild(api_arrow);
+          swal_actions.parentElement.insertBefore(api_button, div_footer);
+          swal_actions.parentElement.insertBefore(helpText, div_footer);
+
+        }
+        else {
           // hide the cancel button
           let cancel_button = document.getElementsByClassName("swal2-cancel")[0];
           cancel_button.style.display = "none";
