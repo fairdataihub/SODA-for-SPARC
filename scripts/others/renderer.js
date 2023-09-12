@@ -4352,7 +4352,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
             val,
             "folder-and-file-name-is-valid"
           );
-          
+
           if (folderNameIsValid) {
             $("#add-new-folder-button").attr("disabled", false);
           } else {
