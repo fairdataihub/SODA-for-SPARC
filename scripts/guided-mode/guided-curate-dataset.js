@@ -15396,7 +15396,7 @@ $("#guided-new-folder").on("click", () => {
         $(".swal2-input").attr("id", "add-new-folder-input");
         $(".swal2-confirm").attr("id", "add-new-folder-button");
         $("#add-new-folder-input").keyup(function () {
-          var val = $("#add-new-folder-input").val();
+          let val = $("#add-new-folder-input").val();
           const folderNameIsValid = evaluateStringAgainstSdsRequirements(
             val,
             "folder-and-file-name-is-valid"
