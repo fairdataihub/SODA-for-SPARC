@@ -1007,7 +1007,6 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
 
           api_button.innerText = "Connect with API key instead";
           // set length to 270
-          api_button.setAttribute("onclick", "showBFAddAccountSweetalert()");
           api_arrow.classList.add("fas");
           api_arrow.classList.add("fa-arrow-right");
           api_arrow.style.marginLeft = "10px";
@@ -1021,6 +1020,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           api_button.appendChild(api_arrow);
           swal_actions.parentElement.insertBefore(api_button, div_footer);
           swal_actions.parentElement.insertBefore(helpText, div_footer);
+          api_button.addEventListener("click", (e) => showBFAddAccountSweetalert(e));
         } else {
           // hide the cancel button
           let cancel_button = document.getElementsByClassName("swal2-cancel")[0];
