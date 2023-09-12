@@ -8530,6 +8530,10 @@ async function showBFAddAccountSweetalert() {
                     showHideDropdownButtons("account", "show");
                     confirm_click_account_function();
                     updateBfAccountList();
+
+                    datasetList = [];
+                    defaultBfDataset = null;
+                    clearDatasetDropdowns();
                   })
                   .catch((error) => {
                     Swal.showValidationMessage(userErrorMessage(error));
