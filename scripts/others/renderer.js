@@ -1793,7 +1793,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
             didOpen: () => {
               Swal.showLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           generateSubjectsFileHelper(false);
         }
       });
@@ -1809,7 +1809,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       generateSubjectsFileHelper(false);
     }
   }
@@ -1892,7 +1892,7 @@ const generateSubjectsFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   try {
     log.info(`Generating a subjects file.`);
@@ -2002,7 +2002,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
             didOpen: () => {
               Swal.showLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           generateSamplesFileHelper(uploadBFBoolean);
         }
       });
@@ -2018,7 +2018,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       generateSamplesFileHelper(uploadBFBoolean);
     }
   }
@@ -2100,7 +2100,7 @@ const generateSamplesFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   try {
     let samplesFileResponse = await client.post(
@@ -2620,7 +2620,7 @@ const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) =
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
@@ -4925,10 +4925,10 @@ const swalFileListSingleAction = async (fileList, title, helpText, postActionTex
       ${helpText ? `<p>${helpText}</p>` : ""}
       <div class="swal-file-list">
         ${fileList
-          .map(
-            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
-          )
-          .join("")}
+        .map(
+          (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+        )
+        .join("")}
       </div>
       ${postActionText ? `<b>${postActionText}</b>` : ""}
     `,
@@ -4958,10 +4958,10 @@ const swalFileListDoubleAction = async (
       ${helpText}
       <div class="swal-file-list">
         ${fileList
-          .map(
-            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
-          )
-          .join("")}
+        .map(
+          (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+        )
+        .join("")}
       </div>
       <b>${confirmationText}</b>
     `,
@@ -4993,10 +4993,10 @@ const swalFileListTripleAction = async (
       ${helpText}
       <div class="swal-file-list">
         ${fileList
-          .map(
-            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
-          )
-          .join("")}
+        .map(
+          (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+        )
+        .join("")}
       </div>
       <b>${confirmationText}</b>
     `,
@@ -6702,9 +6702,8 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           ${dragDropInstructionsText}
         </p>
         <p class="text-center">
-          You may also <b>add</b> or <b>import</b> ${
-            folderType === undefined ? "folders or files" : folderType + " data"
-          } using the buttons in the upper right corner
+          You may also <b>add</b> or <b>import</b> ${folderType === undefined ? "folders or files" : folderType + " data"
+      } using the buttons in the upper right corner
         </p>
       </div>`
     );
@@ -7392,7 +7391,7 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
     if (
       "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
       sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
-        "forTreeview"
+      "forTreeview"
       ]
     ) {
       delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
@@ -8527,6 +8526,9 @@ async function showBFAddAccountSweetalert() {
                     $("#current-bf-dataset-generate").text("None");
                     $(".bf-dataset-span").html("None");
                     $("#para-continue-bf-dataset-getting-started").text("");
+                    // set the workspace field values to the user's current workspace
+                    let org = response.data.organization;
+                    $(".bf-organization-span").text(org);
                     showHideDropdownButtons("account", "show");
                     confirm_click_account_function();
                     updateBfAccountList();
