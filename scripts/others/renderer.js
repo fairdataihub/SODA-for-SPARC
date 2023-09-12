@@ -8466,7 +8466,9 @@ ipcRenderer.on("selected-manifest-folder", async (event, result) => {
   }
 });
 
-async function showBFAddAccountSweetalert() {
+async function showBFAddAccountSweetalert(ev) {
+  console.log("The ev: ", ev)
+  let target = ev.target
   await Swal.fire({
     title: bfaddaccountTitle,
     html: bfAddAccountBootboxMessage,
@@ -8516,7 +8518,7 @@ async function showBFAddAccountSweetalert() {
                       selected_account: name,
                     },
                   })
-                  .then((response) => {
+                  .then(async (response) => {
                     let user_email = response.data.email;
                     $("#current-bf-account").text(user_email);
                     $("#current-bf-account-generate").text(user_email);
@@ -8532,6 +8534,32 @@ async function showBFAddAccountSweetalert() {
                     showHideDropdownButtons("account", "show");
                     confirm_click_account_function();
                     updateBfAccountList();
+
+                    // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
+                    // then reset the guided mode page
+                    if (target?.getAttribute("data-reset-guided-mode-page") == "true") {
+                      // Get the current page that the user is on in the guided mode
+                      const currentPage = CURRENT_PAGE.id;
+                      if (currentPage) {
+                        await openPage(currentPage);
+                      }
+                    }
+
+                    // reset the selected dataset to None
+                    $(".bf-dataset-span").html("None");
+                    // reset the current owner span in the manage dataset make pi owner of a dataset tab
+                    $(".current-permissions").html("None");
+
+                    refreshOrganizationList();
+
+
+                    // If the button that triggered the organization has the class
+                    // guided-change-workspace (from guided mode), handle changes based on the ev id
+                    // otherwise, reset the FFM UI based on the ev class
+                    // NOTE: For API Key sign in flow it is more simple to just reset the UI as the new user may be in a separate workspace than the prior user.
+                    target?.classList.contains("data-reset-guided-mode-page")
+                      ? handleGuidedModeOrgSwitch(target)
+                      : resetFFMUI(target);
 
                     datasetList = [];
                     defaultBfDataset = null;
