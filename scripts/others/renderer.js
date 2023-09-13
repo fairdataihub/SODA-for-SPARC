@@ -106,12 +106,10 @@ let apiVersionChecked = false;
 
 //log user's OS version //
 log.info("User OS:", os.type(), os.platform(), "version:", os.release());
-console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 
 // Check current app version //
 const appVersion = app.getVersion();
 log.info("Current SODA version:", appVersion);
-console.log("Current SODA version:", appVersion);
 
 // Here is where the lotties are created and loaded for the main tabs.
 // A mutation observer watches for when the overview tab element has
@@ -520,7 +518,6 @@ const startupServerAndApiCheck = async () => {
   }
 
   if (launchAnnouncement) {
-    console.log("Checking for announcements on base startup");
     await checkForAnnouncements("announcements");
     launchAnnouncement = false;
     nodeStorage.setItem("announcements", false);
@@ -5019,13 +5016,10 @@ const swalFileListTripleAction = async (
     },
   });
   if (action === true) {
-    console.log("confirmed");
     return "confirm";
   } else if (action === false) {
-    console.log("denied");
     return "deny";
   } else {
-    console.log("cancelled");
     return "cancel";
   }
 };
@@ -5214,7 +5208,6 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   }
 
   if (forbiddenFileNames.length > 0) {
-    console.log("forbiddenFileNames", forbiddenFileNames);
     await swalFileListSingleAction(
       forbiddenFileNames.map((file) => file.relativePath),
       "Forbidden file names detected",
@@ -5331,7 +5324,6 @@ const mergeLocalAndRemoteDatasetStructure = async (
 
     for (const file of filesBeingMergedToPath) {
       if (ExistingFilesAtPath.includes(file)) {
-        console.log("recursed file path", recursedFilePath);
         duplicateFiles.push({
           fileName: file,
           virtualFilePath: recursedFilePath,
@@ -5380,16 +5372,13 @@ const mergeLocalAndRemoteDatasetStructure = async (
     );
     if (userConfirmedFileOverwrite) {
       for (const file of duplicateFiles) {
-        console.log("file", file);
         const currentNestedPathArray = getGlobalPathFromString(file.virtualFilePath);
         // remove first and last elements from array
         currentNestedPathArray.shift();
-        console.log("nested array", currentNestedPathArray);
         const folderContainingFileToOverwrite = getRecursivePath(
           currentNestedPathArray,
           datasetStructureJSONObj
         );
-        console.log("folderContainingFileToOverwrite", folderContainingFileToOverwrite);
 
         const fileTypeOfObjectToOverwrite =
           folderContainingFileToOverwrite["files"][file.fileName]?.["type"];
@@ -7659,7 +7648,6 @@ const initiate_generate = async () => {
     .then(async (response) => {
       let end = performance.now();
       let time = (end - start) / 1000;
-      console.log("Time to complete curate function: " + time + " seconds");
       let { data } = response;
 
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
@@ -7969,9 +7957,6 @@ const initiate_generate = async () => {
 
     if (start_generate === 1) {
       var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
-      console.log(value);
-      console.log(main_generated_dataset_size);
-      console.log(main_total_generate_dataset_size);
       generateProgressBar.value = value;
       statusMeter.value = value;
       if (main_total_generate_dataset_size < displaySize) {
@@ -8469,7 +8454,6 @@ ipcRenderer.on("selected-manifest-folder", async (event, result) => {
 });
 
 async function showBFAddAccountSweetalert(ev) {
-  console.log("The ev: ", ev);
   let target = ev.target;
   await Swal.fire({
     title: bfaddaccountTitle,
@@ -9323,7 +9307,6 @@ const gatherLogs = () => {
 const displayClientId = () => {
   const { clipboard } = require("electron");
   clipboard.writeText("Example string", "selection");
-  console.log(clipboard.readText("selection"));
   let clientId = nodeStorage.getItem("userId");
 
   const copyClientIdToClipboard = () => {

@@ -1964,7 +1964,6 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
 
   // first, handle target or the next div to show
   let target = document.getElementById(ev.getAttribute("data-next"));
-  console.log("target", target);
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!target.classList.contains("show")) {

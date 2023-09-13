@@ -52,7 +52,6 @@ const userErrorMessage = (error) => {
     errorMessage =
       "The server did not respond to the request. Please try again later or contact the soda team at help@fairdataihub.org if this issue persits.";
   } else {
-    console.log("user.message");
     // Something happened in setting up the request that triggered an Error
     errorMessage = error.message;
   }

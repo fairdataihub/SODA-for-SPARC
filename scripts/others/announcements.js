@@ -14,7 +14,6 @@ const checkForAnnouncements = async (state) => {
     let appVersion = String(app.getVersion());
     let result = await axiosInstance.get();
     let res = result.data;
-    console.log("Announcements result: ", res);
 
     // Prepare the platform name for the announcement
     if (platform === "darwin") {
@@ -26,8 +25,6 @@ const checkForAnnouncements = async (state) => {
     }
 
     if (appVersion in res && state === "announcements") {
-      console.log(res[appVersion]);
-      console.log("version match");
       let features = res[appVersion]["announcements"]["features"];
       let bugFixes = res[appVersion]["announcements"]["bug-fixes"];
       let htmlMessage = `
