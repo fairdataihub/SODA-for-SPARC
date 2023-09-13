@@ -485,11 +485,11 @@ def create_new_dataset(datasetname, accountname):
         for ds in datasets:
             if ds["content"]["name"] == datasetname:
                 abort(400, "Dataset name already exists")
-        else:
-            r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(token), json={"name": datasetname})
-            r.raise_for_status()
-            ds_id = r.json()['content']['id']
-            return {"id": ds_id}
+            else:
+                r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(token), json={"name": datasetname})
+                r.raise_for_status()
+                ds_id = r.json()['content']['id']
+                return {"id": ds_id}
 
     except Exception as e:
         raise e
@@ -730,7 +730,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         except Exception as e:
             namespace_logger.error("Error uploading dataset files")
             namespace_logger.error(e)
-            raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
+            raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
         submitdatastatus = "Done"
     except Exception as e:
@@ -857,13 +857,13 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
         list_permission: list of permission (first name -- last name -- role) associated with the
         selected dataset (list of string)
     """
+    global PENNSIEVE_URL
 
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
 
     try:
-        global PENNSIEVE_URL
         headers = create_request_headers(token)
         # user permissions
         r = requests.get(
@@ -1030,7 +1030,7 @@ def ps_add_permission(
                 r.raise_for_status()
             except Exception as e:
                 raise Exception(e) from e
-            return {"message": "Permission removed for " + selected_user}
+            return {"message": f"Permission removed for {selected_user}"}
         elif selected_role == "owner":
             # check if currently logged in user is owner of selected dataset (only owner can change owner)
             # change owner

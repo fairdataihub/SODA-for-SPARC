@@ -210,15 +210,11 @@ document.querySelector("#run_validator_btn").addEventListener("click", async (ev
   let localDatasetCard = document.querySelector("#validate-1-Local");
   let validatingLocalDataset = localDatasetCard.checked;
 
-  console.log("Logic here being performed?");
-
   if (validatingLocalDataset) {
     await validateLocalDataset();
   } else {
     await validatePennsieveDataset();
   }
-
-  console.log("About to do transition logic");
 });
 
 document

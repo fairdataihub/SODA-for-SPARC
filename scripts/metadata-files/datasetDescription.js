@@ -43,7 +43,7 @@ $(document).ready(function () {
   ipcRenderer.on("selected-destination-generate-dd-locally", (event, dirpath) => {
     if (dirpath.length > 0) {
       document.getElementById("input-destination-generate-dd-locally").placeholder = dirpath[0];
-      var destinationPath = path.join(dirpath[0], "dataset_description.xlsx");
+      let destinationPath = path.join(dirpath[0], "dataset_description.xlsx");
       ddDestinationPath = destinationPath;
       $("#div-confirm-destination-dd-locally").css("display", "flex");
       $($("#div-confirm-destination-dd-locally").children()[0]).css("display", "flex");
@@ -55,7 +55,7 @@ $(document).ready(function () {
 
   $(".prepare-dd-cards").click(function () {
     $("create_dataset_description-tab").removeClass("show");
-    var target = $(this).attr("data-next");
+    let target = $(this).attr("data-next");
     $("#" + target).toggleClass("show");
     document.getElementById("prevBtn").style.display = "none";
   });
@@ -1566,9 +1566,10 @@ const checkBFImportDD = async () => {
   } catch (error) {
     clientError(error);
     Swal.fire({
+      title: `Failed to load existing dataset_description.xslx file`,
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
-      icon: "error",
+      icon: "warning",
       text: error.response.data.message,
     });
 

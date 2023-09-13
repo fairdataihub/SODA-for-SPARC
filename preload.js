@@ -933,8 +933,9 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           refreshDatasetList();
         } catch (error) {
           clientError(error);
-          document.getElementById("para-filter-datasets-status-2").innerHTML =
-            "<span style='color: red'>" + userErrorMessage(error) + "</span>";
+          document.getElementById(
+            "para-filter-datasets-status-2"
+          ).innerHTML = `<span style='color: red'>${userErrorMessage(error)}</span>`;
           return;
         }
       } catch (error) {
@@ -957,6 +958,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
     if (verifyingOrganization) {
       titleText = `<h3 style="text-align:center">Grant SODA access to your current workspace</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`;
     }
+
     let footerText = `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account</a>`;
     if (verifyingOrganization) {
       footerText = "";
@@ -998,9 +1000,14 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           let swal_actions = document.getElementsByClassName("swal2-actions")[0];
           let api_button = document.createElement("button");
           let api_arrow = document.createElement("i");
+          let helpText = document.createElement("p");
+          helpText.innerText = "Recommended only if you sign in to Pennsieve with your ORCID iD.";
+          helpText.classList.add("tip-content");
+          // set margin to auto
+          helpText.style.margin = "auto";
 
           api_button.innerText = "Connect with API key instead";
-          api_button.setAttribute("onclick", "showBFAddAccountSweetalert()");
+          // set length to 270
           api_arrow.classList.add("fas");
           api_arrow.classList.add("fa-arrow-right");
           api_arrow.style.marginLeft = "10px";
@@ -1013,6 +1020,8 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           api_button.style.display = "inline";
           api_button.appendChild(api_arrow);
           swal_actions.parentElement.insertBefore(api_button, div_footer);
+          swal_actions.parentElement.insertBefore(helpText, div_footer);
+          api_button.addEventListener("click", (e) => showBFAddAccountSweetalert(e));
         } else {
           // hide the cancel button
           let cancel_button = document.getElementsByClassName("swal2-cancel")[0];
@@ -1805,7 +1814,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         showCancelButton: true,
         title: `<h3 style="text-align:center">To switch your organization please provide your email and password</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`,
         html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
-          <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
+          <input type="password" id="ps_password" class="swal2-input" placeholder="Password">
+          <p class="tip-content"> If you are using ORCID to sign in to Pennsieve view the official SODA docs <a href="https://docs.sodaforsparc.io/docs/how-to/how-to-use-workspaces" target="_blank">here</a> to learn how to change your workspace in SODA. </p>`,
         showClass: {
           popup: "animate__animated animate__fadeInDown animate__faster",
         },

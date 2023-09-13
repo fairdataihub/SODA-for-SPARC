@@ -59,9 +59,8 @@ def get_access_token():
         
 
 def clear_cached_access_token():
-    global cached_access_token
+    global cached_access_token, last_fetch_time
     cached_access_token = None
-
 
 
 def get_cognito_userpool_access_token(email, password):
@@ -320,6 +319,7 @@ def get_pennsieve_api_key_secret(email, password, keyname):
 
         profile_name = create_unique_profile_name(api_key, email, keyname)
 
+        # clear access token cache
         clear_cached_access_token()
 
         return { 

@@ -513,10 +513,8 @@ $(document).ready(function () {
           return;
         } else {
           //spreadsheet reply contained results
-          // await updateManifestJson(highLevelFolderName, result);
           ipcRenderer.removeAllListeners("spreadsheet-reply");
           saveManifestFiles = true;
-          // guidedManifestTable = result;
           if (saveManifestFiles) {
             //if additional metadata or description gets added for a file then add to json as well
             sodaJSONObj["manifest-files"]["auto-generated"] = true;
@@ -530,10 +528,13 @@ $(document).ready(function () {
               parentFolderName
             );
             let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+
             if (!fs.existsSync(localFolderPath)) {
+              // create the manifest folder if it doesn't exist
               fs.mkdirSync(localFolderPath);
               fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
             }
+
             jsonManifest = excelToJson({
               sourceFile: selectedManifestFilePath,
               columnToKey: {
@@ -548,6 +549,10 @@ $(document).ready(function () {
             // If extra columns are added preserve them into sodaJSONObj
             for (let i = 0; i < savedData.length; i++) {
               let fileName = savedData[i][0];
+              if (fileName == "" || fileName == undefined) {
+                // fileName is blank if user accidentally adds a new row and does not remove it
+                continue;
+              }
               let cleanedFileName = "";
               let fileNameSplit = fileName.split("/");
               let description = savedData[i][2];

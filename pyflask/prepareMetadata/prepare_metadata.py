@@ -258,7 +258,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     except Exception as e:
         namespace_logger.error("Error uploading dataset files")
         namespace_logger.error(e)
-        raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
+        raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
 
     # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
@@ -968,9 +968,8 @@ def import_ps_manifest_file(soda_json_structure, bfdataset):
 
     # get the count of the total number of high level folders in soda_json_structure
     for folder in list(dataset_structure["folders"]):
-        if folder in high_level_folders:
-            if dataset_structure["folders"][folder]["files"] == {} and dataset_structure["folders"][folder]["folders"] == {}:
-                manifest_progress["total_manifest_files"] += 1
+        if folder in high_level_folders and (dataset_structure["folders"][folder]["files"] == {} and dataset_structure["folders"][folder]["folders"] == {}):
+            manifest_progress["total_manifest_files"] += 1
 
     # create the path to the dataset files and folders on Pennsieve and add them to the dataset structure stored in soda_json_structure
     recursive_item_path_create(dataset_structure, [])

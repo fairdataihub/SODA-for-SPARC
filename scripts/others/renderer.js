@@ -32,8 +32,7 @@ const doiRegex = require("doi-regex");
 const lottie = require("lottie-web");
 const select2 = require("select2")();
 const DragSort = require("@yaireo/dragsort");
-const spawn = require("child_process").spawn;
-const execFile = require("child_process").execFile;
+const { spawn, execFile } = require("child_process");
 
 // TODO: Test with a build
 const { datasetUploadSession } = require("./scripts/others/analytics/upload-session-tracker");
@@ -63,14 +62,16 @@ const { backOff } = require("exponential-backoff");
 
 // const prevent_sleep_id = "";
 // const electron_app = electron.app;
-const app = remote.app;
+const { app } = remote;
 const Clipboard = electron.clipboard;
+
+let nodeStorage = new JSONStorage(app.getPath("userData"));
 
 var nextBtnDisabledVariable = true;
 var reverseSwalButtons = false;
 let organizeDSglobalPath = "";
 
-var datasetStructureJSONObj = {
+let datasetStructureJSONObj = {
   folders: {},
   files: {},
   type: "",
@@ -105,17 +106,14 @@ let apiVersionChecked = false;
 
 //log user's OS version //
 log.info("User OS:", os.type(), os.platform(), "version:", os.release());
-console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 
 // Check current app version //
 const appVersion = app.getVersion();
 log.info("Current SODA version:", appVersion);
-console.log("Current SODA version:", appVersion);
 
 // Here is where the lotties are created and loaded for the main tabs.
 // A mutation observer watches for when the overview tab element has
 // a class change to 'is-shown' to know when to load and unload the lotties
-// let over_view_section = document.getElementById("getting_started-section");
 
 // LOTTIES FOR DOCUMENTATION AND CONTACT US PAGE
 let guidedModeSection = document.getElementById("guided_mode-section");
@@ -128,12 +126,6 @@ let madeWithLoveContainer = document.getElementById("made-with-love-lottie");
 // LOTTIES FOR CURATE AND SHARE PAGE
 let existingDatasetLottieContainer = document.getElementById("existing-dataset-lottie");
 let modifyDatasetLottieContainer = document.getElementById("edit-dataset-component-lottie");
-
-//LOTTIES FOR OVERVIEW PAGE
-// let column1 = document.getElementById("lottie1");
-// let column2 = document.getElementById("lottie2");
-// let column3 = document.getElementById("lottie3");
-// let heart_lottie = document.getElementById("heart_lottie");
 
 existingDatasetLottieContainer.innerHTML = "";
 modifyDatasetLottieContainer.innerHTML = "";
@@ -178,40 +170,11 @@ let documentation_lottie = lottie.loadAnimation({
   autoplay: true,
 });
 
-// var column1_lottie = lottie.loadAnimation({
-//   container: column1,
-//   animationData: column1Lottie /*(json js variable, (view src/assets/lotties)*/,
-//   renderer: "svg",
-//   loop: true /*controls looping*/,
-//   autoplay: true,
-// });
-// var column2_lottie = lottie.loadAnimation({
-//   container: column2,
-//   animationData: column2Lottie /*(json js variable, (view src/assets/lotties)*/,
-//   renderer: "svg",
-//   loop: true /*controls looping*/,
-//   autoplay: true,
-// });
-// var column3_lottie = lottie.loadAnimation({
-//   container: column3,
-//   animationData: column3Lottie,
-//   renderer: "svg",
-//   loop: true,
-//   autoplay: true,
-// });
-// var heart_container = lottie.loadAnimation({
-//   container: heart_lottie,
-//   animationData: heartLottie,
-//   renderer: "svg",
-//   loop: true,
-//   autoplay: true,
-// });
-
 // A mutation observer (watches the classes of the given element)
 // On changes this will do some work with the lotties
-var sectionObserver = new MutationObserver(function (mutations) {
+let sectionObserver = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
-    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    let attributeValue = $(mutation.target).prop(mutation.attributeName);
 
     if (attributeValue.includes("is-shown") == true) {
       //add lotties
@@ -226,13 +189,9 @@ var sectionObserver = new MutationObserver(function (mutations) {
   });
 });
 
-// contact_lottie_animation.pause();
-// documentation_lottie.pause();
-// contactHeartLottieLottie.pause();
-
-var documentation_lottie_observer = new MutationObserver(function (mutations) {
+let documentation_lottie_observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
-    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    let attributeValue = $(mutation.target).prop(mutation.attributeName);
     if (attributeValue.includes("is-shown") == true) {
       //play lottie
       documentation_lottie.play();
@@ -243,9 +202,9 @@ var documentation_lottie_observer = new MutationObserver(function (mutations) {
   });
 });
 
-var contact_us_lottie_observer = new MutationObserver(function (mutations) {
+let contact_us_lottie_observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
-    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    let attributeValue = $(mutation.target).prop(mutation.attributeName);
     if (attributeValue.includes("is-shown") == true) {
       //play lottie
       contact_lottie_animation.play();
@@ -275,12 +234,20 @@ contact_us_lottie_observer.observe(contact_section, {
 
 document.getElementById("guided_mode_view").click();
 
-let launchAnnouncement = false;
-ipcRenderer.on("checkForAnnouncements", (event, index) => {
-  launchAnnouncement = true;
-  let nodeStorage = new JSONStorage(app.getPath("userData"));
-  nodeStorage.setItem("announcements", false);
-});
+// check for announcements on startup; if the user is in the auto update workflow do not check for announcements
+// Rationale: The auto update workflow involves refreshing the DOM which will cause a re-run of
+//            the renderer process. One potential outcome of this is the renderer reaches this code block before the refresh
+//            and sets the launch_announcements flag to false. On the second run, the one which the user will have time to see announcements
+//            before the DOM reloads, the announcements will not be checked or displayed at all.
+let autoUpdateLaunch = nodeStorage.getItem("auto_update_launch");
+let launchAnnouncement = nodeStorage.getItem("launch_announcements");
+if (autoUpdateLaunch == false || autoUpdateLaunch == null || autoUpdateLaunch == undefined) {
+  // if launchAnnouncements is undefined/null then announcements havent been launched yet; set launch_announcements to true
+  // later code will reference this flag to determine if announcements should be checked for
+  if (launchAnnouncement === undefined || launchAnnouncement === null) launchAnnouncement = true;
+  // do not check for announcements on the next launch
+  nodeStorage.setItem("launch_announcements", false); // NOTE: launch_announcements is only set to true during the auto update process ( see main.js )
+}
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -400,6 +367,16 @@ const notyf = new Notyf({
         color: "white",
       },
       duration: 3000,
+    },
+
+    {
+      type: "info-grey",
+      background: "grey",
+      icon: {
+        className: "fas fa-info-circle",
+        tagName: "i",
+        color: "white",
+      },
     },
 
     {
@@ -540,14 +517,29 @@ const startupServerAndApiCheck = async () => {
     app.exit();
   }
 
-  // let nodeStorage = new JSONStorage(app.getPath("userData"));
-  // launchAnnouncement = nodeStorage.getItem("announcements");
   if (launchAnnouncement) {
-    // nodeStorage.setItem("announcements", false);
     await checkForAnnouncements("announcements");
     launchAnnouncement = false;
     nodeStorage.setItem("announcements", false);
   }
+
+  // get apps base path
+  const basepath = app.getAppPath();
+  const { resourcesPath } = process;
+
+  // set the templates path
+  try {
+    await client.put("prepare_metadata/template_paths", {
+      basepath: basepath,
+      resourcesPath: resourcesPath,
+    });
+  } catch (error) {
+    clientError(error);
+    ipcRenderer.send("track-event", "Error", "Setting Templates Path");
+    return;
+  }
+
+  ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 
   apiVersionChecked = true;
 };
@@ -570,24 +562,6 @@ ipcRenderer.on("start_pre_flight_checks", async (event, arg) => {
   await run_pre_flight_checks();
 
   log.info("Running pre flight checks finished");
-
-  // get apps base path
-  const basepath = app.getAppPath();
-  const { resourcesPath } = process;
-
-  // set the templates path
-  try {
-    await client.put("prepare_metadata/template_paths", {
-      basepath: basepath,
-      resourcesPath: resourcesPath,
-    });
-  } catch (error) {
-    clientError(error);
-    ipcRenderer.send("track-event", "Error", "Setting Templates Path");
-    return;
-  }
-
-  ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 });
 
 const getPennsieveAgentPath = () => {
@@ -1022,10 +996,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       }
     }
 
-    // let nodeStorage = new JSONStorage(app.getPath("userData"));
-    // launchAnnouncement = nodeStorage.getItem("announcements");
     if (launchAnnouncement) {
-      // nodeStorage.setItem("announcements", false);
       await checkForAnnouncements("announcements");
       launchAnnouncement = false;
     }
@@ -1095,7 +1066,7 @@ const serverIsLiveStartup = async () => {
 
   let echoResponse = echoResponseObject.data;
 
-  return echoResponse === "server ready" ? true : false;
+  return !!(echoResponse === "server ready");
 };
 
 // Check if the Pysoda server API version and the package.json versions match
@@ -1450,11 +1421,11 @@ const menuHighLevelFolders = document.querySelector(".menu.high-level-folder");
 const organizeNextStepBtn = document.getElementById("button-organize-confirm-create");
 const organizePrevStepBtn = document.getElementById("button-organize-prev");
 const manifestFileCheck = document.getElementById("generate-manifest-curate");
-var bfAccountOptions;
-var defaultBfAccount;
-var defaultBfDataset = "Select dataset";
-var defaultBfDatasetId = undefined;
-var bfAccountOptionsStatus;
+let bfAccountOptions;
+let defaultBfAccount;
+let defaultBfDataset = "Select dataset";
+let defaultBfDatasetId = undefined;
+let bfAccountOptionsStatus;
 
 // Organize dataset //
 const selectImportFileOrganizationBtn = document.getElementById(
@@ -1474,7 +1445,6 @@ const validateLocalProgressBar = document.getElementById("div-indetermiate-bar-v
 const validateSODAProgressBar = document.getElementById("div-indetermiate-bar-validate-soda");
 
 // Generate dataset //
-
 var subjectsTableData = [];
 var samplesTableData = [];
 
@@ -1482,11 +1452,11 @@ const newDatasetName = document.querySelector("#new-dataset-name");
 const manifestStatus = document.querySelector("#generate-manifest");
 
 // Manage datasets //
-var myitem;
-var datasetList = [];
-var organizationList = [];
-var sodaCopy = {};
-var datasetStructCopy = {};
+let myitem;
+let datasetList = [];
+let organizationList = [];
+let sodaCopy = {};
+let datasetStructCopy = {};
 const bfUploadRefreshDatasetBtn = document.getElementById("button-upload-refresh-dataset-list");
 
 const pathSubmitDataset = document.querySelector("#selected-local-dataset-submit");
@@ -1554,7 +1524,7 @@ const delayAnimation = 250;
 //////////////////////////////////
 
 // Sidebar Navigation //
-var open = false;
+let open = false;
 const openSidebar = (buttonElement) => {
   if (!open) {
     ipcRenderer.send("resize-window", "up");
@@ -1595,20 +1565,20 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
 ///// Global variables for this section
 
 /////// Save and load award and milestone info
-var metadataPath = path.join(homeDirectory, "SODA", "METADATA");
-var awardFileName = "awards.json";
-var affiliationFileName = "affiliations.json";
-var milestoneFileName = "milestones.json";
-var protocolConfigFileName = "protocol-config.json";
-var affiliationConfigPath = path.join(metadataPath, affiliationFileName);
-var milestonePath = path.join(metadataPath, milestoneFileName);
-var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
-var guidedProgressFilePath = path.join(homeDirectory, "SODA", "Guided-Progress");
+let metadataPath = path.join(homeDirectory, "SODA", "METADATA");
+let awardFileName = "awards.json";
+let affiliationFileName = "affiliations.json";
+let milestoneFileName = "milestones.json";
+let protocolConfigFileName = "protocol-config.json";
+let affiliationConfigPath = path.join(metadataPath, affiliationFileName);
+let milestonePath = path.join(metadataPath, milestoneFileName);
+let progressFilePath = path.join(homeDirectory, "SODA", "Progress");
+let guidedProgressFilePath = path.join(homeDirectory, "SODA", "Guided-Progress");
 const guidedManifestFilePath = path.join(homeDirectory, "SODA", "guided_manifest_files");
-var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
-var allCollectionTags = {};
-var currentTags = {};
-var currentCollectionTags = [];
+let protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
+let allCollectionTags = {};
+let currentTags = {};
+let currentCollectionTags = [];
 
 if (process.platform === "linux") {
   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
@@ -3208,8 +3178,9 @@ async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
     refreshDatasetList();
   } catch (error) {
     clientError(error);
-    curateBFAccountLoadStatus.innerHTML =
-      "<span style='color: red'>" + userErrorMessage(error) + "</span>";
+    curateBFAccountLoadStatus.innerHTML = `<span style='color: red'>${userErrorMessage(
+      error
+    )}</span>`;
   }
 }
 
@@ -3222,7 +3193,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
   var options = datasetDropdown.getElementsByTagName("option");
   options[0].disabled = true;
 
-  for (var myitem of datasetlist) {
+  for (let myitem of datasetlist) {
     var myitemselect = myitem.name;
     var option = document.createElement("option");
     option.textContent = myitemselect;
@@ -3239,7 +3210,6 @@ const metadataDatasetlistChange = () => {
   showCurrentDescription();
   showCurrentLicense();
   showCurrentBannerImage();
-  // TODO-NEW: Check flow
   showCurrentTags();
 };
 
@@ -3248,11 +3218,11 @@ const permissionDatasetlistChange = () => {
   showCurrentPermission();
 };
 
-function datasetStatusListChange() {
+const datasetStatusListChange = () => {
   $(bfCurrentDatasetStatusProgress).css("visibility", "visible");
   $("#bf-dataset-status-spinner").css("display", "block");
   showCurrentDatasetStatus();
-}
+};
 
 // This function is called when the user selects a dataset from the dropdown list
 // It is called to update the UI elements that are related to the publishing status
@@ -3354,7 +3324,7 @@ const setupPublicationOptionsPopover = () => {
   const target = document.getElementById("tui-date-picker-target");
 
   // calculate one year from now
-  var oneYearFromNow = new Date();
+  let oneYearFromNow = new Date();
   oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
 
   // initialize the calendar
@@ -3368,9 +3338,9 @@ const setupPublicationOptionsPopover = () => {
   });
 
   // display/hide calendar on toggle
-  $("input[name='publishing-options']").on("change", (e) => {
+  $("input[id='embargo-date-check']").on("change", (e) => {
     let tuiCalendarWrapper = document.getElementById("calendar-wrapper");
-    if (e.target.value === "embargo-date-check") {
+    if ($(`#${e.target.value}`).is(":checked")) {
       tuiCalendarWrapper.style.visibility = "visible";
     } else {
       tuiCalendarWrapper.style.visibility = "hidden";
@@ -3481,7 +3451,7 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
       },
       willClose: () => {
         // check if the embargo radio button is selected
-        const checkedRadioButton = $("input:radio[name ='publishing-options']:checked").val();
+        const checkedRadioButton = $("input:radio[id ='confirm-to-awknowledge']:checked").val();
 
         if (checkedRadioButton === "embargo-date-check") {
           // set the embargoDate variable if so
@@ -3603,7 +3573,6 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
-// TODO: Dorian -> Exlcuded files will no longer be a thing in the future
 // Go about removing the feature and see how it effects dataset submissions
 const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   let currentAccount = defaultBfAccount;
@@ -4376,15 +4345,17 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
         $(".swal2-confirm").attr("id", "add-new-folder-button");
         $("#add-new-folder-input").keyup(function () {
           let val = $("#add-new-folder-input").val();
-          let folderNameCheck = checkIrregularNameBoolean(val);
-          if (folderNameCheck === true) {
-            Swal.showValidationMessage(
-              `The folder name contains non-allowed characters. To follow the SPARC Data Standards, please create a folder name with only alphanumberic characters and hyphens '-'`
-            );
+          const folderNameIsValid = evaluateStringAgainstSdsRequirements(
+            val,
+            "folder-and-file-name-is-valid"
+          );
+
+          if (folderNameIsValid) {
+            $("#add-new-folder-button").attr("disabled", false);
+          } else {
+            Swal.showValidationMessage(`The folder name contains non-allowed characters.`);
             $("#add-new-folder-button").attr("disabled", true);
             return;
-          } else {
-            $("#add-new-folder-button").attr("disabled", false);
           }
         });
       },
@@ -4829,1212 +4800,745 @@ organizeDSaddFiles.addEventListener("click", function () {
   ipcRenderer.send("open-files-organize-datasets-dialog");
 });
 
-ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
-  var filtered = getGlobalPath(organizeDSglobalPath);
-  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  let hidden_files_present = false;
-  path = path.filter(
-    (file_path) => fs.statSync(file_path).isFile() && !/(^|\/)\.[^\/\.]/g.test(file_path)
-  );
-  path.forEach((file_path) => {
-    if (/(^|\/)\.[^\/\.]/g.test(file_path)) {
-      hidden_files_present = true;
-    }
-  });
-  if (hidden_files_present == true) {
-    Swal.fire({
-      icon: "warning",
-      text: "We found some hidden files. These will be ignored when importing.",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-  }
-
-  if (path.length > 0) {
-    let load_spinner_promise = new Promise(async (resolved) => {
-      let background = document.createElement("div");
-      let spinner_container = document.createElement("div");
-      let spinner_icon = document.createElement("div");
-      spinner_container.setAttribute("id", "items_loading_container");
-      spinner_icon.setAttribute("id", "item_load");
-      spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
-      background.setAttribute("class", "loading-items-background");
-      background.setAttribute("id", "loading-items-background-overlay");
-
-      spinner_container.append(spinner_icon);
-      document.body.prepend(background);
-      document.body.prepend(spinner_container);
-      let loading_items_spinner = document.getElementById("items_loading_container");
-      loading_items_spinner.style.display = "block";
-      if (loading_items_spinner.style.display === "block") {
-        setTimeout(() => {
-          resolved();
-        }, 100);
-      }
-    }).then(async () => {
-      await addFilesfunction(
-        path,
-        myPath,
-        organizeDSglobalPath,
-        "#items",
-        ".single-item",
-        datasetStructureJSONObj
-      );
-      // Swal.close();
-      document.getElementById("loading-items-background-overlay").remove();
-      document.getElementById("items_loading_container").remove();
-      // background.remove();
-    });
-  }
+ipcRenderer.on("selected-files-organize-datasets", async (event, importedFiles) => {
+  await addDataArrayToDatasetStructureAtPath(importedFiles);
 });
 
 organizeDSaddFolders.addEventListener("click", function () {
   ipcRenderer.send("open-folders-organize-datasets-dialog");
 });
 
-ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) => {
-  // var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-  irregularFolderArray = [];
-  var filtered = getGlobalPath(organizeDSglobalPath);
-  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  for (var ele of pathElement) {
-    detectIrregularFolders(path.basename(ele), ele);
-  }
-  if (irregularFolderArray.length > 0) {
-    Swal.fire({
-      title:
-        "As per the SPARC Data Standards, folder names must contain only alphanumeric values 0-9, A-Z (no special characters, no empty spaces). The folders listed below don't comply with these guidlines. What would you like to do?",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" +
-        irregularFolderArray.join("</br>") +
-        "</div>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Replace forbidden characters with '-')",
-      denyButtonText: "Remove forbidden characters",
-      cancelButtonText: "Skip these folders",
-      didOpen: () => {
-        $(".swal-popover").popover();
-        let swalTitle = document.getElementById("swal-title");
-        swalTitle.style.textAlign = "justify";
-        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
-        let swal_content = document.getElementsByClassName("swal2-content")[0];
-        let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
-        swalContainer.style.width = "600px";
-        // swalContainer.style.padding = "1.5rem";
-        swal_content.style.textAlign = "justify";
-        swalDenyButton.style.backgroundColor = "#086dd3";
-      },
-    }).then(async (result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        if (pathElement.length > 0) {
-          let load_spinner_promise = new Promise(async (resolved) => {
-            let background = document.createElement("div");
-            let spinner_container = document.createElement("div");
-            let spinner_icon = document.createElement("div");
-            spinner_container.setAttribute("id", "items_loading_container");
-            spinner_icon.setAttribute("id", "item_load");
-            spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
-            background.setAttribute("class", "loading-items-background");
-            background.setAttribute("id", "loading-items-background-overlay");
-
-            spinner_container.append(spinner_icon);
-            document.body.prepend(background);
-            document.body.prepend(spinner_container);
-            let loading_items_spinner = document.getElementById("items_loading_container");
-            loading_items_spinner.style.display = "block";
-            if (loading_items_spinner.style.display === "block") {
-              setTimeout(() => {
-                resolved();
-              }, 100);
-            }
-          }).then(async () => {
-            await addFoldersfunction("replace", irregularFolderArray, pathElement, myPath);
-            document.getElementById("loading-items-background-overlay").remove();
-            document.getElementById("items_loading_container").remove();
-          });
-        } else {
-          await addFoldersfunction("replace", irregularFolderArray, pathElement, myPath);
-        }
-      } else if (result.isDenied) {
-        if (pathElement.length > 0) {
-          let load_spinner_promise = new Promise(async (resolved) => {
-            let background = document.createElement("div");
-            let spinner_container = document.createElement("div");
-            let spinner_icon = document.createElement("div");
-            spinner_container.setAttribute("id", "items_loading_container");
-            spinner_icon.setAttribute("id", "item_load");
-            spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
-            background.setAttribute("class", "loading-items-background");
-            background.setAttribute("id", "loading-items-background-overlay");
-
-            spinner_container.append(spinner_icon);
-            document.body.prepend(background);
-            document.body.prepend(spinner_container);
-            let loading_items_spinner = document.getElementById("items_loading_container");
-            loading_items_spinner.style.display = "block";
-            if (loading_items_spinner.style.display === "block") {
-              setTimeout(() => {
-                resolved();
-              }, 100);
-            }
-          }).then(async () => {
-            await addFoldersfunction("remove", irregularFolderArray, pathElement, myPath);
-            document.getElementById("loading-items-background-overlay").remove();
-            document.getElementById("items_loading_container").remove();
-          });
-        } else {
-          await addFoldersfunction("remove", irregularFolderArray, pathElement, myPath);
-        }
-      }
-    });
-  } else {
-    if (pathElement.length > 0) {
-      let load_spinner_promise = new Promise(async (resolved) => {
-        let background = document.createElement("div");
-        let spinner_container = document.createElement("div");
-        let spinner_icon = document.createElement("div");
-        spinner_container.setAttribute("id", "items_loading_container");
-        spinner_icon.setAttribute("id", "item_load");
-        spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
-        background.setAttribute("class", "loading-items-background");
-        background.setAttribute("id", "loading-items-background-overlay");
-
-        spinner_container.append(spinner_icon);
-        document.body.prepend(background);
-        document.body.prepend(spinner_container);
-        let loading_items_spinner = document.getElementById("items_loading_container");
-        loading_items_spinner.style.display = "block";
-        if (loading_items_spinner.style.display === "block") {
-          setTimeout(() => {
-            resolved();
-          }, 100);
-        }
-      }).then(async () => {
-        await addFoldersfunction("", irregularFolderArray, pathElement, myPath);
-        document.getElementById("loading-items-background-overlay").remove();
-        document.getElementById("items_loading_container").remove();
-      });
-    } else {
-      await addFoldersfunction("", irregularFolderArray, pathElement, myPath);
-    }
-  }
+// Event listener for when folder(s) are imported into the file explorer
+ipcRenderer.on("selected-folders-organize-datasets", async (event, importedFolders) => {
+  // Add the imported folders to the dataset structure
+  await addDataArrayToDatasetStructureAtPath(importedFolders);
 });
 
-const addFoldersfunction = async (action, nonallowedFolderArray, folderArray, currentLocation) => {
-  let importToast = new Notyf({
-    position: { x: "right", y: "bottom" },
-    ripple: true,
-    dismissible: true,
-    ripple: false,
-    types: [
-      {
-        type: "success",
-        background: "#13716D",
-        icon: {
-          className: "fas fa-check-circle",
-          tagName: "i",
-          color: "white",
-        },
-        duration: 2500,
-      },
-    ],
-  });
-  var uiFolders = {};
-  var importedFolders = {};
-  var duplicateFolders = [];
-  var folderPath = [];
+/* ################################################################################## */
+/* ################################################################################## */
+/* ################################################################################## */
 
-  if (JSON.stringify(currentLocation["folders"]) !== "{}") {
-    for (var folder in currentLocation["folders"]) {
-      uiFolders[folder] = 1;
+const getNestedObjectsFromDatasetStructureByPath = (datasetStructure, path) => {
+  const pathArray = path.split("/").filter((item) => item !== "");
+  let currentObject = datasetStructure;
+  for (const item of pathArray) {
+    currentObject = currentObject["folders"][item];
+  }
+  return currentObject;
+};
+
+const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
+  const currentFilesAtPath = Object.keys(datasetStructure.files);
+  for (const fileKey of currentFilesAtPath) {
+    const fileIsHidden = evaluateStringAgainstSdsRequirements(fileKey, "file-is-hidden");
+    if (fileIsHidden) {
+      delete datasetStructure["files"][fileKey];
     }
   }
-  var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-  if (slashCount === 1) {
-    Swal.fire({
-      icon: "error",
-      text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    });
 
-    // log the error
-    logCurationForAnalytics(
-      "Error",
-      PrepareDatasetsAnalyticsPrefix.CURATE,
-      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-      ["Step 3", "Import", "Folder"],
-      determineDatasetLocation()
+  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+  for (const folderKey of currentFoldersAtPath) {
+    removeHiddenFilesFromDatasetStructure(datasetStructure["folders"][folderKey]);
+  }
+};
+
+const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
+  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+  for (const folderKey of currentFoldersAtPath) {
+    const folderNameIsValid = evaluateStringAgainstSdsRequirements(
+      folderKey,
+      "folder-and-file-name-is-valid"
     );
-  } else {
-    // if non-allowed characters are detected, do the action
-    // AND
-    // check for duplicates/folders with the same name
-    for (var i = 0; i < folderArray.length; i++) {
-      var j = 1;
-      var originalFolderName = path.basename(folderArray[i]);
-      var renamedFolderName = originalFolderName;
-
-      if (originalFolderName in currentLocation["folders"]) {
-        //folder matches object key
-        folderPath.push(folderArray[i]);
-        duplicateFolders.push(originalFolderName);
-      } else {
-        if (originalFolderName in importedFolders) {
-          folderPath.push(folderArray[i]);
-          duplicateFolders.push(originalFolderName);
-        } else {
-          if (nonallowedFolderArray.includes(folderArray[i])) {
-            if (action !== "ignore" && action !== "") {
-              if (action === "remove") {
-                renamedFolderName = removeIrregularFolders(folderArray[i]);
-              } else if (action === "replace") {
-                renamedFolderName = replaceIrregularFolders(folderArray[i]);
-              }
-              importedFolders[renamedFolderName] = {
-                path: folderArray[i],
-                "original-basename": originalFolderName,
-              };
-            }
-          } else {
-            importedFolders[originalFolderName] = {
-              path: folderArray[i],
-              "original-basename": originalFolderName,
-            };
-          }
-        }
+    if (!folderNameIsValid) {
+      const newFolderName = folderKey.replace(sparcFolderAndFileRegex, "-");
+      const newFolderObj = { ...datasetStructure["folders"][folderKey] };
+      if (!newFolderObj["action"].includes("renamed")) {
+        newFolderObj["action"].push("renamed");
       }
-
-      if (nonallowedFolderArray.includes(folderArray[i])) {
-        if (action !== "ignore" && action !== "") {
-          if (action === "remove") {
-            renamedFolderName = removeIrregularFolders(folderArray[i]);
-          } else if (action === "replace") {
-            renamedFolderName = replaceIrregularFolders(folderArray[i]);
-          }
-          importedFolders[renamedFolderName] = {
-            path: folderArray[i],
-            "original-basename": originalFolderName,
-          };
-        }
-      } else {
-        var listElements = showItemsAsListBootbox(duplicateFolders);
-        var list = JSON.stringify(folderPath).replace(/"/g, "");
-        if (duplicateFolders.length > 0) {
-          Swal.fire({
-            title: "Duplicate folder(s) detected",
-            icon: "warning",
-            showConfirmButton: false,
-            allowOutsideClick: false,
-            showCloseButton: true,
-            customClass: "wide-swal-auto",
-            backdrop: "rgba(0, 0, 0, 0.4)",
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate_animated animate_zoomout animate__faster",
-            },
-            html:
-              `
-            <div class="caption">
-              <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
-            </div>
-            <div class="swal-button-container">
-              <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
-              list +
-              `', 'free-form')">Skip Folders</button>
-              <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}', 'free-form')">Replace Existing Folders</button>
-              <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}', 'free-form')">Import Duplicates</button>
-              <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel', '', 'free-form')">Cancel</button>
-              </div>`,
-          });
-        }
-      }
-    }
-
-    if (Object.keys(importedFolders).length > 0) {
-      for (var element in importedFolders) {
-        currentLocation["folders"][element] = {
-          type: "local",
-          path: importedFolders[element]["path"],
-          folders: {},
-          files: {},
-          action: ["new"],
-        };
-        populateJSONObjFolder(
-          action,
-          currentLocation["folders"][element],
-          importedFolders[element]["path"]
-        );
-        // check if a folder has to be renamed due to duplicate reason
-        if (element !== importedFolders[element]["original-basename"]) {
-          currentLocation["folders"][element]["action"].push("renamed");
-        }
-      }
-      // $("#items").empty();
-      listItems(currentLocation, "#items", 500, (reset = true));
-      getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
-      beginScrollListen();
-      if (Object.keys(importedFolders).length > 1) {
-        importToast.open({
-          type: "success",
-          message: "Successfully Imported Folders",
-        });
-      } else {
-        importToast.open({
-          type: "success",
-          message: "Successfully Imported Folder",
-        });
-      }
-      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
-
-      // log the success
-      logCurationForAnalytics(
-        "Success",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        ["Step 3", "Import", "Folder"],
-        determineDatasetLocation()
-      );
+      datasetStructure["folders"][newFolderName] = newFolderObj;
+      delete datasetStructure["folders"][folderKey];
+      replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][newFolderName]);
     }
   }
 };
 
-//// Step 3. Organize dataset: Add files or folders with drag&drop
+const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
+  const currentFilesAtPath = Object.keys(datasetStructure.files);
+  for (const fileKey of currentFilesAtPath) {
+    const fileNameIsValid = evaluateStringAgainstSdsRequirements(
+      fileKey,
+      "folder-and-file-name-is-valid"
+    );
+    if (!fileNameIsValid) {
+      const newFileName = fileKey.replace(sparcFolderAndFileRegex, "-");
+      const newFileObj = { ...datasetStructure["files"][fileKey] };
+      if (!newFileObj["action"].includes("renamed")) {
+        newFileObj["action"].push("renamed");
+      }
+      datasetStructure["files"][newFileName] = newFileObj;
+      delete datasetStructure["files"][fileKey];
+    }
+  }
+  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+  for (const folderKey of currentFoldersAtPath) {
+    replaceProblematicFilesWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
+  }
+};
+
+const deleteProblematicFilesFromDatasetStructure = (datasetStructure) => {
+  const currentFilesAtPath = Object.keys(datasetStructure.files);
+  for (const fileKey of currentFilesAtPath) {
+    const fileNameIsValid = evaluateStringAgainstSdsRequirements(
+      fileKey,
+      "folder-and-file-name-is-valid"
+    );
+    if (!fileNameIsValid) {
+      delete datasetStructure["files"][fileKey];
+    }
+  }
+
+  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+  for (const folderKey of currentFoldersAtPath) {
+    deleteProblematicFilesFromDatasetStructure(datasetStructure["folders"][folderKey]);
+  }
+};
+
+const swalShowError = async (title, errorText) => {
+  await Swal.fire({
+    title: title,
+    html: errorText,
+    icon: "error",
+    width: 600,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showConfirmButton: true,
+    confirmButtonText: "OK",
+  });
+};
+
+const swalFileListSingleAction = async (fileList, title, helpText, postActionText) => {
+  await Swal.fire({
+    title: title,
+    html: `
+      ${helpText ? `<p>${helpText}</p>` : ""}
+      <div class="swal-file-list">
+        ${fileList
+          .map(
+            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+          )
+          .join("")}
+      </div>
+      ${postActionText ? `<b>${postActionText}</b>` : ""}
+    `,
+    width: 800,
+    heightAuto: false,
+    width: 800,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showCancelButton: false,
+    showCloseButton: false,
+  });
+};
+
+const swalFileListDoubleAction = async (
+  fileList,
+  title,
+  helpText,
+  confirmButtonText,
+  cancelButtonText,
+  confirmationText
+) => {
+  const { value: action } = await Swal.fire({
+    title: title,
+    html: `
+      ${helpText}
+      <div class="swal-file-list">
+        ${fileList
+          .map(
+            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+          )
+          .join("")}
+      </div>
+      <b>${confirmationText}</b>
+    `,
+    width: 800,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showCancelButton: true,
+    showCloseButton: false,
+    confirmButtonText: confirmButtonText,
+    cancelButtonText: cancelButtonText,
+  });
+  return action;
+};
+
+const swalFileListTripleAction = async (
+  fileList,
+  title,
+  helpText,
+  confirmButtonText,
+  denyButtonText,
+  cancelButtonText,
+  confirmationText
+) => {
+  const { value: action } = await Swal.fire({
+    title: title,
+    html: `
+      ${helpText}
+      <div class="swal-file-list">
+        ${fileList
+          .map(
+            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+          )
+          .join("")}
+      </div>
+      <b>${confirmationText}</b>
+    `,
+    width: 800,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showCloseButton: false,
+    showCancelButton: true,
+    showDenyButton: true,
+    confirmButtonText: confirmButtonText,
+    denyButtonText: denyButtonText,
+    cancelButtonText: cancelButtonText,
+    customClass: {
+      confirmButton: "swal-confirm-button",
+      denyButton: "swal-deny-button",
+      cancelButton: "swal-cancel-button",
+    },
+  });
+  if (action === true) {
+    return "confirm";
+  } else if (action === false) {
+    return "deny";
+  } else {
+    return "cancel";
+  }
+};
+
+const namesOfForbiddenFiles = {
+  ".DS_Store": true,
+  "Thumbs.db": true,
+};
+
+const sparcFolderAndFileRegex = /[\+&\%#]/;
+const identifierConventionsRegex = /^[a-zA-Z0-9-_]+$/;
+
+const evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
+  const testCases = {
+    "folder-and-file-name-is-valid": !sparcFolderAndFileRegex.test(stringToTest), // returns true if the string is valid
+    "file-is-hidden": stringToTest.startsWith("."), // returns true if the string is hidden
+    "file-is-in-forbidden-files-list": namesOfForbiddenFiles?.[stringToTest], // returns true if the string is in the forbidden files list
+    "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest), // returns true if the string adheres to the identifier conventions
+  };
+  return testCases[stringCase];
+};
+let loadingSweetAlert;
+let loadingSweetAlertTimer;
+
+const showFileImportLoadingSweetAlert = (delayBeforeShowingSweetAlert) => {
+  // Close any existing loading sweet alert if it exists
+  closeFileImportLoadingSweetAlert();
+
+  // Show the loading sweet alert after a short deleay to avoid flickering
+  // if the loading is quick, the closeFileImportLoadingSweetAlert() function should
+  // be called so that the loading sweet alert is not shown at all
+  loadingSweetAlertTimer = setTimeout(() => {
+    loadingSweetAlert = Swal.fire({
+      title: "Importing your files and folders into SODA...",
+      html: `
+        <div class="lds-roller">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      `,
+      width: 800,
+      heightAuto: false,
+      width: 800,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showCancelButton: false,
+      showConfirmButton: false,
+      showCloseButton: false,
+    });
+  }, delayBeforeShowingSweetAlert);
+};
+
+const closeFileImportLoadingSweetAlert = () => {
+  // Clear any existing timer
+  if (loadingSweetAlertTimer) {
+    clearTimeout(loadingSweetAlertTimer);
+  }
+
+  if (loadingSweetAlert) {
+    loadingSweetAlert.close();
+  }
+};
+
+const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileExplorerPath) => {
+  const inaccessibleItems = [];
+  const forbiddenFileNames = [];
+  const problematicFolderNames = [];
+  const problematicFileNames = [];
+  const datasetStructure = {};
+  const hiddenItems = [];
+
+  showFileImportLoadingSweetAlert(500);
+
+  // Function to traverse and build JSON structure
+  const traverseAndBuildJson = async (pathToExplore, currentStructure, currentStructurePath) => {
+    currentStructure["folders"] = currentStructure["folders"] || {};
+    currentStructure["files"] = currentStructure["files"] || {};
+
+    try {
+      const fsStatsObj = await fs.promises.stat(pathToExplore);
+
+      if (fsStatsObj.isDirectory()) {
+        const folderName = path.basename(pathToExplore);
+
+        const folderNameIsValid = evaluateStringAgainstSdsRequirements(
+          folderName,
+          "folder-and-file-name-is-valid"
+        );
+        if (!folderNameIsValid) {
+          problematicFolderNames.push(`${currentStructurePath}${folderName}`);
+        }
+
+        // Add the folder to the JSON structure
+        currentStructure["folders"][folderName] = {
+          path: pathToExplore,
+          type: "local",
+          files: {},
+          folders: {},
+          action: ["new"],
+        };
+
+        // Recursively traverse the folder and build the JSON structure
+        const folderContents = await fs.promises.readdir(pathToExplore);
+        await Promise.all(
+          folderContents.map(async (item) => {
+            const itemPath = path.join(pathToExplore, item);
+            await traverseAndBuildJson(
+              itemPath,
+              currentStructure["folders"][folderName],
+              `${currentStructurePath}${folderName}/`
+            );
+          })
+        );
+      } else if (fsStatsObj.isFile()) {
+        const fileName = path.basename(pathToExplore);
+        const fileExtension = path.extname(pathToExplore);
+        const relativePathToFileObject = currentStructurePath;
+        const fileObject = {
+          relativePath: `${relativePathToFileObject}${fileName}`,
+          localFilePath: pathToExplore,
+          fileName: fileName,
+        };
+
+        const fileIsInForbiddenFilesList = evaluateStringAgainstSdsRequirements(
+          fileName,
+          "file-is-in-forbidden-files-list"
+        );
+
+        if (fileIsInForbiddenFilesList) {
+          forbiddenFileNames.push(fileObject);
+        } else {
+          // Check if the file name has any characters that do not comply with SPARC naming requirements
+          const fileNameIsValid = evaluateStringAgainstSdsRequirements(
+            fileName,
+            "folder-and-file-name-is-valid"
+          );
+          if (!fileNameIsValid) {
+            problematicFileNames.push(fileObject);
+          }
+
+          const fileIsHidden = evaluateStringAgainstSdsRequirements(fileName, "file-is-hidden");
+          if (fileIsHidden) {
+            hiddenItems.push(fileObject);
+          }
+
+          // Add the file to the current structure
+          currentStructure["files"][fileName] = {
+            path: pathToExplore,
+            type: "local",
+            description: "",
+            "additional-metadata": "",
+            action: ["new"],
+            extension: fileExtension,
+          };
+        }
+      }
+    } catch (error) {
+      inaccessibleItems.push(pathToExplore);
+    }
+  };
+
+  // Process itemPaths in parallel
+  await Promise.all(
+    itemPaths.map(async (itemPath) => {
+      await traverseAndBuildJson(itemPath, datasetStructure, currentFileExplorerPath);
+    })
+  );
+
+  closeFileImportLoadingSweetAlert();
+
+  if (inaccessibleItems.length > 0) {
+    await swalFileListSingleAction(
+      inaccessibleItems,
+      "SODA was unable to access some of your imported files",
+      "The files listed below will not be imported into SODA:",
+      false
+    );
+  }
+
+  if (forbiddenFileNames.length > 0) {
+    await swalFileListSingleAction(
+      forbiddenFileNames.map((file) => file.relativePath),
+      "Forbidden file names detected",
+      "The files listed below do not comply with the SPARC data standards and will not be imported:",
+      false
+    );
+  }
+
+  if (problematicFolderNames.length > 0) {
+    const userResponse = await swalFileListTripleAction(
+      problematicFolderNames,
+      "<p>Folder name modifications</p>",
+      `The folders listed below contain the special characters "#", "&", "%", or "+"
+      which are typically not recommended per the SPARC data standards.
+      You may choose to either keep them as is, or replace the characters with '-'.
+      `,
+      "Replace the special characters with '-'",
+      "Keep the folder names as they are",
+      "Cancel import",
+      "What would you like to do with the folders with special characters?"
+    );
+    if (userResponse === "confirm") {
+      replaceProblematicFoldersWithSDSCompliantNames(datasetStructure);
+    }
+    // If the userResponse is "deny", nothing needs to be done
+    if (userResponse === "cancel") {
+      throw new Error("Importation cancelled");
+    }
+  }
+
+  if (problematicFileNames.length > 0) {
+    const userResponse = await swalFileListTripleAction(
+      problematicFileNames.map((file) => file.relativePath),
+      "<p>File name modifications</p>",
+      `The files listed below contain the special characters "#", "&", "%", or "+"
+      which are typically not recommended per the SPARC data standards.
+      You may choose to either keep them as is, or replace the characters with '-'.
+      `,
+      "Replace the special characters with '-'",
+      "Keep the file names as they are",
+      "Cancel import",
+      "What would you like to do with the files with special characters?"
+    );
+    if (userResponse === "confirm") {
+      replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
+    }
+    // If the userResponse is "deny", nothing needs to be done
+    if (userResponse === "cancel") {
+      throw new Error("Importation cancelled");
+    }
+  }
+
+  if (hiddenItems.length > 0) {
+    const userResponse = await swalFileListTripleAction(
+      hiddenItems.map((file) => file.relativePath),
+      "<p>Hidden files detected</p>",
+      `Hidden files are typically not recommend per the SPARC data standards, but you can choose to keep them if you wish.`,
+      "Import the hidden files into SODA",
+      "Do not import the hidden files",
+      "Cancel import",
+      "What would you like to do with the hidden files?"
+    );
+    // If the userResponse is "confirm", nothing needs to be done
+    if (userResponse === "deny") {
+      removeHiddenFilesFromDatasetStructure(datasetStructure);
+    }
+    if (userResponse === "cancel") {
+      throw new Error("Importation cancelled");
+    }
+  }
+
+  // If the dataset structure is empty after processing the imported files and folders, throw an error
+  if (
+    Object.keys(datasetStructure?.["folders"]).length === 0 &&
+    Object.keys(datasetStructure?.["files"]).length === 0
+  ) {
+    throw new Error("Error building dataset structure");
+  }
+
+  return datasetStructure;
+};
+
+const mergeLocalAndRemoteDatasetStructure = async (
+  datasetStructureToMerge,
+  currentFileExplorerPath
+) => {
+  const duplicateFiles = [];
+
+  const traverseAndMergeDatasetJsonObjects = async (datasetStructureToMerge, recursedFilePath) => {
+    const currentNestedPathArray = getGlobalPathFromString(recursedFilePath);
+    const existingDatasetJsonAtPath = getRecursivePath(
+      currentNestedPathArray.slice(1),
+      datasetStructureJSONObj
+    ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
+
+    const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]);
+    const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]);
+    const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]);
+    const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]);
+
+    for (const folder of foldersBeingMergedToPath) {
+      if (ExistingFoldersAtPath.includes(folder)) {
+        // If the folder already exists, leave it as is...
+      } else {
+        // Otherwise add a new folder to the existing dataset structure
+        existingDatasetJsonAtPath["folders"][folder] = {
+          type: "local",
+          files: {},
+          folders: {},
+          action: ["new"],
+        };
+      }
+    }
+
+    for (const file of filesBeingMergedToPath) {
+      if (ExistingFilesAtPath.includes(file)) {
+        duplicateFiles.push({
+          fileName: file,
+          virtualFilePath: recursedFilePath,
+          fileObject: datasetStructureToMerge["files"][file],
+        });
+      } else {
+        existingDatasetJsonAtPath["files"][file] = datasetStructureToMerge["files"][file];
+      }
+    }
+
+    for (const folder of foldersBeingMergedToPath) {
+      await traverseAndMergeDatasetJsonObjects(
+        datasetStructureToMerge["folders"][folder],
+        `${recursedFilePath}${folder}/`
+      );
+    }
+  };
+
+  showFileImportLoadingSweetAlert(500);
+
+  // DO THE MERGING
+  await traverseAndMergeDatasetJsonObjects(datasetStructureToMerge, currentFileExplorerPath);
+
+  closeFileImportLoadingSweetAlert();
+
+  if (duplicateFiles.length > 0) {
+    const userConfirmedFileOverwrite = await swalFileListDoubleAction(
+      duplicateFiles.map((file) => `${file.virtualFilePath}${file.fileName}`),
+      "Duplicate files detected",
+      ` 
+        You have two options for the duplicate files:
+        <br />
+        <span
+          class="text-left"
+          style="display: flex; flex-direction: column; margin-bottom: 1em">
+          <b>Overwrite the existing files:</b> This option will completely replace existing files with the files being imported.
+          This option is recommended if the files have changed since they were last imported into SODA.
+          <br />
+          <b>Skip the duplicate files:</b> This option will not import the duplicate files into SODA.
+          This option is recommended if the files have not changed since they were last imported into SODA.
+        </span>
+      `,
+      "Overwrite the existing files",
+      "Skip the duplicate files",
+      "What would you like to do with the duplicate files?"
+    );
+    if (userConfirmedFileOverwrite) {
+      for (const file of duplicateFiles) {
+        const currentNestedPathArray = getGlobalPathFromString(file.virtualFilePath);
+        // remove first and last elements from array
+        currentNestedPathArray.shift();
+        const folderContainingFileToOverwrite = getRecursivePath(
+          currentNestedPathArray,
+          datasetStructureJSONObj
+        );
+
+        const fileTypeOfObjectToOverwrite =
+          folderContainingFileToOverwrite["files"][file.fileName]?.["type"];
+
+        // overwrite the existing file with the new file
+        folderContainingFileToOverwrite["files"][file.fileName] = file.fileObject;
+
+        // if the file being overwritten was from Pennsieve, add the "updated" action to the file
+        if (
+          fileTypeOfObjectToOverwrite === "bf" &&
+          !folderContainingFileToOverwrite["files"][file.fileName]["action"].includes("updated")
+        ) {
+          folderContainingFileToOverwrite["files"][file.fileName]["action"].push("updated");
+        }
+      }
+    }
+  }
+};
+
+const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath) => {
+  const duplicateFolderNames = [];
+  const duplicateFileNames = [];
+
+  const checkForDuplicateNames = async (importedFolders, itemsAtPath) => {
+    const currentFoldersAtPath = Object.keys(itemsAtPath.folders);
+    const currentFilesAtPath = Object.keys(itemsAtPath.files);
+    fg;
+    for (const folder of importedFolders) {
+      folderName = path.basename(folder);
+      if (currentFoldersAtPath.includes(folderName)) {
+        duplicateFolderNames.push(folderName);
+      }
+      const folderContents = await fs.readdir(folder);
+    }
+    for (const fileName of importedFiles) {
+      if (currentFilesAtPath.includes(fileName)) {
+        duplicateFileNames.push(fileName);
+      }
+    }
+  };
+};
+
+const addDataArrayToDatasetStructureAtPath = async (importedData) => {
+  // If no data was imported ()
+  const numberOfItemsToImport = importedData.length;
+  if (numberOfItemsToImport === 0) {
+    notyf.open({
+      type: "info",
+      message: "No folders/files were selected to import",
+      duration: 4000,
+    });
+    return;
+  }
+  try {
+    // STEP 1: Build the JSON object from the imported data
+    // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
+    const currentFileExplorerPath = organizeDSglobalPath.value.trim();
+
+    const builtDatasetStructure = await buildDatasetStructureJsonFromImportedData(
+      importedData,
+      currentFileExplorerPath
+    );
+
+    // Step 2: Add the imported data to the dataset structure (This function handles duplicate files, etc)
+    await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
+
+    // Step 3: Update the UI
+    const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['dataset_root', 'code']
+    const nestedJsonDatasetStructure = getRecursivePath(
+      currentPathArray.slice(1),
+      datasetStructureJSONObj
+    );
+    listItems(nestedJsonDatasetStructure, "#items", 500, (reset = true));
+    getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+
+    // Step 4: Update successful, show success message
+    notyf.open({
+      type: "success",
+      message: `Data successfully imported`,
+      duration: 3000,
+    });
+  } catch (error) {
+    closeFileImportLoadingSweetAlert();
+    notyf.open({
+      type: error.message === "Importation cancelled" ? "info-grey" : "error",
+      message: error.message || "Error importing data",
+      duration: 3000,
+    });
+  }
+};
+
 const allowDrop = (ev) => {
   ev.preventDefault();
 };
-
-var filesElement;
-var targetElement;
+// This function is called when the user drops files into the file explorer
 const drop = async (ev) => {
-  irregularFolderArray = [];
-  let renamedFolderName = "";
-  let replaced = [];
-  var action = "";
-  filesElement = ev.dataTransfer.files;
-  targetElement = ev.target;
-  // get global path
-  var currentPath = organizeDSglobalPath.value;
-  var jsonPathArray = currentPath.split("/");
-  var filtered = jsonPathArray.slice(1).filter(function (el) {
-    return el != "";
-  });
-
-  var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
-  irregularFolderArray = [];
-  var action = "";
-  filesElement = ev.dataTransfer.files;
-  targetElement = ev.target;
-  var importedFiles = {};
-  var importedFolders = {};
-  var nonAllowedDuplicateFiles = [];
   ev.preventDefault();
-  var uiFiles = {};
-  var uiFolders = {};
 
-  $("body").addClass("waiting");
+  // If the user is trying to drag/drop files at the root level of the dataset, show an error
+  const slashCount = getPathSlashCount();
+  if (slashCount === 1) {
+    await swalShowError(
+      "You cannot import files at the root level of your dataset",
+      `To import data, please navigate to a SPARC folder and try again.
+      <br /><br />
+      If you are trying to add SPARC metadata file(s), you can do so in the next Step.`
+    );
+    return;
+  }
+  const itemsDroppedInFileExplorer = ev.dataTransfer.files;
+  // Convert the FileList object to an array of paths
+  const droppedItemsArray = Array.from(itemsDroppedInFileExplorer).map((item) => item.path);
 
-  for (var file in myPath["files"]) {
-    uiFiles[path.parse(file).base] = 1;
+  if (droppedItemsArray.length === 0) {
+    notyf.open({
+      duration: "4000",
+      type: "error",
+      message: "No folders/files were able to be imported",
+    });
+    return;
   }
-  for (var folder in myPath["folders"]) {
-    uiFolders[path.parse(folder).name] = 1;
-  }
-  for (var i = 0; i < ev.dataTransfer.files.length; i++) {
-    var ele = ev.dataTransfer.files[i].path;
-    if (path.basename(ele).indexOf(".") === -1) {
-      detectIrregularFolders(path.basename(ele), ele);
+
+  let accessibleItems = [];
+  let inaccessibleItems = [];
+  for (const path of droppedItemsArray) {
+    try {
+      fs.statSync(path);
+      accessibleItems.push(path);
+    } catch (error) {
+      inaccessibleItems.push(path);
     }
   }
-  var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-  if (irregularFolderArray.length > 0) {
-    Swal.fire({
-      title:
-        "The following folders contain non-allowed characters in their names. How should we handle them?",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" +
-        irregularFolderArray.join("</br>") +
-        "</div>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Replace characters with (-)",
-      denyButtonText: "Remove characters",
-      cancelButtonText: "Cancel",
-      footer: footer,
-      didOpen: () => {
-        $(".swal-popover").popover();
-      },
-    }).then(async (result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        action = "replace";
-        if (irregularFolderArray.length > 0) {
-          for (let i = 0; i < irregularFolderArray.length; i++) {
-            renamedFolderName = replaceIrregularFolders(irregularFolderArray[i]);
-            replaced.push(renamedFolderName);
-          }
-        }
-      } else if (result.isDenied) {
-        action = "remove";
-        if (irregularFolderArray.length > 0) {
-          for (let i = 0; i < irregularFolderArray.length; i++) {
-            renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
-            replaced.push(renamedFolderName);
-          }
-        }
-      } else {
+
+  if (inaccessibleItems.length > 0) {
+    if (accessibleItems.length === 0) {
+      await swalFileListSingleAction(
+        inaccessibleItems,
+        "SODA was unable import your dropped files/folders",
+        "The files listed below will not be imported into SODA. If this issue persists, please try importing the folders/files via the import button.",
+        false
+      );
+      return;
+    } else {
+      const importAccessibleItemsOnly = await swalFileListDoubleAction(
+        accessibleItems,
+        "<p>SODA was unable to import some of your dropped files/folders</p>",
+        "A list of the folders/files that SODA was not able to import is shown below:",
+        "Yes, continue with the import",
+        "No, cancel the import",
+        "Would you like to continue the import without these folders/files?"
+      );
+
+      if (!importAccessibleItemsOnly) {
         return;
       }
-      let load_spinner_promise = new Promise(async (resolved) => {
-        let background = document.createElement("div");
-        let spinner_container = document.createElement("div");
-        let spinner_icon = document.createElement("div");
-        spinner_container.setAttribute("id", "items_loading_container");
-        spinner_icon.setAttribute("id", "item_load");
-        spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
-        background.setAttribute("class", "loading-items-background");
-        background.setAttribute("id", "loading-items-background-overlay");
-
-        spinner_container.append(spinner_icon);
-        document.body.prepend(background);
-        document.body.prepend(spinner_container);
-        let loading_items_spinner = document.getElementById("items_loading_container");
-        loading_items_spinner.style.display = "block";
-        if (loading_items_spinner.style.display === "block") {
-          setTimeout(() => {
-            resolved();
-          }, 100);
-        }
-      }).then(async () => {
-        await dropHelper(
-          filesElement,
-          targetElement,
-          action,
-          myPath,
-          importedFiles,
-          importedFolders,
-          nonAllowedDuplicateFiles,
-          uiFiles,
-          uiFolders
-        );
-        // Swal.close();
-        document.getElementById("loading-items-background-overlay").remove();
-        document.getElementById("items_loading_container").remove();
-        // background.remove();
-      });
-    });
-  } else {
-    let load_spinner_promise = new Promise(async (resolved) => {
-      let background = document.createElement("div");
-      let spinner_container = document.createElement("div");
-      let spinner_icon = document.createElement("div");
-      spinner_container.setAttribute("id", "items_loading_container");
-      spinner_icon.setAttribute("id", "item_load");
-      spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
-      background.setAttribute("class", "loading-items-background");
-      background.setAttribute("id", "loading-items-background-overlay");
-
-      spinner_container.append(spinner_icon);
-      document.body.prepend(background);
-      document.body.prepend(spinner_container);
-      let loading_items_spinner = document.getElementById("items_loading_container");
-      loading_items_spinner.style.display = "block";
-      if (loading_items_spinner.style.display === "block") {
-        setTimeout(() => {
-          resolved();
-        }, 100);
-      }
-    }).then(async () => {
-      await dropHelper(
-        filesElement,
-        targetElement,
-        "",
-        myPath,
-        importedFiles,
-        importedFolders,
-        nonAllowedDuplicateFiles,
-        uiFiles,
-        uiFolders
-      );
-      // Swal.close();
-      document.getElementById("loading-items-background-overlay").remove();
-      document.getElementById("items_loading_container").remove();
-      // background.remove();
-    });
-  }
-};
-
-const dropHelper = async (
-  ev1,
-  ev2,
-  action,
-  myPath,
-  importedFiles,
-  importedFolders,
-  nonAllowedDuplicateFiles,
-  uiFiles,
-  uiFolders
-) => {
-  let importToast = new Notyf({
-    position: { x: "right", y: "bottom" },
-    ripple: true,
-    dismissible: true,
-    ripple: false,
-    types: [
-      {
-        type: "success",
-        background: "#13716D",
-        icon: {
-          className: "fas fa-check-circle",
-          tagName: "i",
-          color: "white",
-        },
-        duration: 2500,
-      },
-    ],
-  });
-
-  let loadingIcon = document.getElementById("items_loading_container");
-  let loadingContainer = document.getElementById("loading-items-background-overlay");
-  let nonAllowedCharacterFiles = [];
-  let folderPath = [];
-  let duplicateFolders = [];
-  let hiddenFiles = [];
-  let nonAllowedFiles = [];
-  let tripleExtension = [];
-  let doubleExtension = [];
-
-  for (let i = 0; i < ev1.length; i++) {
-    /// Get all the file information
-    let itemPath = ev1[i].path;
-    let itemName = path.parse(itemPath).base;
-    let duplicate = false;
-    let statsObj = fs.statSync(itemPath);
-    let slashCount = getPathSlashCount();
-
-    // check for duplicate or files with the same name
-    for (let j = 0; j < ev2.children.length; j++) {
-      if (itemName === ev2.children[j].innerText) {
-        duplicate = true;
-        break;
-      }
-    }
-
-    /// check for File duplicate
-    if (statsObj.isFile()) {
-      let nonAllowedDuplicate = false;
-      let originalFileName = path.parse(itemPath).base;
-      let filePath = itemPath;
-      let fileName = path.parse(filePath).name;
-      let fileBase = path.parse(filePath).base;
-      let slashCount = getPathSlashCount();
-
-      let forbiddenCheck = forbiddenFileCheck(filePath);
-      if (forbiddenCheck === "forbidden") {
-        nonAllowedFiles.push(filePath);
-        continue;
-      }
-      if (forbiddenCheck === "hidden") {
-        hiddenFiles.push(filePath);
-        continue;
-      }
-
-      let warningCharacterBool = warningCharacterCheck(fileBase);
-      if (warningCharacterBool === true) {
-        nonAllowedCharacterFiles.push(filePath);
-        continue;
-      }
-
-      let extensionCount = checkForMultipleExtensions(fileBase);
-      if (extensionCount > 2) {
-        //multiple extensions, raise warning (do not import)
-        tripleExtension.push(filePath);
-        continue;
-      }
-      if (extensionCount === 2) {
-        //double extension ask if compressed file
-        doubleExtension.push(filePath);
-        continue;
-      }
-
-      if (slashCount === 1) {
-        if (loadingContainer != undefined) {
-          loadingContainer.style.display = "none";
-          loadingIcon.style.display = "none";
-        }
-        await Swal.fire({
-          icon: "error",
-          html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-        break;
-      } else {
-        if (JSON.stringify(myPath["files"]) === "{}" && JSON.stringify(importedFiles) === "{}") {
-          importedFiles[fileBase] = {
-            path: filePath,
-            basename: originalFileName,
-          };
-        } else {
-          //check if fileName is in to-be-imported object keys
-          if (importedFiles.hasOwnProperty(originalFileName)) {
-            nonAllowedDuplicate = true;
-            nonAllowedDuplicateFiles.push(filePath);
-            continue;
-          } else {
-            //check if filename is in already-imported object keys
-            if (myPath["files"].hasOwnProperty(originalFileName)) {
-              nonAllowedDuplicate = true;
-              nonAllowedDuplicateFiles.push(filePath);
-              continue;
-            } else {
-              if (Object.keys(myPath["files"]).length === 0) {
-                importedFiles[originalFileName] = {
-                  path: filePath,
-                  basename: originalFileName,
-                };
-              }
-              for (let alreadyImportedFile in myPath["files"]) {
-                if (alreadyImportedFile !== undefined) {
-                  nonAllowedDuplicate = false;
-                  //just checking if paths are the same
-                  if (filePath === myPath["files"][alreadyImportedFile]["path"]) {
-                    nonAllowedDuplicateFiles.push(filePath);
-                    nonAllowedDuplicate = true;
-                    continue;
-                  } else {
-                    //in neither so write
-                    importedFiles[originalFileName] = {
-                      path: filePath,
-                      basename: originalFileName,
-                    };
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    } else if (statsObj.isDirectory()) {
-      /// drop a folder
-      let folderPath = itemPath;
-
-      if (slashCount === 1) {
-        if (loadingContainer != undefined) {
-          loadingContainer.style.display = "none";
-          loadingIcon.style.display = "none";
-        }
-        await Swal.fire({
-          icon: "error",
-          text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-      } else {
-        var j = 1;
-        var originalFolderName = itemName;
-        var renamedFolderName = originalFolderName;
-
-        if (irregularFolderArray.includes(folderPath)) {
-          if (action !== "ignore" && action !== "") {
-            if (action === "remove") {
-              renamedFolderName = removeIrregularFolders(itemName);
-            } else if (action === "replace") {
-              renamedFolderName = replaceIrregularFolders(itemName);
-            }
-            importedFolders[renamedFolderName] = {
-              path: folderPath,
-              "original-basename": originalFolderName,
-            };
-          }
-        } else {
-          if (myPath["folders"].hasOwnProperty(originalFolderName) === true) {
-            //folder is already imported
-            duplicateFolders.push(itemName);
-            // folderPath.push(folderPath);
-            continue;
-          } else {
-            if (importedFolders.hasOwnProperty(originalFolderName) === true) {
-              //folder is already in to-be-imported list
-              duplicateFolders.push(itemName);
-              // folderPath.push(folderPath);
-              continue;
-            } else {
-              //folder is in neither so write
-              importedFolders[originalFolderName] = {
-                path: folderPath,
-                "original-basename": originalFolderName,
-              };
-            }
-          }
-        }
-      }
     }
   }
 
-  if (doubleExtension.length > 0) {
-    if (loadingContainer != undefined) {
-      loadingContainer.style.display = "none";
-      loadingIcon.style.display = "none";
-    }
-
-    await Swal.fire({
-      title:
-        "The following files have a double period, which is only allowed if they are compressed files as per SPARC Data Standards. Do you confirm that these are all compressed files?",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" +
-        doubleExtension.join("</br></br>") +
-        "</div>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showDenyButton: false,
-      showCancelButton: true,
-      confirmButtonText: "Yes, import them",
-      // denyButtonText: "Import",
-      cancelButtonText: "No, skip them",
-      didOpen: () => {
-        $(".swal-popover").popover();
-        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
-        let swal_content = document.getElementsByClassName("swal2-content")[0];
-        swalContainer.style.width = "600px";
-        swal_content.style.textAlign = "justify";
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        //remove slashes and place just file name in new array
-        for (let i = 0; i < doubleExtension.length; i++) {
-          if (
-            doubleExtension[i] in myPath["files"] ||
-            path.parse(doubleExtension[i]).base in Object.keys(importedFiles)
-          ) {
-            nonAllowedDuplicateFiles.push(doubleExtension[i]);
-            continue;
-          } else {
-            //not in there or regular files so store?
-            importedFiles[path.parse(doubleExtension[i]).base] = {
-              path: doubleExtension[i],
-              basename: path.parse(doubleExtension[i]).base,
-            };
-          }
-        }
-      }
-    });
-  }
-
-  if (tripleExtension.length > 0) {
-    if (loadingContainer != undefined) {
-      loadingContainer.style.display = "none";
-      loadingIcon.style.display = "none";
-    }
-    await Swal.fire({
-      title:
-        "Files should typically have one (two when they are compressed) periods in their names according to the SPARC Data Standards. The following files have three of more periods in their name and will not be imported.",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" +
-        tripleExtension.join("</br></br>") +
-        "</div>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showDenyButton: false,
-      showCancelButton: false,
-      confirmButtonText: "OK",
-      didOpen: () => {
-        $(".swal-popover").popover();
-        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
-        let swal_content = document.getElementsByClassName("swal2-content")[0];
-        swalContainer.style.width = "600px";
-        swal_content.style.textAlign = "justify";
-      },
-    });
-  }
-
-  if (nonAllowedCharacterFiles.length > 0) {
-    if (loadingContainer != undefined) {
-      loadingContainer.style.display = "none";
-      loadingIcon.style.display = "none";
-    }
-    await Swal.fire({
-      title:
-        "The following files have characters (#&%+) that are typically not recommendeda as per the SPARC Data Standards. Although not forbidden to import as is, we recommend replacing those characters.",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" +
-        nonAllowedCharacterFiles.join("</br></br>") +
-        "</div>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Replace characters with '-'",
-      denyButtonText: "Import as is",
-      cancelButtonText: "Skip All",
-      didOpen: () => {
-        $(".swal-popover").popover();
-        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
-        let swal_content = document.getElementsByClassName("swal2-content")[0];
-        let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
-        swalContainer.style.width = "600px";
-        swal_content.style.textAlign = "justify";
-        swalDenyButton.style.backgroundColor = "#086dd3";
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        //replace characters
-        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
-          let fileName = path.parse(nonAllowedCharacterFiles[i]).base;
-          let regex = /[\+&\%#]/g;
-          let replaceFile = fileName.replace(regex, "-");
-          importedFiles[replaceFile] = {
-            path: nonAllowedCharacterFiles[i],
-            basename: replaceFile,
-          };
-        }
-      }
-      if (result.isDenied) {
-        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
-          let fileName = nonAllowedCharacterFiles[i];
-          importedFiles[fileName] = {
-            path: fileName,
-            basename: path.parse(fileName).base,
-          };
-        }
-      }
-    });
-  }
-
-  if (hiddenFiles.length > 0) {
-    if (loadingContainer != undefined) {
-      loadingContainer.style.display = "none";
-      loadingIcon.style.display = "none";
-    }
-    await Swal.fire({
-      title:
-        "The following files have an unexpected name starting with a period and are considered hidden files. As per SPARC Data Standards they are typically not recommended to be imported as hidden. How should we handle them?",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" +
-        hiddenFiles.join("</br></br>") +
-        "</div>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Remove period",
-      denyButtonText: "Import as is",
-      cancelButtonText: "Skip All",
-      didOpen: () => {
-        $(".swal-popover").popover();
-        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
-        let swal_content = document.getElementsByClassName("swal2-content")[0];
-        swalContainer.style.width = "600px";
-        swal_content.style.textAlign = "justify";
-      },
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        //replace characters
-        //check for already imported
-        for (let i = 0; i < hiddenFiles.length; i++) {
-          let file_name = path.parse(hiddenFiles[i]).base;
-          let path_name = hiddenFiles[i];
-
-          if (Object.keys(myPath["files"]).length > 0) {
-            for (const objectKey in myPath["files"]) {
-              //tries finding duplicates with the same path
-              if (objectKey != undefined) {
-                nonAllowedDuplicate = false;
-                if (file_name.substr(1, file_name.length) === objectKey) {
-                  if (path_name === myPath["files"][objectKey]["path"]) {
-                    //same path and has not been renamed
-                    nonAllowedDuplicateFiles.push(path_name);
-                    nonAllowedDuplicate = true;
-                    continue;
-                  } else {
-                    //store in imported files
-                    importedFiles[file_name.substr(1, file_name.length)] = {
-                      path: path_name,
-                      basename: file_name.substr(1, file_name.length),
-                    };
-                  }
-                } else {
-                  //store in imported files
-                  importedFiles[file_name.substr(1, file_name.length)] = {
-                    path: path_name,
-                    basename: file_name.substr(1, file_name.length),
-                  };
-                }
-              }
-            }
-          } else {
-            //store in imported files
-            importedFiles[file_name.substr(1, file_name.length)] = {
-              path: path_name,
-              basename: file_name.substr(1, file_name.length),
-            };
-          }
-        }
-      } else if (result.isDenied) {
-        //leave as is
-
-        for (let i = 0; i < hiddenFiles.length; i++) {
-          let file_name = path.parse(hiddenFiles[i]).base;
-          let path_name = hiddenFiles[i];
-
-          if (Object.keys(myPath["files"]).length > 0) {
-            for (const objectKey in myPath["files"]) {
-              //tries finding duplicates with the same path
-              if (objectKey != undefined) {
-                nonAllowedDuplicate = false;
-                if (file_name === objectKey) {
-                  if (path_name === myPath["files"][objectKey]["path"]) {
-                    //same path and has not been renamed
-                    nonAllowedDuplicateFiles.push(path_name);
-                    nonAllowedDuplicate = true;
-                    continue;
-                  } else {
-                    //file path and object key path arent the same
-                    //check if the file name are the same
-                    //if so consider it as a duplicate
-
-                    //store in regular files
-                    importedFiles[file_name] = {
-                      path: path_name,
-                      basename: file_name,
-                    };
-                  }
-                } else {
-                  //store in regular files
-                  importedFiles[file_name] = {
-                    path: path_name,
-                    basename: file_name,
-                  };
-                }
-              }
-            }
-          } else {
-            //store in regular files
-            importedFiles[file_name] = {
-              path: path_name,
-              basename: file_name,
-            };
-          }
-        }
-      }
-    });
-  }
-
-  if (nonAllowedFiles.length > 0) {
-    if (loadingContainer != undefined) {
-      loadingContainer.style.display = "none";
-      loadingIcon.style.display = "none";
-    }
-    await Swal.fire({
-      title:
-        "The following files are not allowed in datasets as per the SPARC Data Standards and will thus not be imported",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" +
-        nonAllowedFiles.join("</br></br>") +
-        "</div>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showConfirmButton: true,
-      confirmButtonText: "OK",
-      didOpen: () => {
-        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
-        swalContainer.style.width = "600px";
-      },
-    });
-  }
-
-  let listElements = showItemsAsListBootbox(duplicateFolders);
-  let list = JSON.stringify(duplicateFolders).replace(/"/g, "");
-  if (duplicateFolders.length > 0) {
-    if (loadingContainer != undefined) {
-      loadingContainer.style.display = "none";
-      loadingIcon.style.display = "none";
-    }
-    await Swal.fire({
-      title: "Duplicate folder(s) detected",
-      icon: "warning",
-      showConfirmButton: false,
-      allowOutsideClick: false,
-      showCloseButton: true,
-      customClass: "wide-swal-auto",
-      backdrop: "rgba(0, 0, 0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate_animated animate_zoomout animate__faster",
-      },
-      html:
-        `
-      <div class="caption">
-        <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
-      </div>
-      <div class="swal-button-container">
-        <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
-        list +
-        `', 'free-form')">Skip Folders</button>
-        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}', 'free-form')">Replace Existing Folders</button>
-        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}', 'free-form')">Import Duplicates</button>
-        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel', '', 'free-form')">Cancel</button>
-        </div>`,
-    });
-  }
-  let baseName = [];
-  if (nonAllowedDuplicateFiles.length > 0) {
-    for (let element in nonAllowedDuplicateFiles) {
-      let lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("\\") + 1;
-      if (lastSlash === 0) {
-        lastSlash = nonAllowedDuplicateFiles[element].lastIndexOf("/") + 1;
-      }
-      baseName.push(
-        nonAllowedDuplicateFiles[element].substring(
-          lastSlash,
-          nonAllowedDuplicateFiles[element].length
-        )
-      );
-    }
-    let listElements = showItemsAsListBootbox(baseName);
-    let list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
-    if (loadingContainer != undefined) {
-      loadingContainer.style.display = "none";
-      loadingIcon.style.display = "none";
-    }
-    await Swal.fire({
-      title: "Duplicate file(s) detected",
-      icon: "warning",
-      showConfirmButton: false,
-      allowOutsideClick: false,
-      showCloseButton: true,
-      customClass: "wide-swal-auto",
-      backdrop: "rgba(0, 0, 0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate_animated animate_zoomout animate__faster",
-      },
-      html:
-        `
-      <div class="caption">
-        <p>Files with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
-      </div>
-      <div class="swal-button-container">
-        <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
-        list +
-        `', 'free-form')">Skip Files</button>
-        <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}', 'free-form')">Replace Existing Files</button>
-        <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}', 'free-form')">Import Duplicates</button>
-        <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel', '', 'free-form')">Cancel</button>
-        </div>`,
-    });
-  }
-  // // now append to UI files and folders
-
-  if (Object.keys(importedFiles).length > 0) {
-    for (let element in importedFiles) {
-      myPath["files"][importedFiles[element]["basename"]] = {
-        path: importedFiles[element]["path"],
-        type: "local",
-        description: "",
-        "additional-metadata": "",
-        action: ["new"],
-      };
-      // append "renamed" to "action" key if file is auto-renamed by UI
-      var originalName = path.parse(
-        myPath["files"][importedFiles[element]["basename"]]["path"]
-      ).base;
-      if (element !== originalName) {
-        myPath["files"][importedFiles[element]["basename"]]["action"].push("renamed");
-      }
-      var appendString =
-        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
-        importedFiles[element]["basename"] +
-        "</div></div>";
-      $(appendString).appendTo(ev2);
-    }
-    listItems(myPath, "#items", 500, (reset = true));
-    if (Object.keys(importedFiles).length > 1) {
-      importToast.open({
-        type: "success",
-        message: "Successfully Imported Files",
-      });
-    } else {
-      importToast.open({
-        type: "success",
-        message: "Successfully Imported File",
-      });
-    }
-    // getInFolder(
-    //   ".single-item",
-    //   "#items",
-    //   organizeDSglobalPath,
-    //   datasetStructureJSONObj
-    // );
-    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
-  }
-  if (Object.keys(importedFolders).length > 0) {
-    for (let element in importedFolders) {
-      myPath["folders"][element] = {
-        type: "local",
-        path: importedFolders[element]["path"],
-        folders: {},
-        files: {},
-        action: ["new"],
-      };
-      // append "renamed" to "action" key if file is auto-renamed by UI
-      var originalName = path.parse(myPath["folders"][element]["path"]).name;
-      let placeholderString =
-        '<div id="placeholder_element" class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="fas fa-file-import"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">Loading ' +
-        element +
-        "... </div></div>";
-      $(placeholderString).appendTo(ev2);
-      // await listItems(myPath, "#items");
-      //listItems(myPath, "#items");
-      if (element !== originalName) {
-        myPath["folders"][element]["action"].push("renamed");
-      }
-      populateJSONObjFolder(action, myPath["folders"][element], importedFolders[element]["path"]);
-      var appendString =
-        '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
-        element +
-        "</div></div>";
-      $("#placeholder_element").remove();
-      $(appendString).appendTo(ev2);
-    }
-    listItems(myPath, "#items", 500, (reset = true));
-    getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
-    if (Object.keys(importedFolders).length > 1) {
-      importToast.open({
-        type: "success",
-        message: "Successfully Imported Folders",
-      });
-    } else {
-      importToast.open({
-        type: "success",
-        message: "Successfully Imported Folder",
-      });
-    }
-    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
-  }
-  beginScrollListen();
-  $("body").removeClass("waiting");
+  // Add the items to the dataset structure (This handles problematic files/folders, duplicate files etc)
+  await addDataArrayToDatasetStructureAtPath(accessibleItems);
 };
 
 var irregularFolderArray = [];
@@ -6691,7 +6195,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     );
 
     //remove my_dataset_folder and if any of the ROOT FOLDER names is included
-    if (splitPath[0] === "My_dataset_folder") splitPath.shift();
+    if (splitPath[0] === "dataset_root") splitPath.shift();
     if (rootFolders.includes(splitPath[0])) splitPath.shift();
     //remove the last element in array is it is always ''
     splitPath.pop();
@@ -6778,7 +6282,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     }
 
     for (let i = 0; i < splitPath.length; i++) {
-      if (splitPath[i] === "My_dataset_folder" || splitPath[i] === undefined) continue;
+      if (splitPath[i] === "dataset_root" || splitPath[i] === undefined) continue;
       trimmedPath += splitPath[i] + "/";
     }
 
@@ -7152,7 +6656,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let folderType;
 
     if (organizeDSglobalPath.value == undefined) {
-      currentFolder = "My_dataset_folder";
+      currentFolder = "dataset_root";
     } else {
       //Get the name of the folder the user is currently in.
       currentFolder = organizeDSglobalPath.value.split("/").slice(-2)[0];
@@ -7225,7 +6729,7 @@ const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
       var myPath = getRecursivePath(filtered, globalObj);
       if (myPath.length === 2) {
         filtered = myPath[1];
-        currentLocation.value = "My_dataset_folder/" + filtered.join("/") + "/";
+        currentLocation.value = "dataset_root/" + filtered.join("/") + "/";
       }
       $("#items").empty();
       already_created_elem = [];
@@ -8029,7 +7533,11 @@ const initiate_generate = async () => {
   document.getElementById("div-new-curate-progress").style.display = "block";
   document.getElementById("div-generate-comeback").style.display = "none";
 
+  // Create the progress bar clone for the navigation bar
   let organizeDataset = document.getElementById("organize_dataset_btn");
+  let curateAndShareNavButton = document.getElementById("guided_mode_view");
+  let documentationNavButton = document.getElementById("documentation-view");
+  let contactNavButton = document.getElementById("contact-us-view");
   let uploadLocally = document.getElementById("upload_local_dataset_btn");
   let guidedModeHomePageButton = document.getElementById("button-homepage-guided-mode");
   let organizeDataset_option_buttons = document.getElementById("div-generate-comeback");
@@ -8062,8 +7570,12 @@ const initiate_generate = async () => {
   returnButton.id = "returnButton";
   returnButton.innerHTML = "Return to progress";
 
+  // Event handler for navigation menu's progress bar clone
   returnButton.onclick = function () {
     organizeDataset.disabled = false;
+    contactNavButton.classList.remove("is-selected");
+    documentationNavButton.classList.remove("is-selected");
+    curateAndShareNavButton.classList.add("is-selected");
     organizeDataset.className = "content-button is-selected";
     organizeDataset.style = "background-color: #fff";
     organizeDataset.click();
@@ -8079,7 +7591,6 @@ const initiate_generate = async () => {
     organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
   };
 
-  //document.body.appendChild(statusBarClone);
   let sparc_container = document.getElementById("sparc-logo-container");
   sparc_container.style.display = "none";
   navContainer.appendChild(statusBarClone);
@@ -8092,17 +7603,15 @@ const initiate_generate = async () => {
     sodaJSONObj["manifest-files"]["auto-generated"] = true;
   }
 
-  //dissmisButton.addEventListener("click", dismiss('status-bar-curate-progress'));
   if ("manifest-files" in sodaJSONObj) {
-    if ("auto-generated" in sodaJSONObj["manifest-files"]) {
-      if (sodaJSONObj["manifest-files"]["auto-generated"] === true) {
-        delete_imported_manifest();
-      }
-    } else {
-      if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
-        manifest_files_requested = true;
-        delete_imported_manifest();
-      }
+    if (
+      "auto-generated" in sodaJSONObj["manifest-files"] &&
+      sodaJSONObj["manifest-files"]["auto-generated"] === true
+    ) {
+      delete_imported_manifest();
+    } else if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
+      manifest_files_requested = true;
+      delete_imported_manifest();
     }
   }
 
@@ -8114,9 +7623,6 @@ const initiate_generate = async () => {
   let uploadedBytes = 0;
   let increaseInFileSize = 0;
   let generated_dataset_id = undefined;
-  // when generating a new dataset we need to add its ID to the ID -> Name mapping
-  // we need to do this only once
-  // TODO: Integrate into modified analytics tracking
   let loggedDatasetNameToIdMapping = false;
 
   // determine where the dataset will be generated/uploaded
@@ -8130,6 +7636,7 @@ const initiate_generate = async () => {
     datasetUploadSession.startSession();
   }
 
+  let start = performance.now();
   client
     .post(
       `/curate_datasets/curation`,
@@ -8139,6 +7646,8 @@ const initiate_generate = async () => {
       { timeout: 0 }
     )
     .then(async (response) => {
+      let end = performance.now();
+      let time = (end - start) / 1000;
       let { data } = response;
 
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
@@ -8300,8 +7809,9 @@ const initiate_generate = async () => {
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
 
-      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-        "<span style='color: red;'>" + emessage + "</span>";
+      document.getElementById(
+        "para-new-curate-progress-bar-error-status"
+      ).innerHTML = `<span style='color: red;'>${emessage}</span>`;
 
       Swal.fire({
         icon: "error",
@@ -8364,8 +7874,9 @@ const initiate_generate = async () => {
       clientError(error);
       let emessage = userErrorMessage(error);
 
-      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-        "<span style='color: red;'>" + emessage + "</span>";
+      document.getElementById(
+        "para-new-curate-progress-bar-error-status"
+      ).innerHTML = `<span style='color: red;'>${emessage}</span>`;
       log.error(error);
 
       //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
@@ -8460,17 +7971,15 @@ const initiate_generate = async () => {
           (main_total_generate_dataset_size / displaySize / displaySize / displaySize).toFixed(2) +
           " GB";
       }
-      var progressMessage = "";
-      var statusProgressMessage = "";
-      progressMessage += main_curate_progress_message + "<br>";
-      statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
-      statusProgressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
-      progressMessage +=
-        "Progress: " + value.toFixed(2) + "%" + " (total size: " + totalSizePrint + ") " + "<br>";
-      progressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
-      progressMessage += "Total files uploaded: " + total_files_uploaded + "<br>";
-      progressStatus.innerHTML = progressMessage;
-      statusText.innerHTML = statusProgressMessage;
+
+      progressStatus.innerHTML = `${main_curate_progress_message}<br>
+      Elapsed time: ${elapsed_time_formatted}
+      <br>Progress: ${value.toFixed(2)}% (total size: ${totalSizePrint})<br>
+      Total files uploaded: ${total_files_uploaded}<br>`;
+
+      statusText.innerHTML = `Progress: ${value.toFixed(2)}%
+      <br>Elapsed time: ${elapsed_time_formatted}<br>`;
+
       divGenerateProgressBar.style.display = "block";
 
       if (main_curate_progress_message.includes("Success: COMPLETED!")) {
@@ -8482,10 +7991,27 @@ const initiate_generate = async () => {
         successful = true;
       }
     } else {
-      statusText.innerHTML =
-        main_curate_progress_message + "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>";
-      progressStatus.innerHTML =
-        main_curate_progress_message + "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>";
+      statusText.innerHTML = `${main_curate_progress_message}<br>Elapsed time: ${elapsed_time_formatted}`;
+      progressStatus.innerHTML = `${main_curate_progress_message}<br>Elapsed time: ${elapsed_time_formatted}`;
+    }
+
+    if (main_curate_progress_message.includes("Preparing files to be renamed...")) {
+      statusMeter.value = 0;
+      generateProgressBar.value = 0;
+      progressStatus.innerHTML = `Preparing files to be renamed...<br>Elapsed time: ${elapsed_time_formatted}`;
+      statusText.innerHTML = `Preparing files to be renamed... <br>Elapsed time: ${elapsed_time_formatted}`;
+    }
+
+    if (main_curate_progress_message.includes("Renaming files...")) {
+      statusMeter.value = value;
+      generateProgressBar.value = value;
+      progressStatus.innerHTML = `Renaming files...<br>
+      Elapsed time: ${elapsed_time_formatted}<br>
+      Progress: ${value.toFixed(2)}% 
+      (${main_generated_dataset_size} of ${main_total_generate_dataset_size})`;
+
+      statusText.innerHTML = `Renaming files...<br>Elapsed time: ${elapsed_time_formatted}<br>
+      Progress: ${value.toFixed(2)}%`;
     }
 
     if (main_curate_status === "Done") {
@@ -8525,8 +8051,6 @@ const initiate_generate = async () => {
         uploadLocally.className = "content-button is-selected";
         uploadLocally.style = "background-color: #fff";
       }
-      // then show the sidebar again
-      // forceActionSidebar("show");
     }
 
     // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
@@ -8929,7 +8453,8 @@ ipcRenderer.on("selected-manifest-folder", async (event, result) => {
   }
 });
 
-async function showBFAddAccountSweetalert() {
+async function showBFAddAccountSweetalert(ev) {
+  let target = ev.target;
   await Swal.fire({
     title: bfaddaccountTitle,
     html: bfAddAccountBootboxMessage,
@@ -8942,7 +8467,7 @@ async function showBFAddAccountSweetalert() {
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     allowOutsideClick: false,
-    footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/manage-dataset/connect-your-pennsieve-account-with-soda#how-to-login-with-api-key" style="text-decoration: none;">Help me get an API key</a>`,
+    footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/connecting-to-pennsieve/connecting-with-api-key" style="text-decoration: none;">Help me get an API key</a>`,
     didOpen: () => {
       let swal_container = document.getElementsByClassName("swal2-popup")[0];
       swal_container.style.width = "43rem";
@@ -8979,7 +8504,7 @@ async function showBFAddAccountSweetalert() {
                       selected_account: name,
                     },
                   })
-                  .then((response) => {
+                  .then(async (response) => {
                     let user_email = response.data.email;
                     $("#current-bf-account").text(user_email);
                     $("#current-bf-account-generate").text(user_email);
@@ -8989,9 +8514,41 @@ async function showBFAddAccountSweetalert() {
                     $("#current-bf-dataset-generate").text("None");
                     $(".bf-dataset-span").html("None");
                     $("#para-continue-bf-dataset-getting-started").text("");
+                    // set the workspace field values to the user's current workspace
+                    let org = response.data.organization;
+                    $(".bf-organization-span").text(org);
                     showHideDropdownButtons("account", "show");
                     confirm_click_account_function();
                     updateBfAccountList();
+
+                    // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
+                    // then reset the guided mode page
+                    if (target?.getAttribute("data-reset-guided-mode-page") == "true") {
+                      // Get the current page that the user is on in the guided mode
+                      const currentPage = CURRENT_PAGE.id;
+                      if (currentPage) {
+                        await openPage(currentPage);
+                      }
+                    }
+
+                    // reset the selected dataset to None
+                    $(".bf-dataset-span").html("None");
+                    // reset the current owner span in the manage dataset make pi owner of a dataset tab
+                    $(".current-permissions").html("None");
+
+                    refreshOrganizationList();
+
+                    // If the button that triggered the organization has the class
+                    // guided-change-workspace (from guided mode), handle changes based on the ev id
+                    // otherwise, reset the FFM UI based on the ev class
+                    // NOTE: For API Key sign in flow it is more simple to just reset the UI as the new user may be in a separate workspace than the prior user.
+                    target?.classList.contains("data-reset-guided-mode-page")
+                      ? handleGuidedModeOrgSwitch(target)
+                      : resetFFMUI(target);
+
+                    datasetList = [];
+                    defaultBfDataset = null;
+                    clearDatasetDropdowns();
                   })
                   .catch((error) => {
                     Swal.showValidationMessage(userErrorMessage(error));
@@ -9051,6 +8608,8 @@ Analytics Logging Section
 //  analyticsGranularity: string - Determines what levels of granularity get logged; options are: "prefix", "action", "action with destination", "all levels of granularity."
 //  action: string - Optional. Indicates the step in the metadata preparation process the Success or Failure occurs
 //  destination: string - Optional. The destination where the action is occurring; defined below in an enum
+
+// TEST comment for build spawn
 
 function logMetadataForAnalytics(
   category,
@@ -9737,6 +9296,30 @@ const gatherLogs = () => {
         }
       }
     }
+  });
+};
+
+/**
+ * Gather the client's analytics ID and save it in a file of the user's choosing. The user can then send this to use when requesting to have their data
+ * removed from our analytics database. For each computer/profile the user has they may have to perform this operation if they want all of their data
+ * purged.
+ */
+const displayClientId = () => {
+  const { clipboard } = require("electron");
+  clipboard.writeText("Example string", "selection");
+  let clientId = nodeStorage.getItem("userId");
+
+  const copyClientIdToClipboard = () => {
+    clipboard.writeText(clientId, "clipboard");
+  };
+  copyClientIdToClipboard();
+  let copyIcon = `<i class="fas fa-copy" id="copy-icon-client-id" click="${copyClientIdToClipboard()}" ></i>`;
+  Swal.fire({
+    title: "Click the Copy Icon to Copy Your Client ID",
+    html: `<div style="margin-bottom:1rem;">${clientId} ${copyIcon}</div>`,
+    heightAuto: false,
+    allowOutsideClick: false,
+    allowEscapeKey: true,
   });
 };
 

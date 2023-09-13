@@ -1,6 +1,6 @@
 // this function runs when the DOM is ready, i.e. when the document has been parsed
 document.addEventListener("DOMContentLoaded", function () {
-  const ipcRenderer = require("electron").ipcRenderer;
+  const { ipcRenderer } = require("electron");
 
   //Request the spreadsheet data from main
   ipcRenderer.once("requested-spreadsheet", async (ev, spreadsheet) => {
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
         data: manifestFileData,
         columns: columnHeaders.map((header) => {
           return {
-            readOnly: readOnlyHeaders.includes(header) ? true : false,
+            readOnly: !!readOnlyHeaders.includes(header),
             type: "text",
             title: header,
             width: "204px",
@@ -88,18 +88,38 @@ document.addEventListener("DOMContentLoaded", function () {
         //extract headers and data
         const savedData = manifestTable.getData();
         const savedHeaders = savedData[0];
+        let breakOut = 0;
         savedData.shift();
 
         //remove extra columns created if headers are untitled
-        if (savedHeaders[8] === "") savedHeaders.splice(8, 1);
-        if (savedHeaders[7] === "") savedHeaders.splice(7, 1);
-        if (savedHeaders[6] === "") savedHeaders.splice(6, 1);
-        if (savedHeaders[5] === "") savedHeaders.splice(5, 1);
+        for (let i = savedHeaders.length - 1; i >= 0; i--) {
+          if (breakOut > 2) {
+            // After 2 rows of not being empty, break out of the loop
+            break;
+          }
+          if (savedHeaders[i] === "") {
+            savedHeaders.splice(i, 1);
+          } else {
+            breakOut++;
+          }
+        }
 
-        const result = [savedHeaders, savedData];
+        // iterate through savedData and remove any rows that are empty
+        breakOut = 0;
+        for (let i = savedData.length - 1; i >= 0; i--) {
+          if (breakOut > 2) {
+            // After 2 rows of not being emtpy, break out of the loop
+            break;
+          }
+          if (savedData[i][0] === "") {
+            savedData.splice(i, 1);
+          } else {
+            breakOut++;
+          }
+        }
 
         //send spreadsheet data back to main
-        ipcRenderer.send("spreadsheet-results", result);
+        ipcRenderer.send("spreadsheet-results", [savedHeaders, savedData]);
       });
     }
   });

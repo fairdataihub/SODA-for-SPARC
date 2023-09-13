@@ -34,6 +34,8 @@ autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 global.trackKombuchaEvent = trackKombuchaEvent;
 const nodeStorage = new JSONStorage(app.getPath("userData"));
+// nodeStorage.setItem("announcements", true);
+
 /*************************************************************
  * Python Process
  *************************************************************/
@@ -242,9 +244,6 @@ let user_restart_confirmed = false;
 let updatechecked = false;
 let window_reloaded = false;
 function initialize() {
-  const checkForAnnouncements = () => {
-    mainWindow.webContents.send("checkForAnnouncements");
-  };
   sendUserAnalytics();
   makeSingleInstance();
   loadDemos();
@@ -274,23 +273,23 @@ function initialize() {
               let { response } = responseObject;
               if (response === 0) {
                 // Runs the following if 'Yes' is clicked
-                var announcementsLaunch = nodeStorage.getItem("announcements");
-                nodeStorage.setItem("announcements", false);
                 await exitPyProc();
                 quit_app();
               }
             });
         }
       } else {
-        var first_launch = nodeStorage.getItem("firstlaunch");
-        nodeStorage.setItem("firstlaunch", true);
-        nodeStorage.setItem("announcements", true);
+        // if this flag is true SODA for SPARC will run through the auto update launch workflow
+        nodeStorage.setItem("auto_update_launch", true);
+        // after an autoupdate we want to display announcements at launch
+        nodeStorage.setItem("launch_announcements", true);
         await exitPyProc();
         app.exit();
       }
     });
   }
   const quit_app = () => {
+    // TODO: CHeck if an update was downloaded here and reset the launchAnnouncements and freshLaunch flags to true [ HERE ]
     app.showExitPrompt = false;
     mainWindow.close();
     /// feedback form iframe prevents closing gracefully
@@ -309,6 +308,7 @@ function initialize() {
       center: true,
       show: false,
       icon: __dirname + "/assets/menu-icon/soda_icon.png",
+      // autoHideMenuBar: true,
       webPreferences: {
         nodeIntegration: true,
         enableRemoteModule: true,
@@ -336,17 +336,13 @@ function initialize() {
         //mainWindow.maximize();
         mainWindow.show();
         createWindow();
-        var first_launch = nodeStorage.getItem("firstlaunch");
-        var announcementsLaunch = nodeStorage.getItem("announcements");
-        if (first_launch == true || first_launch == undefined) {
+        var first_launch = nodeStorage.getItem("auto_update_launch");
+        if (first_launch == true) {
+          nodeStorage.setItem("auto_update_launch", false);
           mainWindow.reload();
           mainWindow.focus();
-          nodeStorage.setItem("firstlaunch", false);
         }
-        if (announcementsLaunch == true || announcementsLaunch == undefined) {
-          checkForAnnouncements();
-          nodeStorage.setItem("announcements", false);
-        }
+
         start_pre_flight_checks();
         if (!buildIsBeta) {
           autoUpdater.checkForUpdatesAndNotify();
@@ -355,9 +351,9 @@ function initialize() {
       }, 6000);
     });
     mainWindow.on("show", () => {
-      var first_launch = nodeStorage.getItem("firstlaunch");
-      if ((first_launch == true || first_launch == undefined) && window_reloaded == false) {
-      }
+      var first_launch = nodeStorage.getItem("auto_update_launch");
+      // if ((first_launch == true || first_launch == undefined) && window_reloaded == false) {
+      // }
     });
   });
 
@@ -461,6 +457,10 @@ autoUpdater.on("update-available", () => {
 });
 autoUpdater.on("update-downloaded", () => {
   log.info("update_downloaded");
+  // set the launch announcements and auto update flags to true here to handle the case where a user closes the application once the update is downloaded
+  // via some means other than the notyf popup
+  nodeStorage.setItem("launch_announcements", true);
+  nodeStorage.setItem("auto_update_launch", true);
   mainWindow.webContents.send("update_downloaded");
 });
 ipcMain.on("restart_app", async () => {

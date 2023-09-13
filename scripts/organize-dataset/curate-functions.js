@@ -2,7 +2,7 @@ const checkDiskSpace = require("check-disk-space").default;
 
 var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
-const nonAllowedCharacters = '<>_:",;[]{}^`~@/|?*$=!%&+#\\';
+const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 
 // Event listeners for opening the dropdown prompt
 document
@@ -904,7 +904,7 @@ const create_child_node = (
     for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
       if ("action" in oldFormatNode["folders"][key]) {
         if (!oldFormatNode["folders"][key]["action"].includes("deleted")) {
-          if (nodeName === "My_dataset_folder") {
+          if (nodeName === "dataset_root") {
             high_lvl_folder_node = key;
           }
           if (key === selectedOriginalLocation && parentFolder === high_lvl_folder_node) {
@@ -1038,7 +1038,7 @@ var jsTreeData = create_child_node(
     files: {},
     type: "",
   },
-  "My_dataset_folder",
+  "dataset_root",
   "folder",
   "",
   true,
@@ -1157,7 +1157,7 @@ const moveItems = async (ev, category) => {
 
   jsTreeData = create_child_node(
     datasetStructureJSONObj,
-    "My_dataset_folder",
+    "dataset_root",
     "folder",
     "",
     true,
@@ -1202,26 +1202,29 @@ const moveItems = async (ev, category) => {
     hideClass: {
       popup: "animate__animated animate__fadeOutUp animate_fastest",
     },
+    didOpen: () => {
+      document.getElementById("swal2-content").style.overflowY = "auto";
+      document.getElementById("swal2-content").style.maxHeight = "500px";
+    },
     preConfirm: () => {
       Swal.resetValidationMessage();
       if (!selectedPath) {
         Swal.showValidationMessage("Please select a folder destination!");
         return undefined;
+      } else if (selectedNode === "dataset_root") {
+        Swal.showValidationMessage("Items cannot be moved to this level of the dataset!");
+        return undefined;
+      } else if (selectedNode === selectedItem) {
+        Swal.showValidationMessage("Items cannot be moved into themselves!");
+        return undefined;
       } else {
-        if (selectedNode === "My_dataset_folder") {
-          Swal.showValidationMessage("Items cannot be moved to this level of the dataset!");
-          return undefined;
-        } else if (selectedNode === selectedItem) {
-          Swal.showValidationMessage("Items cannot be moved into themselves!");
-          return undefined;
-        } else {
-          return selectedPath;
-        }
+        return selectedPath;
       }
     },
   });
 
   if (folderDestination) {
+    // Confirm with user if they want to move the item(s)
     const { value: confirm } = await Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
@@ -1240,6 +1243,8 @@ const moveItems = async (ev, category) => {
     });
 
     if (confirm) {
+      // User confimed the moving of the item(s)
+      // TODO: Dorian -> Add a nicer loading icon for the sweet alert here
       let duplicateItems = [`<ul style="text-align: center;">`];
       let numberItems = $("div.single-item.selected-item").toArray().length;
       let timer = 2000;
@@ -1263,47 +1268,47 @@ const moveItems = async (ev, category) => {
       }).then(() => {
         // action to move and delete here
         // multiple files/folders
-        let split = selectedPath.split("/");
-        let datasetCopy = datasetStructureJSONObj;
+        let splitSelectedPath = selectedPath.split("/");
+        let datasetStructureCopy = datasetStructureJSONObj;
+
         if ($("div.single-item.selected-item").toArray().length > 1) {
+          // Moving multiple items
           $("div.single-item.selected-item")
             .toArray()
             .forEach((element) => {
-              datasetCopy = datasetStructureJSONObj;
+              console.log(element);
+              datasetStructureCopy = datasetStructureJSONObj;
               let itemToMove = element.textContent;
               let itemType = "";
-              if ($(element.firstElementChild).hasClass("myFile")) {
-                itemType = "file";
-              } else if ($(element.firstElementChild).hasClass("myFol")) {
-                itemType = "folder";
-              }
-              //do a check here
-              //store duplicates into array and then skip
-              //let user know which ones were duplicates
 
-              for (let i = 1; i < split.length; i++) {
-                if (datasetCopy["folders"].hasOwnProperty(split[i])) {
-                  datasetCopy = datasetCopy["folders"][split[i]];
+              if ($(element.firstElementChild).hasClass("myFile")) {
+                itemType = "files";
+              } else if ($(element.firstElementChild).hasClass("myFol")) {
+                itemType = "folders";
+              }
+
+              for (let i = 1; i < splitSelectedPath.length; i++) {
+                if (datasetStructureCopy["folders"].hasOwnProperty(splitSelectedPath[i])) {
+                  // Traverse to the necessary subfolder based on the path length (amount of subfolders)
+                  datasetStructureCopy = datasetStructureCopy["folders"][splitSelectedPath[i]];
                 }
               }
-              if (itemType == "file") {
-                datasetCopy = datasetCopy["files"];
-              } else {
-                datasetCopy = datasetCopy["folders"];
-              }
 
-              if (datasetCopy.hasOwnProperty(itemToMove)) {
-                if (itemType == "folder") {
-                  itemToMove = itemToMove + "/";
+              //Enter files or folders based on the itemType
+              datasetStructureCopy = datasetStructureCopy[itemType];
+              if (datasetStructureCopy.hasOwnProperty(itemToMove)) {
+                // There is already an item with the same name in the destination folder
+                if (itemType == "folders") {
+                  itemToMove += "/";
                 }
                 duplicateItems.push(`<li style="font-size: large;">${itemToMove}</li>`);
               } else {
                 moveItemsHelper(itemToMove, selectedPath, itemType, organizeDSglobalPath);
-                ev.parentElement.remove();
+                element.remove();
               }
             });
-          duplicateItems.push(`</ul>`);
 
+          duplicateItems.push(`</ul>`);
           if (duplicateItems.length > 2) {
             Swal.fire({
               backdrop: "rgba(0,0,0, 0.4)",
@@ -1316,41 +1321,41 @@ const moveItems = async (ev, category) => {
               },
             });
           }
-          // only 1 file/folder
         } else {
+          // only 1 file/folder
           let itemToMove = ev.parentElement.textContent;
           let itemType = "";
 
           if ($(ev).hasClass("myFile")) {
-            itemType = "file";
+            itemType = "files";
           } else if ($(ev).hasClass("myFol")) {
-            itemType = "folder";
+            itemType = "folders";
           }
 
-          for (let i = 1; i < split.length; i++) {
-            if (split[i] in datasetCopy["folders"]) {
-              datasetCopy = datasetCopy["folders"][split[i]];
+          for (let i = 1; i < splitSelectedPath.length; i++) {
+            if (splitSelectedPath[i] in datasetStructureCopy["folders"]) {
+              // Traverse to the necessary subfolder based on the path length (amount of subfolders)
+              datasetStructureCopy = datasetStructureCopy["folders"][splitSelectedPath[i]];
             }
           }
 
-          if (itemType == "file") {
-            datasetCopy = datasetCopy["files"];
-          } else {
-            datasetCopy = datasetCopy["folders"];
-          }
-          if (datasetCopy.hasOwnProperty(itemToMove)) {
+          // Enter files or folders based on the itemType
+          datasetStructureCopy = datasetStructureCopy[itemType];
+          if (datasetStructureCopy.hasOwnProperty(itemToMove)) {
             Swal.fire({
               backdrop: "rgba(0,0,0, 0.4)",
               heightAuto: false,
               icon: "error",
-              title: `The ${itemType} is already in the folder destination!`,
+              title: `The ${itemType.substring(
+                0,
+                itemType.length - 1
+              )} is already in the folder destination!`,
               html: `<ul style="text-align: center;"><li>${itemToMove}</li></ul>`,
               didOpen: () => {
                 Swal.hideLoading();
               },
             });
           } else {
-            // return selectedPath;
             moveItemsHelper(itemToMove, selectedPath, itemType, organizeDSglobalPath);
             ev.parentElement.remove();
             Swal.fire({
@@ -1364,21 +1369,22 @@ const moveItems = async (ev, category) => {
             });
           }
         }
-        let pathAsArray = selectedPath.split("/");
+
+        // Rerender the file view again
         listItems(myPath, "#items", 500);
         getInFolder(".single-item", "#items", organizeDSglobalPath, myPath);
 
-        // if moved into an empty folder we need to remove the class 'empty'
-        // from the folder destination
-        let folderDestinationName = pathAsArray[pathAsArray.length - 1];
-        if (myPath?.["folders"]?.[folderDestinationName] != undefined) {
-          if (Object.keys(myPath?.["folders"]?.[folderDestinationName]).length > 0) {
-            //check if element has empty class
-            let listedItems = document.getElementsByClassName("folder_desc");
-            for (let i = 0; i < listedItems.length; i++) {
-              if (listedItems[i].innerText === folderDestinationName) {
-                listedItems[i].parentElement.children[0].classList.remove("empty");
-              }
+        // if moved into an empty folder we need to remove the class 'empty' from the folder destination
+        let folderDestinationName = splitSelectedPath[splitSelectedPath.length - 1];
+        if (
+          myPath?.["folders"]?.[folderDestinationName] != undefined &&
+          Object.keys(myPath?.["folders"]?.[folderDestinationName]).length > 0
+        ) {
+          let listedItems = document.getElementsByClassName("folder_desc");
+          for (let i = 0; i < listedItems.length; i++) {
+            // Find the folder in the list of folders and remove the empty class
+            if (listedItems[i].innerText === folderDestinationName) {
+              listedItems[i].parentElement.children[0].classList.remove("empty");
             }
           }
         }
@@ -1388,30 +1394,31 @@ const moveItems = async (ev, category) => {
 };
 
 const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
-  var filtered = getGlobalPath(currentDatasetPath);
-  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  var selectedNodeList = destination.split("/").slice(1);
-  var destinationPath = getRecursivePath(selectedNodeList, datasetStructureJSONObj);
+  let filtered = getGlobalPath(currentDatasetPath);
+  let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+  let selectedNodeList = destination.split("/").slice(1);
+  let destinationPath = getRecursivePath(selectedNodeList, datasetStructureJSONObj);
 
   // handle duplicates in destination folder
-  if (category === "file") {
-    category = "files";
-    var uiFiles = {};
+  if (category === "files") {
+    let uiFiles = {};
     if (JSON.stringify(destinationPath["files"]) !== "{}") {
-      for (var file in destinationPath["files"]) {
+      for (let file in destinationPath["files"]) {
         uiFiles[path.parse(file).base] = 1;
       }
     }
-    var fileBaseName = path.basename(item);
-    var originalFileNameWithoutExt = path.parse(fileBaseName).name;
-    var fileNameWithoutExt = originalFileNameWithoutExt;
-    var j = 1;
+    let fileBaseName = path.basename(item);
+    let originalFileNameWithoutExt = path.parse(fileBaseName).name;
+    let fileNameWithoutExt = originalFileNameWithoutExt;
+    let j = 1;
 
     while (fileBaseName in uiFiles) {
       fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
       fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext;
       j++;
     }
+
+    // Add moved action to file in SODA JSON
     if ("action" in myPath[category][item]) {
       if (!myPath[category][item]["action"].includes("moved")) {
         myPath[category][item]["action"].push("moved");
@@ -1426,21 +1433,22 @@ const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
       }
     }
     destinationPath[category][fileBaseName] = myPath[category][item];
-  } else if (category === "folder") {
-    category = "folders";
-    var uiFolders = {};
+  } else if (category === "folders") {
+    let uiFolders = {};
     if (JSON.stringify(destinationPath["folders"]) !== "{}") {
       for (var folder in destinationPath["folders"]) {
         uiFolders[folder] = 1;
       }
     }
-    var originalFolderName = path.basename(item);
-    var renamedFolderName = originalFolderName;
-    var j = 1;
+    let originalFolderName = path.basename(item);
+    let renamedFolderName = originalFolderName;
+    let j = 1;
     while (renamedFolderName in uiFolders) {
       renamedFolderName = `${originalFolderName} (${j})`;
       j++;
     }
+
+    // Add moved action to folder in SODA JSON
     if ("action" in myPath[category][item]) {
       myPath[category][item]["action"].push("moved");
       addMovedRecursively(myPath[category][item]);
@@ -1458,17 +1466,6 @@ const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
   }
   //delete item from the original location
   delete myPath[category][item];
-  listItems(myPath, "#items");
-  getInFolder(".single-item", "#items", currentDatasetPath, datasetStructureJSONObj);
-
-  // log moving multiple files/folders successfully
-  logCurationForAnalytics(
-    "Success",
-    PrepareDatasetsAnalyticsPrefix.CURATE,
-    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-    ["Step 3", "Move", category === "files" ? "File" : "Folder"],
-    determineDatasetLocation()
-  );
 };
 
 const updateManifestLabelColor = (el) => {
@@ -1753,7 +1750,6 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
       //spreadsheet reply contained results
       ipcRenderer.removeAllListeners("spreadsheet-reply");
       saveManifestFiles = true;
-      // guidedManifestTable = result;
       if (saveManifestFiles) {
         //if additional metadata or description gets added for a file then add to json as well
         sodaJSONObj["manifest-files"]["auto-generated"] = true;
@@ -1767,10 +1763,12 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
           highlevelFolderName
         );
         let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+
         if (!fs.existsSync(localFolderPath)) {
           fs.mkdirSync(localFolderPath);
           fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
         }
+
         jsonManifest = excelToJson({
           sourceFile: selectedManifestFilePath,
           columnToKey: {
@@ -1784,6 +1782,10 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
         //Update the metadata in json object
         for (let i = 0; i < savedData.length; i++) {
           let fileName = savedData[i][0];
+          if (fileName == "" || fileName == undefined) {
+            // fileName is blank if user accidentally creates a new row and does not remove it
+            continue;
+          }
           let cleanedFileName = "";
           let fileNameSplit = fileName.split("/");
           let description = savedData[i][2];

@@ -130,6 +130,8 @@ const getDatasetMetadataFiles = async (datasetName) => {
   return metadata_files;
 };
 
+const setDatasetPermissions = async (selected_account, selected_dataset, params) => {};
+
 const getDatasetPermissions = async (selected_account, selected_dataset, boolReturnAll) => {
   let getDatasetPermissionsResponse = await client.get(`/manage_datasets/bf_dataset_permissions`, {
     params: {
@@ -157,12 +159,10 @@ const reserveDOI = async (account, dataset) => {
 
   try {
     let doiReserve = await client.post(`datasets/${dataset}/reserve-doi`);
-    // Save DOI to SODAJSONObj
     return doiReserve.data.doi;
   } catch (err) {
     let errorMessage = userErrorMessage(err);
     clientError(err);
-    console.log(errorMessage);
     if (errorMessage.includes("is locked")) {
       return "locked";
     }
@@ -187,7 +187,6 @@ const getLockStatus = async (datasetNameOrId) => {
     let lockStatusResponse = await client.get(`/datasets/${datasetNameOrId}/lock-status`);
     return lockStatusResponse.data;
   } catch (err) {
-    console.log(err);
     clientError(err);
     userErrorMessage(err);
   }

@@ -141,7 +141,7 @@ $(document).ready(function () {
       Swal.close();
       if (!success.includes(false)) {
         Swal.fire({
-          title: "Successfully updated collection from " + defaultBfDataset,
+          title: `Successfully updated collection from ${defaultBfDataset}`,
           icon: "success",
           showConfirmButton: true,
           heightAuto: false,

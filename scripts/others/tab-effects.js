@@ -194,7 +194,7 @@ const showParentTab = async (tabNow, nextOrPrev) => {
 
 // function to fill the card details in the preview tab of step 7
 const fill_info_details = () => {
-  let new_dataset_name = "My_dataset_folder";
+  let new_dataset_name = "dataset_root";
   $(".card-container.generate-preview").remove();
   if (sodaJSONObj["starting-point"]["type"] === "bf") {
     add_card_detail("Pennsieve account", $("#current-bf-account-generate").text());
@@ -609,9 +609,16 @@ const nextPrev = (pageIndex) => {
     }
 
     if (missingFiles.length > 0) {
-      var notIncludedMessage = `<div style='text-align: left'>You did not include the following metadata files that are typically expected for all SPARC datasets: <br><ol style='text-align: left'>${missingFiles.join(
-        ""
-      )} </ol>Are you sure you want to continue?</div>`;
+      var notIncludedMessage = `
+        <div style='text-align: left'>
+          You did not include the following metadata files that are typically expected for all SPARC datasets:
+          <br>
+          <ol style='text-align: left'>
+            ${missingFiles.join("")}
+          </ol>
+          Are you sure you want to continue?
+        </div>
+      `;
       Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
@@ -1752,7 +1759,6 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
   if (currentDiv === "Question-getting-started-BF-dataset") {
     let selectedDataset = $("#current-bf-dataset").text();
     $("#nextBtn").prop("disabled", true);
-    // $("#button-confirm-bf-dataset-getting-started").prop("disabled", true);
     sodaJSONObj = {
       "bf-account-selected": {
         "account-name": {},
@@ -1769,6 +1775,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
       },
     };
 
+    // Set the default Pennsieve account and dataset
     sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
     sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedDataset;
 
@@ -1957,7 +1964,6 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
 
   // first, handle target or the next div to show
   let target = document.getElementById(ev.getAttribute("data-next"));
-  console.log("target", target);
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!target.classList.contains("show")) {
@@ -2940,7 +2946,7 @@ const hidePrevDivs = (currentDiv, category) => {
 };
 
 const updateJSONStructureGettingStarted = () => {
-  document.getElementById("input-global-path").value = "My_dataset_folder/";
+  document.getElementById("input-global-path").value = "dataset_root/";
 };
 
 // function to populate metadata files
@@ -3295,7 +3301,7 @@ const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
 // function to call when users click on Continue at each step
 const updateOverallJSONStructure = (id) => {
   if (id === allParentStepsJSON["high-level-folders"]) {
-    document.getElementById("input-global-path").value = "My_dataset_folder/";
+    document.getElementById("input-global-path").value = "dataset_root/";
     var optionCards = document.getElementsByClassName("option-card high-level-folders");
     var newDatasetStructureJSONObj = { folders: {}, files: {} };
     var keys = [];

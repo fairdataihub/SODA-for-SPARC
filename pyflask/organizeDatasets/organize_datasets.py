@@ -19,6 +19,8 @@ import time
 import shutil
 import subprocess
 import re
+from timeit import default_timer as timer
+from datetime import timedelta
 import gevent
 import pathlib
 from datetime import datetime, timezone
@@ -932,7 +934,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "inputs_metadata.xlsx",
         "outputs_metadata.xlsx",
     ]
-
     double_extensions = [
         ".ome.tiff",
         ".ome.tif",
@@ -956,6 +957,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     create_soda_json_total_items = 0
     create_soda_json_completed = 0
 
+    # ["extensions"] doesn't seem to be returned by the Pennsieve API anymore
     def verify_file_name(file_name, extension):
         global namespace_logger
         if extension == "":
@@ -1001,53 +1003,40 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
         r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
         r.raise_for_status()
-        subfolder = r.json()
+        subfolder = r.json()["children"]
 
-        folder_items = subfolder["children"]
-        for items in folder_items:
+        for items in subfolder:
             folder_item_name = items["content"]["name"]
             create_soda_json_progress += 1
             item_id = items["content"]["id"]
+            # is a file name check if there are additional manifest information to attach to files
             if item_id[2:9] == "package":
-                # is a file name check if there are additional manifest information to attach to files
                 if (
                     folder_item_name[0:8] != "manifest"
                 ):  # manifest files are not being included in json structure
 
-                    #verify file name first
-                    if("extension" not in folder_items):
+                    # verify file name first (used for legacy Pennsieve datasets)
+                    if("extension" not in subfolder):
                         folder_item_name = verify_file_name(folder_item_name, "")
                     else:
-                        folder_item_name = verify_file_name(folder_item_name, folder_items["extension"])
+                        folder_item_name = verify_file_name(folder_item_name, subfolder["extension"])
                         
-                    ## verify timestamps
-                    timestamp = items["content"]["createdAt"]
-                    formatted_timestamp = timestamp.replace('.', ',')
+                    # verify timestamps
+                    timestamp = items["content"]["createdAt"].replace('.', ',')
+                    paths_list = [*subfolder_json["bfpath"]]
                     subfolder_json["files"][folder_item_name] = {
                         "action": ["existing"],
                         "path": item_id,
-                        "bfpath": [],
-                        "timestamp": formatted_timestamp,
+                        "bfpath": paths_list,
+                        "timestamp": timestamp,
                         "type": "bf",
                         "additional-metadata": "",
                         "description": "",
                     }
-                    for paths in subfolder_json["bfpath"]:
-                        subfolder_json["files"][folder_item_name]["bfpath"].append(paths)
-
                     
                     # creates path for folder_item_name (stored in temp_name)
                     if len(subfolder_json["files"][folder_item_name]["bfpath"]) > 1:
-                        temp_name = ""
-                        for i in range(
-                            len(subfolder_json["files"][folder_item_name]["bfpath"])
-                        ):
-                            if i == 0:
-                                continue
-                            temp_name += (
-                                subfolder_json["files"][folder_item_name]["bfpath"][i] + "/"
-                            )
-                        temp_name += folder_item_name
+                        temp_name = '/'.join(subfolder_json["files"][folder_item_name]["bfpath"][1:]) + "/" + folder_item_name
                     else:
                         temp_name = folder_item_name
                     
@@ -1144,17 +1133,15 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                             subfolder_json["files"][folder_item_name]["extra_columns"][manifestKey] = updated_manifest[manifestKey][location_index]
 
             else:  # another subfolder found
+                paths_list = [*subfolder_json["bfpath"], folder_item_name]
                 subfolder_json["folders"][folder_item_name] = {
                     "action": ["existing"],
                     "path": item_id,
-                    "bfpath": [],
+                    "bfpath": paths_list,
                     "files": {},
                     "folders": {},
                     "type": "bf",
                 }
-                for paths in subfolder_json["bfpath"]:
-                    subfolder_json["folders"][folder_item_name]["bfpath"].append(paths)
-                subfolder_json["folders"][folder_item_name]["bfpath"].append(folder_item_name)
 
         if len(subfolder_json["folders"].keys()) != 0:  # there are subfolders
             for folder in subfolder_json["folders"].keys():
@@ -1162,7 +1149,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                 createFolderStructure(subfolder, pennsieve_client_or_token, manifest)
 
     # START
-
+    start = timer()
     token = get_access_token()
 
     # check that the Pennsieve dataset is valid
@@ -1172,7 +1159,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         raise e
 
     selected_dataset_id = get_dataset_id(token, bf_dataset_name)
-
 
     # check that the user has permission to edit this dataset
     try:
@@ -1196,14 +1182,13 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     # headers for making requests to Pennsieve's api
     headers = create_request_headers(token)
 
-
-    # root of dataset is pulled here
-    # root_children is the files and folders within root
+    # root of dataset is pulled here (high level folders/files are gathered here)
+    # root_folder is the files and folders within root
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
     r.raise_for_status()
-    root_folder = r.json()
+    root_folder = r.json()["children"]
 
-    # root's packages 
+    # Get the amount of files/folders in the dataset
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=headers)
     r.raise_for_status()
     packages_list = r.json()
@@ -1212,14 +1197,14 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     # root's children files
     for count in packages_list.values():
         create_soda_json_total_items += int(count)
-    root_children = root_folder["children"]
 
-    for items in root_children:
+    # Go through the content in the root folder
+    for items in root_folder:
         item_id = items["content"]["id"]
         item_name = items["content"]["name"]
+        # If package type is Collection, then it is a folder
         if items["content"]["packageType"] == "Collection" and item_name in high_level_sparc_folders:
             create_soda_json_progress += 1
-            # is a SPARC folder and will be checked recursively
             soda_json_structure["dataset-structure"]["folders"][item_name] = {
                 "type": "bf",
                 "path": item_id,
@@ -1228,48 +1213,20 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                 "folders": {},
                 "bfpath": [item_name],
             }
-        else:
-            if item_name in high_level_metadata_sparc:
-                create_soda_json_progress += 1
-                # is a metadata file
-                if "metadata-files" in soda_json_structure.keys():
-                    soda_json_structure["metadata-files"][item_name] = {
-                        "type": "bf",
-                        "action": ["existing"],
-                        "path": item_id,
-                    }
 
-
-    # manifest information is needed so it is looked for before the recursive calls are made
-    if len(soda_json_structure["dataset-structure"]["folders"].keys()) != 0:
-        for high_lvl_folder in soda_json_structure["dataset-structure"]["folders"].keys():
-            collection_id = soda_json_structure["dataset-structure"]["folders"][high_lvl_folder][
-                "path"
-            ]
-
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
+            manifest_dict[item_name] = {}
+            # Check the content of the folder to see if a manifest file exists
+            r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}", headers=headers)
             r.raise_for_status()
-            subfolder = r.json()
+            folder_content = r.json()["children"]
 
-            children_content = subfolder["children"]
-            manifest_dict[high_lvl_folder] = {}
-            if len(children_content) > 0:
-                for items in children_content:
-                    # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
-                    package_name = items["content"]["name"]
-                    package_id = items["content"]["id"]
+            if len(folder_content) > 0:
+                for package in folder_content:
+                    package_name = package["content"]["name"]
                     if package_name in manifest_sparc:
                         # item is manifest
-                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=headers)
-                        r.raise_for_status()
-                        file_details = r.json()
-
-                        file_id = file_details[0]["content"]["id"]
-                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/files/{file_id}", headers=headers)
-                        r.raise_for_status()
-                        manifest_url = r.json()["url"]
-
                         df = ""
+                        package_id = package["content"]["id"]
                         try:                            
                             if package_name.lower() == "manifest.xlsx":
                                 df = load_metadata_to_dataframe(package_id, "excel", token)
@@ -1277,28 +1234,40 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                             else:
                                 df = load_metadata_to_dataframe(package_id, "csv", token)
                                 df = df.fillna("")
-                            # 
-                            manifest_dict[high_lvl_folder].update(df.to_dict())
+                            manifest_dict[item_name].update(df.to_dict())
                         except Exception as e:
                             manifest_error_message.append(
                                 items["content"]["name"]
                             )
 
                 high_lvl_folder_dict = soda_json_structure["dataset-structure"]["folders"][
-                    high_lvl_folder
+                    item_name
                 ]
 
-                if high_lvl_folder in manifest_dict:
+                if item_name in manifest_dict:
                     createFolderStructure(
-                        high_lvl_folder_dict, token, manifest_dict[high_lvl_folder]
+                        high_lvl_folder_dict, token, manifest_dict[item_name]
                     )  # passing item's json and the collection ID
+
+
+        else:
+            # Item is a metadata file
+            if item_name in high_level_metadata_sparc:
+                create_soda_json_progress += 1
+                if "metadata-files" in soda_json_structure.keys():
+                    soda_json_structure["metadata-files"][item_name] = {
+                        "type": "bf",
+                        "action": ["existing"],
+                        "path": item_id,
+                    }
 
     success_message = (
         "Data files under a valid high-level SPARC folders have been imported"
     )
     create_soda_json_completed = 1
 
-    
+    end = timer()
+    namespace_logger.info(f"Time to import {soda_json_structure['bf-dataset-selected']['dataset-name']} dataset: {timedelta(seconds=end - start)}")
     return {
         "soda_object": soda_json_structure,
         "success_message": success_message,
