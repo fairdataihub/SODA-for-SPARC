@@ -15,9 +15,8 @@
         "Sweet alert icons for Prepare Metadata -> No 'metadata' file found in root directory will all be the same icon."
       ],
       "features": [
-        "SODA for SPARC uploads files/folders to existing Pennsieve datasets on average 47% faster than before!",
-        "SODA for SPARC uploads new SODA created datasets onto Pennsieve on average 48% faster than before!",
-        "Importing datasets from Pennsieve have been slightly improved on average by 10%!",
+        "Uploads to new and existing Pennsieve datasets have been further optimized in SODA for SPARC.",
+        "Importing datasets from Pennsieve have been further optimized in SODA for SPARC.",
         "Enhanced the user experience when importing folders and files into SODA.",
         "A button for gathering the user's Kombucha Analytics client ID is available in the 'Contact Us' page in the sidebar. This eases the user's burden when making a request to view/delete their analytics data as per GDPR.",
         "SODA for SPARC returns more informative and useful error messages to the client when a service that it depends on is unavailable or behaving unexpectedly."
