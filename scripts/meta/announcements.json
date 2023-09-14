@@ -15,7 +15,7 @@
         "Sweet alert icons for Prepare Metadata -> No 'metadata' file found in root directory will all be the same icon."
       ],
       "features": [
-       "Uploads to new and existing Pennsieve datasets have been further optimized in SODA for SPARC.",
+        "Uploads to new and existing Pennsieve datasets have been further optimized in SODA for SPARC.",
         "Importing datasets from Pennsieve have been further optimized in SODA for SPARC.",
         "Enhanced the user experience when importing folders and files into SODA.",
         "A button for gathering the user's Kombucha Analytics client ID is available in the 'Contact Us' page in the sidebar. This eases the user's burden when making a request to view/delete their analytics data as per GDPR.",
