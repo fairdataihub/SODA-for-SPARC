@@ -6287,7 +6287,7 @@ const openPage = async (targetPageID) => {
           });
           sodaJSONObj["pennsieve-dataset-has-code-metadata-file"] = "yes";
         } catch (error) {
-          console.log("code_description file does not exist");
+          console.log("code_description metadata file does not exist");
         }
       }
       // If the code_description file has been detected on the dataset on Pennsieve, show the
