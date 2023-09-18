@@ -104,6 +104,15 @@ document.querySelectorAll(".guided-data-deliverables-download-button").forEach((
   });
 });
 
+document
+  .querySelectorAll(".guided-subject-sample-pool-structure-download-button")
+  .forEach((button) => {
+    button.addEventListener("click", (event) => {
+      console.log("clicked");
+      ipcRenderer.send("open-folder-dialog-save-metadata", "subjects_pools_samples_structure.xlsx");
+    });
+  });
+
 ipcRenderer.on("selected-metadata-download-folder", (event, path, filename) => {
   if (path.length > 0) {
     downloadTemplates(filename, path[0]);

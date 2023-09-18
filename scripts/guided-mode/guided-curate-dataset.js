@@ -5052,7 +5052,7 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
-      openSubPageNavigation(targetPageID);
+      renderSamplesTable();
     }
 
     if (targetPageID === "guided-primary-data-organization-tab") {
@@ -6700,7 +6700,7 @@ const renderSamplesTable = () => {
     .join("\n");
 
   const subjectSampleAdditionTableContainer = document.getElementById(
-    "guided-div-add-samples-tables"
+    "guided-section-subjects-tables"
   );
   subjectSampleAdditionTableContainer.innerHTML = subjectSampleAdditionTables;
 };
@@ -10774,7 +10774,7 @@ const confirmEnter = (button) => {
     addSampleButton =
       button.parentElement.parentElement.parentElement.parentElement.previousElementSibling
         .children[0].children[0].children[1];
-    sampleTableContainers = document.getElementById("guided-div-add-samples-tables").children;
+    sampleTableContainers = document.getElementById("guided-section-subjects-tables").children;
     sampleTable = true;
     // addSampleSpecificationTableRow();
   }
