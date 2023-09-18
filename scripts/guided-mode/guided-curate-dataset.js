@@ -69,6 +69,11 @@ const lottieAnimationManager = {
       loop: true,
       autoplay: true,
     },
+    "guided-lottie-import-subjects-pools-samples-excel-file": {
+      animationData: dragDrop,
+      loop: true,
+      autoplay: true,
+    },
     "guided-dataset-metadata-intro-lottie": {
       animationData: datasetMetadataIntroLottie,
       loop: true,

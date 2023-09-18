@@ -5594,6 +5594,17 @@ ipcRenderer.on("save-file-organization-dialog", (event) => {
   });
 });
 
+document.querySelectorAll(".file-import-container").forEach((fileImportContainer) => {
+  console.log("fileImportContainer", fileImportContainer);
+  fileImportContainer.addEventListener("dragover", (ev) => {
+    ev.preventDefault();
+  });
+  fileImportContainer.addEventListener("drop", (ev) => {
+    ev.preventDefault();
+    console.log(ev.dataTransfer.files);
+  });
+});
+
 // displays the user selected banner image using Jimp in the edit banner image modal
 //path: array
 //curationMode: string (guided-moded) (freeform)

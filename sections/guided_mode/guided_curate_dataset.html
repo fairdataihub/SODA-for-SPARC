@@ -1352,12 +1352,49 @@
           class="guided--page"
           data-page-name="Dataset structuring"
         >
-          <h1 class="text-sub-step-title">Subject structuring</h1>
+          <h1 class="text-sub-step-title">Dataset structuring</h1>
           <div class="guided--section">
             <p class="help-text">
-              Create a unique ID for each of the subjects that data was collected from in the
-              interface below.
+              The core folders that contain data in a SPARC dataset are the primary, source, and
+              derivative folders, which are structured based off of the characteristics of your
+              subjects that data was extracted from. In the interface below, you can specify the
+              structure of subjects which SODA will use to automatically generate the structure of
+              the primary, source, and derivative folders.
             </p>
+            <p class="help-text">
+              If your dataset contains a large number of subjects or samples, you can also use the
+              spreadsheet import feature which will allow you to insert the data in an external
+              spreadsheet and import it in to SODA.
+            </p>
+            <p class="help-text">
+              To download the spreadsheet template, click the button below.<br />
+            </p>
+            <button class="guided-subject-sample-pool-structure-download-button">
+              Download subject/pool/samples template
+            </button>
+            <p class="help-text">
+              Once you have added your structure to the spreadsheet, import it below.<br />
+            </p>
+            <div class="file-import-container horizontal">
+              <div
+                id="guided-lottie-import-subjects-pools-samples-excel-file"
+                class="lottieAnimationContainer guided--container-lottie-small"
+              ></div>
+              <p class="help-text text-center">Drag and Drop <br /><b>code_description.xslx</b></p>
+              <p class="help-text text-center mt-md mb-md">OR</p>
+              <button
+                class="ui primary basic button mt-sm"
+                onclick="importMetadataFiles(this, 'code_description', ['.xlsx'], 'guided-code-description-para-text', 'guided')"
+              >
+                <i class="fas fa-file-import" style="margin-right: 7px"></i>Import
+                code_description.xslx
+              </button>
+              <p
+                class="help-text small text-center mt-sm"
+                id="guided-code-description-para-text"
+                style="max-width: 240px; overflow-wrap: break-word"
+              ></p>
+            </div>
           </div>
           <div class="guided--section" id="guided-section-subjects-tables"></div>
         </div>

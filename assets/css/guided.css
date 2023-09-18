@@ -24,6 +24,11 @@
   width: 200px;
 }
 
+.guided--container-lottie-small {
+  height: 100px;
+  width: 100px;
+}
+
 .black-arrow-lottie-container {
   height: 150px;
   width: 150px;
@@ -46,6 +51,25 @@
   border: 1px dashed #258193;
   padding: 20px;
   margin: 0px 10px 10px 10px;
+}
+
+.file-import-container {
+  display: flex;
+  border-radius: 10px;
+  border: 1px dashed #258193;
+}
+
+.file-import-container.horizontal {
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  padding: 5px;
+  margin: 0px 10px 10px 10px;
+}
+
+.file-import-container.vertical {
+  flex-direction: column;
+  justify-content: center;
 }
 
 .guided--container {
