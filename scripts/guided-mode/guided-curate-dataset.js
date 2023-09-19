@@ -6692,6 +6692,17 @@ const renderSubjectsTable = () => {
   document.getElementById("subject-specification-table-body").innerHTML = subjectElementRows;
 };
 
+document.getElementById("guided-button-add-a-subject").addEventListener("click", async () => {
+  const subjectName = await swalGetUserTextInput(
+    "Enter a name for the subject",
+    "Subject name",
+    "Subject name"
+  );
+  if (subjectName) {
+    console.log("subjectName", subjectName);
+  }
+});
+
 const renderSamplesTable = () => {
   const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
   //Combine sample data from subjects in and out of pools

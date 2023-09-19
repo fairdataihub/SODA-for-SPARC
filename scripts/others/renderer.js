@@ -4903,6 +4903,39 @@ const deleteProblematicFilesFromDatasetStructure = (datasetStructure) => {
   }
 };
 
+const swalGetUserTextInput = async (
+  title,
+  inputLabel,
+  validationRegex,
+  textToDisplayIfRegexValidationFails,
+  confirmButtonText,
+  cancelButtonText
+) => {
+  const { value: textInput } = await Swal.fire({
+    title: title,
+    input: "text",
+    inputLabel: inputLabel,
+    width: 600,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showConfirmButton: true,
+    showCancelButton: true,
+    confirmButtonText: confirmButtonText,
+    cancelButtonText: cancelButtonText,
+    inputValidator: (value) => {
+      if (!value) {
+        return "Input can not be empty.";
+      }
+      if (!validationRegex.test(value)) {
+        return textToDisplayIfRegexValidationFails;
+      }
+    },
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+  });
+  return textInput;
+};
+
 const swalShowError = async (title, errorText) => {
   await Swal.fire({
     title: title,
