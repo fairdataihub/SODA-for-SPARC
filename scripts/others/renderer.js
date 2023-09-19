@@ -5594,14 +5594,53 @@ ipcRenderer.on("save-file-organization-dialog", (event) => {
   });
 });
 
+const handleFileImport = (containerID, filePath) => {
+  if (containerID === "guided-container-subjects-pools-samples-structure-import") {
+    // read the contents of the first worksheet in the excel file at the path using excelToJson
+    const excelFile = excelToJson({
+      sourceFile: filePath,
+    });
+    console.log(excelFile);
+    // log the columnn headers of the first sheet
+  }
+};
+const fileNamesWithExtensions = {
+  subjects_pools_samples_structure: ["xlsx"],
+};
+
 document.querySelectorAll(".file-import-container").forEach((fileImportContainer) => {
-  console.log("fileImportContainer", fileImportContainer);
+  const fileImportContainerId = fileImportContainer.id;
+  const fileName = fileImportContainer.dataset.fileName;
   fileImportContainer.addEventListener("dragover", (ev) => {
     ev.preventDefault();
+    console.log(fileName);
   });
   fileImportContainer.addEventListener("drop", (ev) => {
     ev.preventDefault();
-    console.log(ev.dataTransfer.files);
+    const droppedFilePath = ev.dataTransfer.files[0].path;
+    const dropedFileName = path.basename(droppedFilePath).split(".")[0];
+    const droppedFileExtension = path.extname(droppedFilePath).slice(1);
+    // Throw an error if the dropped file is not the expected file
+    if (fileName !== dropedFileName) {
+      notyf.open({
+        duration: "4000",
+        type: "error",
+        message: `Please drop the ${fileName} file`,
+      });
+      return;
+    }
+    //Throw an error if the dropped file does not have an expected extension
+    if (!fileNamesWithExtensions[dropedFileName].includes(droppedFileExtension)) {
+      notyf.open({
+        duration: "4000",
+        type: "error",
+        message: `File extension must be ${fileNamesWithExtensions[dropedFileName].join(", ")}`,
+      });
+      return;
+    }
+
+    // File name and extension has been validated, not handle the file import
+    handleFileImport(fileImportContainerId, droppedFilePath);
   });
 });
 
