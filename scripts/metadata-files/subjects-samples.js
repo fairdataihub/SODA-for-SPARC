@@ -214,7 +214,30 @@ const confirmSample = () => {
 const addSubject = (curationMode) => {
   let subjectID = "";
   if (curationMode === "free-form") {
-    subjectID = $("#bootbox-subject-id").val();
+    subjectID = $("#bootbox-subject-id").val().trim();
+    if (subjectID === "") {
+      notyf.open({
+        type: "error",
+        message: "The subject_id is required to add a subject.",
+        duration: 3000,
+      });
+      return;
+    }
+
+    const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+      subjectID,
+      "string-adheres-to-identifier-conventions"
+    );
+
+    if (!subjectNameIsValid) {
+      notyf.open({
+        type: "error",
+        message: "The subject_id can not contain special characters.",
+        duration: 4000,
+      });
+      return;
+    }
+
     addSubjectIDtoDataBase(subjectID);
     if (subjectsTableData.length !== 0) {
       $("#div-import-primary-folder-subjects").hide();
@@ -410,17 +433,14 @@ const addSubjectIDtoDataBase = (id) => {
       break;
     }
   }
-  if (id.trim() !== "") {
-    if (!duplicate) {
-      var message = addNewIDToTable(id, null, "subjects");
-      addSubjectIDToJSON(id);
-    } else {
-      error =
-        "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id.";
-    }
+  if (!duplicate) {
+    var message = addNewIDToTable(id, null, "subjects");
+    addSubjectIDToJSON(id);
   } else {
-    error = "The subject_id is required to add a subject.";
+    error =
+      "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id.";
   }
+
   if (error !== "") {
     Swal.fire("Failed to add the subject", error, "error");
   }
