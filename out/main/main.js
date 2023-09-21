@@ -42,7 +42,7 @@ const portRange = 100;
 const kombuchaURL = "https://analytics-nine-ashen.vercel.app/api";
 const kombuchaServer = axios.create({
   baseURL: kombuchaURL,
-  timeout: 0
+  timeout: 0,
 });
 const guessPackaged = () => {
   log.info("Guessing if packaged");
@@ -91,51 +91,48 @@ const createPyProc = async () => {
   } else {
     log.info("server doesn't exist at specified location");
   }
-  fp(PORT, PORT + portRange).then(([freePort]) => {
-    let port = freePort;
-    if (guessPackaged()) {
-      log.info("Application is packaged");
-      let sessionServerOutput = "";
-      pyflaskProcess = require("child_process").execFile(script, [port], {});
-      pyflaskProcess.stdout.on("data", (data) => {
-        const logOutput = `[pyflaskProcess output] ${data.toString()}`;
-        sessionServerOutput += `${logOutput}`;
-      });
-      pyflaskProcess.stderr.on("data", (data) => {
-        const logOutput = `[pyflaskProcess stderr] ${data.toString()}`;
-        sessionServerOutput += `${logOutput}`;
-      });
-      pyflaskProcess.on("close", (code) => {
-        log.info(`child process exited with code ${code}`);
-        log.info("Server output during session found below:");
-        log.info(sessionServerOutput);
-      });
-    } else {
-      log.info("Application is not packaged");
-      pyflaskProcess = require("child_process").spawn("python", [script, port], {
-        stdio: "ignore"
-      });
-    }
-    if (pyflaskProcess != null) {
-      console.log("child process success on port " + port);
-      log.info("child process success on port " + port);
-    } else {
-      console.error("child process failed to start on port" + port);
-    }
-    selectedPort = port;
-  }).catch((err) => {
-    console.log(err);
-  });
+  fp(PORT, PORT + portRange)
+    .then(([freePort]) => {
+      let port = freePort;
+      if (guessPackaged()) {
+        log.info("Application is packaged");
+        let sessionServerOutput = "";
+        pyflaskProcess = require("child_process").execFile(script, [port], {});
+        pyflaskProcess.stdout.on("data", (data) => {
+          const logOutput = `[pyflaskProcess output] ${data.toString()}`;
+          sessionServerOutput += `${logOutput}`;
+        });
+        pyflaskProcess.stderr.on("data", (data) => {
+          const logOutput = `[pyflaskProcess stderr] ${data.toString()}`;
+          sessionServerOutput += `${logOutput}`;
+        });
+        pyflaskProcess.on("close", (code) => {
+          log.info(`child process exited with code ${code}`);
+          log.info("Server output during session found below:");
+          log.info(sessionServerOutput);
+        });
+      } else {
+        log.info("Application is not packaged");
+        pyflaskProcess = require("child_process").spawn("python", [script, port], {
+          stdio: "ignore",
+        });
+      }
+      if (pyflaskProcess != null) {
+        console.log("child process success on port " + port);
+        log.info("child process success on port " + port);
+      } else {
+        console.error("child process failed to start on port" + port);
+      }
+      selectedPort = port;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 const exitPyProc = async () => {
   log.info("Killing python server process");
   const killPythonProcess = () => {
-    require("child_process").spawnSync("taskkill", [
-      "/pid",
-      pyflaskProcess.pid,
-      "/f",
-      "/t"
-    ]);
+    require("child_process").spawnSync("taskkill", ["/pid", pyflaskProcess.pid, "/f", "/t"]);
   };
   console.log("Killing the process");
   await killAllPreviousProcesses();
@@ -178,13 +175,16 @@ const sendUserAnalytics = () => {
     userCreated = null;
   }
   if (token === null || userCreated === null) {
-    kombuchaServer.post("meta/users", {}).then((res) => {
-      nodeStorage.setItem("kombuchaToken", res.data.token);
-      nodeStorage.setItem("userId", res.data.uid);
-      nodeStorage.setItem("kombuchaUserCreated", true);
-    }).catch((err) => {
-      console.error(err);
-    });
+    kombuchaServer
+      .post("meta/users", {})
+      .then((res) => {
+        nodeStorage.setItem("kombuchaToken", res.data.token);
+        nodeStorage.setItem("userId", res.data.uid);
+        nodeStorage.setItem("kombuchaUserCreated", true);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
 };
 let mainWindow = null;
@@ -208,18 +208,20 @@ function initialize() {
       if (!user_restart_confirmed) {
         if (app.showExitPrompt) {
           e.preventDefault();
-          dialog.showMessageBox(BrowserWindow.getFocusedWindow(), {
-            type: "question",
-            buttons: ["Yes", "No"],
-            title: "Confirm",
-            message: "Any running process will be stopped. Are you sure you want to quit?"
-          }).then(async (responseObject) => {
-            let { response } = responseObject;
-            if (response === 0) {
-              await exitPyProc();
-              quit_app();
-            }
-          });
+          dialog
+            .showMessageBox(BrowserWindow.getFocusedWindow(), {
+              type: "question",
+              buttons: ["Yes", "No"],
+              title: "Confirm",
+              message: "Any running process will be stopped. Are you sure you want to quit?",
+            })
+            .then(async (responseObject) => {
+              let { response } = responseObject;
+              if (response === 0) {
+                await exitPyProc();
+                quit_app();
+              }
+            });
         }
       } else {
         nodeStorage.setItem("auto_update_launch", true);
@@ -251,9 +253,9 @@ function initialize() {
         nodeIntegration: true,
         enableRemoteModule: true,
         contextIsolation: false,
-        sandbox: false
+        sandbox: false,
         // preload: path.join(__dirname, "preload.js"),
-      }
+      },
     };
     mainWindow = new BrowserWindow(windowOptions);
     require("@electron/remote/main").enable(mainWindow.webContents);
@@ -264,11 +266,11 @@ function initialize() {
       frame: false,
       icon: __dirname + "/assets/menu-icon/soda_icon.png",
       alwaysOnTop: true,
-      transparent: true
+      transparent: true,
     });
     splash.loadURL(path.join("file://", __dirname, "/splash-screen.html"));
     mainWindow.webContents.once("dom-ready", () => {
-      setTimeout(function() {
+      setTimeout(function () {
         splash.close();
         mainWindow.show();
         createWindow();
@@ -296,7 +298,7 @@ function initialize() {
       kombuchaEnums.Label.VERSION,
       kombuchaEnums.Status.SUCCESS,
       {
-        value: app.getVersion()
+        value: app.getVersion(),
       }
     );
     trackKombuchaEvent(
@@ -305,7 +307,7 @@ function initialize() {
       kombuchaEnums.Label.OS,
       kombuchaEnums.Status.SUCCESS,
       {
-        value: os.platform() + "-" + os.release()
+        value: os.platform() + "-" + os.release(),
       }
     );
     trackEvent("Success", "App Launched - OS", os.platform() + "-" + os.release());
@@ -360,8 +362,7 @@ ipcMain.on("resize-window", (event, dir) => {
   }
   mainWindow.setSize(x, y);
 });
-ipcMain.on("track-event", (event, category, action, label, value) => {
-});
+ipcMain.on("track-event", (event, category, action, label, value) => {});
 ipcMain.on("track-kombucha", (event, category, action, label, eventStatus, eventData) => {
   trackKombuchaEvent(category, action, label, eventStatus, eventData);
 });
@@ -395,11 +396,11 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
-      contextIsolation: false
+      contextIsolation: false,
     },
     // modal: true,
     parent: mainWindow,
-    closable: true
+    closable: true,
   };
   let spreadSheetModal = new BrowserWindow(windowOptions);
   spreadSheetModal.on("close", (e) => {
@@ -435,15 +436,15 @@ ipcMain.on("orcid", (event, url) => {
     icon: __dirname + "/assets/menu-icon/soda_icon.png",
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: true
+      enableRemoteModule: true,
     },
     // modal: true,
     parent: mainWindow,
-    closable: true
+    closable: true,
   };
   let pennsieveModal = new BrowserWindow(windowOptions);
   let accessCode;
-  pennsieveModal.on("close", function() {
+  pennsieveModal.on("close", function () {
     event.reply("orcid-reply", accessCode);
     pennsieveModal = null;
   });
