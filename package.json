@@ -3,7 +3,7 @@
   "productName": "SODA for SPARC",
   "version": "12.3.1-beta",
   "description": "Keep Calm and Curate ",
-  "main": "main.js",
+  "main": "./out/main/main.js",
   "scripts": {
     "start": "NODE_ENV=development electron .",
     "build-win": "electron-builder build --win --publish never",
@@ -19,7 +19,9 @@
     "commit": "cz",
     "prepare": "run-script-os",
     "prepare:win32": "husky install",
-    "prepare:darwin:linux": "husky install && chmod ug+x .husky/*  && chmod ug+x .git/hooks/*"
+    "prepare:darwin:linux": "husky install && chmod ug+x .husky/*  && chmod ug+x .git/hooks/*",
+    "dev": "electron-vite dev",
+    "preview": "electron-vite preview"
   },
   "lint-staged": {
     "./**/*.html|css|js|md|yml": [
@@ -145,6 +147,7 @@
     "electron-notarize": "^1.2.1",
     "electron-shortcut-normalizer": "^1.0.0",
     "electron-updater": "4.3.9",
+    "electron-vite": "^1.0.28",
     "excel4node": "^1.7.2",
     "exponential-backoff": "^3.1.0",
     "find-free-port": "^2.0.0",
