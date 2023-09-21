@@ -1,4 +1,10 @@
 {
+  "12.3.1": {
+    "announcements": {
+      "bug-fixes": ["Fixed a bug allowing subjects and samples to be created without a name."],
+      "features": []
+    }
+  },
   "12.3.0": {
     "announcements": {
       "bug-fixes": [
