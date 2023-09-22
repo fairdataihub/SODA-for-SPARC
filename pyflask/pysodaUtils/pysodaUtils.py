@@ -21,7 +21,7 @@ def get_agent_installation_location():
         else:
             return os.path.normpath("C:\Program Files\Pennsieve\pennsieve.exe")
     else:
-        return "/usr/local/bin/pennsieve"
+        return "/usr/local/bin/pennsieve" if exists("/usr/local/bin/pennsieve") else "/usr/local/opt/pennsieve"
 
 
 
