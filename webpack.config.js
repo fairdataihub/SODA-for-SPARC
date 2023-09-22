@@ -3,9 +3,9 @@ import { resolve } from "path";
 
 // electron.vite.config.js
 module.exports = {
-    entry: {
-      main: resolve(__dirname, 'main.js'),
-    },
+  entry: {
+    main: resolve(__dirname, "main.js"),
+  },
   preload: {
     // vite config options
     build: {
@@ -19,12 +19,11 @@ module.exports = {
       // vite config options
       build: {
         rollupOptions: {
-            input: {
-                index: resolve(__dirname, 'index.html'),
-            }
-        }
-      }
-    }
-  }
-}
-  
+          input: {
+            index: resolve(__dirname, "index.html"),
+          },
+        },
+      },
+    },
+  },
+};
