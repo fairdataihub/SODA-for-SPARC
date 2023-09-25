@@ -1,5 +1,5 @@
 name: Build-and-deploy-mac
-run-name: ${{ github.actor }} is building a MAC release for SODA
+run-name: ${{ github.actor }} is building a MAC release for SODA beta
 
 on:
   push:
