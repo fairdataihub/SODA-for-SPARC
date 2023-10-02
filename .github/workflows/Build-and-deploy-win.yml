@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - switch-fix-reuse-valid-keys
 
 jobs:
   deploy-on-windows:
