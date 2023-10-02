@@ -36,7 +36,9 @@ const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
 };
 
 const isDatasetLocked = async (account, datasetNameOrId) => {
-  try {
+  console.log("Return false for isDatasetLocked");
+  return false;
+  /*try {
     // get the logged in user's information which will be used to check if the user is a member of the "Publishers" team
     const currentUserInformation = await getUserInformation();
     const currentUserID = currentUserInformation.id;
@@ -74,7 +76,7 @@ const isDatasetLocked = async (account, datasetNameOrId) => {
     } else {
       return false;
     }
-  }
+  }*/
 };
 
 const getDatasetRole = async (datasetNameOrId) => {
