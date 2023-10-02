@@ -784,6 +784,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     // Check for an API key pair in the default profile and ensure it is not obsolete.
     // NOTE: Calling the agent startup command without a profile setup in the config.ini file causes it to crash.
     const account_present = await check_api_key();
+    log.info("Continuing pre flight checks");
 
     // Add a new api key and secret for validating the user's account in the current workspace.
     if (!account_present) {

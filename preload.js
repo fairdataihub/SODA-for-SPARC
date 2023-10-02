@@ -1707,6 +1707,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
     // if no account as them to connect one
     if (!accountPresent) {
+      log.info("Prompting user to connect account with Pennsieve");
       //If there is no API key pair, warning will pop up allowing user to sign in
       const { value: result } = await Swal.fire({
         icon: "warning",
@@ -1760,6 +1761,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         1
       );
     }
+
+    log.info("Gathering the list of available user organization");
 
     // get the list of the user's available organizations
     //account is signed in but no datasets have been fetched or created
