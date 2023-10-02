@@ -5,6 +5,24 @@ const { v4: uuid } = require("uuid");
 // TODO: Pennsieve vs local considerations for result parsing and error handling
 const validateOrganizedDataset = async () => {
   let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+  let datasetOrigin = "";
+  let datasetDestination = "";
+
+  if ("bf" in sodaJSONObj["starting-point"]["type"]) {
+    datasetOrigin = "Pennsieve";
+  }
+
+  if ("local" in sodaJSONObj["starting-point"]["type"]) {
+    datasetOrigin = "Local";
+  }
+
+  if ("new" in sodaJSONObj["starting-point"]["type"]) {
+    datasetOrigin = "New";
+  }
+
+  if ("save-progress" in sodaJSONObj) {
+    datasetOrigin = "Saved";
+  }
 
   if (validationErrorsTable.childElementCount > 0) {
     // ask the user to confirm they want to reset their validation progress
@@ -35,7 +53,7 @@ const validateOrganizedDataset = async () => {
     clearValidationResults(validationErrorsTable);
   }
 
-  swal.fire({
+  Swal.fire({
     title: "Validating Dataset",
     text: "Please wait while your dataset is validated.",
     allowEscapeKey: false,
@@ -124,7 +142,9 @@ const validateOrganizedDataset = async () => {
   let validationReport;
   try {
     validationReport = await createValidationReport(sodaJSONObjCopy);
-    if (validationReport.status === "Error") throw new Error(validationReport.error);
+    if (validationReport.status === "Error") {
+      throw new Error(validationReport.error);
+    }
   } catch (error) {
     clientError(error);
     if (error.response && (error.response.status == 503 || error.response.status == 502)) {
@@ -145,8 +165,9 @@ const validateOrganizedDataset = async () => {
       });
     } else if (error.response && error.response.status == 400) {
       let msg = error.response.data.message;
-      if (msg.includes("Missing required metadata files"))
+      if (msg.includes("Missing required metadata files")) {
         msg = "Please add the required metadata files then re-run validation.";
+      }
       await Swal.fire({
         title: "Validation Error",
         text: msg,
@@ -187,6 +208,21 @@ const validateOrganizedDataset = async () => {
       "Number of Files",
       file_counter
     );
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_DATASETS,
+      kombuchaEnums.Action.VALIDATE_DATASET,
+      kombuchaEnums.Label.FILES,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: file_counter,
+        dataset_id: defaultBfDatasetId,
+        origin: datasetOrigin,
+        destination: datasetDestination,
+      }
+    );
+
     return;
   }
 
@@ -205,6 +241,20 @@ const validateOrganizedDataset = async () => {
     "Validation - Number of Files",
     "Number of Files",
     file_counter
+  );
+
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.PREPARE_DATASETS,
+    kombuchaEnums.Action.VALIDATE_DATASET,
+    kombuchaEnums.Label.FILES,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: file_counter,
+      dataset_id: defaultBfDatasetId,
+      origin: datasetOrigin,
+      destination: datasetDestination,
+    }
   );
 
   if (validationReport.status === "Incomplete") {

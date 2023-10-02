@@ -17,6 +17,10 @@ from utils import create_request_headers, column_check, returnFileURL, remove_hi
 
 userpath = expanduser("~")
 
+from namespaces import NamespaceEnum, get_namespace_logger
+
+namespace_logger = get_namespace_logger(NamespaceEnum.PREPARE_METADATA)
+
 
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
@@ -40,26 +44,24 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
     """
     dataset_id = get_dataset_id(ps, soda_json_structure["bf-dataset-selected"]["dataset-name"])
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/packages", headers=create_request_headers(ps))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps))
     r.raise_for_status()
 
-    ds_items = r.json()["packages"]
+    ds_items = r.json()["children"]
 
     dataset_structure = soda_json_structure["dataset-structure"]
 
     # handle updating any existing manifest files on Pennsieve
+    namespace_logger.info("Updating existing manifest files on Pennsieve...")
+    namespace_logger.info(f"DS Items: {ds_items}")
     for i in ds_items:
-        if i["content"]["name"] in [
-            "code",
-            "derivative",
-            "docs",
-            "primary",
-            "protocol",
-            "source",
-        ]:
+        namespace_logger.info(f"Item: {i}")
+        if i["content"]["name"] in ["code", "derivative", "docs", "primary", "protocol", "source"] and i["content"]["packageType"] == "Collection":
             # request the packages of that folder
             folder_name = i["content"]["name"]
             folder_collection_id = i["content"]["nodeId"]
+            namespace_logger.info(f"Folder Name: {folder_name}")
+            namespace_logger.info(f"Folder Collection ID: {folder_collection_id}")
             r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_collection_id}", headers=create_request_headers(ps))
             r.raise_for_status()
 
@@ -75,7 +77,6 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
                         remove(join(manifest_folder, "manifest.xlsx"))
 
                     item_id = j["content"]["nodeId"]
-                    # url = returnFileURL(ps, item_id)
 
                     manifest_df = load_metadata_to_dataframe(item_id, "excel", ps, column_check, 0)
 
@@ -85,9 +86,10 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
 
                     if folder_name not in high_level_folders:
                         continue
-                        
+
                     high_level_folders.remove(folder_name)
 
+                    namespace_logger.info(f"dataset_structure: {dataset_structure['folders']}")
                     updated_manifest_dict = update_existing_pennsieve_manifest_file(dataset_structure["folders"][folder_name], manifest_df)
 
                     if not exists(join(manifest_path, folder_name)):

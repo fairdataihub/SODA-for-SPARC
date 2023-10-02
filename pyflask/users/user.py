@@ -10,14 +10,15 @@ from utils import (
 )
 from namespaces import NamespaceEnum, get_namespace_logger
 from flask import abort
-from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, bf_delete_account, bf_delete_default_profile, delete_duplicate_keys
 from profileUtils import create_unique_profile_name
+from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, delete_duplicate_keys, clear_cached_access_token
+
 
 logger = get_namespace_logger(NamespaceEnum.USER)
 
 
 
-def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
+def integrate_orcid_with_pennsieve(access_code):
   """
   Given an OAuth access code link a user's ORCID ID to their Pennsieve account.
   This is required in order to publish a dataset for review with the SPARC Consortium.
@@ -26,17 +27,11 @@ def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
   if access_code == "" or access_code is None:
     abort(400, "Cannot integrate your ORCID iD to Pennsieve without an access code.")
 
-  # verify Pennsieve account
-  try:
-    ps = connect_pennsieve_client()
-    authenticate_user_with_client(ps, pennsieve_account)
-  except Exception as e:
-     abort(400, "Error: Please select a valid Pennsieve account")
+  token = get_access_token()
     
-  
   try:
     jsonfile = {"authorizationCode": access_code}
-    r = requests.post(f"{PENNSIEVE_URL}/user/orcid", json=jsonfile, headers=create_request_headers(ps))
+    r = requests.post(f"{PENNSIEVE_URL}/user/orcid", json=jsonfile, headers=create_request_headers(token))
     r.raise_for_status()
 
     return r.json()
@@ -187,9 +182,14 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
     key =  response["key"]
     secret = response["secret"]
 
-    
+    # clear the cached access token 
+    clear_cached_access_token()
+
     # create the new profile for the user, associate the api key and secret with the profile, and set it as the default profile
     bf_add_account_username(profile_name, key, secret)
+
+
+    
 
 
 def get_user_organizations():

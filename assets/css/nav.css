@@ -162,6 +162,10 @@ a[data-toggle="collapse"] {
   border-radius: 0;
 }
 
+#main-nav ul li a.is-selected i {
+  color: var(--color-light-green);
+}
+
 #main-nav ul li a.is-selected svg {
   fill: var(--color-light-green);
 }

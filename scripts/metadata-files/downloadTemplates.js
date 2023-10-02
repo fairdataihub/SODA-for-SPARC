@@ -18,11 +18,11 @@ let templateArray = [
 ];
 
 const downloadTemplates = (templateItem, destinationFolder) => {
-  var templatePath = path.join(__dirname, "file_templates", templateItem);
-  var destinationPath = path.join(destinationFolder, templateItem);
+  let templatePath = path.join(__dirname, "file_templates", templateItem);
+  let destinationPath = path.join(destinationFolder, templateItem);
 
   if (fs.existsSync(destinationPath)) {
-    var emessage = "File '" + templateItem + "' already exists in " + destinationFolder;
+    let emessage = "File '" + templateItem + "' already exists in " + destinationFolder;
     Swal.fire({
       icon: "error",
       title: "Metadata file already exists",
@@ -32,9 +32,25 @@ const downloadTemplates = (templateItem, destinationFolder) => {
     });
 
     ipcRenderer.send("track-event", "Error", `Download Template - ${templateItem}`);
+
+    let templateLabel = Object.values(kombuchaEnums.Label).find((label) => {
+      return label === templateItem;
+    });
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.DOWNLOAD_TEMPLATES,
+      templateLabel,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: 1,
+      }
+    );
   } else {
     fs.createReadStream(templatePath).pipe(fs.createWriteStream(destinationPath));
-    var emessage = `Successfully saved '${templateItem}' to ${destinationFolder}`;
+    let emessage = `Successfully saved '${templateItem}' to ${destinationFolder}`;
+
     Swal.fire({
       icon: "success",
       title: "Download successful",
@@ -43,6 +59,21 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       backdrop: "rgba(0,0,0, 0.4)",
     });
     ipcRenderer.send("track-event", "Success", `Download Template - ${templateItem}`);
+
+    let templateLabel = Object.values(kombuchaEnums.Label).find((label) => {
+      return label === templateItem;
+    });
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.DOWNLOAD_TEMPLATES,
+      templateLabel,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: 1,
+      }
+    );
   }
 };
 

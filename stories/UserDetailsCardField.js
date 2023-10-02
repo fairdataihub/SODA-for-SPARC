@@ -159,7 +159,7 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
             <h5
               class="card-right current-permissions"
               id="para-add-edit-dataset-permission-current"
-              style="padding-left: 6px; overflow-y: hidden"
+              style="padding-left: 6px; overflow-y: hidden; overflow-x: hidden"
             >
               None
             </h5>

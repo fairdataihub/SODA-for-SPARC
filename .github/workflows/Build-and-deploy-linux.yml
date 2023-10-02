@@ -4,6 +4,7 @@ run-name: ${{ github.actor }} is building a linux release for SODA
 on:
   push:
     branches:
+      - main
       - staging
 
 jobs:
@@ -23,9 +24,15 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@v2
         with:
+          miniconda-version: "latest"
           activate-environment: env-electron-python
           environment-file: tools/anaconda-env/environment-Linux.yml
+          auto-update-conda: true
           auto-activate-base: false
+      - run: |
+          conda activate env-electron-python
+          conda info
+          conda list
 
       - uses: actions/setup-node@v3
         with:
@@ -34,9 +41,12 @@ jobs:
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
 
-      - name: Build and deploy on Linux
+      - name: Build the python server executable
+        run: |
+          npm run python-onefile-build-unix
+
+      - name: Deploy the app to GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npm run python-onefile-build
           npm run deploy-linux

@@ -43,7 +43,7 @@ $(document).ready(function () {
   ipcRenderer.on("selected-destination-generate-dd-locally", (event, dirpath) => {
     if (dirpath.length > 0) {
       document.getElementById("input-destination-generate-dd-locally").placeholder = dirpath[0];
-      var destinationPath = path.join(dirpath[0], "dataset_description.xlsx");
+      let destinationPath = path.join(dirpath[0], "dataset_description.xlsx");
       ddDestinationPath = destinationPath;
       $("#div-confirm-destination-dd-locally").css("display", "flex");
       $($("#div-confirm-destination-dd-locally").children()[0]).css("display", "flex");
@@ -55,7 +55,7 @@ $(document).ready(function () {
 
   $(".prepare-dd-cards").click(function () {
     $("create_dataset_description-tab").removeClass("show");
-    var target = $(this).attr("data-next");
+    let target = $(this).attr("data-next");
     $("#" + target).toggleClass("show");
     document.getElementById("prevBtn").style.display = "none";
   });
@@ -528,17 +528,25 @@ const generateDDFile = async (uploadBFBoolean) => {
     });
 
     // log the successful attempt to generate the description file in analytics at this step in the Generation process
-    logMetadataForAnalytics(
-      "Success",
-      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-      AnalyticsGranularity.ALL_LEVELS,
-      "Generate",
-      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.DATASET_DESCRIPTION_XLSX,
+      kombuchaEnums.Status.SUCCESS,
+      createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" : "Local", 1)
     );
 
     // log the size of the metadata file that was generated at varying levels of granularity
     const size = res;
-    logMetadataSizeForAnalytics(uploadBFBoolean, "dataset_description.xlsx", size);
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.DATASET_DESCRIPTION_XLSX_SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" : "Local", size)
+    );
   } catch (error) {
     clientError(error);
     let emessage = userErrorMessage(error);
@@ -552,12 +560,13 @@ const generateDDFile = async (uploadBFBoolean) => {
     });
 
     // log the failure to generate the description file to analytics at this step in the Generation process
-    logMetadataForAnalytics(
-      "Error",
-      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-      AnalyticsGranularity.ALL_LEVELS,
-      "Generate",
-      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.DATASET_DESCRIPTION_XLSX,
+      kombuchaEnums.Status.FAIL,
+      createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" : "Local", 1)
     );
   }
 };
@@ -1557,9 +1566,10 @@ const checkBFImportDD = async () => {
   } catch (error) {
     clientError(error);
     Swal.fire({
+      title: `Failed to load existing dataset_description.xslx file`,
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
-      icon: "error",
+      icon: "warning",
       text: error.response.data.message,
     });
 

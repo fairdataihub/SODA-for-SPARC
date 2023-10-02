@@ -191,17 +191,14 @@ const handleSectionTrigger = async (event) => {
 
     if (
       !localDatasetButton.classList.contains("checked") &&
-      !localDatasetButton.classList.contains("non-selected")
+      !localDatasetButton.classList.contains("non-selected") &&
+      !pennsieveDatasetButton.classList.contains("checked") &&
+      !pennsieveDatasetButton.classList.contains("non-selected")
     ) {
-      if (
-        !pennsieveDatasetButton.classList.contains("checked") &&
-        !pennsieveDatasetButton.classList.contains("non-selected")
-      ) {
-        $("#validate_dataset-question-2").removeClass("show");
-        $("#validate_dataset-question-1").removeClass("prev");
-        $("#validate_dataset-question-2").removeClass("prev");
-        $("#validate_dataset-question-3").removeClass("show");
-      }
+      $("#validate_dataset-question-2").removeClass("show");
+      $("#validate_dataset-question-1").removeClass("prev");
+      $("#validate_dataset-question-2").removeClass("prev");
+      $("#validate_dataset-question-3").removeClass("show");
     }
   }
 };

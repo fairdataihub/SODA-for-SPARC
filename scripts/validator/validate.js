@@ -187,7 +187,9 @@ const validateLocalDataset = async () => {
   let validationReportData;
   try {
     validationReportData = await createValidationReport(localSodaJsonObject);
-    if (validationReportData.status === "Error") throw new Error(validationReportData.error);
+    if (validationReportData.status === "Error") {
+      throw new Error(validationReportData.error);
+    }
   } catch (error) {
     clientError(error);
     file_counter = 0;
@@ -201,6 +203,9 @@ const validateLocalDataset = async () => {
       "Number of Files",
       file_counter
     );
+    // hide the validation question
+    $("#validate_dataset-question-4").removeClass("show");
+
     if (error.response && (error.response.status == 503 || error.response.status == 502)) {
       await Swal.fire({
         title: "Validation Service Unavailable",
@@ -219,8 +224,9 @@ const validateLocalDataset = async () => {
       });
     } else if (error.response && error.response.status == 400) {
       let msg = error.response.data.message;
-      if (msg.includes("Missing required metadata files"))
+      if (msg.includes("Missing required metadata files")) {
         msg = "Please add the required metadata files then re-run validation.";
+      }
       await Swal.fire({
         title: "Validation Error",
         text: msg,
@@ -435,12 +441,16 @@ const validatePennsieveDatasetStandAlone = async () => {
   let validationReport;
   try {
     validationReport = await createValidationReport(localSodaJSONObj);
-    if (validationReport.status === "Error") throw new Error(validationReport.error);
+    if (validationReport.status === "Error") {
+      throw new Error(validationReport.error);
+    }
   } catch (error) {
     clientError(error);
     file_counter = 0;
     folder_counter = 0;
     get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
+    // hide the validation question
+    $("#validate_dataset-question-4").removeClass("show");
     // log successful validation run to analytics
     ipcRenderer.send(
       "track-event",
@@ -448,6 +458,20 @@ const validatePennsieveDatasetStandAlone = async () => {
       "Validation - Number of Files",
       "Number of Files",
       file_counter
+    );
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_DATASETS,
+      kombuchaEnums.Action.VALIDATE_DATASET,
+      kombuchaEnums.Label.FILES,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: file_counter,
+        dataset_name: datasetName,
+        dataset_id: datasetPopulationResponse.dataset_id,
+        origin: "Pennsieve",
+      }
     );
     if (error.response && (error.response.status == 503 || error.response.status == 502)) {
       await Swal.fire({
@@ -467,8 +491,9 @@ const validatePennsieveDatasetStandAlone = async () => {
       });
     } else if (error.response && error.response.status == 400) {
       let msg = error.response.data.message;
-      if (msg.includes("Missing required metadata files"))
+      if (msg.includes("Missing required metadata files")) {
         msg = "Please add the required metadata files then re-run validation.";
+      }
       await Swal.fire({
         title: "Validation Error",
         text: msg,
@@ -517,6 +542,20 @@ const validatePennsieveDatasetStandAlone = async () => {
     "Validation - Number of Files",
     "Number of Files",
     file_counter
+  );
+
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.PREPARE_DATASETS,
+    kombuchaEnums.Action.VALIDATE_DATASET,
+    kombuchaEnums.Label.FILES,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: file_counter,
+      dataset_name: datasetName,
+      dataset_id: datasetPopulationResponse.dataset_id,
+      origin: "Pennsieve",
+    }
   );
 
   if (validationReport.status === "Incomplete") {
@@ -893,10 +932,19 @@ document.querySelector("#run_validator_btn").addEventListener("click", async fun
 
   if (validatingLocalDataset) {
     await validateLocalDataset();
-
-    scrollToElement("#validation-errors-container");
   } else {
     await validatePennsieveDatasetStandAlone();
+  }
+
+  if (getValidationResultsCount() > 0) {
+    transitionFreeFormMode(
+      this,
+      "validate_dataset-question-3",
+      "validate_dataset-tab",
+      "",
+      "individual-question validate_dataset"
+    );
+    scrollToElement("#validation-errors-container");
   }
 });
 

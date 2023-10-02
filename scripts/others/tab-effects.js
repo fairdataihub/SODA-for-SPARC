@@ -194,7 +194,7 @@ const showParentTab = async (tabNow, nextOrPrev) => {
 
 // function to fill the card details in the preview tab of step 7
 const fill_info_details = () => {
-  let new_dataset_name = "My_dataset_folder";
+  let new_dataset_name = "dataset_root";
   $(".card-container.generate-preview").remove();
   if (sodaJSONObj["starting-point"]["type"] === "bf") {
     add_card_detail("Pennsieve account", $("#current-bf-account-generate").text());
@@ -609,9 +609,16 @@ const nextPrev = (pageIndex) => {
     }
 
     if (missingFiles.length > 0) {
-      var notIncludedMessage = `<div style='text-align: left'>You did not include the following metadata files that are typically expected for all SPARC datasets: <br><ol style='text-align: left'>${missingFiles.join(
-        ""
-      )} </ol>Are you sure you want to continue?</div>`;
+      var notIncludedMessage = `
+        <div style='text-align: left'>
+          You did not include the following metadata files that are typically expected for all SPARC datasets:
+          <br>
+          <ol style='text-align: left'>
+            ${missingFiles.join("")}
+          </ol>
+          Are you sure you want to continue?
+        </div>
+      `;
       Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
@@ -954,7 +961,7 @@ const handleValidateCardSelection = async (ev) => {
 };
 
 var divList = [];
-async function transitionSubQuestions(ev, currentDiv, parentDiv, button, category) {
+const transitionSubQuestions = async (ev, currentDiv, parentDiv, button, category) => {
   if (currentDiv === "Question-getting-started-1") {
     // log the start of a new curation process from scratch
     // logCurationForAnalytics(
@@ -1206,7 +1213,7 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       $("#nextBtn").prop("disabled", true);
     }
   }
-}
+};
 
 // Create the dataset structure for sodaJSONObj
 const create_json_object = (action, sodaJSONObj, root_folder_path) => {
@@ -1752,7 +1759,6 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
   if (currentDiv === "Question-getting-started-BF-dataset") {
     let selectedDataset = $("#current-bf-dataset").text();
     $("#nextBtn").prop("disabled", true);
-    // $("#button-confirm-bf-dataset-getting-started").prop("disabled", true);
     sodaJSONObj = {
       "bf-account-selected": {
         "account-name": {},
@@ -1769,6 +1775,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
       },
     };
 
+    // Set the default Pennsieve account and dataset
     sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
     sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedDataset;
 
@@ -1956,7 +1963,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
   }
 
   // first, handle target or the next div to show
-  var target = document.getElementById(ev.getAttribute("data-next"));
+  let target = document.getElementById(ev.getAttribute("data-next"));
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!target.classList.contains("show")) {
@@ -1977,6 +1984,10 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
   // if buttons: Add account and Confirm account were hidden, show them again here
   if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-account") {
     $("#" + ev.getAttribute("data-next") + " button").show();
+  }
+
+  if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-workspace") {
+    document.getElementById("btn-bf-workspace").style.display = "block";
   }
 
   if (ev.getAttribute("data-next") === "Question-generate-dataset-generate-div-old") {
@@ -2011,34 +2022,37 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
 
-  if (ev.getAttribute("data-next") === "Question-getting-started-final") {
-    if ($("#existing-bf").is(":checked")) {
-      $("#nextBtn").prop("disabled", true);
-      if (sodaJSONObj["dataset-structure"] != {}) {
-        $("#nextBtn").prop("disabled", false);
-      }
+  if (
+    ev.getAttribute("data-next") === "Question-getting-started-final" &&
+    $("#existing-bf").is(":checked")
+  ) {
+    $("#nextBtn").prop("disabled", true);
+    if (sodaJSONObj["dataset-structure"] != {}) {
+      $("#nextBtn").prop("disabled", false);
     }
   }
 
-  if (ev.getAttribute("data-next") === "input-destination-getting-started-locally") {
-    if ($("#existing-local").is(":checked") && currentDiv == "Question-getting-started-1") {
-      sodaJSONObj = {
-        "bf-account-selected": {},
-        "bf-dataset-selected": {},
-        "dataset-structure": {},
-        "metadata-files": {},
-        "manifest-files": {},
-        "generate-dataset": {},
-        "starting-point": {
-          type: "local",
-          "local-path": "",
-        },
-      };
+  if (
+    ev.getAttribute("data-next") === "input-destination-getting-started-locally" &&
+    $("#existing-local").is(":checked") &&
+    currentDiv == "Question-getting-started-1"
+  ) {
+    sodaJSONObj = {
+      "bf-account-selected": {},
+      "bf-dataset-selected": {},
+      "dataset-structure": {},
+      "metadata-files": {},
+      "manifest-files": {},
+      "generate-dataset": {},
+      "starting-point": {
+        type: "local",
+        "local-path": "",
+      },
+    };
 
-      // this should run after a folder is selected
-      reset_ui();
-      $("#nextBtn").prop("disabled", true);
-    }
+    // this should run after a folder is selected
+    reset_ui();
+    $("#nextBtn").prop("disabled", true);
   }
 };
 
@@ -2103,8 +2117,8 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
 
       // check if the user has selected start from existing pennsieve
       // if so then hide the workspace selection field
-      var res = generateSubmissionFile();
-      if (res === "empty") {
+      const submissionFieldsAreValid = validateSubmissionFileInputs();
+      if (!submissionFieldsAreValid) {
         return;
       }
       $("#submission-accordion").removeClass("active");
@@ -2156,8 +2170,8 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
           $("#changes-organization-field").show();
         }
       }
-      var res = generateRCFilesHelper("changes");
-      if (res === "empty") {
+      let changesFilesHelper = generateRCFilesHelper("changes");
+      if (changesFilesHelper === "empty") {
         return;
       }
       break;
@@ -2184,8 +2198,8 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
           $("#readme-organization-field").show();
         }
       }
-      var res = generateRCFilesHelper("readme");
-      if (res === "empty") {
+      let readMeFilesHelper = generateRCFilesHelper("readme");
+      if (readMeFilesHelper === "empty") {
         return;
       }
       break;
@@ -2389,9 +2403,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
   // auto-scroll to bottom of div
   if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
     document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
-    if (ev.getAttribute("data-next") === "Question-prepare-submission-2") {
-      onboardingSubmission();
-    }
   }
 
   if (ev.getAttribute("data-next") === "Question-prepare-subjects-2") {
@@ -2935,7 +2946,7 @@ const hidePrevDivs = (currentDiv, category) => {
 };
 
 const updateJSONStructureGettingStarted = () => {
-  document.getElementById("input-global-path").value = "My_dataset_folder/";
+  document.getElementById("input-global-path").value = "dataset_root/";
 };
 
 // function to populate metadata files
@@ -3290,7 +3301,7 @@ const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
 // function to call when users click on Continue at each step
 const updateOverallJSONStructure = (id) => {
   if (id === allParentStepsJSON["high-level-folders"]) {
-    document.getElementById("input-global-path").value = "My_dataset_folder/";
+    document.getElementById("input-global-path").value = "dataset_root/";
     var optionCards = document.getElementsByClassName("option-card high-level-folders");
     var newDatasetStructureJSONObj = { folders: {}, files: {} };
     var keys = [];
@@ -3692,17 +3703,6 @@ $(document).ready(() => {
   $(".ui.accordion").accordion();
   $(".content-button").click(function () {
     let section = $(this).data("section");
-
-    // if (section === "add_edit_bf_dataset_collection") {
-    //   let rename_dataset_name = $(
-    //     "#rename_dataset_BF_account_tab .change-current-account.ds-dd.dataset-name h5"
-    //   ).html();
-    //   if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
-    //     $("#bf-rename-dataset-name").val(rename_dataset_name);
-    //   } else {
-    //     $("#bf-rename-dataset-name").val("");
-    //   }
-    // }
 
     if (section === "rename_existing_bf_dataset") {
       let rename_dataset_name = $(

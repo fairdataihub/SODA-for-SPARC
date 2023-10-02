@@ -182,10 +182,13 @@ def bf_add_account_api_key(keyname, key, secret):
     try:
         org_id = get_user_information(token)["preferredOrganization"]
 
+        ''' Commented out as users should be able to sign in to non-sparc organizations using an API key
+            TODO: Remove this code if it is not needed
         if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
             abort(403,
                 "Please check that your account is within the SPARC Organization"
             )
+        '''
 
         if not config.has_section("global"):
             config.add_section("global")
@@ -201,6 +204,22 @@ def bf_add_account_api_key(keyname, key, secret):
     except Exception as e:
         bf_delete_account(keyname)
         raise e
+    
+def check_forbidden_characters_ps(my_string):
+    """
+    Check for forbidden characters in Pennsieve file/folder name
+
+    Args:
+        my_string: string with characters (string)
+    Returns:
+        False: no forbidden character
+        True: presence of forbidden character(s)
+    """
+    regex = re.compile(f"[{forbidden_characters_bf}]")
+    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
+        return False
+    else:
+        return True
 
 
 def bf_account_list():
@@ -470,11 +489,11 @@ def create_new_dataset(datasetname, accountname):
         for ds in datasets:
             if ds["content"]["name"] == datasetname:
                 abort(400, "Dataset name already exists")
-        else:
-            r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(token), json={"name": datasetname})
-            r.raise_for_status()
-            ds_id = r.json()['content']['id']
-            return {"id": ds_id}
+            else:
+                r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(token), json={"name": datasetname})
+                r.raise_for_status()
+                ds_id = r.json()['content']['id']
+                return {"id": ds_id}
 
     except Exception as e:
         raise e
@@ -715,7 +734,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         except Exception as e:
             namespace_logger.error("Error uploading dataset files")
             namespace_logger.error(e)
-            raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
+            raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
         submitdatastatus = "Done"
     except Exception as e:
@@ -760,6 +779,7 @@ def submit_dataset_progress():
         'submit_print_status': submitprintstatus,
         'total_file_size': total_file_size,
         'upload_file_size': total_bytes_uploaded["value"],
+        'uploaded_files': files_uploaded,
         'elapsed_time_formatted': elapsed_time_formatted,
         'files_uploaded_status': f"Uploaded {files_uploaded} of {total_files_to_upload} files",
     }
@@ -841,13 +861,13 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
         list_permission: list of permission (first name -- last name -- role) associated with the
         selected dataset (list of string)
     """
+    global PENNSIEVE_URL
 
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
 
     try:
-        global PENNSIEVE_URL
         headers = create_request_headers(token)
         # user permissions
         r = requests.get(
@@ -1014,7 +1034,7 @@ def ps_add_permission(
                 r.raise_for_status()
             except Exception as e:
                 raise Exception(e) from e
-            return {"message": "Permission removed for " + selected_user}
+            return {"message": f"Permission removed for {selected_user}"}
         elif selected_role == "owner":
             # check if currently logged in user is owner of selected dataset (only owner can change owner)
             # change owner

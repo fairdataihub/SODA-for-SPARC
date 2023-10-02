@@ -2,7 +2,7 @@ const {
   addDatasetAndOrganizationCardComponents,
 } = require("./components-utils/addDatasetAndOrganizationCards");
 
-function docReady(fn) {
+const docReady = (fn) => {
   // see if DOM is already available
   if (document.readyState === "complete" || document.readyState === "interactive") {
     // call on next available tick
@@ -10,7 +10,7 @@ function docReady(fn) {
   } else {
     document.addEventListener("DOMContentLoaded", fn);
   }
-}
+};
 
 // adds the apps HTML pages to the DOM
 document.addEventListener("DOMContentLoaded", async function () {
@@ -85,7 +85,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   await includeJavaScriptFile("./scripts/metadata-files/readme-changes.js");
   await includeJavaScriptFile("./scripts/metadata-files/subjects-samples.js");
   await includeJavaScriptFile("./scripts/metadata-files/submission.js");
-  await includeJavaScriptFile("./scripts/guided-mode/lottieJSON.js");
   await includeJavaScriptFile("./scripts/guided-mode/guided-curate-dataset.js");
   await includeJavaScriptFile("./scripts/collections/collections.js");
   await includeJavaScriptFile("./scripts/others/announcements.js");
@@ -94,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 const includeJavaScriptFile = async (filePath) => {
   return new Promise((resolve, reject) => {
-    var script = document.createElement("script");
+    let script = document.createElement("script");
     script.type = "text/javascript";
     script.src = filePath;
     script.async = false;

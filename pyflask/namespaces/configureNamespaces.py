@@ -17,6 +17,7 @@ class NamespaceEnum(Enum):
     COLLECTIONS = "collections"
     SKELETON_DATASET = "skeleton_dataset"
     PYSODA_UTILS = "pysoda_utils"
+    AUTHENTICATE = "authenticate"
 
 
 # namespaces dictionary that is given a namespace name as a key and returns the corresponding namespace object as a value

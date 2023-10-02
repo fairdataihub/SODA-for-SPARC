@@ -131,7 +131,6 @@
 }
 
 .docu-content-container {
-  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -139,8 +138,10 @@
 
 .button_container_contact {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
 }
 
 .sodaVideo-button {

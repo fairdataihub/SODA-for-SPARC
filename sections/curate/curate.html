@@ -105,10 +105,10 @@
   <main
     class="dash-content"
     id="organize_main"
-    style="flex-direction: column; justify-content: space-between"
+    style="flex-direction: column; justify-content: center"
   >
-    <header class="section-header">
-      <div class="container-tab-information-header">
+    <header class="section-header" style="margin-top: 1rem;">
+      <div class="container-tab-information-header" style="margin-bottom: 0 !important">
         <div class="need-help-div">
           <h2>Organize dataset</h2>
           <a
@@ -127,7 +127,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        max-height: 90%;
+        max-height: 97%;
         height: 100vh;
       "
     >
@@ -138,10 +138,8 @@
           justify-content: space-evenly;
           width: 100%;
           max-height: 90%;
-          border-top: 1px solid #f5f5f5;
           padding-left: 20px;
           padding-top: 15px;
-          overflow: auto;
           height: 90vh;
         "
       >
@@ -1141,7 +1139,7 @@
                         text-overflow: ellipsis;
                       "
                       id="input-global-path"
-                      value="My_dataset_folder/"
+                      value="dataset_root/"
                       readonly
                     />
 
@@ -3319,7 +3317,8 @@
                 </div>
                 <div id="manifest-items-container"
                   style="display: flex; flex-direction: column; justify-content: center">
-                  <a id="button-generate-manifest-locally"
+                  <!-- Temporarily hide local copy generation in organize ds for v12.2.1 release -->
+                  <a id="button-generate-manifest-locally" class="hidden"
                     data-content="Use this button to generate and view the manifest file locally" rel="popover"
                     data-placement="right" data-trigger="hover" style="text-decoration: underline; display: none">
                     Create a copy of the Manifest files locally to review.
@@ -3655,6 +3654,7 @@
                               margin: 0 10px;
                               width: 100px;
                               border: none !important;
+                              padding-left: .7rem;
                             "
                           >
                             Confirm
@@ -3788,19 +3788,18 @@
                     class="individual-question generate-dataset"
                     id="Question-generate-dataset-choose-ds-name"
                   >
-                    <div class="ui form" style="width: 450px">
+                    <div class="ui form">
                       <div class="grouped fields">
                         <label
+                          class="w-100 text-center"
                           style="
                             font-size: 17px;
                             color: var(--color-bg-plum);
-                            width: 100%;
-                            text-align: center;
                           "
                           >What is the name of the new dataset?</label
                         >
                         <div
-                          class="field"
+                          class="field justify-center"
                           style="
                             margin: 15px auto;
                             display: flex;
@@ -3812,7 +3811,7 @@
                             class="form-control"
                             style="
                               background: #fff !important;
-                              width: 450px !important;
+                              width: 550px !important;
                             "
                             id="inputNewNameDataset"
                             placeholder="Type here"
@@ -3838,15 +3837,15 @@
                           data-next="Question-generate-dataset-generate-div-old"
                           style="
                             cursor: pointer;
-                            border-radius: 8px;
+                            border-radius: 4px;
                             margin: 0 10px;
                             width: 100px;
-                            height: 30px;
+                            height: 35px;
                             background: var(--color-light-green);
                             color: #fff;
                             font-weight: 600;
                             border: none;
-                            font-size: 13px;
+                            font-size: 14px;
                           "
                         >
                           Confirm
@@ -4915,8 +4914,9 @@
                 id="button-generate"
                 class="btn_animated generate-btn"
                 style="
+                  padding-left: .7rem;
                   margin: 5px;
-                  width: 120px;
+                  width: 160px;
                   height: 40px;
                   font-size: 15px;
                   border: none !important;
@@ -5075,12 +5075,11 @@
       <div
         style="
           border-top: 1px solid #f0f0f0;
-          padding: 10px;
-          padding-top: 15px;
+          padding-top: 10px;
           display: flex;
           flex-direction: row;
           justify-content: space-between;
-          height: 80px;
+          height: 67px;
           margin-right: 3.7rem;
         "
       >
@@ -5101,6 +5100,7 @@
             data-placement="top"
             data-trigger="hover"
             data-content="Reset your progress and go back to Step 1"
+            style="padding-left: 1.8rem;"
           >
             <i class="fas fa-sync-alt" style="margin-right: 10px"></i>Start over
           </button>

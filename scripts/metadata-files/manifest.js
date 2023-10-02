@@ -1,6 +1,6 @@
 const { platform } = require("os");
-
 const { copyFile, readdir } = require("fs").promises;
+const { join } = require("path");
 let openedEdit = false;
 
 // opendropdown event listeners
@@ -16,7 +16,7 @@ document.querySelectorAll(".manifest-change-current-ds").forEach((element) => {
   });
 });
 
-var jstreePreviewManifest = document.getElementById("div-dataset-tree-preview-manifest");
+const jstreePreviewManifest = document.getElementById("div-dataset-tree-preview-manifest");
 
 const guidedJsTreePreviewManifest = document.getElementById(
   "guided-div-dataset-tree-preview-manifest"
@@ -513,10 +513,8 @@ $(document).ready(function () {
           return;
         } else {
           //spreadsheet reply contained results
-          // await updateManifestJson(highLevelFolderName, result);
           ipcRenderer.removeAllListeners("spreadsheet-reply");
           saveManifestFiles = true;
-          // guidedManifestTable = result;
           if (saveManifestFiles) {
             //if additional metadata or description gets added for a file then add to json as well
             sodaJSONObj["manifest-files"]["auto-generated"] = true;
@@ -530,10 +528,13 @@ $(document).ready(function () {
               parentFolderName
             );
             let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+
             if (!fs.existsSync(localFolderPath)) {
+              // create the manifest folder if it doesn't exist
               fs.mkdirSync(localFolderPath);
               fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
             }
+
             jsonManifest = excelToJson({
               sourceFile: selectedManifestFilePath,
               columnToKey: {
@@ -548,6 +549,10 @@ $(document).ready(function () {
             // If extra columns are added preserve them into sodaJSONObj
             for (let i = 0; i < savedData.length; i++) {
               let fileName = savedData[i][0];
+              if (fileName == "" || fileName == undefined) {
+                // fileName is blank if user accidentally adds a new row and does not remove it
+                continue;
+              }
               let cleanedFileName = "";
               let fileNameSplit = fileName.split("/");
               let description = savedData[i][2];
@@ -770,9 +775,15 @@ const convertJSONToXlsx = (jsondata, excelfile) => {
   let headingColumnIndex = 1;
   headingColumnNames.forEach((heading) => {
     let styleObject = yellowHeaderStyle;
-    if (blueHeader.includes(heading)) styleObject = blueHeaderStyle;
-    if (yellowHeader.includes(heading)) styleObject = yellowHeaderStyle;
-    if (greenHeader.includes(heading)) styleObject = greenHeaderStyle;
+    if (blueHeader.includes(heading)) {
+      styleObject = blueHeaderStyle;
+    }
+    if (yellowHeader.includes(heading)) {
+      styleObject = yellowHeaderStyle;
+    }
+    if (greenHeader.includes(heading)) {
+      styleObject = greenHeaderStyle;
+    }
 
     ws.cell(1, headingColumnIndex++)
       .string(heading)
@@ -792,12 +803,16 @@ const convertJSONToXlsx = (jsondata, excelfile) => {
   wb.write(excelfile);
 };
 
+const determineStandaloneManifestGeneratorOrigin = () => {
+  const selectedCardCreateManifest = $('input[name="generate-manifest-1"]:checked').prop("id");
+  return selectedCardCreateManifest === "generate-manifest-from-Penn" ? "bf" : "local";
+};
+
 var localDatasetFolderPath = "";
 var finalManifestGenerationPath = "";
 let pennsievePreview = false;
 
 const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
-  let type = "local";
   let continueProgressValidateDataset = true;
   let titleTerm = "folder";
   let localGenerationDifferentDestination = false;
@@ -805,13 +820,8 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   let localManifestGeneratePath = document.querySelector(
     "#input-manifest-local-gen-location"
   ).placeholder;
-  let selectedCardCreateManifest = $('input[name="generate-manifest-1"]:checked').prop("id");
   pennsievePreview = false;
-
-  // check if manifest is being generated from Pennsieve
-  if (selectedCardCreateManifest === "generate-manifest-from-Penn") {
-    type = "bf";
-  }
+  const type = determineStandaloneManifestGeneratorOrigin();
 
   exitCurate();
   sodaJSONObj["starting-point"] = {};
@@ -1215,26 +1225,22 @@ const initiate_generate_manifest_bf = async () => {
   generatingBoolean = true;
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
-  var main_curate_status = "Solving";
-  var main_total_generate_dataset_size;
-
-  let dataset_name = "";
-  let dataset_destination = "";
 
   if ("bf-dataset-selected" in sodaJSONObj) {
     dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     dataset_destination = "Pennsieve";
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      let destination = sodaJSONObj["generate-dataset"]["destination"];
-      if (destination == "local") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Local";
-      }
-      if (destination == "bf") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Pennsieve";
-      }
+  } else if (
+    "generate-dataset" in sodaJSONObj &&
+    "destination" in sodaJSONObj["generate-dataset"]
+  ) {
+    let destination = sodaJSONObj["generate-dataset"]["destination"];
+    if (destination == "local") {
+      dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+      dataset_destination = "Local";
+    }
+    if (destination == "bf") {
+      dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+      dataset_destination = "Pennsieve";
     }
   }
 
@@ -1289,10 +1295,11 @@ const initiate_generate_manifest_bf = async () => {
     // determine if working with a Local dataset or Pennsieve
     if ("bf-dataset-selected" in sodaJSONObj) {
       destination = "Pennsieve";
-    } else if ("generate-dataset" in sodaJSONObj) {
-      if ("destination" in sodaJSONObj["generate-dataset"]) {
-        destination = sodaJSONObj["generate-dataset"]["destination"];
-      }
+    } else if (
+      "generate-dataset" in sodaJSONObj &&
+      "destination" in sodaJSONObj["generate-dataset"]
+    ) {
+      destination = sodaJSONObj["generate-dataset"]["destination"];
     }
 
     // log the error to analytics
@@ -1310,23 +1317,31 @@ const initiate_generate_manifest_bf = async () => {
   let res = curationResponse.data;
 
   let high_level_folder_num = 0;
-  if (manifest_files_requested) {
-    if ("dataset-structure" in sodaJSONObj) {
-      if ("folders" in sodaJSONObj["dataset-structure"]) {
-        for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
-          high_level_folder_num += 1;
-        }
-      }
+  if (
+    manifest_files_requested &&
+    "dataset-structure" in sodaJSONObj &&
+    "folders" in sodaJSONObj["dataset-structure"]
+  ) {
+    for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
+      high_level_folder_num += 1;
     }
   }
+
   // determine if working with a Local dataset or Pennsieve
   if ("bf-dataset-selected" in sodaJSONObj) {
     destination = "Pennsieve";
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      destination = sodaJSONObj["generate-dataset"]["destination"];
-    }
+  } else if (
+    "generate-dataset" in sodaJSONObj &&
+    "destination" in sodaJSONObj["generate-dataset"]
+  ) {
+    destination = sodaJSONObj["generate-dataset"]["destination"];
   }
+
+  // Verify the origin of dataset for kombucha tracking
+  const origin =
+    determineStandaloneManifestGeneratorOrigin() === "bf"
+      ? kombuchaEnums.Origin.PENNSIEVE
+      : kombuchaEnums.Origin.LOCAL;
 
   // log the manifest file creation to analytics
   logMetadataForAnalytics(
@@ -1346,7 +1361,21 @@ const initiate_generate_manifest_bf = async () => {
     high_level_folder_num
   );
 
-  logMetadataSizeForAnalytics(destination === "Pennsieve" ? true : false, "manifest.xlsx", res[1]);
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.PREPARE_METADATA,
+    kombuchaEnums.Action.GENERATE_METADATA,
+    kombuchaEnums.Label.FILES,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: high_level_folder_num,
+      dataset_id: defaultBfDatasetId,
+      origin: origin,
+      destination: destination,
+    }
+  );
+
+  logMetadataSizeForAnalytics(!!(destination === "Pennsieve"), "manifest.xlsx", res[1]);
 
   sodaJSONObj = {
     "starting-point": { type: "" },

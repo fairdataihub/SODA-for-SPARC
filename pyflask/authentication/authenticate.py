@@ -4,6 +4,10 @@ from os.path import expanduser, join, exists
 from configparser import ConfigParser
 from flask import abort
 from os import mkdir
+import time
+
+from namespaces import NamespaceEnum, get_namespace_logger
+namespace_logger = get_namespace_logger(NamespaceEnum.USER)
 
 from profileUtils import create_unique_profile_name
 
@@ -11,7 +15,15 @@ userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
-from namespaces import NamespaceEnum, get_namespace_logger
+# Variables for token caching
+cached_access_token = None
+last_fetch_time = 0
+TOKEN_CACHE_DURATION = 60 # Amount of time in seconds to cache the access token
+
+# Variables for token caching
+cached_access_token = None
+last_fetch_time = 0
+TOKEN_CACHE_DURATION = 60 # Amount of time in seconds to cache the access token
 
 
 def get_access_token(api_key=None, api_secret=None):
@@ -19,6 +31,14 @@ def get_access_token(api_key=None, api_secret=None):
     Creates a temporary access token for utilizing the Pennsieve API. Reads the api token and secret from the Pennsieve config.ini file.
     get cognito config . If no target profile name is provided the default profile is used. 
     """
+    global cached_access_token, last_fetch_time, TOKEN_CACHE_DURATION # Variables used for token caching
+    global namespace_logger
+    current_time = time.time()
+
+    # If the cached_access_token is not None and the last fetch time is less than the cache duration, return the cached access token
+    if cached_access_token and current_time - last_fetch_time < TOKEN_CACHE_DURATION:
+        return cached_access_token
+    
     r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
     r.raise_for_status()
 
@@ -26,10 +46,10 @@ def get_access_token(api_key=None, api_secret=None):
     cognito_region_name = r.json()["region"]
 
     cognito_idp_client = boto3.client(
-    "cognito-idp",
-    region_name=cognito_region_name,
-    aws_access_key_id="",
-    aws_secret_access_key="",
+        "cognito-idp",
+        region_name=cognito_region_name,
+        aws_access_key_id="",
+        aws_secret_access_key="",
     )
 
     # use the default profile values for auth if no api_key or api_secret is provided
@@ -45,9 +65,16 @@ def get_access_token(api_key=None, api_secret=None):
     AuthParameters={"USERNAME": api_key, "PASSWORD": api_secret},
     ClientId=cognito_app_client_id,
     )
+
+    cached_access_token = login_response["AuthenticationResult"]["AccessToken"]
+    last_fetch_time = current_time
+
+    return cached_access_token
         
 
-    return login_response["AuthenticationResult"]["AccessToken"]
+def clear_cached_access_token():
+    global cached_access_token, last_fetch_time
+    cached_access_token = None
 
 
 def get_cognito_userpool_access_token(email, password):
@@ -271,6 +298,8 @@ def create_pennsieve_api_key_secret(email, password, machine_username_specifier)
     response.raise_for_status()
     response = response.json()
 
+    # clear access token cache
+    clear_cached_access_token()
 
     return { 
         "success": "success", 

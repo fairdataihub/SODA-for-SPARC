@@ -62,12 +62,15 @@ def set_template_path(soda_base_path, soda_resources_path):
     # it creates an archive that slef extracts to an OS-specific temp directory.
     # Due to this we can no longer use a relative path from the pysoda directory to the file_templates folder.
     # When running in dev mode this also works
-    TEMPLATE_PATH = join(soda_base_path, "file_templates")
+    # TEMPLATE_PATH = join(soda_base_path, "file_templates")
 
     # check if os is Darwin/Linux
-    if platform.system() in ["Darwin", "Linux"] and not exists(TEMPLATE_PATH):
+    if platform.system() in ["Darwin", "Linux", "Windows"] and not exists(TEMPLATE_PATH):
         # we are in production and we need to use the Resources folder for the file_templates folder
         TEMPLATE_PATH = join(soda_resources_path, "file_templates")
+
+    if not exists(TEMPLATE_PATH):
+        TEMPLATE_PATH = join(soda_base_path, "file_templates")
 
 
 
@@ -156,13 +159,17 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr
     wb = load_workbook(destination)
     ws1 = wb["Sheet1"]
     for column, arr in zip(excel_columns(start_index=2), val_arr):
-        ws1[column + "2"] = arr["award"]
-        ws1[column + "3"] = arr["milestone"]
-        ws1[column + "4"] = arr["date"]
+        ws1[column + "2"] = arr["consortiumDataStandard"]
+        ws1[column + "3"] = arr["fundingConsortium"]
+        ws1[column + "4"] = arr["award"]
+        ws1[column + "5"] = arr["milestone"]
+        ws1[column + "6"] = arr["date"]
 
         ws1[column + "2"].font = font_submission
         ws1[column + "3"].font = font_submission
         ws1[column + "4"].font = font_submission
+        ws1[column + "5"].font = font_submission
+        ws1[column + "6"].font = font_submission
 
     rename_headers(ws1, len(val_arr), 2)
 
@@ -251,7 +258,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     except Exception as e:
         namespace_logger.error("Error uploading dataset files")
         namespace_logger.error(e)
-        raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
+        raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
 
     # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
@@ -798,11 +805,11 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
 
     try:
         if item_id is None:
-            DD_df = pd.read_excel(
+            submission_data_frame = pd.read_excel(
                 filepath, engine="openpyxl", usecols=column_check, header=0
             )
         else:
-            DD_df = load_metadata_to_dataframe(item_id, "excel", token, column_check, 0)
+            submission_data_frame = load_metadata_to_dataframe(item_id, "excel", token, column_check, 0)
 
     except Exception as e:
         if is_file_not_found_exception(e):
@@ -816,50 +823,59 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
         ) from e
 
     # drop rows with missing values, convert values to strings, and remove white spaces
-    DD_df = DD_df.dropna(axis=0, how="all")
-    DD_df = DD_df.replace(np.nan, "", regex=True)
-    DD_df = DD_df.applymap(str)
-    DD_df = DD_df.applymap(str.strip)
+    submission_data_frame = submission_data_frame.dropna(axis=0, how="all")
+    submission_data_frame = submission_data_frame.replace(np.nan, "", regex=True)
+    submission_data_frame = submission_data_frame.applymap(str)
+    submission_data_frame = submission_data_frame.applymap(str.strip)
 
     basicColumns = ["Submission Item", "Definition", "Value"]
     basicHeaders = [
-        "SPARC Award number",
+        "Consortium data standard",
+        "Funding consortium",
+        "Award number",
         "Milestone achieved",
         "Milestone completion date",
     ]
+
+    #log the submission_data_frame
+    namespace_logger.info(f"submission_data_frame: {submission_data_frame}")
     ## normalize the entries to lowercase just for Version Exception check
     basicColumns = [x.lower() for x in basicColumns]
-    basicHeaders = [x.lower() for x in basicHeaders]
-    DD_df_lower = [x.lower() for x in DD_df]
-
+    submission_data_frame_lowercased = [x.lower() for x in submission_data_frame]
     for key in basicColumns:
-        if key not in DD_df_lower:
+        if key not in submission_data_frame_lowercased:
             abort(
                 400,
-                "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
+                "The imported file columns are not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.1.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
 
+    basicHeaders = [x.lower() for x in basicHeaders]
     for header_name in basicHeaders:
-        submissionItems = [x.lower() for x in DD_df["Submission Item"]]
+        submissionItems = [x.lower() for x in submission_data_frame["Submission Item"]]
         if header_name not in set(submissionItems):
             abort(
                 400,
-                "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
+                "The imported file headers are not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.1.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
 
-    awardNo = DD_df["Value"][0]
-    milestones = [DD_df["Value"][1]]
 
-    for i in range(3, len(DD_df.columns)):
-        value = DD_df[f"Value {str(i - 1)}"]
-        milestones.append(value[1])
+    consortium_data_standard = submission_data_frame["Value"][0]
+    funding_consortium = submission_data_frame["Value"][1]
+    award_number = submission_data_frame["Value"][2]
+    milestones = [submission_data_frame["Value"][3]]
 
-    date = DD_df["Value"][2] or ""
+    for i in range(3, len(submission_data_frame.columns)):
+        value = submission_data_frame[f"Value {str(i - 1)}"]
+        milestones.append(value[3])
+
+    milestone_completion_data = submission_data_frame["Value"][4] or ""
 
     return {
-        "SPARC Award number": awardNo,
+        "Consortium data standard": consortium_data_standard,
+        "Funding consortium": funding_consortium,
+        "Award number": award_number,
         "Milestone achieved": milestones,
-        "Milestone completion date": date,
+        "Milestone completion date": milestone_completion_data,
     }
 
 
@@ -952,9 +968,8 @@ def import_ps_manifest_file(soda_json_structure, bfdataset):
 
     # get the count of the total number of high level folders in soda_json_structure
     for folder in list(dataset_structure["folders"]):
-        if folder in high_level_folders:
-            if dataset_structure["folders"][folder]["files"] == {} and dataset_structure["folders"][folder]["folders"] == {}:
-                manifest_progress["total_manifest_files"] += 1
+        if folder in high_level_folders and (dataset_structure["folders"][folder]["files"] == {} and dataset_structure["folders"][folder]["folders"] == {}):
+            manifest_progress["total_manifest_files"] += 1
 
     # create the path to the dataset files and folders on Pennsieve and add them to the dataset structure stored in soda_json_structure
     recursive_item_path_create(dataset_structure, [])
