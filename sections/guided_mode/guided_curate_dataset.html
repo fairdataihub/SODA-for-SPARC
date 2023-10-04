@@ -1416,6 +1416,91 @@
                 To import from folders/files you must first organize your subjects into folders...
               </p>
             </div>
+            <div class="guided--radio-button-container">
+              <button
+                class="guided--radio-button tile-button"
+                data-next-element="guided-section-add-subject-manually"
+                data-button-config-value="latest-subject-addition-method"
+                data-button-config-value-state="manual"
+              >
+                <div class="tile-button-icon">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g
+                      id="SVGRepo_tracerCarrier"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></g>
+                    <g id="SVGRepo_iconCarrier">
+                      <path
+                        d="M7 8H21M7 12H21M7 16H21M3 8H3.01M3 12H3.01M3 16H3.01"
+                        stroke="#000000"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      ></path>
+                    </g>
+                  </svg>
+                </div>
+                <div class="tile-button-text">
+                  <h2>NIH SPARC program</h2>
+                </div>
+              </button>
+
+              <button
+                class="guided--radio-button tile-button"
+                data-next-element="guided-section-add-subject-via-spreadsheet"
+                data-button-config-value="latest-subject-addition-method"
+                data-button-config-value-state="spreadsheet"
+              >
+                <div class="tile-button-icon">
+                  <img
+                    src="assets\img\rejoinLogo.png"
+                    alt="REJOINlogo"
+                    width="50px"
+                    height="50px"
+                  />
+                </div>
+                <div class="tile-button-text">
+                  <h2>NIH RE-JOIN program</h2>
+                </div>
+              </button>
+
+              <button
+                class="guided--radio-button tile-button"
+                data-next-element="guided-section-add-subject-via-folders"
+                data-button-config-value="latest-subject-addition-method"
+                data-button-config-value-state="folders"
+              >
+                <div class="tile-button-icon">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g
+                      id="SVGRepo_tracerCarrier"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></g>
+                    <g id="SVGRepo_iconCarrier">
+                      <path
+                        d="M7 8H21M7 12H21M7 16H21M3 8H3.01M3 12H3.01M3 16H3.01"
+                        stroke="#000000"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      ></path>
+                    </g>
+                  </svg>
+                </div>
+                <div class="tile-button-text">
+                  <h2>Other/no funding source</h2>
+                </div>
+              </button>
+            </div>
+
+            <div class="guided--section" id="guided-section-add-subject-manually"></div>
+            <div class="guided--section" id="guided-section-add-subject-via-spreadsheet"></div>
+            <div class="guided--section" id="guided-section-add-subject-via-folders"></div>
+
             <div class="guided--section">
               <button class="ui positive button soda-green-background">Add a subject</button>
               <table
