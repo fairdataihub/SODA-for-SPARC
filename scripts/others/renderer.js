@@ -244,7 +244,9 @@ let launchAnnouncement = nodeStorage.getItem("launch_announcements");
 if (autoUpdateLaunch == false || autoUpdateLaunch == null || autoUpdateLaunch == undefined) {
   // if launchAnnouncements is undefined/null then announcements havent been launched yet; set launch_announcements to true
   // later code will reference this flag to determine if announcements should be checked for
-  if (launchAnnouncement === undefined || launchAnnouncement === null) launchAnnouncement = true;
+  if (launchAnnouncement === undefined || launchAnnouncement === null) {
+    launchAnnouncement = true;
+  }
   // do not check for announcements on the next launch
   nodeStorage.setItem("launch_announcements", false); // NOTE: launch_announcements is only set to true during the auto update process ( see main.js )
 }

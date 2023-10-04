@@ -1368,14 +1368,48 @@
               <i class="fas fa-chevron-right"></i>
             </div>
             <div class="info-container">
-              <p class="help-text mb-0">
+              <p class="help-text">
                 SODA provides two methods for importing a large number of subjects: Importing from
                 an excel spreadsheet, or importing directly from a set of folders or files on your
                 computer.
-                <br /><br />
+              </p>
+              <p class="help-text">
                 <b>Importing from a spreadsheet:</b>
                 <br />
-                To import from a spreadsheet you must first download the template by clicking the...
+                To import from a spreadsheet you must first
+                <button class="guided-subject-sample-pool-structure-download-button">
+                  Download subject/pool/samples template
+                </button>
+                <br />
+
+                Once you have added your subjects to the spreadsheet, import it by drag and dropping
+                or importing it below. <br />
+              </p>
+              <div
+                class="file-import-container horizontal"
+                id="guided-container-subjects-pools-samples-structure-import"
+                data-file-name="subjects_pools_samples_structure"
+              >
+                <div
+                  id="guided-lottie-import-subjects-pools-samples-excel-file"
+                  class="lottieAnimationContainer guided--container-lottie-small"
+                ></div>
+                <p class="help-text text-center">Drag and Drop <b>subjects_structure.xslx</b></p>
+                <p class="help-text text-center mt-md mb-md">OR</p>
+                <button
+                  class="ui primary basic button mt-sm"
+                  onclick="importMetadataFiles(this, 'code_description', ['.xlsx'], 'guided-code-description-para-text', 'guided')"
+                >
+                  <i class="fas fa-file-import" style="margin-right: 7px"></i>Import
+                  subjects_structure.xslx
+                </button>
+                <p
+                  class="help-text small text-center mt-sm"
+                  id="guided-code-description-para-text"
+                  style="max-width: 240px; overflow-wrap: break-word"
+                ></p>
+              </div>
+              <p>
                 <br /><br />
                 <b>Importing from folders/files:</b>
                 <br />
@@ -1383,17 +1417,7 @@
               </p>
             </div>
             <div class="guided--section">
-              <button
-                class="ui positive button soda-green-background"
-                id="guided-next-button"
-                style="
-                  background-color: var(--color-light-green) !important;
-                  width: 200px !important;
-                  font-family: Poppins;
-                "
-              >
-                Save and Continue
-              </button>
+              <button class="ui positive button soda-green-background">Add a subject</button>
               <table
                 class="ui celled striped table mt-md"
                 style="margin-bottom: 10px; width: 800px"
