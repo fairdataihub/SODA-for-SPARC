@@ -29,10 +29,10 @@ dependencies:
   - PyInstaller == 4.7
   - opencv-python == 4.5.3.56
   - certifi == 2023.7.22
-  - requests
   - boto3 
   - numpy == 1.23.0
   - protobuf == 4.21.12
   - pennsieve2 == 0.1.1
   - jsonschema == 4.17.3
-  - urllib3 == 2.0.4
+  - urllib3 == 2.0.6
+  - requests == 2.31.0

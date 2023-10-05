@@ -22,7 +22,6 @@ dependencies:
   - flask_restx
   - werkzeug == 2.0.2
   - opencv-python == 4.5.3.56
-  - requests == 2.28.1
   - grpcio
   - tqdm 
   - numpy == 1.23.0
@@ -30,3 +29,5 @@ dependencies:
   - pennsieve2 == 0.1.1
   - boto3
   - jsonschema == 4.17.3
+  - urllib3 == 2.0.6
+  - requests == 2.31.0
