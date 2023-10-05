@@ -5,7 +5,15 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.12.3.1 - 2023-10-05
+
+## Bug fixes:
+
+- Updated urllib3 and request versions to fix issues with the back-end processing responses from Pennsieve API.
+
 ## v.12.3.1 - 2023-09-21
+
+## Bug fixes:
 
 - Fixed a bug allowing subjects and samples to be created without a name.
 
