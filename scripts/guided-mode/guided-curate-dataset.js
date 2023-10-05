@@ -10324,8 +10324,12 @@ const openCopySampleMetadataPopup = async () => {
 
 const specifySubject = (event, subjectNameInput) => {
   if (event.which == 13) {
+    const userEnteredSubjectName = subjectNameInput.val().trim();
+    if (userEnteredSubjectName.length === 0) {
+      return;
+    }
     try {
-      const subjectName = `sub-${subjectNameInput.val().trim()}`;
+      const subjectName = `sub-${userEnteredSubjectName}`;
       const subjectNameElement = `
         <div class="space-between w-100">
           <span class="subject-id">${subjectName}</span>
@@ -10342,28 +10346,26 @@ const specifySubject = (event, subjectNameInput) => {
         subjectIdCellToAddNameTo[0].parentElement.nextElementSibling.children[0];
       trashCanElement.style.display = "block";
 
-      if (subjectName.length > 0) {
-        const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
-          subjectName,
-          "string-adheres-to-identifier-conventions"
-        );
-        if (!subjectNameIsValid) {
-          generateAlertMessage(subjectNameInput);
-          return;
-        }
-        //remove the add subject help text
-        document.getElementById("guided-add-subject-instructions").classList.add("hidden");
-        removeAlertMessageIfExists(subjectNameInput);
-        if (subjectNameInput.attr("data-prev-name")) {
-          const subjectToRename = subjectNameInput.attr("data-prev-name");
-          sodaJSONObj.renameSubject(subjectToRename, subjectName);
-        } else {
-          //case where subject name is valid and not being renamed:
-          sodaJSONObj.addSubject(subjectName);
-        }
-        subjectIdCellToAddNameTo.html(subjectNameElement);
-        addSubjectSpecificationTableRow();
+      const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+        subjectName,
+        "string-adheres-to-identifier-conventions"
+      );
+      if (!subjectNameIsValid) {
+        generateAlertMessage(subjectNameInput);
+        return;
       }
+      //remove the add subject help text
+      document.getElementById("guided-add-subject-instructions").classList.add("hidden");
+      removeAlertMessageIfExists(subjectNameInput);
+      if (subjectNameInput.attr("data-prev-name")) {
+        const subjectToRename = subjectNameInput.attr("data-prev-name");
+        sodaJSONObj.renameSubject(subjectToRename, subjectName);
+      } else {
+        //case where subject name is valid and not being renamed:
+        sodaJSONObj.addSubject(subjectName);
+      }
+      subjectIdCellToAddNameTo.html(subjectNameElement);
+      addSubjectSpecificationTableRow();
     } catch (error) {
       notyf.open({
         duration: "3000",
@@ -10380,9 +10382,14 @@ const specifySample = (event, sampleNameInput) => {
       .previousElementSibling;
 
   let addSampleButton = buttonContainer.children[0].children[0].children[1];
+
   if (event.which == 13) {
+    const userEnteredSample = sampleNameInput.val().trim();
+    if (userEnteredSample.length === 0) {
+      return;
+    }
     try {
-      const sampleName = `sam-${sampleNameInput.val().trim()}`;
+      const sampleName = `sam-${userEnteredSample}`;
       const sampleRenameElement = `
       <div class="space-between w-100">
         <span class="sample-id">${sampleName}</span>
@@ -10404,40 +10411,34 @@ const specifySample = (event, sampleNameInput) => {
         .text();
       const subjectToAddSampleTo = subjectSampleAdditionTable.find(".samples-subject-name").text();
 
-      if (sampleName.length > 0) {
-        const sampleNameIsValid = evaluateStringAgainstSdsRequirements(
-          sampleName,
-          "string-adheres-to-identifier-conventions"
-        );
-        if (!sampleNameIsValid) {
-          //show alert message below pool name input if input is invalid and abort function
-          generateAlertMessage(sampleNameInput);
-          return;
-        }
-        removeAlertMessageIfExists(sampleNameInput);
+      const sampleNameIsValid = evaluateStringAgainstSdsRequirements(
+        sampleName,
+        "string-adheres-to-identifier-conventions"
+      );
+      if (!sampleNameIsValid) {
+        //show alert message below pool name input if input is invalid and abort function
+        generateAlertMessage(sampleNameInput);
+        return;
+      }
+      removeAlertMessageIfExists(sampleNameInput);
 
-        if (sampleNameInput.attr("data-prev-name")) {
-          const sampleToRename = sampleNameInput.attr("data-prev-name");
-          sodaJSONObj.renameSample(
-            sampleToRename,
-            sampleName,
-            subjectsPoolToAddSampleTo,
-            subjectToAddSampleTo
-          );
-        } else {
-          //Add the new sample to sodaJSONObj
-          sodaJSONObj.addSampleToSubject(
-            sampleName,
-            subjectsPoolToAddSampleTo,
-            subjectToAddSampleTo
-          );
-          //then show trash can svg
-          sampleTrashCan.style.display = "block";
-        }
-        sampleIdCellToAddNameTo.html(sampleRenameElement);
-        if (!sampleNameInput.attr("data-prev-name")) {
-          addSampleSpecificationTableRow(addSampleButton);
-        }
+      if (sampleNameInput.attr("data-prev-name")) {
+        const sampleToRename = sampleNameInput.attr("data-prev-name");
+        sodaJSONObj.renameSample(
+          sampleToRename,
+          sampleName,
+          subjectsPoolToAddSampleTo,
+          subjectToAddSampleTo
+        );
+      } else {
+        //Add the new sample to sodaJSONObj
+        sodaJSONObj.addSampleToSubject(sampleName, subjectsPoolToAddSampleTo, subjectToAddSampleTo);
+        //then show trash can svg
+        sampleTrashCan.style.display = "block";
+      }
+      sampleIdCellToAddNameTo.html(sampleRenameElement);
+      if (!sampleNameInput.attr("data-prev-name")) {
+        addSampleSpecificationTableRow(addSampleButton);
       }
     } catch (error) {
       console.log(error);
@@ -10452,8 +10453,12 @@ const specifySample = (event, sampleNameInput) => {
 
 const specifyPool = (event, poolNameInput) => {
   if (event.which == 13) {
+    const userEnteredPoolName = poolNameInput.val().trim();
+    if (userEnteredPoolName.length === 0) {
+      return;
+    }
     try {
-      const poolName = `pool-${poolNameInput.val().trim()}`;
+      const poolName = `pool-${userEnteredPoolName}`;
       const poolNameElement = `
         <div class="space-between" style="width: 250px;">
           <span class="pool-id">${poolName}</span>
@@ -10477,65 +10482,63 @@ const specifyPool = (event, poolNameInput) => {
       const poolTrashcan = poolSubjectsDropdownCell[0].nextElementSibling.children[0];
       const poolIdCellToAddNameTo = poolNameInput.parent();
       let poolsTable = $("#pools-table");
-      if (poolName !== "pool-") {
-        const poolNameIsValid = evaluateStringAgainstSdsRequirements(
-          poolName,
-          "string-adheres-to-identifier-conventions"
-        );
-        if (!poolNameIsValid) {
-          notyf.open({
-            duration: "3000",
-            type: "error",
-            message: "Pool IDs may not contain spaces or special characters",
-          });
-          return;
-        }
-        removeAlertMessageIfExists(poolsTable);
-        if (poolNameInput.attr("data-prev-name")) {
-          const poolFolderToRename = poolNameInput.attr("data-prev-name");
-
-          sodaJSONObj.renamePool(poolFolderToRename, poolName);
-
-          //refresh the UI to update the dropdowns to avoid having to update select2 dropdowns
-          setActiveSubPage("guided-organize-subjects-into-pools-page");
-          return;
-        } else {
-          //Add left border back to subject dropdown cell to separate pool name and subject dropdown
-          poolSubjectsDropdownCell.removeClass("remove-left-border");
-
-          //Add the new pool to sodaJSONObj
-          sodaJSONObj.addPool(poolName);
-          poolTrashcan.style.display = "block";
-
-          //Add the select2 base element
-          poolSubjectsDropdownCell.html(poolSubjectSelectElement);
-
-          //Get the newly created select2 element
-          const newPoolSubjectsSelectElement = document.querySelector(
-            `select[name="${poolName}-subjects-selection-dropdown"]`
-          );
-
-          //create a select2 dropdown for the pool subjects
-          $(newPoolSubjectsSelectElement).select2({
-            placeholder: "Select subjects",
-            tags: true,
-            width: "100%",
-            closeOnSelect: false,
-          });
-          $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
-            updatePoolDropdown($(e.currentTarget), poolName);
-          });
-          $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
-            const subjectToRemove = e.params.data.id;
-            sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, poolName);
-          });
-          $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
-            const selectedSubject = e.params.data.id;
-            sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
-          });
-        }
-        poolIdCellToAddNameTo.html(poolNameElement);
+      const poolNameIsValid = evaluateStringAgainstSdsRequirements(
+        poolName,
+        "string-adheres-to-identifier-conventions"
+      );
+      if (!poolNameIsValid) {
+        notyf.open({
+          duration: "3000",
+          type: "error",
+          message: "Pool IDs may not contain spaces or special characters",
+        });
+        return;
       }
+      removeAlertMessageIfExists(poolsTable);
+      if (poolNameInput.attr("data-prev-name")) {
+        const poolFolderToRename = poolNameInput.attr("data-prev-name");
+
+        sodaJSONObj.renamePool(poolFolderToRename, poolName);
+
+        //refresh the UI to update the dropdowns to avoid having to update select2 dropdowns
+        setActiveSubPage("guided-organize-subjects-into-pools-page");
+        return;
+      } else {
+        //Add left border back to subject dropdown cell to separate pool name and subject dropdown
+        poolSubjectsDropdownCell.removeClass("remove-left-border");
+
+        //Add the new pool to sodaJSONObj
+        sodaJSONObj.addPool(poolName);
+        poolTrashcan.style.display = "block";
+
+        //Add the select2 base element
+        poolSubjectsDropdownCell.html(poolSubjectSelectElement);
+
+        //Get the newly created select2 element
+        const newPoolSubjectsSelectElement = document.querySelector(
+          `select[name="${poolName}-subjects-selection-dropdown"]`
+        );
+
+        //create a select2 dropdown for the pool subjects
+        $(newPoolSubjectsSelectElement).select2({
+          placeholder: "Select subjects",
+          tags: true,
+          width: "100%",
+          closeOnSelect: false,
+        });
+        $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
+          updatePoolDropdown($(e.currentTarget), poolName);
+        });
+        $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
+          const subjectToRemove = e.params.data.id;
+          sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, poolName);
+        });
+        $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
+          const selectedSubject = e.params.data.id;
+          sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
+        });
+      }
+      poolIdCellToAddNameTo.html(poolNameElement);
     } catch (error) {
       notyf.open({
         duration: "3000",

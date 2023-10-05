@@ -214,7 +214,30 @@ const confirmSample = () => {
 const addSubject = (curationMode) => {
   let subjectID = "";
   if (curationMode === "free-form") {
-    subjectID = $("#bootbox-subject-id").val();
+    subjectID = $("#bootbox-subject-id").val().trim();
+    if (subjectID === "") {
+      notyf.open({
+        type: "error",
+        message: "The subject_id is required to add a subject.",
+        duration: 3000,
+      });
+      return;
+    }
+
+    const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+      subjectID,
+      "string-adheres-to-identifier-conventions"
+    );
+
+    if (!subjectNameIsValid) {
+      notyf.open({
+        type: "error",
+        message: "The subject_id can not contain special characters.",
+        duration: 4000,
+      });
+      return;
+    }
+
     addSubjectIDtoDataBase(subjectID);
     if (subjectsTableData.length !== 0) {
       $("#div-import-primary-folder-subjects").hide();
@@ -233,8 +256,42 @@ const addSample = (curationMode) => {
   let sampleID = "";
   let subjectID = "";
   if (curationMode === "free-form") {
-    sampleID = $("#bootbox-sample-id").val();
-    subjectID = $("#bootbox-subject-id-samples").val();
+    sampleID = $("#bootbox-sample-id").val().trim();
+    subjectID = $("#bootbox-subject-id-samples").val().trim();
+    if (sampleID === "" || subjectID === "") {
+      notyf.open({
+        type: "error",
+        message: "The subject_id and sample_id are required to add a sample.",
+        duration: 3000,
+      });
+      return;
+    }
+
+    const sampleNameIsValid = evaluateStringAgainstSdsRequirements(
+      sampleID,
+      "string-adheres-to-identifier-conventions"
+    );
+    if (!sampleNameIsValid) {
+      notyf.open({
+        type: "error",
+        message: "The sample_id can not contain special characters.",
+        duration: 4000,
+      });
+      return;
+    }
+    const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+      subjectID,
+      "string-adheres-to-identifier-conventions"
+    );
+    if (!subjectNameIsValid) {
+      notyf.open({
+        type: "error",
+        message: "The subject_id can not contain special characters.",
+        duration: 4000,
+      });
+      return;
+    }
+
     addSampleIDtoDataBase(sampleID, subjectID);
     if (samplesTableData.length !== 0) {
       $("#div-import-primary-folder-samples").hide();
@@ -410,17 +467,14 @@ const addSubjectIDtoDataBase = (id) => {
       break;
     }
   }
-  if (id.trim() !== "") {
-    if (!duplicate) {
-      var message = addNewIDToTable(id, null, "subjects");
-      addSubjectIDToJSON(id);
-    } else {
-      error =
-        "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id.";
-    }
+  if (!duplicate) {
+    var message = addNewIDToTable(id, null, "subjects");
+    addSubjectIDToJSON(id);
   } else {
-    error = "The subject_id is required to add a subject.";
+    error =
+      "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id.";
   }
+
   if (error !== "") {
     Swal.fire("Failed to add the subject", error, "error");
   }
@@ -437,17 +491,14 @@ const addSampleIDtoDataBase = (samID, subID) => {
       break;
     }
   }
-  if (samID !== "" && subID !== "") {
-    if (!duplicate) {
-      var message = addNewIDToTable(samID, subID, "samples");
-      addSampleIDtoJSON(samID);
-    } else {
-      error =
-        "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id.";
-    }
+  if (!duplicate) {
+    var message = addNewIDToTable(samID, subID, "samples");
+    addSampleIDtoJSON(samID);
   } else {
-    error = "The subject_id and sample_id are required to add a sample.";
+    error =
+      "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id.";
   }
+
   if (error !== "") {
     Swal.fire("Failed to add the sample", error, "error");
   }
