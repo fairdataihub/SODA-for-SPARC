@@ -603,13 +603,11 @@ const stopPennsieveAgent = async (pathToPennsieveAgent) => {
     }
   });
 };
-
 const startPennsieveAgent = async (pathToPennsieveAgent) => {
   return new Promise((resolve, reject) => {
     // Keep track of the output from the agent
     // (output is added as strings to the array)
     const pennsieveAgentOutputLog = [];
-
     // Throw an error if the agent doesn't start within 15 seconds
     const agentStartTimeout = 15000; // 15 seconds
     const versionCheckTimeout = setTimeout(() => {
@@ -621,35 +619,41 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
         )
       );
     }, agentStartTimeout);
-
     // Start the agent by running the command "agent start" at the path of the agent
     const agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
-
     // Listen to the output from the agent and resolve the promise if the agent outputs
     // "Running Agent NOT as daemon" or "Pennsieve Agent started"
     agentStartSpawn.stdout.on("data", (data) => {
       const agentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
       log.info(agentMessage);
-      // Check if the agentMessage contains the string "Agent started"
+      // Add to message to the output log which will be used to display the output to the user if the agent fails to start
+      pennsieveAgentOutputLog.push(agentMessage);
+      // If the error message contains "Running Agent NOT as daemon" or "Pennsieve Agent started", then the agent was able to
+      // start successfully with the caveat that the agent might throw an error if the agent has issues while starting up.
+      // To alleviate this, we will try to start the agent again after 5 seconds and make sure the agent was started successfully.
       if (
         agentMessage.includes("Running Agent NOT as daemon") ||
         agentMessage.includes("Pennsieve Agent started")
       ) {
-        clearTimeout(versionCheckTimeout);
-        resolve();
-      } else {
-        // Otherwise, add the message to the log
-        pennsieveAgentOutputLog.push(agentMessage);
+        setTimeout(() => {
+          const secondAgentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
+          secondAgentStartSpawn.stdout.on("data", (data) => {
+            const secondAgentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
+            if (secondAgentMessage.includes("Pennsieve Agent is already running")) {
+              log.info(`Pennsieve Agent is confirmed to be running: ${secondAgentMessage}`);
+              clearTimeout(versionCheckTimeout);
+              resolve();
+            }
+          });
+        }, 5000);
       }
     });
-
     // Capture standard error output and add it to the output log
     agentStartSpawn.stderr.on("data", (data) => {
       const agentStdErr = `[Pennsieve Agent Error] ${data.toString()}`;
       log.info(agentStdErr);
       pennsieveAgentOutputLog.push(agentStdErr);
     });
-
     // Capture error output and add it to the output log
     agentStartSpawn.on("error", (error) => {
       const agentSpawnError = `[Pennsieve Agent Error] ${error.toString()}`;
