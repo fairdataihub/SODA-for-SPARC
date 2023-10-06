@@ -858,6 +858,7 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
         selected dataset (list of string)
     """
     global PENNSIEVE_URL
+    global namespace_logger
 
     token = get_access_token()
 
@@ -869,6 +870,10 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
         r = requests.get(
             f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=headers
         )
+        namespace_logger.info(f'User permissions content: {r.content}')
+        namespace_logger.info(f'User permissions status code: {r.status_code}')
+        namespace_logger.info(f'User permissions headers: {r.headers}')
+        namespace_logger.info(f'User permissions JSON: {r.json()}')
         r.raise_for_status()
         list_dataset_permission = r.json()
         list_dataset_permission_first_last_role = []
