@@ -110,7 +110,7 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
-
+    namespace_logger.info("Testa making publicatiojn status request")
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", headers=create_request_headers(token))
     namespace_logger.info(f"Testa review_request_status code: {r.status_code}")
     namespace_logger.info(f"Testa review_request_status json: {r.json()}")
