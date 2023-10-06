@@ -11,7 +11,12 @@ from namespaces import NamespaceEnum, get_namespace
 from errorHandlers import notBadRequestException, handle_http_error
 from flask import request
 
+from namespaces import NamespaceEnum, get_namespace_logger
+namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
+
 api = get_namespace(NamespaceEnum.DISSEMINATE_DATASETS)
+
+
 
 
 model_success_message_response = api.model('SuccessMessageResponse', {
@@ -114,8 +119,10 @@ class PublishingStatus(Resource):
         selected_bfaccount = data.get("selected_account")
 
         try:
+            namespace_logger.info("Testa bf_get_publishing_status")
             return bf_get_publishing_status(selected_bfaccount, dataset_name)
         except Exception as e:
+            namespace_logger.info(f"Testa bf_get_publishing_status exception: {e}")
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
