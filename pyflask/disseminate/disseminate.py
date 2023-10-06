@@ -9,7 +9,8 @@ from utils import connect_pennsieve_client, get_dataset_id, authenticate_user_wi
 from errorHandlers import handle_http_error
 from authentication import get_access_token
 
-
+from namespaces import NamespaceEnum, get_namespace_logger
+namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
@@ -95,6 +96,8 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
 
 
 def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
+    global namespace_logger
+
     """
     Function to get the review request status and publishing status of a dataset
 
@@ -110,11 +113,15 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
 
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", headers=create_request_headers(token))
+    namespace_logger.info(f"Testa bf_get_publishing_status: {r.status_code}")
+    namespace_logger.info(f"Testa bf_get_publishing_status json: {r.json()}")
     r.raise_for_status()
     review_request_status = r.json()["publication"]["status"]
 
 
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/published", headers=create_request_headers(token))
+    namespace_logger.info(f"Testa bf_get_publishing_status: {r.status_code}")
+    namespace_logger.info(f"Testa bf_get_publishing_status json: {r.json()}")
     r.raise_for_status()
     publishing_status = r.json()["status"]
 
