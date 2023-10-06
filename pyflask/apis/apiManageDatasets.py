@@ -50,6 +50,9 @@ from authentication import get_cognito_userpool_access_token, bf_add_account_use
 # retrieve the manage datasets namespace to add the (previously known as) pysoda.py routes to
 api = get_namespace(NamespaceEnum.MANAGE_DATASETS)
 
+from namespaces import NamespaceEnum, get_namespace_logger
+namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
+
 
 # the model for the pennsieve api key secret endpoint defines what is returned from the endpoint
 pennsieveAPIKeyAndSecret = api.model('PennsieveAPIKeyAndSecret', {
@@ -535,6 +538,7 @@ class DatasetPermissions(Resource):
     try:
       return ps_get_permission(selected_account, selected_dataset)
     except Exception as e:
+      namespace_logger.error(f'Exception thrown for ps_get_permission: {e}')
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e
