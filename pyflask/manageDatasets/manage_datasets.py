@@ -870,10 +870,10 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
         r = requests.get(
             f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=headers
         )
-        namespace_logger.info(f'User permissions content: {r.content}')
-        namespace_logger.info(f'User permissions status code: {r.status_code}')
-        namespace_logger.info(f'User permissions headers: {r.headers}')
-        namespace_logger.info(f'User permissions JSON: {r.json()}')
+        namespace_logger.info(f'Testa User permissions content: {r.content}')
+        namespace_logger.info(f'Testa User permissions status code: {r.status_code}')
+        namespace_logger.info(f'Testa User permissions headers: {r.headers}')
+        namespace_logger.info(f'Testa User permissions JSON: {r.json()}')
         r.raise_for_status()
         list_dataset_permission = r.json()
         list_dataset_permission_first_last_role = []
@@ -1157,6 +1157,7 @@ def ps_add_permission_team(
 
 
 def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
+    global namespace_logger
     """
     Function to get current subtitle associated with a selected dataset
 
@@ -1172,6 +1173,11 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
 
     try:
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(token))
+
+        namespace_logger.info(f'Testa Subtitle content: {r.content}')
+        namespace_logger.info(f'Testa Subtitle status code: {r.status_code}')
+        namespace_logger.info(f'Testa Subtitle JSON: {r.json()}')
+        
         r.raise_for_status()
 
         dataset_info = r.json()

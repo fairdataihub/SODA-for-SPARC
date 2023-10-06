@@ -404,6 +404,8 @@ model_get_dataset_subtitle_response = api.model('GetDatasetSubtitleResponse', {
 @api.route('/bf_dataset_subtitle')
 class DatasetSubtitle(Resource):
 
+  global namespace_logger
+
   parser_dataset_subtitle = reqparse.RequestParser(bundle_errors=True)
   parser_dataset_subtitle.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve the dataset subitle for.')
   parser_dataset_subtitle.add_argument('selected_dataset', type=str, required=True, location='args', help='The name or id of the dataset to retrieve the subtitle for.')
@@ -421,6 +423,8 @@ class DatasetSubtitle(Resource):
     try:
       return bf_get_subtitle(selected_account, selected_dataset)
     except Exception as e:
+      namespace_logger.error(f'Exception thrown for bf_dataset_subtitle: {e}')
+
       # if exception is an HTTPError then check if 400 or 500
       if type(e).__name__ == "HTTPError":
         handle_http_error(e)
