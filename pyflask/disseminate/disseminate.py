@@ -112,15 +112,15 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
 
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", headers=create_request_headers(token))
-    namespace_logger.info(f"Testa bf_get_publishing_status: {r.status_code}")
-    namespace_logger.info(f"Testa bf_get_publishing_status json: {r.json()}")
+    namespace_logger.info(f"Testa review_request_status code: {r.status_code}")
+    namespace_logger.info(f"Testa review_request_status json: {r.json()}")
     r.raise_for_status()
     review_request_status = r.json()["publication"]["status"]
 
 
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/published", headers=create_request_headers(token))
-    namespace_logger.info(f"Testa bf_get_publishing_status: {r.status_code}")
-    namespace_logger.info(f"Testa bf_get_publishing_status json: {r.json()}")
+    namespace_logger.info(f"Testa publishing_status code: {r.status_code}")
+    namespace_logger.info(f"Testa publishing_status json: {r.json()}")
     r.raise_for_status()
     publishing_status = r.json()["status"]
 
