@@ -4923,36 +4923,28 @@ const openPage = async (targetPageID) => {
         datasetNameInput.value = datasetName;
       }
 
-      if (pageNeedsUpdateFromPennsieve("guided-name-subtitle-tab")) {
-        // Show the loading page while the page's data is being fetched from Pennsieve
-        setPageLoadingState(true);
-        try {
-          //Try to get the dataset name from Pennsieve
-          //If the request fails, the subtitle input will remain blank
-          const datasetSubtitle = await api.getDatasetSubtitle(
-            defaultBfAccount,
-            sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
-          );
+      // Show the loading page while the page's data is being fetched from Pennsieve
+      setPageLoadingState(true);
+      try {
+        //Try to get the dataset name from Pennsieve
+        //If the request fails, the subtitle input will remain blank
+        const datasetSubtitle = await api.getDatasetSubtitle(
+          defaultBfAccount,
+          sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+        );
 
-          // Save the subtitle to the JSON and add it to the input
-          sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
-          datasetSubtitleInput.value = datasetSubtitle;
+        // Save the subtitle to the JSON and add it to the input
+        sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
+        datasetSubtitleInput.value = datasetSubtitle;
 
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
-        } catch (error) {
-          clientError(error);
-          const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage, "guided-name-subtitle-tab");
-          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
-          // so the the fetch does not occur again
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
-        }
-      } else {
-        //Update subtitle from JSON
-        const datasetSubtitle = getGuidedDatasetSubtitle();
-        if (datasetSubtitle) {
-          datasetSubtitleInput.value = datasetSubtitle;
-        }
+        sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
+      } catch (error) {
+        clientError(error);
+        const emessage = error.response.data.message;
+        await guidedShowOptionalRetrySwal(emessage, "guided-name-subtitle-tab");
+        // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+        // so the the fetch does not occur again
+        sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
       }
 
       //Set the characters remaining counter
