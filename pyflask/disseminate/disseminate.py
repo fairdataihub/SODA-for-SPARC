@@ -116,6 +116,7 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     Return:
         Current req publishing status
     """
+    namespace_logger.info("Testa beginning of request")
 
     token = get_access_token()
 
