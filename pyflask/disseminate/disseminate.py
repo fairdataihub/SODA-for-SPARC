@@ -98,15 +98,12 @@ def multi_attempt_request(url, headers):
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-        namespace_logger.info(f"Attempt {attempt + 1} successful")
+        response.json()
+        namespace_logger.info(f"Attempt successful")
         return response  # Return successful response
     except Exception as e:
-        namespace_logger.info(f"Attempt error {attempt + 1}: {e}")
-        if attempt < max_attempts - 1:
-            namespace_logger.info(f"Retrying for the {attempt} time in {retry_delay} seconds...")
-            time.sleep(retry_delay)
-    # If all retry attempts fail, return the last response (which contains the error)
-    return response
+        namespace_logger.info(f"Attempt error: {e}")
+        return response
 
 def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     global namespace_logger
