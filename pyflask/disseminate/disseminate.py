@@ -104,7 +104,7 @@ def multi_attempt_request(url, headers):
                 response.raise_for_status()
                 namespace_logger.info(f"Attempt {attempt + 1} successful")
                 return response  # Return successful response
-            except requests.exceptions.RequestException as e:
+            except Exception as e:
                 namespace_logger.info(f"Attempt {attempt + 1} failed: {e}")
                 if attempt < max_attempts - 1:
                     namespace_logger.info(f"Retrying for the {attempt} time in {retry_delay} seconds...")
