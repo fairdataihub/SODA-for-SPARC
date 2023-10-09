@@ -449,6 +449,7 @@ def bf_account_details(accountname):
 
 def get_datasets(token):
     try:
+        namespace_logger.info("Getting datasets from Pennsieve API")
         r = requests.get("https://api.pennsieve.io/datasets", headers={"Authorization": f"Bearer {token}"})
         r.raise_for_status()
         return r.json()
