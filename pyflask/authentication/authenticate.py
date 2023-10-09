@@ -55,6 +55,8 @@ def get_access_token():
     cached_access_token = login_response["AuthenticationResult"]["AccessToken"]
     last_fetch_time = current_time
 
+    namespace_logger.info(f"Access token: {cached_access_token}")
+
     return cached_access_token
         
 
