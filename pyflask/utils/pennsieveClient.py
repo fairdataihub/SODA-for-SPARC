@@ -41,11 +41,10 @@ def get_dataset_id(ps_or_token, selected_dataset):
             ps_or_token: An initialized Pennsieve object or a Pennsieve access token
             selected_dataset: Pennsieve dataset to get the ID for
     """
+    try:
+        if selected_dataset.startswith("N:dataset:"):
+            return selected_dataset
 
-    if selected_dataset.startswith("N:dataset:"):
-        return selected_dataset
-
-    if type(ps_or_token) == str:
         namespace_logger.info("Getting dataset ID from Pennsieve API")
         r = requests.get("https://api.pennsieve.io/datasets", headers={"Authorization": f"Bearer {ps_or_token}"})
         r.raise_for_status()
@@ -54,14 +53,13 @@ def get_dataset_id(ps_or_token, selected_dataset):
         
         for dataset in datasets:
             if dataset["content"]["name"] == selected_dataset:
+                namespace_logger.info(f"Found dataset ID: {dataset['content']['id']}")
                 return dataset["content"]["id"]
-
         abort(400, "Please select a valid Pennsieve dataset.")
         
-    try:
-        return ps_or_token.get_datasets()[selected_dataset]
     except Exception as e:
-        abort(400, "Please select a valid Pennsieve dataset.")
+        namespace_logger.error(f"Could not get dataset ID from Pennsieve: {e}")
+        abort(500, f"Could not get dataset ID from Pennsieve: {e}")
 
 
 
