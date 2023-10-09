@@ -114,14 +114,39 @@ def multi_attempt_request(url, headers):
 
 def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     global namespace_logger
-    # Ping google and return the response
-    try:
-        r = requests.get("http://google.com")
-        r.raise_for_status()
-        namespace_logger.info("Google ping successful")
-    except Exception as e:
-        namespace_logger.info(f"Google ping error: {e}")
-        raise e
+    """
+    Function to get the review request status and publishing status of a dataset
+
+    Args:
+        selected_bfaccount: name of selected Pennsieve account (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
+    Return:
+        Current req publishing status
+    """
+
+    token = get_access_token()
+
+    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
+    namespace_logger.info("Testa making publicatiojn status request")
+    r = multi_attempt_request(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", create_request_headers(token))
+    namespace_logger.info(f"Testa review_request_status code: {r.status_code}")
+    namespace_logger.info(f"Testa review_request_status json: {r.json()}")
+    r.raise_for_status()
+    review_request_status = r.json()["publication"]["status"]
+
+    r = multi_attempt_request(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/published", create_request_headers(token))
+
+    namespace_logger.info(f"Testa publishing_status code: {r.status_code}")
+    namespace_logger.info(f"Testa publishing_status json: {r.json()}")
+    r.raise_for_status()
+    publishing_status = r.json()["status"]
+
+    namespace_logger.info("Testa returning response")
+
+    return { 
+        "publishing_status": publishing_status, 
+        "review_request_status": review_request_status
+    }
 
 
 
