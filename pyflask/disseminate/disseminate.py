@@ -95,22 +95,18 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
 
 
 def multi_attempt_request(url, headers):
-        max_attempts = 3
-        retry_delay = 2
-        response = None  # Initialize response variable
-        for attempt in range(max_attempts):
-            try:
-                response = requests.get(url, headers=headers)
-                response.raise_for_status()
-                namespace_logger.info(f"Attempt {attempt + 1} successful")
-                return response  # Return successful response
-            except Exception as e:
-                namespace_logger.info(f"Attempt error {attempt + 1}: {e}")
-                if attempt < max_attempts - 1:
-                    namespace_logger.info(f"Retrying for the {attempt} time in {retry_delay} seconds...")
-                    time.sleep(retry_delay)
-        # If all retry attempts fail, return the last response (which contains the error)
-        return response
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        namespace_logger.info(f"Attempt {attempt + 1} successful")
+        return response  # Return successful response
+    except Exception as e:
+        namespace_logger.info(f"Attempt error {attempt + 1}: {e}")
+        if attempt < max_attempts - 1:
+            namespace_logger.info(f"Retrying for the {attempt} time in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+    # If all retry attempts fail, return the last response (which contains the error)
+    return response
 
 def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     global namespace_logger
@@ -132,14 +128,20 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     namespace_logger.info(f"Testa review_request_status code: {r.status_code}")
     namespace_logger.info(f"Testa review_request_status json: {r.json()}")
     r.raise_for_status()
+    namespace_logger.info("Testa review_request_status request successful getting the json 1")
     review_request_status = r.json()["publication"]["status"]
+    namespace_logger.info("Got the JSON")
 
     r = multi_attempt_request(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/published", create_request_headers(token))
 
     namespace_logger.info(f"Testa publishing_status code: {r.status_code}")
     namespace_logger.info(f"Testa publishing_status json: {r.json()}")
     r.raise_for_status()
+    namespace_logger.info("Testa review_request_status request successful getting the json 2")
+
     publishing_status = r.json()["status"]
+    namespace_logger.info("Got the JSON")
+
 
     namespace_logger.info("Testa returning response")
 
