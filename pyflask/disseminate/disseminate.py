@@ -132,8 +132,8 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     r.raise_for_status()
     review_request_status = r.json()["publication"]["status"]
 
+    r = multi_attempt_request(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/published", create_request_headers(token))
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/published", headers=create_request_headers(token))
     namespace_logger.info(f"Testa publishing_status code: {r.status_code}")
     namespace_logger.info(f"Testa publishing_status json: {r.json()}")
     r.raise_for_status()
