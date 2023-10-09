@@ -588,7 +588,7 @@ const getPennsieveAgentPath = () => {
 const stopPennsieveAgent = async (pathToPennsieveAgent) => {
   return new Promise((resolve, reject) => {
     try {
-      const agentStopSpawn = spawn(pathToPennsieveAgent, ["agent", "stop"]);
+      const agentStopSpawn = spawn("pennsieve", ["agent", "stop"]);
       agentStopSpawn.stdout.on("data", (data) => {
         log.info(data.toString());
         resolve();
