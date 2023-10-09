@@ -101,6 +101,8 @@ def multi_attempt_request(url, headers):
         for attempt in range(max_attempts):
             try:
                 response = requests.get(url, headers=headers)
+                response.raise_for_status()
+                namespace_logger.info(f"Attempt {attempt + 1} successful")
                 return response  # Return successful response
             except requests.exceptions.RequestException as e:
                 namespace_logger.info(f"Attempt {attempt + 1} failed: {e}")
