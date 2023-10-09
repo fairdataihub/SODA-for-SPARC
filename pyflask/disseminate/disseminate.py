@@ -94,6 +94,21 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         handle_http_error(e)
 
 
+def multi_attempt_request(url, headers):
+        max_attempts = 3
+        retry_delay = 2
+        response = None  # Initialize response variable
+        for attempt in range(max_attempts):
+            try:
+                response = requests.get(url, headers=headers)
+                return response  # Return successful response
+            except requests.exceptions.RequestException as e:
+                namespace_logger.info(f"Attempt {attempt + 1} failed: {e}")
+                if attempt < max_attempts - 1:
+                    namespace_logger.info(f"Retrying for the {attempt} time in {retry_delay} seconds...")
+                    time.sleep(retry_delay)
+        # If all retry attempts fail, return the last response (which contains the error)
+        return response
 
 def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     global namespace_logger
@@ -111,7 +126,7 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
     namespace_logger.info("Testa making publicatiojn status request")
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", headers=create_request_headers(token))
+    r = multi_attempt_request(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", create_request_headers(token))
     namespace_logger.info(f"Testa review_request_status code: {r.status_code}")
     namespace_logger.info(f"Testa review_request_status json: {r.json()}")
     r.raise_for_status()
