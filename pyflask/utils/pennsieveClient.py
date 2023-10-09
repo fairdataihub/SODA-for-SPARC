@@ -2,6 +2,9 @@ from pennsieve2.pennsieve import Pennsieve
 from flask import abort
 import requests
 
+from namespaces import NamespaceEnum, get_namespace_logger
+namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
+
 def connect_pennsieve_client(account_name):
     """
         Connects to Pennsieve Python client to the Agent and returns the initialized Pennsieve object.
@@ -43,6 +46,7 @@ def get_dataset_id(ps_or_token, selected_dataset):
         return selected_dataset
 
     if type(ps_or_token) == str:
+        namespace_logger.info("Getting dataset ID from Pennsieve API")
         r = requests.get("https://api.pennsieve.io/datasets", headers={"Authorization": f"Bearer {ps_or_token}"})
         r.raise_for_status()
 
@@ -53,6 +57,7 @@ def get_dataset_id(ps_or_token, selected_dataset):
                 return dataset["content"]["id"]
 
         abort(400, "Please select a valid Pennsieve dataset.")
+        
     try:
         return ps_or_token.get_datasets()[selected_dataset]
     except Exception as e:

@@ -447,11 +447,13 @@ def bf_account_details(accountname):
         raise e
 
 
-def get_datasets(token): 
-    r = requests.get("https://api.pennsieve.io/datasets", headers={"Authorization": f"Bearer {token}"})
-    r.raise_for_status()
-
-    return r.json()
+def get_datasets(token):
+    try:
+        r = requests.get("https://api.pennsieve.io/datasets", headers={"Authorization": f"Bearer {token}"})
+        r.raise_for_status()
+        return r.json()
+    except Exception as e:
+        namespace_logger.error(f"Error getting datasets: {e}")
 
 def create_new_dataset(datasetname, accountname):
     """
