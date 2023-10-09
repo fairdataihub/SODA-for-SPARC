@@ -33,6 +33,23 @@ def authenticate_user_with_client(ps, selected_account):
         abort(401, "Could not reauthenticate this account with Pennsieve.")
 
 
+def multi_attempt_request(url, headers):
+        max_attempts = 3
+        retry_delay = 2
+        response = None  # Initialize response variable
+        for attempt in range(max_attempts):
+            try:
+                response = requests.get(url, headers=headers)
+                response.raise_for_status()
+                namespace_logger.info(f"Attempt {attempt + 1} successful")
+                return response  # Return successful response
+            except Exception as e:
+                namespace_logger.info(f"Attempt error {attempt + 1}: {e}")
+                if attempt < max_attempts - 1:
+                    namespace_logger.info(f"Retrying for the {attempt} time in {retry_delay} seconds...")
+
+        return response  # Return last response
+
 def get_dataset_id(ps_or_token, selected_dataset):
     """
         Returns the dataset ID for the given dataset name.
@@ -46,7 +63,7 @@ def get_dataset_id(ps_or_token, selected_dataset):
             return selected_dataset
 
         namespace_logger.info("Getting dataset ID from Pennsieve API")
-        r = requests.get("https://api.pennsieve.io/datasets", headers={"Authorization": f"Bearer {ps_or_token}"})
+        r = multi_attempt_request("https://api.pennsieve.io/datasets", headers={"Authorization": f"Bearer {ps_or_token}"})
         r.raise_for_status()
 
         datasets = r.json()
