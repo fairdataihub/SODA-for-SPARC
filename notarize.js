@@ -18,7 +18,7 @@ module.exports = async function (params) {
 
   let appPath = path.join(params.appOutDir, `${params.packager.appInfo.productFilename}.app`);
   if (!fs.existsSync(appPath)) {
-    throw new Error(`Cannot find application at: ${appPath}`);
+    throw new Error(`Could not find application at: ${appPath}`);
   }
 
   console.log(`Notarizing ${appId} found at ${appPath}`);
