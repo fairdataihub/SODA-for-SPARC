@@ -34,19 +34,17 @@ def authenticate_user_with_client(ps, selected_account):
 
 
 def multi_attempt_request(url, headers):
-        max_attempts = 3
-        retry_delay = 2
+        max_attempts = 5
         response = None  # Initialize response variable
         for attempt in range(max_attempts):
             try:
                 response = requests.get(url, headers=headers)
                 response.raise_for_status()
-                namespace_logger.info(f"Attempt {attempt + 1} successful")
                 return response  # Return successful response
             except Exception as e:
                 namespace_logger.info(f"Attempt error {attempt + 1}: {e}")
                 if attempt < max_attempts - 1:
-                    namespace_logger.info(f"Retrying for the {attempt} time in {retry_delay} seconds...")
+                    namespace_logger.info(f"Retrying request to {url}...")
 
         return response  # Return last response
 
