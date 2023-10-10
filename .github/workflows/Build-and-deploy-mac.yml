@@ -7,7 +7,6 @@ on:
       - main
       - staging
       - use-notarytool
-
 jobs:
   deploy-on-mac:
     runs-on: macos-latest
