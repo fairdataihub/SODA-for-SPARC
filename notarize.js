@@ -32,7 +32,7 @@ module.exports = async function (params) {
       appleIdPassword: process.env.appleIdPassword,
     });
   } catch (error) {
-    console.error(error);
+    console.error(`Error notarizing ${appId}: ${error}`);
   }
 
   console.log(`Done notarizing ${appId}`);
