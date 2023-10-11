@@ -31,10 +31,9 @@ from datetime import datetime
 from permissions import pennsieve_get_current_user_permissions
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
-from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL
+from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL, get_users_dataset_list
 from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
 from authentication import get_access_token
-from manageDatasets import (get_users_datasets_from_pennsieve)
 
 from pysodaUtils import (
     check_forbidden_characters_ps,
@@ -1006,7 +1005,7 @@ def ps_create_new_dataset(datasetname, ps):
             abort(400, error)
 
         try:
-            dataset_list = get_users_datasets_from_pennsieve(ps)
+            dataset_list = get_users_dataset_list(ps)
         except Exception as e:
             abort(500, "Error: Failed to retrieve datasets from Pennsieve. Please try again later.")
 

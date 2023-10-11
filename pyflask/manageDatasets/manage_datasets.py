@@ -37,6 +37,7 @@ from constants import PENNSIEVE_URL
 from pysodaUtils import (
     check_forbidden_characters_ps,
 )
+from utils import (get_users_dataset_list)
 
 
 ### Global variables
@@ -319,7 +320,7 @@ def bf_dataset_account(accountname):
     
     # get the datasets the user has access to
     try:
-        datasets = get_users_datasets_from_pennsieve("asdf")
+        datasets = get_users_dataset_list("asdf")
     except Exception as e:
         namespace_logger.error(f"Error retrieving datasets for {accountname} account {e}")
         raise e
@@ -443,44 +444,6 @@ def bf_account_details(accountname):
 
     except Exception as e:
         raise e
-
-
-def get_users_datasets_from_pennsieve(token): 
-    # The number of datasets to retrieve per chunk
-    NUMBER_OF_DATASETS_PER_CHUNK = 200
-    # The total number of datasets the user has access to (set after the first request)
-    NUMBER_OF_DATASETS_USER_HAS_ACCESS_TO = None
-
-    # The offset is the number of datasets to skip before retrieving the next chunk of datasets (starts at 0, then increases by the number of datasets per chunk)
-    current_offset = 0
-    # The list of datasets the user has access to
-    datasets = []
-
-    try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/paginated", headers=create_request_headers(token), params={"offset": current_offset, "limit": NUMBER_OF_DATASETS_PER_CHUNK})
-        r.raise_for_status()
-        responseJSON = r.json()
-        datasets.extend(responseJSON["datasets"])
-        NUMBER_OF_DATASETS_USER_HAS_ACCESS_TO = responseJSON["totalCount"]
-        # If the number of datasets the user has access to is less than the number of datasets per chunk, then return the datasets since we have already retrieved all of them
-        if NUMBER_OF_DATASETS_USER_HAS_ACCESS_TO < NUMBER_OF_DATASETS_PER_CHUNK:
-            return datasets
-        
-        # Otherwise, we need to retrieve the rest of the datasets
-        while len(datasets) < NUMBER_OF_DATASETS_USER_HAS_ACCESS_TO:
-            # Increase the offset by the number of datasets per chunk (e.g. if 200 datasets per chunk, then increase the offset by 200)
-            current_offset += NUMBER_OF_DATASETS_PER_CHUNK
-            r = requests.get(f"{PENNSIEVE_URL}/datasets/paginated", headers=create_request_headers(token), params={"offset": current_offset, "limit": NUMBER_OF_DATASETS_PER_CHUNK})
-            r.raise_for_status()
-            responseJSON = r.json()
-            datasets.extend(responseJSON["datasets"])
-
-        namespace_logger.info(f"Number of datasets retrieved: {len(datasets)}")
-        namespace_logger.info(f"Number of datasets user has access to: {NUMBER_OF_DATASETS_USER_HAS_ACCESS_TO}")
-
-        return datasets
-    except Exception as e:
-        raise e
     
     
 
@@ -512,7 +475,7 @@ def create_new_dataset(datasetname, accountname):
 
         token = get_access_token()
         try:
-            datasets = get_users_datasets_from_pennsieve(token)
+            datasets = get_users_dataset_list(token)
         except Exception as e:
             raise e
         namespace_logger.info(f"Datasets retrieved: {datasets}")
@@ -565,7 +528,7 @@ def ps_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
-    dataset_list = [ds["content"]["name"] for ds in get_users_datasets_from_pennsieve(token)]
+    dataset_list = [ds["content"]["name"] for ds in get_users_dataset_list(token)]
     if datasetname in dataset_list:
         abort(400, "Dataset name already exists.")
 
