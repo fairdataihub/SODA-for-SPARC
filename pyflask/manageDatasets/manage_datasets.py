@@ -316,16 +316,14 @@ def bf_dataset_account(accountname):
     global namespace_logger
     PENNSIEVE_URL = "https://api.pennsieve.io"
     token = get_access_token()
-
-    # get the session token
-    headers = create_request_headers(token)
     
-    # get the user's datasets that they have access to in their given organization
-    r = requests.get(f"{PENNSIEVE_URL}/datasets", headers=headers)
-    r.raise_for_status()
-    datasets = r.json()
-
-
+    # get the datasets the user has access to
+    try:
+        datasets = get_users_datasets_from_pennsieve("asdf")
+    except Exception as e:
+        namespace_logger.error(f"Error retrieving datasets for {accountname} account {e}")
+        raise e
+    
     datasets_list = []
     for ds in datasets:
         datasets_list.append({"name": ds["content"]["name"], "id": ds["content"]["id"]})
@@ -335,7 +333,7 @@ def bf_dataset_account(accountname):
             store = []
         for dataset in datasets_list:
             selected_dataset_id = dataset['id']
-            r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=headers)
+            r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=create_request_headers(token))
             r.raise_for_status()
             user_role = r.json()["role"]
             if user_role not in ["viewer", "editor"]:
@@ -447,11 +445,15 @@ def bf_account_details(accountname):
         raise e
 
 
-def get_datasets(token): 
+def get_users_datasets_from_pennsieve(token): 
+    # The number of datasets to retrieve per chunk
     NUMBER_OF_DATASETS_PER_CHUNK = 200
+    # The total number of datasets the user has access to (set after the first request)
     NUMBER_OF_DATASETS_USER_HAS_ACCESS_TO = None
 
+    # The offset is the number of datasets to skip before retrieving the next chunk of datasets (starts at 0, then increases by the number of datasets per chunk)
     current_offset = 0
+    # The list of datasets the user has access to
     datasets = []
 
     try:
@@ -472,11 +474,15 @@ def get_datasets(token):
             r.raise_for_status()
             responseJSON = r.json()
             datasets.extend(responseJSON["datasets"])
+
+        namespace_logger.info(f"Number of datasets retrieved: {len(datasets)}")
+        namespace_logger.info(f"Number of datasets user has access to: {NUMBER_OF_DATASETS_USER_HAS_ACCESS_TO}")
+
+        return datasets
     except Exception as e:
         raise e
-    namespace_logger.info(f"Number of datasets retrieved: {len(datasets)}")
-    namespace_logger.info(f"Number of datasets user has access to: {NUMBER_OF_DATASETS_USER_HAS_ACCESS_TO}")
-    return datasets
+    
+    
 
 
 def create_new_dataset(datasetname, accountname):
@@ -506,7 +512,7 @@ def create_new_dataset(datasetname, accountname):
 
         token = get_access_token()
         try:
-            datasets = get_datasets(token)
+            datasets = get_users_datasets_from_pennsieve(token)
         except Exception as e:
             raise e
         namespace_logger.info(f"Datasets retrieved: {datasets}")
@@ -559,7 +565,7 @@ def ps_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
-    dataset_list = [ds["content"]["name"] for ds in get_datasets(token)]
+    dataset_list = [ds["content"]["name"] for ds in get_users_datasets_from_pennsieve(token)]
     if datasetname in dataset_list:
         abort(400, "Dataset name already exists.")
 

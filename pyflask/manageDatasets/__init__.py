@@ -33,5 +33,6 @@ from .manage_datasets import (
     get_dataset_readme,
     get_dataset_tags,
     update_dataset_tags,
-    scale_image
+    scale_image,
+    get_users_datasets_from_pennsieve
 )
