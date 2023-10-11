@@ -448,10 +448,36 @@ def bf_account_details(accountname):
 
 
 def get_datasets(token): 
-    r = requests.get("https://api.pennsieve.io/datasets", headers={"Authorization": f"Bearer {token}"})
-    r.raise_for_status()
+    NUMBER_OF_DATASETS_PER_CHUNK = 200
+    NUMBER_OF_DATASETS_USER_HAS_ACCESS_TO = None
 
-    return r.json()
+    current_offset = 0
+    datasets = []
+
+    try:
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/paginated", headers=create_request_headers(token), params={"offset": current_offset, "limit": NUMBER_OF_DATASETS_PER_CHUNK})
+        r.raise_for_status()
+        responseJSON = r.json()
+        datasets.extend(responseJSON["datasets"])
+        NUMBER_OF_DATASETS_USER_HAS_ACCESS_TO = responseJSON["totalCount"]
+        # If the number of datasets the user has access to is less than the number of datasets per chunk, then return the datasets since we have already retrieved all of them
+        if NUMBER_OF_DATASETS_USER_HAS_ACCESS_TO < NUMBER_OF_DATASETS_PER_CHUNK:
+            return datasets
+        
+        # Otherwise, we need to retrieve the rest of the datasets
+        while len(datasets) < NUMBER_OF_DATASETS_USER_HAS_ACCESS_TO:
+            # Increase the offset by the number of datasets per chunk (e.g. if 200 datasets per chunk, then increase the offset by 200)
+            current_offset += NUMBER_OF_DATASETS_PER_CHUNK
+            r = requests.get(f"{PENNSIEVE_URL}/datasets/paginated", headers=create_request_headers(token), params={"offset": current_offset, "limit": NUMBER_OF_DATASETS_PER_CHUNK})
+            r.raise_for_status()
+            responseJSON = r.json()
+            datasets.extend(responseJSON["datasets"])
+    except Exception as e:
+        raise e
+    namespace_logger.info(f"Number of datasets retrieved: {len(datasets)}")
+    namespace_logger.info(f"Number of datasets user has access to: {NUMBER_OF_DATASETS_USER_HAS_ACCESS_TO}")
+    return datasets
+
 
 def create_new_dataset(datasetname, accountname):
     """
@@ -479,17 +505,22 @@ def create_new_dataset(datasetname, accountname):
             abort(400, error)
 
         token = get_access_token()
+        try:
+            datasets = get_datasets(token)
+        except Exception as e:
+            raise e
+        namespace_logger.info(f"Datasets retrieved: {datasets}")
 
-        datasets = get_datasets(token)
-
+        # Check if the dataset name already exists
         for ds in datasets:
             if ds["content"]["name"] == datasetname:
                 abort(400, "Dataset name already exists")
-            else:
-                r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(token), json={"name": datasetname})
-                r.raise_for_status()
-                ds_id = r.json()['content']['id']
-                return {"id": ds_id}
+
+        namespace_logger.info("Creating new dataset")
+        r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(token), json={"name": datasetname})
+        r.raise_for_status()
+        ds_id = r.json()['content']['id']
+        return {"id": ds_id}
 
     except Exception as e:
         raise e
