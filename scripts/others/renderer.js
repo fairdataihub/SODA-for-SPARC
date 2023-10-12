@@ -620,7 +620,12 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
       );
     }, agentStartTimeout);
     // Start the agent by running the command "agent start" at the path of the agent
-    const agentStartSpawn = spawn("pennsieve", ["agent", "start"]);
+    let agentStartSpawn;
+    if (process.platform === "win32" || process.platform === "cygwin") {
+      agentStartSpawn = spawn("pennsieve", ["agent", "start"]);
+    } else {
+      agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
+    }
     // Listen to the output from the agent and resolve the promise if the agent outputs
     // "Running Agent NOT as daemon" or "Pennsieve Agent started"
     agentStartSpawn.stdout.on("data", (data) => {
