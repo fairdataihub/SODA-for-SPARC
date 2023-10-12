@@ -621,7 +621,8 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
     }, agentStartTimeout);
     // Start the agent by running the command "agent start" at the path of the agent
     let agentStartSpawn;
-    if (process.platform === "win32" || process.platform === "cygwin") {
+    // check if linux 
+    if (process.platform === "win32" || process.platform === "cygwin" || process.platform === "linux") {
       agentStartSpawn = spawn("pennsieve", ["agent", "start"]);
     } else {
       agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
