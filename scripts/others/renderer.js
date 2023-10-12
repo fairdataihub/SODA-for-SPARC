@@ -589,7 +589,11 @@ const stopPennsieveAgent = async (pathToPennsieveAgent) => {
   return new Promise((resolve, reject) => {
     try {
       let agentStopSpawn;
-      if (process.platform === "win32" || process.platform === "cygwin" || process.platform === "linux") {
+      if (
+        process.platform === "win32" ||
+        process.platform === "cygwin" ||
+        process.platform === "linux"
+      ) {
         agentStopSpawn = spawn("pennsieve", ["agent", "stop"]);
       } else {
         agentStopSpawn = spawn(pathToPennsieveAgent, ["agent", "stop"]);
@@ -1809,7 +1813,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
             didOpen: () => {
               Swal.showLoading();
             },
-          }).then((result) => { });
+          }).then((result) => {});
           generateSubjectsFileHelper(false);
         }
       });
@@ -1825,7 +1829,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       generateSubjectsFileHelper(false);
     }
   }
@@ -1908,7 +1912,7 @@ const generateSubjectsFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   try {
     log.info(`Generating a subjects file.`);
@@ -2018,7 +2022,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
             didOpen: () => {
               Swal.showLoading();
             },
-          }).then((result) => { });
+          }).then((result) => {});
           generateSamplesFileHelper(uploadBFBoolean);
         }
       });
@@ -2034,7 +2038,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       generateSamplesFileHelper(uploadBFBoolean);
     }
   }
@@ -2116,7 +2120,7 @@ const generateSamplesFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   try {
     let samplesFileResponse = await client.post(
@@ -2636,7 +2640,7 @@ const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) =
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
@@ -4942,10 +4946,10 @@ const swalFileListSingleAction = async (fileList, title, helpText, postActionTex
       ${helpText ? `<p>${helpText}</p>` : ""}
       <div class="swal-file-list">
         ${fileList
-        .map(
-          (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
-        )
-        .join("")}
+          .map(
+            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+          )
+          .join("")}
       </div>
       ${postActionText ? `<b>${postActionText}</b>` : ""}
     `,
@@ -4975,10 +4979,10 @@ const swalFileListDoubleAction = async (
       ${helpText}
       <div class="swal-file-list">
         ${fileList
-        .map(
-          (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
-        )
-        .join("")}
+          .map(
+            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+          )
+          .join("")}
       </div>
       <b>${confirmationText}</b>
     `,
@@ -5010,10 +5014,10 @@ const swalFileListTripleAction = async (
       ${helpText}
       <div class="swal-file-list">
         ${fileList
-        .map(
-          (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
-        )
-        .join("")}
+          .map(
+            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+          )
+          .join("")}
       </div>
       <b>${confirmationText}</b>
     `,
@@ -6711,8 +6715,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           ${dragDropInstructionsText}
         </p>
         <p class="text-center">
-          You may also <b>add</b> or <b>import</b> ${folderType === undefined ? "folders or files" : folderType + " data"
-      } using the buttons in the upper right corner
+          You may also <b>add</b> or <b>import</b> ${
+            folderType === undefined ? "folders or files" : folderType + " data"
+          } using the buttons in the upper right corner
         </p>
       </div>`
     );
@@ -7400,7 +7405,7 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
     if (
       "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
       sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
-      "forTreeview"
+        "forTreeview"
       ]
     ) {
       delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
