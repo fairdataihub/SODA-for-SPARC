@@ -1,34 +1,32 @@
 ---
-
 title: 'SODA: Software to Support the Curation and Sharing of FAIR Peripheral Nervous System Datasets'
 tags:
-
-- Data sharing
-- Data curation
-- Biomedical
-- Neuroscience
-  authors:
-- name: Christopher Marroquin
-  orcid: 0000-0000-0000-0000
-  affiliation: 1
-- name: Jacob Clark
-  orcid: 0000-0000-0000-0000
-  affiliation: 1
-- name: Dorian Portillo
-  orcid: 0000-0000-0000-0000
-  affiliation: 1
-- name: Sanjay Soundarajan
-  orcid: 0000-0003-2829-8032
-  affiliation: 1
-- name: Bhavesh Patel
-  orcid: 0000-0002-0307-262X
-  corresponding: true
-  affiliation: 1
-  affiliations:
-- name: FAIR Data Innovations Hub, California Medical Innovations Institute, San Diego, CA, USA
-  index: 1
-  date: 11 October 2023
-  bibliography: paper.bib
+  - Data sharing
+  - Data curation
+  - Biomedical
+  - Neuroscience
+authors:
+  - name: Christopher Marroquin
+    orcid: 0000-0000-0000-0000
+    affiliation: 1
+  - name: Jacob Clark
+    orcid: 0000-0000-0000-0000
+    affiliation: 1
+  - name: Dorian Portillo
+    orcid: 0000-0000-0000-0000
+    affiliation: 1
+  - name: Sanjay Soundarajan
+    orcid: 0000-0003-2829-8032
+    affiliation: 1
+  - name: Bhavesh Patel
+    orcid: 0000-0002-0307-262X
+    corresponding: true
+    affiliation: 1
+affiliations:
+  - name: FAIR Data Innovations Hub, California Medical Innovations Institute, San Diego, CA, USA
+    index: 1
+date: 11 October 2023
+bibliography: paper.bib
 
 # Summary
 
