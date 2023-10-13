@@ -52,10 +52,10 @@ if (!fs.existsSync(configFolderPath)) {
 }
 
 // If app is in beta, send tracking events to the beta analytics branch
-if (appVersion.includes("beta")) {
-  appStatus = "beta";
-  appId = "dd958d89-9625-4959-96da-6524d7a82254";
-}
+// if (appVersion.includes("beta")) {
+//   appStatus = "beta";
+//   appId = "dd958d89-9625-4959-96da-6524d7a82254";
+// }
 
 // If in the dev environment, send tracking events to the dev branch
 if (process.env.NODE_ENV === "development") {
