@@ -588,7 +588,16 @@ const getPennsieveAgentPath = () => {
 const stopPennsieveAgent = async (pathToPennsieveAgent) => {
   return new Promise((resolve, reject) => {
     try {
-      const agentStopSpawn = spawn(pathToPennsieveAgent, ["agent", "stop"]);
+      let agentStopSpawn;
+      if (
+        process.platform === "win32" ||
+        process.platform === "cygwin" ||
+        process.platform === "linux"
+      ) {
+        agentStopSpawn = spawn("pennsieve", ["agent", "stop"]);
+      } else {
+        agentStopSpawn = spawn(pathToPennsieveAgent, ["agent", "stop"]);
+      }
       agentStopSpawn.stdout.on("data", (data) => {
         log.info(data.toString());
         resolve();
@@ -620,7 +629,17 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
       );
     }, agentStartTimeout);
     // Start the agent by running the command "agent start" at the path of the agent
-    const agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
+    let agentStartSpawn;
+    // check if linux
+    if (
+      process.platform === "win32" ||
+      process.platform === "cygwin" ||
+      process.platform === "linux"
+    ) {
+      agentStartSpawn = spawn("pennsieve", ["agent", "start"]);
+    } else {
+      agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
+    }
     // Listen to the output from the agent and resolve the promise if the agent outputs
     // "Running Agent NOT as daemon" or "Pennsieve Agent started"
     agentStartSpawn.stdout.on("data", (data) => {
