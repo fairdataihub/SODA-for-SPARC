@@ -29,7 +29,7 @@ affiliations:
    index: 1
 date: 11 October 2023
 bibliography: paper.bib
-—
+---
 
 # Summary
 SODA (Software to Organize Data Automatically) is an open source and free cross-platform desktop software that assists researchers in preparing and sharing their autonomic nervous system (ANS) related data according to the guidelines developed by the National Institute of Health (NIH)'s [Stimulating Peripheral Activity to Relieve Conditions (SPARC) Program](https://commonfund.nih.gov/sparc). By combining intuitive user interfaces with automation, SODA streamlines the process of implementing the SPARC guidelines which can otherwise be challenging for researchers.
