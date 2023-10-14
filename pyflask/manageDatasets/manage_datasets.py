@@ -320,7 +320,7 @@ def bf_dataset_account(accountname):
     
     # get the datasets the user has access to
     try:
-        datasets = get_users_dataset_list("asdf")
+        datasets = get_users_dataset_list(token)
     except Exception as e:
         namespace_logger.error(f"Error retrieving datasets for {accountname} account {e}")
         raise e
