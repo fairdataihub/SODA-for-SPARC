@@ -711,7 +711,18 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
       );
     }, timeout);
 
-    const agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
+    let agentVersionSpawn;
+
+    // check if linux
+    if (
+      process.platform === "win32" ||
+      process.platform === "cygwin" ||
+      process.platform === "linux"
+    ) {
+      agentVersionSpawn = execFile("pennsieve", ["version"]);
+    } else {
+      agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
+    }
 
     // Capture standard output and parse the version
     // Resolve the promise if the version is found
