@@ -38,7 +38,7 @@ from manageDatasets import (
 from pysodaUtils import get_agent_version, start_agent
 import time 
 
-from namespaces import get_namespace, NamespaceEnum
+from namespaces import get_namespace, NamespaceEnum, namespaceLogger
 from errorHandlers import notBadRequestException, handle_http_error
 from authentication import get_cognito_userpool_access_token, bf_add_account_username, get_pennsieve_api_key_secret
 
@@ -386,7 +386,8 @@ class BfDatasetAccount(Resource):
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))
-      raise e
+      else:
+        api.abort(400, str(e))
 
 
 

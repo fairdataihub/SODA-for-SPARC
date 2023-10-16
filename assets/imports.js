@@ -66,6 +66,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   //Synchronously include js files
   await includeJavaScriptFile("./assets/ex-links.js");
   await includeJavaScriptFile("./assets/demo-btns.js");
+  await includeJavaScriptFile("./scripts/utils/swal-utils.js");
   await includeJavaScriptFile("./preload.js");
   await includeJavaScriptFile("./scripts/others/renderer.js");
   await includeJavaScriptFile("./scripts/metadata-files/downloadTemplates.js");

@@ -1281,7 +1281,11 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               },
             });
           } catch (error) {
-            clientError(error);
+            const emessage = userErrorMessage(error);
+            await swalShowError("Failed to fetch datasets from Pennsieve", emessage);
+            // Reset the dataset select UI
+            $(".ui.active.green.inline.loader.small").css("display", "none");
+            $(".svg-change-current-account.dataset").css("display", "block");
             return;
           }
 

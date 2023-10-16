@@ -1005,13 +1005,14 @@ def ps_create_new_dataset(datasetname, ps):
             abort(400, error)
 
         try:
-            dataset_list = get_users_dataset_list(ps)
+            token = get_access_token()
+            dataset_list = get_users_dataset_list(token)
         except Exception as e:
             abort(500, "Error: Failed to retrieve datasets from Pennsieve. Please try again later.")
 
         for dataset in dataset_list:
             if datasetname == dataset["content"]["name"]:
-                abort(400, "Error: Dataset name already exists")
+                abort(400, "Dataset name already exists")
 
         # Create the dataset on Pennsieve
         r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps), json={"name": datasetname})

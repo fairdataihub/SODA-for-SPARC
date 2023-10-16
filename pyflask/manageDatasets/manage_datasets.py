@@ -322,7 +322,6 @@ def bf_dataset_account(accountname):
     try:
         datasets = get_users_dataset_list(token)
     except Exception as e:
-        namespace_logger.error(f"Error retrieving datasets for {accountname} account {e}")
         raise e
     
     datasets_list = []
@@ -477,8 +476,7 @@ def create_new_dataset(datasetname, accountname):
         try:
             datasets = get_users_dataset_list(token)
         except Exception as e:
-            raise e
-        namespace_logger.info(f"Datasets retrieved: {datasets}")
+            abort(500, "Error: Failed to retrieve datasets from Pennsieve. Please try again later.")
 
         # Check if the dataset name already exists
         for ds in datasets:
@@ -530,7 +528,7 @@ def ps_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
 
     dataset_list = [ds["content"]["name"] for ds in get_users_dataset_list(token)]
     if datasetname in dataset_list:
-        abort(400, "Dataset name already exists.")
+        abort(400, "Dataset name already exists")
 
     jsonfile = {"name": renamed_dataset_name}
     try: 
@@ -664,7 +662,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
 
 
-    selected_dataset_id = get_dataset_id(ps, bfdataset)
+    selected_dataset_id = get_dataset_id(get_access_token(), bfdataset)
 
         # reauthenticate the user
     try:
