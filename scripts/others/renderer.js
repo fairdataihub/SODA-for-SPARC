@@ -649,6 +649,14 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
       log.info(agentMessage);
       // Add to message to the output log which will be used to display the output to the user if the agent fails to start
       pennsieveAgentOutputLog.push(agentMessage);
+
+      // Resolve the promise if the agent is already running
+      if (agentMessage.includes("Pennsieve Agent is already running")) {
+        log.info(`Pennsieve Agent is confirmed to be running: ${agentMessage}`);
+        clearTimeout(versionCheckTimeout);
+        resolve();
+      }
+
       // If the error message contains "Running Agent NOT as daemon" or "Pennsieve Agent started", then the agent was able to
       // start successfully with the caveat that the agent might throw an error if the agent has issues while starting up.
       // To alleviate this, we will try to start the agent again after 5 seconds and make sure the agent was started successfully.
