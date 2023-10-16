@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - ventura-update
 jobs:
   deploy-on-mac:
     runs-on: macos-latest
