@@ -5,11 +5,13 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v.12.3.2 - 2023-10-11
+## v.12.3.2 - 2023-10-17
 
 ## Bug fixes:
 
 - Updated urllib3 and request versions to fix issues with the back-end processing responses from Pennsieve API.
+- Modified the request to retrieve a list of datasets by utilizing Pennsieve's dataset pagination endpoint. This change was implemented to address an issue that was affecting users with a large number of datasets.
+- Migrated the notarization tool from alttool to notarytool.
 
 ## v.12.3.1 - 2023-09-21
 
