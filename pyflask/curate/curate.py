@@ -31,7 +31,7 @@ from datetime import datetime
 from permissions import pennsieve_get_current_user_permissions
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
-from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL
+from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL, get_users_dataset_list
 from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
 from authentication import get_access_token
 
@@ -1005,21 +1005,18 @@ def ps_create_new_dataset(datasetname, ps):
             abort(400, error)
 
         try:
-            r = requests.get(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps))
-            r.raise_for_status()
-            dataset_dicts = r.json()
+            token = get_access_token()
+            dataset_list = get_users_dataset_list(token)
         except Exception as e:
-            abort(500, "Error: Could not connect to Pennsieve. Please try again later.")
+            abort(500, "Error: Failed to retrieve datasets from Pennsieve. Please try again later.")
 
+        for dataset in dataset_list:
+            if datasetname == dataset["content"]["name"]:
+                abort(400, "Dataset name already exists")
 
-        dataset_list = [
-            dataset_dict["content"]["name"] for dataset_dict in dataset_dicts
-        ]
-        if datasetname in dataset_list:
-            abort(400, "Error: Dataset name already exists")
-        else:
-            r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps), json={"name": datasetname})
-            r.raise_for_status()
+        # Create the dataset on Pennsieve
+        r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps), json={"name": datasetname})
+        r.raise_for_status()
 
         return r.json()
 
