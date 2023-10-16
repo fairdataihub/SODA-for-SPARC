@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - get-datasets-pagination
 jobs:
   deploy-on-mac:
     runs-on: macos-latest
