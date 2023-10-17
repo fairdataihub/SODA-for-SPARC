@@ -596,7 +596,9 @@ const stopPennsieveAgent = async (pathToPennsieveAgent) => {
         process.platform === "cygwin" ||
         process.platform === "linux"
       ) {
-        agentStopSpawn = spawn("pennsieve", ["agent", "stop"]);
+        agentStopSpawn = spawn("pennsieve", ["agent", "stop"], {
+          shell: true,
+        });
       } else {
         agentStopSpawn = spawn(pathToPennsieveAgent, ["agent", "stop"]);
       }
@@ -638,7 +640,9 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
       process.platform === "cygwin" ||
       process.platform === "linux"
     ) {
-      agentStartSpawn = spawn("pennsieve", ["agent", "start"]);
+      agentStartSpawn = spawn("pennsieve", ["agent", "start"], {
+        shell: true,
+      });
     } else {
       agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
     }
