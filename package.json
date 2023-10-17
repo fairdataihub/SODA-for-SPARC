@@ -1,7 +1,7 @@
 {
   "name": "soda-for-sparc",
   "productName": "SODA for SPARC",
-  "version": "12.3.2-beta",
+  "version": "12.3.11-beta",
   "description": "Keep Calm and Curate ",
   "main": "main.js",
   "scripts": {
