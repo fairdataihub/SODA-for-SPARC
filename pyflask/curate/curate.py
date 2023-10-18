@@ -1818,10 +1818,22 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
         else:
             soda_json_structure["manifest-files"] = {"destination": "bf"}
 
+    action_for_existing_folders = "merge" # default action for existing folders is to merge
+    action_for_existing_files = "replace" # default action for existing files is to replace
+
+    if "generate-dataset" in soda_json_structure.keys():
+        if "if-existing" in soda_json_structure["generate-dataset"].keys():
+            action_for_existing_folders = soda_json_structure["generate-dataset"]["if-existing"]
+        if "if-existing-files" in soda_json_structure["generate-dataset"].keys():
+            action_for_existing_files = soda_json_structure["generate-dataset"]["if-existing-files"]
+
+    namespace_logger.info(f"action_for_existing_folders: {action_for_existing_folders}")
+    namespace_logger.info(f"action_for_existing_files: {action_for_existing_files}")
+
     soda_json_structure["generate-dataset"] = {
         "destination": "bf",
-        "if-existing": soda_json_structure["generate-dataset"]["if-existing"] or "merge",
-        "if-existing-files": soda_json_structure["generate-dataset"]["if-existing-files"] or "replace",
+        "if-existing": action_for_existing_folders,
+        "if-existing-files": action_for_existing_files,
         "generate-option": "existing-bf"
     }
 
