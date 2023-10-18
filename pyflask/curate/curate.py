@@ -1366,9 +1366,6 @@ def create_high_lvl_manifest_files_existing_ps(
             "if-existing-files"
         ]
 
-        namespace_logger.info(f"Existing folder option: {existing_folder_option}")
-        namespace_logger.info(f"Existing file option: {existing_file_option}")
-
         for folder_key, folder in dataset_structure["folders"].items():
             relative_path = ""
 
@@ -2043,7 +2040,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 my_tracking_folder: Tracks what folders have been created on Pennsieve thus far. Starts as an empty dictionary.
                 existing_folder_option: Dictates whether to merge, duplicate, replace, or skip existing folders.
             """
-            namespace_logger.info("recursive_create_folder_for_ps existing folder option: " + existing_folder_option)
 
             # Check if the current folder has any subfolders that already exist on Pennsieve. Important step to appropriately handle replacing and merging folders.
             if len(my_tracking_folder["children"]["folders"]) == 0 and my_tracking_folder["content"]["id"].find("N:dataset") == -1:
@@ -2116,8 +2112,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             """
                 Delete files that are marked to be replaced in the dataset. Create a list of files to upload to Pennsieve.
             """
-            namespace_logger.info("recursive_dataset_scan_for_ps existing file option: " + existing_file_option)
-
             global main_total_generate_dataset_size
 
 
