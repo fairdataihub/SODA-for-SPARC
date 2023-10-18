@@ -1314,13 +1314,15 @@ def create_high_lvl_manifest_files_existing_ps(
             ):
 
                 relative_path = ""
-                dict_folder_manifest = {}
+
                 # Initialize dict where manifest info will be stored
-                dict_folder_manifest["filename"] = []
-                dict_folder_manifest["timestamp"] = []
-                dict_folder_manifest["description"] = []
-                dict_folder_manifest["file type"] = []
-                dict_folder_manifest["Additional Metadata"] = []
+                dict_folder_manifest = {
+                    "filename": [],
+                    "timestamp": [],
+                    "description": [],
+                    "file type": [],
+                    "Additional Metadata": [],
+                }
 
                 # pull manifest file into if exists 
                 manifest_df = pd.DataFrame()
@@ -1363,6 +1365,7 @@ def create_high_lvl_manifest_files_existing_ps(
         existing_file_option = soda_json_structure["generate-dataset"][
             "if-existing-files"
         ]
+
         for folder_key, folder in dataset_structure["folders"].items():
             relative_path = ""
 
@@ -1817,8 +1820,8 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
 
     soda_json_structure["generate-dataset"] = {
         "destination": "bf",
-        "if-existing": "merge",
-        "if-existing-files": "replace",
+        "if-existing": soda_json_structure["generate-dataset"]["if-existing"] or "merge",
+        "if-existing-files": soda_json_structure["generate-dataset"]["if-existing-files"] or "replace",
         "generate-option": "existing-bf"
     }
 
@@ -2109,7 +2112,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             """
                 Delete files that are marked to be replaced in the dataset. Create a list of files to upload to Pennsieve.
             """
-
             global main_total_generate_dataset_size
 
 
