@@ -5,7 +5,8 @@
         "Users with large amount of datasets will no longer receive errors when fetching their datasets within SODA for SPARC",
         "SODA for SPARC launches the Pennsieve Agent for macOS Ventura users.",
         "The `skip` existing files option in the `Organize dataset` upload feature works as intended once again."
-      ]
+      ], 
+      "features": []
     }
   },
   "12.3.1": {
