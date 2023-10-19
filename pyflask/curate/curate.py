@@ -1314,13 +1314,15 @@ def create_high_lvl_manifest_files_existing_ps(
             ):
 
                 relative_path = ""
-                dict_folder_manifest = {}
+
                 # Initialize dict where manifest info will be stored
-                dict_folder_manifest["filename"] = []
-                dict_folder_manifest["timestamp"] = []
-                dict_folder_manifest["description"] = []
-                dict_folder_manifest["file type"] = []
-                dict_folder_manifest["Additional Metadata"] = []
+                dict_folder_manifest = {
+                    "filename": [],
+                    "timestamp": [],
+                    "description": [],
+                    "file type": [],
+                    "Additional Metadata": [],
+                }
 
                 # pull manifest file into if exists 
                 manifest_df = pd.DataFrame()
@@ -1363,6 +1365,7 @@ def create_high_lvl_manifest_files_existing_ps(
         existing_file_option = soda_json_structure["generate-dataset"][
             "if-existing-files"
         ]
+
         for folder_key, folder in dataset_structure["folders"].items():
             relative_path = ""
 
@@ -1815,10 +1818,22 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
         else:
             soda_json_structure["manifest-files"] = {"destination": "bf"}
 
+    action_for_existing_folders = "merge" # default action for existing folders is to merge
+    action_for_existing_files = "replace" # default action for existing files is to replace
+
+    if "generate-dataset" in soda_json_structure.keys():
+        if "if-existing" in soda_json_structure["generate-dataset"].keys():
+            action_for_existing_folders = soda_json_structure["generate-dataset"]["if-existing"]
+        if "if-existing-files" in soda_json_structure["generate-dataset"].keys():
+            action_for_existing_files = soda_json_structure["generate-dataset"]["if-existing-files"]
+
+    namespace_logger.info(f"action_for_existing_folders: {action_for_existing_folders}")
+    namespace_logger.info(f"action_for_existing_files: {action_for_existing_files}")
+
     soda_json_structure["generate-dataset"] = {
         "destination": "bf",
-        "if-existing": "merge",
-        "if-existing-files": "replace",
+        "if-existing": action_for_existing_folders,
+        "if-existing-files": action_for_existing_files,
         "generate-option": "existing-bf"
     }
 
@@ -2109,7 +2124,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             """
                 Delete files that are marked to be replaced in the dataset. Create a list of files to upload to Pennsieve.
             """
-
             global main_total_generate_dataset_size
 
 
