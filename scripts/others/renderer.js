@@ -698,7 +698,7 @@ const getPennsieveAgentVersion = () => {
       );
     }, timeout);
 
-    let agentVersionSpawn = execFile("pennsieve", ["version"]);
+    let agentVersionSpawn = spawn("pennsieve", ["version"]);
 
     // Capture standard output and parse the version
     // Resolve the promise if the version is found
@@ -876,7 +876,10 @@ const run_pre_flight_checks = async (check_update = true) => {
       const emessage = userErrorMessage(error);
 
       // TODO: make a function
-      if (emessage.includes("pennsieve: command not found")) {
+      if (
+        emessage.includes("pennsieve: command not found") ||
+        emessage.includes("'pennsieve' is not recognized")
+      ) {
         const { value: restartSoda } = await Swal.fire({
           icon: "info",
           title: "Pennsieve Agent Not Found",
