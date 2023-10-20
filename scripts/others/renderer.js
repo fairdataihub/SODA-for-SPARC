@@ -587,21 +587,13 @@ const getPennsieveAgentPath = () => {
   }
 };
 
-const stopPennsieveAgent = async (pathToPennsieveAgent) => {
+const stopPennsieveAgent = async () => {
   return new Promise((resolve, reject) => {
     try {
-      let agentStopSpawn;
-      if (
-        process.platform === "win32" ||
-        process.platform === "cygwin" ||
-        process.platform === "linux"
-      ) {
-        agentStopSpawn = spawn("pennsieve", ["agent", "stop"], {
-          shell: true,
-        });
-      } else {
-        agentStopSpawn = spawn(pathToPennsieveAgent, ["agent", "stop"]);
-      }
+      let agentStopSpawn = spawn("pennsieve", ["agent", "stop"], {
+        shell: true,
+      });
+
       agentStopSpawn.stdout.on("data", (data) => {
         log.info(data.toString());
         resolve();
@@ -616,7 +608,7 @@ const stopPennsieveAgent = async (pathToPennsieveAgent) => {
     }
   });
 };
-const startPennsieveAgent = async (pathToPennsieveAgent) => {
+const startPennsieveAgent = async () => {
   return new Promise((resolve, reject) => {
     // Keep track of the output from the agent
     // (output is added as strings to the array)
@@ -632,20 +624,11 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
         )
       );
     }, agentStartTimeout);
-    // Start the agent by running the command "agent start" at the path of the agent
-    let agentStartSpawn;
-    // check if linux
-    if (
-      process.platform === "win32" ||
-      process.platform === "cygwin" ||
-      process.platform === "linux"
-    ) {
-      agentStartSpawn = spawn("pennsieve", ["agent", "start"], {
-        shell: true,
-      });
-    } else {
-      agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
-    }
+
+    let agentStartSpawn = spawn("pennsieve", ["agent", "start"], {
+      shell: true,
+    });
+
     // Listen to the output from the agent and resolve the promise if the agent outputs
     // "Running Agent NOT as daemon" or "Pennsieve Agent started"
     agentStartSpawn.stdout.on("data", (data) => {
@@ -669,7 +652,7 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
         agentMessage.includes("Pennsieve Agent started")
       ) {
         setTimeout(() => {
-          const secondAgentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
+          const secondAgentStartSpawn = spawn("pennsieve", ["agent", "start"]);
           secondAgentStartSpawn.stdout.on("data", (data) => {
             const secondAgentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
             if (secondAgentMessage.includes("Pennsieve Agent is already running")) {
@@ -696,7 +679,7 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
   });
 };
 
-const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
+const getPennsieveAgentVersion = () => {
   log.info("Getting Pennsieve agent version");
 
   return new Promise((resolve, reject) => {
@@ -715,18 +698,7 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
       );
     }, timeout);
 
-    let agentVersionSpawn;
-
-    // check if linux
-    if (
-      process.platform === "win32" ||
-      process.platform === "cygwin" ||
-      process.platform === "linux"
-    ) {
-      agentVersionSpawn = execFile("pennsieve", ["version"]);
-    } else {
-      agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
-    }
+    let agentVersionSpawn = execFile("pennsieve", ["version"]);
 
     // Capture standard output and parse the version
     // Resolve the promise if the version is found
@@ -841,56 +813,56 @@ const run_pre_flight_checks = async (check_update = true) => {
     // Get the path to the Pennsieve agent
     // If the path that the Pennsieve agent should be at is not found,
     // alert the user and open the download page for the Pennsieve agent
-    let agentPath;
-    try {
-      agentPath = getPennsieveAgentPath();
-    } catch (error) {
-      const emessage = userErrorMessage(error);
-      log.info(`Error getting Pennsieve agent path: ${emessage}`);
+    // let agentPath;
+    // try {
+    //   agentPath = getPennsieveAgentPath();
+    // } catch (error) {
+    //   const emessage = userErrorMessage(error);
+    //   log.info(`Error getting Pennsieve agent path: ${emessage}`);
 
-      const { value: rerunPreFlightChecks } = await Swal.fire({
-        icon: "info",
-        title: "Pennsieve Agent Not Found",
-        html: `
-          It looks like the Pennsieve Agent is not installed on your computer.
-          <br />
-          To install the Pennsieve Agent, please visit the link below and follow the instructions.
-          <br />
-          <br />
-          <a href="${browser_download_url}" target="_blank">Download the Pennsieve agent</a>
-          <br />
-          <br />
-          Once you have installed the Pennsieve Agent, please click the button below to ensure that the Pennsieve agent was installed correctly.
-        `,
-        width: 800,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showCancelButton: true,
-        showCloseButton: true,
-        reverseButtons: reverseSwalButtons,
-        confirmButtonText: "Retry check for Pennsieve agent",
-        cancelButtonText: "Skip for now",
-      });
-      // If the user clicks the retry button, rerun the pre flight checks
-      if (rerunPreFlightChecks) {
-        return await run_pre_flight_checks();
-      }
+    //   const { value: rerunPreFlightChecks } = await Swal.fire({
+    //     icon: "info",
+    //     title: "Pennsieve Agent Not Found",
+    //     html: `
+    //       It looks like the Pennsieve Agent is not installed on your computer.
+    //       <br />
+    //       To install the Pennsieve Agent, please visit the link below and follow the instructions.
+    //       <br />
+    //       <br />
+    //       <a href="${browser_download_url}" target="_blank">Download the Pennsieve agent</a>
+    //       <br />
+    //       <br />
+    //       Once you have installed the Pennsieve Agent, please click the button below to ensure that the Pennsieve agent was installed correctly.
+    //     `,
+    //     width: 800,
+    //     heightAuto: false,
+    //     backdrop: "rgba(0,0,0, 0.4)",
+    //     allowOutsideClick: false,
+    //     allowEscapeKey: false,
+    //     showCancelButton: true,
+    //     showCloseButton: true,
+    //     reverseButtons: reverseSwalButtons,
+    //     confirmButtonText: "Retry check for Pennsieve agent",
+    //     cancelButtonText: "Skip for now",
+    //   });
+    //   // If the user clicks the retry button, rerun the pre flight checks
+    //   if (rerunPreFlightChecks) {
+    //     return await run_pre_flight_checks();
+    //   }
 
-      // Dismiss the preflight check notification if it is still open
-      if (preFlightCheckNotyf) {
-        notyf.dismiss(preFlightCheckNotyf);
-        preFlightCheckNotyf = null;
-      }
-      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
-      return false;
-    }
+    //   // Dismiss the preflight check notification if it is still open
+    //   if (preFlightCheckNotyf) {
+    //     notyf.dismiss(preFlightCheckNotyf);
+    //     preFlightCheckNotyf = null;
+    //   }
+    //   // If the user clicks the skip button, return false which will cause the pre flight checks to fail
+    //   return false;
+    // }
 
     // Stop the Pennsieve agent if it is running
     // This is to ensure that the agent is not running when we try to start it so no funny business happens
     try {
-      await stopPennsieveAgent(agentPath);
+      await stopPennsieveAgent();
     } catch (error) {
       // Note: This error is not critical so we do not need to throw it
       clientError(error);
@@ -898,10 +870,44 @@ const run_pre_flight_checks = async (check_update = true) => {
 
     // Start the Pennsieve agent
     try {
-      await startPennsieveAgent(agentPath);
+      await startPennsieveAgent();
     } catch (error) {
       clientError(error);
       const emessage = userErrorMessage(error);
+
+      // TODO: make a function
+      if (emessage.includes("pennsieve: command not found")) {
+        const { value: restartSoda } = await Swal.fire({
+          icon: "info",
+          title: "Pennsieve Agent Not Found",
+          html: `
+              It looks like the Pennsieve Agent is not installed on your computer.
+              <br />
+              To install the Pennsieve Agent, please visit the link below and follow the instructions.
+              <br />
+              <br />
+              <a href="${browser_download_url}" target="_blank">Download the Pennsieve agent</a>
+              <br />
+              <br />
+              Once you have installed the Pennsieve Agent, you will need to restart SODA for SPARC before you can upload datasets. Would you like to restart SODA for SPARC now?
+            `,
+          width: 800,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showCancelButton: true,
+          showCloseButton: true,
+          reverseButtons: reverseSwalButtons,
+          confirmButtonText: "Restart SODA for SPARC",
+          cancelButtonText: "Skip for now",
+        });
+
+        if (restartSoda) {
+          await ipcRenderer.invoke("restart-app");
+        }
+      }
+
       const { value: rerunPreFlightChecks } = await Swal.fire({
         icon: "info",
         title: "The Pennsieve Agent failed to start",
@@ -940,7 +946,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     // Get the version of the Pennsieve agent
     let usersPennsieveAgentVersion;
     try {
-      const versionObj = await getPennsieveAgentVersion(agentPath);
+      const versionObj = await getPennsieveAgentVersion();
       usersPennsieveAgentVersion = versionObj["Agent Version"];
     } catch (error) {
       clientError(error);
@@ -983,7 +989,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     if (usersPennsieveAgentVersion !== latest_agent_version) {
       // Stop the Pennsieve agent if it is running to prevent any issues when updating while the agent is running
       try {
-        await stopPennsieveAgent(agentPath);
+        await stopPennsieveAgent();
       } catch (error) {
         // Note: This error is not critical so we do not need to throw it
         clientError(error);
@@ -1072,7 +1078,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     }
     // Stop the Pennsieve agent if it is running
     try {
-      await stopPennsieveAgent(agentPath);
+      await stopPennsieveAgent();
     } catch (error) {
       // Note: This error is not critical so we do not need to throw it
       clientError(error);
