@@ -635,8 +635,11 @@ const startPennsieveAgent = async () => {
       ].join(":");
     }
 
+    console.log(process.env.PATH)
+
     let agentStartSpawn = spawn("pennsieve", ["agent", "start"], {
       shell: true,
+      env: process.env,
     });
 
     // Listen to the output from the agent and resolve the promise if the agent outputs
