@@ -902,7 +902,7 @@ const run_pre_flight_checks = async (check_update = true) => {
               <a href="${browser_download_url}" target="_blank">Download the Pennsieve agent</a>
               <br />
               <br />
-              Once you have installed the Pennsieve Agent, you will need to restart SODA for SPARC before you can upload datasets. Would you like to restart SODA for SPARC now?
+              Once you have installed the Pennsieve Agent, you will need to restart SODA for SPARC before you can upload datasets. Would you like to close SODA for SPARC now?
             `,
           width: 800,
           heightAuto: false,
@@ -912,12 +912,12 @@ const run_pre_flight_checks = async (check_update = true) => {
           showCancelButton: true,
           showCloseButton: true,
           reverseButtons: reverseSwalButtons,
-          confirmButtonText: "Restart SODA for SPARC",
-          cancelButtonText: "Skip for now",
+          confirmButtonText: "Yes",
+          cancelButtonText: "No",
         });
 
         if (restartSoda) {
-          await ipcRenderer.invoke("restart-app");
+          await ipcRenderer.invoke("quit-app");
         }
       }
 

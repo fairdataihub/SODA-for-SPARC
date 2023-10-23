@@ -1,6 +1,5 @@
 const { ipcMain, app } = require("electron");
 
-ipcMain.handle("restart-app", (event) => {
-  app.relaunch();
+ipcMain.handle("quit-app", (event) => {
   app.quit();
 });
