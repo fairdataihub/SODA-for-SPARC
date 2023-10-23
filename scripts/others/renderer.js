@@ -750,7 +750,23 @@ const getPennsieveAgentVersion = () => {
 
 let preFlightCheckNotyf = null;
 
-const agent_installed = () => {};
+const agent_installed = () => {
+  return new Promise((resolve, reject) => {
+    let agentStartSpawn = spawn("pennsieve", {
+      shell: true,
+      env: process.env,
+    });
+
+    agentStartSpawn.stdout.on("data", async (data) => {
+      return resolve(true);
+    });
+
+    agentStartSpawn.stderr.on("data", (data) => {
+      clientError(data.toString());
+      return resolve(false);
+    });
+  });
+};
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
@@ -825,6 +841,76 @@ const run_pre_flight_checks = async (check_update = true) => {
     }
 
     // check if the Pennsieve agent is installed [ here ]
+    try {
+      let installed = await agent_installed();
+      if (!installed) {
+        const { value: restartSoda } = await Swal.fire({
+          icon: "info",
+          title: "Pennsieve Agent Not Found",
+          html: `
+                  It looks like the Pennsieve Agent is not installed on your computer.
+                  <br />
+                  To install the Pennsieve Agent, please visit the link below and follow the instructions.
+                  <br />
+                  <br />
+                  <a href="${browser_download_url}" target="_blank">Download the Pennsieve agent</a>
+                  <br />
+                  <br />
+                  Once you have installed the Pennsieve Agent, you will need to restart SODA for SPARC before you can upload datasets. Would you like to close SODA for SPARC now?
+                `,
+          width: 800,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showCancelButton: true,
+          showCloseButton: true,
+          reverseButtons: reverseSwalButtons,
+          confirmButtonText: "Yes",
+          cancelButtonText: "No",
+        });
+
+        if (restartSoda) {
+          await ipcRenderer.invoke("quit-app");
+        }
+
+        // If the user clicks doesn't want to close SODA return false so the client code knows the pre flight checks failed
+        return false;
+      }
+    } catch (error) {
+      clientError(error);
+      const emessage = userErrorMessage(error);
+
+      const { value: restartSoda } = await Swal.fire({
+        icon: "error",
+        title: "Error Determining if the Pennsieve Agent is Installed",
+        html: `
+          <br />
+          <div class="div--code-block-error">${emessage}</div>
+          <br />
+          Please view the <a href="https://docs.sodaforsparc.io/docs/common-errors/installing-the-pennsieve-agent" target="_blank">SODA documentation</a>
+          for Pennsieve Agent installation instructions. Once installed restart SODA for SPARC. If you continue to receive this issue after  
+          restarting SODA for SPARC please reach out to the SODA team using the "Contact Us" button in the side bar. 
+        `,
+        width: 800,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showCancelButton: true,
+        showCloseButton: true,
+        reverseButtons: reverseSwalButtons,
+        confirmButtonText: "Close SODA for SPARC",
+        cancelButtonText: "Skip for now",
+      });
+      // If the user clicks the retry button, rerun the pre flight checks
+      if (restartSoda) {
+        await ipcRenderer.invoke("quit-app");
+      }
+
+      // user selected skip for now
+      return false;
+    }
 
     // Stop the Pennsieve agent if it is running
     // This is to ensure that the agent is not running when we try to start it so no funny business happens
@@ -841,43 +927,6 @@ const run_pre_flight_checks = async (check_update = true) => {
     } catch (error) {
       clientError(error);
       const emessage = userErrorMessage(error);
-
-      // TODO: make a function
-      if (
-        emessage.includes("pennsieve: command not found") ||
-        emessage.includes("'pennsieve' is not recognized") ||
-        emessage.includes("/bin/sh: 1: pennsieve: not found")
-      ) {
-        const { value: restartSoda } = await Swal.fire({
-          icon: "info",
-          title: "Pennsieve Agent Not Found",
-          html: `
-              It looks like the Pennsieve Agent is not installed on your computer.
-              <br />
-              To install the Pennsieve Agent, please visit the link below and follow the instructions.
-              <br />
-              <br />
-              <a href="${browser_download_url}" target="_blank">Download the Pennsieve agent</a>
-              <br />
-              <br />
-              Once you have installed the Pennsieve Agent, you will need to restart SODA for SPARC before you can upload datasets. Would you like to close SODA for SPARC now?
-            `,
-          width: 800,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          showCancelButton: true,
-          showCloseButton: true,
-          reverseButtons: reverseSwalButtons,
-          confirmButtonText: "Yes",
-          cancelButtonText: "No",
-        });
-
-        if (restartSoda) {
-          await ipcRenderer.invoke("quit-app");
-        }
-      }
 
       const { value: rerunPreFlightChecks } = await Swal.fire({
         icon: "info",
