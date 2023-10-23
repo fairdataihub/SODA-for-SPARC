@@ -658,7 +658,10 @@ const startPennsieveAgent = async () => {
         agentMessage.includes("Pennsieve Agent started")
       ) {
         setTimeout(() => {
-          const secondAgentStartSpawn = spawn("pennsieve", ["agent", "start"]);
+          const secondAgentStartSpawn = spawn("pennsieve", ["agent", "start"], {
+            shell: true,
+            env: process.env,
+          });
           secondAgentStartSpawn.stdout.on("data", (data) => {
             const secondAgentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
             if (secondAgentMessage.includes("Pennsieve Agent is already running")) {
@@ -747,6 +750,8 @@ const getPennsieveAgentVersion = () => {
 
 let preFlightCheckNotyf = null;
 
+const agent_installed = () => {};
+
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
   try {
@@ -819,54 +824,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       throw new Error(`Error getting latest Pennsieve agent version:<br />${emessage}`);
     }
 
-    // Get the path to the Pennsieve agent
-    // If the path that the Pennsieve agent should be at is not found,
-    // alert the user and open the download page for the Pennsieve agent
-    // let agentPath;
-    // try {
-    //   agentPath = getPennsieveAgentPath();
-    // } catch (error) {
-    //   const emessage = userErrorMessage(error);
-    //   log.info(`Error getting Pennsieve agent path: ${emessage}`);
-
-    //   const { value: rerunPreFlightChecks } = await Swal.fire({
-    //     icon: "info",
-    //     title: "Pennsieve Agent Not Found",
-    //     html: `
-    //       It looks like the Pennsieve Agent is not installed on your computer.
-    //       <br />
-    //       To install the Pennsieve Agent, please visit the link below and follow the instructions.
-    //       <br />
-    //       <br />
-    //       <a href="${browser_download_url}" target="_blank">Download the Pennsieve agent</a>
-    //       <br />
-    //       <br />
-    //       Once you have installed the Pennsieve Agent, please click the button below to ensure that the Pennsieve agent was installed correctly.
-    //     `,
-    //     width: 800,
-    //     heightAuto: false,
-    //     backdrop: "rgba(0,0,0, 0.4)",
-    //     allowOutsideClick: false,
-    //     allowEscapeKey: false,
-    //     showCancelButton: true,
-    //     showCloseButton: true,
-    //     reverseButtons: reverseSwalButtons,
-    //     confirmButtonText: "Retry check for Pennsieve agent",
-    //     cancelButtonText: "Skip for now",
-    //   });
-    //   // If the user clicks the retry button, rerun the pre flight checks
-    //   if (rerunPreFlightChecks) {
-    //     return await run_pre_flight_checks();
-    //   }
-
-    //   // Dismiss the preflight check notification if it is still open
-    //   if (preFlightCheckNotyf) {
-    //     notyf.dismiss(preFlightCheckNotyf);
-    //     preFlightCheckNotyf = null;
-    //   }
-    //   // If the user clicks the skip button, return false which will cause the pre flight checks to fail
-    //   return false;
-    // }
+    // check if the Pennsieve agent is installed [ here ]
 
     // Stop the Pennsieve agent if it is running
     // This is to ensure that the agent is not running when we try to start it so no funny business happens
