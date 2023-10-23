@@ -594,6 +594,7 @@ const stopPennsieveAgent = async () => {
     try {
       let agentStopSpawn = spawn("pennsieve", ["agent", "stop"], {
         shell: true,
+        env: process.env,
       });
 
       agentStopSpawn.stdout.on("data", (data) => {
@@ -703,7 +704,10 @@ const getPennsieveAgentVersion = () => {
       );
     }, timeout);
 
-    let agentVersionSpawn = spawn("pennsieve", ["version"]);
+    let agentVersionSpawn = spawn("pennsieve", ["version"], {
+      shell: true,
+      env: process.env,
+    });
 
     // Capture standard output and parse the version
     // Resolve the promise if the version is found
