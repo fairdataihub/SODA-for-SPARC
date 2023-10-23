@@ -33,7 +33,6 @@ const lottie = require("lottie-web");
 const select2 = require("select2")();
 const DragSort = require("@yaireo/dragsort");
 const { spawn, execFile } = require("child_process");
-// import fixPath from "fix-path";
 // TODO: Test with a build
 const { datasetUploadSession } = require("./scripts/others/analytics/upload-session-tracker");
 const { kombuchaEnums } = require("./scripts/others/analytics/analytics-enums");
@@ -51,6 +50,7 @@ const {
   userErrorMessage,
 } = require("./scripts/others/http-error-handler/error-handler");
 const { hasConnectedAccountWithPennsieve } = require("./scripts/others/authentication/auth");
+const fixPath = require("./scripts/others/update-path-darwin");
 const api = require("./scripts/others/api/api");
 
 const axios = require("axios").default;
@@ -59,6 +59,8 @@ const DatePicker = require("tui-date-picker"); /* CommonJS */
 const excel4node = require("excel4node");
 
 const { backOff } = require("exponential-backoff");
+
+fixPath();
 
 // const prevent_sleep_id = "";
 // const electron_app = electron.app;
@@ -625,17 +627,7 @@ const startPennsieveAgent = async () => {
       );
     }, agentStartTimeout);
 
-    if (process.platform == "darwin") {
-      process.env.PATH = [
-        "./node_modules/.bin",
-        "/.nodebrew/current/bin",
-        "/usr/local/bin",
-        "/usr/local/opt",
-        process.env.PATH,
-      ].join(":");
-    }
-
-    console.log(process.env.PATH)
+    console.log(process.env.PATH);
 
     let agentStartSpawn = spawn("pennsieve", ["agent", "start"], {
       shell: true,
