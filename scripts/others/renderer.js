@@ -878,7 +878,8 @@ const run_pre_flight_checks = async (check_update = true) => {
       // TODO: make a function
       if (
         emessage.includes("pennsieve: command not found") ||
-        emessage.includes("'pennsieve' is not recognized")
+        emessage.includes("'pennsieve' is not recognized") ||
+        emessage.includes("/bin/sh: 1: pennsieve: not found")
       ) {
         const { value: restartSoda } = await Swal.fire({
           icon: "info",
