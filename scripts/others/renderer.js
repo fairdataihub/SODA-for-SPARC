@@ -33,7 +33,7 @@ const lottie = require("lottie-web");
 const select2 = require("select2")();
 const DragSort = require("@yaireo/dragsort");
 const { spawn, execFile } = require("child_process");
-
+// import fixPath from "fix-path";
 // TODO: Test with a build
 const { datasetUploadSession } = require("./scripts/others/analytics/upload-session-tracker");
 const { kombuchaEnums } = require("./scripts/others/analytics/analytics-enums");
@@ -625,10 +625,14 @@ const startPennsieveAgent = async () => {
       );
     }, agentStartTimeout);
 
-    // when running on mac, not all PATH locations are available to the app
     if (process.platform == "darwin") {
-      const fixPath = require("fix-path");
-      fixPath();
+      process.env.PATH = [
+        "./node_modules/.bin",
+        "/.nodebrew/current/bin",
+        "/usr/local/bin",
+        "/usr/local/opt",
+        process.env.PATH,
+      ].join(":");
     }
 
     let agentStartSpawn = spawn("pennsieve", ["agent", "start"], {
@@ -3305,7 +3309,6 @@ const { background } = require("jimp");
 const { rename } = require("fs");
 const { resolveSoa } = require("dns");
 const internal = require("stream");
-const { default: fixPath } = require("fix-path");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
