@@ -625,6 +625,12 @@ const startPennsieveAgent = async () => {
       );
     }, agentStartTimeout);
 
+    // when running on mac, not all PATH locations are available to the app
+    if (process.platform == "darwin") {
+      const fixPath = require("fix-path");
+      fixPath();
+    }
+
     let agentStartSpawn = spawn("pennsieve", ["agent", "start"], {
       shell: true,
     });
@@ -3299,6 +3305,7 @@ const { background } = require("jimp");
 const { rename } = require("fs");
 const { resolveSoa } = require("dns");
 const internal = require("stream");
+const { default: fixPath } = require("fix-path");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
