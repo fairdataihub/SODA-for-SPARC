@@ -5,13 +5,15 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v.12.3.2 - 2023-10-17
+## v.12.3.2 - 2023-10-19
 
 ## Bug fixes:
 
 - Updated urllib3 and request versions to fix issues with the back-end processing responses from Pennsieve API.
 - Modified the request to retrieve a list of datasets by utilizing Pennsieve's dataset pagination endpoint. This change was implemented to address an issue that was affecting users with a large number of datasets.
 - Migrated the notarization tool from alttool to notarytool.
+- SODA for SPARC launches the Pennsieve Agent for OS X Ventura.
+- Duplicate files were being created when uploading a dataset through `Organize Datasets` and selecting the 'skip' existing files option. The 'skip' option now works as intended. Local files that exist on a Pennsieve dataset are no longer duplicated.
 
 ## v.12.3.1 - 2023-09-21
 
