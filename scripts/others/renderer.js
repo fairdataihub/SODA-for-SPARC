@@ -825,8 +825,10 @@ const run_pre_flight_checks = async (check_update = true) => {
       // If user chose to log in, open the dropdown prompt
       if (userChoseToLogIn) {
         await openDropdownPrompt(null, "bf");
+        console.log("COntinuing after adding account");
+      } else {
+        return false;
       }
-      return false;
     }
 
     // First get the latest Pennsieve agent version on GitHub
@@ -848,7 +850,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           icon: "info",
           title: "Pennsieve Agent Not Found",
           html: `
-                  It looks like the Pennsieve Agent is not installed on your computer.
+                  It looks like the Pennsieve Agent is not installed on your computer. It is recommended that you install the Pennsieve Agent now if you want to upload datasets to Pennsieve through SODA.
                   <br />
                   To install the Pennsieve Agent, please visit the link below and follow the instructions.
                   <br />
@@ -856,7 +858,7 @@ const run_pre_flight_checks = async (check_update = true) => {
                   <a href="${browser_download_url}" target="_blank">Download the Pennsieve agent</a>
                   <br />
                   <br />
-                  Once you have installed the Pennsieve Agent, you will need to restart SODA for SPARC before you can upload datasets. Would you like to close SODA for SPARC now?
+                  Once you have installed the Pennsieve Agent, you will need to close and restart SODA before you can upload datasets. Would you like to close SODA now?
                 `,
           width: 800,
           heightAuto: false,
