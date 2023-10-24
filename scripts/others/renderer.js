@@ -566,29 +566,6 @@ ipcRenderer.on("start_pre_flight_checks", async (event, arg) => {
   log.info("Running pre flight checks finished");
 });
 
-const getPennsieveAgentPath = () => {
-  if (process.platform === "win32" || process.platform === "cygwin") {
-    const bit64Path = path.join("C:\\Program Files\\Pennsieve\\pennsieve.exe");
-    if (fs.existsSync(bit64Path)) {
-      return bit64Path;
-    }
-    const bit32Path = path.join("C:\\Program Files (x86)\\Pennsieve\\pennsieve.exe");
-    if (fs.existsSync(bit32Path)) {
-      return bit32Path;
-    }
-    throw new Error(`Could not find the Pennsieve agent path at ${bit64Path} or ${bit32Path}`);
-  } else {
-    const unixPath = "/usr/local/bin/pennsieve";
-    if (fs.existsSync(unixPath)) {
-      return unixPath;
-    } else if (fs.existsSync("/usr/local/opt/pennsieve/pennsieve")) {
-      return "/usr/local/opt/pennsieve/pennsieve";
-    }
-
-    throw new Error(`Could not find the Pennsieve agent path at the expected installation path.`);
-  }
-};
-
 const stopPennsieveAgent = async () => {
   return new Promise((resolve, reject) => {
     try {
