@@ -108,7 +108,6 @@ document
   .querySelectorAll(".guided-subject-sample-pool-structure-download-button")
   .forEach((button) => {
     button.addEventListener("click", (event) => {
-      console.log("clicked");
       ipcRenderer.send("open-folder-dialog-save-metadata", "subjects_pools_samples_structure.xlsx");
     });
   });

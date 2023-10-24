@@ -6680,6 +6680,10 @@ const openPage = async (targetPageID) => {
   guidedSetNavLoadingState(false);
 };
 
+document.getElementById("guided-button-open-subject-import-flow").addEventListener("click", () => {
+  console.log("open subject import flow");
+});
+
 const renderSubjectsTable = () => {
   const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
   //Combine sample data from subjects in and out of pools
