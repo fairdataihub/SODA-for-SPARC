@@ -1,4 +1,12 @@
 {
+  "12.3.3": {
+    "announcements": {
+      "bug-fixes": [
+        "SODA will always find and start the most up to date Pennsieve Agent installed on a user machine."
+      ],
+      "features": []
+    }
+  },
   "12.3.2": {
     "announcements": {
       "bug-fixes": [
