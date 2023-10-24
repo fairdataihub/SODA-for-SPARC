@@ -628,8 +628,6 @@ const startPennsieveAgent = async () => {
       );
     }, agentStartTimeout);
 
-    console.log(process.env.PATH);
-
     let agentStartSpawn = spawn("pennsieve", ["agent", "start"], {
       shell: true,
       env: process.env,
@@ -825,7 +823,6 @@ const run_pre_flight_checks = async (check_update = true) => {
       // If user chose to log in, open the dropdown prompt
       if (userChoseToLogIn) {
         await openDropdownPrompt(null, "bf");
-        console.log("COntinuing after adding account");
       } else {
         return false;
       }
