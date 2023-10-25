@@ -5056,6 +5056,9 @@ const openPage = async (targetPageID) => {
       $("#guided-select-sparc-funding-consortium").trigger("change");
     }
 
+    if (targetPageID === "guided-subjects-specification-tab") {
+      renderSubjectsTable();
+    }
     if (targetPageID === "guided-subjects-folder-tab") {
       renderSamplesTable();
     }
@@ -6688,6 +6691,20 @@ const renderSubjectsTable = () => {
   const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
   //Combine sample data from subjects in and out of pools
   const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+
+  // If there are no subjects, hide the subjects table
+  const subjectsTableContainer = document.getElementById("guided-section-subjects-table");
+  if (subjects.length === 0) {
+    subjectsTableContainer.classList.add("hidden");
+    console.log("Hiding container");
+    return;
+  } else {
+    console.log("Showing container");
+    // If there are subjects, show the subjects table
+    subjectsTableContainer.classList.remove("hidden");
+  }
+
+  // Map the subjects to HTML elements
   const subjectElementRows = subjects
     .map((subject) => {
       return generateSubjectRowElement(subject.subjectName);
