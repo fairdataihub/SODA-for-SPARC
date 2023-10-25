@@ -1076,3 +1076,39 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.guided--container-card {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  overflow-x: auto;
+}
+
+.guided--card-item {
+  display: flex;
+  flex: 1;
+  margin: 5px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-teal);
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.guided--card-item-text {
+  margin: 0px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #000;
+}
+
+.guided--card-item-header-text {
+  margin: 0px;
+  margin-bottom: 5px;
+  font-weight: 700;
+  font-size: 16px;
+  color: #000;
+}
