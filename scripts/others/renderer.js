@@ -850,6 +850,12 @@ const run_pre_flight_checks = async (check_update = true) => {
           await ipcRenderer.invoke("quit-app");
         }
 
+        // Dismiss the preflight check notification if it is still open
+        if (preFlightCheckNotyf) {
+          notyf.dismiss(preFlightCheckNotyf);
+          preFlightCheckNotyf = null;
+        }
+
         // If the user clicks doesn't want to close SODA return false so the client code knows the pre flight checks failed
         return false;
       }
@@ -882,6 +888,12 @@ const run_pre_flight_checks = async (check_update = true) => {
       // If the user clicks the retry button, rerun the pre flight checks
       if (restartSoda) {
         await ipcRenderer.invoke("quit-app");
+      }
+
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
       }
 
       // user selected skip for now
