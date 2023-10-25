@@ -6,11 +6,13 @@
  */
 const fixPath = () => {
   if (process.platform == "darwin") {
+
     process.env.PATH = [
       "./node_modules/.bin",
       "/.nodebrew/current/bin",
       "/usr/local/bin",
       "/usr/local/opt",
+      "/usr/local/opt/pennsieve", // Ventura installation folder; Note: On Ventura the Agent isn't added to the Path
       process.env.PATH,
     ].join(":");
   }
