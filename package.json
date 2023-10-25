@@ -1,7 +1,7 @@
 {
   "name": "soda-for-sparc",
   "productName": "SODA for SPARC",
-  "version": "12.3.2",
+  "version": "12.3.3-beta",
   "description": "Keep Calm and Curate ",
   "main": "main.js",
   "scripts": {
@@ -148,6 +148,7 @@
     "excel4node": "^1.7.2",
     "exponential-backoff": "^3.1.0",
     "find-free-port": "^2.0.0",
+    "fix-path": "^4.0.0",
     "fomantic-ui": "^2.8.8",
     "fs-extra": "^10.0.0",
     "glob": "^7.1.7",
