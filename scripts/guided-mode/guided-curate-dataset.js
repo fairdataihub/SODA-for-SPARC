@@ -10881,6 +10881,17 @@ const confirmOnBlur = (element) => {
   document.getElementById(element).addEventListener("blur", onBlurEvent);
 };
 
+const getExistingSubjectNamesss = () => {
+  // Get all subjects in pools and outside of pools
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  // Combine the two arrays
+  const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+  // Map each subject object to its name
+  const subjectNames = subjects.map((subject) => subject["subjectName"]);
+
+  return subjectNames;
+};
+
 const addSubjectSpecificationTableRow = () => {
   const subjectSpecificationTableBody = document.getElementById("subject-specification-table-body");
   //check if subject specification table body has an input with the name guided-subject-id
