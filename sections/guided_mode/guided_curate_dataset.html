@@ -1418,12 +1418,12 @@
             </div>
             <div class="guided--section" id="guided-organize-into-pools-prompt">
               <label class="guided--form-label centered">
-                Do you have more that 20 subjects in your dataset?
+                Do you have more than 20 subjects in your dataset?
               </label>
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
                   class="ui positive basic button guided--radio-button"
-                  data-next-element="guided-section-add-subjects-manually"
+                  data-next-element="guided-section-ask-if-subjects-are-organized-in-folders"
                   data-button-config-value="subject-addition-method"
                   data-button-config-value-state="manual"
                 >
@@ -1431,7 +1431,33 @@
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
-                  data-next-element="guied-section-add-subjects-via-import"
+                  data-next-element="guided-section-add-subjects-manually"
+                  data-button-config-value="subject-addition-method"
+                  data-button-config-value-state="import"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+            <div
+              class="guided--section"
+              id="guided-section-ask-if-subjects-are-organized-in-folders"
+            >
+              <label class="guided--form-label centered">
+                Do you already have your subjects organized into folders?
+              </label>
+              <div class="guided--radio-button-container" style="margin-bottom: 7px">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-element="guided-section-import-subjects-via-folders"
+                  data-button-config-value="subject-addition-method"
+                  data-button-config-value-state="manual"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  data-next-element="guided-section-ask-if-user-would-like-to-add-subjects-via-spreadsheet"
                   data-button-config-value="subject-addition-method"
                   data-button-config-value-state="import"
                 >
@@ -1440,66 +1466,42 @@
               </div>
             </div>
 
-            <div class="guided--section" id="guided-section-add-subjects-manually">
-              <p class="help-text">
-                SODA provides two additional methods for importing a large amount of subjects.
-              </p>
-              <p class="help-text hidden">
-                SODA provides two additioal methods for importing a large number of subjects:
-                <br />
-                <br />
-                <b>Importing from a spreadsheet:</b>
-                <br />
-                To import from a spreadsheet you must first
-                <br />
-                Once you have added your subjects to the spreadsheet, import it by drag and dropping
-                or importing it below. <br /><br />
-                <b>Importing from folders/files:</b>
-                <br />
-                To import from folders/files you must first organize your subjects into folders...
-              </p>
-              <div class="guided--container-card">
-                <div class="guided--card-item">
-                  <p class="guided--card-item-header-text">Importing from dataset folders/files</p>
-                  <p class="guided--card-item-text">
-                    In this flow, you will be able to copy subject names from folders or files in
-                    your dataset and import them into SODA.
-                  </p>
-                  <button
-                    class="ui positive button soda-green-background mt-md"
-                    id="guided-button-open-subject-import-flow4"
-                  >
-                    Import from folders/files
-                  </button>
-                </div>
-                <div class="guided--card-item">
-                  <p class="guided--card-item-header-text">Importing from a spreadsheet</p>
-                  <p class="guided--card-item-text">
-                    In this flow, you will be able to download an excel spreadsheet in which you can
-                    copy/paste your subjects from an external spreadsheet and import them into SODA.
-                  </p>
-                  <button
-                    class="ui positive button soda-green-background mt-md"
-                    id="guided-button-open-subject-import-flow4"
-                  >
-                    Import subjects from a spreadsheet
-                  </button>
-                </div>
-                <div class="guided--card-item">
-                  <p class="guided--card-item-header-text">Add subjects manually</p>
-                  <p class="guided--card-item-text">
-                    Use this flow to add subjects manually by typing them out in an interface.
-                  </p>
-                  <button
-                    class="ui positive button soda-green-background mt-md"
-                    id="guided-button-open-subject-import-flow4"
-                  >
-                    Add subjects manually
-                  </button>
-                </div>
+            <div class="guided--section" id="guided-section-import-subjects-via-folders">
+              This is the UI where you import via folders
+            </div>
+
+            <div
+              class="guided--section"
+              id="guided-section-ask-if-user-would-like-to-add-subjects-via-spreadsheet"
+            >
+              <label class="guided--form-label centered">
+                Would you like to import via a spreadsheet?
+              </label>
+              <div class="guided--radio-button-container" style="margin-bottom: 7px">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-element="guided-section-import-subjects-via-spreadsheet"
+                  data-button-config-value="subject-addition-method"
+                  data-button-config-value-state="manual"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  data-next-element="guided-section-add-subjects-manually"
+                  data-button-config-value="subject-addition-method"
+                  data-button-config-value-state="import"
+                >
+                  No
+                </button>
               </div>
             </div>
-            <div class="guided--section" id="guied-section-add-subjects-via-import">
+
+            <div class="guided--section" id="guided-section-import-subjects-via-spreadsheet">
+              This is the UI where you import via spreadsheet
+            </div>
+
+            <div class="guided--section" id="guided-section-add-subjects-manually">
               <button
                 class="ui positive button soda-green-background"
                 id="guided-button-open-subject-import-flow"
@@ -1677,10 +1679,7 @@
                     original data will be modified).
                   </p>
                 </div>
-                <!-- <div>
-                  <p>Here will be a temp place for the dataset path</p>
-                  <p id="datasetPathDisplay"></p>
-                </div> -->
+
                 <div
                   class="guided--container-subject-samples mt-md"
                   id="guided-primary-samples-file-explorer-container"

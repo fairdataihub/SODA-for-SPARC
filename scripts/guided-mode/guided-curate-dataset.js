@@ -4554,6 +4554,9 @@ const resetGuidedRadioButtons = (parentPageID) => {
     const elementButtonControls = guidedRadioButton.getAttribute("data-next-element");
     if (elementButtonControls) {
       const elementToHide = document.getElementById(elementButtonControls);
+      if (!elementToHide) {
+        console.error(`Element with id ${elementButtonControls} does not exist`);
+      }
       elementToHide.classList.add("hidden");
     }
   }
