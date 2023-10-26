@@ -10881,7 +10881,7 @@ const confirmOnBlur = (element) => {
   document.getElementById(element).addEventListener("blur", onBlurEvent);
 };
 
-const getExistingSubjectNamesss = () => {
+const getExistingSubjectNames = () => {
   // Get all subjects in pools and outside of pools
   const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
   // Combine the two arrays
@@ -10892,6 +10892,84 @@ const getExistingSubjectNamesss = () => {
   return subjectNames;
 };
 
+const guidedOpenSubjectAdditionSwal = async () => {
+  // Get a list of the existing subject names so we can check for duplicates
+  // const subjects = getExistingSubjectNames();
+  const subjects = ["sub-1", "sub-2", "sub-3"];
+  const addSubject = (subjectName) => {
+    if (subjectName.length < 1) {
+      throw new Error("Subject name cannot be empty");
+    }
+    // Check to see if the subjectName starts with sub- otherwise prepend sub- to it
+    if (!subjectName.startsWith("sub-")) {
+      subjectName = `sub-${subjectName}`;
+    }
+    console.log(subjectName);
+  };
+
+  await Swal.fire({
+    title: "Enter subject ID and press enter",
+    html: `
+      <p class="help-text">Instructions yada yada</p>
+      <div class="space-between w-100">
+        <input id='input-subject-addition' class='guided--input' type='text' name='guided-subject-id' placeholder='Enter subject ID and press enter'/>
+        <button
+          class="ui positive button soda-green-background ml-1"
+          style="width: 180px;"
+          id="guided-button-add-subject-in-swal"
+        >
+          Add subject
+        </button>
+      </div>
+      <div class="scrollable-swal-content-container my-3">
+        <p>asdf</p><p>asdf</p>
+      </div>
+    `,
+    width: 600,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showConfirmButton: true,
+    showCancelButton: true,
+    showCloseButton: false,
+    confirmButtonText: "Add subject(s)",
+    cancelButtonText: "Cancel subject addition",
+    didOpen: () => {
+      const subjectNameInput = document.getElementById("input-subject-addition");
+      if (!subjectNameInput.isVisible) {
+        console.log("input is not visible");
+      }
+
+      if (subjectNameInput.disabled) {
+        console.log("input is disabled");
+      }
+      setTimeout(() => {
+        subjectNameInput.focus();
+      }, 500);
+      // Focus on the subject name input so the user can start typing right away
+      subjectNameInput.focus();
+
+      // Add an event listener for the enter key so the user can press enter to add the subject
+      subjectNameInput.addEventListener("keyup", (event) => {
+        if (event.key === "Enter") {
+          try {
+            addSubject(subjectNameInput.value);
+          } catch (error) {
+            Swal.showValidationMessage(error);
+          }
+        }
+      });
+
+      const addSubjectButton = document.getElementById("guided-button-add-subject-in-swal");
+      addSubjectButton.addEventListener("click", () => {
+        try {
+          addSubject(subjectNameInput.value);
+        } catch (error) {
+          Swal.showValidationMessage(error);
+        }
+      });
+    },
+  });
+};
 const addSubjectSpecificationTableRow = () => {
   const subjectSpecificationTableBody = document.getElementById("subject-specification-table-body");
   //check if subject specification table body has an input with the name guided-subject-id
