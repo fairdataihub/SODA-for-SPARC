@@ -1,0 +1,491 @@
+/* 
+  This CSS files contains styling for the file explorer and file/folder icons
+*/
+
+.container-fluid {
+  width: 100%;
+  height: 100%;
+  padding-right: 0px;
+  padding-left: 0;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 5px;
+}
+
+.freeform-file-explorer {
+  border: 2px solid lightgray;
+  margin-top: 5px;
+  height: auto;
+  border-radius: 3px;
+}
+
+.freeform-file-explorer {
+  border: 2px solid lightgray;
+  margin-top: 5px;
+  height: auto;
+  border-radius: 3px;
+}
+
+.freeform-file-explorer-buttons {
+  display: flex;
+  margin-top: 0.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  width: 100%;
+  border-bottom: 2px solid lightgray;
+}
+
+.div-file-import {
+  text-align: center;
+  display: inline-block;
+  flex-direction: column;
+  justify-content: flex-start;
+  border: 1px dashed #258193;
+  padding: 20px;
+  padding-top: 15px;
+  width: 200px;
+  height: 220px;
+  border-radius: 5px;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.div-file-import p {
+  margin-top: 0;
+  font-size: 15px;
+}
+
+.div-file-import-button {
+  background: var(--color-bg-light-green-button);
+  color: var(--color-teal);
+  border: 1px solid var(--color-bg-light-green-button);
+  border-radius: 5px;
+  margin: 0 auto;
+  width: 70%;
+  padding: 7px;
+  cursor: pointer;
+}
+
+.div-file-import-button:hover {
+  background: var(--color-light-green);
+  color: #fff;
+  font-weight: 600;
+  border: 1px solid var(--color-light-green);
+}
+
+.myFile {
+  width: 55px;
+  height: 55px;
+}
+
+.myFile.csv:before {
+  background: url("../img/csv-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 5px;
+}
+
+.myFile.doc:before {
+  background: url("../img/doc-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 5px;
+}
+
+.myFile.docx:before {
+  background: url("../img/doc-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 5px;
+}
+
+.myFile.png:before {
+  background: url("../img/png-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 5px;
+}
+
+.myFile.PNG:before {
+  background: url("../img/png-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 5px;
+}
+
+.myFile.jpg:before {
+  background: url("../img/jpeg-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 5px;
+}
+
+.myFile.jpeg:before {
+  background: url("../img/jpeg-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 5px;
+}
+
+.myFile.JPEG:before {
+  background: url("../img/jpeg-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 5px;
+}
+
+.myFile.pdf:before {
+  background: url("../img/pdf-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 5px;
+}
+
+.myFile.txt:before {
+  background: url("../img/txt-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 5px;
+}
+
+.myFile.xlsx:before {
+  background: url("../img/excel-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 5px;
+}
+
+.myFile.xls:before {
+  background: url("../img/excel-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 5px;
+}
+
+.myFile.other:before {
+  background: url("../img/other-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 5px;
+}
+
+.myFile.deleted_file:before {
+  opacity: 0.5;
+}
+
+.myFile.deleted_file:after {
+  content: "\00D7";
+  position: absolute;
+  bottom: 26px;
+  right: 23px;
+  line-height: 1;
+  color: rgb(252, 0, 0);
+  z-index: 10;
+  font-size: 35px;
+  font-family: helvetica, arial, sans-serif;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.folder_desc.pennsieve_folder:after {
+  content: "\f0c2";
+  position: absolute;
+  bottom: 34px;
+  left: 18px;
+  color: rgb(81, 176, 240);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
+}
+
+.pennsieve_folder_deleted {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.folder_desc.local_folder:after {
+  content: "\f7c2";
+  position: absolute;
+  bottom: 34px;
+  left: 18px;
+  color: rgb(81, 176, 240);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
+}
+
+.local_folder_deleted {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.folder_desc.pennsieve_folder_deleted:after {
+  content: "\f0c2";
+  position: absolute;
+  bottom: 34px;
+  left: 18px;
+  color: rgb(185, 221, 245);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
+}
+
+.folder_desc.local_folder_deleted:after {
+  content: "\f7c2";
+  position: absolute;
+  bottom: 34px;
+  left: 18px;
+  color: rgb(185, 221, 245);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
+}
+
+.folder_desc.pennsieve_file:after {
+  content: "\f0c2";
+  position: absolute;
+  bottom: 27px;
+  left: 34px;
+  color: rgb(81, 176, 240);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
+}
+
+.folder_desc.local_file:after {
+  content: "\f7c2";
+  position: absolute;
+  bottom: 27px;
+  left: 34px;
+  color: rgb(81, 176, 240);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
+}
+
+.pennsieve_file_deleted {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.local_file_deleted {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.folder_desc.pennsieve_file_deleted:after {
+  content: "\f0c2";
+  position: absolute;
+  bottom: 27px;
+  left: 34px;
+  color: rgb(185, 221, 245);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
+}
+
+.folder_desc.local_file_deleted:after {
+  content: "\f7c2";
+  position: absolute;
+  bottom: 27px;
+  left: 34px;
+  color: rgb(185, 221, 245);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
+}
+
+.update-file:before {
+  opacity: 0.5;
+}
+
+.update-file:after {
+  content: "\f24d";
+  position: absolute;
+  top: 42px;
+  right: 24px;
+  color: var(--color-bg-plum);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
+}
+
+.single-item {
+  display: inline-block;
+  text-align: center;
+  width: 120px;
+  height: 100px;
+  position: relative !important;
+  margin-right: 5px;
+  margin-top: 5px;
+  padding: 10px 0px 10px 0px;
+}
+
+.single-item.selected-item:hover {
+  border: #c0c0c0;
+  background-color: #d8d7d7;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+}
+
+.single-item.selected-item:focus {
+  border: #c0c0c0;
+  background-color: #eeeaea;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+}
+
+.ds-selected {
+  border: #c0c0c0;
+  background-color: #eeeaea;
+  /* transform: translateY(-6px); */
+}
+
+.single-item:active {
+  transform: all 3s;
+  -webkit-transform: all 3s;
+}
+
+/*Pre publishing submission flow file viewer uses .single-item but allows a user to select a file UI element.
+  When the element is selected it adds styling. This sets it up to ignore the hover effect styling once selected.
+*/
+.single-item:not(.pre-publishing-file-viewer-file-selected):hover {
+  border: #c0c0c0;
+  background-color: #f5f5f5;
+  transition: all 0.15s linear;
+  -webkit-transition: all 0.15s linear;
+}
+
+.single-item:hover + #myspan {
+  display: block;
+}
+
+.myFol {
+  width: 50px;
+  height: 50px;
+}
+
+.myFol:before {
+  content: "";
+  background: url("../img/close_folder.png") no-repeat;
+  background-size: 60px;
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  margin-right: 10px;
+}
+
+.myFol.empty:before {
+  content: "";
+  background: url("../img/close_folder.png") no-repeat;
+  opacity: 0.5;
+  background-size: 60px;
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  margin-right: 10px;
+}
+
+.myFol.deleted_folder:before {
+  opacity: 0.5;
+}
+
+.myFol.deleted_folder:after {
+  content: "\00D7";
+  position: absolute;
+  bottom: 30px;
+  right: 25px;
+  line-height: 1;
+  color: rgb(252, 0, 0);
+  z-index: 10;
+  font-size: 35px;
+  font-family: Poppins, helvetica, arial, sans-serif;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.folder_desc {
+  text-align: center;
+  font-size: 13px;
+  width: 110px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  user-select: none;
+  -webkit-user-select: none;
+  padding: 0px 4px 0px 4px;
+  /* word-wrap: break-word; */
+  line-height: 1.5;
+  margin-right: 5px;
+  margin-left: 5px;
+  color: black;
+  pointer-events: none;
+}
+
+.filepath {
+  display: block;
+  margin: 0;
+  padding: 0.5em 1.5em;
+}

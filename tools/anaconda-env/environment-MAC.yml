@@ -4,8 +4,8 @@ channels:
   - conda-forge
 dependencies:
 - python = 3.9.7
-- PyInstaller = 4.7
-- nodejs = 16.14.2
+- PyInstaller
+- nodejs = 18.16.0
 - git = 2.20.1
 - pip
 - pip:
@@ -20,6 +20,7 @@ dependencies:
   - certifi==2022.12.7
   - flask == 2.0.2
   - flask_restx
+  - flask-cors == 4.0.0
   - werkzeug == 2.0.2
   - opencv-python == 4.5.3.56
   - grpcio
