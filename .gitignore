@@ -2,6 +2,7 @@
 *~
 
 # Ignore node_modules folder
+out
 node_modules
 build/api
 pysodadist
@@ -13,6 +14,10 @@ semantic
 semantic.json
 .env
 build/
+
+*.log*
+build
+__pycache__
 
 app.spec
 
@@ -35,3 +40,4 @@ src/build
 access_token.txt
 
 .vscode
+

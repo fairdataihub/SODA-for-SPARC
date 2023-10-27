@@ -105,7 +105,7 @@ let selectedPort = null;
  * @returns {boolean} True if the app is packaged, false if it is running from a dev version.
  */
 const guessPackaged = () => {
-  const windowsPath = join(process.resourcesPath, PY_FLASK_DIST_FOLDER);
+  const windowsPath = join(__dirname, "..", PY_FLASK_DIST_FOLDER);
   ElectronLog.info("Windows path: " + windowsPath);
   const unixPath = join(process.resourcesPath, PY_FLASK_MODULE);
   if (process.platform === "darwin" || process.platform === "linux") {
@@ -139,7 +139,7 @@ const getScriptPath = () => {
     return join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py");
   }
   if (process.platform === "win32") {
-    const winPath = join(process.resourcesPath, PY_FLASK_DIST_FOLDER,  PY_FLASK_MODULE + ".exe");
+    const winPath = join(__dirname, PY_FLASK_DIST_FOLDER,  PY_FLASK_MODULE + ".exe");
     ElectronLog.info("App is packaged [Windows]; Path to server executable: " + winPath);
     return winPath;
   } else {
