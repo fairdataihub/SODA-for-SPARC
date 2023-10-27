@@ -4,7 +4,7 @@ run-name: ${{ github.actor }} is building a Windows release for SODA
 on:
   push:
     branches:
-      - main
+      - bundled-soda
 
 jobs:
   deploy-on-windows:
@@ -23,29 +23,25 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@v2
         with:
-          miniconda-version: "latest"
-          activate-environment: env-electron-python
+          miniconda-version: 'latest'
+          activate-environment: bundle-up-too
           environment-file: tools/anaconda-env/environment-Windows.yml
           auto-update-conda: true
           auto-activate-base: false
       - run: |
-          conda activate env-electron-python
+          conda activate bundle-up-too
           conda info
           conda list
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "18.14.0"
+          node-version: '20.8.0'
 
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
 
-      - name: Build the python server executable
-        run: |
-          npm run python-onefile-build-win
-
       - name: Deploy the app to GitHub
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           npm run deploy-win

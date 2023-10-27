@@ -1,4 +1,4 @@
-name: env-electron-python
+name: bundle-up-too
 channels:
   - defaults
   - conda-forge
