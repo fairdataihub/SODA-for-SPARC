@@ -9,6 +9,7 @@ import {spawn, execFile} from "node:child_process"
 import { existsSync } from 'fs'
 
 // import "./appUtils"
+console.log("Test up[date")
 
 
 
