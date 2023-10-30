@@ -8,6 +8,7 @@ import './assets/imports'
 import './assets/demo-btns'
 import './assets/nav'
 import './scripts/guided-mode/guided-curate-dataset'
+import './scripts/others/renderer'
 
 
 // Application Lotties
