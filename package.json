@@ -60,6 +60,7 @@
     "select2": "^4.1.0-rc.0",
     "tippy.js": "^6.3.7",
     "tui-date-picker": "^4.3.3",
+    "uuid": "^9.0.1",
     "v8-compile-cache": "^2.4.0",
     "validator": "^13.11.0",
     "vite-plugin-commonjs-externals": "^0.1.3"

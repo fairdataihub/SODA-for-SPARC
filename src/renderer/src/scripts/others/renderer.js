@@ -33,24 +33,22 @@ select2()
 import DragSort from "@yaireo/dragsort";
 import axios from "axios";
 import DatePicker from "tui-date-picker"; /* CommonJS */
-// const { datasetUploadSession } = require("./scripts/others/analytics/upload-session-tracker");
-// const { kombuchaEnums } = require("./scripts/others/analytics/analytics-enums");
+import  datasetUploadSession from "../analytics/upload-session-tracker";
+import kombuchaEnums from"../analytics/analytics-enums"
 
-// const {
-//   createEventData,
-//   logSelectedUpdateExistingDatasetOptions,
-// } = require("./scripts/others/analytics/curation-analytics");
-// const {
-//   createEventDataPrepareMetadata,
-// } = require("./scripts/others/analytics/prepare-metadata-analytics");
-// const { determineDatasetLocation } = require("./scripts/others/analytics/analytics-utils");
-// const {
-//   clientError,
-//   userErrorMessage,
-// } = require("./scripts/others/http-error-handler/error-handler");
-// const { hasConnectedAccountWithPennsieve } = require("./scripts/others/authentication/auth");
-// const fixPath = require("./scripts/others/update-path-darwin");
-// const api = require("./scripts/others/api/api");
+import {
+  createEventData,
+  logSelectedUpdateExistingDatasetOptions,
+} from "../analytics/curation-analytics"
+import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
+import determineDatasetLocation from "../analytics/analytics-utils"
+import {
+  clientError,
+  userErrorMessage,
+} from "./http-error-handler/error-handler"
+import  hasConnectedAccountWithPennsieve from "./authentication/auth";
+import fixPath from "./update-path-darwin"
+import api from "./api/api"
 
 // fixPath();
 
