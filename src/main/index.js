@@ -7,6 +7,12 @@ import axios from "axios"
 import fp from "find-free-port"
 import {spawn, execFile} from "node:child_process"
 import { existsSync } from 'fs'
+import { JSONStorage } from "node-localstorage";
+
+
+// TODO: Move to ipcMain handler so renderer processes can talk to the nodestorage
+let nodeStorage = new JSONStorage(app.getPath("userData"));
+
 
 // import "./appUtils"
 console.log("Test up[date")

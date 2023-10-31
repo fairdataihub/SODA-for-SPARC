@@ -17,25 +17,22 @@ import Tagify from "@yaireo/tagify";
 import jQuery from 'jquery'
 import bootstrap from 'bootstrap'
 import * as popper from '@popperjs/core'
-import * as bootbox from "bootbox";
-// const DragSelect = require("dragselect");
-// const excelToJson = require("convert-excel-to-json");
-// const csvToJson = require("convert-csv-to-json");
-// const Jimp = require("jimp");
-// const { JSONStorage } = require("node-localstorage");
-// const tippy = require("tippy.js").default;
-// const introJs = require("intro.js");
-// const selectpicker = require("bootstrap-select");
-
-// const { homedir } = require("os");
-// const diskCheck = require("check-disk-space").default;
-// const validator = require("validator");
-// const doiRegex = require("doi-regex");
-// const lottie = require("lottie-web");
-// const select2 = require("select2")();
-// const DragSort = require("@yaireo/dragsort");
-// const { spawn, execFile } = require("child_process");
-// // TODO: Test with a build
+// import * as bootbox from "bootbox";
+import DragSelect from "dragselect";
+import excelToJson from "convert-excel-to-json";
+import csvToJson from "convert-csv-to-json";
+import tippy from "tippy.js";
+import introJs from "intro.js";
+// import selectpicker  from "bootstrap-select";
+import diskCheck from "check-disk-space";
+import validator from "validator";
+import doiRegex from "doi-regex";
+import lottie from "lottie-web";
+import select2 from "select2"; // TODO: select2()
+select2()
+import DragSort from "@yaireo/dragsort";
+import axios from "axios";
+import DatePicker from "tui-date-picker"; /* CommonJS */
 // const { datasetUploadSession } = require("./scripts/others/analytics/upload-session-tracker");
 // const { kombuchaEnums } = require("./scripts/others/analytics/analytics-enums");
 
@@ -54,13 +51,6 @@ import * as bootbox from "bootbox";
 // const { hasConnectedAccountWithPennsieve } = require("./scripts/others/authentication/auth");
 // const fixPath = require("./scripts/others/update-path-darwin");
 // const api = require("./scripts/others/api/api");
-
-// const axios = require("axios").default;
-
-// const DatePicker = require("tui-date-picker"); /* CommonJS */
-// const excel4node = require("excel4node");
-
-// const { backOff } = require("exponential-backoff");
 
 // fixPath();
 

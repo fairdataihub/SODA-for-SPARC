@@ -5,7 +5,11 @@ import fs from "fs-extra"
 import path from "path"
 import log from 'electron-log/renderer'
 import imageDataURI from "image-data-uri" // TODO: fix this
+import Jimp from "jimp";
+import excel4node from "excel4node";
+
 import "v8-compile-cache";
+
 
 
 
@@ -65,6 +69,16 @@ if (process.contextIsolated) {
       }, 
       outputFile: (croppedImageDataURI, imagePath) => {
         return imageDataURI.outputFile(croppedImageDataURI, imagePath)
+      }
+    }), 
+    contextBridge.exposeInMainWorld('Jimp', {
+      read: (imagePath) => {
+        return Jimp.read(imagePath)
+      }
+    }), 
+    contextBridge.exposeInMainWorld('excel4node', {
+      Workbook: () => {
+        return new excel4node.Workbook()
       }
     })
   } catch (error) {

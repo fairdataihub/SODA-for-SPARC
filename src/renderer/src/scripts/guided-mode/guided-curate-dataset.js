@@ -3795,8 +3795,8 @@ console.log(window.api)
 // const homeDir = window.api.homeDir;
 // let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
-let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home")
-let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress")
+// let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home")
+// let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress")
 
 const guidedResetProgressVariables = () => {
   window.sodaJSONObj = {};
