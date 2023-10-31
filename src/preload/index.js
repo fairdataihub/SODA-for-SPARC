@@ -3,6 +3,10 @@ import { electronAPI } from '@electron-toolkit/preload'
 import os from"os"
 import fs from "fs-extra"
 import path from "path"
+import log from 'electron-log/renderer'
+import imageDataURI from "image-data-uri" // TODO: fix this
+import "v8-compile-cache";
+
 
 
 // Custom APIs for renderer
@@ -36,6 +40,31 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('path', {
       join: (...paths) => {
         return path.join(...paths)
+      }
+    }), 
+    contextBridge.exposeInMainWorld('log', {
+      info: (message) => {
+        return log.info(message)
+      },
+      error: (message) => {
+        return log.error(message)
+      },
+      warn: (message) => {
+        return log.warn(message)
+      },
+      debug: (message) => {
+        return log.debug(message)
+      },
+      verbose: (message) => {
+        return log.verbose(message)
+      }
+    }),
+    contextBridge.exposeInMainWorld('imageDataURI', {
+      encodeFromURL: (url) => {
+        return imageDataURI.encodeFromURL(url)
+      }, 
+      outputFile: (croppedImageDataURI, imagePath) => {
+        return imageDataURI.outputFile(croppedImageDataURI, imagePath)
       }
     })
   } catch (error) {

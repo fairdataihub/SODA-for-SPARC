@@ -2,6 +2,9 @@ import { resolve } from 'path'
 import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 import copy from 'rollup-plugin-copy'
+import inject from "@rollup/plugin-inject";
+
+const commonjsPackages = ['image-data-uri']
 
 export default defineConfig({
   main: {
@@ -16,7 +19,13 @@ export default defineConfig({
         '@renderer': resolve('src/renderer/src')
       }
     },
-    plugins: [react()]
+    plugins: [react(), inject({
+      $: 'jquery',
+      jQuery: 'jquery'
+    })], 
+    optimizeDeps: {
+      exclude: ['bootbox']
+    }
   },
   pyflask: {
     resolve: {
