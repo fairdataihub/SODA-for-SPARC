@@ -5,15 +5,15 @@
  *  Fix the PATH environment variable on MacOS when running GUI packaged app by updating the process to have the missing PATHS.
  */
 const fixPath = () => {
-  if (process.platform == "darwin") {
+  if (window.process.platform == "darwin") {
 
-    process.env.PATH = [
+    window.process.env.PATH = [
       "./node_modules/.bin",
       "/.nodebrew/current/bin",
       "/usr/local/bin",
       "/usr/local/opt",
       "/usr/local/opt/pennsieve", // Ventura installation folder; Note: On Ventura the Agent isn't added to the Path
-      process.env.PATH,
+      window.process.env.PATH,
     ].join(":");
   }
 };

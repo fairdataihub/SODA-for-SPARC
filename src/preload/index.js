@@ -3,6 +3,7 @@ import { electronAPI } from '@electron-toolkit/preload'
 import os from"os"
 import fs from "fs-extra"
 import path from "path"
+import process from "process"
 import log from 'electron-log/renderer'
 import imageDataURI from "image-data-uri" // TODO: fix this
 import Jimp from "jimp";
@@ -39,6 +40,14 @@ if (process.contextIsolated) {
       }, 
       mkdirSync: (targetDir, options) => {
         return fs.mkdirSync(targetDir, options)
+      }
+    }),
+    contextBridge.exposeInMainWorld('process', {
+      platform: () => {
+        return process.platform
+      }, 
+      env: () => {
+        return process.env
       }
     })
     contextBridge.exposeInMainWorld('path', {

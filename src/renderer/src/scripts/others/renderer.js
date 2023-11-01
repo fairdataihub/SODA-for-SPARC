@@ -50,7 +50,7 @@ import  hasConnectedAccountWithPennsieve from "./authentication/auth";
 import fixPath from "./update-path-darwin"
 import api from "./api/api"
 
-// fixPath();
+fixPath();
 
 // // const prevent_sleep_id = "";
 // // const electron_app = electron.app;
