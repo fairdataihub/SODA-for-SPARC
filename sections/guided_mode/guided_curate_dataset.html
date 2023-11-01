@@ -1419,7 +1419,7 @@
             <!-- ALWAYS SHOWED INITIAL QUESTION -->
             <div class="guided--section">
               <label class="guided--form-label centered">
-                Would you like to import your subjects from an external source?
+                Do you have more than 20 subjects in your dataset?
               </label>
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
@@ -1450,16 +1450,16 @@
                   <button
                     class="ui positive basic button guided--radio-button"
                     data-next-element="guided-section-import-subjects-via-folders"
-                    data-button-config-value="subject-addition-method"
-                    data-button-config-value-state="manual"
+                    data-button-config-value="user-imported-subjects-via-folders"
+                    data-button-config-value-state="yes"
                   >
                     Yes
                   </button>
                   <button
                     class="ui negative basic button guided--radio-button"
                     data-next-element="guided-section-ask-if-user-would-like-to-add-subjects-via-spreadsheet"
-                    data-button-config-value="subject-addition-method"
-                    data-button-config-value-state="import"
+                    data-button-config-value="user-imported-subjects-via-folders"
+                    data-button-config-value-state="no"
                   >
                     No
                   </button>
@@ -1478,16 +1478,16 @@
                     <button
                       class="ui positive basic button guided--radio-button"
                       data-next-element="guided-section-import-subjects-via-spreadsheet"
-                      data-button-config-value="subject-addition-method"
-                      data-button-config-value-state="manual"
+                      data-button-config-value="user-imported-subjects-via-spreadsheet"
+                      data-button-config-value-state="yes"
                     >
                       Yes
                     </button>
                     <button
                       class="ui negative basic button guided--radio-button"
                       data-next-element="guided-section-add-subjects-manually"
-                      data-button-config-value="subject-addition-method"
-                      data-button-config-value-state="import"
+                      data-button-config-value="user-imported-subjects-via-spreadsheet"
+                      data-button-config-value-state="no"
                     >
                       No
                     </button>
