@@ -8,6 +8,11 @@ import fp from "find-free-port"
 import {spawn, execFile} from "node:child_process"
 import { existsSync } from 'fs'
 import { JSONStorage } from "node-localstorage";
+import log from 'electron-log/main';
+
+// Optional, initialize the logger for any renderer process
+log.initialize({ preload: true });
+
 
 
 // TODO: Move to ipcMain handler so renderer processes can talk to the nodestorage
@@ -18,9 +23,18 @@ let nodeStorage = new JSONStorage(app.getPath("userData"));
 console.log("Test up[date")
 
 
-
+// TODO: move to a separate file that handles all the ipcMain handlers
 ipcMain.handle('get-app-path', async (event, arg) => {
   return app.getPath(arg)   
+})
+
+ipcMain.handle("get-port", () => {
+  log.info("Renderer requested port: " + selectedPort);
+  return selectedPort
+});
+
+ipcMain.handle("app-version", () => {
+  return app.getVersion();
 })
 
 
@@ -247,3 +261,5 @@ const createPyProc = async () => {
       console.log(err);
     });
 };
+
+

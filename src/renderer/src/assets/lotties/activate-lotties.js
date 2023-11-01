@@ -118,3 +118,11 @@ let documentation_lottie_observer = new MutationObserver(function (mutations) {
         }
     });
 });
+
+
+let guidedModeSection = document.getElementById("guided_mode-section");
+
+sectionObserver.observe(guidedModeSection, {
+  attributes: true,
+  attributeFilter: ["class"],
+});

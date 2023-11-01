@@ -57,174 +57,52 @@ fixPath();
 // const { app } = remote;
 // const Clipboard = electron.clipboard;
 
-// let nodeStorage = new JSONStorage(app.getPath("userData"));
+// let nodeStorage = new JSONStorage(app.getPath("userData")); NOTE: Done in main now. Need to expose to main world via contextBridge.
 
-// var nextBtnDisabledVariable = true;
-// var reverseSwalButtons = false;
-// let organizeDSglobalPath = "";
+var nextBtnDisabledVariable = true;
+var reverseSwalButtons = false;
+let organizeDSglobalPath = "";
 
-// let datasetStructureJSONObj = {
-//   folders: {},
-//   files: {},
-//   type: "",
-// };
+let datasetStructureJSONObj = {
+  folders: {},
+  files: {},
+  type: "",
+};
 
-// let introStatus = {
-//   organizeStep3: true,
-//   submission: false,
-//   subjects: false,
-//   samples: false,
-// };
+let introStatus = {
+  organizeStep3: true,
+  submission: false,
+  subjects: false,
+  samples: false,
+};
 
 // //////////////////////////////////
 // // App launch actions
 // //////////////////////////////////
 
 // // Log file settings //
-// log.transports.console.level = false;
-// log.transports.file.maxSize = 1024 * 1024 * 10;
-// const homeDirectory = app.getPath("home");
-// const SODA_SPARC_API_KEY = "SODA-Pennsieve";
+window.log.setupRendererLogOptions()
+const homeDirectory = await window.electron.ipcRenderer.invoke('get-app-path', 'home') 
+const SODA_SPARC_API_KEY = "SODA-Pennsieve";
 
 // // get port number from the main process
-// log.info("Requesting the port");
-// const port = ipcRenderer.sendSync("get-port");
-// log.info("Port is: " + port);
+window.log.info("Requesting the port");
+const port = await window.electron.ipcRenderer.invoke("get-port");
+window.log.info("Port is: " + port);
 
-// // set to true once the SODA server has been connected to
-// let sodaIsConnected = false;
-// // set to true once the API version has been confirmed
-// let apiVersionChecked = false;
+// set to true once the SODA server has been connected to
+let sodaIsConnected = false;
+// set to true once the API version has been confirmed
+let apiVersionChecked = false;
 
-// //log user's OS version //
-// log.info("User OS:", os.type(), os.platform(), "version:", os.release());
+//log user's OS version //
+window.log.info("User OS:", window.os.type(), window.os.platform(), "version:", window.os.release());
 
 // // Check current app version //
-// const appVersion = app.getVersion();
-// log.info("Current SODA version:", appVersion);
+const appVersion = await window.electron.ipcRenderer.invoke("app-version")
+window.log.info("Current SODA version:", appVersion);
 
-// // Here is where the lotties are created and loaded for the main tabs.
-// // A mutation observer watches for when the overview tab element has
-// // a class change to 'is-shown' to know when to load and unload the lotties
-
-// // LOTTIES FOR DOCUMENTATION AND CONTACT US PAGE
-// let guidedModeSection = document.getElementById("guided_mode-section");
-// let docu_lottie_section = document.getElementById("documentation-section");
-// let contact_section = document.getElementById("contact-us-section");
-// let doc_lottie = document.getElementById("documentation-lottie");
-// let contact_lottie_container = document.getElementById("contact-us-lottie");
-// let madeWithLoveContainer = document.getElementById("made-with-love-lottie");
-
-// // LOTTIES FOR CURATE AND SHARE PAGE
-// let existingDatasetLottieContainer = document.getElementById("existing-dataset-lottie");
-// let modifyDatasetLottieContainer = document.getElementById("edit-dataset-component-lottie");
-
-// existingDatasetLottieContainer.innerHTML = "";
-// modifyDatasetLottieContainer.innerHTML = "";
-
-// let existingDatasetLottie = lottie.loadAnimation({
-//   container: existingDatasetLottieContainer,
-//   animationData: existingDataset,
-//   renderer: "svg",
-//   loop: true,
-//   autoplay: true,
-// });
-
-// let editDatasetLottie = lottie.loadAnimation({
-//   container: modifyDatasetLottieContainer,
-//   animationData: modifyDataset,
-//   renderer: "svg",
-//   loop: true,
-//   autoplay: true,
-// });
-
-// let contact_lottie_animation = lottie.loadAnimation({
-//   container: contact_lottie_container,
-//   animationData: contact_lottie /*(json js variable, (view src/assets/lotties)*/,
-//   renderer: "svg",
-//   loop: true /*controls looping*/,
-//   autoplay: true,
-// });
-
-// let contactHeartLottie = lottie.loadAnimation({
-//   container: madeWithLoveContainer,
-//   animationData: heartLottie,
-//   renderer: "svg",
-//   loop: true,
-//   autoplay: true,
-// });
-
-// let documentation_lottie = lottie.loadAnimation({
-//   container: doc_lottie,
-//   animationData: docu_lottie /*(json js variable, (view src/assets/lotties)*/,
-//   renderer: "svg",
-//   loop: true /*controls looping*/,
-//   autoplay: true,
-// });
-
-// // A mutation observer (watches the classes of the given element)
-// // On changes this will do some work with the lotties
-// let sectionObserver = new MutationObserver(function (mutations) {
-//   mutations.forEach(function (mutation) {
-//     let attributeValue = $(mutation.target).prop(mutation.attributeName);
-
-//     if (attributeValue.includes("is-shown") == true) {
-//       //add lotties
-//       existingDatasetLottie.play();
-//       editDatasetLottie.play();
-//       // heart_container.play();
-//     } else {
-//       existingDatasetLottie.stop();
-//       editDatasetLottie.stop();
-//       // heart_container.stop();
-//     }
-//   });
-// });
-
-// let documentation_lottie_observer = new MutationObserver(function (mutations) {
-//   mutations.forEach(function (mutation) {
-//     let attributeValue = $(mutation.target).prop(mutation.attributeName);
-//     if (attributeValue.includes("is-shown") == true) {
-//       //play lottie
-//       documentation_lottie.play();
-//     } else {
-//       // stop lottie to preserve memory
-//       documentation_lottie.stop();
-//     }
-//   });
-// });
-
-// let contact_us_lottie_observer = new MutationObserver(function (mutations) {
-//   mutations.forEach(function (mutation) {
-//     let attributeValue = $(mutation.target).prop(mutation.attributeName);
-//     if (attributeValue.includes("is-shown") == true) {
-//       //play lottie
-//       contact_lottie_animation.play();
-//       contactHeartLottie.play();
-//     } else {
-//       //stop lottie to preserve memory
-//       contact_lottie_animation.stop();
-//       contactHeartLottie.stop();
-//     }
-//   });
-// });
-
-// sectionObserver.observe(guidedModeSection, {
-//   attributes: true,
-//   attributeFilter: ["class"],
-// });
-
-// documentation_lottie_observer.observe(docu_lottie_section, {
-//   attributes: true,
-//   attributeFilter: ["class"],
-// });
-
-// contact_us_lottie_observer.observe(contact_section, {
-//   attributes: true,
-//   attributeFilter: ["class"],
-// });
-
-// document.getElementById("guided_mode_view").click();
+document.getElementById("guided_mode_view").click();
 
 // // check for announcements on startup; if the user is in the auto update workflow do not check for announcements
 // // Rationale: The auto update workflow involves refreshing the DOM which will cause a re-run of
