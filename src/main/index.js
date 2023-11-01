@@ -37,6 +37,13 @@ ipcMain.handle("app-version", () => {
   return app.getVersion();
 })
 
+ipcMain.handle("set-nodestorage-key", (key, value) => {
+  return nodeStorage.setItem(key, value);
+})
+
+ipcMain.handle("get-nodestorage-key", (key) => {
+  return nodeStorage.getItem(key);
+})
 
 
 function createWindow() {

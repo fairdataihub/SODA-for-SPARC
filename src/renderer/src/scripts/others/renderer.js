@@ -104,20 +104,21 @@ window.log.info("Current SODA version:", appVersion);
 
 document.getElementById("guided_mode_view").click();
 
-// // check for announcements on startup; if the user is in the auto update workflow do not check for announcements
-// // Rationale: The auto update workflow involves refreshing the DOM which will cause a re-run of
-// //            the renderer process. One potential outcome of this is the renderer reaches this code block before the refresh
-// //            and sets the launch_announcements flag to false. On the second run, the one which the user will have time to see announcements
-// //            before the DOM reloads, the announcements will not be checked or displayed at all.
-// let autoUpdateLaunch = nodeStorage.getItem("auto_update_launch");
-// let launchAnnouncement = nodeStorage.getItem("launch_announcements");
-// if (autoUpdateLaunch == false || autoUpdateLaunch == null || autoUpdateLaunch == undefined) {
-//   // if launchAnnouncements is undefined/null then announcements havent been launched yet; set launch_announcements to true
-//   // later code will reference this flag to determine if announcements should be checked for
-//   if (launchAnnouncement === undefined || launchAnnouncement === null) launchAnnouncement = true;
-//   // do not check for announcements on the next launch
-//   nodeStorage.setItem("launch_announcements", false); // NOTE: launch_announcements is only set to true during the auto update process ( see main.js )
-// }
+// check for announcements on startup; if the user is in the auto update workflow do not check for announcements
+// Rationale: The auto update workflow involves refreshing the DOM which will cause a re-run of
+//            the renderer process. One potential outcome of this is the renderer reaches this code block before the refresh
+//            and sets the launch_announcements flag to false. On the second run, the one which the user will have time to see announcements
+//            before the DOM reloads, the announcements will not be checked or displayed at all.
+let autoUpdateLaunch = await window.electron.ipcRenderer.invoke("get-nodestorage-key", "auto_update_launch")
+let launchAnnouncement = await window.electron.ipcRenderer.invoke("get-nodestorage-key", "launch_announcements");
+if (autoUpdateLaunch == false || autoUpdateLaunch == null || autoUpdateLaunch == undefined) {
+  // if launchAnnouncements is undefined/null then announcements havent been launched yet; set launch_announcements to true
+  // later code will reference this flag to determine if announcements should be checked for
+  if (launchAnnouncement === undefined || launchAnnouncement === null) launchAnnouncement = true;
+  // do not check for announcements on the next launch
+  await window.electron.ipcRenderer.invoke("set-nodestorage-key", "launch_announcements", false); // NOTE: launch_announcements is only set to true during the auto update process ( see main.js )
+}
+
 
 // //////////////////////////////////
 // // Connect to Python back-end
