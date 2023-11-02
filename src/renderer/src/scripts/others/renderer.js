@@ -50,6 +50,8 @@ import {
 import  hasConnectedAccountWithPennsieve from "./authentication/auth";
 import fixPath from "./update-path-darwin"
 import api from "./api/api"
+import {confirm_click_account_function, showHideDropdownButtons, updateDatasetList} from '../globals'
+import checkForAnnouncements from './announcements'
 
 fixPath();
 
@@ -124,16 +126,6 @@ if (autoUpdateLaunch == false || autoUpdateLaunch == null || autoUpdateLaunch ==
 // //////////////////////////////////
 // // Connect to Python back-end
 // //////////////////////////////////
-
-// let client = null;
-
-// // get port number from the main process
-
-// // TODO: change the default port so it is based off the discovered port in Main.js
-// client = axios.create({
-//   baseURL: `http://127.0.0.1:${port}/`,
-//   timeout: 300000,
-// });
 
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -390,6 +382,7 @@ const startupServerAndApiCheck = async () => {
   try {
     await apiVersionsMatch();
   } catch (e) {
+    console.log("SODA will exit")
     // api versions do not match
     await window.electron.ipcRenderer.invoke("exit-soda")
   }
@@ -397,12 +390,12 @@ const startupServerAndApiCheck = async () => {
   if (launchAnnouncement) {
     await checkForAnnouncements("announcements");
     launchAnnouncement = false;
-    nodeStorage.setItem("announcements", false);
+    window.electron.ipcRenderer.invoke("set-nodestorage-key", "announcements", false) 
   }
 
   // get apps base path
-  const basepath = app.getAppPath();
-  const { resourcesPath } = process;
+  const basepath = await window.electron.ipcRenderer.invoke("get-app-path", "home") 
+  const resourcesPath = window.process.resourcesPath();
 
   // set the templates path
   try {
@@ -412,13 +405,17 @@ const startupServerAndApiCheck = async () => {
     });
   } catch (error) {
     clientError(error);
-    ipcRenderer.send("track-event", "Error", "Setting Templates Path");
+
+    window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");
     return;
   }
 
-  ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+  window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 
   apiVersionChecked = true;
+
+  console.log("Api version checjed value: " + apiVersionChecked);
+  console.log("Soda is connected value: " + sodaIsConnected);
 };
 
 startupServerAndApiCheck();
@@ -1039,6 +1036,8 @@ const apiVersionsMatch = async () => {
   let serverAppVersion = responseObject.data.version;
 
   window.log.info(`Server version is ${serverAppVersion}`);
+  console.log("Server version is " + serverAppVersion);
+  console.log("App version is: ", appVersion)
   const browser_download_url = `https://docs.sodaforsparc.io/docs/common-errors/api-version-mismatch`;
 
   if (serverAppVersion !== appVersion) {
@@ -1082,7 +1081,8 @@ const apiVersionsMatch = async () => {
     //await checkForAnnouncements("update")
 
     throw new Error();
-  }updateBfAccountList
+  }
+
 
   window.electron.ipcRenderer.send("track-event", "Success", "Verifying App Version");
 
@@ -1096,8 +1096,10 @@ const apiVersionsMatch = async () => {
 
   //Load Default/global Pennsieve account if available
   if (hasConnectedAccountWithPennsieve()) {
+
     try {
-      ();
+      console.log("About to try to update bf account list after verifying api versions match")
+      updateBfAccountList();
     } catch (error) {
       clientError(error);
     }
@@ -1262,16 +1264,16 @@ const apiVersionsMatch = async () => {
 //   return [browser_download_url, latest_agent_version];
 // };
 
-// const checkNewAppVersion = () => {
-//   ipcRenderer.send("app_version");
-// };
+const checkNewAppVersion = async () => {
+  let currentAppVersion = await window.electron.ipcRenderer.invoke("app-version");
+  const version = document.getElementById("version");
+  version.innerText = currentAppVersion;
+};
 
-// // Check app version on current app and display in the side bar
-// ipcRenderer.on("app_version", (event, arg) => {
-//   const version = document.getElementById("version");
-//   ipcRenderer.removeAllListeners("app_version");
-//   version.innerText = arg.version;
-// });
+// Check app version on current app and display in the side bar
+window.electron.ipcRenderer.on("app_version", (event, arg) => {
+  window.electron.ipcRenderer.removeAllListeners("app_version");
+});
 
 // // Check for update and show the pop up box
 // ipcRenderer.on("update_available", () => {
@@ -1358,11 +1360,11 @@ const apiVersionsMatch = async () => {
 // const organizeNextStepBtn = document.getElementById("button-organize-confirm-create");
 // const organizePrevStepBtn = document.getElementById("button-organize-prev");
 // const manifestFileCheck = document.getElementById("generate-manifest-curate");
-// let bfAccountOptions;
-// let defaultBfAccount;
-// let defaultBfDataset = "Select dataset";
-// let defaultBfDatasetId = undefined;
-// let bfAccountOptionsStatus;
+let bfAccountOptions;
+let defaultBfAccount;
+let defaultBfDataset = "Select dataset";
+let defaultBfDatasetId = undefined;
+let bfAccountOptionsStatus;
 
 // // Organize dataset //
 // const selectImportFileOrganizationBtn = document.getElementById(
@@ -1389,9 +1391,9 @@ const apiVersionsMatch = async () => {
 // const manifestStatus = document.querySelector("#generate-manifest");
 
 // // Manage datasets //
-// let myitem;
-// let datasetList = [];
-// let organizationList = [];
+let myitem;
+let datasetList = [];
+let organizationList = [];
 // let sodaCopy = {};
 // let datasetStructCopy = {};
 // const bfUploadRefreshDatasetBtn = document.getElementById("button-upload-refresh-dataset-list");
@@ -1421,7 +1423,7 @@ const apiVersionsMatch = async () => {
 // const currentAddEditDatasetPermission = document.querySelector(
 //   "#para-add-edit-dataset-permission-current"
 // );
-// const bfListUsersPI = document.querySelector("#bf_list_users_pi");
+const bfListUsersPI = document.querySelector("#bf_list_users_pi");
 
 // const bfAddPermissionCurationTeamBtn = document.getElementById(
 //   "button-add-permission-curation-team"
@@ -1429,10 +1431,10 @@ const apiVersionsMatch = async () => {
 // const datasetPermissionStatusCurationTeam = document.querySelector(
 //   "#para-dataset-permission-status-curation-team"
 // );
-// const bfListUsers = document.querySelector("#bf_list_users");
-// const bfListTeams = document.querySelector("#bf_list_teams");
-// const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
-// const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-team");
+const bfListUsers = document.querySelector("#bf_list_users");
+const bfListTeams = document.querySelector("#bf_list_teams");
+const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
+const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-team");
 
 // //Pennsieve dataset status
 // const bfCurrentDatasetStatusProgress = document.querySelector(
@@ -2629,13 +2631,13 @@ const apiVersionsMatch = async () => {
 //   }
 // };
 
-// // Function to add options to dropdown list
-// function addOption(selectbox, text, value) {
-//   var opt = document.createElement("OPTION");
-//   opt.text = text;
-//   opt.value = value;
-//   selectbox.options.add(opt);
-// }
+// Function to add options to dropdown list
+function addOption(selectbox, text, value) {
+  var opt = document.createElement("OPTION");
+  opt.text = text;
+  opt.value = value;
+  selectbox.options.add(opt);
+}
 
 // //////////////// Dataset description file ///////////////////////
 // //////////////// //////////////// //////////////// ////////////////
@@ -2703,14 +2705,14 @@ const apiVersionsMatch = async () => {
 //   $("#dd-contributor-first-name").attr("disabled", false);
 // };
 
-// //// De-populate dataset dropdowns to clear options
-// const clearDatasetDropdowns = () => {
-//   for (let list of [curateDatasetDropdown]) {
-//     removeOptions(list);
-//     addOption(list, "Search here...", "Select dataset");
-//     list.options[0].disabled = true;
-//   }
-// };
+//// De-populate dataset dropdowns to clear options
+const clearDatasetDropdowns = () => {
+  for (let list of [curateDatasetDropdown]) {
+    removeOptions(list);
+    addOption(list, "Search here...", "Select dataset");
+    list.options[0].disabled = true;
+  }
+};
 
 // const clearOrganizationDropdowns = () => {
 //   for (let list of [curateOrganizationDropdown]) {
@@ -3097,47 +3099,47 @@ const apiVersionsMatch = async () => {
 // //////////////////////////////////// Prepare dataset UI ////////////////////////////////////////////
 // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// /// Add all BF accounts to the dropdown list, and then choose by default one option ('global' account)
-// const curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
-// const curateOrganizationDropdown = document.getElementById("curatebforganizationlist");
+/// Add all BF accounts to the dropdown list, and then choose by default one option ('global' account)
+const curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
+const curateOrganizationDropdown = document.getElementById("curatebforganizationlist");
 
-// async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
-//   let defaultBfAccount = bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text;
-//   try {
-//     let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-//       params: {
-//         selected_account: defaultBfAccount,
-//       },
-//     });
-//     datasetList = [];
-//     datasetList = responseObject.data.datasets;
-//     populateDatasetDropdownCurate(datasetDropdown, datasetList);
-//     refreshDatasetList();
-//   } catch (error) {
-//     clientError(error);
-//     curateBFAccountLoadStatus.innerHTML = `<span style='color: red'>${userErrorMessage(
-//       error
-//     )}</span>`;
-//   }
-// }
+async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
+  let defaultBfAccount = bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text;
+  try {
+    let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+      params: {
+        selected_account: defaultBfAccount,
+      },
+    });
+    datasetList = [];
+    datasetList = responseObject.data.datasets;
+    populateDatasetDropdownCurate(datasetDropdown, datasetList);
+    refreshDatasetList();
+  } catch (error) {
+    clientError(error);
+    curateBFAccountLoadStatus.innerHTML = `<span style='color: red'>${userErrorMessage(
+      error
+    )}</span>`;
+  }
+}
 
-// //// De-populate dataset dropdowns to clear options for CURATE
-// function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
-//   removeOptions(datasetDropdown);
+//// De-populate dataset dropdowns to clear options for CURATE
+function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
+  removeOptions(datasetDropdown);
 
-//   /// making the first option: "Select" disabled
-//   addOption(datasetDropdown, "Select dataset", "Select dataset");
-//   var options = datasetDropdown.getElementsByTagName("option");
-//   options[0].disabled = true;
+  /// making the first option: "Select" disabled
+  addOption(datasetDropdown, "Select dataset", "Select dataset");
+  var options = datasetDropdown.getElementsByTagName("option");
+  options[0].disabled = true;
 
-//   for (let myitem of datasetlist) {
-//     var myitemselect = myitem.name;
-//     var option = document.createElement("option");
-//     option.textContent = myitemselect;
-//     option.value = myitemselect;
-//     datasetDropdown.appendChild(option);
-//   }
-// }
+  for (let myitem of datasetlist) {
+    var myitemselect = myitem.name;
+    var option = document.createElement("option");
+    option.textContent = myitemselect;
+    option.value = myitemselect;
+    datasetDropdown.appendChild(option);
+  }
+}
 // ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
 // const metadataDatasetlistChange = () => {
@@ -3818,105 +3820,106 @@ const apiVersionsMatch = async () => {
 // // Helper functions
 // //////////////////////////////////
 
-// // General //
+// General //
 
-// const removeOptions = (selectbox) => {
-//   for (let i = selectbox.options.length - 1; i >= 0; i--) {
-//     selectbox.remove(i);
-//   }
-// };
+const removeOptions = (selectbox) => {
+  for (let i = selectbox.options.length - 1; i >= 0; i--) {
+    selectbox.remove(i);
+  }
+};
 
 // // Manage Datasets //
 
-// const refreshBfUsersList = () => {
-//   let accountSelected = defaultBfAccount;
+const refreshBfUsersList = () => {
+  let accountSelected = defaultBfAccount;
 
-//   removeOptions(bfListUsers);
-//   let optionUser = document.createElement("option");
-//   optionUser.textContent = "Select user";
-//   bfListUsers.appendChild(optionUser);
+  removeOptions(bfListUsers);
+  let optionUser = document.createElement("option");
+  optionUser.textContent = "Select user";
+  bfListUsers.appendChild(optionUser);
 
-//   removeOptions(bfListUsersPI);
-//   let optionUserPI = document.createElement("option");
-//   optionUserPI.textContent = "Select PI";
-//   bfListUsersPI.appendChild(optionUserPI);
+  removeOptions(bfListUsersPI);
+  let optionUserPI = document.createElement("option");
+  optionUserPI.textContent = "Select PI";
+  bfListUsersPI.appendChild(optionUserPI);
 
-//   if (accountSelected !== "Select") {
-//     client
-//       .get(`manage_datasets/ps_get_users?selected_account=${accountSelected}`)
-//       .then((res) => {
-//         let users = res.data["users"];
-//         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
-//         $("#bf_list_users").selectpicker("refresh");
-//         $("#bf_list_users").find("option:not(:first)").remove();
+  if (accountSelected !== "Select") {
+    client
+      .get(`manage_datasets/ps_get_users?selected_account=${accountSelected}`)
+      .then((res) => {
+        let users = res.data["users"];
+        // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
+        $("#bf_list_users").selectpicker("refresh");
+        $("#bf_list_users").find("option:not(:first)").remove();
 
-//         $("#button-add-permission-user").hide();
-//         $("#bf_list_users_pi").selectpicker("refresh");
-//         $("#bf_list_users_pi").find("option:not(:first)").remove();
-//         for (let myItem in users) {
-//           // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
-//           let sep_pos = users[myItem].lastIndexOf("!|**|!");
-//           let myUser = users[myItem].substring(0, sep_pos);
-//           let optionUser = document.createElement("option");
-//           let optionUser2 = document.createElement("option");
+        $("#button-add-permission-user").hide();
+        $("#bf_list_users_pi").selectpicker("refresh");
+        $("#bf_list_users_pi").find("option:not(:first)").remove();
+        for (let myItem in users) {
+          // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
+          let sep_pos = users[myItem].lastIndexOf("!|**|!");
+          let myUser = users[myItem].substring(0, sep_pos);
+          let optionUser = document.createElement("option");
+          let optionUser2 = document.createElement("option");
 
-//           optionUser.textContent = myUser;
-//           optionUser.value = users[myItem].substring(sep_pos + 6);
-//           optionUser2 = optionUser.cloneNode(true);
-//           bfListUsers.appendChild(optionUser);
-//           bfListUsersPI.appendChild(optionUser2);
-//         }
-//       })
-//       .catch((error) => {
-//         clientError(error);
-//       });
-//   }
-// };
+          optionUser.textContent = myUser;
+          optionUser.value = users[myItem].substring(sep_pos + 6);
+          optionUser2 = optionUser.cloneNode(true);
+          bfListUsers.appendChild(optionUser);
+          bfListUsersPI.appendChild(optionUser2);
+        }
+      })
+      .catch((error) => {
+        clientError(error);
+      });
+  }
+};
 
-// // Takes in a pennsieve teams JSON response and returns a sorted list of team strings
-// const getSortedTeamStrings = (pennsieveTeamsJsonResponse) => {
-//   const teamStrings = pennsieveTeamsJsonResponse.map((teamElement) => {
-//     return teamElement.team.name;
-//   });
-//   return teamStrings.sort();
-// };
+// Takes in a pennsieve teams JSON response and returns a sorted list of team strings
+const getSortedTeamStrings = (pennsieveTeamsJsonResponse) => {
+  const teamStrings = pennsieveTeamsJsonResponse.map((teamElement) => {
+    return teamElement.team.name;
+  });
+  return teamStrings.sort();
+};
 
-// const refreshBfTeamsList = async (teamList) => {
-//   removeOptions(teamList);
+const refreshBfTeamsList = async (teamList) => {
+  removeOptions(teamList);
 
-//   let accountSelected = defaultBfAccount;
-//   let optionTeam = document.createElement("option");
+  let accountSelected = defaultBfAccount;
+  console.log("Default bf account value is: ", defaultBfAccount)
+  let optionTeam = document.createElement("option");
 
-//   optionTeam.textContent = "Select team";
-//   teamList.appendChild(optionTeam);
+  optionTeam.textContent = "Select team";
+  teamList.appendChild(optionTeam);
 
-//   if (accountSelected !== "Select") {
-//     try {
-//       const teamsReq = await client.get(
-//         `manage_datasets/ps_get_teams?selected_account=${defaultBfAccount}`
-//       );
-//       const teamsThatCanBeGrantedPermissions = getSortedTeamStrings(teamsReq.data.teams);
+  if (accountSelected !== "Select") {
+    try {
+      const teamsReq = await client.get(
+        `manage_datasets/ps_get_teams?selected_account=${defaultBfAccount}`
+      );
+      const teamsThatCanBeGrantedPermissions = getSortedTeamStrings(teamsReq.data.teams);
 
-//       // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
-//       $("#bf_list_teams").selectpicker("refresh");
-//       $("#bf_list_teams").find("option:not(:first)").remove();
-//       $("#guided_bf_list_users_and_teams").selectpicker("refresh");
-//       $("#button-add-permission-team").hide();
+      // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
+      $("#bf_list_teams").selectpicker("refresh");
+      $("#bf_list_teams").find("option:not(:first)").remove();
+      $("#guided_bf_list_users_and_teams").selectpicker("refresh");
+      $("#button-add-permission-team").hide();
 
-//       for (const teamName of teamsThatCanBeGrantedPermissions) {
-//         const optionTeam = document.createElement("option");
-//         optionTeam.textContent = teamName;
-//         optionTeam.value = teamName;
-//         teamList.appendChild(optionTeam);
-//       }
-//       confirm_click_account_function();
-//     } catch (error) {
-//       log.error(error);
-//       console.error(error);
-//       confirm_click_account_function();
-//     }
-//   }
-// };
+      for (const teamName of teamsThatCanBeGrantedPermissions) {
+        const optionTeam = document.createElement("option");
+        optionTeam.textContent = teamName;
+        optionTeam.value = teamName;
+        teamList.appendChild(optionTeam);
+      }
+      confirm_click_account_function();
+    } catch (error) {
+      log.error(error);
+      console.error(error);
+      confirm_click_account_function();
+    }
+  }
+};
 
 // const selectOptionColor = (mylist) => {
 //   mylist.style.color = mylist.options[mylist.selectedIndex].style.color;
@@ -3925,25 +3928,25 @@ const apiVersionsMatch = async () => {
 // ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 // /////////////////////////////////////////////////////////////////////////////////////////////
 
-// // this function now is only used to load all datasets ("All" permission)
-// // onto the dataset_description file ds-name select
-// const refreshDatasetList = () => {
-//   let datasetPermission = "All";
-//   let filteredDatasets = [];
+// this function now is only used to load all datasets ("All" permission)
+// onto the dataset_description file ds-name select
+const refreshDatasetList = () => {
+  let datasetPermission = "All";
+  let filteredDatasets = [];
 
-//   if (datasetPermission.toLowerCase() === "all") {
-//     for (let i = 0; i < datasetList.length; i++) {
-//       filteredDatasets.push(datasetList[i].name);
-//     }
-//   }
-//   filteredDatasets.sort((a, b) => {
-//     return a.toLowerCase().localeCompare(b.toLowerCase());
-//   });
+  if (datasetPermission.toLowerCase() === "all") {
+    for (let i = 0; i < datasetList.length; i++) {
+      filteredDatasets.push(datasetList[i].name);
+    }
+  }
+  filteredDatasets.sort((a, b) => {
+    return a.toLowerCase().localeCompare(b.toLowerCase());
+  });
 
-//   populateDatasetDropdowns(filteredDatasets);
-//   // parentDSTagify.settings.whitelist = getParentDatasets();
-//   return filteredDatasets.length;
-// };
+  populateDatasetDropdowns(filteredDatasets);
+  // parentDSTagify.settings.whitelist = getParentDatasets();
+  return filteredDatasets.length;
+};
 
 // /**
 //  *
@@ -3962,24 +3965,24 @@ const apiVersionsMatch = async () => {
 //   return organizationList.length;
 // };
 
-// /// populate the dropdowns with refreshed dataset list
-// const populateDatasetDropdowns = (mylist) => {
-//   clearDatasetDropdowns();
-//   for (myitem in mylist) {
-//     let myitemselect = mylist[myitem];
-//     let option = document.createElement("option");
-//     let option2 = document.createElement("option");
-//     option.textContent = myitemselect;
-//     option.value = myitemselect;
-//     option2 = option.cloneNode(true);
+/// populate the dropdowns with refreshed dataset list
+const populateDatasetDropdowns = (mylist) => {
+  clearDatasetDropdowns();
+  for (myitem in mylist) {
+    let myitemselect = mylist[myitem];
+    let option = document.createElement("option");
+    let option2 = document.createElement("option");
+    option.textContent = myitemselect;
+    option.value = myitemselect;
+    option2 = option.cloneNode(true);
 
-//     curateDatasetDropdown.appendChild(option2);
-//   }
-//   metadataDatasetlistChange();
-//   permissionDatasetlistChange();
-//   postCurationListChange();
-//   datasetStatusListChange();
-// };
+    curateDatasetDropdown.appendChild(option2);
+  }
+  // metadataDatasetlistChange();
+  // permissionDatasetlistChange();
+  // postCurationListChange();
+  // datasetStatusListChange();
+};
 
 // const populateOrganizationDropdowns = (organizations) => {
 //   clearOrganizationDropdowns();
@@ -4010,6 +4013,7 @@ const updateBfAccountList = async () => {
   }
 
   let accountList = responseObject.data["accounts"];
+  console.log(accountList)
   for (myitem in accountList) {
     let myitemselect = accountList[myitem];
     let option = document.createElement("option");
@@ -4036,6 +4040,8 @@ const loadDefaultAccount = async () => {
   }
 
   let accounts = responseObject.data["defaultAccounts"];
+
+  console.log("LOad default accounts, ", accounts)
 
   if (accounts.length > 0) {
     let myitemselect = accounts[0];
@@ -4514,91 +4520,91 @@ const loadDefaultAccount = async () => {
 
 // var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve account using an API key</h3>`;
 
-// // once connected to SODA get the user's accounts
-// (async () => {
-//   // wait until soda is connected to the backend server
-//   while (!sodaIsConnected) {
-//     await wait(1000);
-//   }
+// once connected to SODA get the user's accounts
+(async () => {
+  // wait until soda is connected to the backend server
+  while (!sodaIsConnected) {
+    await wait(1000);
+  }
 
-//   retrieveBFAccounts();
-// })();
+  retrieveBFAccounts();
+})();
 
 // // this function is called in the beginning to load bf accounts to a list
 // // which will be fed as dropdown options
-// const retrieveBFAccounts = async () => {
-//   bfAccountOptions = [];
-//   bfAccountOptionsStatus = "";
+const retrieveBFAccounts = async () => {
+  bfAccountOptions = [];
+  bfAccountOptionsStatus = "";
 
-//   if (hasConnectedAccountWithPennsieve()) {
-//     client
-//       .get("manage_datasets/bf_account_list")
-//       .then((res) => {
-//         let accounts = res.data;
-//         for (const myitem in accounts) {
-//           bfAccountOptions[accounts[myitem]] = accounts[myitem];
-//         }
+  if (hasConnectedAccountWithPennsieve()) {
+    client
+      .get("manage_datasets/bf_account_list")
+      .then((res) => {
+        let accounts = res.data;
+        for (const myitem in accounts) {
+          bfAccountOptions[accounts[myitem]] = accounts[myitem];
+        }
 
-//         showDefaultBFAccount();
-//       })
-//       .catch((error) => {
-//         bfAccountOptionsStatus = error;
-//       });
-//   } else {
-//     bfAccountOptionsStatus = "No account connected";
-//   }
-//   return [bfAccountOptions, bfAccountOptionsStatus];
-// };
+        showDefaultBFAccount();
+      })
+      .catch((error) => {
+        bfAccountOptionsStatus = error;
+      });
+  } else {
+    bfAccountOptionsStatus = "No account connected";
+  }
+  return [bfAccountOptions, bfAccountOptionsStatus];
+};
 
-// let defaultAccountDetails = "";
-// const showDefaultBFAccount = async () => {
-//   try {
-//     let bf_default_acc_req = await client.get("manage_datasets/bf_default_account_load");
-//     let accounts = bf_default_acc_req.data.defaultAccounts;
-//     if (accounts.length > 0) {
-//       let myitemselect = accounts[0];
-//       defaultBfAccount = myitemselect;
-//       try {
-//         let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
-//           params: {
-//             selected_account: defaultBfAccount,
-//           },
-//         });
-//         let user_email = bf_account_details_req.data.email;
-//         $("#current-bf-account").text(user_email);
-//         $("#current-bf-account-generate").text(user_email);
-//         $("#create_empty_dataset_BF_account_span").text(user_email);
-//         $(".bf-account-span").text(user_email);
+let defaultAccountDetails = "";
+const showDefaultBFAccount = async () => {
+  try {
+    let bf_default_acc_req = await client.get("manage_datasets/bf_default_account_load");
+    let accounts = bf_default_acc_req.data.defaultAccounts;
+    if (accounts.length > 0) {
+      let myitemselect = accounts[0];
+      defaultBfAccount = myitemselect;
+      try {
+        let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
+          params: {
+            selected_account: defaultBfAccount,
+          },
+        });
+        let user_email = bf_account_details_req.data.email;
+        $("#current-bf-account").text(user_email);
+        $("#current-bf-account-generate").text(user_email);
+        $("#create_empty_dataset_BF_account_span").text(user_email);
+        $(".bf-account-span").text(user_email);
 
-//         // show the preferred organization
-//         let organization = bf_account_details_req.data.organization;
-//         $(".bf-organization-span").text(organization);
+        // show the preferred organization
+        let organization = bf_account_details_req.data.organization;
+        $(".bf-organization-span").text(organization);
 
-//         $("#div-bf-account-load-progress").css("display", "none");
-//         showHideDropdownButtons("account", "show");
-//         // refreshDatasetList()
-//         updateDatasetList();
-//         updateOrganizationList();
-//       } catch (error) {
-//         clientError(error);
+        $("#div-bf-account-load-progress").css("display", "none");
+        showHideDropdownButtons("account", "show");
+        refreshDatasetList()
+        updateDatasetList();
+        updateOrganizationList();
+      } catch (error) {
+        clientError(error);
 
-//         $("#para-account-detail-curate").html("None");
-//         $("#current-bf-account").text("None");
-//         $("#current-bf-account-generate").text("None");
-//         $("#create_empty_dataset_BF_account_span").text("None");
-//         $(".bf-account-span").text("None");
-//         $("#para-account-detail-curate-generate").html("None");
-//         $("#para_create_empty_dataset_BF_account").html("None");
-//         $(".bf-account-details-span").html("None");
+        $("#para-account-detail-curate").html("None");
+        $("#current-bf-account").text("None");
+        $("#current-bf-account-generate").text("None");
+        $("#create_empty_dataset_BF_account_span").text("None");
+        $(".bf-account-span").text("None");
+        $("#para-account-detail-curate-generate").html("None");
+        $("#para_create_empty_dataset_BF_account").html("None");
+        $(".bf-account-details-span").html("None");
 
-//         $("#div-bf-account-load-progress").css("display", "none");
-//         showHideDropdownButtons("account", "hide");
-//       }
-//     }
-//   } catch (error) {
-//     clientError(error);
-//   }
-// };
+        $("#div-bf-account-load-progress").css("display", "none");
+        showHideDropdownButtons("account", "hide");
+      }
+    }
+  } catch (error) {
+    clientError(error);
+  }
+};
 
 // ////// function to trigger action for each context menu option
 // const hideMenu = (category, menu1, menu2, menu3) => {

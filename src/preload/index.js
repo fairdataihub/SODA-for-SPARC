@@ -49,6 +49,9 @@ if (process.contextIsolated) {
       },
       mkdirSync: (targetDir, options) => {
         return fs.mkdirSync(targetDir, options)
+      }, 
+      readFileSync: (filePath, encoding) => {
+        return fs.readFileSync(filePath, encoding)
       }
     }),
       contextBridge.exposeInMainWorld('process', {
@@ -57,6 +60,9 @@ if (process.contextIsolated) {
         },
         env: () => {
           return process.env
+        }, 
+        resourcesPath: () => {
+          return process.resourcesPath
         }
       })
     contextBridge.exposeInMainWorld('path', {

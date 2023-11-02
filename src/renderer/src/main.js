@@ -1,13 +1,8 @@
-
-
-// const Jimp = require("jimp");
-// const { Notyf } = require("notyf");
-
-
 import './assets/imports'
 import './assets/demo-btns'
 import './assets/nav'
 import './scripts/guided-mode/guided-curate-dataset'
+import './scripts/globals'
 import './scripts/others/renderer'
 
 

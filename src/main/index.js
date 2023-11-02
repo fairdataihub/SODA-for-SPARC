@@ -25,7 +25,7 @@ console.log("Test up[date")
 
 // TODO: move to a separate file that handles all the ipcMain handlers
 ipcMain.handle('get-app-path', async (event, arg) => {
-  return app.getPath(arg)   
+  return app.getPath(arg) 
 })
 
 ipcMain.handle("get-port", () => {
