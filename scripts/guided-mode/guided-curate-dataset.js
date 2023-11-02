@@ -6755,15 +6755,7 @@ const setActiveSubPage = (pageIdToActivate) => {
 
   //create a switch statement for pageIdToActivate to load data from sodaJSONObj
   //depending on page being opened
-  if (pageIdToActivate === "guided-specify-subjects-page") {
-    document.getElementById("guided-section-dataset-subjects-text").classList.remove("hidden");
-    document.getElementById("guided-section-dataset-pools-text").classList.add("hidden");
-    document.getElementById("guided-section-dataset-samples-text").classList.add("hidden");
 
-    renderSubjectsTable();
-    //remove the add subject help text
-    document.getElementById("guided-add-subject-instructions").classList.add("hidden");
-  }
   if (pageIdToActivate === "guided-organize-subjects-into-pools-page") {
     document.getElementById("guided-section-dataset-subjects-text").classList.add("hidden");
     document.getElementById("guided-section-dataset-pools-text").classList.remove("hidden");
@@ -10906,18 +10898,43 @@ const guidedExtractEntityNamesFromFolders = async (entityType) => {
   }
 };
 
-const guidedAddListOfSubjects = async (subjectNameArray) => {
+const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingSubjects) => {
+  // Check to see if any of the subject names are invalid
+  const validSubjecNames = [];
+  const invalidSubjectNames = [];
+  for (const subjectName of subjectNameArray) {
+    const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+      subjectName,
+      "string-adheres-to-identifier-conventions"
+    );
+    if (subjectNameIsValid) {
+      validSubjecNames.push(subjectName);
+    } else {
+      invalidSubjectNames.push(subjectName);
+    }
+  }
+  if (invalidSubjectNames.length > 0) {
+    await swalFileListSingleAction(
+      invalidSubjectNames,
+      "Invalid subject names detected",
+      "Subject names can not contain spaces or special characters. The following subjects will not be imported into SODA:",
+      ""
+    );
+  }
+
   // Get the existing subjects added to the dataset to check for duplicates
   // const existingSubjects = getExistingSubjectNames();
   const existingSubjects = ["sub-animal-1", "sub-animal-2", "sub-3"];
 
   // append sub- to each subject name if it doesn't already start with sub-
-  const formattedSubjectNameArray = subjectNameArray.map((subjectName) => {
+  const formattedSubjectNameArray = validSubjecNames.map((subjectName) => {
     if (!subjectName.startsWith("sub-")) {
       subjectName = `sub-${subjectName}`;
     }
     return subjectName;
   });
+
+  console.log("formattedSubjectNameArray", formattedSubjectNameArray);
 
   // Array of the subjects that already exist in the dataset
   const duplicateSubjects = formattedSubjectNameArray.filter((subjectName) =>
@@ -10929,13 +10946,42 @@ const guidedAddListOfSubjects = async (subjectNameArray) => {
     (subjectName) => !existingSubjects.includes(subjectName)
   );
 
-  // Let the user know that duplicate subjects will not be added
-  await swalFileListSingleAction(
-    duplicateSubjects,
-    "Duplicate subjects detected",
-    "The following subjects have already been specified and will not be added:",
-    ""
-  );
+  if (showWarningForExistingSubjects && duplicateSubjects.length > 0) {
+    // Let the user know that duplicate subjects will not be added
+    await swalFileListSingleAction(
+      duplicateSubjects,
+      "Duplicate subjects detected",
+      "The following subjects have already been specified and will not be added:",
+      ""
+    );
+  }
+
+  if (newSubjects.length > 0) {
+    // Confirm that the user wants to add the subjects
+    const subjectAdditionConfirmed = await swalFileListDoubleAction(
+      newSubjects,
+      `${newSubjects.length} subjects will be added to the dataset`,
+      "Please review the list of subjects before proceeding:",
+      "yes, import the subjects",
+      "No, cancel the import",
+      "Would you like to import the subjects into SODA?"
+    );
+    if (subjectAdditionConfirmed) {
+      // Add the new subjects to the dataset
+      for (const subjectName of newSubjects) {
+        sodaJSONObj.addSubject(subjectName);
+      }
+
+      notyf.open({
+        duration: "3000",
+        type: "success",
+        message: `${newSubjects.length} subjects added`,
+      });
+
+      // Refresh the UI
+      renderSubjectsTable();
+    }
+  }
 };
 
 ipcRenderer.on("selected-subject-names-from-dialog", async (event, folders) => {
@@ -10943,7 +10989,7 @@ ipcRenderer.on("selected-subject-names-from-dialog", async (event, folders) => {
     const folderName = path.basename(folder);
     return folderName;
   });
-  guidedAddListOfSubjects(subjectNames);
+  guidedAddListOfSubjects(subjectNames, true);
 });
 
 ipcRenderer.on("selected-sample-names-from-dialog", async (event, folders) => {
