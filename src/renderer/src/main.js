@@ -40,30 +40,6 @@ import './assets/css/spur.css'
 import './assets/css/tablepath.css'
 import './assets/css/variables.css'
 
-import axios from "axios"
-
-
-let port = 4242;
-let client = axios.create({
-    baseURL: `http://127.0.0.1:${port}`,
-    timeout: 300000,
-});
-
-
-
-// wait for 3 seconds
-setTimeout(() => {
-    console.log("Waiting for 3 seconds");
-
-    client.get("/startup/echo?arg=server ready").then((response) => {
-        console.log(response.data);
-    })
-        .catch((error) => {
-            console.log(error);
-        });
-
-}, 3000);
-
 
 
 

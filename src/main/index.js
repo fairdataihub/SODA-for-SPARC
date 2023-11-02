@@ -45,6 +45,15 @@ ipcMain.handle("get-nodestorage-key", (key) => {
   return nodeStorage.getItem(key);
 })
 
+ipcMain.handle("relaunch-soda", () => {
+  app.relaunch();
+  app.exit();
+})
+
+ipcMain.handle("exit-soda", () => {
+  app.exit();
+})
+
 
 function createWindow() {
   // Create the browser window.

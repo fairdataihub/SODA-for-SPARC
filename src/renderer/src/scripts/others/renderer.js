@@ -32,6 +32,7 @@ import select2 from "select2"; // TODO: select2()
 select2()
 import DragSort from "@yaireo/dragsort";
 import axios from "axios";
+import Swal from "sweetalert2";
 import DatePicker from "tui-date-picker"; /* CommonJS */
 import  datasetUploadSession from "../analytics/upload-session-tracker";
 import kombuchaEnums from"../analytics/analytics-enums"
@@ -134,288 +135,293 @@ if (autoUpdateLaunch == false || autoUpdateLaunch == null || autoUpdateLaunch ==
 //   timeout: 300000,
 // });
 
-// const notyf = new Notyf({
-//   position: { x: "right", y: "bottom" },
-//   dismissible: true,
-//   ripple: false,
-//   types: [
-//     {
-//       type: "checking_server_is_live",
-//       background: "grey",
-//       icon: {
-//         className: "fas fa-wifi",
-//         tagName: "i",
-//         color: "white",
-//       },
-//       duration: 1000,
-//     },
-//     {
-//       type: "checking_server_api_version",
-//       background: "grey",
-//       icon: {
-//         className: "fas fa-wifi",
-//         tagName: "i",
-//         color: "white",
-//       },
-//       duration: 1000,
-//     },
-//     {
-//       type: "loading_internet",
-//       background: "grey",
-//       icon: {
-//         className: "fas fa-wifi",
-//         tagName: "i",
-//         color: "white",
-//       },
-//       duration: 10000,
-//     },
-//     {
-//       type: "ps_agent",
-//       background: "grey",
-//       icon: {
-//         className: "fas fa-cogs",
-//         tagName: "i",
-//         color: "white",
-//       },
-//       duration: 5000,
-//     },
-//     {
-//       type: "app_update",
-//       background: "grey",
-//       icon: {
-//         className: "fas fa-sync-alt",
-//         tagName: "i",
-//         color: "white",
-//       },
-//       duration: 0,
-//     },
-//     {
-//       type: "api_key_search",
-//       background: "grey",
-//       icon: {
-//         className: "fas fa-users-cog",
-//         tagName: "i",
-//         color: "white",
-//       },
-//       duration: 0,
-//     },
-//     {
-//       type: "success",
-//       background: "#13716D",
-//       icon: {
-//         className: "fas fa-check-circle",
-//         tagName: "i",
-//         color: "white",
-//       },
-//       duration: 800,
-//     },
-//     {
-//       type: "final",
-//       background: "#13716D",
-//       icon: {
-//         className: "fas fa-check-circle",
-//         tagName: "i",
-//         color: "white",
-//       },
-//       duration: 3000,
-//     },
-//     {
-//       type: "warning",
-//       background: "#fa8c16",
-//       icon: {
-//         className: "fas fa-exclamation-triangle",
-//         tagName: "i",
-//         color: "white",
-//       },
-//       duration: 3000,
-//     },
-//     {
-//       type: "info",
-//       background: "#13716D",
-//       icon: {
-//         className: "fas fa-info-circle",
-//         tagName: "i",
-//         color: "white",
-//       },
-//       duration: 3000,
-//     },
+const notyf = new Notyf({
+  position: { x: "right", y: "bottom" },
+  dismissible: true,
+  ripple: false,
+  types: [
+    {
+      type: "checking_server_is_live",
+      background: "grey",
+      icon: {
+        className: "fas fa-wifi",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 1000,
+    },
+    {
+      type: "checking_server_api_version",
+      background: "grey",
+      icon: {
+        className: "fas fa-wifi",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 1000,
+    },
+    {
+      type: "loading_internet",
+      background: "grey",
+      icon: {
+        className: "fas fa-wifi",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 10000,
+    },
+    {
+      type: "ps_agent",
+      background: "grey",
+      icon: {
+        className: "fas fa-cogs",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 5000,
+    },
+    {
+      type: "app_update",
+      background: "grey",
+      icon: {
+        className: "fas fa-sync-alt",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 0,
+    },
+    {
+      type: "api_key_search",
+      background: "grey",
+      icon: {
+        className: "fas fa-users-cog",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 0,
+    },
+    {
+      type: "success",
+      background: "#13716D",
+      icon: {
+        className: "fas fa-check-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 800,
+    },
+    {
+      type: "final",
+      background: "#13716D",
+      icon: {
+        className: "fas fa-check-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 3000,
+    },
+    {
+      type: "warning",
+      background: "#fa8c16",
+      icon: {
+        className: "fas fa-exclamation-triangle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 3000,
+    },
+    {
+      type: "info",
+      background: "#13716D",
+      icon: {
+        className: "fas fa-info-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 3000,
+    },
 
-//     {
-//       type: "info-grey",
-//       background: "grey",
-//       icon: {
-//         className: "fas fa-info-circle",
-//         tagName: "i",
-//         color: "white",
-//       },
-//     },
+    {
+      type: "info-grey",
+      background: "grey",
+      icon: {
+        className: "fas fa-info-circle",
+        tagName: "i",
+        color: "white",
+      },
+    },
 
-//     {
-//       type: "app_update_warning",
-//       background: "#fa8c16",
-//       icon: {
-//         className: "fas fa-tools",
-//         tagName: "i",
-//         color: "white",
-//       },
-//       duration: 0,
-//     },
-//     {
-//       type: "error",
-//       background: "#B80D49",
-//       icon: {
-//         className: "fas fa-times-circle",
-//         tagName: "i",
-//         color: "white",
-//       },
-//       duration: 3000,
-//     },
-//   ],
-// });
+    {
+      type: "app_update_warning",
+      background: "#fa8c16",
+      icon: {
+        className: "fas fa-tools",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 0,
+    },
+    {
+      type: "error",
+      background: "#B80D49",
+      icon: {
+        className: "fas fa-times-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 3000,
+    },
+  ],
+});
 
-// let connected_to_internet = false;
-// let update_available_notification = "";
-// let update_downloaded_notification = "";
+let connected_to_internet = false;
+let update_available_notification = "";
+let update_downloaded_notification = "";
 
-// // utility function for async style set timeout
-// const wait = async (delay) => {
-//   return new Promise((resolve) => setTimeout(resolve, delay));
-// };
+// utility function for async style set timeout
+const wait = async (delay) => {
+  return new Promise((resolve) => setTimeout(resolve, delay));
+};
 
-// // check that the client connected to the server using exponential backoff
-// // verify the api versions match
-// const startupServerAndApiCheck = async () => {
-//   // wait for SWAL to be loaded in
-//   await wait(2000);
+let client = axios.create({
+    baseURL: `http://127.0.0.1:${port}`,
+    timeout: 300000,
+});
 
-//   // notify the user that the application is starting connecting to the server
-//   Swal.fire({
-//     icon: "info",
-//     title: `Initializing SODA's background services<br /><br />This may take several minutes...`,
-//     heightAuto: false,
-//     backdrop: "rgba(0,0,0, 0.4)",
-//     confirmButtonText: "Restart now",
-//     allowOutsideClick: false,
-//     allowEscapeKey: false,
-//     didOpen: () => {
-//       Swal.showLoading();
-//     },
-//   });
+// check that the client connected to the server using exponential backoff
+// verify the api versions match
+const startupServerAndApiCheck = async () => {
+  // wait for SWAL to be loaded in
+  await wait(2000);
 
-//   // Darwin executable starts slowly
-//   // use an exponential backoff to wait for the app server to be ready
-//   // this will give Mac users more time before receiving a backend server error message
-//   // ( during the wait period the server should start )
-//   // Bonus:  doesn't stop Windows and Linux users from starting right away
-//   // NOTE: backOff is bad at surfacing errors to the console
-//   //while variable is false keep requesting, if time exceeds two minutes break
-//   let status = false;
-//   let time_start = new Date();
-//   let error = "";
-//   while (true) {
-//     try {
-//       status = await serverIsLiveStartup();
-//     } catch (e) {
-//       error = e;
-//       status = false;
-//     }
-//     time_pass = new Date() - time_start;
-//     if (status) {
-//       break;
-//     }
-//     if (time_pass > 300000) {
-//       break;
-//     } //break after five minutes
-//     await wait(2000);
-//   }
+  // notify the user that the application is starting connecting to the server
+  Swal.fire({
+    icon: "info",
+    title: `Initializing SODA's background services<br /><br />This may take several minutes...`,
+    heightAuto: true,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "Restart now",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
 
-//   if (!status) {
-//     //two minutes pass then handle connection error
-//     // SWAL that the server needs to be restarted for the app to work
-//     clientError(error);
-//     ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
-//     ipcRenderer.send(
-//       "track-kombucha",
-//       kombuchaEnums.Category.STARTUP,
-//       kombuchaEnums.Action.APP_LAUNCHED,
-//       kombuchaEnums.Label.PYTHON_CONNECTION,
-//       kombuchaEnums.Status.FAIL,
-//       {
-//         value: 1,
-//       }
-//     );
 
-//     await Swal.fire({
-//       icon: "error",
-//       html: `Something went wrong while initializing SODA's background services. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       confirmButtonText: "Restart now",
-//       allowOutsideClick: false,
-//       allowEscapeKey: false,
-//     });
+  // Darwin executable starts slowly
+  // use an exponential backoff to wait for the app server to be ready
+  // this will give Mac users more time before receiving a backend server error message
+  // ( during the wait period the server should start )
+  // Bonus:  doesn't stop Windows and Linux users from starting right away
+  // NOTE: backOff is bad at surfacing errors to the console
+  //while variable is false keep requesting, if time exceeds two minutes break
+  let status = false;
+  let time_start = new Date();
+  let error = "";
+  while (true) {
+    try {
+      status = await serverIsLiveStartup();
+    } catch (e) {
+      error = e;
+      status = false;
+    }
+    let time_pass = new Date() - time_start;
+    if (status) {
+      break;
+    }
+    if (time_pass > 300000) {
+      break;
+    } //break after five minutes
+    await wait(2000);
+  }
 
-//     // Restart the app
-//     app.relaunch();
-//     app.exit();
-//   }
+  if (!status) {
+    //two minutes pass then handle connection error
+    // SWAL that the server needs to be restarted for the app to work
+    clientError(error);
+    window.electron.ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.STARTUP,
+      kombuchaEnums.Action.APP_LAUNCHED,
+      kombuchaEnums.Label.PYTHON_CONNECTION,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+      }
+    );
 
-//   console.log("Connected to Python back-end successfully");
-//   log.info("Connected to Python back-end successfully");
-//   ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
-//   ipcRenderer.send(
-//     "track-kombucha",
-//     kombuchaEnums.Category.STARTUP,
-//     kombuchaEnums.Action.APP_LAUNCHED,
-//     kombuchaEnums.Label.PYTHON_CONNECTION,
-//     kombuchaEnums.Status.SUCCESS,
-//     {
-//       value: 1,
-//     }
-//   );
+    await Swal.fire({
+      icon: "error",
+      html: `Something went wrong while initializing SODA's background services. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Restart now",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
 
-//   // inform observers that the app is connected to the server
-//   sodaIsConnected = true;
+    // Restart the app
+    await window.electron.ipcRenderer.invoke("relaunch-soda")
+  }
 
-//   // dismiss the Swal
-//   Swal.close();
+  console.log("Connected to Python back-end successfully");
+  log.info("Connected to Python back-end successfully");
+  window.electron.ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
+  window.electron.ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.STARTUP,
+    kombuchaEnums.Action.APP_LAUNCHED,
+    kombuchaEnums.Label.PYTHON_CONNECTION,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: 1,
+    }
+  );
 
-//   // check if the API versions match
-//   try {
-//     await apiVersionsMatch();
-//   } catch (e) {
-//     // api versions do not match
-//     app.exit();
-//   }
+  // inform observers that the app is connected to the server
+  sodaIsConnected = true;
 
-//   if (launchAnnouncement) {
-//     await checkForAnnouncements("announcements");
-//     launchAnnouncement = false;
-//     nodeStorage.setItem("announcements", false);
-//   }
+  // dismiss the Swal
+  Swal.close();
 
-//   // get apps base path
-//   const basepath = app.getAppPath();
-//   const { resourcesPath } = process;
+  // check if the API versions match
+  try {
+    await apiVersionsMatch();
+  } catch (e) {
+    // api versions do not match
+    await window.electron.ipcRenderer.invoke("exit-soda")
+  }
 
-//   // set the templates path
-//   try {
-//     await client.put("prepare_metadata/template_paths", {
-//       basepath: basepath,
-//       resourcesPath: resourcesPath,
-//     });
-//   } catch (error) {
-//     clientError(error);
-//     ipcRenderer.send("track-event", "Error", "Setting Templates Path");
-//     return;
-//   }
+  if (launchAnnouncement) {
+    await checkForAnnouncements("announcements");
+    launchAnnouncement = false;
+    nodeStorage.setItem("announcements", false);
+  }
 
-//   ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+  // get apps base path
+  const basepath = app.getAppPath();
+  const { resourcesPath } = process;
 
-//   apiVersionChecked = true;
-// };
+  // set the templates path
+  try {
+    await client.put("prepare_metadata/template_paths", {
+      basepath: basepath,
+      resourcesPath: resourcesPath,
+    });
+  } catch (error) {
+    clientError(error);
+    ipcRenderer.send("track-event", "Error", "Setting Templates Path");
+    return;
+  }
 
-// startupServerAndApiCheck();
+  ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+
+  apiVersionChecked = true;
+};
+
+startupServerAndApiCheck();
 
 // // Check if we are connected to the Pysoda server
 // // Check app version on current app and display in the side bar
@@ -985,119 +991,119 @@ if (autoUpdateLaunch == false || autoUpdateLaunch == null || autoUpdateLaunch ==
 //   }
 // };
 
-// // Check if the Pysoda server is live
-// const serverIsLiveStartup = async () => {
-//   let echoResponseObject;
+// Check if the Pysoda server is live
+const serverIsLiveStartup = async () => {
+  let echoResponseObject;
 
-//   try {
-//     echoResponseObject = await client.get("/startup/echo?arg=server ready");
-//   } catch (error) {
-//     throw error;
-//   }
+  try {
+    echoResponseObject = await client.get("/startup/echo?arg=server ready");
+  } catch (error) {
+    throw error;
+  }
 
-//   let echoResponse = echoResponseObject.data;
+  let echoResponse = echoResponseObject.data;
 
-//   return !!(echoResponse === "server ready");
-// };
+  return !!(echoResponse === "server ready");
+};
 
-// // Check if the Pysoda server API version and the package.json versions match
-// const apiVersionsMatch = async () => {
-//   // notyf that tells the user that the server is checking the versions
-//   let notification = notyf.open({
-//     message: "Checking API Version",
-//     type: "checking_server_api_version",
-//   });
+// Check if the Pysoda server API version and the package.json versions match
+const apiVersionsMatch = async () => {
+  // notyf that tells the user that the server is checking the versions
+  let notification = notyf.open({
+    message: "Checking API Version",
+    type: "checking_server_api_version",
+  });
 
-//   let responseObject;
+  let responseObject;
 
-//   try {
-//     responseObject = await client.get("/startup/minimum_api_version");
-//   } catch (e) {
-//     clientError(e);
-//     log.info("Minimum API Versions do not match");
-//     ipcRenderer.send("track-event", "Error", "Verifying App Version", userErrorMessage(e));
+  try {
+    responseObject = await client.get("/startup/minimum_api_version");
+  } catch (e) {
+    clientError(e);
+    window.log.info("Minimum API Versions do not match");
+    window.electron.ipcRenderer.send("track-event", "Error", "Verifying App Version", userErrorMessage(e));
 
-//     await Swal.fire({
-//       icon: "error",
-//       html: `Something went wrong while initializing SODA's background services. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       confirmButtonText: "Close now",
-//       allowOutsideClick: false,
-//       allowEscapeKey: false,
-//     });
+    await Swal.fire({
+      icon: "error",
+      html: `Something went wrong while initializing SODA's background services. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Close now",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
 
-//     throw e;
-//   }
+    throw e;
+  }
 
-//   let serverAppVersion = responseObject.data.version;
+  let serverAppVersion = responseObject.data.version;
 
-//   log.info(`Server version is ${serverAppVersion}`);
-//   const browser_download_url = `https://docs.sodaforsparc.io/docs/common-errors/api-version-mismatch`;
+  window.log.info(`Server version is ${serverAppVersion}`);
+  const browser_download_url = `https://docs.sodaforsparc.io/docs/common-errors/api-version-mismatch`;
 
-//   if (serverAppVersion !== appVersion) {
-//     log.info("Server version does not match client version");
-//     console.error("Server version does not match client version");
-//     ipcRenderer.send(
-//       "track-event",
-//       "Error",
-//       "Verifying App Version",
-//       "Server version does not match client version"
-//     );
+  if (serverAppVersion !== appVersion) {
+    window.log.info("Server version does not match client version");
+    console.error("Server version does not match client version");
+    window.electron.ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Verifying App Version",
+      "Server version does not match client version"
+    );
 
-//     await Swal.fire({
-//       icon: "error",
-//       title: "Minimum App Version Mismatch",
-//       html: `
-//           Your API version: <b>${appVersion}</b>
-//           <br />
-//           Latest API version: <b>${serverAppVersion}</b>
-//           <br />
-//           <br />
-//           To resolve this issue, please visit the link below and follow the instructions.
-//           <br />
-//           <br />
-//           <a href="${browser_download_url}" target="_blank">API Version Mismatch</a>
-//           <br />
-//           <br />
-//           Once you have updated the SODA Server, please restart SODA.
-//         `,
-//       width: 800,
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       allowOutsideClick: false,
-//       allowEscapeKey: false,
-//       showCancelButton: false,
-//       showCloseButton: false,
-//       reverseButtons: reverseSwalButtons,
-//       confirmButtonText: "Close Application",
-//     });
+    await Swal.fire({
+      icon: "error",
+      title: "Minimum App Version Mismatch",
+      html: `
+          Your API version: <b>${appVersion}</b>
+          <br />
+          Latest API version: <b>${serverAppVersion}</b>
+          <br />
+          <br />
+          To resolve this issue, please visit the link below and follow the instructions.
+          <br />
+          <br />
+          <a href="${browser_download_url}" target="_blank">API Version Mismatch</a>
+          <br />
+          <br />
+          Once you have updated the SODA Server, please restart SODA.
+        `,
+      width: 800,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showCancelButton: false,
+      showCloseButton: false,
+      reverseButtons: reverseSwalButtons,
+      confirmButtonText: "Close Application",
+    });
 
-//     //await checkForAnnouncements("update")
+    //await checkForAnnouncements("update")
 
-//     throw new Error();
-//   }
+    throw new Error();
+  }updateBfAccountList
 
-//   ipcRenderer.send("track-event", "Success", "Verifying App Version");
+  window.electron.ipcRenderer.send("track-event", "Success", "Verifying App Version");
 
-//   notyf.dismiss(notification);
+  notyf.dismiss(notification);
 
-//   // create a success notyf for api version check
-//   notyf.open({
-//     message: "API Versions match",
-//     type: "success",
-//   });
+  // create a success notyf for api version check
+  notyf.open({
+    message: "API Versions match",
+    type: "success",
+  });
 
-//   //Load Default/global Pennsieve account if available
-//   if (hasConnectedAccountWithPennsieve()) {
-//     try {
-//       updateBfAccountList();
-//     } catch (error) {
-//       clientError(error);
-//     }
-//   }
-//   checkNewAppVersion(); // Added so that version will be displayed for new users
-// };
+  //Load Default/global Pennsieve account if available
+  if (hasConnectedAccountWithPennsieve()) {
+    try {
+      ();
+    } catch (error) {
+      clientError(error);
+    }
+  }
+  checkNewAppVersion(); // Added so that version will be displayed for new users
+};
 
 // const checkInternetConnection = async () => {
 //   try {
@@ -3991,65 +3997,65 @@ if (autoUpdateLaunch == false || autoUpdateLaunch == null || autoUpdateLaunch ==
 // };
 // ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
-// const updateBfAccountList = async () => {
-//   let responseObject;
-//   try {
-//     responseObject = await client.get("manage_datasets/bf_account_list");
-//   } catch (error) {
-//     clientError(error);
-//     confirm_click_account_function();
-//     refreshBfUsersList();
-//     refreshBfTeamsList(bfListTeams);
-//     return;
-//   }
+const updateBfAccountList = async () => {
+  let responseObject;
+  try {
+    responseObject = await client.get("manage_datasets/bf_account_list");
+  } catch (error) {
+    clientError(error);
+    confirm_click_account_function();
+    refreshBfUsersList();
+    refreshBfTeamsList(bfListTeams);
+    return;
+  }
 
-//   let accountList = responseObject.data["accounts"];
-//   for (myitem in accountList) {
-//     let myitemselect = accountList[myitem];
-//     let option = document.createElement("option");
-//     option.textContent = myitemselect;
-//     option.value = myitemselect;
-//   }
-//   await loadDefaultAccount();
-//   if (accountList[0] === "Select" && accountList.length === 1) {
-//     // todo: no existing accounts to load
-//   }
-//   refreshBfUsersList();
-//   refreshBfTeamsList(bfListTeams);
-// };
+  let accountList = responseObject.data["accounts"];
+  for (myitem in accountList) {
+    let myitemselect = accountList[myitem];
+    let option = document.createElement("option");
+    option.textContent = myitemselect;
+    option.value = myitemselect;
+  }
+  await loadDefaultAccount();
+  if (accountList[0] === "Select" && accountList.length === 1) {
+    // todo: no existing accounts to load
+  }
+  refreshBfUsersList();
+  refreshBfTeamsList(bfListTeams);
+};
 
-// const loadDefaultAccount = async () => {
-//   let responseObject;
+const loadDefaultAccount = async () => {
+  let responseObject;
 
-//   try {
-//     responseObject = await client.get("/manage_datasets/bf_default_account_load");
-//   } catch (e) {
-//     clientError(e);
-//     confirm_click_account_function();
-//     return;
-//   }
+  try {
+    responseObject = await client.get("/manage_datasets/bf_default_account_load");
+  } catch (e) {
+    clientError(e);
+    confirm_click_account_function();
+    return;
+  }
 
-//   let accounts = responseObject.data["defaultAccounts"];
+  let accounts = responseObject.data["defaultAccounts"];
 
-//   if (accounts.length > 0) {
-//     let myitemselect = accounts[0];
-//     // keep the defaultBfAccount value as the user's profile config key value for reference later
-//     defaultBfAccount = myitemselect;
+  if (accounts.length > 0) {
+    let myitemselect = accounts[0];
+    // keep the defaultBfAccount value as the user's profile config key value for reference later
+    defaultBfAccount = myitemselect;
 
-//     // fetch the user's email and set that as the account field's value
-//     let userInformation = await api.getUserInformation();
-//     let userEmail = userInformation.email;
+    // fetch the user's email and set that as the account field's value
+    let userInformation = await api.getUserInformation();
+    let userEmail = userInformation.email;
 
-//     $("#current-bf-account").text(userEmail);
-//     $("#current-bf-account-generate").text(userEmail);
-//     $("#create_empty_dataset_BF_account_span").text(userEmail);
-//     $(".bf-account-span").text(userEmail);
+    $("#current-bf-account").text(userEmail);
+    $("#current-bf-account-generate").text(userEmail);
+    $("#create_empty_dataset_BF_account_span").text(userEmail);
+    $(".bf-account-span").text(userEmail);
 
-//     showHideDropdownButtons("account", "show");
-//     refreshBfUsersList();
-//     refreshBfTeamsList(bfListTeams);
-//   }
-// };
+    showHideDropdownButtons("account", "show");
+    refreshBfUsersList();
+    refreshBfTeamsList(bfListTeams);
+  }
+};
 
 // const showPrePublishingPageElements = () => {
 //   let selectedBfAccount = defaultBfAccount;
