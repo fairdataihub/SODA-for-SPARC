@@ -1,33 +1,29 @@
 const { ipcMain, dialog, BrowserWindow } = require("electron");
 
 ipcMain.on("open-subject-multi-folder-import-dialog", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openDirectory", "multiSelections"],
-      title: "Select your subject folders",
-    },
-    (files) => {
-      if (files) {
-        mainWindow.webContents.send("selected-subject-names-from-dialog", files);
-      }
-    }
-  );
+  const mainWindow = BrowserWindow.getFocusedWindow();
+
+  const files = dialog.showOpenDialogSync(mainWindow, {
+    properties: ["openDirectory", "multiSelections"],
+    title: "Select your subject folders",
+  });
+
+  if (files) {
+    mainWindow.webContents.send("selected-subject-names-from-dialog", files);
+  }
 });
 
 ipcMain.on("open-sample-multi-folder-import-dialog", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openDirectory", "multiSelections"],
-      title: "Select your sample folders",
-    },
-    (files) => {
-      if (files) {
-        mainWindow.webContents.send("selected-sample-names-from-dialog", files);
-      }
-    }
-  );
+  const mainWindow = BrowserWindow.getFocusedWindow();
+
+  const folders = dialog.showOpenDialogSync(mainWindow, {
+    properties: ["openDirectory", "multiSelections"],
+    title: "Select your sample folders",
+  });
+
+  if (folders) {
+    mainWindow.webContents.send("selected-sample-names-from-dialog", folders);
+  }
 });
 
 ipcMain.on("open-file-dialog-dataset", (event) => {
@@ -45,7 +41,6 @@ ipcMain.on("open-file-dialog-dataset", (event) => {
 });
 
 ipcMain.on("open-file-dialog-newdataset-curate", (event) => {
-  1;
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),
     {

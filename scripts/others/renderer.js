@@ -4951,6 +4951,19 @@ const swalShowError = async (title, errorText) => {
   });
 };
 
+const swalShowInfo = async (title, infoText) => {
+  await Swal.fire({
+    title: title,
+    html: infoText,
+    icon: "info",
+    width: 600,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showConfirmButton: true,
+    confirmButtonText: "OK",
+  });
+};
+
 const swalFileListSingleAction = async (fileList, title, helpText, postActionText) => {
   await Swal.fire({
     title: title,

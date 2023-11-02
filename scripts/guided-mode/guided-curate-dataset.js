@@ -10906,12 +10906,44 @@ const guidedExtractEntityNamesFromFolders = async (entityType) => {
   }
 };
 
+const guidedAddListOfSubjects = async (subjectNameArray) => {
+  // Get the existing subjects added to the dataset to check for duplicates
+  // const existingSubjects = getExistingSubjectNames();
+  const existingSubjects = ["sub-animal-1", "sub-animal-2", "sub-3"];
+
+  // append sub- to each subject name if it doesn't already start with sub-
+  const formattedSubjectNameArray = subjectNameArray.map((subjectName) => {
+    if (!subjectName.startsWith("sub-")) {
+      subjectName = `sub-${subjectName}`;
+    }
+    return subjectName;
+  });
+
+  // Array of the subjects that already exist in the dataset
+  const duplicateSubjects = formattedSubjectNameArray.filter((subjectName) =>
+    existingSubjects.includes(subjectName)
+  );
+
+  // Array of the subjects that do not already exist in the dataset
+  const newSubjects = formattedSubjectNameArray.filter(
+    (subjectName) => !existingSubjects.includes(subjectName)
+  );
+
+  // Let the user know that duplicate subjects will not be added
+  await swalFileListSingleAction(
+    duplicateSubjects,
+    "Duplicate subjects detected",
+    "The following subjects have already been specified and will not be added:",
+    ""
+  );
+};
+
 ipcRenderer.on("selected-subject-names-from-dialog", async (event, folders) => {
   const subjectNames = folders.map((folder) => {
     const folderName = path.basename(folder);
     return folderName;
   });
-  console.log(subjectNames);
+  guidedAddListOfSubjects(subjectNames);
 });
 
 ipcRenderer.on("selected-sample-names-from-dialog", async (event, folders) => {
@@ -10921,6 +10953,7 @@ ipcRenderer.on("selected-sample-names-from-dialog", async (event, folders) => {
   });
   console.log(sampleNames);
 });
+
 const guidedOpenSubjectAdditionSwal = async () => {
   // Get a list of the existing subject names so we can check for duplicates
   // const subjects = getExistingSubjectNames();
