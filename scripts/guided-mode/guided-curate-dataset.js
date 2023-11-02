@@ -74,6 +74,11 @@ const lottieAnimationManager = {
       loop: true,
       autoplay: true,
     },
+    "guided-lottie-import-subjects-folder-structure": {
+      animationData: dragDrop,
+      loop: true,
+      autoplay: true,
+    },
     "guided-dataset-metadata-intro-lottie": {
       animationData: datasetMetadataIntroLottie,
       loop: true,
@@ -10892,6 +10897,30 @@ const getExistingSubjectNames = () => {
   return subjectNames;
 };
 
+const guidedExtractEntityNamesFromFolders = async (entityType) => {
+  if (entityType === "subjects") {
+    ipcRenderer.send("open-subject-multi-folder-import-dialog");
+  }
+  if (entityType === "samples") {
+    ipcRenderer.send("open-multi-folder-dialog");
+  }
+};
+
+ipcRenderer.on("selected-subject-names-from-dialog", async (event, folders) => {
+  const subjectNames = folders.map((folder) => {
+    const folderName = path.basename(folder);
+    return folderName;
+  });
+  console.log(subjectNames);
+});
+
+ipcRenderer.on("selected-sample-names-from-dialog", async (event, folders) => {
+  const sampleNames = folders.map((folder) => {
+    const folderName = path.basename(folder);
+    return folderName;
+  });
+  console.log(sampleNames);
+});
 const guidedOpenSubjectAdditionSwal = async () => {
   // Get a list of the existing subject names so we can check for duplicates
   // const subjects = getExistingSubjectNames();

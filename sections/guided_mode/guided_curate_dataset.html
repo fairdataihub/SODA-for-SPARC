@@ -1444,8 +1444,14 @@
                 id="guided-section-ask-if-subjects-are-organized-in-folders"
               >
                 <label class="guided--form-label centered">
-                  Do you already have your subjects organized into folders?
+                  Do you have your subjects organized in a folder?
                 </label>
+                <p class="help-text">See the image below for an example of organized subjects</p>
+                <img
+                  src="assets/img/organized-subjects-example.png"
+                  alt="Image of organized subjects"
+                  style="width: 100%"
+                />
                 <div class="guided--radio-button-container" style="margin-bottom: 7px">
                   <button
                     class="ui positive basic button guided--radio-button"
@@ -1465,7 +1471,30 @@
                   </button>
                 </div>
                 <div class="guided--section" id="guided-section-import-subjects-via-folders">
-                  This is the UI where you import via folders
+                  <div
+                    class="file-import-container horizontal"
+                    id="guided-container-subjects-pools-samples-structure-import"
+                    data-file-name="subjects_pools_samples_structure"
+                  >
+                    <div
+                      id="guided-lottie-import-subjects-folder-structure"
+                      class="lottieAnimationContainer guided--container-lottie-small"
+                    ></div>
+                    <p class="help-text text-center m-0">Drag and Drop your subject folders</p>
+                    <p class="help-text text-center m-0 mx-2">OR</p>
+                    <button
+                      class="ui primary basic button mx-2"
+                      onclick="guidedExtractEntityNamesFromFolders('subjects')"
+                    >
+                      <i class="fas fa-file-import" style="margin-right: 7px"></i>Import subject
+                      folders
+                    </button>
+                    <p
+                      class="help-text small text-center mt-sm"
+                      id="guided-code-description-para-text"
+                      style="max-width: 240px; overflow-wrap: break-word"
+                    ></p>
+                  </div>
                 </div>
                 <div
                   class="guided--section"

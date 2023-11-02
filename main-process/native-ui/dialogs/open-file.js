@@ -1,5 +1,35 @@
 const { ipcMain, dialog, BrowserWindow } = require("electron");
 
+ipcMain.on("open-subject-multi-folder-import-dialog", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory", "multiSelections"],
+      title: "Select your subject folders",
+    },
+    (files) => {
+      if (files) {
+        mainWindow.webContents.send("selected-subject-names-from-dialog", files);
+      }
+    }
+  );
+});
+
+ipcMain.on("open-sample-multi-folder-import-dialog", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory", "multiSelections"],
+      title: "Select your sample folders",
+    },
+    (files) => {
+      if (files) {
+        mainWindow.webContents.send("selected-sample-names-from-dialog", files);
+      }
+    }
+  );
+});
+
 ipcMain.on("open-file-dialog-dataset", (event) => {
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),
@@ -15,6 +45,7 @@ ipcMain.on("open-file-dialog-dataset", (event) => {
 });
 
 ipcMain.on("open-file-dialog-newdataset-curate", (event) => {
+  1;
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),
     {
