@@ -36,6 +36,7 @@ import Swal from "sweetalert2";
 import DatePicker from "tui-date-picker"; /* CommonJS */
 import datasetUploadSession from "../analytics/upload-session-tracker";
 import kombuchaEnums from "../analytics/analytics-enums"
+import client from '../client'
 
 import {
   createEventData,
@@ -52,9 +53,9 @@ import fixPath from "./update-path-darwin"
 import api from "./api/api"
 import {
   confirm_click_account_function, showHideDropdownButtons,
-  updateDatasetList, openDropdownPrompt, bfAccountOptionsStatus,
+  updateDatasetList, openDropdownPrompt,
   bfAccountOptions, defaultBfAccount, defaultBfDataset, defaultBfDatasetId,
-  reverseSwalButtons
+  reverseSwalButtons, SODA_SPARC_API_KEY
 } from '../globals'
 import checkForAnnouncements from './announcements'
 
@@ -90,14 +91,11 @@ let introStatus = {
 // // Log file settings //
 window.log.setupRendererLogOptions()
 const homeDirectory = await window.electron.ipcRenderer.invoke('get-app-path', 'home')
-const SODA_SPARC_API_KEY = "SODA-Pennsieve";
 
-// // get port number from the main process
-window.log.info("Requesting the port");
-const port = await window.electron.ipcRenderer.invoke("get-port");
-window.log.info("Port is: " + port);
+
 
 // set to true once the SODA server has been connected to
+// TODO: Fix this since we removed updating this variable in the startup logic
 let sodaIsConnected = false;
 // set to true once the API version has been confirmed
 let apiVersionChecked = false;
@@ -279,10 +277,7 @@ const wait = async (delay) => {
   return new Promise((resolve) => setTimeout(resolve, delay));
 };
 
-let client = axios.create({
-  baseURL: `http://127.0.0.1:${port}`,
-  timeout: 300000,
-});
+
 
 // check that the client connected to the server using exponential backoff
 // verify the api versions match
@@ -361,6 +356,8 @@ const startupServerAndApiCheck = async () => {
     // Restart the app
     await window.electron.ipcRenderer.invoke("relaunch-soda")
   }
+
+  sodaIsConnected = true
 
   console.log("Connected to Python back-end successfully");
   log.info("Connected to Python back-end successfully");
@@ -1186,69 +1183,69 @@ const check_api_key = async () => {
 //   return [true, agent_version];
 // };
 
-// const get_latest_agent_version = async () => {
-//   let browser_download_url = undefined;
+const get_latest_agent_version = async () => {
+  let browser_download_url = undefined;
 
-//   // let the error raise up to the caller if one occurs
-//   let releasesResponse;
-//   try {
-//     releasesResponse = await axios.get(
-//       "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases"
-//     );
-//   } catch (error) {
-//     throw new Error("Could not find the lastest release on Pennsieve's Github");
-//   }
+  // let the error raise up to the caller if one occurs
+  let releasesResponse;
+  try {
+    releasesResponse = await axios.get(
+      "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases"
+    );
+  } catch (error) {
+    throw new Error("Could not find the lastest release on Pennsieve's Github");
+  }
 
-//   let releases = releasesResponse.data;
-//   let targetRelease = undefined;
-//   let latest_agent_version = undefined;
-//   for (const release of releases) {
-//     targetRelease = release;
-//     latest_agent_version = release.tag_name;
-//     if (!release.prerelease && !release.draft) {
-//       break;
-//     }
-//   }
+  let releases = releasesResponse.data;
+  let targetRelease = undefined;
+  let latest_agent_version = undefined;
+  for (const release of releases) {
+    targetRelease = release;
+    latest_agent_version = release.tag_name;
+    if (!release.prerelease && !release.draft) {
+      break;
+    }
+  }
 
-//   if (process.platform == "darwin") {
-//     reverseSwalButtons = true;
-//     targetRelease.assets.forEach((asset, index) => {
-//       let file_name = asset.name;
-//       if (path.extname(file_name) == ".pkg") {
-//         browser_download_url = asset.browser_download_url;
-//       }
-//     });
-//   }
+  if (process.platform == "darwin") {
+    reverseSwalButtons = true;
+    targetRelease.assets.forEach((asset, index) => {
+      let file_name = asset.name;
+      if (path.extname(file_name) == ".pkg") {
+        browser_download_url = asset.browser_download_url;
+      }
+    });
+  }
 
-//   if (process.platform == "win32") {
-//     reverseSwalButtons = false;
-//     targetRelease.assets.forEach((asset, index) => {
-//       let file_name = asset.name;
-//       if (path.extname(file_name) == ".msi" || path.extname(file_name) == ".exe") {
-//         browser_download_url = asset.browser_download_url;
-//       }
-//     });
-//   }
+  if (process.platform == "win32") {
+    reverseSwalButtons = false;
+    targetRelease.assets.forEach((asset, index) => {
+      let file_name = asset.name;
+      if (path.extname(file_name) == ".msi" || path.extname(file_name) == ".exe") {
+        browser_download_url = asset.browser_download_url;
+      }
+    });
+  }
 
-//   if (process.platform == "linux") {
-//     reverseSwalButtons = false;
-//     targetRelease.assets.forEach((asset, index) => {
-//       let file_name = asset.name;
-//       if (path.extname(file_name) == ".deb") {
-//         browser_download_url = asset.browser_download_url;
-//       }
-//     });
-//   }
+  if (process.platform == "linux") {
+    reverseSwalButtons = false;
+    targetRelease.assets.forEach((asset, index) => {
+      let file_name = asset.name;
+      if (path.extname(file_name) == ".deb") {
+        browser_download_url = asset.browser_download_url;
+      }
+    });
+  }
 
-//   if (browser_download_url == undefined) {
-//     throw new Error("Could not find a download url for the agent.");
-//   }
-//   if (latest_agent_version == undefined) {
-//     throw new Error("Could not extract the latest agent version from the release.");
-//   }
+  if (browser_download_url == undefined) {
+    throw new Error("Could not find a download url for the agent.");
+  }
+  if (latest_agent_version == undefined) {
+    throw new Error("Could not extract the latest agent version from the release.");
+  }
 
-//   return [browser_download_url, latest_agent_version];
-// };
+  return [browser_download_url, latest_agent_version];
+};
 
 const checkNewAppVersion = async () => {
   let currentAppVersion = await window.electron.ipcRenderer.invoke("app-version");
@@ -1373,9 +1370,7 @@ window.electron.ipcRenderer.on("app_version", (event, arg) => {
 // const manifestStatus = document.querySelector("#generate-manifest");
 
 // // Manage datasets //
-let myitem;
-let datasetList = [];
-let organizationList = [];
+
 // let sodaCopy = {};
 // let datasetStructCopy = {};
 // const bfUploadRefreshDatasetBtn = document.getElementById("button-upload-refresh-dataset-list");
@@ -3981,7 +3976,7 @@ const populateDatasetDropdowns = (mylist) => {
 // };
 // ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
-const updateBfAccountList = async () => {
+window.updateBfAccountList = async () => {
   let responseObject;
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
@@ -4512,8 +4507,9 @@ const loadDefaultAccount = async () => {
 // // this function is called in the beginning to load bf accounts to a list
 // // which will be fed as dropdown options
 const retrieveBFAccounts = async () => {
-  bfAccountOptions = [];
-  bfAccountOptionsStatus = "";
+  // remove all elements from the array
+  bfAccountOptions.length = 0
+  window.bfAccountOptionsStatus = "";
 
   if (hasConnectedAccountWithPennsieve()) {
     client

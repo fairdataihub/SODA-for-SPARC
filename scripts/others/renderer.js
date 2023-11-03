@@ -94,7 +94,6 @@ let introStatus = {
 log.transports.console.level = false;
 log.transports.file.maxSize = 1024 * 1024 * 10;
 const homeDirectory = app.getPath("home");
-const SODA_SPARC_API_KEY = "SODA-Pennsieve";
 
 // get port number from the main process
 log.info("Requesting the port");
