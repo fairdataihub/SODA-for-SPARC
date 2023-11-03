@@ -1,4 +1,6 @@
 import Swal from 'sweetalert2'
+import 'bootstrap-select'
+
 import api from './others/api/api'
 import {clientError, userErrorMessage} from './others/http-error-handler/error-handler'
 import client from './client'

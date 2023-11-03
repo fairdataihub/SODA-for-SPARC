@@ -36,7 +36,7 @@
     "@yaireo/tagify": "^4.17.9",
     "animate.css": "4.1.1",
     "axios": "^1.6.0",
-    "bootbox": "^5.0.1",
+    "bootbox": "^5.5.2",
     "bootstrap": "4.0.0",
     "bootstrap-icons": "1.5.0",
     "bootstrap-select": "^1.13.18",

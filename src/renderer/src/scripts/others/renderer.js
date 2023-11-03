@@ -17,6 +17,7 @@ import Tagify from "@yaireo/tagify";
 import jQuery from 'jquery'
 import bootstrap from 'bootstrap'
 import * as popper from '@popperjs/core'
+import 'bootstrap-select'
 // import * as bootbox from "bootbox";
 import DragSelect from "dragselect";
 import excelToJson from "convert-excel-to-json";
