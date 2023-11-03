@@ -68,6 +68,7 @@ function createWindow() {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
       contextIsolation: true,
+      webSecurity: false // TODO: set to true and make the Python server a proxy to add CORS headers
     }
   })
 

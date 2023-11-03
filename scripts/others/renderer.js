@@ -1487,7 +1487,7 @@ let bfAccountOptions;
 let defaultBfAccount;
 let defaultBfDataset = "Select dataset";
 let defaultBfDatasetId = undefined;
-let bfAccountOptionsStatus;
+
 
 // Organize dataset //
 const selectImportFileOrganizationBtn = document.getElementById(
