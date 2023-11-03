@@ -101,7 +101,7 @@ const handleSectionTrigger = async (event) => {
         focusCancel: true,
         cancelButtonText: "Cancel",
         confirmButtonText: "Go back Home",
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {

@@ -758,7 +758,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked(defaultBfAccount, datasetName);
+    const isLocked = await api.isDatasetLocked(window.defaultBfDataset, datasetName);
 
     if (isLocked) {
       await Swal.fire({
@@ -865,7 +865,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
       },
       {
         params: {
-          selected_account: defaultBfAccount,
+          selected_account: window.defaultBfDataset,
           selected_dataset: datasetName,
         },
       }
@@ -950,7 +950,7 @@ $("#submission-completion-date").change(function () {
       showCloseButton: true,
       focusConfirm: true,
       heightAuto: false,
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       showCancelButton: false,
       title: `<span style="text-align:center"> Enter your Milestone completion date </span>`,
       html: `<input type="date" id="milestone_date_picker" >`,
@@ -1014,7 +1014,7 @@ const showExistingSubmissionFile = (type) => {
       confirmButtonColor: "#3085d6",
       confirmButtonText: "Yes",
       icon: "warning",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send(`open-file-dialog-existing-submission`);
@@ -1218,7 +1218,7 @@ const checkBFImportSubmission = async () => {
     let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
       params: {
         file_type: "submission.xlsx",
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfDataset,
         selected_dataset: bfDataset,
       },
     });

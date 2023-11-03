@@ -334,7 +334,7 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
     const changesRes = await client.get(`/prepare_metadata/readme_changes_file`, {
       params: {
         file_type: "CHANGES",
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfDataset,
         selected_dataset: pennsieveDatasetID,
       },
     });
@@ -343,7 +343,7 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
   } catch (error) {
     const emessage = userErrorMessage(error);
 
-    const datasetInfo = await api.getDatasetInformation(defaultBfAccount, pennsieveDatasetID);
+    const datasetInfo = await api.getDatasetInformation(window.defaultBfDataset, pennsieveDatasetID);
     const isPublished = datasetInfo?.publication?.status === "completed";
 
     if (isPublished) {
@@ -358,7 +358,7 @@ const skipOrUnSkipCodeDescriptionPage = async (pennsieveDatasetID) => {
   try {
     await client.get(`/prepare_metadata/import_metadata_file`, {
       params: {
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfDataset,
         selected_dataset: pennsieveDatasetID,
         file_type: "code_description.xlsx",
       },
@@ -594,7 +594,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
 
         const datasetIsLocked = await api.isDatasetLocked(
-          defaultBfAccount,
+          window.defaultBfDataset,
           selectedPennsieveDataset
         );
         if (datasetIsLocked) {
@@ -614,7 +614,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         //Pull the dataset folders and files from Pennsieve\
         sodaJSONObj["bf-dataset-selected"] = {};
         sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedPennsieveDataset;
-        sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
+        sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfDataset;
         const importProgressCircle = document.querySelector(
           "#guided_loading_pennsieve_dataset-organize"
         );
@@ -726,7 +726,7 @@ const savePageChanges = async (pageBeingLeftID) => {
               `/prepare_metadata/import_metadata_file`,
               {
                 params: {
-                  selected_account: defaultBfAccount,
+                  selected_account: window.defaultBfDataset,
                   selected_dataset: selectedPennsieveDatasetID,
                   file_type: "subjects.xlsx",
                   ui_fields: fieldEntries.toString(),
@@ -762,7 +762,7 @@ const savePageChanges = async (pageBeingLeftID) => {
                 `/prepare_metadata/import_metadata_file`,
                 {
                   params: {
-                    selected_account: defaultBfAccount,
+                    selected_account: window.defaultBfDataset,
                     selected_dataset: selectedPennsieveDatasetID,
                     file_type: "samples.xlsx",
                     ui_fields: fieldEntries.toString(),
@@ -1481,7 +1481,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         "guided-confirm-pennsieve-account-button"
       );
       if (!confirmAccountbutton.classList.contains("selected")) {
-        if (!defaultBfAccount) {
+        if (!window.defaultBfDataset) {
           // If the user has not logged in, throw an error
           errorArray.push({
             type: "notyf",
@@ -1523,7 +1523,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      sodaJSONObj["last-confirmed-bf-account-details"] = defaultBfAccount;
+      sodaJSONObj["last-confirmed-bf-account-details"] = window.defaultBfDataset;
       sodaJSONObj["last-confirmed-pennsieve-workspace-details"] = userSelectedWorkSpace;
     }
 
@@ -1651,7 +1651,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           cancelButtonText: "Go back to add folders and files",
           cancelButtonWidth: "200px",
           confirmButtonText: "Continue without adding folders and files",
-          reverseSwalButtons: true,
+          window.reverseSwalButtons: true,
         });
         if (!continueProgress) {
           $(this).removeClass("loading");
@@ -1692,7 +1692,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           focusCancel: true,
           confirmButtonText: "Yes, Continue",
           backdrop: "rgba(0,0,0, 0.4)",
-          reverseButtons: reverseSwalButtons,
+          reverseButtons: window.reverseSwalButtons,
           heightAuto: false,
           allowOutsideClick: false,
         });
@@ -2543,7 +2543,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
 
 const checkIfDatasetExistsOnPennsieve = async (datasetNameOrID) => {
   let datasetName = null;
-  const datasetList = await api.getDatasetsForAccount(defaultBfAccount);
+  const datasetList = await api.getDatasetsForAccount(window.defaultBfDataset);
   for (const dataset of datasetList) {
     if (dataset.name === datasetNameOrID || dataset.id === datasetNameOrID) {
       datasetName = dataset.name;
@@ -2982,7 +2982,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     if (workspaceUserNeedsToSwitchTo) {
       // If the progress file has an organization set but the user is no longer logged in,
       // prompt the user to log in
-      if (!defaultBfAccount) {
+      if (!window.defaultBfDataset) {
         return `
           <button
             class="ui positive button guided--progress-button-login-to-pennsieve"
@@ -3513,7 +3513,7 @@ document
             icon: "error",
             confirmButtonText: "Ok",
             backdrop: "rgba(0,0,0, 0.4)",
-            reverseButtons: reverseSwalButtons,
+            reverseButtons: window.reverseSwalButtons,
             heightAuto: false,
             showClass: {
               popup: "animate__animated animate__zoomIn animate__faster",
@@ -3532,7 +3532,7 @@ document
             icon: "error",
             confirmButtonText: "Ok",
             backdrop: "rgba(0,0,0, 0.4)",
-            reverseButtons: reverseSwalButtons,
+            reverseButtons: window.reverseSwalButtons,
             heightAuto: false,
             showClass: {
               popup: "animate__animated animate__zoomIn animate__faster",
@@ -3726,7 +3726,7 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   pennsieveDatasetSelectDiv.classList.add("hidden");
 
   // If the user is not logged in, show the log in div and return
-  if (!defaultBfAccount) {
+  if (!window.defaultBfDataset) {
     logInDiv.classList.remove("hidden");
     return;
   }
@@ -3739,7 +3739,7 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   try {
     let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
       params: {
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfDataset,
       },
     });
     const datasets = responseObject.data.datasets;
@@ -4930,7 +4930,7 @@ const openPage = async (targetPageID) => {
           //Try to get the dataset name from Pennsieve
           //If the request fails, the subtitle input will remain blank
           const datasetSubtitle = await api.getDatasetSubtitle(
-            defaultBfAccount,
+            window.defaultBfDataset,
             sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
           );
 
@@ -4969,7 +4969,7 @@ const openPage = async (targetPageID) => {
           // Get the submission metadata from Pennsieve
           const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
-              selected_account: defaultBfAccount,
+              selected_account: window.defaultBfDataset,
               selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "submission.xlsx",
             },
@@ -5293,7 +5293,7 @@ const openPage = async (targetPageID) => {
         try {
           const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
-              selected_account: defaultBfAccount,
+              selected_account: window.defaultBfDataset,
               selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "submission.xlsx",
             },
@@ -5414,7 +5414,7 @@ const openPage = async (targetPageID) => {
         try {
           let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
-              selected_account: defaultBfAccount,
+              selected_account: window.defaultBfDataset,
               selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "dataset_description.xlsx",
             },
@@ -5466,7 +5466,7 @@ const openPage = async (targetPageID) => {
         try {
           let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
-              selected_account: defaultBfAccount,
+              selected_account: window.defaultBfDataset,
               selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "dataset_description.xlsx",
             },
@@ -5514,7 +5514,7 @@ const openPage = async (targetPageID) => {
         try {
           let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
-              selected_account: defaultBfAccount,
+              selected_account: window.defaultBfDataset,
               selected_dataset: sodaJSONObj["bf-dataset-selected"]["dataset-name"],
               file_type: "dataset_description.xlsx",
             },
@@ -5624,7 +5624,7 @@ const openPage = async (targetPageID) => {
           try {
             const currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
             const tagsReq = await client.get(`/manage_datasets/datasets/${currentDatasetID}/tags`, {
-              params: { selected_account: defaultBfAccount },
+              params: { selected_account: window.defaultBfDataset },
             });
             const { tags } = tagsReq.data;
             if (tags.length > 0) {
@@ -5655,7 +5655,7 @@ const openPage = async (targetPageID) => {
         if (!studyPurpose && !studyDataCollection && !studyPrimaryConclusion) {
           try {
             const pennsieveDatasetDescription = await api.getDatasetReadme(
-              defaultBfAccount,
+              window.defaultBfDataset,
               sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
             );
             const parsedDescription = createParsedReadme(pennsieveDatasetDescription);
@@ -5810,7 +5810,7 @@ const openPage = async (targetPageID) => {
         "guided-confirm-pennsieve-account"
       );
       const selectPennsieveAccountDiv = document.getElementById("guided-select-pennsieve-account");
-      if (!defaultBfAccount) {
+      if (!window.defaultBfDataset) {
         confirmPennsieveAccountDiv.classList.add("hidden");
         selectPennsieveAccountDiv.classList.remove("hidden");
       } else {
@@ -5849,7 +5849,7 @@ const openPage = async (targetPageID) => {
         try {
           // pass in the id in case the name of the dataset has been
           // changed from the original Pennsieve dataset name
-          let res = await api.getDatasetBannerImageURL(defaultBfAccount, datasetID);
+          let res = await api.getDatasetBannerImageURL(window.defaultBfDataset, datasetID);
           if (res != "No banner image") {
             //Banner is returned as an s3 bucket url but image needs to be converted as
             //base64 to save and write to users local system
@@ -5944,10 +5944,10 @@ const openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-designate-permissions-tab") {
       const usersReq = await client.get(
-        `manage_datasets/ps_get_users?selected_account=${defaultBfAccount}`
+        `manage_datasets/ps_get_users?selected_account=${window.defaultBfDataset}`
       );
       const teamsReq = await client.get(
-        `manage_datasets/ps_get_teams?selected_account=${defaultBfAccount}`
+        `manage_datasets/ps_get_teams?selected_account=${window.defaultBfDataset}`
       );
 
       const usersThatCanBeGrantedPermissions = usersReq.data.users;
@@ -5973,7 +5973,7 @@ const openPage = async (targetPageID) => {
           });
 
           const permissions = await api.getDatasetPermissions(
-            defaultBfAccount,
+            window.defaultBfDataset,
             sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
             false
           );
@@ -6089,7 +6089,7 @@ const openPage = async (targetPageID) => {
         try {
           const licenseReq = await client.get(`/manage_datasets/bf_license`, {
             params: {
-              selected_account: defaultBfAccount,
+              selected_account: window.defaultBfDataset,
               selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
             },
           });
@@ -6280,7 +6280,7 @@ const openPage = async (targetPageID) => {
         try {
           await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
-              selected_account: defaultBfAccount,
+              selected_account: window.defaultBfDataset,
               selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "code_description.xlsx",
             },
@@ -6341,7 +6341,7 @@ const openPage = async (targetPageID) => {
             params: {
               file_type: "README",
 
-              selected_account: defaultBfAccount,
+              selected_account: window.defaultBfDataset,
               selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
             },
           });
@@ -7240,7 +7240,7 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
     return false;
   }
   // If the user has changed their Pennsieve account, they need to confirm their new Pennsieve account and workspace
-  if (sodaJSONObj?.["last-confirmed-bf-account-details"] !== defaultBfAccount) {
+  if (sodaJSONObj?.["last-confirmed-bf-account-details"] !== window.defaultBfDataset) {
     if (sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
       delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
     }
@@ -7502,7 +7502,7 @@ const guidedResumeProgress = async (datasetNameToResume) => {
       if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
         // Check to make sure the dataset is not locked
         const datasetIsLocked = await api.isDatasetLocked(
-          defaultBfAccount,
+          window.defaultBfDataset,
           datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"]
         );
         if (datasetIsLocked) {
@@ -7716,7 +7716,7 @@ const guidedWarnBeforeDeletingEntity = async (entityType, entityName) => {
     focusCancel: true,
     confirmButtonText: `Delete ${entityType}`,
     cancelButtonText: "Cancel deletion",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
   });
 
   return continueWithDeletion.isConfirmed;
@@ -9597,7 +9597,7 @@ const openProtocolSwal = async (protocolElement) => {
     cancelButtonText: "Cancel",
     customClass: "swal-content-additional-link",
     showCancelButton: true,
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     heightAuto: false,
     width: "38rem",
     backdrop: "rgba(0,0,0, 0.4)",
@@ -9843,7 +9843,7 @@ const openAddAdditionLinkSwal = async () => {
     cancelButtonText: "Cancel",
     customClass: "swal-content-additional-link",
     showCancelButton: true,
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     didOpen: () => {
@@ -10179,7 +10179,7 @@ const openCopySubjectMetadataPopup = async () => {
       width: 950,
       html: copyMetadataElement,
       showCancelButton: true,
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       confirmButtonColor: "Copy",
       focusCancel: true,
     })
@@ -10273,7 +10273,7 @@ const openCopySampleMetadataPopup = async () => {
       width: 950,
       html: copyMetadataElement,
       showCancelButton: true,
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       confirmButtonText: "Copy",
       focusCancel: true,
     })
@@ -11292,7 +11292,7 @@ $("#guided-button-no-source-data").on("click", () => {
       confirmButtonColor: "#3085d6 !important",
       showCancelButton: true,
       focusCancel: true,
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       heightAuto: false,
       customClass: "swal-wide",
       backdrop: "rgba(0,0,0, 0.4)",
@@ -11332,7 +11332,7 @@ $("#guided-submission-completion-date").change(function () {
       showCloseButton: true,
       focusConfirm: true,
       heightAuto: false,
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       showCancelButton: false,
       title: `<span style="text-align:center"> Enter your Milestone completion date </span>`,
       html: `<input type="date" id="milestone_date_picker" >`,
@@ -11381,7 +11381,7 @@ $("#guided-submission-completion-date-manual").change(function () {
       showCloseButton: true,
       focusConfirm: true,
       heightAuto: false,
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       showCancelButton: false,
       title: `<span style="text-align:center"> Enter your Milestone completion date </span>`,
       html: `<input type="date" id="milestone_date_picker" >`,
@@ -12237,7 +12237,7 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
               `/prepare_metadata/import_metadata_file`,
               {
                 params: {
-                  selected_account: defaultBfAccount,
+                  selected_account: window.defaultBfDataset,
                   selected_dataset: sodaJSONObj["bf-dataset-selected"]["dataset-name"],
                   file_type: "dataset_description.xlsx",
                 },
@@ -13419,7 +13419,7 @@ const guidedUploadREADMEorCHANGESMetadata = async (
 const guidedPennsieveDatasetUpload = async () => {
   guidedSetNavLoadingState(true);
   try {
-    const guidedBfAccount = defaultBfAccount;
+    const guidedBfAccount = window.defaultBfDataset;
     const guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
     const guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
     const guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
@@ -13751,7 +13751,7 @@ const guidedUploadDatasetToPennsieve = async () => {
     dataset_name = sodaJSONObj["digital-metadata"]["name"];
     sodaJSONObj["bf-dataset-selected"] = {};
     sodaJSONObj["bf-dataset-selected"]["dataset-name"] = dataset_name;
-    sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
+    sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfDataset;
     dataset_destination = "Pennsieve";
   }
 
@@ -13871,7 +13871,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
           params: {
-            selected_account: defaultBfAccount,
+            selected_account: window.defaultBfDataset,
           },
         });
         datasetList = [];
@@ -13996,7 +13996,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
           params: {
-            selected_account: defaultBfAccount,
+            selected_account: window.defaultBfDataset,
           },
         });
         datasetList = [];
@@ -14537,7 +14537,7 @@ $("#guided-save-banner-image").click(async (event) => {
         focusCancel: true,
         confirmButtonText: "Yes",
         cancelButtonText: "No",
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
         },
@@ -14555,7 +14555,7 @@ $("#guided-save-banner-image").click(async (event) => {
             focusCancel: true,
             confirmButtonText: "Yes",
             cancelButtonText: "No",
-            reverseButtons: reverseSwalButtons,
+            reverseButtons: window.reverseSwalButtons,
             showClass: {
               popup: "animate__animated animate__zoomIn animate__faster",
             },
@@ -14577,7 +14577,7 @@ $("#guided-save-banner-image").click(async (event) => {
             focusCancel: true,
             confirmButtonText: "Yes",
             cancelButtonText: "No",
-            reverseButtons: reverseSwalButtons,
+            reverseButtons: window.reverseSwalButtons,
             showClass: {
               popup: "animate__animated animate__zoomIn animate__faster",
             },
@@ -15385,7 +15385,7 @@ $("#guided-new-folder").on("click", () => {
       backdrop: "rgba(0,0,0, 0.4)",
       showCancelButton: "Cancel",
       confirmButtonText: "Add folder",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__fadeInDown animate__faster",
       },

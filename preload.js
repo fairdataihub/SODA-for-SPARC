@@ -228,7 +228,7 @@ function resetSubmission(askToReset = true) {
     focusCancel: true,
     heightAuto: false,
     icon: "warning",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     showCancelButton: true,
     text: "Are you sure you want to start over and reset your progress?",
     showClass: {
@@ -324,7 +324,7 @@ function resetDD(askToReset = true) {
     focusCancel: true,
     heightAuto: false,
     icon: "warning",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     showCancelButton: true,
     text: "Are you sure you want to start over and reset your progress?",
     showClass: {
@@ -465,7 +465,7 @@ function resetSubjects(askToReset = true) {
     text: "Are you sure you want to start over and reset your progress?",
     icon: "warning",
     showCancelButton: true,
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over",
@@ -579,7 +579,7 @@ function resetSamples(askToReset = true) {
     text: "Are you sure you want to start over and reset your progress?",
     icon: "warning",
     showCancelButton: true,
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over",
@@ -641,7 +641,7 @@ function resetManifest(askToReset = true) {
       focusCancel: true,
       heightAuto: false,
       icon: "warning",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       showCancelButton: true,
       text: "Are you sure you want to start over and reset your progress?",
       showClass: {
@@ -890,7 +890,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       $("#current-bf-dataset").text("None");
       $("#current-bf-dataset-generate").text("None");
       $(".bf-dataset-span").html("None");
-      defaultBfDataset = "Select dataset";
+      window.defaultBfDataset = "Select dataset";
       document.getElementById("ds-description").innerHTML = "";
       refreshDatasetList();
       $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "none");
@@ -976,7 +976,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       showCloseButton: false,
       focusConfirm: false,
       heightAuto: false,
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       showCancelButton: true,
       title: titleText,
       html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
@@ -1093,15 +1093,15 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           secret: apiSecret,
         });
 
-        // set the user's email to be the defaultBfAccount value
+        // set the user's email to be the window.defaultBfDataset value
         bfAccountOptions[key_name] = key_name;
-        defaultBfAccount = key_name;
-        defaultBfDataset = "Select dataset";
+        window.defaultBfDataset = key_name;
+        window.defaultBfDataset = "Select dataset";
 
         try {
           let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
             params: {
-              selected_account: defaultBfAccount,
+              selected_account: window.defaultBfDataset,
             },
           });
           // reset the dataset field values
@@ -1142,7 +1142,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
         }
 
         datasetList = [];
-        defaultBfDataset = null;
+        window.defaultBfDataset = null;
         clearDatasetDropdowns();
 
         let titleText = "Successfully added! <br/>Loading your account details...";
@@ -1244,7 +1244,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           backdrop: "rgba(0,0,0, 0.4)",
           confirmButtonText: "Yes",
           showCancelButton: true,
-          reverseButtons: reverseSwalButtons,
+          reverseButtons: window.reverseSwalButtons,
           cancelButtonText: "I'll do it later",
           showClass: {
             popup: "animate__animated animate__zoomIn animate__faster",
@@ -1277,7 +1277,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           try {
             responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
               params: {
-                selected_account: defaultBfAccount,
+                selected_account: window.defaultBfDataset,
               },
             });
           } catch (error) {
@@ -1349,7 +1349,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           allowOutsideClick: false,
           allowEscapeKey: true,
           html: datasetPermissionDiv,
-          reverseButtons: reverseSwalButtons,
+          reverseButtons: window.reverseSwalButtons,
           showCloseButton: true,
           showCancelButton: true,
           title: "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
@@ -1438,7 +1438,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
             // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
             // Ensure the dataset is not locked before proceeding
-            const datasetIsLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
+            const datasetIsLocked = await api.isDatasetLocked(window.defaultBfDataset, bfDataset);
             if (datasetIsLocked) {
               // Show the locked swal and return
               await Swal.fire({
@@ -1479,7 +1479,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#button-refresh-publishing-status").addClass("fa-spin");
             $("#para-review-dataset-info-disseminate").text("None");
 
-            defaultBfDataset = bfDataset;
+            window.defaultBfDataset = bfDataset;
             // document.getElementById("ds-description").innerHTML = "";
             refreshDatasetList();
             $("#dataset-loaded-message").hide();
@@ -1534,7 +1534,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         for (const item of datasetList) {
           let { name, id } = item;
           if (name === bfDataset) {
-            defaultBfDatasetId = id;
+            window.window.defaultBfDatasetId = id;
           }
         }
 
@@ -1547,8 +1547,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         ipcRenderer.send(
           "track-event",
           "Dataset ID to Dataset Name Map",
-          defaultBfDatasetId,
-          defaultBfDataset
+          window.window.defaultBfDatasetId,
+          window.defaultBfDataset
         );
 
         // document.getElementById("ds-description").innerHTML = "";
@@ -1576,7 +1576,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $("body").removeClass("waiting");
       $(".svg-change-current-account.dataset").css("display", "block");
       $(".ui.active.green.inline.loader.small").css("display", "none");
-      ipcRenderer.send("track-event", "Success", "Selecting dataset", defaultBfDatasetId, 1);
+      ipcRenderer.send("track-event", "Success", "Selecting dataset", window.window.defaultBfDatasetId, 1);
     }, 10);
   } else if (dropdown === "organization") {
     // TODO: Change these classes to organization classes
@@ -1615,7 +1615,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         backdrop: "rgba(0,0,0, 0.4)",
         confirmButtonText: "Yes",
         showCancelButton: true,
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         cancelButtonText: "I'll do it later",
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
@@ -1669,7 +1669,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       try {
         responseObject = await client.get(`user/organizations`, {
           params: {
-            selected_account: defaultBfAccount,
+            selected_account: window.defaultBfDataset,
           },
         });
       } catch (error) {
@@ -1705,7 +1705,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         allowOutsideClick: false,
         allowEscapeKey: true,
         html: datasetPermissionDiv,
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         showCloseButton: true,
         showCancelButton: true,
         title: "<h3 style='margin-bottom:20px !important'>Select your workspace</h3>",
@@ -1814,7 +1814,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         showCloseButton: false,
         focusConfirm: false,
         heightAuto: false,
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         showCancelButton: true,
         title: `<h3 style="text-align:center">To switch your organization please provide your email and password</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`,
         html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
@@ -1908,7 +1908,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       // reset the dataset list
       datasetList = [];
-      defaultBfDataset = null;
+      window.defaultBfDataset = null;
       clearDatasetDropdowns();
 
       // checkPrevDivForConfirmButton("dataset");

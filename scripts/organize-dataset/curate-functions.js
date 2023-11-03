@@ -459,7 +459,7 @@ const importGenerateDatasetStep = async (object) => {
         sodaJSONObj["bf-account-selected"]["account-name"] !== ""
       ) {
         let bfAccountSelected = sodaJSONObj["bf-account-selected"]["account-name"];
-        if (bfAccountSelected != defaultBfAccount) {
+        if (bfAccountSelected != window.defaultBfDataset) {
           return;
         }
         $("#current-bf-account-generate").text(bfAccountSelected);
@@ -661,7 +661,7 @@ const verify_missing_files = (mode) => {
     title:
       "The following files have been moved, deleted, or renamed since this progress was saved. If you continue, they will be ignored",
     icon: "warning",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     showCancelButton: true,
     html: message_text,
     showClass: {
@@ -791,7 +791,7 @@ $(document).ready(async function () {
 
 
 $("#select-permission-list-2").change((e) => {
-  // updateDatasetList(defaultBfAccount);
+  // updateDatasetList(window.defaultBfDataset);
   $("#div-filter-datasets-progress-2").css("display", "block");
 
   $("#bf-dataset-select-header").css("display", "none");
@@ -1173,7 +1173,7 @@ const moveItems = async (ev, category) => {
     focusConfirm: false,
     heightAuto: false,
     html: jstreeInstance,
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     showCancelButton: true,
     showCloseButton: true,
     title: "<h3 style='margin-bottom:20px !important'>Please choose a folder destination:</h3>",
@@ -1213,7 +1213,7 @@ const moveItems = async (ev, category) => {
       focusCancel: true,
       heightAuto: false,
       icon: "warning",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       showCancelButton: true,
       title: `Are you sure you want to move selected item(s) to: ${selectedPath}?`,
       showClass: {

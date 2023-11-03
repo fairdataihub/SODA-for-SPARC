@@ -309,7 +309,7 @@ const showExistingDDFile = () => {
       confirmButtonColor: "#3085d6",
       confirmButtonText: "Yes",
       icon: "warning",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send("open-file-dialog-existing-DD");
@@ -347,7 +347,7 @@ const generateDatasetDescription = async () => {
       focusCancel: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -372,7 +372,7 @@ const generateDatasetDescription = async () => {
 };
 
 const generateDDFile = async (uploadBFBoolean) => {
-  let bfaccountname = defaultBfAccount;
+  let bfaccountname = window.defaultBfDataset;
   let bf_dataset = document.getElementById("bf_dataset_load_dd").innerText.trim();
   if (uploadBFBoolean) {
     /// get current, selected Pennsieve account
@@ -649,7 +649,7 @@ const addProtocol = async () => {
     cancelButtonText: "Cancel",
     customClass: "swal-content-additional-link",
     showCancelButton: true,
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     heightAuto: false,
     width: "38rem",
     backdrop: "rgba(0,0,0, 0.4)",
@@ -872,7 +872,7 @@ const showContributorSweetalert = (key) => {
     cancelButtonText: "Cancel",
     confirmButtonText: "Add contributor",
     width: "max-content",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     allowOutsideClick: false,
@@ -1036,7 +1036,7 @@ const delete_current_con_id = (ev) => {
     cancelButtonColor: "#f44336",
     confirmButtonColor: "#3085d6",
     confirmButtonText: "Yes",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
   }).then((boolean) => {
     if (boolean.isConfirmed) {
       // 1. Delete from table
@@ -1072,7 +1072,7 @@ const edit_current_con_id = (ev) => {
     confirmButtonText: "Confirm",
     width: "max-content",
     customClass: "contributor-popup",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     allowOutsideClick: false,
@@ -1547,7 +1547,7 @@ const checkBFImportDD = async () => {
   try {
     let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
       params: {
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfDataset,
         selected_dataset: bf_dataset,
         file_type: "dataset_description.xlsx",
       },

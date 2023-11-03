@@ -3,8 +3,8 @@ const createEventDataPrepareMetadata = (destination, value) => {
     return {
       value,
       destination: "Pennsieve",
-      dataset_name: defaultBfDataset,
-      dataset_id: defaultBfDatasetId,
+      dataset_name: window.defaultBfDataset,
+      dataset_id: window.window.defaultBfDatasetId,
     };
   }
 

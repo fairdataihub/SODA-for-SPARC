@@ -290,7 +290,7 @@ const userWantsToResetValidation = async () => {
       focusCancel: true,
       confirmButtonText: "Yes",
       backdrop: "rgba(0,0,0, 0.4)",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },

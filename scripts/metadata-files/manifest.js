@@ -847,12 +847,12 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   await wait(500);
   if (!localGenerationDifferentDestination) {
     // Check if dataset is locked before generating manifest
-    const isLocked = await api.isDatasetLocked(defaultBfAccount, defaultBfDataset);
+    const isLocked = await api.isDatasetLocked(window.defaultBfDataset, window.defaultBfDataset);
 
     if (isLocked) {
       await Swal.fire({
         icon: "info",
-        title: `${defaultBfDataset} is locked from editing`,
+        title: `${window.defaultBfDataset} is locked from editing`,
         html: `
           This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
           <br />
@@ -1065,9 +1065,9 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
     if (manifestEditBoolean) {
       generateAfterEdits();
     } else {
-      sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
-      sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
-      extractBFDatasetForManifestFile(false, defaultBfAccount, defaultBfDataset, ev);
+      sodaJSONObj["bf-account-selected"] = { "account-name": window.defaultBfDataset };
+      sodaJSONObj["bf-dataset-selected"] = { "dataset-name": window.defaultBfDataset };
+      extractBFDatasetForManifestFile(false, window.defaultBfDataset, window.defaultBfDataset, ev);
     }
   }
 };
@@ -1272,7 +1272,7 @@ const initiate_generate_manifest_bf = async () => {
 
     try {
       datasetList = [];
-      datasetList = await api.getDatasetsForAccount(defaultBfAccount);
+      datasetList = await api.getDatasetsForAccount(window.defaultBfDataset);
     } catch (error) {
       clientError(error);
     }
@@ -1369,7 +1369,7 @@ const initiate_generate_manifest_bf = async () => {
     kombuchaEnums.Status.SUCCESS,
     {
       value: high_level_folder_num,
-      dataset_id: defaultBfDatasetId,
+      dataset_id: window.window.defaultBfDatasetId,
       origin: origin,
       destination: destination,
     }
@@ -1643,7 +1643,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
     $("#Question-prepare-manifest-4").removeClass("prev");
     $("#Question-prepare-manifest-3").removeClass("prev");
     $("#bf_dataset_create_manifest").text("None");
-    defaultBfDataset = "Select dataset";
+    window.defaultBfDataset = "Select dataset";
     // log the Generate action without the destination
     logMetadataForAnalytics(
       "Error",
@@ -1696,7 +1696,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
       $("#bf_dataset_create_manifest").text("None");
-      defaultBfDataset = "Select dataset";
+      window.defaultBfDataset = "Select dataset";
       logMetadataForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.MANIFEST,
@@ -1738,7 +1738,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
       $("#bf_dataset_create_manifest").text("None");
-      defaultBfDataset = "Select dataset";
+      window.defaultBfDataset = "Select dataset";
       logMetadataForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.MANIFEST,
@@ -1771,7 +1771,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
       hideProgressContainer(progressContainer);
       spanManifest.style.display = "none";
 
-      defaultBfDataset = "Select dataset";
+      window.defaultBfDataset = "Select dataset";
       // log the error to analytics
       logMetadataForAnalytics(
         "Error",
@@ -1825,8 +1825,8 @@ const extractBFManifestFile = () => {
         `/prepare_metadata/manifest_files/pennsieve`,
         {
           soda_json_object: sodaJSONObj,
-          selected_account: defaultBfAccount,
-          selected_dataset: defaultBfDataset,
+          selected_account: window.defaultBfDataset,
+          selected_dataset: window.defaultBfDataset,
         },
         {
           timeout: 0,
@@ -1888,7 +1888,7 @@ const validateSPARCdataset = () => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showConfirmButton: true,
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -2076,9 +2076,9 @@ const generateManifestFolderLocallyForEdit = async (ev) => {
     createManifestLocally("local", true, "");
   } else {
     // Case 2: bf dataset
-    sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
-    sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
-    extractBFDatasetForManifestFile(true, defaultBfAccount, defaultBfDataset, ev);
+    sodaJSONObj["bf-account-selected"] = { "account-name": window.defaultBfDataset };
+    sodaJSONObj["bf-dataset-selected"] = { "dataset-name": window.defaultBfDataset };
+    extractBFDatasetForManifestFile(true, window.defaultBfDataset, window.defaultBfDataset, ev);
   }
 };
 
@@ -2460,8 +2460,8 @@ const generateAfterEdits = async () => {
   datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
   populate_existing_folders(datasetStructureJSONObj);
   populate_existing_metadata(sodaJSONObj);
-  sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
-  sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
+  sodaJSONObj["bf-account-selected"] = { "account-name": window.defaultBfDataset };
+  sodaJSONObj["bf-dataset-selected"] = { "dataset-name": window.defaultBfDataset };
   sodaJSONObj["generate-dataset"] = {
     destination: "bf",
     "if-existing": "merge",

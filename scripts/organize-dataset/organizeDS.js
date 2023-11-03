@@ -118,7 +118,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
       confirmButtonText: "OK",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -204,7 +204,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
         focusCancel: true,
         confirmButtonText: `Delete ${type}`,
         cancelButtonText: "Cancel",
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
         },
@@ -266,7 +266,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
         focusCancel: true,
         confirmButtonText: `Delete ${promptVar}`,
         cancelButtonText: "Cancel",
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
         },
@@ -479,7 +479,7 @@ const renameFolder = (
       focusCancel: true,
       confirmButtonText: "Save",
       cancelButtonText: "Cancel",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__fadeInDown animate__faster",
       },

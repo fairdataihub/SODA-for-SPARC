@@ -121,7 +121,7 @@ const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
       "track-event",
       "Error",
       "Disseminate Datasets - Show current dataset permission",
-      defaultBfDatasetId
+      window.window.defaultBfDatasetId
     );
     return;
   }
@@ -143,7 +143,7 @@ const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
     "track-event",
     "Success",
     "Disseminate Datasets - Show current dataset permission",
-    defaultBfDatasetId
+    window.window.defaultBfDatasetId
   );
 };
 
@@ -171,7 +171,7 @@ const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) 
         "track-event",
         "Success",
         "Disseminate Datasets - Show current dataset status",
-        defaultBfDatasetId
+        window.window.defaultBfDatasetId
       );
       var myitemselect = [];
       removeOptions(bfListDatasetStatus);
@@ -198,7 +198,7 @@ const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) 
         "track-event",
         "Error",
         "Disseminate Datasets - Show current dataset status",
-        defaultBfDatasetId
+        window.window.defaultBfDatasetId
       );
     }
   }

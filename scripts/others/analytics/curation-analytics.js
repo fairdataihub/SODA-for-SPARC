@@ -66,7 +66,7 @@ const createEventData = (value, destination, origin, dataset_name) => {
   if (destination === "Pennsieve") {
     return {
       value: value,
-      dataset_id: defaultBfDatasetId,
+      dataset_id: window.window.defaultBfDatasetId,
       dataset_name: dataset_name,
       origin: origin,
       destination: destination,

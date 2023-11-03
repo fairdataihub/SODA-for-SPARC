@@ -82,13 +82,13 @@ const bf_request_and_populate_dataset = async (
 
     const { data } = filesFoldersResponse;
 
-    ipcRenderer.send("track-event", "Success", "Retrieve Dataset - Pennsieve", defaultBfDatasetId);
+    ipcRenderer.send("track-event", "Success", "Retrieve Dataset - Pennsieve", window.window.defaultBfDatasetId);
     return data;
   } catch (error) {
     importError = true;
     progressContainer.style.display = "none";
     clientError(error);
-    ipcRenderer.send("track-event", "Error", "Retrieve Dataset - Pennsieve", defaultBfDatasetId);
+    ipcRenderer.send("track-event", "Error", "Retrieve Dataset - Pennsieve", window.window.defaultBfDatasetId);
     throw Error(userErrorMessage(error));
   }
 };

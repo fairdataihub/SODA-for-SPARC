@@ -64,7 +64,7 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
+    const isLocked = await api.isDatasetLocked(window.defaultBfDataset, bfDataset);
     if (isLocked) {
       await Swal.fire({
         icon: "info",
@@ -127,7 +127,7 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
         {
           params: {
             file_type: upperCaseLetters,
-            selected_account: defaultBfAccount,
+            selected_account: window.defaultBfDataset,
             selected_dataset: bfDataset,
           },
         }
@@ -474,7 +474,7 @@ function showExistingRCFile(type) {
       confirmButtonColor: "#3085d6",
       confirmButtonText: "Yes",
       icon: "warning",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send(`open-file-dialog-existing-${type}`);
@@ -497,7 +497,7 @@ function resetRCFile(type) {
     focusCancel: true,
     heightAuto: false,
     icon: "warning",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     showCancelButton: true,
     text: "Are you sure you want to start over and reset your progress?",
     showClass: {
@@ -562,7 +562,7 @@ const getRC = async (type) => {
     let import_rc_file = await client.get(`/prepare_metadata/readme_changes_file`, {
       params: {
         file_type: path.parse(type).name,
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfDataset,
         selected_dataset: datasetName,
       },
     });

@@ -5,7 +5,7 @@ Purpose: An abstraction layer between the client and making HTTP requests via Ax
 const getUserInformation = async () => {
   let userResponse = await client.get(`/user`, {
     params: {
-      pennsieve_account: defaultBfAccount,
+      pennsieve_account: window.defaultBfDataset,
     },
   });
 
@@ -41,7 +41,7 @@ const isDatasetLocked = async (account, datasetNameOrId) => {
     const currentUserInformation = await getUserInformation();
     const currentUserID = currentUserInformation.id;
     const teamsReq = await client.get(
-      `manage_datasets/ps_get_teams?selected_account=${defaultBfAccount}`
+      `manage_datasets/ps_get_teams?selected_account=${window.defaultBfDataset}`
     );
     const teamsInCurrentUsersOrganization = teamsReq.data.teams;
 
@@ -79,10 +79,10 @@ const isDatasetLocked = async (account, datasetNameOrId) => {
 
 const getDatasetRole = async (datasetNameOrId) => {
   if (datasetNameOrId != undefined || datasetNameOrId != "") {
-    defaultBfDataset = datasetNameOrId;
+    window.defaultBfDataset = datasetNameOrId;
   }
 
-  let datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`);
+  let datasetRoleResponse = await client.get(`/datasets/${window.defaultBfDataset}/role`);
 
   let { role } = datasetRoleResponse.data;
 
@@ -119,7 +119,7 @@ const getDatasetMetadataFiles = async (datasetName) => {
     `/disseminate_datasets/datasets/${datasetName}/metadata-files`,
     {
       params: {
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfDataset,
       },
     }
   );
@@ -346,7 +346,7 @@ const uploadNewTags = async (account, dataset, tags) => {
     //put collection ids to dataset
     try {
       let newTagsUpload = await client.put(
-        `datasets/${defaultBfDataset}/collections?selected_account=${defaultBfAccount}`,
+        `datasets/${window.defaultBfDataset}/collections?selected_account=${window.defaultBfDataset}`,
         {
           collection: newUploadedTags,
         }

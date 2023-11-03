@@ -553,7 +553,7 @@ const nextPrev = (pageIndex) => {
       confirmButtonText: "Continue",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -628,7 +628,7 @@ const nextPrev = (pageIndex) => {
         confirmButtonText: "Continue",
         showCancelButton: "No",
         focusCancel: true,
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         heightAuto: false,
         customClass: "swal-wide",
         backdrop: "rgba(0,0,0, 0.4)",
@@ -911,7 +911,7 @@ const raiseWarningGettingStarted = (ev) => {
         showCancelButton: "Cancel",
         focusCancel: true,
         confirmButtonText: "Continue",
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
@@ -1776,7 +1776,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
     };
 
     // Set the default Pennsieve account and dataset
-    sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
+    sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfDataset;
     sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedDataset;
 
     $("#para-continue-bf-dataset-getting-started").text("");
@@ -1787,7 +1787,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
     $("#bf-dataset-spinner").css("visibility", "visible");
 
     // Check if dataset is locked before trying to import
-    const isDatasetLocked = await api.isDatasetLocked(defaultBfAccount, selectedDataset);
+    const isDatasetLocked = await api.isDatasetLocked(window.defaultBfDataset, selectedDataset);
     if (isDatasetLocked) {
       Swal.fire({
         icon: "info",
@@ -1892,7 +1892,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
         confirmButtonText: "Continue",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
         },
@@ -2425,7 +2425,7 @@ const switchMetadataRCImportBFQuestions = async (metadataRCFileType) => {
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
     });
     if (!continueProgress) {
       return;
@@ -2447,7 +2447,7 @@ async function switchMetadataRCQuestion(metadataRCFileType) {
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
     });
     if (continueProgress) {
       $(`#existing-${metadataRCFileType}-file-destination`).attr("placeholder", "Browse here");
@@ -2482,7 +2482,7 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
     });
     if (continueProgress) {
       $(`#existing-${metadataSubSamFile}-file-destination`).val("");
@@ -2533,7 +2533,7 @@ async function switchMetadataDDQuestion() {
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
     });
     if (continueProgressDD) {
       $("#existing-dd-file-destination").val("");
@@ -2558,7 +2558,7 @@ async function switchMetadataSubmissionQuestion() {
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
     });
     if (continueProgressSubmission) {
       $("#existing-submission-file-destination").val("");
@@ -2589,7 +2589,7 @@ async function switchMetadataManifestQuestion() {
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
       cancelButtonText: "No",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
     });
     if (continueProgressManifest) {
       // deleting manifest file folders in user/SODA path that were generated half-way before users switch.
@@ -2613,7 +2613,7 @@ async function switchMetadataManifestQuestion() {
           type: "",
         };
         $("#bf_dataset_create_manifest").text("None");
-        defaultBfDataset = "Select dataset";
+        window.defaultBfDataset = "Select dataset";
         $("#input-manifest-local-folder-dataset").val("");
         $("#input-manifest-local-folder-dataset").attr("placeholder", "Browse here");
         $("#div-confirm-manifest-local-folder-dataset").css("display", "none");
@@ -3230,10 +3230,10 @@ const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
 
         if ($("#current-bf-account-generate").text() !== "None") {
           if ("bf-account-selected" in sodaJSONObj) {
-            sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
+            sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfDataset;
           } else {
             sodaJSONObj["bf-account-selected"] = {
-              "account-name": defaultBfAccount,
+              "account-name": window.defaultBfDataset,
             };
           }
         }
@@ -3376,7 +3376,7 @@ function raiseWarningExit(message) {
       focusCancel: true,
       cancelButtonText: "Cancel",
       confirmButtonText: "Continue",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showClass: {
@@ -3643,7 +3643,7 @@ const saveOrganizeProgressPrompt = () => {
       showCancelButton: true,
       cancelButtonText: "Cancel",
       confirmButtonText: "OK",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       backdrop: "rgba(0,0,0, 0.4)",
       showClass: {
         popup: "animate__animated animate__fadeInDown animate__faster",

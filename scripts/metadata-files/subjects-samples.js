@@ -74,7 +74,7 @@ const promptImportPrevInfoSamples = (arr1, arr2) => {
     showCancelButton: true,
     cancelButtonText: "Cancel",
     confirmButtonText: "Confirm",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     customClass: {
       confirmButton: "confirm-disabled",
     },
@@ -160,7 +160,7 @@ const promptImportPrevInfoSubject = (arr1) => {
     showCancelButton: true,
     cancelButtonText: "Cancel",
     confirmButtonText: "Confirm",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     onOpen: function () {
       removeOptions(document.getElementById("previous-subject-single"));
       $("#previous-subject-single").append(`<option value="Select">Select a subject</option>`);
@@ -315,7 +315,7 @@ const warningBeforeHideForm = (type) => {
     showConfirmButton: true,
     confirmButtonText: "Yes, cancel",
     cancelButtonText: "No, stay here",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
   }).then((result) => {
@@ -931,7 +931,7 @@ const edit_current_protocol_id = async (ev) => {
     showCancelButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     didOpen: () => {
       $("#DD-protocol-link-select").val(type);
       $("#DD-protocol-link-relation").val(relation);
@@ -1017,7 +1017,7 @@ const edit_current_additional_link_id = async (ev) => {
       "</textarea>",
     focusConfirm: false,
     showCancelButton: true,
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     didOpen: () => {
@@ -1421,7 +1421,7 @@ const delete_current_subject_id = (ev) => {
     cancelButtonText: `No!`,
     cancelButtonColor: "#f44336",
     confirmButtonColor: "#3085d6",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     confirmButtonText: "Yes",
   }).then((boolean) => {
     if (boolean.isConfirmed) {
@@ -1451,7 +1451,7 @@ const delete_current_sample_id = (ev) => {
     cancelButtonText: `No!`,
     cancelButtonColor: "#f44336",
     confirmButtonColor: "#3085d6",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     confirmButtonText: "Yes",
   }).then((boolean) => {
     if (boolean.isConfirmed) {
@@ -1481,7 +1481,7 @@ const delete_current_protocol_id = (ev) => {
     cancelButtonText: `No!`,
     cancelButtonColor: "#f44336",
     confirmButtonColor: "#3085d6",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     confirmButtonText: "Yes",
   }).then((boolean) => {
     if (boolean.isConfirmed) {
@@ -1504,7 +1504,7 @@ const delete_current_additional_link_id = (ev) => {
     cancelButtonColor: "#f44336",
     confirmButtonColor: "#3085d6",
     confirmButtonText: "Yes",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
   }).then((boolean) => {
     if (boolean.isConfirmed) {
       // 1. Delete from table
@@ -1521,7 +1521,7 @@ const copy_current_subject_id = async (ev) => {
     title: "Enter an ID for the new subject:",
     input: "text",
     showCancelButton: true,
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     inputValidator: (value) => {
@@ -1753,7 +1753,7 @@ const importPrimaryFolderSubjects = (folderPath) => {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showCancelButton: true,
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         showConfirmButton: true,
         confirmButtonText: "Yes, correct",
         cancelButtonText: "No",
@@ -1844,7 +1844,7 @@ const importPrimaryFolderSamples = (folderPath) => {
           samIDArray.join(", "),
         icon: "warning",
         showCancelButton: true,
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         showConfirmButton: true,
         confirmButtonText: "Yes, correct",
         cancelButtonText: "No",
@@ -1964,7 +1964,7 @@ const addCustomField = async (type, curationMode) => {
       title: "Enter a custom field:",
       input: "text",
       showCancelButton: true,
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       inputValidator: (value) => {
@@ -1995,7 +1995,7 @@ const addCustomField = async (type, curationMode) => {
       title: "Enter a custom field:",
       input: "text",
       showCancelButton: true,
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       inputValidator: (value) => {
@@ -2101,7 +2101,7 @@ const deleteCustomField = (ev, customField, category, curationMode) => {
     text: "Are you sure you want to delete this custom field?",
     icon: "warning",
     showCancelButton: true,
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "Yes",
@@ -2224,7 +2224,7 @@ $(document).ready(function () {
           "track-event",
           "Success",
           "Prepare Metadata - Continue with existing subjects.xlsx",
-          defaultBfAccount
+          window.defaultBfDataset
         );
       } else {
         document.getElementById("existing-subjects-file-destination").placeholder = "Browse here";
@@ -2284,7 +2284,7 @@ $(document).ready(function () {
           "track-event",
           "Success",
           "Prepare Metadata - Continue with existing dataset_description.xlsx",
-          defaultBfAccount
+          window.defaultBfDataset
         );
         if (document.getElementById("existing-dd-file-destination").placeholder !== "Browse here") {
           $("#div-confirm-existing-dd-import").show();
@@ -2384,7 +2384,7 @@ const showExistingSubjectsFile = () => {
       confirmButtonColor: "#3085d6",
       confirmButtonText: "Yes",
       icon: "warning",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send("open-file-dialog-existing-subjects");
@@ -2412,7 +2412,7 @@ const showExistingSamplesFile = () => {
       confirmButtonColor: "#3085d6",
       confirmButtonText: "Yes",
       icon: "warning",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send("open-file-dialog-existing-samples");
@@ -2551,7 +2551,7 @@ const checkBFImportSubjects = async () => {
   try {
     let import_metadata_file = await client.get(`/prepare_metadata/import_metadata_file`, {
       params: {
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfDataset,
         selected_dataset: bfDataset,
         file_type: "subjects.xlsx",
         ui_fields: fieldEntries.toString(),
@@ -2617,7 +2617,7 @@ const checkBFImportSamples = async () => {
     let importMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
       params: {
         file_type: "samples.xlsx",
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfDataset,
         selected_dataset: bfDataset,
         ui_fields: fieldEntries.toString(),
       },
@@ -2734,7 +2734,7 @@ const addAdditionalLink = async () => {
     customClass: "swal-content-additional-link",
     showCancelButton: true,
     width: "38rem",
-    reverseButtons: reverseSwalButtons,
+    reverseButtons: window.reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     didOpen: () => {

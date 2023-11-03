@@ -3,7 +3,7 @@ $(document).ready(function () {
   //upload new collection tags or check if none
   $("#button-bf-collection").on("click", async () => {
     setTimeout(async () => {
-      let selectedDataset = defaultBfDataset;
+      let selectedDataset = window.defaultBfDataset;
       let newCollectionTags = [];
       let whiteListTags = [];
       let newTags = [];
@@ -90,8 +90,8 @@ $(document).ready(function () {
         //collection names that are already have an ID
         try {
           let uploadTagsStatus = await api.uploadCollectionTags(
-            defaultBfAccount,
-            defaultBfDataset,
+            window.defaultBfDataset,
+            window.defaultBfDataset,
             whiteListTags
           );
           if (uploadTagsStatus === false) {
@@ -109,8 +109,8 @@ $(document).ready(function () {
         //remove collection names
         try {
           let removeStatus = await api.removeCollectionTags(
-            defaultBfAccount,
-            defaultBfDataset,
+            window.defaultBfDataset,
+            window.defaultBfDataset,
             removeTags
           );
           if (removeStatus === false) {
@@ -126,7 +126,7 @@ $(document).ready(function () {
       if (newTags.length > 0) {
         //upload tags that haven't been created on pennsieve (no ID)
         try {
-          let newTagsStatus = await api.uploadNewTags(defaultBfAccount, defaultBfDataset, newTags);
+          let newTagsStatus = await api.uploadNewTags(window.defaultBfDataset, window.defaultBfDataset, newTags);
           if (newTagsStatus === false) {
             success.push(false);
           } else {
@@ -141,7 +141,7 @@ $(document).ready(function () {
       Swal.close();
       if (!success.includes(false)) {
         Swal.fire({
-          title: `Successfully updated collection from ${defaultBfDataset}`,
+          title: `Successfully updated collection from ${window.defaultBfDataset}`,
           icon: "success",
           showConfirmButton: true,
           heightAuto: false,
@@ -156,8 +156,8 @@ $(document).ready(function () {
           kombuchaEnums.Status.SUCCESS,
           {
             value: whiteListTags.length + newTags.length - removeTags.length,
-            dataset_name: defaultBfDataset,
-            dataset_id: defaultBfDatasetId,
+            dataset_name: window.defaultBfDataset,
+            dataset_id: window.window.defaultBfDatasetId,
           }
         );
       } else {
@@ -178,8 +178,8 @@ $(document).ready(function () {
           kombuchaEnums.Status.FAIL,
           {
             value: 1,
-            dataset_name: defaultBfDataset,
-            dataset_id: defaultBfDatasetId,
+            dataset_name: window.defaultBfDataset,
+            dataset_id: window.window.defaultBfDatasetId,
           }
         );
       }
@@ -189,10 +189,10 @@ $(document).ready(function () {
   });
 
   const updateCollectionWhiteList = async () => {
-    let collection_list = await api.getAllCollectionTags(defaultBfAccount);
+    let collection_list = await api.getAllCollectionTags(window.defaultBfDataset);
     let currentCollectionList = await api.getCurrentCollectionTags(
-      defaultBfAccount,
-      defaultBfDataset
+      window.defaultBfDataset,
+      window.defaultBfDataset
     );
 
     let currentCollectionNames = Object.keys(currentCollectionList);
@@ -233,8 +233,8 @@ $(document).ready(function () {
       });
     }
 
-    let collection_list = await api.getAllCollectionTags(defaultBfAccount);
-    let current_tags = await api.getCurrentCollectionTags(defaultBfAccount, defaultBfDataset);
+    let collection_list = await api.getAllCollectionTags(window.defaultBfDataset);
+    let current_tags = await api.getCurrentCollectionTags(window.defaultBfDataset, window.defaultBfDataset);
 
     let collectionNames = Object.keys(collection_list);
     let currentCollectionNames = Object.keys(current_tags);

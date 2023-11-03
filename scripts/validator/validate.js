@@ -213,7 +213,7 @@ const validateLocalDataset = async () => {
         icon: "error",
         confirmButtonText: "Ok",
         backdrop: "rgba(0,0,0, 0.4)",
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         heightAuto: false,
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
@@ -233,7 +233,7 @@ const validateLocalDataset = async () => {
         icon: "error",
         confirmButtonText: "Ok",
         backdrop: "rgba(0,0,0, 0.4)",
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         heightAuto: false,
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
@@ -480,7 +480,7 @@ const validatePennsieveDatasetStandAlone = async () => {
         icon: "error",
         confirmButtonText: "Ok",
         backdrop: "rgba(0,0,0, 0.4)",
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         heightAuto: false,
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
@@ -500,7 +500,7 @@ const validatePennsieveDatasetStandAlone = async () => {
         icon: "error",
         confirmButtonText: "Ok",
         backdrop: "rgba(0,0,0, 0.4)",
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         heightAuto: false,
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
@@ -1025,7 +1025,7 @@ const userWantsToResetValidation = async () => {
       focusCancel: true,
       confirmButtonText: "Yes",
       backdrop: "rgba(0,0,0, 0.4)",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -1098,8 +1098,8 @@ const setCurationTeamAsManagers = async () => {
       },
       {
         params: {
-          selected_account: defaultBfAccount,
-          selected_dataset: defaultBfDataset,
+          selected_account: window.defaultBfDataset,
+          selected_dataset: window.defaultBfDataset,
           scope: "team",
           name: selectedTeam,
         },
@@ -1122,8 +1122,8 @@ const removeCurationTeamAsManagers = async () => {
       },
       {
         params: {
-          selected_account: defaultBfAccount,
-          selected_dataset: defaultBfDataset,
+          selected_account: window.defaultBfDataset,
+          selected_dataset: window.defaultBfDataset,
           scope: "team",
           name: selectedTeam,
         },

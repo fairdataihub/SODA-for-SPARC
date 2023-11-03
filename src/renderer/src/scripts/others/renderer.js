@@ -54,8 +54,7 @@ import api from "./api/api"
 import {
   confirm_click_account_function, showHideDropdownButtons,
   updateDatasetList, openDropdownPrompt,
-  bfAccountOptions, defaultBfAccount, defaultBfDataset, defaultBfDatasetId,
-  reverseSwalButtons, SODA_SPARC_API_KEY
+  bfAccountOptions,
 } from '../globals'
 import checkForAnnouncements from './announcements'
 
@@ -643,7 +642,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         backdrop: "rgba(0,0,0, 0.4)",
         confirmButtonText: "Yes",
         showCancelButton: true,
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         cancelButtonText: "I'll do it later",
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
@@ -697,7 +696,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           allowEscapeKey: false,
           showCancelButton: true,
           showCloseButton: true,
-          reverseButtons: reverseSwalButtons,
+          reverseButtons: window.reverseSwalButtons,
           confirmButtonText: "Yes",
           cancelButtonText: "No",
         });
@@ -737,7 +736,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         allowEscapeKey: false,
         showCancelButton: true,
         showCloseButton: true,
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         confirmButtonText: "Close SODA for SPARC",
         cancelButtonText: "Skip for now",
       });
@@ -789,7 +788,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         allowEscapeKey: false,
         showCancelButton: true,
         showCloseButton: true,
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         confirmButtonText: "Try again",
         cancelButtonText: "Skip for now",
       });
@@ -832,7 +831,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         allowEscapeKey: false,
         showCancelButton: true,
         showCloseButton: true,
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         confirmButtonText: "Try again",
         cancelButtonText: "Skip for now",
       });
@@ -882,7 +881,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         allowEscapeKey: false,
         showCancelButton: true,
         showCloseButton: true,
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         confirmButtonText: "Check updated Pennsieve agent version",
         cancelButtonText: "Skip for now",
       });
@@ -906,7 +905,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
     // make an api request to change to the organization members. If it fails with a 401 then ask them to go through the workspace change flow as SODA does not have access to the workspace.
     try {
-      await client.get(`/manage_datasets/ps_get_users?selected_account=${defaultBfAccount}`);
+      await client.get(`/manage_datasets/ps_get_users?selected_account=${window.defaultBfDataset}`);
     } catch (err) {
       clientError(err);
       if (err.response.status) {
@@ -961,7 +960,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       allowEscapeKey: false,
       confirmButtonText: "Retry",
       cancelButtonText: "Skip for now",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
     });
     // If the user clicks retry, then run the preflight checks again
     if (retryChecks) {
@@ -1056,7 +1055,7 @@ const apiVersionsMatch = async () => {
       allowEscapeKey: false,
       showCancelButton: false,
       showCloseButton: false,
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       confirmButtonText: "Close Application",
     });
 
@@ -1208,7 +1207,7 @@ const get_latest_agent_version = async () => {
   }
 
   if (process.platform == "darwin") {
-    reverseSwalButtons = true;
+    window.reverseSwalButtons = true;
     targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
       if (path.extname(file_name) == ".pkg") {
@@ -1218,7 +1217,7 @@ const get_latest_agent_version = async () => {
   }
 
   if (process.platform == "win32") {
-    reverseSwalButtons = false;
+    window.reverseSwalButtons = false;
     targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
       if (path.extname(file_name) == ".msi" || path.extname(file_name) == ".exe") {
@@ -1228,7 +1227,7 @@ const get_latest_agent_version = async () => {
   }
 
   if (process.platform == "linux") {
-    reverseSwalButtons = false;
+    window.reverseSwalButtons = false;
     targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
       if (path.extname(file_name) == ".deb") {
@@ -1738,7 +1737,7 @@ const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-te
 //     }
 
 //     // Check if dataset is locked after running pre-flight checks
-//     const isLocked = await api.isDatasetLocked(defaultBfAccount, bfdataset);
+//     const isLocked = await api.isDatasetLocked(window.defaultBfDataset, bfdataset);
 
 //     if (isLocked) {
 //       await Swal.fire({
@@ -1813,7 +1812,7 @@ const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-te
 //       `/prepare_metadata/subjects_file`,
 //       {
 //         filepath: subjectsDestinationPath,
-//         selected_account: defaultBfAccount,
+//         selected_account: window.defaultBfDataset,
 //         selected_dataset: bfdataset,
 //         subjects_header_row: subjectsTableData,
 //       },
@@ -1947,7 +1946,7 @@ const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-te
 //     }
 
 //     // Check if dataset is locked after running pre-flight checks
-//     const isLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
+//     const isLocked = await api.isDatasetLocked(window.defaultBfDataset, bfDataset);
 //     if (isLocked) {
 //       await Swal.fire({
 //         icon: "info",
@@ -2020,7 +2019,7 @@ const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-te
 //       "prepare_metadata/samples_file",
 //       {
 //         filepath: samplesDestinationPath,
-//         selected_account: defaultBfAccount,
+//         selected_account: window.defaultBfDataset,
 //         selected_dataset: $("#bf_dataset_load_samples").text().trim(),
 //         samples_str: samplesTableData,
 //       },
@@ -2683,7 +2682,7 @@ function addOption(selectbox, text, value) {
 // };
 
 //// De-populate dataset dropdowns to clear options
-const clearDatasetDropdowns = () => {
+window.clearDatasetDropdowns = () => {
   for (let list of [curateDatasetDropdown]) {
     removeOptions(list);
     addOption(list, "Search here...", "Select dataset");
@@ -3081,11 +3080,11 @@ const curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
 const curateOrganizationDropdown = document.getElementById("curatebforganizationlist");
 
 async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
-  let defaultBfAccount = bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text;
+  window.defaultBfDataset = bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text;
   try {
     let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
       params: {
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfDataset,
       },
     });
     datasetList = [];
@@ -3323,7 +3322,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 //       denyButtonText: "Cancel",
 //       showDenyButton: true,
 //       title: `Submit your dataset for review`,
-//       reverseButtons: reverseSwalButtons,
+//       reverseButtons: window.reverseSwalButtons,
 //       text: "",
 //       html: `
 //                 <div style="display: flex; flex-direction: column;  font-size: 15px;">
@@ -3396,7 +3395,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 //       denyButtonText: "Cancel",
 //       showDenyButton: true,
 //       title: `Submit your dataset for review`,
-//       reverseButtons: reverseSwalButtons,
+//       reverseButtons: window.reverseSwalButtons,
 //       html: `
 //               <div style="display: flex; flex-direction: column;  font-size: 15px;">
 //                 <p style="text-align:left">Your dataset will be submitted for review to the SPARC Curation Team. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
@@ -3490,8 +3489,8 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 
 // // Go about removing the feature and see how it effects dataset submissions
 // const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
-//   let currentAccount = defaultBfAccount;
-//   let currentDataset = defaultBfDataset;
+//   let currentAccount = window.defaultBfDataset;
+//   let currentDataset = window.defaultBfDataset;
 
 //   if (curationMode === "guided") {
 //     currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
@@ -3533,7 +3532,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 //       kombuchaEnums.Status.FAIL,
 //       {
 //         value: 1,
-//         dataset_id: defaultBfDatasetId,
+//         dataset_id: window.defaultBfDatasetId,
 //       }
 //     );
 
@@ -3544,7 +3543,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 //       confirmButtonText: "Ok",
 //       title: `Could not submit your dataset to Curation Team`,
 //       icon: "error",
-//       reverseButtons: reverseSwalButtons,
+//       reverseButtons: window.reverseSwalButtons,
 //       text: userErrorMessage(error),
 //       showClass: {
 //         popup: "animate__animated animate__zoomIn animate__faster",
@@ -3570,7 +3569,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 //     kombuchaEnums.Status.SUCCESS,
 //     {
 //       value: 1,
-//       dataset_id: defaultBfDatasetId,
+//       dataset_id: window.defaultBfDatasetId,
 //     }
 //   );
 
@@ -3581,7 +3580,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 //     confirmButtonText: "Ok",
 //     title: `Dataset has been submitted for review to the SPARC Curation Team!`,
 //     icon: "success",
-//     reverseButtons: reverseSwalButtons,
+//     reverseButtons: window.reverseSwalButtons,
 //     showClass: {
 //       popup: "animate__animated animate__zoomIn animate__faster",
 //     },
@@ -3689,7 +3688,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 //       heightAuto: false,
 //       backdrop: "rgba(0,0,0, 0.4)",
 //       confirmButtonText: "Ok",
-//       reverseButtons: reverseSwalButtons,
+//       reverseButtons: window.reverseSwalButtons,
 //       showClass: {
 //         popup: "animate__animated animate__zoomIn animate__faster",
 //       },
@@ -3808,7 +3807,7 @@ const removeOptions = (selectbox) => {
 // // Manage Datasets //
 
 const refreshBfUsersList = () => {
-  let accountSelected = defaultBfAccount;
+  let accountSelected = window.defaultBfDataset;
 
   removeOptions(bfListUsers);
   let optionUser = document.createElement("option");
@@ -3863,7 +3862,7 @@ const getSortedTeamStrings = (pennsieveTeamsJsonResponse) => {
 const refreshBfTeamsList = async (teamList) => {
   removeOptions(teamList);
 
-  let accountSelected = defaultBfAccount;
+  let accountSelected = window.defaultBfDataset;
   let optionTeam = document.createElement("option");
 
   optionTeam.textContent = "Select team";
@@ -3872,7 +3871,7 @@ const refreshBfTeamsList = async (teamList) => {
   if (accountSelected !== "Select") {
     try {
       const teamsReq = await client.get(
-        `manage_datasets/ps_get_teams?selected_account=${defaultBfAccount}`
+        `manage_datasets/ps_get_teams?selected_account=${window.defaultBfDataset}`
       );
       const teamsThatCanBeGrantedPermissions = getSortedTeamStrings(teamsReq.data.teams);
 
@@ -3943,7 +3942,7 @@ const refreshDatasetList = () => {
 
 /// populate the dropdowns with refreshed dataset list
 const populateDatasetDropdowns = (mylist) => {
-  clearDatasetDropdowns();
+  window.clearDatasetDropdowns();
   for (myitem in mylist) {
     let myitemselect = mylist[myitem];
     let option = document.createElement("option");
@@ -3989,7 +3988,7 @@ window.updateBfAccountList = async () => {
   }
 
   let accountList = responseObject.data["accounts"];
-  for (myitem in accountList) {
+  for (const myitem in accountList) {
     let myitemselect = accountList[myitem];
     let option = document.createElement("option");
     option.textContent = myitemselect;
@@ -4019,8 +4018,8 @@ const loadDefaultAccount = async () => {
 
   if (accounts.length > 0) {
     let myitemselect = accounts[0];
-    // keep the defaultBfAccount value as the user's profile config key value for reference later
-    defaultBfAccount = myitemselect;
+    // keep the window.defaultBfDataset value as the user's profile config key value for reference later
+    window.defaultBfDataset = myitemselect;
 
     // fetch the user's email and set that as the account field's value
     let userInformation = await api.getUserInformation();
@@ -4038,8 +4037,8 @@ const loadDefaultAccount = async () => {
 };
 
 // const showPrePublishingPageElements = () => {
-//   let selectedBfAccount = defaultBfAccount;
-//   let selectedBfDataset = defaultBfDataset;
+//   let selectedBfAccount = window.defaultBfDataset;
+//   let selectedBfDataset = window.defaultBfDataset;
 
 //   if (selectedBfDataset === "Select dataset") {
 //     return;
@@ -4123,7 +4122,7 @@ const loadDefaultAccount = async () => {
 //           heightAuto: false,
 //           backdrop: "rgba(0,0,0, 0.4)",
 //           confirmButtonText: "Ok",
-//           reverseButtons: reverseSwalButtons,
+//           reverseButtons: window.reverseSwalButtons,
 //           showClass: {
 //             popup: "animate__animated animate__fadeInDown animate__faster",
 //           },
@@ -4246,7 +4245,7 @@ const loadDefaultAccount = async () => {
 //       backdrop: "rgba(0,0,0, 0.4)",
 //       showCancelButton: "Cancel",
 //       confirmButtonText: "Add folder",
-//       reverseButtons: reverseSwalButtons,
+//       reverseButtons: window.reverseSwalButtons,
 //       showClass: {
 //         popup: "animate__animated animate__fadeInDown animate__faster",
 //       },
@@ -4520,7 +4519,7 @@ const retrieveBFAccounts = async () => {
           bfAccountOptions[accounts[myitem]] = accounts[myitem];
         }
 
-        showDefaultBFAccount();
+        showWindow.defaultBfDataset();
       })
       .catch((error) => {
         bfAccountOptionsStatus = error;
@@ -4532,17 +4531,17 @@ const retrieveBFAccounts = async () => {
 };
 
 let defaultAccountDetails = "";
-const showDefaultBFAccount = async () => {
+const showdefaultBfDataset = async () => {
   try {
     let bf_default_acc_req = await client.get("manage_datasets/bf_default_account_load");
     let accounts = bf_default_acc_req.data.defaultAccounts;
     if (accounts.length > 0) {
       let myitemselect = accounts[0];
-      defaultBfAccount = myitemselect;
+      window.defaultBfDataset = myitemselect;
       try {
         let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
           params: {
-            selected_account: defaultBfAccount,
+            selected_account: window.defaultBfDataset,
           },
         });
         let user_email = bf_account_details_req.data.email;
@@ -4632,7 +4631,7 @@ const showDefaultBFAccount = async () => {
 //       confirmButtonText: "Confirm and Choose Location",
 //       heightAuto: false,
 //       backdrop: "rgba(0,0,0, 0.4)",
-//       reverseButtons: reverseSwalButtons,
+//       reverseButtons: window.reverseSwalButtons,
 //       showClass: {
 //         popup: "animate__animated animate__zoomIn animate__faster",
 //       },
@@ -6608,7 +6607,7 @@ const showDefaultBFAccount = async () => {
 //       heightAuto: false,
 //       backdrop: "rgba(0,0,0, 0.4)",
 //       confirmButtonText: "Yes",
-//       reverseButtons: reverseSwalButtons,
+//       reverseButtons: window.reverseSwalButtons,
 //       showClass: {
 //         popup: "animate__animated animate__zoomIn animate__faster",
 //       },
@@ -6895,7 +6894,7 @@ const showDefaultBFAccount = async () => {
 //             showCancelButton: true,
 //             focusCancel: true,
 //             cancelButtonText: "Okay",
-//             reverseButtons: reverseSwalButtons,
+//             reverseButtons: window.reverseSwalButtons,
 //             showClass: {
 //               popup: "animate__animated animate__zoomIn animate__faster",
 //             },
@@ -7006,7 +7005,7 @@ const showDefaultBFAccount = async () => {
 //           showCancelButton: true,
 //           focusCancel: true,
 //           cancelButtonText: "Okay",
-//           reverseButtons: reverseSwalButtons,
+//           reverseButtons: window.reverseSwalButtons,
 //           showClass: {
 //             popup: "animate__animated animate__zoomIn animate__faster",
 //           },
@@ -7251,7 +7250,7 @@ const showDefaultBFAccount = async () => {
 //       focusCancel: true,
 //       confirmButtonText: "Yes, Continue",
 //       backdrop: "rgba(0,0,0, 0.4)",
-//       reverseButtons: reverseSwalButtons,
+//       reverseButtons: window.reverseSwalButtons,
 //       heightAuto: false,
 //       showClass: {
 //         popup: "animate__animated animate__zoomIn animate__faster",
@@ -7509,7 +7508,7 @@ const showDefaultBFAccount = async () => {
 //       try {
 //         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
 //           params: {
-//             selected_account: defaultBfAccount,
+//             selected_account: window.defaultBfDataset,
 //           },
 //         });
 //         datasetList = [];
@@ -7647,7 +7646,7 @@ const showDefaultBFAccount = async () => {
 //       try {
 //         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
 //           params: {
-//             selected_account: defaultBfAccount,
+//             selected_account: window.defaultBfDataset,
 //           },
 //         });
 //         datasetList = [];
@@ -7932,7 +7931,7 @@ const showDefaultBFAccount = async () => {
 //     heightAuto: false,
 //     icon: "success",
 //     allowOutsideClick: false,
-//     reverseButtons: reverseSwalButtons,
+//     reverseButtons: window.reverseSwalButtons,
 //     showCancelButton: true,
 //     text: "Now that your dataset is uploaded, do you want to share it with the Curation Team?",
 //     showClass: {
@@ -7963,7 +7962,7 @@ const showDefaultBFAccount = async () => {
 //       $(".bf-dataset-span").html(datasetName);
 //       confirm_click_function();
 
-//       defaultBfDataset = datasetName;
+//       window.defaultBfDataset = datasetName;
 //       // document.getElementById("ds-description").innerHTML = "";
 //       refreshDatasetList();
 //       $("#dataset-loaded-message").hide();
@@ -8259,7 +8258,7 @@ const showDefaultBFAccount = async () => {
 //     focusCancel: true,
 //     cancelButtonText: "Cancel",
 //     confirmButtonText: "Connect to Pennsieve",
-//     reverseButtons: reverseSwalButtons,
+//     reverseButtons: window.reverseSwalButtons,
 //     backdrop: "rgba(0,0,0, 0.4)",
 //     heightAuto: false,
 //     allowOutsideClick: false,
@@ -8291,8 +8290,8 @@ const showDefaultBFAccount = async () => {
 //               $("#bootbox-api-key").val("");
 //               $("#bootbox-api-secret").val("");
 //               bfAccountOptions[name] = name;
-//               defaultBfAccount = name;
-//               defaultBfDataset = "Select dataset";
+//               window.defaultBfDataset = name;
+//               window.defaultBfDataset = "Select dataset";
 //               return new Promise((resolve, reject) => {
 //                 client
 //                   .get("/manage_datasets/bf_account_details", {
@@ -8343,8 +8342,8 @@ const showDefaultBFAccount = async () => {
 //                       : resetFFMUI(target);
 
 //                     datasetList = [];
-//                     defaultBfDataset = null;
-//                     clearDatasetDropdowns();
+//                     window.defaultBfDataset = null;
+//                     window.clearDatasetDropdowns();
 //                   })
 //                   .catch((error) => {
 //                     Swal.showValidationMessage(userErrorMessage(error));
@@ -8455,7 +8454,7 @@ const showDefaultBFAccount = async () => {
 //     actionName = actionName + " - " + destination;
 //     // log only the action with the destination added
 //     if (destination === Destinations.PENNSIEVE) {
-//       ipcRenderer.send("track-event", `${category}`, actionName, defaultBfDatasetId);
+//       ipcRenderer.send("track-event", `${category}`, actionName, window.defaultBfDatasetId);
 //     } else {
 //       ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
 //     }
@@ -8489,8 +8488,8 @@ const showDefaultBFAccount = async () => {
 //     {
 //       value: size,
 //       destination: destination,
-//       origin: uploadBFBoolean ? defaultBfDatasetId : "Local",
-//       dataset_name: defaultBfDataset,
+//       origin: uploadBFBoolean ? window.defaultBfDatasetId : "Local",
+//       dataset_name: window.defaultBfDataset,
 //     }
 //   );
 
@@ -8526,7 +8525,7 @@ const showDefaultBFAccount = async () => {
 //     "track-event",
 //     "Success",
 //     currentMetadataLoggingPrefix + ` - Generate - ${destination} - Size`,
-//     uploadBFBoolean ? defaultBfDatasetId : "Local",
+//     uploadBFBoolean ? window.defaultBfDatasetId : "Local",
 //     size
 //   );
 // };
@@ -8662,7 +8661,7 @@ const showDefaultBFAccount = async () => {
 //     // determine logging format
 //     if (location === Destinations.PENNSIEVE) {
 //       // use the datasetid as a label and do not add an aggregation value
-//       ipcRenderer.send("track-event", `${category}`, actionName, defaultBfDatasetId);
+//       ipcRenderer.send("track-event", `${category}`, actionName, window.defaultBfDatasetId);
 //     } else {
 //       // log the location as a label and add an aggregation value
 //       ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
@@ -8718,7 +8717,7 @@ const showDefaultBFAccount = async () => {
 //     for (let idx = 0; idx < actions.length; idx++) {
 //       // track the action
 //       actionName = analyticsPrefix + " - " + actions[idx];
-//       ipcRenderer.send("track-event", `${category}`, actionName, defaultBfDatasetId);
+//       ipcRenderer.send("track-event", `${category}`, actionName, window.defaultBfDatasetId);
 //     }
 //   }
 // };
@@ -8894,8 +8893,8 @@ const showDefaultBFAccount = async () => {
 //   $("#dataset_validator_status").text("Please wait while we retrieve the dataset...");
 //   $("#dataset_validator_spinner").show();
 
-//   let selectedBfAccount = defaultBfAccount;
-//   let selectedBfDataset = defaultBfDataset;
+//   let selectedBfAccount = window.defaultBfDataset;
+//   let selectedBfDataset = window.defaultBfDataset;
 
 //   temp_object = {
 //     "bf-account-selected": {
@@ -8956,8 +8955,8 @@ const showDefaultBFAccount = async () => {
 //       },
 //       {
 //         params: {
-//           selected_account: defaultBfAccount,
-//           selected_dataset: defaultBfDataset,
+//           selected_account: window.defaultBfDataset,
+//           selected_dataset: window.defaultBfDataset,
 //         },
 //       }
 //     );

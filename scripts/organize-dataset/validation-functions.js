@@ -35,7 +35,7 @@ const validateOrganizedDataset = async () => {
       focusCancel: true,
       confirmButtonText: "Yes",
       backdrop: "rgba(0,0,0, 0.4)",
-      reverseButtons: reverseSwalButtons,
+      reverseButtons: window.reverseSwalButtons,
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -154,7 +154,7 @@ const validateOrganizedDataset = async () => {
         icon: "error",
         confirmButtonText: "Ok",
         backdrop: "rgba(0,0,0, 0.4)",
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         heightAuto: false,
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
@@ -174,7 +174,7 @@ const validateOrganizedDataset = async () => {
         icon: "error",
         confirmButtonText: "Ok",
         backdrop: "rgba(0,0,0, 0.4)",
-        reverseButtons: reverseSwalButtons,
+        reverseButtons: window.reverseSwalButtons,
         heightAuto: false,
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
@@ -217,7 +217,7 @@ const validateOrganizedDataset = async () => {
       kombuchaEnums.Status.FAIL,
       {
         value: file_counter,
-        dataset_id: defaultBfDatasetId,
+        dataset_id: window.window.defaultBfDatasetId,
         origin: datasetOrigin,
         destination: datasetDestination,
       }
@@ -251,7 +251,7 @@ const validateOrganizedDataset = async () => {
     kombuchaEnums.Status.SUCCESS,
     {
       value: file_counter,
-      dataset_id: defaultBfDatasetId,
+      dataset_id: window.window.defaultBfDatasetId,
       origin: datasetOrigin,
       destination: datasetDestination,
     }
@@ -378,7 +378,7 @@ const displayValidationReportErrors = (validationReport, tableBody, validationEr
 //       text: "Cannot validate a dataset with empty files or folders.",
 //       confirmButtonText: "Ok",
 //       backdrop: "rgba(0,0,0, 0.4)",
-//       reverseButtons: reverseSwalButtons,
+//       reverseButtons: window.reverseSwalButtons,
 //       heightAuto: false,
 //       showClass: {
 //         popup: "animate__animated animate__zoomIn animate__faster",

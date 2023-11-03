@@ -62,7 +62,7 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
   // set the subtitle's status
   statuses.subtitle = description && description.length ? true : false;
 
-  let readme = await api.getDatasetReadme(defaultBfAccount, currentDataset);
+  let readme = await api.getDatasetReadme(window.defaultBfDataset, currentDataset);
 
   // set the readme's status
   statuses.readme = readme && readme.length >= 1 ? true : false;
@@ -70,7 +70,7 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
   // set tags's status
   statuses.tags = tags && tags.length ? true : false;
 
-  let bannerImageURL = await api.getDatasetBannerImageURL(defaultBfAccount, currentDataset);
+  let bannerImageURL = await api.getDatasetBannerImageURL(window.defaultBfDataset, currentDataset);
 
   // set the banner image's url status
   statuses.bannerImageURL = bannerImageURL !== "No banner image" ? true : false;
@@ -177,7 +177,7 @@ const orcidSignIn = async (ev, curationMode) => {
           { access_code: accessCode },
           {
             params: {
-              pennsieve_account: defaultBfAccount,
+              pennsieve_account: window.defaultBfDataset,
             },
           }
         );
@@ -222,7 +222,7 @@ const orcidSignIn = async (ev, curationMode) => {
         "track-event",
         "Success",
         DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Integrate ORCID iD",
-        defaultBfDatasetId
+        window.window.defaultBfDatasetId
       );
 
       // mark the orcid item green
@@ -241,7 +241,7 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
   resetSubmissionChecklistText();
   document.getElementById("pre-publishing-continue-btn").disabled = true;
   $("#pre-publishing-continue-btn").disabled = true;
-  let currentDataset = defaultBfDataset;
+  let currentDataset = window.defaultBfDataset;
   let curationModeID = "";
   // resetPrePublishingChecklist(curationMode);
 
@@ -504,7 +504,7 @@ const allPrepublishingChecklistItemsCompleted = (curationMode) => {
 // transition to the final question and populate the file tree with the dataset's metadata files
 const createPrepublishingChecklist = async (curationMode) => {
   let curationModeID = "";
-  let currentDataset = defaultBfDataset;
+  let currentDataset = window.defaultBfDataset;
   if (curationMode === "guided") {
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     curationModeID = "guided--";
@@ -556,8 +556,8 @@ const createPrepublishingChecklist = async (curationMode) => {
 // check if the user is the dataset owner and transition to the prepublishing checklist question if so
 // TODO: Dorian handle the freeform withdraw button and remove it
 const beginPrepublishingFlow = async (curationMode) => {
-  let currentDataset = defaultBfDataset;
-  let currentAccount = defaultBfAccount;
+  let currentDataset = window.defaultBfDataset;
+  let currentAccount = window.defaultBfDataset;
 
   let curationModeID = "";
   let embargoDetails;
