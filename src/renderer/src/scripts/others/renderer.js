@@ -372,9 +372,6 @@ const startupServerAndApiCheck = async () => {
     }
   );
 
-  // inform observers that the app is connected to the server
-  sodaIsConnected = true;
-
   // dismiss the Swal
   Swal.close();
 
@@ -410,34 +407,27 @@ const startupServerAndApiCheck = async () => {
   }
 
   window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
-
-  apiVersionChecked = true;
-
-  console.log("Api version checjed value: " + apiVersionChecked);
-  console.log("Soda is connected value: " + sodaIsConnected);
 };
 
-startupServerAndApiCheck();
+
 
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
 // Also check the core systems to make sure they are all operational
-window.electron.ipcRenderer.on("start_pre_flight_checks", async (event, arg) => {
-  console.log("Starting pre flight checks************************")
+const initializeSODARenderer = async () => {
 
-  // run pre flight checks once the server connection is confirmed
-  // wait until soda is connected to the backend server
-  while (!sodaIsConnected || !apiVersionChecked) {
-    await wait(1000);
-  }
+  // check that the server is live and the api versions match
+  await startupServerAndApiCheck();
 
-  log.info("Done with startup");
+  log.info("Server is live and API versions match");
 
   // check integrity of all the core systems
   await run_pre_flight_checks();
 
-  log.info("Running pre flight checks finished");
-});
+  log.info("Pre flight checks finished");
+}
+
+initializeSODARenderer()
 
 const stopPennsieveAgent = async () => {
   return new Promise((resolve, reject) => {
@@ -620,6 +610,7 @@ const agent_installed = () => {
 const run_pre_flight_checks = async (check_update = true) => {
   try {
     log.info("Running pre flight checks");
+    console.log("Initiating pre flight checks")
 
     if (!preFlightCheckNotyf) {
       preFlightCheckNotyf = notyf.open({
@@ -1108,6 +1099,8 @@ const apiVersionsMatch = async () => {
     }
   }
   checkNewAppVersion(); // Added so that version will be displayed for new users
+
+  console.log("Best stuff duh ruh buh bah")
 };
 
 // const checkInternetConnection = async () => {

@@ -73,23 +73,12 @@ function createWindow() {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
-
-  })
-
-  mainWindow.on('dom-ready', () => {
-    console.log("Starting pre flight checkss")
-
-    start_pre_flight_checks()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
-
-  function start_pre_flight_checks() {
-    mainWindow.webContents.send("start_pre_flight_checks");
-  }
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
