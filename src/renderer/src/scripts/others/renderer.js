@@ -382,7 +382,6 @@ const startupServerAndApiCheck = async () => {
   try {
     await apiVersionsMatch();
   } catch (e) {
-    console.log("SODA will exit")
     // api versions do not match
     await window.electron.ipcRenderer.invoke("exit-soda")
   }
@@ -420,221 +419,228 @@ const startupServerAndApiCheck = async () => {
 
 startupServerAndApiCheck();
 
-// // Check if we are connected to the Pysoda server
-// // Check app version on current app and display in the side bar
-// // Also check the core systems to make sure they are all operational
-// ipcRenderer.on("start_pre_flight_checks", async (event, arg) => {
-//   // run pre flight checks once the server connection is confirmed
-//   // wait until soda is connected to the backend server
-//   while (!sodaIsConnected || !apiVersionChecked) {
-//     await wait(1000);
-//   }
+// Check if we are connected to the Pysoda server
+// Check app version on current app and display in the side bar
+// Also check the core systems to make sure they are all operational
+window.electron.ipcRenderer.on("start_pre_flight_checks", async (event, arg) => {
+  console.log("Starting pre flight checks************************")
 
-//   log.info("Done with startup");
+  // run pre flight checks once the server connection is confirmed
+  // wait until soda is connected to the backend server
+  while (!sodaIsConnected || !apiVersionChecked) {
+    await wait(1000);
+  }
 
-//   // check integrity of all the core systems
-//   await run_pre_flight_checks();
+  log.info("Done with startup");
 
-//   log.info("Running pre flight checks finished");
-// });
+  // check integrity of all the core systems
+  await run_pre_flight_checks();
 
-// const stopPennsieveAgent = async () => {
-//   return new Promise((resolve, reject) => {
-//     try {
-//       let agentStopSpawn = spawn("pennsieve", ["agent", "stop"], {
-//         shell: true,
-//         env: process.env,
-//       });
+  log.info("Running pre flight checks finished");
+});
 
-//       agentStopSpawn.stdout.on("data", (data) => {
-//         log.info(data.toString());
-//         resolve();
-//       });
-//       agentStopSpawn.stderr.on("data", (data) => {
-//         log.info(data.toString());
-//         reject(new Error(data.toString()));
-//       });
-//     } catch (error) {
-//       log.info(error);
-//       reject(error);
-//     }
-//   });
-// };
-// const startPennsieveAgent = async () => {
-//   return new Promise((resolve, reject) => {
-//     // Keep track of the output from the agent
-//     // (output is added as strings to the array)
-//     const pennsieveAgentOutputLog = [];
-//     // Throw an error if the agent doesn't start within 15 seconds
-//     const agentStartTimeout = 15000; // 15 seconds
-//     const versionCheckTimeout = setTimeout(() => {
-//       reject(
-//         new Error(
-//           `Pennsieve Agent output while trying to start the agent:<br />${pennsieveAgentOutputLog.join(
-//             "<br />"
-//           )}`
-//         )
-//       );
-//     }, agentStartTimeout);
+const stopPennsieveAgent = async () => {
+  return new Promise((resolve, reject) => {
+    try {
+      let agentStopSpawn = spawn("pennsieve", ["agent", "stop"], {
+        shell: true,
+        env: process.env,
+      });
 
-//     let agentStartSpawn = spawn("pennsieve", ["agent", "start"], {
-//       shell: true,
-//       env: process.env,
-//     });
+      agentStopSpawn.stdout.on("data", (data) => {
+        log.info(data.toString());
+        resolve();
+      });
+      agentStopSpawn.stderr.on("data", (data) => {
+        log.info(data.toString());
+        reject(new Error(data.toString()));
+      });
+    } catch (error) {
+      log.info(error);
+      reject(error);
+    }
+  });
+};
+const startPennsieveAgent = async () => {
+  return new Promise((resolve, reject) => {
+    // Keep track of the output from the agent
+    // (output is added as strings to the array)
+    const pennsieveAgentOutputLog = [];
+    // Throw an error if the agent doesn't start within 15 seconds
+    const agentStartTimeout = 15000; // 15 seconds
+    const versionCheckTimeout = setTimeout(() => {
+      reject(
+        new Error(
+          `Pennsieve Agent output while trying to start the agent:<br />${pennsieveAgentOutputLog.join(
+            "<br />"
+          )}`
+        )
+      );
+    }, agentStartTimeout);
 
-//     // Listen to the output from the agent and resolve the promise if the agent outputs
-//     // "Running Agent NOT as daemon" or "Pennsieve Agent started"
-//     agentStartSpawn.stdout.on("data", (data) => {
-//       const agentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
-//       log.info(agentMessage);
-//       // Add to message to the output log which will be used to display the output to the user if the agent fails to start
-//       pennsieveAgentOutputLog.push(agentMessage);
+    let agentStartSpawn = spawn("pennsieve", ["agent", "start"], {
+      shell: true,
+      env: process.env,
+    });
 
-//       // Resolve the promise if the agent is already running
-//       if (agentMessage.includes("Pennsieve Agent is already running")) {
-//         log.info(`Pennsieve Agent is confirmed to be running: ${agentMessage}`);
-//         clearTimeout(versionCheckTimeout);
-//         resolve();
-//       }
+    // Listen to the output from the agent and resolve the promise if the agent outputs
+    // "Running Agent NOT as daemon" or "Pennsieve Agent started"
+    agentStartSpawn.stdout.on("data", (data) => {
+      const agentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
+      log.info(agentMessage);
+      // Add to message to the output log which will be used to display the output to the user if the agent fails to start
+      pennsieveAgentOutputLog.push(agentMessage);
 
-//       // If the error message contains "Running Agent NOT as daemon" or "Pennsieve Agent started", then the agent was able to
-//       // start successfully with the caveat that the agent might throw an error if the agent has issues while starting up.
-//       // To alleviate this, we will try to start the agent again after 5 seconds and make sure the agent was started successfully.
-//       if (
-//         agentMessage.includes("Running Agent NOT as daemon") ||
-//         agentMessage.includes("Pennsieve Agent started")
-//       ) {
-//         setTimeout(() => {
-//           const secondAgentStartSpawn = spawn("pennsieve", ["agent", "start"], {
-//             shell: true,
-//             env: process.env,
-//           });
-//           secondAgentStartSpawn.stdout.on("data", (data) => {
-//             const secondAgentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
-//             if (secondAgentMessage.includes("Pennsieve Agent is already running")) {
-//               log.info(`Pennsieve Agent is confirmed to be running: ${secondAgentMessage}`);
-//               clearTimeout(versionCheckTimeout);
-//               resolve();
-//             }
-//           });
-//         }, 5000);
-//       }
-//     });
-//     // Capture standard error output and add it to the output log
-//     agentStartSpawn.stderr.on("data", (data) => {
-//       const agentStdErr = `[Pennsieve Agent Error] ${data.toString()}`;
-//       log.info(agentStdErr);
-//       pennsieveAgentOutputLog.push(agentStdErr);
-//     });
-//     // Capture error output and add it to the output log
-//     agentStartSpawn.on("error", (error) => {
-//       const agentSpawnError = `[Pennsieve Agent Error] ${error.toString()}`;
-//       log.info(agentSpawnError);
-//       pennsieveAgentOutputLog.push(agentSpawnError);
-//     });
-//   });
-// };
+      // Resolve the promise if the agent is already running
+      if (agentMessage.includes("Pennsieve Agent is already running")) {
+        log.info(`Pennsieve Agent is confirmed to be running: ${agentMessage}`);
+        clearTimeout(versionCheckTimeout);
+        resolve();
+      }
 
-// const getPennsieveAgentVersion = () => {
-//   log.info("Getting Pennsieve agent version");
+      // If the error message contains "Running Agent NOT as daemon" or "Pennsieve Agent started", then the agent was able to
+      // start successfully with the caveat that the agent might throw an error if the agent has issues while starting up.
+      // To alleviate this, we will try to start the agent again after 5 seconds and make sure the agent was started successfully.
+      if (
+        agentMessage.includes("Running Agent NOT as daemon") ||
+        agentMessage.includes("Pennsieve Agent started")
+      ) {
+        setTimeout(() => {
+          const secondAgentStartSpawn = spawn("pennsieve", ["agent", "start"], {
+            shell: true,
+            env: process.env,
+          });
+          secondAgentStartSpawn.stdout.on("data", (data) => {
+            const secondAgentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
+            if (secondAgentMessage.includes("Pennsieve Agent is already running")) {
+              log.info(`Pennsieve Agent is confirmed to be running: ${secondAgentMessage}`);
+              clearTimeout(versionCheckTimeout);
+              resolve();
+            }
+          });
+        }, 5000);
+      }
+    });
+    // Capture standard error output and add it to the output log
+    agentStartSpawn.stderr.on("data", (data) => {
+      const agentStdErr = `[Pennsieve Agent Error] ${data.toString()}`;
+      log.info(agentStdErr);
+      pennsieveAgentOutputLog.push(agentStdErr);
+    });
+    // Capture error output and add it to the output log
+    agentStartSpawn.on("error", (error) => {
+      const agentSpawnError = `[Pennsieve Agent Error] ${error.toString()}`;
+      log.info(agentSpawnError);
+      pennsieveAgentOutputLog.push(agentSpawnError);
+    });
+  });
+};
 
-//   return new Promise((resolve, reject) => {
-//     // Keep track of the output from the agent
-//     // (output is added as strings to the array)
-//     const pennsieveAgentOutputLog = [];
-//     // Throw an error if the agent doesn't start within 15 seconds
-//     const timeout = 15000; // 15 seconds
-//     const versionCheckTimeout = setTimeout(() => {
-//       reject(
-//         new Error(
-//           `Pennsieve Agent output while trying to verify the agent version:<br />${pennsieveAgentOutputLog.join(
-//             "<br />"
-//           )}`
-//         )
-//       );
-//     }, timeout);
+const getPennsieveAgentVersion = () => {
+  log.info("Getting Pennsieve agent version");
 
-//     let agentVersionSpawn = spawn("pennsieve", ["version"], {
-//       shell: true,
-//       env: process.env,
-//     });
+  return new Promise((resolve, reject) => {
+    // Keep track of the output from the agent
+    // (output is added as strings to the array)
+    const pennsieveAgentOutputLog = [];
+    // Throw an error if the agent doesn't start within 15 seconds
+    const timeout = 15000; // 15 seconds
+    const versionCheckTimeout = setTimeout(() => {
+      reject(
+        new Error(
+          `Pennsieve Agent output while trying to verify the agent version:<br />${pennsieveAgentOutputLog.join(
+            "<br />"
+          )}`
+        )
+      );
+    }, timeout);
 
-//     // Capture standard output and parse the version
-//     // Resolve the promise if the version is found
-//     agentVersionSpawn.stdout.on("data", (data) => {
-//       const agentVersionOutput = `[Pennsieve Agent Output] ${data.toString()}`;
-//       log.info(agentVersionOutput);
-//       pennsieveAgentOutputLog.push(agentVersionOutput);
+    let agentVersionSpawn = spawn("pennsieve", ["version"], {
+      shell: true,
+      env: process.env,
+    });
 
-//       const versionResult = {};
-//       const regex = /(\w+ Version)\s*:\s*(\S+)/g;
-//       let match;
-//       while ((match = regex.exec(data)) !== null) {
-//         versionResult[match[1]] = match[2];
-//       }
-//       // If we were able to extract the version from the stdout, resolve the promise
-//       if (versionResult["Agent Version"]) {
-//         clearTimeout(versionCheckTimeout);
-//         resolve(versionResult);
-//       }
-//     });
+    // Capture standard output and parse the version
+    // Resolve the promise if the version is found
+    agentVersionSpawn.stdout.on("data", (data) => {
+      const agentVersionOutput = `[Pennsieve Agent Output] ${data.toString()}`;
+      log.info(agentVersionOutput);
+      pennsieveAgentOutputLog.push(agentVersionOutput);
 
-//     // Capture standard error output and reject the promise
-//     agentVersionSpawn.stderr.on("data", (data) => {
-//       const agentStdErr = `[Pennsieve Agent Error] ${data.toString()}`;
-//       log.info(agentStdErr);
-//       pennsieveAgentOutputLog.push(agentStdErr);
-//     });
+      const versionResult = {};
+      const regex = /(\w+ Version)\s*:\s*(\S+)/g;
+      let match;
+      while ((match = regex.exec(data)) !== null) {
+        versionResult[match[1]] = match[2];
+      }
+      // If we were able to extract the version from the stdout, resolve the promise
+      if (versionResult["Agent Version"]) {
+        clearTimeout(versionCheckTimeout);
+        resolve(versionResult);
+      }
+    });
 
-//     // Capture error output and reject the promise
-//     agentVersionSpawn.on("error", (error) => {
-//       const agentVersionSpawnError = `[Pennsieve Agent Error] ${error.toString()}`;
-//       log.info(agentVersionSpawnError);
-//       pennsieveAgentOutputLog.push(agentVersionSpawnError);
-//     });
-//   });
-// };
+    // Capture standard error output and reject the promise
+    agentVersionSpawn.stderr.on("data", (data) => {
+      const agentStdErr = `[Pennsieve Agent Error] ${data.toString()}`;
+      log.info(agentStdErr);
+      pennsieveAgentOutputLog.push(agentStdErr);
+    });
 
-// let preFlightCheckNotyf = null;
+    // Capture error output and reject the promise
+    agentVersionSpawn.on("error", (error) => {
+      const agentVersionSpawnError = `[Pennsieve Agent Error] ${error.toString()}`;
+      log.info(agentVersionSpawnError);
+      pennsieveAgentOutputLog.push(agentVersionSpawnError);
+    });
+  });
+};
 
-// const agent_installed = () => {
-//   return new Promise((resolve, reject) => {
-//     let agentStartSpawn = spawn("pennsieve", {
-//       shell: true,
-//       env: process.env,
-//     });
+let preFlightCheckNotyf = null;
 
-//     agentStartSpawn.stdout.on("data", async (data) => {
-//       return resolve(true);
-//     });
+const agent_installed = () => {
+  return new Promise((resolve, reject) => {
+    let agentStartSpawn = spawn("pennsieve", {
+      shell: true,
+      env: process.env,
+    });
 
-//     agentStartSpawn.stderr.on("data", (data) => {
-//       clientError(data.toString());
-//       return resolve(false);
-//     });
-//   });
-// };
+    agentStartSpawn.stdout.on("data", async (data) => {
+      return resolve(true);
+    });
 
-// // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
-// const run_pre_flight_checks = async (check_update = true) => {
-//   try {
-//     log.info("Running pre flight checks");
+    agentStartSpawn.stderr.on("data", (data) => {
+      clientError(data.toString());
+      return resolve(false);
+    });
+  });
+};
 
-//     if (!preFlightCheckNotyf) {
-//       preFlightCheckNotyf = notyf.open({
-//         duration: 25000,
-//         type: "info",
-//         message: "Checking SODA's connection to Pennsieve...",
-//       });
-//     }
+// Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
+const run_pre_flight_checks = async (check_update = true) => {
+  try {
+    log.info("Running pre flight checks");
 
-//     // Check the internet connection and if available check the rest.
-//     const userConnectedToInternet = await checkInternetConnection();
-//     if (!userConnectedToInternet) {
-//       throw new Error(
-//         "It seems that you are not connected to the internet. Please check your connection and try again."
-//       );
-//     }
+    if (!preFlightCheckNotyf) {
+      preFlightCheckNotyf = notyf.open({
+        duration: 25000,
+        type: "info",
+        message: "Checking SODA's connection to Pennsieve...",
+      });
+    }
+
+    // Check the internet connection and if available check the rest.
+    const userConnectedToInternet = await checkInternetConnection();
+    if (!userConnectedToInternet) {
+      throw new Error(
+        "It seems that you are not connected to the internet. Please check your connection and try again."
+      );
+    }
+
+  } catch(e) {
+
+  }
+}
 
 //     // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
 //     const account_present = await check_api_key();
@@ -1036,8 +1042,6 @@ const apiVersionsMatch = async () => {
   let serverAppVersion = responseObject.data.version;
 
   window.log.info(`Server version is ${serverAppVersion}`);
-  console.log("Server version is " + serverAppVersion);
-  console.log("App version is: ", appVersion)
   const browser_download_url = `https://docs.sodaforsparc.io/docs/common-errors/api-version-mismatch`;
 
   if (serverAppVersion !== appVersion) {
@@ -1098,7 +1102,6 @@ const apiVersionsMatch = async () => {
   if (hasConnectedAccountWithPennsieve()) {
 
     try {
-      console.log("About to try to update bf account list after verifying api versions match")
       updateBfAccountList();
     } catch (error) {
       clientError(error);
@@ -3887,7 +3890,6 @@ const refreshBfTeamsList = async (teamList) => {
   removeOptions(teamList);
 
   let accountSelected = defaultBfAccount;
-  console.log("Default bf account value is: ", defaultBfAccount)
   let optionTeam = document.createElement("option");
 
   optionTeam.textContent = "Select team";
@@ -4013,7 +4015,6 @@ const updateBfAccountList = async () => {
   }
 
   let accountList = responseObject.data["accounts"];
-  console.log(accountList)
   for (myitem in accountList) {
     let myitemselect = accountList[myitem];
     let option = document.createElement("option");
@@ -4041,7 +4042,6 @@ const loadDefaultAccount = async () => {
 
   let accounts = responseObject.data["defaultAccounts"];
 
-  console.log("LOad default accounts, ", accounts)
 
   if (accounts.length > 0) {
     let myitemselect = accounts[0];

@@ -54,17 +54,17 @@ if (process.contextIsolated) {
         return fs.readFileSync(filePath, encoding)
       }
     }),
-      contextBridge.exposeInMainWorld('process', {
-        platform: () => {
-          return process.platform
-        },
-        env: () => {
-          return process.env
-        }, 
-        resourcesPath: () => {
-          return process.resourcesPath
-        }
-      })
+    contextBridge.exposeInMainWorld('process', {
+      platform: () => {
+        return process.platform
+      },
+      env: () => {
+        return process.env
+      }, 
+      resourcesPath: () => {
+        return process.resourcesPath
+      }
+    })
     contextBridge.exposeInMainWorld('path', {
       join: (...paths) => {
         return path.join(...paths)
