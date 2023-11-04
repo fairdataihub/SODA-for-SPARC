@@ -1156,7 +1156,7 @@
       >
         <div class="guided--capsule-container">
           <div class="guided--capsule" id="guided-dataset-structure-intro-capsule"></div>
-          <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
+          <div class="guided--capsule" id="guided-pre-organized-dataset-import-capsule"></div>
           <div class="guided--capsule" id="guided-subjects-specification-capsule"></div>
           <div class="guided--capsule" id="guided-subjects-pooling-capsule"></div>
           <div class="guided--capsule" id="guided-samples-specification-capsule"></div>
@@ -1191,164 +1191,51 @@
             </h2>
           </div>
         </div>
-
-        <!--<div
-          id="guided-subjects-folder-tab-deprecated"
+        <div
+          id="guided-pre-organized-dataset-import-tab"
           class="guided--page"
-          data-page-name="Dataset structuring"
+          data-page-name="Pre-organized dataset import"
         >
-          <div class="guided--section" id="guided-section-dataset-subjects-text">
-            <h1 class="text-sub-step-title">Subject specification</h1>
-            <p class="help-text">
-              Create a unique ID for each of the subjects that data was collected from in the
-              interface below.
-            </p>
-            <p class="help-text">
-              If you have your subjects organized in either a folder structure or listed in an excel
-              file, you may use one of the buttons below to easily import them into SODA without
-              having to type them out individually.
-            </p>
-            <button id="guided-button-import-subjects-from-folders">Import from folders</button>
-            <button class="guided-subject-sample-pool-structure-download-button">
-              Download subject/pool/samples template
-            </button>
-          </div>
-          <div class="guided--section" id="guided-section-dataset-pools-text">
-            <h1 class="text-sub-step-title">Subject pooling</h1>
-            <p class="help-text">
-              Your dataset's subjects can optionally be organized into subject pools, which are
-              groups of subjects that share a common characteristic.
-            </p>
-          </div>
-          <div class="guided--section" id="guided-section-dataset-samples-text">
-            <h1 class="text-sub-step-title">Sample specification</h1>
-            <p class="help-text">
-              If any measurements were taken from samples collected from subjects (e.g., tissue
-              samples), you can specify the samples in the interface below.
-            </p>
-          </div>
+          <h1 class="text-sub-step-title">Pre-organized dataset importation</h1>
+          <div class="guided--section">
+            <label class="guided--form-label centered">
+              Is your dataset already organized according to the SDS-specified folder structure?
+            </label>
+            <div class="info-dropdown" style="align-self: center">
+              <p class="info-dropdown-text" data-dropdown-type="info">
+                What is the SDS-specified folder structure?
+              </p>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="info-container">
+              <p class="help-text">
+                The SDS-specified folder structure is the folder structure that is required for
+                SPARC datasets submitted to...
+              </p>
+            </div>
 
-          <div class="guided--capsule-container-sub-page">
-            <div
-              class="guided--capsule-sub-page active"
-              id="guided-specify-subjects-page-capsule"
-            ></div>
-            <div
-              class="guided--capsule-sub-page"
-              id="guided-organize-subjects-into-pools-page-capsule"
-            ></div>
-            <div class="guided--capsule-sub-page" id="guided-specify-samples-page-capsule"></div>
-          </div>
-
-          <div class="guided--panel sub-page" id="guided-specify-subjects-page">
-            <div class="guided--section" id="guided-specify-subjects-prompt">
-              <div class="guided--panel">
-                <table
-                  class="ui celled striped table mt-md"
-                  style="margin-bottom: 10px; width: 800px"
-                >
-                  <thead>
-                    <tr>
-                      <th class="text-center" colspan="2">Dataset subjects</th>
-                    </tr>
-                  </thead>
-                  <tbody id="subject-specification-table-body"></tbody>
-                </table>
-                <p
-                  class="guided--text-input-instructions text-center mb-sm hidden"
-                  id="guided-add-subject-instructions"
-                  style="margin-top: -7px"
-                >
-                  Hit enter/click the checkbox after entering the subject ID to add a subject.
-                </p>
-                <button
-                  class="ui primary basic button mt-2"
-                  onclick="addSubjectSpecificationTableRow()"
-                >
-                  <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new subject
-                </button>
-              </div>
-              <div
-                class="guided--panel hidden"
-                id="guided-div-warning-before-deleting-pool-sub-sam-structure"
+            <div class="guided--radio-button-container" style="margin-bottom: 7px">
+              <button
+                class="ui positive basic button guided--radio-button"
+                data-next-element="guided-section-import-sds-dataset"
+                data-button-config-value="sds-compliant-dataset-imported"
+                data-button-config-value-state="yes"
               >
-                <h2 class="text-sub-step-title">
-                  Click Next to confirm that your dataset does not contain human or non-human
-                  subjects.
-                </h2>
-              </div>
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                data-next-element="guided-section-no-sds-dataset-imported"
+                data-button-config-value="sds-compliant-dataset-imported"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
             </div>
           </div>
-          <div class="guided--panel sub-page hidden" id="guided-organize-subjects-into-pools-page">
-            <div class="guided--section" id="guided-organize-into-pools-prompt">
-              <label class="guided--form-label centered">
-                Would you like to organize subjects into pools?
-              </label>
-              <div class="guided--radio-button-container" style="margin-bottom: 7px">
-                <button
-                  class="ui positive basic button guided--radio-button"
-                  id="guided-button-organize-subjects-into-pools"
-                  data-next-element="guided-div-organize-subjects-into-pools"
-                  data-button-config-value="dataset-contains-pools"
-                  data-button-config-value-state="yes"
-                >
-                  Yes
-                </button>
-                <button
-                  class="ui negative basic button guided--radio-button"
-                  id="guided-button-no-pools"
-                  data-button-config-value="dataset-contains-pools"
-                  data-button-config-value-state="no"
-                >
-                  No
-                </button>
-              </div>
-              <div class="guided--panel hidden" id="guided-div-organize-subjects-into-pools">
-                <table class="ui celled striped table" style="margin-bottom: 10px; width: 800px">
-                  <thead>
-                    <tr>
-                      <th class="text-center" style="min-width: 250px" colspan="3">
-                        Enter a unique ID for each of your pools and specify the subjects they
-                        contain
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody id="pools-specification-table-body"></tbody>
-                </table>
-                <button class="ui primary basic button mt-2" onclick="addPoolTableRow()">
-                  <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new pool
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="guided--panel sub-page hidden" id="guided-specify-samples-page">
-            <div class="guided--section" id="guided-number-of-samples-prompt">
-              <label class="guided--form-label centered">
-                Do you have sample data for any of your subjects?
-              </label>
-              <div class="guided--radio-button-container" style="margin-bottom: 7px">
-                <button
-                  class="ui positive basic button guided--radio-button"
-                  id="guided-button-add-samples-tables"
-                  data-next-element="guided-section-subjects-tables"
-                  data-button-config-value="dataset-contains-samples"
-                  data-button-config-value-state="yes"
-                >
-                  Yes
-                </button>
-                <button
-                  class="ui negative basic button guided--radio-button"
-                  id="guided-button-no-samples"
-                  data-button-config-value="dataset-contains-samples"
-                  data-button-config-value-state="no"
-                >
-                  No
-                </button>
-              </div>
-              <div class="guided--panel hidden" id="guided-section-subjects-tables"></div>
-            </div>
-          </div>
-        </div>-->
+          <div class="guided--section" id="guided-section-import-sds-dataset">Import dataset</div>
+          <div class="guided--section" id="guided-section-no-sds-dataset-imported">No problemo</div>
+        </div>
         <div
           id="guided-subjects-specification-tab"
           class="guided--page"
@@ -1361,61 +1248,6 @@
               interface below. If you have a large amount of subjects (greater than 20), view the
               dropdown below for an alternative method of importing subjects.
             </p>
-            <div class="info-dropdown">
-              <p class="info-dropdown-text" data-dropdown-type="info">
-                Import a large number of subjects
-              </p>
-              <i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="info-container">
-              <p class="help-text">
-                SODA provides two methods for importing a large number of subjects: Importing from
-                an excel spreadsheet, or importing directly from a set of folders or files on your
-                computer.
-              </p>
-              <p class="help-text">
-                <b>Importing from a spreadsheet:</b>
-                <br />
-                To import from a spreadsheet you must first
-                <button class="guided-subject-sample-pool-structure-download-button">
-                  Download subject/pool/samples template
-                </button>
-                <br />
-
-                Once you have added your subjects to the spreadsheet, import it by drag and dropping
-                or importing it below. <br />
-              </p>
-              <div
-                class="file-import-container horizontal"
-                id="guided-container-subjects-pools-samples-structure-import"
-                data-file-name="subjects_pools_samples_structure"
-              >
-                <div
-                  id="guided-lottie-import-subjects-pools-samples-excel-file"
-                  class="lottieAnimationContainer guided--container-lottie-small"
-                ></div>
-                <p class="help-text text-center">Drag and Drop <b>subjects_structure.xslx</b></p>
-                <p class="help-text text-center mt-md mb-md">OR</p>
-                <button
-                  class="ui primary basic button mt-sm"
-                  onclick="importMetadataFiles(this, 'code_description', ['.xlsx'], 'guided-code-description-para-text', 'guided')"
-                >
-                  <i class="fas fa-file-import" style="margin-right: 7px"></i>Import
-                  subjects_structure.xslx
-                </button>
-                <p
-                  class="help-text small text-center mt-sm"
-                  id="guided-code-description-para-text"
-                  style="max-width: 240px; overflow-wrap: break-word"
-                ></p>
-              </div>
-              <p>
-                <br /><br />
-                <b>Importing from folders/files:</b>
-                <br />
-                To import from folders/files you must first organize your subjects into folders...
-              </p>
-            </div>
             <!-- ALWAYS SHOWED INITIAL QUESTION -->
             <div class="guided--section">
               <label class="guided--form-label centered">

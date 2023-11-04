@@ -954,14 +954,18 @@ const savePageChanges = async (pageBeingLeftID) => {
       const datasetHasCode = sodaJSONObj["dataset-contains-code"];
 
       if (datasetHasSubjects) {
-        guidedUnSkipPage("guided-subjects-folder-tab");
+        guidedUnSkipPage("guided-subjects-specification-tab");
+        guidedUnSkipPage("guided-subjects-pooling-tab");
+        guidedUnSkipPage("guided-samples-specification-tab");
         guidedUnSkipPage("guided-primary-data-organization-tab");
         guidedUnSkipPage("guided-source-data-organization-tab");
         guidedUnSkipPage("guided-derivative-data-organization-tab");
         guidedUnSkipPage("guided-create-subjects-metadata-tab");
         guidedUnSkipPage("guided-create-subjects-metadata-tab");
       } else {
-        guidedSkipPage("guided-subjects-folder-tab");
+        guidedSkipPage("guided-subjects-specification-tab");
+        guidedSkipPage("guided-subjects-pooling-tab");
+        guidedSkipPage("guided-samples-specification-tab");
         guidedSkipPage("guided-primary-data-organization-tab");
         guidedSkipPage("guided-source-data-organization-tab");
         guidedSkipPage("guided-derivative-data-organization-tab");
