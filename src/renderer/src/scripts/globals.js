@@ -89,8 +89,8 @@ const updateDatasetList = (bfaccount) => {
 
   $('#div-filter-datasets-progress-2').css('display', 'none')
 
-  removeOptions(curateDatasetDropdown)
-  addOption(curateDatasetDropdown, 'Search here...', 'Select dataset')
+  window.removeOptions(window.curateDatasetDropdown)
+  window.addOption(window.curateDatasetDropdown, 'Search here...', 'Select dataset')
 
   initializeBootstrapSelect('#curatebfdatasetlist', 'disabled')
 
@@ -103,20 +103,20 @@ const updateDatasetList = (bfaccount) => {
 
   // waiting for dataset list to load first before initiating BF dataset dropdown list
   setTimeout(() => {
-    var myPermission = $(datasetPermissionDiv).find('#select-permission-list-2').val()
+    var myPermission = $(window.datasetPermissionDiv).find('#select-permission-list-2').val()
 
     if (!myPermission) {
       myPermission = 'All'
     }
 
     if (myPermission.toLowerCase() === 'all') {
-      for (var i = 0; i < datasetList.length; i++) {
-        filteredDatasets.push(datasetList[i].name)
+      for (var i = 0; i < window.datasetList.length; i++) {
+        filteredDatasets.push(window.datasetList[i].name)
       }
     } else {
-      for (var i = 0; i < datasetList.length; i++) {
-        if (datasetList[i].role === myPermission.toLowerCase()) {
-          filteredDatasets.push(datasetList[i].name)
+      for (var i = 0; i < window.datasetList.length; i++) {
+        if (window.datasetList[i].role === myPermission.toLowerCase()) {
+          filteredDatasets.push(window.datasetList[i].name)
         }
       }
     }
@@ -125,7 +125,7 @@ const updateDatasetList = (bfaccount) => {
       return a.toLowerCase().localeCompare(b.toLowerCase())
     })
 
-    // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
+    // The window.removeOptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
     $('#curatebfdatasetlist').find('option:not(:first)').remove()
 
     for (myitem in filteredDatasets) {
@@ -133,7 +133,7 @@ const updateDatasetList = (bfaccount) => {
       var option = document.createElement('option')
       option.textContent = myitemselect
       option.value = myitemselect
-      curateDatasetDropdown.appendChild(option)
+      window.curateDatasetDropdown.appendChild(option)
     }
 
     initializeBootstrapSelect('#curatebfdatasetlist', 'show')
@@ -163,75 +163,76 @@ window.bfAccountOptionsStatus = ''
 window.myitem;
 
 let bfAccountOptions = []
-window.defaultBfDataset;
+window.defaultBfAccount = undefined;
 window.defaultBfDataset = "Select dataset";
 window.defaultBfDatasetId = undefined;
 window.reverseSwalButtons = false;
 window.SODA_SPARC_API_KEY = "SODA-Pennsieve";
-let datasetList = [];
+window.datasetList = [];
 let organizationList = [];
 
 
 
 
-// const updateOrganizationList = async (bfaccount) => {
-// let organizations = []
 
-// $('#div-filter-datasets-progress-2').css('display', 'none')
+window.updateOrganizationList = async (bfaccount) => {
+let organizations = []
 
-// removeOptions(curateOrganizationDropdown)
-// addOption(curateOrganizationDropdown, 'Search here...', 'Select organization')
+$('#div-filter-datasets-progress-2').css('display', 'none')
 
-// initializeBootstrapSelect('#curatebforganizationlist', 'disabled')
+window.removeOptions(window.curateOrganizationDropdown)
+window.addOption(window.curateOrganizationDropdown, 'Search here...', 'Select organization')
 
-// $('#bf-organization-select-header').css('display', 'none')
-// $('#curatebforganizationlist').selectpicker('hide')
-// $('#curatebforganizationlist').selectpicker('refresh')
-// $('.selectpicker').selectpicker('hide')
-// $('.selectpicker').selectpicker('refresh')
-// $('#bf-organization-select-div').hide()
+initializeBootstrapSelect('#curatebforganizationlist', 'disabled')
 
-// await wait(100)
+$('#bf-organization-select-header').css('display', 'none')
+$('#curatebforganizationlist').selectpicker('hide')
+$('#curatebforganizationlist').selectpicker('refresh')
+$('.selectpicker').selectpicker('hide')
+$('.selectpicker').selectpicker('refresh')
+$('#bf-organization-select-div').hide()
 
-// $('#curatebforganizationlist').find('option:not(:first)').remove()
+await window.wait(100)
 
-// // add the organization options to the dropdown
-// for (const myOrganization in organizations) {
-//   var myitemselect = organiztions[myOrganization]
-//   var option = document.createElement('option')
-//   option.textContent = myitemselect
-//   option.value = myitemselect
-//   curateOrganizationDropdown.appendChild(option)
-// }
+$('#curatebforganizationlist').find('option:not(:first)').remove()
 
-// initializeBootstrapSelect('#curatebforganizationlist', 'show')
+// add the organization options to the dropdown
+for (const myOrganization in organizations) {
+  var myitemselect = organiztions[myOrganization]
+  var option = document.createElement('option')
+  option.textContent = myitemselect
+  option.value = myitemselect
+  window.curateOrganizationDropdown.appendChild(option)
+}
 
-// $("#div-filter-datasets-progress-2").css("display", "none");
-//$("#bf-dataset-select-header").css("display", "block")
-// $('#curatebforganizationlist').selectpicker('show')
-// $('#curatebforganizationlist').selectpicker('refresh')
-// $('.selectpicker').selectpicker('show')
-// $('.selectpicker').selectpicker('refresh')
-// $('#bf-organization-select-div').show()
-// }
+initializeBootstrapSelect('#curatebforganizationlist', 'show')
+
+$("#div-filter-datasets-progress-2").css("display", "none");
+$("#bf-dataset-select-header").css("display", "block")
+$('#curatebforganizationlist').selectpicker('show')
+$('#curatebforganizationlist').selectpicker('refresh')
+$('.selectpicker').selectpicker('show')
+$('.selectpicker').selectpicker('refresh')
+$('#bf-organization-select-div').show()
+}
 
 // per change event of current dataset span text
-// const confirm_click_function = () => {
-//   let temp = $('.bf-dataset-span').html()
-//   if (temp == 'None' || temp == '') {
-//     $($(this).parents().find('.field').find('.div-confirm-button')).css('display', 'none')
-//     $('#para-review-dataset-info-disseminate').text('None')
-//   } else {
-//     $($(this).parents().find('.field').find('.div-confirm-button')).css('display', 'flex')
-//     if ($($(this).parents().find('.field').find('.synced-progress')).length) {
-//       if ($($(this).parents().find('.field').find('.synced-progress')).css('display') === 'none') {
-//         $('.confirm-button').click()
-//       }
-//     } else {
-//       $('.confirm-button').click()
-//     }
-//   }
-// }
+const confirm_click_function = () => {
+  let temp = $('.bf-dataset-span').html()
+  if (temp == 'None' || temp == '') {
+    $($(this).parents().find('.field').find('.div-confirm-button')).css('display', 'none')
+    $('#para-review-dataset-info-disseminate').text('None')
+  } else {
+    $($(this).parents().find('.field').find('.div-confirm-button')).css('display', 'flex')
+    if ($($(this).parents().find('.field').find('.synced-progress')).length) {
+      if ($($(this).parents().find('.field').find('.synced-progress')).css('display') === 'none') {
+        $('.confirm-button').click()
+      }
+    } else {
+      $('.confirm-button').click()
+    }
+  }
+}
 
 // RESET UI LOGIC SECTION ---------------------------------------------------------------------
 // function resetSubmission(askToReset = true) {
@@ -956,8 +957,8 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
             },
           });
 
-          datasetList = [];
-          datasetList = responseObject.data.datasets;
+          window.datasetList = [];
+          window.datasetList = responseObject.data.datasets;
           window.clearDatasetDropdowns();
           refreshDatasetList();
         } catch (error) {
@@ -1124,13 +1125,13 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
 
         // set the user's email to be the window.defaultBfDataset value
         bfAccountOptions[key_name] = key_name;
-        window.defaultBfDataset = key_name;
+        window.defaultBfAccount = key_name;
         window.defaultBfDataset = "Select dataset";
 
         try {
           let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
             params: {
-              selected_account: window.defaultBfDataset,
+              selected_account: window.defaultBfAccount,
             },
           });
           // reset the dataset field values
@@ -1170,7 +1171,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           confirm_click_account_function();
         }
 
-        datasetList = [];
+        window.datasetList = [];
         window.defaultBfDataset = null;
         window.clearDatasetDropdowns();
 
@@ -1235,23 +1236,23 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       var bfDataset = "";
 
       // if users edit Current dataset
-      datasetPermissionDiv.style.display = "none";
-      $(datasetPermissionDiv)
+      window.datasetPermissionDiv.style.display = "none";
+      $(window.datasetPermissionDiv)
         .find("#curatebfdatasetlist")
         .find("option")
         .empty()
         .append('<option value="Select dataset">Search here...</option>')
         .val("Select dataset");
 
-      $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "block");
+      $(window.datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "block");
 
       $("#bf-dataset-select-header").css("display", "none");
 
-      $(datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
+      $(window.datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
       $("#para-continue-bf-dataset-getting-started").text("");
 
-      $(datasetPermissionDiv).find("#select-permission-list-2").val("All").trigger("change");
-      $(datasetPermissionDiv).find("#curatebfdatasetlist").val("Select dataset").trigger("change");
+      $(window.datasetPermissionDiv).find("#select-permission-list-2").val("All").trigger("change");
+      $(window.datasetPermissionDiv).find("#curatebfdatasetlist").val("Select dataset").trigger("change");
 
       initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
@@ -1301,7 +1302,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       } else {
         //account is signed in but no datasets have been fetched or created
         //invoke dataset request to ensure no datasets have been created
-        if (datasetList.length === 0) {
+        if (window.datasetList.length === 0) {
           let responseObject;
           try {
             responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
@@ -1319,15 +1320,15 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
 
           let result = responseObject.data.datasets;
-          datasetList = [];
-          datasetList = result;
+          window.datasetList = [];
+          window.datasetList = result;
           refreshDatasetList();
         }
       }
 
       //after request check length again
       //if 0 then no datasets have been created
-      if (datasetList.length === 0) {
+      if (window.datasetList.length === 0) {
         Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           cancelButtonText: "Cancel",
@@ -1367,7 +1368,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       //datasets do exist so display popup with dataset options
       //else datasets have been created
-      if (datasetList.length > 0) {
+      if (window.datasetList.length > 0) {
         await Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           cancelButtonText: "Cancel",
@@ -1377,7 +1378,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           heightAuto: false,
           allowOutsideClick: false,
           allowEscapeKey: true,
-          html: datasetPermissionDiv,
+          html: window.datasetPermissionDiv,
           reverseButtons: window.reverseSwalButtons,
           showCloseButton: true,
           showCancelButton: true,
@@ -1396,9 +1397,9 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           didOpen: () => {
             $("#div-permission-list-2").css("display", "block");
             $(".ui.active.green.inline.loader.small").css("display", "none");
-            datasetPermissionDiv.style.display = "block";
+            window.datasetPermissionDiv.style.display = "block";
             $("#curatebfdatasetlist").attr("disabled", false);
-            $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
+            $(window.datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
             $("#curatebfdatasetlist").selectpicker("refresh");
             $("#curatebfdatasetlist").selectpicker("show");
             $("#bf-dataset-select-div").show();
@@ -1424,7 +1425,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             if (!bfDataset) {
               Swal.showValidationMessage("Please select a dataset!");
 
-              $(datasetPermissionDiv)
+              $(window.datasetPermissionDiv)
                 .find("#div-filter-datasets-progress-2")
                 .css("display", "none");
               $("#curatebfdatasetlist").selectpicker("show");
@@ -1436,7 +1437,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               if (bfDataset === "Select dataset") {
                 Swal.showValidationMessage("Please select a dataset!");
 
-                $(datasetPermissionDiv)
+                $(window.datasetPermissionDiv)
                   .find("#div-filter-datasets-progress-2")
                   .css("display", "none");
                 $("#curatebfdatasetlist").selectpicker("show");
@@ -1560,7 +1561,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         }
 
         // update the gloabl dataset id
-        for (const item of datasetList) {
+        for (const item of window.datasetList) {
           let { name, id } = item;
           if (name === bfDataset) {
             window.defaultBfDatasetId = id;
@@ -1614,7 +1615,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     $(".ui.active.green.inline.loader.small.organization-loader").css("display", "block");
 
     // hacky: wait for animations
-    await wait(10);
+    await window.wait(10);
 
     // disable the Continue btn first
     $("#nextBtn").prop("disabled", true);
@@ -1733,7 +1734,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         heightAuto: false,
         allowOutsideClick: false,
         allowEscapeKey: true,
-        html: datasetPermissionDiv,
+        html: window.datasetPermissionDiv,
         reverseButtons: window.reverseSwalButtons,
         showCloseButton: true,
         showCancelButton: true,
@@ -1755,9 +1756,9 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         didOpen: () => {
           $("#div-permission-list-2").css("display", "block");
           $(".ui.active.green.inline.loader.small").css("display", "none");
-          datasetPermissionDiv.style.display = "block";
+          window.datasetPermissionDiv.style.display = "block";
           $("#curatebforganizationlist").attr("disabled", false);
-          $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
+          $(window.datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
           $("#curatebforganizationlist").selectpicker("refresh");
           $("#curatebforganizationlist").selectpicker("show");
           $("#bf-organization-select-div").show();
@@ -1784,7 +1785,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           if (!bfOrganization) {
             Swal.showValidationMessage("Please select an organization!");
 
-            $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
+            $(window.datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
             $("#curatebforganizationlist").selectpicker("show");
             $("#curatebforganizationlist").selectpicker("refresh");
             $("#bf-organization-select-div").show();
@@ -1795,7 +1796,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           if (bfOrganization === "Select organization") {
             Swal.showValidationMessage("Please select an organization!");
 
-            $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
+            $(window.datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
             $("#curatebforganizationlist").selectpicker("show");
             $("#curatebforganizationlist").selectpicker("refresh");
             $("#bf-organization-select-div").show();
@@ -1936,7 +1937,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         : resetFFMUI(ev);
 
       // reset the dataset list
-      datasetList = [];
+      window.datasetList = [];
       window.defaultBfDataset = null;
       window.clearDatasetDropdowns();
 

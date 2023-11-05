@@ -1,6 +1,7 @@
 /*
 Purpose: An abstraction layer between the client and making HTTP requests via Axios. This layer handles the error parsing and logging.
 */
+import client from '../../client'
 
 const getUserInformation = async () => {
   let userResponse = await client.get(`/user`, {

@@ -273,7 +273,7 @@ let update_available_notification = "";
 let update_downloaded_notification = "";
 
 // utility function for async style set timeout
-const wait = async (delay) => {
+window.wait = async (delay) => {
   return new Promise((resolve) => setTimeout(resolve, delay));
 };
 
@@ -283,7 +283,7 @@ const wait = async (delay) => {
 // verify the api versions match
 const startupServerAndApiCheck = async () => {
   // wait for SWAL to be loaded in
-  await wait(2000);
+  await window.wait(2000);
 
   // notify the user that the application is starting connecting to the server
   Swal.fire({
@@ -324,7 +324,7 @@ const startupServerAndApiCheck = async () => {
     if (time_pass > 300000) {
       break;
     } //break after five minutes
-    await wait(2000);
+    await window.wait(2000);
   }
 
   if (!status) {
@@ -789,7 +789,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
     // make an api request to change to the organization members. If it fails with a 401 then ask them to go through the workspace change flow as SODA does not have access to the workspace.
     try {
-      await client.get(`/manage_datasets/ps_get_users?selected_account=${window.defaultBfDataset}`);
+      await client.get(`/manage_datasets/ps_get_users?selected_account=${window.defaultBfAccount}`);
     } catch (err) {
       clientError(err);
       if (err.response.status) {
@@ -990,7 +990,7 @@ const check_api_key = async () => {
     type: "api_key_search",
     message: "Checking for Pennsieve account...",
   });
-  await wait(800);
+  await window.wait(800);
   // If no accounts are found, return false.
   let responseObject;
 
@@ -1263,7 +1263,7 @@ window.electron.ipcRenderer.on("app_version", (event, arg) => {
 // const pathSubmitDataset = document.querySelector("#selected-local-dataset-submit");
 // const progressUploadBf = document.getElementById("div-progress-submit");
 // const progressBarUploadBf = document.getElementById("progress-bar-upload-bf");
-// const datasetPermissionDiv = document.getElementById("div-permission-list-2");
+window.datasetPermissionDiv = document.getElementById("div-permission-list-2");
 // const bfDatasetSubtitle = document.querySelector("#bf-dataset-subtitle");
 // const bfDatasetSubtitleCharCount = document.querySelector("#para-char-count-metadata");
 
@@ -2494,7 +2494,7 @@ const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-te
 // };
 
 // Function to add options to dropdown list
-function addOption(selectbox, text, value) {
+window.addOption = (selectbox, text, value)  => {
   var opt = document.createElement("OPTION");
   opt.text = text;
   opt.value = value;
@@ -2507,19 +2507,19 @@ function addOption(selectbox, text, value) {
 // //// get datasets and append that to option list for parent datasets
 // function getParentDatasets() {
 //   var parentDatasets = [];
-//   for (var i = 0; i < datasetList.length; i++) {
-//     parentDatasets.push(datasetList[i].name);
+//   for (var i = 0; i < window.datasetList.length; i++) {
+//     parentDatasets.push(window.datasetList[i].name);
 //   }
 //   return parentDatasets;
 // }
 
 // function changeAwardInputDsDescription() {
 //   if (dsContributorArrayLast1) {
-//     removeOptions(dsContributorArrayLast1);
+//     window.removeOptions(dsContributorArrayLast1);
 //   }
 //   if (dsContributorArrayFirst1) {
-//     removeOptions(dsContributorArrayFirst1);
-//     addOption(dsContributorArrayFirst1, "Select an option", "Select an option");
+//     window.removeOptions(dsContributorArrayFirst1);
+//     window.addOption(dsContributorArrayFirst1, "Select an option", "Select an option");
 //   }
 
 //   currentContributorsLastNames = [];
@@ -2541,7 +2541,7 @@ function addOption(selectbox, text, value) {
 //     $($($("#table-current-contributors").find("tr")[1].cells[1]).find("select")[0]).prop("id")
 //   );
 //   if (selectID) {
-//     removeOptions(selectID);
+//     window.removeOptions(selectID);
 //     $($($("#table-current-contributors").find("tr")[1].cells[1]).find("select")[0]).prop(
 //       "disabled",
 //       true
@@ -2553,9 +2553,9 @@ function addOption(selectbox, text, value) {
 // const onchangeLastNames = () => {
 //   $("#dd-contributor-first-name").attr("disabled", true);
 //   var conLastname = $("#dd-contributor-last-name").val();
-//   removeOptions(document.getElementById("dd-contributor-first-name"));
+//   window.removeOptions(document.getElementById("dd-contributor-first-name"));
 //   if (conLastname in globalContributorNameObject) {
-//     addOption(
+//     window.addOption(
 //       document.getElementById("dd-contributor-first-name"),
 //       globalContributorNameObject[conLastname],
 //       globalContributorNameObject[conLastname]
@@ -2569,17 +2569,17 @@ function addOption(selectbox, text, value) {
 
 //// De-populate dataset dropdowns to clear options
 window.clearDatasetDropdowns = () => {
-  for (let list of [curateDatasetDropdown]) {
-    removeOptions(list);
-    addOption(list, "Search here...", "Select dataset");
+  for (let list of [window.curateDatasetDropdown]) {
+    window.removeOptions(list);
+    window.addOption(list, "Search here...", "Select dataset");
     list.options[0].disabled = true;
   }
 };
 
 // const clearOrganizationDropdowns = () => {
-//   for (let list of [curateOrganizationDropdown]) {
-//     removeOptions(list);
-//     addOption(list, "Search here...", "Select organization");
+//   for (let list of [window.curateOrganizationDropdown]) {
+//     window.removeOptions(list);
+//     window.addOption(list, "Search here...", "Select organization");
 //     list.options[0].disabled = true;
 //   }
 // };
@@ -2962,20 +2962,20 @@ window.clearDatasetDropdowns = () => {
 // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /// Add all BF accounts to the dropdown list, and then choose by default one option ('global' account)
-const curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
-const curateOrganizationDropdown = document.getElementById("curatebforganizationlist");
+window.curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
+window.curateOrganizationDropdown = document.getElementById("curatebforganizationlist");
 
 async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
-  window.defaultBfDataset = bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text;
+  window.defaultBfAccount = bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text;
   try {
     let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
       params: {
-        selected_account: window.defaultBfDataset,
+        selected_account: window.defaultBfAccount,
       },
     });
-    datasetList = [];
-    datasetList = responseObject.data.datasets;
-    populateDatasetDropdownCurate(datasetDropdown, datasetList);
+    window.datasetList = [];
+    window.datasetList = responseObject.data.datasets;
+    populateDatasetDropdownCurate(datasetDropdown, window.datasetList);
     refreshDatasetList();
   } catch (error) {
     clientError(error);
@@ -2986,15 +2986,15 @@ async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
 }
 
 //// De-populate dataset dropdowns to clear options for CURATE
-function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
-  removeOptions(datasetDropdown);
+function populateDatasetDropdownCurate(datasetDropdown, datasetList) {
+  window.removeOptions(datasetDropdown);
 
   /// making the first option: "Select" disabled
-  addOption(datasetDropdown, "Select dataset", "Select dataset");
+  window.addOption(datasetDropdown, "Select dataset", "Select dataset");
   var options = datasetDropdown.getElementsByTagName("option");
   options[0].disabled = true;
 
-  for (let myitem of datasetlist) {
+  for (let myitem of datasetList) {
     var myitemselect = myitem.name;
     var option = document.createElement("option");
     option.textContent = myitemselect;
@@ -3684,7 +3684,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 
 // General //
 
-const removeOptions = (selectbox) => {
+window.removeOptions = (selectbox) => {
   for (let i = selectbox.options.length - 1; i >= 0; i--) {
     selectbox.remove(i);
   }
@@ -3693,14 +3693,14 @@ const removeOptions = (selectbox) => {
 // // Manage Datasets //
 
 const refreshBfUsersList = () => {
-  let accountSelected = window.defaultBfDataset;
+  let accountSelected = window.defaultBfAccount;
 
-  removeOptions(bfListUsers);
+  window.removeOptions(bfListUsers);
   let optionUser = document.createElement("option");
   optionUser.textContent = "Select user";
   bfListUsers.appendChild(optionUser);
 
-  removeOptions(bfListUsersPI);
+  window.removeOptions(bfListUsersPI);
   let optionUserPI = document.createElement("option");
   optionUserPI.textContent = "Select PI";
   bfListUsersPI.appendChild(optionUserPI);
@@ -3710,7 +3710,7 @@ const refreshBfUsersList = () => {
       .get(`manage_datasets/ps_get_users?selected_account=${accountSelected}`)
       .then((res) => {
         let users = res.data["users"];
-        // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
+        // The window.removeOptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
         $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
 
@@ -3746,9 +3746,9 @@ const getSortedTeamStrings = (pennsieveTeamsJsonResponse) => {
 };
 
 const refreshBfTeamsList = async (teamList) => {
-  removeOptions(teamList);
+  window.removeOptions(teamList);
 
-  let accountSelected = window.defaultBfDataset;
+  let accountSelected = window.defaultBfAccount;
   let optionTeam = document.createElement("option");
 
   optionTeam.textContent = "Select team";
@@ -3757,11 +3757,11 @@ const refreshBfTeamsList = async (teamList) => {
   if (accountSelected !== "Select") {
     try {
       const teamsReq = await client.get(
-        `manage_datasets/ps_get_teams?selected_account=${window.defaultBfDataset}`
+        `manage_datasets/ps_get_teams?selected_account=${window.defaultBfAccount}`
       );
       const teamsThatCanBeGrantedPermissions = getSortedTeamStrings(teamsReq.data.teams);
 
-      // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
+      // The window.removeOptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
       $("#bf_list_teams").selectpicker("refresh");
       $("#bf_list_teams").find("option:not(:first)").remove();
       $("#guided_bf_list_users_and_teams").selectpicker("refresh");
@@ -3796,8 +3796,8 @@ const refreshDatasetList = () => {
   let filteredDatasets = [];
 
   if (datasetPermission.toLowerCase() === "all") {
-    for (let i = 0; i < datasetList.length; i++) {
-      filteredDatasets.push(datasetList[i].name);
+    for (let i = 0; i < window.datasetList.length; i++) {
+      filteredDatasets.push(window.datasetList[i].name);
     }
   }
   filteredDatasets.sort((a, b) => {
@@ -3837,7 +3837,7 @@ const populateDatasetDropdowns = (mylist) => {
     option.value = myitemselect;
     option2 = option.cloneNode(true);
 
-    curateDatasetDropdown.appendChild(option2);
+    window.curateDatasetDropdown.appendChild(option2);
   }
   // metadataDatasetlistChange();
   // permissionDatasetlistChange();
@@ -3856,7 +3856,7 @@ const populateDatasetDropdowns = (mylist) => {
 //     option.value = myitemselect;
 //     option1 = option.cloneNode(true);
 
-//     curateOrganizationDropdown.appendChild(option1);
+//     window.curateOrganizationDropdown.appendChild(option1);
 //   }
 // };
 // ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
@@ -3904,8 +3904,8 @@ const loadDefaultAccount = async () => {
 
   if (accounts.length > 0) {
     let myitemselect = accounts[0];
-    // keep the window.defaultBfDataset value as the user's profile config key value for reference later
-    window.defaultBfDataset = myitemselect;
+    // keep the window.defaultBfAccount value as the user's profile config key value for reference later
+    window.defaultBfAccount = myitemselect;
 
     // fetch the user's email and set that as the account field's value
     let userInformation = await api.getUserInformation();
@@ -4383,9 +4383,10 @@ const loadDefaultAccount = async () => {
 (async () => {
   // wait until soda is connected to the backend server
   while (!sodaIsConnected) {
-    await wait(1000);
+    await window.wait(1000);
   }
 
+  console.log("Launching retrieve accounts**********")
   retrieveBFAccounts();
 })();
 
@@ -4401,11 +4402,12 @@ const retrieveBFAccounts = async () => {
       .get("manage_datasets/bf_account_list")
       .then((res) => {
         let accounts = res.data;
+        console.log(accounts)
         for (const myitem in accounts) {
           bfAccountOptions[accounts[myitem]] = accounts[myitem];
         }
 
-        showWindow.defaultBfDataset();
+        showDefaultBFAccount();
       })
       .catch((error) => {
         bfAccountOptionsStatus = error;
@@ -4417,17 +4419,17 @@ const retrieveBFAccounts = async () => {
 };
 
 let defaultAccountDetails = "";
-const showdefaultBfDataset = async () => {
+const showDefaultBFAccount = async () => {
   try {
     let bf_default_acc_req = await client.get("manage_datasets/bf_default_account_load");
     let accounts = bf_default_acc_req.data.defaultAccounts;
     if (accounts.length > 0) {
       let myitemselect = accounts[0];
-      window.defaultBfDataset = myitemselect;
+      window.defaultBfAccount = myitemselect;
       try {
         let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
           params: {
-            selected_account: window.defaultBfDataset,
+            selected_account: window.defaultBfAccount,
           },
         });
         let user_email = bf_account_details_req.data.email;
@@ -4444,7 +4446,7 @@ const showdefaultBfDataset = async () => {
         showHideDropdownButtons("account", "show");
         refreshDatasetList()
         updateDatasetList();
-        updateOrganizationList();
+        window.updateOrganizationList();
       } catch (error) {
         clientError(error);
 
@@ -7397,8 +7399,8 @@ const showdefaultBfDataset = async () => {
 //             selected_account: window.defaultBfDataset,
 //           },
 //         });
-//         datasetList = [];
-//         datasetList = responseObject.data.datasets;
+//         window.datasetList = [];
+//         window.datasetList = responseObject.data.datasets;
 //       } catch (error) {
 //         clientError(error);
 //       }
@@ -7535,8 +7537,8 @@ const showdefaultBfDataset = async () => {
 //             selected_account: window.defaultBfDataset,
 //           },
 //         });
-//         datasetList = [];
-//         datasetList = responseObject.data.datasets;
+//         window.datasetList = [];
+//         window.datasetList = responseObject.data.datasets;
 //       } catch (error) {
 //         clientError(error);
 //         emessage = userErrorMessage(error);
@@ -8227,7 +8229,7 @@ const showdefaultBfDataset = async () => {
 //                       ? handleGuidedModeOrgSwitch(target)
 //                       : resetFFMUI(target);
 
-//                     datasetList = [];
+//                     window.datasetList = [];
 //                     window.defaultBfDataset = null;
 //                     window.clearDatasetDropdowns();
 //                   })
