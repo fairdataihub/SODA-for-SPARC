@@ -72,7 +72,10 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('path', {
       join: (...paths) => {
         return path.join(...paths)
-      }
+      }, 
+      extname: (fileName) => {
+        return path.extname(fileName)
+      },
     })
     contextBridge.exposeInMainWorld('log', {
       info: (message) => {
@@ -131,10 +134,158 @@ if (process.contextIsolated) {
             reject(new Error(data.toString()))
           });
         })
+      }, 
+      startPennsieveAgent: () => {
+        return new Promise((resolve, reject) => {
+          let agentStartSpawn = spawn("pennsieve", {
+            shell: true,
+            env: process.env,
+          });
+      
+          agentStartSpawn.stdout.on("data", async (data) => {
+            return resolve(true);
+          });
+      
+          agentStartSpawn.stderr.on("data", (data) => {
+            logger.error(data.toString());
+            return resolve(false);
+          });
+        });
+      },
+      startPennsieveAgentStart: () => {
+        return new Promise((resolve, reject) => {
+          // Keep track of the output from the agent
+          // (output is added as strings to the array)
+          const pennsieveAgentOutputLog = [];
+          // Throw an error if the agent doesn't start within 15 seconds
+          const agentStartTimeout = 15000; // 15 seconds
+          const versionCheckTimeout = setTimeout(() => {
+            reject(
+              new Error(
+                `Pennsieve Agent output while trying to start the agent:<br />${pennsieveAgentOutputLog.join(
+                  "<br />"
+                )}`
+              )
+            );
+          }, agentStartTimeout);
+      
+          let agentStartSpawn = spawn("pennsieve", ["agent", "start"], {
+            shell: true,
+            env: process.env,
+          });
+      
+          // Listen to the output from the agent and resolve the promise if the agent outputs
+          // "Running Agent NOT as daemon" or "Pennsieve Agent started"
+          agentStartSpawn.stdout.on("data", (data) => {
+            const agentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
+            logger.info(agentMessage);
+            // Add to message to the output logger which will be used to display the output to the user if the agent fails to start
+            pennsieveAgentOutputLog.push(agentMessage);
+      
+            // Resolve the promise if the agent is already running
+            if (agentMessage.includes("Pennsieve Agent is already running")) {
+              logger.info(`Pennsieve Agent is confirmed to be running: ${agentMessage}`);
+              clearTimeout(versionCheckTimeout);
+              resolve();
+            }
+      
+            // If the error message contains "Running Agent NOT as daemon" or "Pennsieve Agent started", then the agent was able to
+            // start successfully with the caveat that the agent might throw an error if the agent has issues while starting up.
+            // To alleviate this, we will try to start the agent again after 5 seconds and make sure the agent was started successfully.
+            if (
+              agentMessage.includes("Running Agent NOT as daemon") ||
+              agentMessage.includes("Pennsieve Agent started")
+            ) {
+              setTimeout(() => {
+                const secondAgentStartSpawn = spawn("pennsieve", ["agent", "start"], {
+                  shell: true,
+                  env: process.env,
+                });
+                secondAgentStartSpawn.stdout.on("data", (data) => {
+                  const secondAgentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
+                  if (secondAgentMessage.includes("Pennsieve Agent is already running")) {
+                    logger.info(`Pennsieve Agent is confirmed to be running: ${secondAgentMessage}`);
+                    clearTimeout(versionCheckTimeout);
+                    resolve();
+                  }
+                });
+              }, 5000);
+            }
+          });
+          // Capture standard error output and add it to the output logger
+          agentStartSpawn.stderr.on("data", (data) => {
+            const agentStdErr = `[Pennsieve Agent Error] ${data.toString()}`;
+            logger.info(agentStdErr);
+            pennsieveAgentOutputLog.push(agentStdErr);
+          });
+          // Capture error output and add it to the output logger
+          agentStartSpawn.on("error", (error) => {
+            const agentSpawnError = `[Pennsieve Agent Error] ${error.toString()}`;
+            logger.info(agentSpawnError);
+            pennsieveAgentOutputLog.push(agentSpawnError);
+          });
+        });
+      },
+      getPennsieveAgentVersion: () => {
+        return new Promise((resolve, reject) => {
+          // Keep track of the output from the agent
+          // (output is added as strings to the array)
+          const pennsieveAgentOutputLog = [];
+          // Throw an error if the agent doesn't start within 15 seconds
+          const timeout = 15000; // 15 seconds
+          const versionCheckTimeout = setTimeout(() => {
+            reject(
+              new Error(
+                `Pennsieve Agent output while trying to verify the agent version:<br />${pennsieveAgentOutputLog.join(
+                  "<br />"
+                )}`
+              )
+            );
+          }, timeout);
+      
+          let agentVersionSpawn = spawn("pennsieve", ["version"], {
+            shell: true,
+            env: process.env,
+          });
+      
+          // Capture standard output and parse the version
+          // Resolve the promise if the version is found
+          agentVersionSpawn.stdout.on("data", (data) => {
+            const agentVersionOutput = `[Pennsieve Agent Output] ${data.toString()}`;
+            logger.info(agentVersionOutput);
+            pennsieveAgentOutputLog.push(agentVersionOutput);
+      
+            const versionResult = {};
+            const regex = /(\w+ Version)\s*:\s*(\S+)/g;
+            let match;
+            while ((match = regex.exec(data)) !== null) {
+              versionResult[match[1]] = match[2];
+            }
+            // If we were able to extract the version from the stdout, resolve the promise
+            if (versionResult["Agent Version"]) {
+              clearTimeout(versionCheckTimeout);
+              resolve(versionResult);
+            }
+          });
+      
+          // Capture standard error output and reject the promise
+          agentVersionSpawn.stderr.on("data", (data) => {
+            const agentStdErr = `[Pennsieve Agent Error] ${data.toString()}`;
+            logger.info(agentStdErr);
+            pennsieveAgentOutputLog.push(agentStdErr);
+          });
+      
+          // Capture error output and reject the promise
+          agentVersionSpawn.on("error", (error) => {
+            const agentVersionSpawnError = `[Pennsieve Agent Error] ${error.toString()}`;
+            logger.info(agentVersionSpawnError);
+            pennsieveAgentOutputLog.push(agentVersionSpawnError);
+          });
+        });
       }
     })
   } catch (error) {
-    log.error(error)
+    logger.error(error)
   }
 } else {
   window.electron = electronAPI

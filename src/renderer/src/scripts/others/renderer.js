@@ -435,164 +435,47 @@ const stopPennsieveAgent = async () => {
     let agentStopSpawn = await window.spawn.stopPennsieveAgent()
     console.log("Agent stop spawn: ", agentStopSpawn)
   } catch (error) {
-    log.info(error);
+    window.log.info(error);
     throw error;
   }
 
 };
 const startPennsieveAgent = async () => {
-  return new Promise((resolve, reject) => {
-    // Keep track of the output from the agent
-    // (output is added as strings to the array)
-    const pennsieveAgentOutputLog = [];
-    // Throw an error if the agent doesn't start within 15 seconds
-    const agentStartTimeout = 15000; // 15 seconds
-    const versionCheckTimeout = setTimeout(() => {
-      reject(
-        new Error(
-          `Pennsieve Agent output while trying to start the agent:<br />${pennsieveAgentOutputLog.join(
-            "<br />"
-          )}`
-        )
-      );
-    }, agentStartTimeout);
-
-    let agentStartSpawn = spawn("pennsieve", ["agent", "start"], {
-      shell: true,
-      env: process.env,
-    });
-
-    // Listen to the output from the agent and resolve the promise if the agent outputs
-    // "Running Agent NOT as daemon" or "Pennsieve Agent started"
-    agentStartSpawn.stdout.on("data", (data) => {
-      const agentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
-      log.info(agentMessage);
-      // Add to message to the output log which will be used to display the output to the user if the agent fails to start
-      pennsieveAgentOutputLog.push(agentMessage);
-
-      // Resolve the promise if the agent is already running
-      if (agentMessage.includes("Pennsieve Agent is already running")) {
-        log.info(`Pennsieve Agent is confirmed to be running: ${agentMessage}`);
-        clearTimeout(versionCheckTimeout);
-        resolve();
-      }
-
-      // If the error message contains "Running Agent NOT as daemon" or "Pennsieve Agent started", then the agent was able to
-      // start successfully with the caveat that the agent might throw an error if the agent has issues while starting up.
-      // To alleviate this, we will try to start the agent again after 5 seconds and make sure the agent was started successfully.
-      if (
-        agentMessage.includes("Running Agent NOT as daemon") ||
-        agentMessage.includes("Pennsieve Agent started")
-      ) {
-        setTimeout(() => {
-          const secondAgentStartSpawn = spawn("pennsieve", ["agent", "start"], {
-            shell: true,
-            env: process.env,
-          });
-          secondAgentStartSpawn.stdout.on("data", (data) => {
-            const secondAgentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
-            if (secondAgentMessage.includes("Pennsieve Agent is already running")) {
-              log.info(`Pennsieve Agent is confirmed to be running: ${secondAgentMessage}`);
-              clearTimeout(versionCheckTimeout);
-              resolve();
-            }
-          });
-        }, 5000);
-      }
-    });
-    // Capture standard error output and add it to the output log
-    agentStartSpawn.stderr.on("data", (data) => {
-      const agentStdErr = `[Pennsieve Agent Error] ${data.toString()}`;
-      log.info(agentStdErr);
-      pennsieveAgentOutputLog.push(agentStdErr);
-    });
-    // Capture error output and add it to the output log
-    agentStartSpawn.on("error", (error) => {
-      const agentSpawnError = `[Pennsieve Agent Error] ${error.toString()}`;
-      log.info(agentSpawnError);
-      pennsieveAgentOutputLog.push(agentSpawnError);
-    });
-  });
+  try{
+    let agentStartSpawn = await window.spawn.startPennsieveAgentStart()
+    console.log("Agent start spawn: ", agentStartSpawn)
+    return agentStartSpawn
+  } catch(e) {
+    window.log.error(e)
+    throw e;
+  }
 };
 
-const getPennsieveAgentVersion = () => {
+const getPennsieveAgentVersion = async () => {
   log.info("Getting Pennsieve agent version");
 
-  return new Promise((resolve, reject) => {
-    // Keep track of the output from the agent
-    // (output is added as strings to the array)
-    const pennsieveAgentOutputLog = [];
-    // Throw an error if the agent doesn't start within 15 seconds
-    const timeout = 15000; // 15 seconds
-    const versionCheckTimeout = setTimeout(() => {
-      reject(
-        new Error(
-          `Pennsieve Agent output while trying to verify the agent version:<br />${pennsieveAgentOutputLog.join(
-            "<br />"
-          )}`
-        )
-      );
-    }, timeout);
+  try {
+    let agentVersion = await window.spawn.getPennsieveAgentVersion()
+    console.log("Agent version: ", agentVersion)
+    return agentVersion
+  } catch(error) {
+    clientError(error)
+    throw error
+  }
 
-    let agentVersionSpawn = spawn("pennsieve", ["version"], {
-      shell: true,
-      env: process.env,
-    });
-
-    // Capture standard output and parse the version
-    // Resolve the promise if the version is found
-    agentVersionSpawn.stdout.on("data", (data) => {
-      const agentVersionOutput = `[Pennsieve Agent Output] ${data.toString()}`;
-      log.info(agentVersionOutput);
-      pennsieveAgentOutputLog.push(agentVersionOutput);
-
-      const versionResult = {};
-      const regex = /(\w+ Version)\s*:\s*(\S+)/g;
-      let match;
-      while ((match = regex.exec(data)) !== null) {
-        versionResult[match[1]] = match[2];
-      }
-      // If we were able to extract the version from the stdout, resolve the promise
-      if (versionResult["Agent Version"]) {
-        clearTimeout(versionCheckTimeout);
-        resolve(versionResult);
-      }
-    });
-
-    // Capture standard error output and reject the promise
-    agentVersionSpawn.stderr.on("data", (data) => {
-      const agentStdErr = `[Pennsieve Agent Error] ${data.toString()}`;
-      log.info(agentStdErr);
-      pennsieveAgentOutputLog.push(agentStdErr);
-    });
-
-    // Capture error output and reject the promise
-    agentVersionSpawn.on("error", (error) => {
-      const agentVersionSpawnError = `[Pennsieve Agent Error] ${error.toString()}`;
-      log.info(agentVersionSpawnError);
-      pennsieveAgentOutputLog.push(agentVersionSpawnError);
-    });
-  });
 };
 
 let preFlightCheckNotyf = null;
 
-const agent_installed = () => {
-  return new Promise((resolve, reject) => {
-    let agentStartSpawn = spawn("pennsieve", {
-      shell: true,
-      env: process.env,
-    });
-
-    agentStartSpawn.stdout.on("data", async (data) => {
-      return resolve(true);
-    });
-
-    agentStartSpawn.stderr.on("data", (data) => {
-      clientError(data.toString());
-      return resolve(false);
-    });
-  });
+const agent_installed = async () => {
+    try{
+      let agentStartSpawn = await window.spawn.startPennsieveAgent()
+      console.log("Agent start spawn: ", agentStartSpawn)
+      return agentStartSpawn
+    } catch(e) {
+      window.log.info(e);
+      throw e;
+    }
 };
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
@@ -703,7 +586,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         });
 
         if (restartSoda) {
-          await ipcRenderer.invoke("quit-app");
+          await window.electron.ipcRenderer.invoke("exit-soda");
         }
 
         // Dismiss the preflight check notification if it is still open
@@ -743,7 +626,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       });
       // If the user clicks the retry button, rerun the pre flight checks
       if (restartSoda) {
-        await ipcRenderer.invoke("quit-app");
+        await window.electron.ipcRenderer.invoke("quit-app");
       }
 
       // Dismiss the preflight check notification if it is still open
@@ -1197,6 +1080,8 @@ const get_latest_agent_version = async () => {
   }
 
   let releases = releasesResponse.data;
+
+  console.log(releases)
   let targetRelease = undefined;
   let latest_agent_version = undefined;
   for (const release of releases) {
@@ -1207,21 +1092,21 @@ const get_latest_agent_version = async () => {
     }
   }
 
-  if (process.platform == "darwin") {
+  if (window.process.platform() == "darwin") {
     window.reverseSwalButtons = true;
     targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
-      if (path.extname(file_name) == ".pkg") {
+      if (window.path.extname(file_name) == ".pkg") {
         browser_download_url = asset.browser_download_url;
       }
     });
   }
 
-  if (process.platform == "win32") {
+  if (window.process.platform() == "win32") {
     window.reverseSwalButtons = false;
     targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
-      if (path.extname(file_name) == ".msi" || path.extname(file_name) == ".exe") {
+      if (window.path.extname(file_name) == ".msi" || window.path.extname(file_name) == ".exe") {
         browser_download_url = asset.browser_download_url;
       }
     });
