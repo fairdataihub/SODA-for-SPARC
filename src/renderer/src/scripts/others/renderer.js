@@ -69,7 +69,6 @@ fixPath();
 // let nodeStorage = new JSONStorage(app.getPath("userData")); NOTE: Done in main now. Need to expose to main world via contextBridge.
 
 var nextBtnDisabledVariable = true;
-let organizeDSglobalPath = "";
 
 let datasetStructureJSONObj = {
   folders: {},
@@ -4092,14 +4091,14 @@ const loadDefaultAccount = async () => {
 
 // /// back button Curate
 // organizeDSbackButton.addEventListener("click", function () {
-//   let slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+//   let slashCount = window.organizeDSglobalPath.value.trim().split("/").length - 1;
 //   if (slashCount !== 1) {
-//     let filtered = getGlobalPath(organizeDSglobalPath);
+//     let filtered = getGlobalPath(window.organizeDSglobalPath);
 
 //     if (filtered.length === 1) {
-//       organizeDSglobalPath.value = filtered[0] + "/";
+//       window.organizeDSglobalPath.value = filtered[0] + "/";
 //     } else {
-//       organizeDSglobalPath.value = filtered.slice(0, filtered.length - 1).join("/") + "/";
+//       window.organizeDSglobalPath.value = filtered.slice(0, filtered.length - 1).join("/") + "/";
 //     }
 //     let myPath = datasetStructureJSONObj;
 //     for (var item of filtered.slice(1, filtered.length - 1)) {
@@ -4113,14 +4112,14 @@ const loadDefaultAccount = async () => {
 //     listItems(myPath, "#items", 500, (reset = true));
 //     organizeLandingUIEffect();
 //     // reconstruct div with new elements
-//     getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+//     getInFolder(".single-item", "#items", window.organizeDSglobalPath, datasetStructureJSONObj);
 //   }
 // });
 
 // // Add folder button
 // organizeDSaddNewFolder.addEventListener("click", function (event) {
 //   event.preventDefault();
-//   let slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+//   let slashCount = window.organizeDSglobalPath.value.trim().split("/").length - 1;
 //   if (slashCount !== 1) {
 //     let newFolderName = "New Folder";
 //     Swal.fire({
@@ -4194,7 +4193,7 @@ const loadDefaultAccount = async () => {
 //           );
 //         } else {
 //           /// update datasetStructureJSONObj
-//           let currentPath = organizeDSglobalPath.value;
+//           let currentPath = window.organizeDSglobalPath.value;
 //           let jsonPathArray = currentPath.split("/");
 //           let filtered = jsonPathArray.slice(1).filter(function (el) {
 //             return el != "";
@@ -4211,7 +4210,7 @@ const loadDefaultAccount = async () => {
 //           };
 
 //           listItems(myPath, "#items", 500, (reset = true));
-//           getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+//           getInFolder(".single-item", "#items", window.organizeDSglobalPath, datasetStructureJSONObj);
 
 //           // log that the folder was successfully added
 //           logCurationForAnalytics(
@@ -5118,7 +5117,7 @@ const showDefaultBFAccount = async () => {
 //   try {
 //     // STEP 1: Build the JSON object from the imported data
 //     // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
-//     const currentFileExplorerPath = organizeDSglobalPath.value.trim();
+//     const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
 
 //     const builtDatasetStructure = await buildDatasetStructureJsonFromImportedData(
 //       importedData,
@@ -5129,13 +5128,13 @@ const showDefaultBFAccount = async () => {
 //     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
 
 //     // Step 3: Update the UI
-//     const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['dataset_root', 'code']
+//     const currentPathArray = getGlobalPath(window.organizeDSglobalPath); // ['dataset_root', 'code']
 //     const nestedJsonDatasetStructure = getRecursivePath(
 //       currentPathArray.slice(1),
 //       datasetStructureJSONObj
 //     );
 //     listItems(nestedJsonDatasetStructure, "#items", 500, (reset = true));
-//     getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+//     getInFolder(".single-item", "#items", window.organizeDSglobalPath, datasetStructureJSONObj);
 
 //     // Step 4: Update successful, show success message
 //     notyf.open({
@@ -5573,14 +5572,14 @@ const showDefaultBFAccount = async () => {
 //         var itemDivElements = document.getElementById("items").children;
 //         renameFolder(
 //           event,
-//           organizeDSglobalPath,
+//           window.organizeDSglobalPath,
 //           itemDivElements,
 //           datasetStructureJSONObj,
 //           "#items",
 //           ".single-item"
 //         );
 //       } else if ($(this).attr("id") === "reg-folder-delete") {
-//         delFolder(event, organizeDSglobalPath, "#items", ".single-item", datasetStructureJSONObj);
+//         delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", datasetStructureJSONObj);
 //       } else if ($(this).attr("id") === "folder-move") {
 //         moveItems(event, "folders");
 //       }
@@ -5598,14 +5597,14 @@ const showDefaultBFAccount = async () => {
 //         var itemDivElements = document.getElementById("items").children;
 //         renameFolder(
 //           event,
-//           organizeDSglobalPath,
+//           window.organizeDSglobalPath,
 //           itemDivElements,
 //           datasetStructureJSONObj,
 //           "#items",
 //           ".single-item"
 //         );
 //       } else if ($(this).attr("id") === "high-folder-delete") {
-//         delFolder(event, organizeDSglobalPath, "#items", ".single-item", datasetStructureJSONObj);
+//         delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", datasetStructureJSONObj);
 //       } else if ($(this).attr("id") === "tooltip-folders") {
 //         showTooltips(event);
 //       }
@@ -5632,14 +5631,14 @@ const showDefaultBFAccount = async () => {
 //         var itemDivElements = document.getElementById("items").children;
 //         renameFolder(
 //           event,
-//           organizeDSglobalPath,
+//           window.organizeDSglobalPath,
 //           itemDivElements,
 //           datasetStructureJSONObj,
 //           "#items",
 //           ".single-item"
 //         );
 //       } else if ($(this).attr("id") === "file-delete") {
-//         delFolder(event, organizeDSglobalPath, "#items", ".single-item", datasetStructureJSONObj);
+//         delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", datasetStructureJSONObj);
 //       } else if ($(this).attr("id") === "file-move") {
 //         moveItems(event, "files");
 //       } else if ($(this).attr("id") === "file-description") {
@@ -5831,7 +5830,7 @@ const showDefaultBFAccount = async () => {
 //   let splitPath = datasetPath.value.split("/");
 //   let fullPath = datasetPath.value;
 
-//   if (organizeDSglobalPath.id === "guided-input-global-path") {
+//   if (window.organizeDSglobalPath.id === "guided-input-global-path") {
 //     const splitPathCheck = (num, button) => {
 //       //based on the paths length we will determine if the back button should be disabled/hidden or not
 //       if (splitPath.length > num) {
@@ -6333,16 +6332,16 @@ const showDefaultBFAccount = async () => {
 //   //check if folder_elements is an empty object and file_elements is an empty array
 //   if (folder_elements.length == 0 && file_elements.length == 0) {
 //     //Fired when no folders are to be appended to the folder structure element.
-//     //Gets the name of the current folder from organizeDSglobalPath and instructs the user
+//     //Gets the name of the current folder from window.organizeDSglobalPath and instructs the user
 //     //on what to do in the empty folder.
 //     let currentFolder = "";
 //     let folderType;
 
-//     if (organizeDSglobalPath.value == undefined) {
+//     if (window.organizeDSglobalPath.value == undefined) {
 //       currentFolder = "dataset_root";
 //     } else {
 //       //Get the name of the folder the user is currently in.
-//       currentFolder = organizeDSglobalPath.value.split("/").slice(-2)[0];
+//       currentFolder = window.organizeDSglobalPath.value.split("/").slice(-2)[0];
 //       if (currentFolder.startsWith("sub-")) {
 //         folderType = "subject";
 //       }
@@ -6419,7 +6418,7 @@ const showDefaultBFAccount = async () => {
 //       // let items = loadFileFolder(myPath);
 //       //we have some items to display
 //       listItems(myPath, "#items", 500, (reset = true));
-//       getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+//       getInFolder(".single-item", "#items", window.organizeDSglobalPath, datasetStructureJSONObj);
 //       organizeLandingUIEffect();
 //       // reconstruct folders and files (child elements after emptying the Div)
 //       // getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
@@ -6437,7 +6436,7 @@ const showDefaultBFAccount = async () => {
 // const manageDesc = (ev) => {
 //   var fileName = ev.parentElement.innerText;
 //   /// get current location of files in JSON object
-//   var filtered = getGlobalPath(organizeDSglobalPath);
+//   var filtered = getGlobalPath(window.organizeDSglobalPath);
 //   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
 //   //// load existing metadata/description
 //   loadDetailsContextMenu(
@@ -6456,7 +6455,7 @@ const showDefaultBFAccount = async () => {
 
 // const updateFileDetails = (ev) => {
 //   var fileName = fileNameForEdit;
-//   var filtered = getGlobalPath(organizeDSglobalPath);
+//   var filtered = getGlobalPath(window.organizeDSglobalPath);
 //   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
 //   triggerManageDetailsPrompts(
 //     ev,
@@ -6467,7 +6466,7 @@ const showDefaultBFAccount = async () => {
 //   );
 //   /// list Items again with new updated JSON structure
 //   listItems(myPath, "#items");
-//   getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+//   getInFolder(".single-item", "#items", window.organizeDSglobalPath, datasetStructureJSONObj);
 //   // find checkboxes here and uncheck them
 //   for (var ele of $($(ev).siblings().find("input:checkbox"))) {
 //     document.getElementById(ele.id).checked = false;

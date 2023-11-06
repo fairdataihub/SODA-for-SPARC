@@ -12574,7 +12574,7 @@ const newDataset = {
   markers: [],
 };
 
-const blackArrow = {
+export const blackArrow = {
   v: "5.5.7",
   fr: 24,
   ip: 0,

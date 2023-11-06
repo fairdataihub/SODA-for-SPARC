@@ -306,3 +306,6 @@ document.querySelector("#shortcut-navigate-to-create_submission").addEventListen
 //   directToFreeFormMode();
 //   document.getElementById("guided_mode_view").classList.add("is-selected");
 // });
+
+
+export {resetLazyLoading, guidedUnLockSideBar}

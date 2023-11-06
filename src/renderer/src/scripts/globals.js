@@ -171,6 +171,13 @@ window.SODA_SPARC_API_KEY = "SODA-Pennsieve";
 window.datasetList = [];
 let organizationList = [];
 
+// TODO: Place in a location for GM and FFM for now 'Global' scope is fine but should probably be placed in a file more related to organize datasets
+window.organizeDSglobalPath = "";
+
+// TODO: Organize ds related global variable; so modularize that appropriately 
+window.dataset_path = document.getElementById("input-global-path");
+
+
 
 
 

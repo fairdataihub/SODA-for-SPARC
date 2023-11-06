@@ -2123,6 +2123,7 @@ const addFilesfunction = async (
 //create intersection observ
 let scroll_box = document.querySelector("#organize-dataset-tab");
 let item_box = document.querySelector("#items");
+let dataset_path = document.getElementById("input-global-path");
 
 //will observe if property of element changes to decide of eventListener is needed
 const observeElement = (element, property, callback, delay = 0) => {
@@ -2148,19 +2149,19 @@ const observeElement = (element, property, callback, delay = 0) => {
 
 //when on top layer of dataset eventListener is removed
 const check_dataset_value = () => {
-  if (window.dataset_path.value === "dataset_root/") {
+  if (dataset_path.value === "dataset_root/") {
     item_box.removeEventListener("scroll", lazyLoad, true);
   }
-  if (window.dataset_path.value != "dataset_root/") {
-    var filtered = getGlobalPath(window.dataset_path);
+  if (dataset_path.value != "dataset_root/") {
+    var filtered = getGlobalPath(dataset_path);
     var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
     amount = 500;
     listItems(myPath, "items", 500);
-    getInFolder(".single-item", "#items", window.dataset_path, datasetStructureJSONObj);
+    getInFolder(".single-item", "#items", dataset_path, datasetStructureJSONObj);
     beginScrollListen();
   }
 };
-observeElement(window.dataset_path, "value", check_dataset_value);
+observeElement(dataset_path, "value", check_dataset_value);
 
 var amount = 500;
 
@@ -2171,7 +2172,7 @@ const beginScrollListen = () => {
 
 const lazyLoad = async () => {
   let total_items = already_created_elem.length;
-  let filtered = getGlobalPath(window.dataset_path);
+  let filtered = getGlobalPath(dataset_path);
   let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
 
   if (item_box.childElementCount != 0) {
@@ -2210,7 +2211,7 @@ const lazyLoad = async () => {
             item_box.children[0].remove();
           }
         }
-        await getInFolder(".single-item", "#items", window.dataset_path, datasetStructureJSONObj);
+        await getInFolder(".single-item", "#items", dataset_path, datasetStructureJSONObj);
 
         if (item_box.lastChild.id === "items_container") {
           item_box.lastChild.remove();
@@ -2252,7 +2253,7 @@ const lazyLoad = async () => {
         amount += 500;
         await listItems(myPath, uiItems, amount);
         // add_items_to_view(already_created_elem, 400);
-        await getInFolder(".single-item", "#items", window.dataset_path, datasetStructureJSONObj);
+        await getInFolder(".single-item", "#items", dataset_path, datasetStructureJSONObj);
         resolved();
       });
     }
@@ -2275,7 +2276,7 @@ const add_items_to_view = async (list, amount_req, reset) => {
   if (already_created_elem.length === 0) {
     listed_count = already_created_elem.length;
   }
-  if (reset === true || window.dataset_path === "dataset_root/") {
+  if (reset === true || dataset_path === "dataset_root/") {
     $("#items").empty();
 
     start = 0;
