@@ -39750,7 +39750,7 @@ export const existingDataset = {
   h: 400,
 };
 
-const questionList = {
+export const questionList = {
   v: "4.8.0",
   meta: { g: "LottieFiles AE ", a: "", k: "", d: "", tc: "" },
   fr: 25,
@@ -41375,7 +41375,7 @@ const questionList = {
   markers: [],
 };
 
-const datasetMetadataIntroLottie = {
+export const datasetMetadataIntroLottie = {
   v: "4.8.0",
   meta: {
     g: "LottieFiles AE 3.2.2",
@@ -42852,7 +42852,7 @@ const datasetMetadataIntroLottie = {
   markers: [],
 };
 
-const addScienceData = {
+export const addScienceData = {
   v: "5.7.6",
   fr: 60,
   ip: 0,
@@ -49635,7 +49635,7 @@ const addScienceData = {
   markers: [],
 };
 
-const startNew = {
+export const startNew = {
   v: "5.5.2",
   fr: 25,
   ip: 0,
@@ -50335,7 +50335,7 @@ const startNew = {
   ],
 };
 
-const resumeExisting = {
+export const resumeExisting = {
   v: "5.7.8",
   fr: 25,
   ip: 0,

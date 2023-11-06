@@ -297,15 +297,15 @@ document.querySelector("#shortcut-navigate-to-create_submission").addEventListen
 
 
 
-// document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
-//   //Free form mode will open through here
-//   guidedPrepareHomeScreen();
+document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
+  //Free form mode will open through here
+  guidedPrepareHomeScreen();
 
-//   // guidedResetSkippedPages();
+  // guidedResetSkippedPages();
 
-//   directToFreeFormMode();
-//   document.getElementById("guided_mode_view").classList.add("is-selected");
-// });
+  directToFreeFormMode();
+  document.getElementById("guided_mode_view").classList.add("is-selected");
+});
 
 
 export {resetLazyLoading, guidedUnLockSideBar}

@@ -1,5 +1,7 @@
 import Swal from 'sweetalert2'
 import 'bootstrap-select'
+import DragSort from '@yaireo/dragsort'
+
 
 import api from './others/api/api'
 import {clientError, userErrorMessage} from './others/http-error-handler/error-handler'
@@ -178,7 +180,18 @@ window.organizeDSglobalPath = "";
 window.dataset_path = document.getElementById("input-global-path");
 
 
-
+// used in renderer and guided Mode
+window.createDragSort = (tagify) => {
+  const onDragEnd = () => {
+    tagify.updateValueByDOMTags();
+  };
+  new DragSort(tagify.DOM.scope, {
+    selector: "." + tagify.settings.classNames.tag,
+    callbacks: {
+      dragEnd: onDragEnd,
+    },
+  });
+};
 
 
 

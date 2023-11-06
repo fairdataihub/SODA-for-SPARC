@@ -1390,17 +1390,7 @@ const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-te
 //   }
 // }
 
-// const createDragSort = (tagify) => {
-//   const onDragEnd = () => {
-//     tagify.updateValueByDOMTags();
-//   };
-//   new DragSort(tagify.DOM.scope, {
-//     selector: "." + tagify.settings.classNames.tag,
-//     callbacks: {
-//       dragEnd: onDragEnd,
-//     },
-//   });
-// };
+
 
 // const guidedSubmissionTagsInputManual = document.getElementById(
 //   "guided-tagify-submission-milestone-tags-manual"
@@ -1415,7 +1405,7 @@ const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-te
 //     closeOnSelect: true,
 //   },
 // });
-// createDragSort(guidedSubmissionTagsTagifyManual);
+// window.createDragSort(guidedSubmissionTagsTagifyManual);
 
 // // initiate Tagify input fields for Dataset description file
 // var keywordInput = document.getElementById("ds-keywords"),
@@ -1423,13 +1413,13 @@ const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-te
 //     duplicates: false,
 //   });
 
-// createDragSort(keywordTagify);
+// window.createDragSort(keywordTagify);
 
 // var otherFundingInput = document.getElementById("ds-other-funding"),
 //   otherFundingTagify = new Tagify(otherFundingInput, {
 //     duplicates: false,
 //   });
-// createDragSort(otherFundingTagify);
+// window.createDragSort(otherFundingTagify);
 
 // var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
 //   collectionDatasetTags = new Tagify(collectionDatasetInput, {
@@ -1446,7 +1436,7 @@ const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-te
 //       rightKey: true,
 //     },
 //   });
-// createDragSort(collectionDatasetTags);
+// window.createDragSort(collectionDatasetTags);
 
 // var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
 //   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
@@ -1478,25 +1468,25 @@ const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-te
 //       closeOnSelect: true,
 //     },
 //   });
-// createDragSort(studyOrganSystemsTagify);
+// window.createDragSort(studyOrganSystemsTagify);
 
 // var studyTechniquesInput = document.getElementById("ds-study-technique"),
 //   studyTechniquesTagify = new Tagify(studyTechniquesInput, {
 //     duplicates: false,
 //   });
-// createDragSort(studyTechniquesTagify);
+// window.createDragSort(studyTechniquesTagify);
 
 // var studyApproachesInput = document.getElementById("ds-study-approach"),
 //   studyApproachesTagify = new Tagify(studyApproachesInput, {
 //     duplicates: false,
 //   });
-// createDragSort(studyApproachesTagify);
+// window.createDragSort(studyApproachesTagify);
 
 // // tagify the input inside of the "Add/edit tags" manage dataset section
 // var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
 //   // initialize Tagify on the above input node reference
 //   datasetTagsTagify = new Tagify(datasetTagsInput);
-// createDragSort(datasetTagsTagify);
+// window.createDragSort(datasetTagsTagify);
 
 // /////////////////// Provide Grant Information section /////////////////////////
 // //////////////// //////////////// //////////////// //////////////// ///////////
@@ -1558,7 +1548,7 @@ const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-te
 //   }
 // });
 
-// createDragSort(milestoneTagify1);
+// window.createDragSort(milestoneTagify1);
 
 // // generate subjects file
 // ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
