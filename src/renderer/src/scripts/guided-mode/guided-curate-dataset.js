@@ -1571,7 +1571,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       sodaJSONObj["digital-metadata"]["license"] = selectedLicense;
     }
     /*
-    if (pageBeingLeftID === "guided-dataset-generate-location-tab") {
+    if (window.pageBeingLeftID === "guided-dataset-generate-location-tab") {
       const buttonGenerateLocally = document.getElementById(
         "guided-button-generate-dataset-locally"
       );
@@ -1606,7 +1606,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
     */
     /*
-    if (pageBeingLeftID === "guided-dataset-generate-destination-tab") {
+    if (window.pageBeingLeftID === "guided-dataset-generate-destination-tab") {
       const buttonGenerateOnExistingPennsieveDataset = document.getElementById(
         "guided-button-pennsieve-generate-existing"
       );
@@ -14634,23 +14634,23 @@ const getNextPageNotSkipped = (currentPageID) => {
 //next button click handler
 $("#guided-next-button").on("click", async function () {
   //Get the ID of the current page to handle actions on page leave (next button pressed)
-  pageBeingLeftID = CURRENT_PAGE.id;
+  window.pageBeingLeftID = CURRENT_PAGE.id;
 
-  if (pageBeingLeftID === "guided-dataset-generation-tab") {
+  if (window.pageBeingLeftID === "guided-dataset-generation-tab") {
     guidedUnSkipPage("guided-dataset-dissemination-tab");
     await openPage("guided-dataset-dissemination-tab");
     return;
   }
 
   try {
-    await savePageChanges(pageBeingLeftID);
+    await savePageChanges(window.pageBeingLeftID);
     //Save progress onto local storage with the dataset name as the key
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
     //Mark page as completed in JSONObj so we know what pages to load when loading local saves
     //(if it hasn't already been marked complete)
-    if (!sodaJSONObj["completed-tabs"].includes(pageBeingLeftID)) {
-      sodaJSONObj["completed-tabs"].push(pageBeingLeftID);
+    if (!sodaJSONObj["completed-tabs"].includes(window.pageBeingLeftID)) {
+      sodaJSONObj["completed-tabs"].push(window.pageBeingLeftID);
     }
 
     //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
@@ -14705,8 +14705,8 @@ const getPrevPageNotSkipped = (currentPageID) => {
 
 //back button click handler
 $("#guided-back-button").on("click", async () => {
-  pageBeingLeftID = CURRENT_PAGE.id;
-  const targetPage = getPrevPageNotSkipped(pageBeingLeftID);
+  window.pageBeingLeftID = CURRENT_PAGE.id;
+  const targetPage = getPrevPageNotSkipped(window.pageBeingLeftID);
 
   // If the target page when clicking the back button does not exist, then we are on the first not skipped page.
   // In this case, we want to save and exit guided mode.
