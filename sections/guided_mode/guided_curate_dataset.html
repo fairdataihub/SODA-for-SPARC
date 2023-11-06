@@ -1248,120 +1248,81 @@
               interface below. If you have a large amount of subjects (greater than 20), view the
               dropdown below for an alternative method of importing subjects.
             </p>
-            <!-- ALWAYS SHOWED INITIAL QUESTION -->
             <div class="guided--section">
               <label class="guided--form-label centered">
-                Do you have more than 20 subjects in your dataset?
+                Are the subjects in your study organized into pools?
               </label>
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
                   class="ui positive basic button guided--radio-button"
-                  data-next-element="guided-section-ask-if-subjects-are-organized-in-folders"
-                  data-button-config-value="subject-addition-method"
-                  data-button-config-value-state="manual"
+                  data-next-element="guided-section-ask-if-subjects-have-samples"
+                  data-button-config-value="dataset-subjects-are-pooled"
+                  data-button-config-value-state="yes"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button"
-                  data-next-element="guided-section-add-subjects-manually"
-                  data-button-config-value="subject-addition-method"
-                  data-button-config-value-state="import"
+                  data-next-element="guided-section-ask-if-subjects-have-samples"
+                  data-button-config-value="dataset-subjects-are-pooled"
+                  data-button-config-value-state="no"
                 >
                   No
                 </button>
               </div>
-              <div
-                class="guided--section"
-                id="guided-section-ask-if-subjects-are-organized-in-folders"
-              >
-                <label class="guided--form-label centered">
-                  Do you have your subjects organized in a folder?
-                </label>
-                <p class="help-text">See the image below for an example of organized subjects</p>
-                <img
-                  src="assets/img/organized-subjects-example.png"
-                  alt="Image of organized subjects"
-                  style="width: 100%"
-                />
-                <div class="guided--radio-button-container" style="margin-bottom: 7px">
-                  <button
-                    class="ui positive basic button guided--radio-button"
-                    data-next-element="guided-section-import-subjects-via-folders"
-                    data-button-config-value="user-imported-subjects-via-folders"
-                    data-button-config-value-state="yes"
-                  >
-                    Yes
-                  </button>
-                  <button
-                    class="ui negative basic button guided--radio-button"
-                    data-next-element="guided-section-ask-if-user-would-like-to-add-subjects-via-spreadsheet"
-                    data-button-config-value="user-imported-subjects-via-folders"
-                    data-button-config-value-state="no"
-                  >
-                    No
-                  </button>
-                </div>
-                <div class="guided--section" id="guided-section-import-subjects-via-folders">
-                  <div
-                    class="file-import-container horizontal"
-                    id="guided-container-subjects-pools-samples-structure-import"
-                    data-file-name="subjects_pools_samples_structure"
-                  >
-                    <div
-                      id="guided-lottie-import-subjects-folder-structure"
-                      class="lottieAnimationContainer guided--container-lottie-small"
-                    ></div>
-                    <p class="help-text text-center m-0">Drag and Drop your subject folders</p>
-                    <p class="help-text text-center m-0 mx-2">OR</p>
-                    <button
-                      class="ui primary basic button mx-2"
-                      onclick="guidedExtractEntityNamesFromFolders('subjects')"
-                    >
-                      <i class="fas fa-file-import" style="margin-right: 7px"></i>Import subject
-                      folders
-                    </button>
-                    <p
-                      class="help-text small text-center mt-sm"
-                      id="guided-code-description-para-text"
-                      style="max-width: 240px; overflow-wrap: break-word"
-                    ></p>
-                  </div>
-                </div>
-                <div
-                  class="guided--section"
-                  id="guided-section-ask-if-user-would-like-to-add-subjects-via-spreadsheet"
+            </div>
+            <div class="guided--section" id="guided-section-ask-if-subjects-have-samples">
+              <label class="guided--form-label centered">
+                Did you collect data from samples in this study?
+              </label>
+              <div class="guided--radio-button-container" style="margin-bottom: 7px">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-element="guided-section-ask-subject-addition-method"
+                  data-button-config-value="dataaset-subjects-have-samples"
+                  data-button-config-value-state="yes"
                 >
-                  <label class="guided--form-label centered">
-                    Would you like to import via a spreadsheet?
-                  </label>
-                  <div class="guided--radio-button-container" style="margin-bottom: 7px">
-                    <button
-                      class="ui positive basic button guided--radio-button"
-                      data-next-element="guided-section-import-subjects-via-spreadsheet"
-                      data-button-config-value="user-imported-subjects-via-spreadsheet"
-                      data-button-config-value-state="yes"
-                    >
-                      Yes
-                    </button>
-                    <button
-                      class="ui negative basic button guided--radio-button"
-                      data-next-element="guided-section-add-subjects-manually"
-                      data-button-config-value="user-imported-subjects-via-spreadsheet"
-                      data-button-config-value-state="no"
-                    >
-                      No
-                    </button>
-                  </div>
-                  <div class="guided--section" id="guided-section-import-subjects-via-spreadsheet">
-                    This is the UI where you import via spreadsheet
-                  </div>
-                </div>
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  data-next-element="guided-section-ask-subject-addition-method"
+                  data-button-config-value="dataaset-subjects-have-samples"
+                  data-button-config-value-state="no"
+                >
+                  No
+                </button>
               </div>
             </div>
 
-            <!-- MANUAL SUBJECT ADDITION FOR WHEN THEY ARE NOT AUTO IMPORTING -->
-            <div class="guided--section p-0" id="guided-section-add-subjects-manually">
+            <div class="guided--section" id="guided-section-ask-subject-addition-method">
+              <label class="guided--form-label centered">
+                The SDS requires a unique ID for each subjects, samples and pools in your dataset
+                [adapt this based on previous answers]. You can provide these IDs in the SODA UI or
+                import them through a spreadsheet (more convenient if you have a large number of
+                subjects/samples/pools [again, adapt]. What would you like to do?
+              </label>
+              <div class="guided--radio-button-container" style="margin-bottom: 7px">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  data-next-element="guided-section-add-subjects-via-spreadsheet"
+                  data-button-config-value="subject-addition-method"
+                  data-button-config-value-state="spreadsheet"
+                >
+                  Enter IDs in SODA/Import IDs through spreadsheet
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  data-next-element="guided-section-add-subjects-manual"
+                  data-button-config-value="subject-addition-method"
+                  data-button-config-value-state="manual"
+                >
+                  Enter subjecs manually
+                </button>
+              </div>
+            </div>
+
+            <div class="guided--section" id="guided-section-add-subjects-manual">
               <button
                 class="ui positive button soda-green-background"
                 id="guided-button-open-subject-import-flow"
@@ -1369,7 +1330,15 @@
                 Add subjects
               </button>
             </div>
-            <!-- SUBJECTS TABLE VISIBILITY HANDLED BY renderSubjectsTable FUNCTION-->
+            <div class="guided--section" id="guided-section-add-subjects-via-spreadsheet">
+              <button
+                class="ui positive button soda-green-background"
+                id="guided-button-open-subject-import-flow"
+              >
+                Import via spreadsheet
+              </button>
+            </div>
+
             <div class="guided--section" id="guided-section-subjects-table">
               <table
                 class="ui celled striped table mt-md"
