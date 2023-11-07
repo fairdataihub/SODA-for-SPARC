@@ -10935,7 +10935,15 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
     const buffer = await workbook.writeToBuffer();
     await fs.promises.writeFile(filePath, buffer);
     sodaJSONObj["dataset-structure-spreadsheet-path"] = filePath;
-    ipcRenderer.send("open-file-at-path", filePath);
+    const openTemplateForUser = await swalConfirmAction(
+      "Template successfully generated",
+      "Would you like to open the template now?",
+      "Yes",
+      "No"
+    );
+    if (openTemplateForUser) {
+      ipcRenderer.send("open-file-at-path", filePath);
+    }
   } catch (error) {
     notyf.error(`Error creating dataset structure spreadsheet: ${error}`);
   }

@@ -5072,6 +5072,23 @@ const swalFileListTripleAction = async (
   }
 };
 
+const swalConfirmAction = async (title, text, confirmButtonText, cancelButtonText) => {
+  const { value: action } = await Swal.fire({
+    title: title,
+    html: text,
+    width: 800,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showCancelButton: true,
+    showCloseButton: false,
+    confirmButtonText: confirmButtonText,
+    cancelButtonText: cancelButtonText,
+  });
+  return action;
+};
+
 const namesOfForbiddenFiles = {
   ".DS_Store": true,
   "Thumbs.db": true,

@@ -14,8 +14,6 @@ ipcMain.on("open-create-dataset-structure-spreadsheet-path-selection-dialog", (e
   }
 });
 
-ipcMain.on("open-file-at-path", (event, path) => {});
-
 ipcMain.on("open-subject-multi-folder-import-dialog", (event) => {
   const mainWindow = BrowserWindow.getFocusedWindow();
 
