@@ -6,6 +6,7 @@ import './scripts/guided-mode/guided-curate-dataset'
 import './scripts/globals'
 import './scripts/others/renderer'
 import './scripts/metadata-files/submission'
+import './scripts/manage-dataset/manage-dataset'
 
 
 // Application Lotties

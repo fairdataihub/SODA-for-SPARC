@@ -3,6 +3,7 @@
 import { existingDataset, modifyDataset, blackArrow, questionList, datasetMetadataIntroLottie, addScienceData, startNew, resumeExisting } from "../../assets/lotties/lotties";
 import { resetLazyLoading, guidedUnLockSideBar } from "../../assets/nav";
 import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
+import api from '../others/api/api'
 import lottie from "lottie-web"
 import Swal from "sweetalert2"
 import Tagify from "@yaireo/tagify";
@@ -4962,7 +4963,7 @@ const openPage = async (targetPageID) => {
       }
 
       //Set the characters remaining counter
-      countCharacters(
+      window.countCharacters(
         document.getElementById("guided-dataset-subtitle-input"),
         document.getElementById("guided-subtitle-char-count")
       );
@@ -12357,8 +12358,8 @@ $(".guided--radio-button").on("click", async function () {
 
   //Store the button's config value in sodaJSONObj
   if (selectedButton.data("button-config-value")) {
-    buttonConfigValue = selectedButton.data("button-config-value");
-    buttonConfigValueState = selectedButton.data("button-config-value-state");
+    let buttonConfigValue = selectedButton.data("button-config-value");
+    let buttonConfigValueState = selectedButton.data("button-config-value-state");
     sodaJSONObj["button-config"][buttonConfigValue] = buttonConfigValueState;
   }
 
@@ -12497,7 +12498,7 @@ $(guidedJstreePreview).on("close_node.jstree", function (event, data) {
 
 $("#guided-dataset-subtitle-input").on("keyup", () => {
   const guidedDatasetSubtitleCharCount = document.getElementById("guided-subtitle-char-count");
-  countCharacters(
+  window.countCharacters(
     document.getElementById("guided-dataset-subtitle-input"),
     guidedDatasetSubtitleCharCount
   );

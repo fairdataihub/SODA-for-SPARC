@@ -1263,7 +1263,7 @@ window.electron.ipcRenderer.on("app_version", (event, arg) => {
 // const progressUploadBf = document.getElementById("div-progress-submit");
 // const progressBarUploadBf = document.getElementById("progress-bar-upload-bf");
 window.datasetPermissionDiv = document.getElementById("div-permission-list-2");
-// const bfDatasetSubtitle = document.querySelector("#bf-dataset-subtitle");
+
 // const bfDatasetSubtitleCharCount = document.querySelector("#para-char-count-metadata");
 
 // const bfCurrentBannerImg = document.getElementById("current-banner-img");
@@ -8765,7 +8765,7 @@ const showDefaultBFAccount = async () => {
 //   });
 
 //   log.info("validating dataset");
-//   log.info(bfDatasetSubtitle.value);
+//   log.info(window.bfDatasetSubtitle.value);
 
 //   $("#dataset_validator_status").text("Please wait while we retrieve the dataset...");
 //   $("#dataset_validator_spinner").show();
