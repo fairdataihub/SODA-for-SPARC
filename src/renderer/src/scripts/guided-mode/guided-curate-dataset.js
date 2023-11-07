@@ -491,7 +491,7 @@ const objectsHaveSameKeys = (...objects) => {
 };
 
 const getGuidedProgressFileNames = () => {
-  return fs
+  return window.fs
     .readdirSync(guidedProgressFilePath)
     .map((progressFileName) => progressFileName.replace(".json", ""));
 };
@@ -502,13 +502,13 @@ const updateGuidedDatasetName = (newDatasetName) => {
   //update old progress file with new dataset name
   const oldProgressFilePath = `${guidedProgressFilePath}/${previousDatasetName}.json`;
   const newProgressFilePath = `${guidedProgressFilePath}/${newDatasetName}.json`;
-  fs.renameSync(oldProgressFilePath, newProgressFilePath);
+  window.fs.renameSync(oldProgressFilePath, newProgressFilePath);
 
   const bannerImagePathToUpdate = sodaJSONObj["digital-metadata"]["banner-image-path"];
   if (bannerImagePathToUpdate) {
     const newBannerImagePath = bannerImagePathToUpdate.replace(previousDatasetName, newDatasetName);
     //Rename the old banner image folder to the new dataset name
-    fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
+    window.fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
     //change the banner image path in the JSON obj
     sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
   }
@@ -1016,7 +1016,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           message: "Please enter a dataset name.",
         });
       }
-      if (check_forbidden_characters_ps(datasetNameInput)) {
+      if (window.check_forbidden_characters_ps(datasetNameInput)) {
         errorArray.push({
           type: "notyf",
           message:
@@ -1424,7 +1424,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
           const codeDescriptionPath = codeDescriptionPathElement.innerHTML;
           //Check if the code description file is valid
-          if (!fs.existsSync(codeDescriptionPath)) {
+          if (!window.fs.existsSync(codeDescriptionPath)) {
             errorArray.push({
               type: "notyf",
               message: "The imported code_description file does not exist at the selected path",
@@ -1475,7 +1475,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
           const codeDescriptionPath = codeDescriptionPathElement.innerHTML;
           //Check if the code description file is valid
-          if (!fs.existsSync(codeDescriptionPath)) {
+          if (!window.fs.existsSync(codeDescriptionPath)) {
             errorArray.push({
               type: "notyf",
               message: "The imported code_description file does not exist at the selected path",
@@ -2855,7 +2855,7 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
 
 const readDirAsync = async (path) => {
   return new Promise((resolve, reject) => {
-    fs.readdir(path, (error, result) => {
+    window.fs.readdir(path, (error, result) => {
       if (error) {
         throw new Error(error);
       } else {
@@ -2867,7 +2867,7 @@ const readDirAsync = async (path) => {
 
 const readFileAsync = async (path) => {
   return new Promise((resolve, reject) => {
-    fs.readFile(path, "utf-8", (error, result) => {
+    window.fs.readFile(path, "utf-8", (error, result) => {
       if (error) {
         throw new Error(error);
       } else {
@@ -2895,7 +2895,7 @@ const deleteProgresFile = async (progressFileName) => {
   //Get the path of the progress file to delete
   const progressFilePathToDelete = path.join(guidedProgressFilePath, progressFileName + ".json");
   //delete the progress file
-  fs.unlinkSync(progressFilePathToDelete, (err) => {
+  window.fs.unlinkSync(progressFilePathToDelete, (err) => {
     console.log(err);
   });
 };
@@ -3108,8 +3108,8 @@ const guidedRenderProgressCards = async () => {
   progressCardLoadingDiv.classList.remove("hidden");
 
   //Check if Guided-Progress folder exists. If not, create it.
-  if (!fs.existsSync(guidedProgressFilePath)) {
-    fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+  if (!window.fs.existsSync(guidedProgressFilePath)) {
+    window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   }
 
   const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
@@ -3232,7 +3232,7 @@ const updateManifestJson = async (highLvlFolderName, result) => {
 
 const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
   // First, empty the guided_manifest_files so we can add the new manifest files
-  fs.emptyDirSync(guidedManifestFilePath);
+  window.fs.emptyDirSync(guidedManifestFilePath);
 
   const guidedManifestData = sodaJSONObj["guided-manifest-files"];
   for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
@@ -3244,7 +3244,7 @@ const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
 
     const manifestPath = path.join(guidedManifestFilePath, highLevelFolder, "manifest.xlsx");
 
-    fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
+    window.fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
       recursive: true,
     });
 
@@ -3605,7 +3605,7 @@ document
 
       // write the full report to the ~/SODA/validation.txt file
       const fullReport = validationReport.full_report;
-      fs.writeFileSync(validationReportPath, fullReport);
+      window.fs.writeFileSync(validationReportPath, fullReport);
 
       file_counter = 0;
       folder_counter = 0;
@@ -5907,13 +5907,13 @@ const openPage = async (targetPageID) => {
             let imageFolder = path.join(homeDirectory, "SODA", "guided-banner-images");
             let buf = new Buffer(img_base64, "base64");
 
-            if (!fs.existsSync(imageFolder)) {
+            if (!window.fs.existsSync(imageFolder)) {
               //create SODA/guided-banner-images if it doesn't exist
-              fs.mkdirSync(imageFolder, { recursive: true });
+              window.fs.mkdirSync(imageFolder, { recursive: true });
             }
             let imagePath = path.join(imageFolder, `${datasetName}.` + imageType);
             //store file at imagePath destination
-            fs.writeFileSync(imagePath, buf);
+            window.fs.writeFileSync(imagePath, buf);
             //save imagePath to sodaJson
             sodaJSONObj["digital-metadata"]["banner-image-path"] = imagePath;
 
@@ -14342,7 +14342,7 @@ const guidedSaveRCFile = async (type) => {
   } else {
     destinationPath = path.join($("#guided-dataset-path").text().trim(), "README.xlsx");
   }
-  fs.writeFile(destinationPath, data, (err) => {
+  window.fs.writeFile(destinationPath, data, (err) => {
     if (err) {
       console.log(err);
       log.error(err);
@@ -14362,7 +14362,7 @@ const guidedSaveRCFile = async (type) => {
         type === "changes"
           ? path.join(path.dirname(destinationPath), "CHANGES.txt")
           : path.join(path.dirname(destinationPath), "README.txt");
-      fs.rename(destinationPath, newName, async (err) => {
+      window.fs.rename(destinationPath, newName, async (err) => {
         if (err) {
           console.log(err);
           log.error(err);
@@ -14504,8 +14504,8 @@ const guidedSaveBannerImage = async () => {
   let imageFolder = path.join(homeDirectory, "SODA", "guided-banner-images");
   let imageType = "";
 
-  if (!fs.existsSync(imageFolder)) {
-    fs.mkdirSync(imageFolder, { recursive: true });
+  if (!window.fs.existsSync(imageFolder)) {
+    window.fs.mkdirSync(imageFolder, { recursive: true });
   }
 
   if (imageExtension == "png") {
@@ -14518,7 +14518,7 @@ const guidedSaveBannerImage = async () => {
   let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
 
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
-    let image_file_size = fs.statSync(imagePath)["size"];
+    let image_file_size = window.fs.statSync(imagePath)["size"];
     if (image_file_size < 5 * 1024 * 1024) {
       $("#guided-para-dataset-banner-image-status").html("");
       setGuidedBannerImage(imagePath);
@@ -15707,7 +15707,7 @@ const createRandomFiles = (
       `${generateRandomFolderOrFileName(boolIncludeProblematicFileNames)}.${fileFormat}`
     );
     const fileText = generateFileText(fileSize);
-    fs.writeFileSync(filePath, fileText);
+    window.fs.writeFileSync(filePath, fileText);
   }
 };
 
@@ -15727,7 +15727,7 @@ const createNestedFolders = (
       baseDirectory,
       generateRandomFolderOrFileName(boolIncludeProblematicFileNames)
     );
-    fs.mkdirSync(folderPath);
+    window.fs.mkdirSync(folderPath);
     // Add the random files to the folder
     createRandomFiles(folderPath, numberOfFilesInEachFolder, fileSize); // Creating multiple files in the folder
     // Recursively create more folders inside of the current folder
@@ -15788,22 +15788,22 @@ const createTestDataset = (
   const testDatasetsPath = path.join(homeDirectory, "SODA", "test-datasets");
 
   // return if the root directory does not exist
-  if (!fs.existsSync(testDatasetsPath)) {
-    fs.mkdirSync(testDatasetsPath);
+  if (!window.fs.existsSync(testDatasetsPath)) {
+    window.fs.mkdirSync(testDatasetsPath);
   }
   const newTestDatasetPath = path.join(testDatasetsPath, datasetName);
-  if (fs.existsSync(newTestDatasetPath)) {
+  if (window.fs.existsSync(newTestDatasetPath)) {
     console.error("A test dataset with this name already exists please choose a different name");
     return;
   }
   // Create the test datasets folder
-  fs.mkdirSync(newTestDatasetPath);
+  window.fs.mkdirSync(newTestDatasetPath);
 
   const rootFolders = ["primary", "source", "derivative", "docs", "code", "protocol"];
   // Add folders to each of the high level folders
   for (const folder of rootFolders) {
     const folderPath = path.join(newTestDatasetPath, folder);
-    fs.mkdirSync(folderPath);
+    window.fs.mkdirSync(folderPath);
     createNestedFolders(
       folderPath,
       numberOfFolders,

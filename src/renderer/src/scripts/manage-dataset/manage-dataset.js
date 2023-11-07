@@ -29,7 +29,7 @@ document.querySelectorAll(".ds-dd.organization").forEach((dropdownElement) => {
 
 var forbidden_characters_bf = '/:*?"<>';
 
-const check_forbidden_characters_ps = (my_string) => {
+window.check_forbidden_characters_ps = (my_string) => {
   // Args:
   // my_string: string with characters (string)
   // Returns:
@@ -104,7 +104,7 @@ $("#bf-new-dataset-name").on("keyup", () => {
   let newName = $("#bf-new-dataset-name").val().trim();
 
   if (newName !== "") {
-    if (check_forbidden_characters_ps(newName)) {
+    if (window.check_forbidden_characters_ps(newName)) {
       Swal.fire({
         title: "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
         icon: "error",
@@ -125,7 +125,7 @@ $("#bf-rename-dataset-name").on("keyup", () => {
   let newName = $("#bf-rename-dataset-name").val().trim();
 
   if (newName !== "") {
-    if (check_forbidden_characters_ps(newName)) {
+    if (window.check_forbidden_characters_ps(newName)) {
       Swal.fire({
         title: "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
         backdrop: "rgba(0,0,0, 0.4)",

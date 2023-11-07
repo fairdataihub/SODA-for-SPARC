@@ -56,6 +56,21 @@ if (process.contextIsolated) {
       },
       readFileSync: (filePath, encoding) => {
         return fs.readFileSync(filePath, encoding)
+      },
+      unlinkSync: (filepath, callback) => {
+        return fs.unlinkSync(filepath, callback)
+      },
+      emptyDirSync: (dirpath) => {
+        return fs.emptyDirSync(dirpath)
+      },
+      writeFileSync: (filepath, data) => {
+        return fs.writeFileSync(filepath, data)
+      },
+      writeFile: (destinationPath, data, errcallback) => {
+        return fs.writeFile(destinationPath, data, errcallback)
+      },
+      readdirSync: (dirpath) => {
+        return fs.readdirSync(dirpath)
       }
     })
     contextBridge.exposeInMainWorld('process', {
