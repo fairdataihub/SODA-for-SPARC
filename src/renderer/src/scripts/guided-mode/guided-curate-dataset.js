@@ -5000,7 +5000,7 @@ const openPage = async (targetPageID) => {
             .trim()
             .toUpperCase();
 
-          if (sparcFundingConsortiums.includes(pennsieveFundingConsortium)) {
+          if (window.sparcFundingConsortiums.includes(pennsieveFundingConsortium)) {
             // Pre-set the funding consortium so it is set in the dropdown
             sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
               pennsieveFundingConsortium;
@@ -5014,7 +5014,7 @@ const openPage = async (targetPageID) => {
       // Set the funding consortium dropdown options / set up select picker
       document.getElementById("guided-select-sparc-funding-consortium").innerHTML = `
         <option value="">Select a funding consortium</option>
-        ${sparcFundingConsortiums
+        ${window.sparcFundingConsortiums
           .map((consortium) => {
             return `<option value="${consortium}">${consortium}</option>`;
           })
@@ -5048,7 +5048,7 @@ const openPage = async (targetPageID) => {
       // Set the funding consortium dropdown to the saved value (deafult is empty string before a user selects a value)
       const savedFundingConsortium =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
-      if (sparcFundingConsortiums.includes(savedFundingConsortium)) {
+      if (window.sparcFundingConsortiums.includes(savedFundingConsortium)) {
         $("#guided-select-sparc-funding-consortium").val(savedFundingConsortium);
       } else {
         $("#guided-select-sparc-funding-consortium").val("");
