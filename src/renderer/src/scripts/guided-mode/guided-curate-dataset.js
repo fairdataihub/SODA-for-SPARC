@@ -4625,7 +4625,7 @@ let removeEventListener = false;
 const copyLink = (link) => {
   Clipboard.writeText(link);
 
-  notyf.open({
+  window.notyf.open({
     duration: "2000",
     type: "success",
     message: "Link copied!",
@@ -10329,7 +10329,7 @@ const openCopySampleMetadataPopup = async () => {
     });
 };
 
-const specifySubject = (event, subjectNameInput) => {
+window.specifySubject = (event, subjectNameInput) => {
   if (event.which == 13) {
     try {
       const subjectName = `sub-${subjectNameInput.val().trim()}`;
@@ -10339,7 +10339,7 @@ const specifySubject = (event, subjectNameInput) => {
           <i
             class="far fa-edit"
             style="cursor: pointer; margin-top: .2rem;"
-            onclick="openSubjectRenameInput($(this))"
+            onclick="window.openSubjectRenameInput($(this))"
           >
           </i>
         </div>
@@ -10350,7 +10350,7 @@ const specifySubject = (event, subjectNameInput) => {
       trashCanElement.style.display = "block";
 
       if (subjectName.length > 0) {
-        const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+        const subjectNameIsValid = window.evaluateStringAgainstSdsRequirements(
           subjectName,
           "string-adheres-to-identifier-conventions"
         );
@@ -10369,10 +10369,10 @@ const specifySubject = (event, subjectNameInput) => {
           sodaJSONObj.addSubject(subjectName);
         }
         subjectIdCellToAddNameTo.html(subjectNameElement);
-        addSubjectSpecificationTableRow();
+        window.addSubjectSpecificationTableRow();
       }
     } catch (error) {
-      notyf.open({
+      window.notyf.open({
         duration: "3000",
         type: "error",
         message: error,
@@ -10412,7 +10412,7 @@ const specifySample = (event, sampleNameInput) => {
       const subjectToAddSampleTo = subjectSampleAdditionTable.find(".samples-subject-name").text();
 
       if (sampleName.length > 0) {
-        const sampleNameIsValid = evaluateStringAgainstSdsRequirements(
+        const sampleNameIsValid = window.evaluateStringAgainstSdsRequirements(
           sampleName,
           "string-adheres-to-identifier-conventions"
         );
@@ -10448,7 +10448,7 @@ const specifySample = (event, sampleNameInput) => {
       }
     } catch (error) {
       console.log(error);
-      notyf.open({
+      window.notyf.open({
         duration: "3000",
         type: "error",
         message: error,
@@ -10485,12 +10485,12 @@ const specifyPool = (event, poolNameInput) => {
       const poolIdCellToAddNameTo = poolNameInput.parent();
       let poolsTable = $("#pools-table");
       if (poolName !== "pool-") {
-        const poolNameIsValid = evaluateStringAgainstSdsRequirements(
+        const poolNameIsValid = window.evaluateStringAgainstSdsRequirements(
           poolName,
           "string-adheres-to-identifier-conventions"
         );
         if (!poolNameIsValid) {
-          notyf.open({
+          window.notyf.open({
             duration: "3000",
             type: "error",
             message: "Pool IDs may not contain spaces or special characters",
@@ -10544,7 +10544,7 @@ const specifyPool = (event, poolNameInput) => {
         poolIdCellToAddNameTo.html(poolNameElement);
       }
     } catch (error) {
-      notyf.open({
+      window.notyf.open({
         duration: "3000",
         type: "error",
         message: error,
@@ -10571,10 +10571,10 @@ const updatePoolDropdown = (poolDropDown, poolName) => {
 };
 
 //On edit button click, creates a new subject ID rename input box
-const openSubjectRenameInput = (subjectNameEditButton) => {
+window.openSubjectRenameInput = (subjectNameEditButton) => {
   const subjectIdCellToRename = subjectNameEditButton.closest("td");
   const prevSubjectName = subjectIdCellToRename.find(".subject-id").text();
-  prevSubjectInput = prevSubjectName.substr(prevSubjectName.search("-") + 1);
+  let prevSubjectInput = prevSubjectName.substr(prevSubjectName.search("-") + 1);
   const subjectRenameElement = `
     <div class="space-between w-100" style="align-items: center">
       <span style="margin-right: 5px;">sub-</span>
@@ -10584,7 +10584,7 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
         name="guided-subject-id"
         value=${prevSubjectInput}
         placeholder="Enter subject ID and press enter"
-        onkeyup="specifySubject(event, $(this))"
+        onkeyup="specifySubject(event, window.$(this))"
         data-alert-message="Subject IDs may not contain spaces or special characters"
         data-alert-type="danger"
         data-prev-name="${prevSubjectName}"
@@ -10638,7 +10638,7 @@ const generateSubjectRowElement = (subjectName) => {
             <i
               class="far fa-edit"
               style="cursor: pointer; margin-top: .2rem"
-              onclick="openSubjectRenameInput($(this))"
+              onclick="window.openSubjectRenameInput($(this))"
             >
             </i>
           </div>
@@ -10648,7 +10648,7 @@ const generateSubjectRowElement = (subjectName) => {
         <i
           class="far fa-trash-alt"
           style="color: red; cursor: pointer"
-          onclick="deleteSubject($(this))"
+          onclick="window.deleteSubject($(this))"
         ></i>
       </td>
     </tr>
@@ -10667,7 +10667,7 @@ const generateSubjectSpecificationRowElement = () => {
             type="text"
             name="guided-subject-id"
             placeholder="Enter subject ID and press enter"
-            onkeyup="specifySubject(event, $(this))"
+            onkeyup="specifySubject(event, window.$(this))"
             data-alert-message="Subject IDs may not contain spaces or special characters"
             data-alert-type="danger"
             style="margin-right: 5px;"
@@ -10681,7 +10681,7 @@ const generateSubjectSpecificationRowElement = () => {
         <i
           class="far fa-trash-alt"
           style="color: red; cursor: pointer; display: none;"
-          onclick="deleteSubject($(this))"
+          onclick="window.deleteSubject($(this))"
         ></i>
       </td>
       </tr>
@@ -10771,7 +10771,7 @@ const generateSampleSpecificationRowElement = () => {
   `;
 };
 
-const confirmEnter = (button) => {
+window.confirmEnter = (button) => {
   let input_id = button.previousElementSibling.id;
   let sampleTable = false;
   let addSampleButton = "";
@@ -10848,7 +10848,7 @@ const confirmOnBlur = (element) => {
   document.getElementById(element).addEventListener("blur", onBlurEvent);
 };
 
-const addSubjectSpecificationTableRow = () => {
+window.addSubjectSpecificationTableRow = () => {
   const subjectSpecificationTableBody = document.getElementById("subject-specification-table-body");
   //check if subject specification table body has an input with the name guided-subject-id
   const subjectSpecificationTableInput = subjectSpecificationTableBody.querySelector(
@@ -11006,7 +11006,7 @@ const addPoolTableRow = () => {
 };
 
 //deletes subject from jsonObj and UI
-const deleteSubject = async (subjectDeleteButton) => {
+window.deleteSubject = async (subjectDeleteButton) => {
   const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
   const subjectIdToDelete = subjectIdCellToDelete.find(".subject-id").text();
 
@@ -11143,7 +11143,7 @@ const removePermission = (clickedPermissionRemoveButton) => {
   let permissionTypeToRemove = permissionElementToRemove.find(".permission-type-cell").text();
 
   if (permissionEntityType === "owner") {
-    notyf.open({
+    window.notyf.open({
       duration: "6000",
       type: "error",
       message: "You can not remove yourself as the owner of this dataset",
@@ -11151,7 +11151,7 @@ const removePermission = (clickedPermissionRemoveButton) => {
     return;
   }
   if (permissionEntityType === "loggedInUser") {
-    notyf.open({
+    window.notyf.open({
       duration: "6000",
       type: "error",
       message:
@@ -12133,7 +12133,7 @@ $("#guided-button-add-permission-user-or-team").on("click", function () {
     });
     guidedResetUserTeamPermissionsDropdowns();
   } catch (error) {
-    notyf.open({
+    window.notyf.open({
       duration: "4000",
       type: "error",
       message: error,
@@ -14233,7 +14233,7 @@ $("#guided-button-save-other-link-fields").on("click", () => {
   const otherLinkFields = document.querySelectorAll(".guided-other-links-field-container");
   //check if contributorFields is empty
   if (otherLinkFields.length === 0) {
-    notyf.error("Please add at least one other link");
+    window.notyf.error("Please add at least one other link");
     return;
   }
 
@@ -14270,7 +14270,7 @@ $("#guided-button-save-other-link-fields").on("click", () => {
   });
   ///////////////////////////////////////////////////////////////////////////////
   if (!allInputsValid) {
-    notyf.error("Please fill out all link fields");
+    window.notyf.error("Please fill out all link fields");
     return;
   }
 
@@ -14666,7 +14666,7 @@ $("#guided-next-button").on("click", async function () {
       error.map((error) => {
         // get the total number of words in error.message
         if (error.type === "notyf") {
-          notyf.open({
+          window.notyf.open({
             duration: "7000",
             type: "error",
             message: error.message,
@@ -15262,7 +15262,7 @@ $("#guided-button-sub-page-continue").on("click", async () => {
     console.log(error);
     log.error(error);
     error.map((error) => {
-      notyf.open({
+      window.notyf.open({
         duration: "5500",
         type: error.type,
         message: error.message,
@@ -15413,7 +15413,7 @@ $("#guided-new-folder").on("click", () => {
         $(".swal2-confirm").attr("id", "add-new-folder-button");
         $("#add-new-folder-input").keyup(function () {
           let val = $("#add-new-folder-input").val();
-          const folderNameIsValid = evaluateStringAgainstSdsRequirements(
+          const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
             val,
             "folder-and-file-name-is-valid"
           );

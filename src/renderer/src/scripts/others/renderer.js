@@ -59,6 +59,10 @@ import {
 } from '../globals'
 import checkForAnnouncements from './announcements'
 
+// add jquery to the window object
+window.$ = jQuery;
+window.jQuery = jQuery;
+
 fixPath();
 
 // // const prevent_sleep_id = "";
@@ -128,7 +132,7 @@ if (autoUpdateLaunch == false || autoUpdateLaunch == null || autoUpdateLaunch ==
 // // Connect to Python back-end
 // //////////////////////////////////
 
-const notyf = new Notyf({
+window.notyf = new Notyf({
   position: { x: "right", y: "bottom" },
   dismissible: true,
   ripple: false,
@@ -484,7 +488,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     console.log("Initiating pre flight checks")
 
     if (!preFlightCheckNotyf) {
-      preFlightCheckNotyf = notyf.open({
+      preFlightCheckNotyf = window.notyf.open({
         duration: 25000,
         type: "info",
         message: "Checking SODA's connection to Pennsieve...",
@@ -509,7 +513,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     if (!account_present) {
       // Dismiss the preflight check notification if it is still open
       if (preFlightCheckNotyf) {
-        notyf.dismiss(preFlightCheckNotyf);
+        window.notyf.dismiss(preFlightCheckNotyf);
         preFlightCheckNotyf = null;
       }
 
@@ -590,7 +594,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
         // Dismiss the preflight check notification if it is still open
         if (preFlightCheckNotyf) {
-          notyf.dismiss(preFlightCheckNotyf);
+          window.notyf.dismiss(preFlightCheckNotyf);
           preFlightCheckNotyf = null;
         }
 
@@ -630,7 +634,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
       // Dismiss the preflight check notification if it is still open
       if (preFlightCheckNotyf) {
-        notyf.dismiss(preFlightCheckNotyf);
+        window.notyf.dismiss(preFlightCheckNotyf);
         preFlightCheckNotyf = null;
       }
 
@@ -682,7 +686,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
       // Dismiss the preflight check notification if it is still open
       if (preFlightCheckNotyf) {
-        notyf.dismiss(preFlightCheckNotyf);
+        window.notyf.dismiss(preFlightCheckNotyf);
         preFlightCheckNotyf = null;
       }
       // If the user clicks the skip button, return false which will cause the pre flight checks to fail
@@ -725,7 +729,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
       // Dismiss the preflight check notification if it is still open
       if (preFlightCheckNotyf) {
-        notyf.dismiss(preFlightCheckNotyf);
+        window.notyf.dismiss(preFlightCheckNotyf);
         preFlightCheckNotyf = null;
       }
       // If the user clicks the skip button, return false which will cause the pre flight checks to fail
@@ -774,7 +778,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       }
       // Dismiss the preflight check notification if it is still open
       if (preFlightCheckNotyf) {
-        notyf.dismiss(preFlightCheckNotyf);
+        window.notyf.dismiss(preFlightCheckNotyf);
         preFlightCheckNotyf = null;
       }
 
@@ -803,11 +807,11 @@ const run_pre_flight_checks = async (check_update = true) => {
 
     // Dismiss the preflight check notification if it is still open
     if (preFlightCheckNotyf) {
-      notyf.dismiss(preFlightCheckNotyf);
+      window.notyf.dismiss(preFlightCheckNotyf);
       preFlightCheckNotyf = null;
     }
 
-    notyf.open({
+    window.notyf.open({
       type: "final",
       message: "SODA connected to Pennsieve successfully!",
     });
@@ -819,7 +823,7 @@ const run_pre_flight_checks = async (check_update = true) => {
   } catch (error) {
     // Dismiss the preflight check notification if it is still open
     if (preFlightCheckNotyf) {
-      notyf.dismiss(preFlightCheckNotyf);
+      window.notyf.dismiss(preFlightCheckNotyf);
       preFlightCheckNotyf = null;
     }
     // Stop the Pennsieve agent if it is running
@@ -871,8 +875,8 @@ const serverIsLiveStartup = async () => {
 
 // Check if the Pysoda server API version and the package.json versions match
 const apiVersionsMatch = async () => {
-  // notyf that tells the user that the server is checking the versions
-  let notification = notyf.open({
+  // window.notyf that tells the user that the server is checking the versions
+  let notification = window.notyf.open({
     message: "Checking API Version",
     type: "checking_server_api_version",
   });
@@ -950,10 +954,10 @@ const apiVersionsMatch = async () => {
 
   window.electron.ipcRenderer.send("track-event", "Success", "Verifying App Version");
 
-  notyf.dismiss(notification);
+  window.notyf.dismiss(notification);
 
-  // create a success notyf for api version check
-  notyf.open({
+  // create a success window.notyf for api version check
+  window.notyf.open({
     message: "API Versions match",
     type: "success",
   });
@@ -985,7 +989,7 @@ const checkInternetConnection = async () => {
 
 const check_api_key = async () => {
   let notification = null;
-  notification = notyf.open({
+  notification = window.notyf.open({
     type: "api_key_search",
     message: "Checking for Pennsieve account...",
   });
@@ -994,8 +998,8 @@ const check_api_key = async () => {
   let responseObject;
 
   if (!hasConnectedAccountWithPennsieve()) {
-    notyf.dismiss(notification);
-    notyf.open({
+    window.notyf.dismiss(notification);
+    window.notyf.open({
       type: "error",
       message: "No account was found",
     });
@@ -1005,8 +1009,8 @@ const check_api_key = async () => {
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
   } catch (e) {
-    notyf.dismiss(notification);
-    notyf.open({
+    window.notyf.dismiss(notification);
+    window.notyf.open({
       type: "error",
       message: "No account was found",
     });
@@ -1017,15 +1021,15 @@ const check_api_key = async () => {
   log.info("Found a set of valid API keys");
   if (res[0] === "Select" && res.length === 1) {
     //no api key found
-    notyf.dismiss(notification);
-    notyf.open({
+    window.notyf.dismiss(notification);
+    window.notyf.open({
       type: "error",
       message: "No account was found",
     });
     return false;
   } else {
-    notyf.dismiss(notification);
-    notyf.open({
+    window.notyf.dismiss(notification);
+    window.notyf.open({
       type: "success",
       message: "Connected to Pennsieve",
     });
@@ -1036,7 +1040,7 @@ const check_api_key = async () => {
 // // return the agent version or an error if the agent is not installed
 // const check_agent_installed = async () => {
 //   let notification = null;
-//   notification = notyf.open({
+//   notification = window.notyf.open({
 //     type: "ps_agent",
 //     message: "Searching for Pennsieve Agent...",
 //   });
@@ -1045,8 +1049,8 @@ const check_api_key = async () => {
 //     responseObject = await client.get("/manage_datasets/check_agent_install");
 //   } catch (error) {
 //     clientError(error);
-//     notyf.dismiss(notification);
-//     notyf.open({
+//     window.notyf.dismiss(notification);
+//     window.notyf.open({
 //       type: "error",
 //       message: "Pennsieve agent not found",
 //     });
@@ -1056,8 +1060,8 @@ const check_api_key = async () => {
 
 //   let { agent_version } = responseObject.data;
 
-//   notyf.dismiss(notification);
-//   notyf.open({
+//   window.notyf.dismiss(notification);
+//   window.notyf.open({
 //     type: "success",
 //     message: "Pennsieve agent found",
 //   });
@@ -1151,7 +1155,7 @@ window.electron.ipcRenderer.on("app_version", (event, arg) => {
 //     "Update Requested",
 //     `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
 //   );
-//   update_available_notification = notyf.open({
+//   update_available_notification = window.notyf.open({
 //     type: "app_update",
 //     message: "A new update is available. Downloading now...",
 //   });
@@ -1166,15 +1170,15 @@ window.electron.ipcRenderer.on("app_version", (event, arg) => {
 //     "Update Downloaded",
 //     `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
 //   );
-//   notyf.dismiss(update_available_notification);
+//   window.notyf.dismiss(update_available_notification);
 //   if (process.platform == "darwin") {
-//     update_downloaded_notification = notyf.open({
+//     update_downloaded_notification = window.notyf.open({
 //       type: "app_update_warning",
 //       message:
 //         "Update downloaded. It will be installed when you close and relaunch the app. Click here to close SODA now.",
 //     });
 //   } else {
-//     update_downloaded_notification = notyf.open({
+//     update_downloaded_notification = window.notyf.open({
 //       type: "app_update_warning",
 //       message:
 //         "Update downloaded. It will be installed on the restart of the app. Click here to restart SODA now.",
@@ -1189,7 +1193,7 @@ window.electron.ipcRenderer.on("app_version", (event, arg) => {
 
 // // Restart the app for update. Does not restart on macos
 // const restartApp = async () => {
-//   notyf.open({
+//   window.notyf.open({
 //     type: "app_update_warning",
 //     message: "Closing SODA now...",
 //   });
@@ -4135,7 +4139,7 @@ const loadDefaultAccount = async () => {
 //         $(".swal2-confirm").attr("id", "add-new-folder-button");
 //         $("#add-new-folder-input").keyup(function () {
 //           let val = $("#add-new-folder-input").val();
-//           const folderNameIsValid = evaluateStringAgainstSdsRequirements(
+//           const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
 //             val,
 //             "folder-and-file-name-is-valid"
 //           );
@@ -4579,7 +4583,7 @@ const showDefaultBFAccount = async () => {
 //     return inaccessible_files;
 //   } catch (error) {
 //     clientError(error);
-//     notyf.open({
+//     window.notyf.open({
 //       type: "error",
 //       message: `Unable to determine file/folder accessibility`,
 //       duration: 7000,
@@ -4623,7 +4627,7 @@ const showDefaultBFAccount = async () => {
 // const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
 //   const currentFilesAtPath = Object.keys(datasetStructure.files);
 //   for (const fileKey of currentFilesAtPath) {
-//     const fileIsHidden = evaluateStringAgainstSdsRequirements(fileKey, "file-is-hidden");
+//     const fileIsHidden = window.evaluateStringAgainstSdsRequirements(fileKey, "file-is-hidden");
 //     if (fileIsHidden) {
 //       delete datasetStructure["files"][fileKey];
 //     }
@@ -4638,7 +4642,7 @@ const showDefaultBFAccount = async () => {
 // const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
 //   const currentFoldersAtPath = Object.keys(datasetStructure.folders);
 //   for (const folderKey of currentFoldersAtPath) {
-//     const folderNameIsValid = evaluateStringAgainstSdsRequirements(
+//     const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
 //       folderKey,
 //       "folder-and-file-name-is-valid"
 //     );
@@ -4658,7 +4662,7 @@ const showDefaultBFAccount = async () => {
 // const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
 //   const currentFilesAtPath = Object.keys(datasetStructure.files);
 //   for (const fileKey of currentFilesAtPath) {
-//     const fileNameIsValid = evaluateStringAgainstSdsRequirements(
+//     const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
 //       fileKey,
 //       "folder-and-file-name-is-valid"
 //     );
@@ -4681,7 +4685,7 @@ const showDefaultBFAccount = async () => {
 // const deleteProblematicFilesFromDatasetStructure = (datasetStructure) => {
 //   const currentFilesAtPath = Object.keys(datasetStructure.files);
 //   for (const fileKey of currentFilesAtPath) {
-//     const fileNameIsValid = evaluateStringAgainstSdsRequirements(
+//     const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
 //       fileKey,
 //       "folder-and-file-name-is-valid"
 //     );
@@ -4696,23 +4700,23 @@ const showDefaultBFAccount = async () => {
 //   }
 // };
 
-// const namesOfForbiddenFiles = {
-//   ".DS_Store": true,
-//   "Thumbs.db": true,
-// };
+const namesOfForbiddenFiles = {
+  ".DS_Store": true,
+  "Thumbs.db": true,
+};
 
-// const sparcFolderAndFileRegex = /[\+&\%#]/;
-// const identifierConventionsRegex = /^[a-zA-Z0-9-_]+$/;
+const sparcFolderAndFileRegex = /[\+&\%#]/;
+const identifierConventionsRegex = /^[a-zA-Z0-9-_]+$/;
 
-// const evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
-//   const testCases = {
-//     "folder-and-file-name-is-valid": !sparcFolderAndFileRegex.test(stringToTest), // returns true if the string is valid
-//     "file-is-hidden": stringToTest.startsWith("."), // returns true if the string is hidden
-//     "file-is-in-forbidden-files-list": namesOfForbiddenFiles?.[stringToTest], // returns true if the string is in the forbidden files list
-//     "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest), // returns true if the string adheres to the identifier conventions
-//   };
-//   return testCases[stringCase];
-// };
+window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
+  const testCases = {
+    "folder-and-file-name-is-valid": !sparcFolderAndFileRegex.test(stringToTest), // returns true if the string is valid
+    "file-is-hidden": stringToTest.startsWith("."), // returns true if the string is hidden
+    "file-is-in-forbidden-files-list": namesOfForbiddenFiles?.[stringToTest], // returns true if the string is in the forbidden files list
+    "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest), // returns true if the string adheres to the identifier conventions
+  };
+  return testCases[stringCase];
+};
 // let loadingSweetAlert;
 // let loadingSweetAlertTimer;
 
@@ -4784,7 +4788,7 @@ const showDefaultBFAccount = async () => {
 //       if (fsStatsObj.isDirectory()) {
 //         const folderName = path.basename(pathToExplore);
 
-//         const folderNameIsValid = evaluateStringAgainstSdsRequirements(
+//         const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
 //           folderName,
 //           "folder-and-file-name-is-valid"
 //         );
@@ -4823,7 +4827,7 @@ const showDefaultBFAccount = async () => {
 //           fileName: fileName,
 //         };
 
-//         const fileIsInForbiddenFilesList = evaluateStringAgainstSdsRequirements(
+//         const fileIsInForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
 //           fileName,
 //           "file-is-in-forbidden-files-list"
 //         );
@@ -4832,7 +4836,7 @@ const showDefaultBFAccount = async () => {
 //           forbiddenFileNames.push(fileObject);
 //         } else {
 //           // Check if the file name has any characters that do not comply with SPARC naming requirements
-//           const fileNameIsValid = evaluateStringAgainstSdsRequirements(
+//           const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
 //             fileName,
 //             "folder-and-file-name-is-valid"
 //           );
@@ -4840,7 +4844,7 @@ const showDefaultBFAccount = async () => {
 //             problematicFileNames.push(fileObject);
 //           }
 
-//           const fileIsHidden = evaluateStringAgainstSdsRequirements(fileName, "file-is-hidden");
+//           const fileIsHidden = window.evaluateStringAgainstSdsRequirements(fileName, "file-is-hidden");
 //           if (fileIsHidden) {
 //             hiddenItems.push(fileObject);
 //           }
@@ -5097,7 +5101,7 @@ const showDefaultBFAccount = async () => {
 //   // If no data was imported ()
 //   const numberOfItemsToImport = importedData.length;
 //   if (numberOfItemsToImport === 0) {
-//     notyf.open({
+//     window.notyf.open({
 //       type: "info",
 //       message: "No folders/files were selected to import",
 //       duration: 4000,
@@ -5127,14 +5131,14 @@ const showDefaultBFAccount = async () => {
 //     getInFolder(".single-item", "#items", window.organizeDSglobalPath, datasetStructureJSONObj);
 
 //     // Step 4: Update successful, show success message
-//     notyf.open({
+//     window.notyf.open({
 //       type: "success",
 //       message: `Data successfully imported`,
 //       duration: 3000,
 //     });
 //   } catch (error) {
 //     closeFileImportLoadingSweetAlert();
-//     notyf.open({
+//     window.notyf.open({
 //       type: error.message === "Importation cancelled" ? "info-grey" : "error",
 //       message: error.message || "Error importing data",
 //       duration: 3000,
@@ -5165,7 +5169,7 @@ const showDefaultBFAccount = async () => {
 //   const droppedItemsArray = Array.from(itemsDroppedInFileExplorer).map((item) => item.path);
 
 //   if (droppedItemsArray.length === 0) {
-//     notyf.open({
+//     window.notyf.open({
 //       duration: "4000",
 //       type: "error",
 //       message: "No folders/files were able to be imported",
