@@ -10893,6 +10893,59 @@ const getExistingSubjectNames = () => {
   return subjectNames;
 };
 
+const getExistingSampleNames = () => {
+  // Get all samples in pools and outside of pools
+  const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
+  // Combine the two arrays
+  const samples = [...samplesInPools, ...samplesOutsidePools];
+  // Map each sample object to its name
+  const sampleNames = samples.map((sample) => sample["sampleName"]);
+
+  return sampleNames;
+};
+
+document
+  .getElementById("guided-button-create-dataset-structure-spreadsheet")
+  .addEventListener("click", () => {
+    // Create a new spreadsheet based on the dataset structure
+    console.log("create dataset structure spreadsheet");
+    ipcRenderer.send("open-create-dataset-structure-spreadsheet-path-selection-dialog");
+  });
+ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (event, path) => {
+  try {
+    console.log("Path selected: ", path);
+
+    const workbook = new excel4node.Workbook();
+    const worksheet = workbook.addWorksheet("Subject structure");
+    // write the columns to the spreadsheet
+    const columns = ["Subject ID"];
+    for (i = 0; i < columns.length; i++) {
+      worksheet.cell(1, i + 1).string(columns[i]);
+    }
+
+    // write the subjects to the spreadsheet
+    const subjects = ["sub-1", "sub-2", "sub-3"];
+    for (i = 0; i < subjects.length; i++) {
+      worksheet.cell(i + 2, 1).string(subjects[i]);
+    }
+    console.log("subjects", subjects);
+
+    // write the spreadsheet to the selected
+    const filePath = path + "/dataset_structure.xlsx";
+    const buffer = await workbook.writeToBuffer();
+    await fs.promises.writeFile(filePath, buffer);
+    sodaJSONObj["dataset-structure-spreadsheet-path"] = filePath;
+    ipcRenderer.send("open-file-at-path", filePath);
+  } catch (error) {
+    notyf.error(`Error creating dataset structure spreadsheet: ${error}`);
+  }
+});
+document
+  .getElementById("guided-button-import-dataset-structure-from-spreadsheet")
+  .addEventListener("click", () => {
+    // Import a dataset structure spreadsheet
+    console.log("import dataset structure spreadsheet");
+  });
 const guidedExtractEntityNamesFromFolders = async (entityType) => {
   if (entityType === "subjects") {
     ipcRenderer.send("open-subject-multi-folder-import-dialog");

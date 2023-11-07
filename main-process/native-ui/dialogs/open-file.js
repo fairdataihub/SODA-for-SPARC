@@ -1,5 +1,21 @@
 const { ipcMain, dialog, BrowserWindow } = require("electron");
 
+ipcMain.on("open-create-dataset-structure-spreadsheet-path-selection-dialog", (event) => {
+  const mainWindow = BrowserWindow.getFocusedWindow();
+
+  // Get the path to the directory where the user wants to save the spreadsheet
+  const spreadsheetPath = dialog.showOpenDialogSync(mainWindow, {
+    properties: ["openDirectory"],
+    title: "Select a folder to save the spreadsheet to",
+  });
+
+  if (spreadsheetPath) {
+    event.sender.send("selected-create-dataset-structure-spreadsheet-path", spreadsheetPath[0]);
+  }
+});
+
+ipcMain.on("open-file-at-path", (event, path) => {});
+
 ipcMain.on("open-subject-multi-folder-import-dialog", (event) => {
   const mainWindow = BrowserWindow.getFocusedWindow();
 
