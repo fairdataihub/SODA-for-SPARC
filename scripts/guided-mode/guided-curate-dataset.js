@@ -7764,20 +7764,28 @@ const guidedWarnBeforeDeletingEntity = async (entityType, entityName) => {
 };
 
 const attachGuidedMethodsToSodaJSONObj = () => {
-  sodaJSONObj.addPool = function (poolName) {
+  sodaJSONObj.addPool = function (poolName, throwErrorIfPoolExists = true) {
     if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName]) {
-      throw new Error("Pool names must be unique.");
+      if (throwErrorIfPoolExists) {
+        throw new Error("Pool names must be unique.");
+      } else {
+        return;
+      }
     }
 
     this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName] = {};
   };
-  sodaJSONObj.addSubject = function (subjectName) {
+  sodaJSONObj.addSubject = function (subjectName, throwErrorIfSubjectExists = true) {
     //check if subject with the same name already exists
     if (
       this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][subjectName] ||
       this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName]
     ) {
-      throw new Error("Subject names must be unique.");
+      if (throwErrorIfSubjectExists) {
+        throw new Error("Subject names must be unique.");
+      } else {
+        return;
+      }
     }
     this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] = {};
   };
@@ -10897,11 +10905,7 @@ const getExistingSampleNames = () => {
   // Get all samples in pools and outside of pools
   const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
   // Combine the two arrays
-  const samples = [...samplesInPools, ...samplesOutsidePools];
-  // Map each sample object to its name
-  const sampleNames = samples.map((sample) => sample["sampleName"]);
-
-  return sampleNames;
+  return [...samplesInPools, ...samplesOutsidePools].map((sample) => sample["sampleName"]);
 };
 
 document
@@ -10930,8 +10934,6 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
     });
 
     // Set the column widths
-    worksheet.column(1).setWidth(30);
-
     const datasetHasPools = document
       .getElementById("guided-button-subjects-are-pooled")
       .classList.contains("selected");
@@ -10942,11 +10944,9 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
 
     if (datasetHasPools) {
       headers.push("Pool ID");
-      worksheet.column(2).setWidth(30);
     }
     if (datasetHasSamples) {
       headers.push("Sample ID");
-      worksheet.column(3).setWidth(30);
     }
 
     for (i = 0; i < headers.length; i++) {
@@ -10954,6 +10954,7 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
         .cell(1, i + 1)
         .string(headers[i])
         .style(sodaGreenHeaderStyle);
+      worksheet.column(i + 1).setWidth(30);
     }
 
     // write the subjects to the spreadsheet
@@ -10981,12 +10982,28 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
     notyf.error(`Error creating dataset structure spreadsheet: ${error}`);
   }
 });
+
+// CLICK HANDLER THAT EXTRACTS THE DATASET STRUCTURE FROM A SPREADSHEET
 document
   .getElementById("guided-button-import-dataset-structure-from-spreadsheet")
   .addEventListener("click", () => {
-    // Import a dataset structure spreadsheet
-    console.log("import dataset structure spreadsheet");
+    const savedTemplatePath = sodaJSONObj["dataset-structure-spreadsheet-path"];
+    if (!savedTemplatePath) {
+      notyf.error("No dataset structure spreadsheet has been saved");
+      return;
+    }
+    if (!fs.existsSync(savedTemplatePath)) {
+      notyf.error("The saved dataset structure spreadsheet no longer exists at the saved path");
+      return;
+    }
+    const xlsx = require("xlsx");
+    const spreadsheet = xlsx.readFile(savedTemplatePath);
+    const worksheet = spreadsheet.Sheets[spreadsheet.SheetNames[0]];
+    const sheetData = xlsx.utils.sheet_to_json(worksheet, { raw: true });
+    console.log(sheetData);
+    console.log(spreadsheet);
   });
+
 const guidedExtractEntityNamesFromFolders = async (entityType) => {
   if (entityType === "subjects") {
     ipcRenderer.send("open-subject-multi-folder-import-dialog");
