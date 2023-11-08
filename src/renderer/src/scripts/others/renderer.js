@@ -29,6 +29,7 @@ import diskCheck from "check-disk-space";
 import validator from "validator";
 import doiRegex from "doi-regex";
 import lottie from "lottie-web";
+import {dragDrop} from '../../assets/lotties/lotties'
 import select2 from "select2"; // TODO: select2()
 select2()
 import DragSort from "@yaireo/dragsort";
@@ -74,7 +75,7 @@ fixPath();
 
 var nextBtnDisabledVariable = true;
 
-let datasetStructureJSONObj = {
+window.datasetStructureJSONObj = {
   folders: {},
   files: {},
   type: "",
@@ -1345,23 +1346,23 @@ const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-te
 //   }
 // };
 
-// // Assign dragable area in the code to allow for dragging and selecting items//
-// let drag_event_fired = false;
-// let dragselect_area = new DragSelect({
-//   selectables: document.querySelectorAll(".single-item"),
-//   draggability: false,
-//   area: document.getElementById("items"),
-// });
+// Assign dragable area in the code to allow for dragging and selecting items//
+let drag_event_fired = false;
+let dragselect_area = new DragSelect({
+  selectables: document.querySelectorAll(".single-item"),
+  draggability: false,
+  area: document.getElementById("items"),
+});
 
-// // Assign the callback event for selecting items
-// dragselect_area.subscribe("callback", ({ items, event }) => {
-//   select_items(items, event, isDragging);
-// });
+// Assign the callback event for selecting items
+dragselect_area.subscribe("callback", ({ items, event }) => {
+  select_items(items, event, isDragging);
+});
 
-// // Assign an additional event to allow for ctrl drag behaviour
-// dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
-//   select_items_ctrl(items, event, isDragging);
-// });
+// Assign an additional event to allow for ctrl drag behaviour
+dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
+  select_items_ctrl(items, event, isDragging);
+});
 
 // ///////////////////// Prepare Metadata Section ////////////////////////////////
 // ///////////////////////////////////////////////////////////////////////////////
@@ -4087,26 +4088,26 @@ window.sodaJSONObj = {};
 // organizeDSbackButton.addEventListener("click", function () {
 //   let slashCount = window.organizeDSglobalPath.value.trim().split("/").length - 1;
 //   if (slashCount !== 1) {
-//     let filtered = getGlobalPath(window.organizeDSglobalPath);
+//     let filtered = window.getGlobalPath(window.organizeDSglobalPath);
 
 //     if (filtered.length === 1) {
 //       window.organizeDSglobalPath.value = filtered[0] + "/";
 //     } else {
 //       window.organizeDSglobalPath.value = filtered.slice(0, filtered.length - 1).join("/") + "/";
 //     }
-//     let myPath = datasetStructureJSONObj;
+//     let myPath = window.datasetStructureJSONObj;
 //     for (var item of filtered.slice(1, filtered.length - 1)) {
 //       myPath = myPath["folders"][item];
 //     }
 //     // construct UI with files and folders
 //     $("#items").empty();
-//     already_created_elem = [];
+//     window.already_created_elem = [];
 //     let items = loadFileFolder(myPath); //array -
 //     //we have some items to display
-//     listItems(myPath, "#items", 500, (reset = true));
+//     window.listItems(myPath, "#items", 500, true);
 //     organizeLandingUIEffect();
 //     // reconstruct div with new elements
-//     getInFolder(".single-item", "#items", window.organizeDSglobalPath, datasetStructureJSONObj);
+//     window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
 //   }
 // });
 
@@ -4186,14 +4187,14 @@ window.sodaJSONObj = {};
 //             determineDatasetLocation()
 //           );
 //         } else {
-//           /// update datasetStructureJSONObj
+//           /// update window.datasetStructureJSONObj
 //           let currentPath = window.organizeDSglobalPath.value;
 //           let jsonPathArray = currentPath.split("/");
 //           let filtered = jsonPathArray.slice(1).filter(function (el) {
 //             return el != "";
 //           });
 
-//           let myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+//           let myPath = getRecursivePath(filtered, window.datasetStructureJSONObj);
 //           let renamedNewFolder = newFolderName;
 //           // update Json object with new folder created
 //           myPath["folders"][renamedNewFolder] = {
@@ -4203,8 +4204,8 @@ window.sodaJSONObj = {};
 //             action: ["new"],
 //           };
 
-//           listItems(myPath, "#items", 500, (reset = true));
-//           getInFolder(".single-item", "#items", window.organizeDSglobalPath, datasetStructureJSONObj);
+//           window.listItems(myPath, "#items", 500, true);
+//           window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
 
 //           // log that the folder was successfully added
 //           logCurationForAnalytics(
@@ -4548,7 +4549,7 @@ const showDefaultBFAccount = async () => {
 //             generation_type: "create-new",
 //             generation_destination_path: filepath[0],
 //             dataset_name: newDSName,
-//             soda_json_directory_structure: datasetStructureJSONObj,
+//             soda_json_directory_structure: window.datasetStructureJSONObj,
 //           },
 //           {
 //             timeout: 0,
@@ -4976,7 +4977,7 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //     const currentNestedPathArray = getGlobalPathFromString(recursedFilePath);
 //     const existingDatasetJsonAtPath = getRecursivePath(
 //       currentNestedPathArray.slice(1),
-//       datasetStructureJSONObj
+//       window.datasetStructureJSONObj
 //     ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
 
 //     const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]);
@@ -5053,7 +5054,7 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //         currentNestedPathArray.shift();
 //         const folderContainingFileToOverwrite = getRecursivePath(
 //           currentNestedPathArray,
-//           datasetStructureJSONObj
+//           window.datasetStructureJSONObj
 //         );
 
 //         const fileTypeOfObjectToOverwrite =
@@ -5122,13 +5123,13 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
 
 //     // Step 3: Update the UI
-//     const currentPathArray = getGlobalPath(window.organizeDSglobalPath); // ['dataset_root', 'code']
+//     const currentPathArray = window.getGlobalPath(window.organizeDSglobalPath); // ['dataset_root', 'code']
 //     const nestedJsonDatasetStructure = getRecursivePath(
 //       currentPathArray.slice(1),
-//       datasetStructureJSONObj
+//       window.datasetStructureJSONObj
 //     );
-//     listItems(nestedJsonDatasetStructure, "#items", 500, (reset = true));
-//     getInFolder(".single-item", "#items", window.organizeDSglobalPath, datasetStructureJSONObj);
+//     window.listItems(nestedJsonDatasetStructure, "#items", 500, true);
+//     window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
 
 //     // Step 4: Update successful, show success message
 //     window.notyf.open({
@@ -5568,12 +5569,12 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //           event,
 //           window.organizeDSglobalPath,
 //           itemDivElements,
-//           datasetStructureJSONObj,
+//           window.datasetStructureJSONObj,
 //           "#items",
 //           ".single-item"
 //         );
 //       } else if ($(this).attr("id") === "reg-folder-delete") {
-//         delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", datasetStructureJSONObj);
+//         delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", window.datasetStructureJSONObj);
 //       } else if ($(this).attr("id") === "folder-move") {
 //         moveItems(event, "folders");
 //       }
@@ -5593,12 +5594,12 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //           event,
 //           window.organizeDSglobalPath,
 //           itemDivElements,
-//           datasetStructureJSONObj,
+//           window.datasetStructureJSONObj,
 //           "#items",
 //           ".single-item"
 //         );
 //       } else if ($(this).attr("id") === "high-folder-delete") {
-//         delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", datasetStructureJSONObj);
+//         delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", window.datasetStructureJSONObj);
 //       } else if ($(this).attr("id") === "tooltip-folders") {
 //         showTooltips(event);
 //       }
@@ -5627,12 +5628,12 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //           event,
 //           window.organizeDSglobalPath,
 //           itemDivElements,
-//           datasetStructureJSONObj,
+//           window.datasetStructureJSONObj,
 //           "#items",
 //           ".single-item"
 //         );
 //       } else if ($(this).attr("id") === "file-delete") {
-//         delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", datasetStructureJSONObj);
+//         delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", window.datasetStructureJSONObj);
 //       } else if ($(this).attr("id") === "file-move") {
 //         moveItems(event, "files");
 //       } else if ($(this).attr("id") === "file-description") {
@@ -5644,30 +5645,30 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
 // };
 
-// $(document).ready(function () {
-//   tippy("[data-tippy-content]:not(.tippy-content-main):not(.guided-tippy-wrapper)", {
-//     allowHTML: true,
-//     interactive: true,
-//     placement: "top",
-//     theme: "light",
-//   });
+$(document).ready(function () {
+  tippy("[data-tippy-content]:not(.tippy-content-main):not(.guided-tippy-wrapper)", {
+    allowHTML: true,
+    interactive: true,
+    placement: "top",
+    theme: "light",
+  });
 
-//   tippy(".tippy-content-main", {
-//     allowHTML: true,
-//     interactive: true,
-//     placement: "bottom",
-//     theme: "light",
-//   });
+  tippy(".tippy-content-main", {
+    allowHTML: true,
+    interactive: true,
+    placement: "bottom",
+    theme: "light",
+  });
 
-//   tippy(".guided-tippy-wrapper", {
-//     allowHTML: true,
-//     interactive: true,
-//     placement: "bottom",
-//     theme: "light",
-//     /*apply -5 bottom margin to negate button bottom margin*/
-//     offset: [0, -3],
-//   });
-// });
+  tippy(".guided-tippy-wrapper", {
+    allowHTML: true,
+    interactive: true,
+    placement: "bottom",
+    theme: "light",
+    /*apply -5 bottom margin to negate button bottom margin*/
+    offset: [0, -3],
+  });
+});
 
 // // Trigger action when the contexmenu is about to be shown
 // $(document).bind("contextmenu", function (event) {
@@ -5741,30 +5742,30 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //   }
 // };
 
-// const select_items = (items, event, isDragging) => {
-//   let selected_class = "";
+const select_items = (items, event, isDragging) => {
+  let selected_class = "";
 
-//   items.forEach((event_item) => {
-//     let target_element = null;
-//     let parent_element = null;
+  items.forEach((event_item) => {
+    let target_element = null;
+    let parent_element = null;
 
-//     if (event_item.classList[0] === "single-item") {
-//       parent_element = event_item;
-//       target_element = $(parent_element).children()[0];
-//       if ($(target_element).hasClass("myFol") || $(target_element).hasClass("myFile")) {
-//         selected_class = "selected-item";
-//         drag_event_fired = true;
-//       }
-//     }
+    if (event_item.classList[0] === "single-item") {
+      parent_element = event_item;
+      target_element = $(parent_element).children()[0];
+      if ($(target_element).hasClass("myFol") || $(target_element).hasClass("myFile")) {
+        selected_class = "selected-item";
+        drag_event_fired = true;
+      }
+    }
 
-//     $(".selected-item").removeClass("selected-item");
-//     $(".ds-selected").addClass(selected_class);
-//     $(".ds-selected").each((index, element) => {
-//       target_element = $(element).children()[0];
-//       $(target_element).addClass(selected_class);
-//     });
-//   });
-// };
+    $(".selected-item").removeClass("selected-item");
+    $(".ds-selected").addClass(selected_class);
+    $(".ds-selected").each((index, element) => {
+      target_element = $(element).children()[0];
+      $(target_element).addClass(selected_class);
+    });
+  });
+};
 
 // $(document).bind("click", (event) => {
 //   // If there is weird right click menu behaviour, check the hideMenu block
@@ -5785,640 +5786,640 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //   }
 // });
 
-// // sort JSON objects by keys alphabetically (folder by folder, file by file)
-// const sortObjByKeys = (object) => {
-//   const orderedFolders = {};
-//   const orderedFiles = {};
-//   /// sort the files in objects
-//   if (object.hasOwnProperty("files")) {
-//     Object.keys(object["files"])
-//       .sort()
-//       .forEach(function (key) {
-//         orderedFiles[key] = object["files"][key];
-//       });
-//   }
-//   if (object.hasOwnProperty("folders")) {
-//     Object.keys(object["folders"])
-//       .sort()
-//       .forEach(function (key) {
-//         orderedFolders[key] = object["folders"][key];
-//       });
-//   }
-//   const orderedObject = {
-//     folders: orderedFolders,
-//     files: orderedFiles,
-//     type: "",
-//   };
-//   return orderedObject;
-// };
+// sort JSON objects by keys alphabetically (folder by folder, file by file)
+window.sortObjByKeys = (object) => {
+  const orderedFolders = {};
+  const orderedFiles = {};
+  /// sort the files in objects
+  if (object.hasOwnProperty("files")) {
+    Object.keys(object["files"])
+      .sort()
+      .forEach(function (key) {
+        orderedFiles[key] = object["files"][key];
+      });
+  }
+  if (object.hasOwnProperty("folders")) {
+    Object.keys(object["folders"])
+      .sort()
+      .forEach(function (key) {
+        orderedFolders[key] = object["folders"][key];
+      });
+  }
+  const orderedObject = {
+    folders: orderedFolders,
+    files: orderedFiles,
+    type: "",
+  };
+  return orderedObject;
+};
 
-// const listItems = async (jsonObj, uiItem, amount_req, reset) => {
-//   //allow amount to choose how many elements to create
-//   //break elements into sets of 100
-//   const rootFolders = ["primary", "source", "derivative"];
-//   const datasetPath = document.getElementById("guided-input-global-path");
-//   const pathDisplay = document.getElementById("datasetPathDisplay");
-//   const fileExplorerBackButton = document.getElementById("guided-button-back");
-//   let hideSampleFolders = false;
-//   let hideSubjectFolders = false;
-//   let splitPath = datasetPath.value.split("/");
-//   let fullPath = datasetPath.value;
+window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
+  //allow amount to choose how many elements to create
+  //break elements into sets of 100
+  const rootFolders = ["primary", "source", "derivative"];
+  const datasetPath = document.getElementById("guided-input-global-path");
+  const pathDisplay = document.getElementById("datasetPathDisplay");
+  const fileExplorerBackButton = document.getElementById("guided-button-back");
+  let hideSampleFolders = false;
+  let hideSubjectFolders = false;
+  let splitPath = datasetPath.value.split("/");
+  let fullPath = datasetPath.value;
 
-//   if (window.organizeDSglobalPath.id === "guided-input-global-path") {
-//     const splitPathCheck = (num, button) => {
-//       //based on the paths length we will determine if the back button should be disabled/hidden or not
-//       if (splitPath.length > num) {
-//         //button should be enabled
-//         button.disabled = false;
-//         button.style.display = "block";
-//       } else {
-//         //button should be disabled
-//         button.disabled = true;
-//         button.style.display = "none";
-//       }
-//     };
+  if (window.organizeDSglobalPath.id === "guided-input-global-path") {
+    const splitPathCheck = (num, button) => {
+      //based on the paths length we will determine if the back button should be disabled/hidden or not
+      if (splitPath.length > num) {
+        //button should be enabled
+        button.disabled = false;
+        button.style.display = "block";
+      } else {
+        //button should be disabled
+        button.disabled = true;
+        button.style.display = "none";
+      }
+    };
 
-//     let currentPageID = CURRENT_PAGE.id;
-//     //capsules need to determine if sample or subjects section
-//     //subjects initially display two folder levels meanwhile samples will initially only show one folder level
-//     let primarySampleCapsule = document.getElementById(
-//       "guided-primary-samples-organization-page-capsule"
-//     );
-//     let primarySubjectCapsule = document.getElementById(
-//       "guided-primary-subjects-organization-page-capsule"
-//     );
-//     let primaryPoolCapsule = document.getElementById(
-//       "guided-primary-pools-organization-page-capsule"
-//     );
-//     let sourceSampleCapsule = document.getElementById(
-//       "guided-source-samples-organization-page-capsule"
-//     );
-//     let sourceSubjectCapsule = document.getElementById(
-//       "guided-source-subjects-organization-page-capsule"
-//     );
-//     let sourcePoolCapsule = document.getElementById(
-//       "guided-source-pools-organization-page-capsule"
-//     );
+    let currentPageID = window.CURRENT_PAGE.id;
+    //capsules need to determine if sample or subjects section
+    //subjects initially display two folder levels meanwhile samples will initially only show one folder level
+    let primarySampleCapsule = document.getElementById(
+      "guided-primary-samples-organization-page-capsule"
+    );
+    let primarySubjectCapsule = document.getElementById(
+      "guided-primary-subjects-organization-page-capsule"
+    );
+    let primaryPoolCapsule = document.getElementById(
+      "guided-primary-pools-organization-page-capsule"
+    );
+    let sourceSampleCapsule = document.getElementById(
+      "guided-source-samples-organization-page-capsule"
+    );
+    let sourceSubjectCapsule = document.getElementById(
+      "guided-source-subjects-organization-page-capsule"
+    );
+    let sourcePoolCapsule = document.getElementById(
+      "guided-source-pools-organization-page-capsule"
+    );
 
-//     let derivativeSampleCapsule = document.getElementById(
-//       "guided-derivative-samples-organization-page-capsule"
-//     );
-//     let derivativeSubjectCapsule = document.getElementById(
-//       "guided-derivative-subjects-organization-page-capsule"
-//     );
-//     let derivativePoolCapsule = document.getElementById(
-//       "guided-derivative-pools-organization-page-capsule"
-//     );
+    let derivativeSampleCapsule = document.getElementById(
+      "guided-derivative-samples-organization-page-capsule"
+    );
+    let derivativeSubjectCapsule = document.getElementById(
+      "guided-derivative-subjects-organization-page-capsule"
+    );
+    let derivativePoolCapsule = document.getElementById(
+      "guided-derivative-pools-organization-page-capsule"
+    );
 
-//     //remove my_dataset_folder and if any of the ROOT FOLDER names is included
-//     if (splitPath[0] === "dataset_root") splitPath.shift();
-//     if (rootFolders.includes(splitPath[0])) splitPath.shift();
-//     //remove the last element in array is it is always ''
-//     splitPath.pop();
+    //remove my_dataset_folder and if any of the ROOT FOLDER names is included
+    if (splitPath[0] === "dataset_root") splitPath.shift();
+    if (rootFolders.includes(splitPath[0])) splitPath.shift();
+    //remove the last element in array is it is always ''
+    splitPath.pop();
 
-//     let trimmedPath = "";
-//     if (currentPageID.includes("primary")) {
-//       if (primarySampleCapsule.classList.contains("active")) {
-//         if (splitPath[0].includes("pool-")) {
-//           splitPathCheck(3, fileExplorerBackButton);
-//         } else {
-//           splitPathCheck(2, fileExplorerBackButton);
-//         }
-//       }
-//       if (primarySubjectCapsule.classList.contains("active")) {
-//         if (splitPath[0].includes("pool-")) {
-//           splitPathCheck(2, fileExplorerBackButton);
-//         } else {
-//           splitPathCheck(1, fileExplorerBackButton);
-//         }
-//         hideSampleFolders = true;
-//       }
-//       if (primaryPoolCapsule.classList.contains("active")) {
-//         if (splitPath[0].includes("pool-")) {
-//           splitPathCheck(1, fileExplorerBackButton);
-//         }
-//         hideSubjectFolders = true;
-//       }
-//     }
-//     if (currentPageID.includes("source")) {
-//       if (sourceSubjectCapsule.classList.contains("active")) {
-//         if (splitPath[0].includes("pool-")) {
-//           splitPathCheck(2, fileExplorerBackButton);
-//         } else {
-//           splitPathCheck(1, fileExplorerBackButton);
-//         }
-//         hideSampleFolders = true;
-//       }
-//       if (sourceSampleCapsule.classList.contains("active")) {
-//         if (splitPath[0].includes("pool-")) {
-//           splitPathCheck(3, fileExplorerBackButton);
-//         } else {
-//           splitPathCheck(2, fileExplorerBackButton);
-//         }
-//       }
-//       if (sourcePoolCapsule.classList.contains("active")) {
-//         if (splitPath[0].includes("pool-")) {
-//           splitPathCheck(1, fileExplorerBackButton);
-//         }
-//         hideSubjectFolders = true;
-//       }
-//     }
-//     if (currentPageID.includes("derivative")) {
-//       //check the active capsule
-//       if (derivativeSubjectCapsule.classList.contains("active")) {
-//         if (splitPath[0].includes("pool-")) {
-//           splitPathCheck(2, fileExplorerBackButton);
-//         } else {
-//           splitPathCheck(1, fileExplorerBackButton);
-//         }
-//         hideSampleFolders = true;
-//       }
-//       if (derivativeSampleCapsule.classList.contains("active")) {
-//         if (splitPath[0].includes("pool-")) {
-//           splitPathCheck(3, fileExplorerBackButton);
-//         } else {
-//           splitPathCheck(2, fileExplorerBackButton);
-//         }
-//       }
-//       if (derivativePoolCapsule.classList.contains("active")) {
-//         if (splitPath[0].includes("pool-")) {
-//           splitPathCheck(1, fileExplorerBackButton);
-//         }
-//         hideSubjectFolders = true;
-//       }
-//     }
-//     if (
-//       currentPageID.includes("code") ||
-//       currentPageID.includes("protocol") ||
-//       currentPageID.includes("docs") ||
-//       currentPageID.includes("helpers")
-//     ) {
-//       //for code/protocols/docs we only initially display one folder lvl
-//       splitPathCheck(1, fileExplorerBackButton);
-//     }
+    let trimmedPath = "";
+    if (currentPageID.includes("primary")) {
+      if (primarySampleCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(3, fileExplorerBackButton);
+        } else {
+          splitPathCheck(2, fileExplorerBackButton);
+        }
+      }
+      if (primarySubjectCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(2, fileExplorerBackButton);
+        } else {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSampleFolders = true;
+      }
+      if (primaryPoolCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSubjectFolders = true;
+      }
+    }
+    if (currentPageID.includes("source")) {
+      if (sourceSubjectCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(2, fileExplorerBackButton);
+        } else {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSampleFolders = true;
+      }
+      if (sourceSampleCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(3, fileExplorerBackButton);
+        } else {
+          splitPathCheck(2, fileExplorerBackButton);
+        }
+      }
+      if (sourcePoolCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSubjectFolders = true;
+      }
+    }
+    if (currentPageID.includes("derivative")) {
+      //check the active capsule
+      if (derivativeSubjectCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(2, fileExplorerBackButton);
+        } else {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSampleFolders = true;
+      }
+      if (derivativeSampleCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(3, fileExplorerBackButton);
+        } else {
+          splitPathCheck(2, fileExplorerBackButton);
+        }
+      }
+      if (derivativePoolCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSubjectFolders = true;
+      }
+    }
+    if (
+      currentPageID.includes("code") ||
+      currentPageID.includes("protocol") ||
+      currentPageID.includes("docs") ||
+      currentPageID.includes("helpers")
+    ) {
+      //for code/protocols/docs we only initially display one folder lvl
+      splitPathCheck(1, fileExplorerBackButton);
+    }
 
-//     for (let i = 0; i < splitPath.length; i++) {
-//       if (splitPath[i] === "dataset_root" || splitPath[i] === undefined) continue;
-//       trimmedPath += splitPath[i] + "/";
-//     }
+    for (let i = 0; i < splitPath.length; i++) {
+      if (splitPath[i] === "dataset_root" || splitPath[i] === undefined) continue;
+      trimmedPath += splitPath[i] + "/";
+    }
 
-//     //append path to tippy and display path to the file explorer
-//     pathDisplay.innerText = trimmedPath;
-//     pathDisplay._tippy.setContent(fullPath);
-//   }
+    //append path to tippy and display path to the file explorer
+    pathDisplay.innerText = trimmedPath;
+    pathDisplay._tippy.setContent(fullPath);
+  }
 
-//   var appendString = "";
-//   var sortedObj = sortObjByKeys(jsonObj);
-//   let file_elements = [],
-//     folder_elements = [];
-//   let count = 0;
+  var appendString = "";
+  var sortedObj = window.sortObjByKeys(jsonObj);
+  let file_elements = [],
+    folder_elements = [];
+  let count = 0;
 
-//   //start creating folder elements to be rendered
-//   if (Object.keys(sortedObj["folders"]).length > 0) {
-//     for (var item in sortedObj["folders"]) {
-//       //hide samples when on the subjects page
-//       if (hideSampleFolders) {
-//         let currentSampleFolder = splitPath[0];
-//         let allSamples = sodaJSONObj.getAllSamplesFromSubjects();
-//         let noPoolSamples = [];
-//         let poolSamples = [];
-//         let skipSubjectFolder = false;
-//         if (allSamples.length > 1) {
-//           //subjects within pools and others not
-//           poolSamples = allSamples[0];
-//           noPoolSamples = allSamples[1];
-//           for (let i = 0; i < poolSamples.length; i++) {
-//             if (item === poolSamples[i]["sampleName"]) {
-//               skipSubjectFolder = true;
-//               break;
-//             }
-//           }
-//           if (skipSubjectFolder) continue;
-//           for (let i = 0; i < noPoolSamples.length; i++) {
-//             if (item === noPoolSamples[i]["sampleName"]) {
-//               skipSubjectFolder = true;
-//               break;
-//             }
-//           }
-//           if (skipSubjectFolder) continue;
-//         }
-//         if (allSamples.length === 1) {
-//           poolSamples = allSamples[1];
-//           for (let i = 0; i < poolSamples.length; i++) {
-//             if (item === poolSamples[i]["sampleName"]) {
-//               skipSubjectFolder = true;
-//               break;
-//             }
-//           }
-//           if (skipSubjectFolder) continue;
-//         }
-//       }
-//       if (hideSubjectFolders) {
-//         //hide subject folders when displaying pool page
-//         const currentPoolName = splitPath[0];
-//         let currentSubjects = sodaJSONObj.getAllSubjects();
-//         let poolSubjects = [];
-//         let noPoolSubjects = [];
-//         let skipSubjectFolder = false;
-//         if (currentSubjects.length === 1) {
-//           poolSubjects = currentSubjects[0];
-//           for (let i = 0; i < poolSubjects.length; i++) {
-//             if (item === poolSubjects[i]["subjectName"]) {
-//               skipSubjectFolder = true;
-//               break;
-//             }
-//           }
-//           if (skipSubjectFolder) continue;
-//         }
-//         if (currentSubjects.length > 1) {
-//           //some subjects in pools and some not
-//           poolSubjects = currentSubjects[0];
-//           noPoolSubjects = currentSubjects[1];
-//           for (let i = 0; i < noPoolSubjects.length; i++) {
-//             if (item === noPoolSubjects[i]["subjectName"]) {
-//               skipSubjectFolder = true;
-//               break;
-//             }
-//           }
-//           if (skipSubjectFolder) continue;
-//           for (let i = 0; i < poolSubjects.length; i++) {
-//             if (item === poolSubjects[i]["subjectName"]) {
-//               skipSubjectFolder = true;
-//               break;
-//             }
-//           }
-//         }
-//         if (skipSubjectFolder) continue;
-//       }
+  //start creating folder elements to be rendered
+  if (Object.keys(sortedObj["folders"]).length > 0) {
+    for (var item in sortedObj["folders"]) {
+      //hide samples when on the subjects page
+      if (hideSampleFolders) {
+        let currentSampleFolder = splitPath[0];
+        let allSamples = sodaJSONObj.getAllSamplesFromSubjects();
+        let noPoolSamples = [];
+        let poolSamples = [];
+        let skipSubjectFolder = false;
+        if (allSamples.length > 1) {
+          //subjects within pools and others not
+          poolSamples = allSamples[0];
+          noPoolSamples = allSamples[1];
+          for (let i = 0; i < poolSamples.length; i++) {
+            if (item === poolSamples[i]["sampleName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+          for (let i = 0; i < noPoolSamples.length; i++) {
+            if (item === noPoolSamples[i]["sampleName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+        }
+        if (allSamples.length === 1) {
+          poolSamples = allSamples[1];
+          for (let i = 0; i < poolSamples.length; i++) {
+            if (item === poolSamples[i]["sampleName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+        }
+      }
+      if (hideSubjectFolders) {
+        //hide subject folders when displaying pool page
+        const currentPoolName = splitPath[0];
+        let currentSubjects = sodaJSONObj.getAllSubjects();
+        let poolSubjects = [];
+        let noPoolSubjects = [];
+        let skipSubjectFolder = false;
+        if (currentSubjects.length === 1) {
+          poolSubjects = currentSubjects[0];
+          for (let i = 0; i < poolSubjects.length; i++) {
+            if (item === poolSubjects[i]["subjectName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+        }
+        if (currentSubjects.length > 1) {
+          //some subjects in pools and some not
+          poolSubjects = currentSubjects[0];
+          noPoolSubjects = currentSubjects[1];
+          for (let i = 0; i < noPoolSubjects.length; i++) {
+            if (item === noPoolSubjects[i]["subjectName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+          for (let i = 0; i < poolSubjects.length; i++) {
+            if (item === poolSubjects[i]["subjectName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+        }
+        if (skipSubjectFolder) continue;
+      }
 
-//       count += 1;
-//       var emptyFolder = "";
-//       if (!highLevelFolders.includes(item)) {
-//         if (
-//           JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
-//           JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
-//         ) {
-//           emptyFolder = " empty";
-//         }
-//       }
+      count += 1;
+      var emptyFolder = "";
+      if (!highLevelFolders.includes(item)) {
+        if (
+          JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
+          JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
+        ) {
+          emptyFolder = " empty";
+        }
+      }
 
-//       cloud_item = "";
-//       deleted_folder = false;
+      let cloud_item = "";
+      let deleted_folder = false;
 
-//       if ("action" in sortedObj["folders"][item]) {
-//         if (
-//           sortedObj["folders"][item]["action"].includes("deleted") ||
-//           sortedObj["folders"][item]["action"].includes("recursive_deleted")
-//         ) {
-//           emptyFolder += " deleted_folder";
-//           deleted_folder = true;
-//           if (sortedObj["folders"][item]["action"].includes("recursive_deleted")) {
-//             emptyFolder += " recursive_deleted_file";
-//           }
-//         }
-//       }
+      if ("action" in sortedObj["folders"][item]) {
+        if (
+          sortedObj["folders"][item]["action"].includes("deleted") ||
+          sortedObj["folders"][item]["action"].includes("recursive_deleted")
+        ) {
+          emptyFolder += " deleted_folder";
+          deleted_folder = true;
+          if (sortedObj["folders"][item]["action"].includes("recursive_deleted")) {
+            emptyFolder += " recursive_deleted_file";
+          }
+        }
+      }
 
-//       if (sortedObj["folders"][item]["type"] == "bf") {
-//         cloud_item = " pennsieve_folder";
-//         if (deleted_folder) {
-//           cloud_item = " pennsieve_folder_deleted";
-//         }
-//       }
+      if (sortedObj["folders"][item]["type"] == "bf") {
+        cloud_item = " pennsieve_folder";
+        if (deleted_folder) {
+          cloud_item = " pennsieve_folder_deleted";
+        }
+      }
 
-//       if (
-//         sortedObj["folders"][item]["type"] == "local" &&
-//         sortedObj["folders"][item]["action"].includes("existing")
-//       ) {
-//         cloud_item = " local_folder";
-//         if (deleted_folder) {
-//           cloud_item = " local_folder_deleted";
-//         }
-//       }
+      if (
+        sortedObj["folders"][item]["type"] == "local" &&
+        sortedObj["folders"][item]["action"].includes("existing")
+      ) {
+        cloud_item = " local_folder";
+        if (deleted_folder) {
+          cloud_item = " local_folder_deleted";
+        }
+      }
 
-//       if (sortedObj["folders"][item]["action"].includes("updated")) {
-//         cloud_item = " update-file";
-//         let elem_creation =
-//           '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-//           emptyFolder +
-//           '"></h1><div class="folder_desc' +
-//           cloud_item +
-//           '">' +
-//           item +
-//           "</div></div>";
+      if (sortedObj["folders"][item]["action"].includes("updated")) {
+        cloud_item = " update-file";
+        let elem_creation =
+          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          emptyFolder +
+          '"></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
 
-//         appendString = appendString + elem_creation;
-//         if (count === 100) {
-//           //every one hundred elements created we put it into one element within the array
-//           folder_elements.push(appendString);
-//           count = 0;
-//           appendString = "";
-//           continue;
-//         }
-//       } else {
-//         let element_creation =
-//           '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-//           emptyFolder +
-//           '"></h1><div class="folder_desc' +
-//           cloud_item +
-//           '">' +
-//           item +
-//           "</div></div>";
+        appendString = appendString + elem_creation;
+        if (count === 100) {
+          //every one hundred elements created we put it into one element within the array
+          folder_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
+        }
+      } else {
+        let element_creation =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          emptyFolder +
+          '"></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
 
-//         appendString = appendString + element_creation;
-//         if (count === 100) {
-//           //every one hundred elements created we put it into one element within the array
-//           folder_elements.push(appendString);
-//           count = 0;
-//           appendString = "";
-//           continue;
-//         }
-//       }
-//     }
-//     if (count < 100) {
-//       //if items to be rendered is less than 100 we push whatever we have to the array element
-//       if (!folder_elements.includes(appendString) && appendString != "") {
-//         folder_elements.push(appendString);
-//         count = 0;
-//       }
-//     }
-//   }
-//   //reset count and string for file elements
-//   count = 0;
-//   appendString = "";
-//   if (Object.keys(sortedObj["files"]).length > 0) {
-//     for (var item in sortedObj["files"]) {
-//       count += 1;
-//       // not the auto-generated manifest
-//       if (sortedObj["files"][item].length !== 1) {
-//         if ("path" in sortedObj["files"][item]) {
-//           var extension = path.extname(sortedObj["files"][item]["path"]).slice(1);
-//         } else {
-//           var extension = "other";
-//         }
-//         if (sortedObj["files"][item]["type"] == "bf") {
-//           if (sortedObj["files"][item]["action"].includes("deleted")) {
-//             original_file_name = item.substring(0, item.lastIndexOf("-"));
-//             extension = original_file_name.split(".").pop();
-//           } else {
-//             extension = item.split(".").pop();
-//           }
-//         }
-//         if (
-//           ![
-//             "docx",
-//             "doc",
-//             "pdf",
-//             "txt",
-//             "jpg",
-//             "JPG",
-//             "jpeg",
-//             "JPEG",
-//             "xlsx",
-//             "xls",
-//             "csv",
-//             "png",
-//             "PNG",
-//           ].includes(extension)
-//         ) {
-//           extension = "other";
-//         }
-//       } else {
-//         extension = "other";
-//       }
+        appendString = appendString + element_creation;
+        if (count === 100) {
+          //every one hundred elements created we put it into one element within the array
+          folder_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
+        }
+      }
+    }
+    if (count < 100) {
+      //if items to be rendered is less than 100 we push whatever we have to the array element
+      if (!folder_elements.includes(appendString) && appendString != "") {
+        folder_elements.push(appendString);
+        count = 0;
+      }
+    }
+  }
+  //reset count and string for file elements
+  count = 0;
+  appendString = "";
+  if (Object.keys(sortedObj["files"]).length > 0) {
+    for (var item in sortedObj["files"]) {
+      count += 1;
+      // not the auto-generated manifest
+      if (sortedObj["files"][item].length !== 1) {
+        if ("path" in sortedObj["files"][item]) {
+          var extension = window.path.extname(sortedObj["files"][item]["path"]).slice(1);
+        } else {
+          var extension = "other";
+        }
+        if (sortedObj["files"][item]["type"] == "bf") {
+          if (sortedObj["files"][item]["action"].includes("deleted")) {
+            original_file_name = item.substring(0, item.lastIndexOf("-"));
+            extension = original_file_name.split(".").pop();
+          } else {
+            extension = item.split(".").pop();
+          }
+        }
+        if (
+          ![
+            "docx",
+            "doc",
+            "pdf",
+            "txt",
+            "jpg",
+            "JPG",
+            "jpeg",
+            "JPEG",
+            "xlsx",
+            "xls",
+            "csv",
+            "png",
+            "PNG",
+          ].includes(extension)
+        ) {
+          extension = "other";
+        }
+      } else {
+        extension = "other";
+      }
 
-//       cloud_item = "";
-//       deleted_file = false;
+      cloud_item = "";
+      deleted_file = false;
 
-//       if ("action" in sortedObj["files"][item]) {
-//         if (
-//           sortedObj["files"][item]["action"].includes("deleted") ||
-//           sortedObj["files"][item]["action"].includes("recursive_deleted")
-//         ) {
-//           extension += " deleted_file";
-//           deleted_file = true;
-//           if (sortedObj["files"][item]["action"].includes("recursive_deleted")) {
-//             extension += " recursive_deleted_file";
-//           }
-//         }
-//       }
+      if ("action" in sortedObj["files"][item]) {
+        if (
+          sortedObj["files"][item]["action"].includes("deleted") ||
+          sortedObj["files"][item]["action"].includes("recursive_deleted")
+        ) {
+          extension += " deleted_file";
+          deleted_file = true;
+          if (sortedObj["files"][item]["action"].includes("recursive_deleted")) {
+            extension += " recursive_deleted_file";
+          }
+        }
+      }
 
-//       if (sortedObj["files"][item]["type"] == "bf") {
-//         cloud_item = " pennsieve_file";
-//         if (deleted_file) {
-//           cloud_item = " pennsieve_file_deleted";
-//         }
-//         let element_creation =
-//           '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-//           extension +
-//           '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-//           cloud_item +
-//           '">' +
-//           item +
-//           "</div></div>";
-//       }
+      if (sortedObj["files"][item]["type"] == "bf") {
+        cloud_item = " pennsieve_file";
+        if (deleted_file) {
+          cloud_item = " pennsieve_file_deleted";
+        }
+        let element_creation =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+      }
 
-//       if (
-//         sortedObj["files"][item]["type"] == "local" &&
-//         sortedObj["files"][item]["action"].includes("existing")
-//       ) {
-//         cloud_item = " local_file";
-//         if (deleted_file) {
-//           cloud_item = " local_file_deleted";
-//         }
-//       }
-//       if (
-//         sortedObj["files"][item]["type"] == "local" &&
-//         sortedObj["files"][item]["action"].includes("updated")
-//       ) {
-//         cloud_item = " update-file";
-//         if (deleted_file) {
-//           cloud_item = "pennsieve_file_deleted";
-//         }
-//         let elem_creation =
-//           '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-//           extension +
-//           '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-//           cloud_item +
-//           '">' +
-//           item +
-//           "</div></div>";
+      if (
+        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["action"].includes("existing")
+      ) {
+        cloud_item = " local_file";
+        if (deleted_file) {
+          cloud_item = " local_file_deleted";
+        }
+      }
+      if (
+        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["action"].includes("updated")
+      ) {
+        cloud_item = " update-file";
+        if (deleted_file) {
+          cloud_item = "pennsieve_file_deleted";
+        }
+        let elem_creation =
+          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
 
-//         appendString = appendString + elem_creation;
-//         if (count === 100) {
-//           file_elements.push(appendString);
-//           count = 0;
-//           appendString = "";
-//           continue;
-//         }
-//       } else {
-//         let element_creation =
-//           '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-//           extension +
-//           '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-//           cloud_item +
-//           '">' +
-//           item +
-//           "</div></div>";
+        appendString = appendString + elem_creation;
+        if (count === 100) {
+          file_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
+        }
+      } else {
+        let element_creation =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
 
-//         appendString = appendString + element_creation;
-//         if (count === 100) {
-//           file_elements.push(appendString);
-//           count = 0;
-//           appendString = "";
-//           continue;
-//         }
-//       }
-//     }
-//     if (count < 100) {
-//       if (!file_elements.includes(appendString) && appendString != "") {
-//         file_elements.push(appendString);
-//         count = 0;
-//       }
-//       // continue;
-//     }
-//   }
-//   if (folder_elements[0] === "") {
-//     folder_elements.splice(0, 1);
-//   }
-//   if (file_elements[0] === "") {
-//     file_elements.splice(0, 1);
-//   }
-//   let items = [folder_elements, file_elements];
+        appendString = appendString + element_creation;
+        if (count === 100) {
+          file_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
+        }
+      }
+    }
+    if (count < 100) {
+      if (!file_elements.includes(appendString) && appendString != "") {
+        file_elements.push(appendString);
+        count = 0;
+      }
+      // continue;
+    }
+  }
+  if (folder_elements[0] === "") {
+    folder_elements.splice(0, 1);
+  }
+  if (file_elements[0] === "") {
+    file_elements.splice(0, 1);
+  }
+  let items = [folder_elements, file_elements];
 
-//   if (amount_req != undefined) {
-//     //add items using a different function
-//     //want the initial files to be imported
-//     let itemDisplay = new Promise(async (resolved) => {
-//       if (reset != undefined) {
-//         await add_items_to_view(items, amount_req, reset);
-//         resolved();
-//       } else {
-//         await add_items_to_view(items, amount_req);
-//         resolved();
-//       }
-//     });
-//   } else {
-//     //load everything in place
-//     let itemDisplay = new Promise(async (resolved) => {
-//       // $(uiItem).empty();
-//       await add_items_to_view(items, 500);
-//       resolved();
-//     });
-//   }
+  if (amount_req != undefined) {
+    //add items using a different function
+    //want the initial files to be imported
+    let itemDisplay = new Promise(async (resolved) => {
+      if (reset != undefined) {
+        await window.add_items_to_view(items, amount_req, reset);
+        resolved();
+      } else {
+        await window.add_items_to_view(items, amount_req);
+        resolved();
+      }
+    });
+  } else {
+    //load everything in place
+    let itemDisplay = new Promise(async (resolved) => {
+      // $(uiItem).empty();
+      await window.add_items_to_view(items, 500);
+      resolved();
+    });
+  }
 
-//   dragselect_area.stop();
+  dragselect_area.stop();
 
-//   dragselect_area = new DragSelect({
-//     selectables: document.querySelectorAll(".single-item"),
-//     draggability: false,
-//     area: document.getElementById("items"),
-//   });
+  dragselect_area = new DragSelect({
+    selectables: document.querySelectorAll(".single-item"),
+    draggability: false,
+    area: document.getElementById("items"),
+  });
 
-//   dragselect_area.subscribe("callback", ({ items, event, isDragging }) => {
-//     select_items(items, event, isDragging);
-//   });
+  dragselect_area.subscribe("callback", ({ items, event, isDragging }) => {
+    select_items(items, event, isDragging);
+  });
 
-//   dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
-//     select_items_ctrl(items, event, isDragging);
-//   });
-//   drag_event_fired = false;
+  dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
+    select_items_ctrl(items, event, isDragging);
+  });
+  drag_event_fired = false;
 
-//   //check if folder_elements is an empty object and file_elements is an empty array
-//   if (folder_elements.length == 0 && file_elements.length == 0) {
-//     //Fired when no folders are to be appended to the folder structure element.
-//     //Gets the name of the current folder from window.organizeDSglobalPath and instructs the user
-//     //on what to do in the empty folder.
-//     let currentFolder = "";
-//     let folderType;
+  //check if folder_elements is an empty object and file_elements is an empty array
+  if (folder_elements.length == 0 && file_elements.length == 0) {
+    //Fired when no folders are to be appended to the folder structure element.
+    //Gets the name of the current folder from window.organizeDSglobalPath and instructs the user
+    //on what to do in the empty folder.
+    let currentFolder = "";
+    let folderType;
 
-//     if (window.organizeDSglobalPath.value == undefined) {
-//       currentFolder = "dataset_root";
-//     } else {
-//       //Get the name of the folder the user is currently in.
-//       currentFolder = window.organizeDSglobalPath.value.split("/").slice(-2)[0];
-//       if (currentFolder.startsWith("sub-")) {
-//         folderType = "subject";
-//       }
-//       if (currentFolder.startsWith("sam-")) {
-//         folderType = "sample";
-//       }
-//       if (currentFolder.startsWith("pool-")) {
-//         folderType = "pool";
-//       }
-//     }
+    if (window.organizeDSglobalPath.value == undefined) {
+      currentFolder = "dataset_root";
+    } else {
+      //Get the name of the folder the user is currently in.
+      currentFolder = window.organizeDSglobalPath.value.split("/").slice(-2)[0];
+      if (currentFolder.startsWith("sub-")) {
+        folderType = "subject";
+      }
+      if (currentFolder.startsWith("sam-")) {
+        folderType = "sample";
+      }
+      if (currentFolder.startsWith("pool-")) {
+        folderType = "pool";
+      }
+    }
 
-//     let dragDropInstructionsText;
-//     if (folderType === undefined) {
-//       dragDropInstructionsText = `Drag and Drop folders and files to be included in the <b>${currentFolder}</b> folder.`;
-//     }
-//     if (folderType == "subject") {
-//       dragDropInstructionsText = `Drag and drop folders and files associated with the subject ${currentFolder}`;
-//     }
-//     if (folderType === "sample") {
-//       dragDropInstructionsText = `Drag and drop folders and files associated with the sample ${currentFolder}`;
-//     }
-//     if (folderType === "pool") {
-//       dragDropInstructionsText = `Drag and drop folders and files associated with the pool ${currentFolder}`;
-//     }
+    let dragDropInstructionsText;
+    if (folderType === undefined) {
+      dragDropInstructionsText = `Drag and Drop folders and files to be included in the <b>${currentFolder}</b> folder.`;
+    }
+    if (folderType == "subject") {
+      dragDropInstructionsText = `Drag and drop folders and files associated with the subject ${currentFolder}`;
+    }
+    if (folderType === "sample") {
+      dragDropInstructionsText = `Drag and drop folders and files associated with the sample ${currentFolder}`;
+    }
+    if (folderType === "pool") {
+      dragDropInstructionsText = `Drag and drop folders and files associated with the pool ${currentFolder}`;
+    }
 
-//     $("#items").html(
-//       `<div class="drag-drop-container-instructions">
-//         <div id="dragDropLottieContainer" style="height: 100px; width: 100px;"></div>
-//         <p class="text-center large">
-//           ${dragDropInstructionsText}
-//         </p>
-//         <p class="text-center">
-//           You may also <b>add</b> or <b>import</b> ${
-//             folderType === undefined ? "folders or files" : folderType + " data"
-//           } using the buttons in the upper right corner
-//         </p>
-//       </div>`
-//     );
-//     const dragDropLottieContainer = document.getElementById("dragDropLottieContainer");
+    $("#items").html(
+      `<div class="drag-drop-container-instructions">
+        <div id="dragDropLottieContainer" style="height: 100px; width: 100px;"></div>
+        <p class="text-center large">
+          ${dragDropInstructionsText}
+        </p>
+        <p class="text-center">
+          You may also <b>add</b> or <b>import</b> ${
+            folderType === undefined ? "folders or files" : folderType + " data"
+          } using the buttons in the upper right corner
+        </p>
+      </div>`
+    );
+    const dragDropLottieContainer = document.getElementById("dragDropLottieContainer");
 
-//     dragDropLottieContainer.innerHTML = ``;
+    dragDropLottieContainer.innerHTML = ``;
 
-//     let dragDropAnimation = lottie.loadAnimation({
-//       container: dragDropLottieContainer,
-//       animationData: dragDrop,
-//       renderer: "svg",
-//       loop: true,
-//       autoplay: true,
-//     });
-//   }
-// };
+    let dragDropAnimation = lottie.loadAnimation({
+      container: dragDropLottieContainer,
+      animationData: dragDrop,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+};
 
-// const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
-//   $(singleUIItem).dblclick(async function () {
-//     if ($(this).children("h1").hasClass("myFol")) {
-//       start = 0;
-//       listed_count = 0;
-//       amount = 0;
-//       var folderName = this.innerText;
-//       currentLocation.value = currentLocation.value + folderName + "/";
+window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
+  $(singleUIItem).dblclick(async function () {
+    if ($(this).children("h1").hasClass("myFol")) {
+      window.start = 0;
+      window.listed_count = 0;
+      window.amount = 0;
+      var folderName = this.innerText;
+      currentLocation.value = currentLocation.value + folderName + "/";
 
-//       var currentPath = currentLocation.value;
-//       var jsonPathArray = currentPath.split("/");
-//       var filtered = jsonPathArray.slice(1).filter(function (el) {
-//         return el.trim() != "";
-//       });
-//       var myPath = getRecursivePath(filtered, globalObj);
-//       if (myPath.length === 2) {
-//         filtered = myPath[1];
-//         currentLocation.value = "dataset_root/" + filtered.join("/") + "/";
-//       }
-//       $("#items").empty();
-//       already_created_elem = [];
-//       // let items = loadFileFolder(myPath);
-//       //we have some items to display
-//       listItems(myPath, "#items", 500, (reset = true));
-//       getInFolder(".single-item", "#items", window.organizeDSglobalPath, datasetStructureJSONObj);
-//       organizeLandingUIEffect();
-//       // reconstruct folders and files (child elements after emptying the Div)
-//       // getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
-//     }
-//   });
-// };
+      var currentPath = currentLocation.value;
+      var jsonPathArray = currentPath.split("/");
+      var filtered = jsonPathArray.slice(1).filter(function (el) {
+        return el.trim() != "";
+      });
+      var myPath = getRecursivePath(filtered, globalObj);
+      if (myPath.length === 2) {
+        filtered = myPath[1];
+        currentLocation.value = "dataset_root/" + filtered.join("/") + "/";
+      }
+      $("#items").empty();
+      window.already_created_elem = [];
+      // let items = loadFileFolder(myPath);
+      //we have some items to display
+      window.listItems(myPath, "#items", 500, true);
+      window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
+      organizeLandingUIEffect();
+      // reconstruct folders and files (child elements after emptying the Div)
+      // window.getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
+    }
+  });
+};
 
 // const sliceStringByValue = (string, endingValue) => {
 //   var newString = string.slice(string.indexOf(endingValue) + 1);
@@ -6430,8 +6431,8 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 // const manageDesc = (ev) => {
 //   var fileName = ev.parentElement.innerText;
 //   /// get current location of files in JSON object
-//   var filtered = getGlobalPath(window.organizeDSglobalPath);
-//   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+//   var filtered = window.getGlobalPath(window.organizeDSglobalPath);
+//   var myPath = getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
 //   //// load existing metadata/description
 //   loadDetailsContextMenu(
 //     fileName,
@@ -6449,8 +6450,8 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 
 // const updateFileDetails = (ev) => {
 //   var fileName = fileNameForEdit;
-//   var filtered = getGlobalPath(window.organizeDSglobalPath);
-//   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+//   var filtered = window.getGlobalPath(window.organizeDSglobalPath);
+//   var myPath = getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
 //   triggerManageDetailsPrompts(
 //     ev,
 //     fileName,
@@ -6459,8 +6460,8 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //     "textarea-file-metadata"
 //   );
 //   /// list Items again with new updated JSON structure
-//   listItems(myPath, "#items");
-//   getInFolder(".single-item", "#items", window.organizeDSglobalPath, datasetStructureJSONObj);
+//   window.listItems(myPath, "#items");
+//   window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
 //   // find checkboxes here and uncheck them
 //   for (var ele of $($(ev).siblings().find("input:checkbox"))) {
 //     document.getElementById(ele.id).checked = false;
@@ -6599,7 +6600,7 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //         numb.innerText = "100%";
 //         clearInterval(local_progress);
 //         progressBar_rightSide.classList.remove("notransition");
-//         populate_existing_folders(datasetStructureJSONObj);
+//         populate_existing_folders(window.datasetStructureJSONObj);
 //         populate_existing_metadata(sodaJSONObj);
 //         $("#para-continue-location-dataset-getting-started").text("Please continue below.");
 //         $("#nextBtn").prop("disabled", false);
@@ -6718,7 +6719,7 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //                 );
 //                 let { data } = importLocalDatasetResponse;
 //                 sodaJSONObj = data;
-//                 datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+//                 window.datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
 //               } catch (error) {
 //                 clientError(error);
 //                 clearInterval(local_progress);
@@ -6755,7 +6756,7 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //               );
 //               let { data } = importLocalDatasetResponse;
 //               sodaJSONObj = data;
-//               datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+//               window.datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
 //             } catch (error) {
 //               clientError(error);
 //               clearInterval(local_progress);
@@ -6860,8 +6861,8 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //             let root_folder_path = $("#guided-input-destination-getting-started-locally").val();
 
 //             create_json_object(action, sodaJSONObj, root_folder_path);
-//             datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-//             populate_existing_folders(datasetStructureJSONObj);
+//             window.datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+//             populate_existing_folders(window.datasetStructureJSONObj);
 //             populate_existing_metadata(sodaJSONObj);
 //             enableProgressButton();
 //           });
@@ -6870,8 +6871,8 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //           let root_folder_path = $("#guided-input-destination-getting-started-locally").val();
 //           sodaJSONObj["starting-point"]["local-path"] = filepath[0];
 //           create_json_object(action, sodaJSONObj, root_folder_path);
-//           datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-//           populate_existing_folders(datasetStructureJSONObj);
+//           window.datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+//           populate_existing_folders(window.datasetStructureJSONObj);
 //           populate_existing_metadata(sodaJSONObj);
 //         }
 //       } else {
@@ -8201,7 +8202,7 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //                     // then reset the guided mode page
 //                     if (target?.getAttribute("data-reset-guided-mode-page") == "true") {
 //                       // Get the current page that the user is on in the guided mode
-//                       const currentPage = CURRENT_PAGE.id;
+//                       const currentPage = window.CURRENT_PAGE.id;
 //                       if (currentPage) {
 //                         await openPage(currentPage);
 //                       }
@@ -9035,11 +9036,11 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //   .getElementById("home-button-free-form-mode-link")
 //   .addEventListener("click", directToFreeFormMode);
 
-// tippy("#datasetPathDisplay", {
-//   placement: "top",
-//   theme: "soda",
-//   maxWidth: "100%",
-// });
+tippy("#datasetPathDisplay", {
+  placement: "top",
+  theme: "soda",
+  maxWidth: "100%",
+});
 
 // const createSpreadSheetWindow = async (spreadsheet) => {
 //   ipcRenderer.send("spreadsheet", spreadsheet);

@@ -1,4 +1,4 @@
-const dragDrop = {
+export const dragDrop = {
   v: "5.5.8",
   fr: 30,
   ip: 0,

@@ -1,3 +1,8 @@
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
+
+
 //// option to show tool-tips for high-level folders
 const showTooltips = (ev) => {
   let folderName = ev.parentElement.innerText;
@@ -128,7 +133,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
     }).then((result) => {
       if (result.isConfirmed) {
         let itemToRestore = itemToDelete;
-        let filtered = getGlobalPath(organizeCurrentLocation);
+        let filtered = window.getGlobalPath(organizeCurrentLocation);
         let myPath = getRecursivePath(filtered.slice(1), inputGlobal);
 
         if (filtered.length == 1) {
@@ -187,7 +192,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
         delete myPath[type][itemToRestore];
 
         // update UI with updated jsonobj
-        listItems(myPath, uiItem, 500, (reset = true));
+        window.listItems(myPath, uiItem, 500, true);
         getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
         beginScrollListen();
       }
@@ -213,7 +218,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          let filtered = getGlobalPath(organizeCurrentLocation);
+          let filtered = window.getGlobalPath(organizeCurrentLocation);
           let myPath = getRecursivePath(filtered.slice(1), inputGlobal);
 
           $("div.single-item.selected-item > .folder_desc").each(function (index, current_element) {
@@ -250,7 +255,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
           });
 
           // update UI with updated jsonobj
-          listItems(myPath, uiItem, 500, (reset = true));
+          window.listItems(myPath, uiItem, 500, true);
           getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
           beginScrollListen();
         }
@@ -276,7 +281,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
       }).then((result) => {
         if (result.isConfirmed) {
           /// get current location of folders or files
-          var filtered = getGlobalPath(organizeCurrentLocation);
+          var filtered = window.getGlobalPath(organizeCurrentLocation);
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
           // update Json object with new folder created
           if (
@@ -300,7 +305,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
             delete myPath[type][itemToDelete];
           }
           // update UI with updated jsonobj
-          listItems(myPath, uiItem, 500, (reset = true));
+          window.listItems(myPath, uiItem, 500, true);
           getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
           beginScrollListen();
         }
@@ -398,7 +403,7 @@ const renameFolder = (
   event1, //this
   organizeCurrentLocation, //current section of My_folder
   itemElement, //the elements in the container with items
-  inputGlobal, //datasetStructureJSONObj
+  inputGlobal, //window.datasetStructureJSONObj
   uiItem, //container with the folders
   singleUIItem //class name
 ) => {
@@ -538,7 +543,7 @@ const renameFolder = (
           });
 
           // get location of current item in SODA JSON
-          let filtered = getGlobalPath(organizeCurrentLocation);
+          let filtered = window.getGlobalPath(organizeCurrentLocation);
           let myPath = getRecursivePath(filtered.slice(1), inputGlobal);
 
           // update UI with new name
@@ -564,7 +569,7 @@ const renameFolder = (
   }
 };
 
-const getGlobalPath = (path) => {
+window.getGlobalPath = (path) => {
   let currentPath = path.value.trim();
   let jsonPathArray = currentPath.split("/");
   return jsonPathArray.filter((el) => {
@@ -581,7 +586,7 @@ const getGlobalPathFromString = (pathString) => {
 
 const loadFileFolder = (myPath) => {
   let appendString = "";
-  let sortedObj = sortObjByKeys(myPath);
+  let sortedObj = window.sortObjByKeys(myPath);
   let count = 0;
   let file_elem = [],
     folder_elem = [];
@@ -900,9 +905,9 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
     ],
   });
 
-  var filtered = getGlobalPath(organizeDSglobalPath);
+  var filtered = window.getGlobalPath(organizeDSglobalPath);
 
-  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+  var myPath = getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
 
   //SKIP OPTION
   if (btnId === "skip") {
@@ -1256,8 +1261,8 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
                 type: "local",
                 action: ["new", "renamed"],
               };
-              listItems(myPath, "#items");
-              getInFolder("#items", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+              window.listItems(myPath, "#items");
+              getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
               hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
               hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
             }
@@ -1287,8 +1292,8 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
                 "</div></div>";
 
               $("#items").html(appendString);
-              listItems(myPath, "#items");
-              getInFolder("#items", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+              window.listItems(myPath, "#items");
+              getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
             }
           }
         }
@@ -1448,8 +1453,8 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
                   nodes[j].parentNode.remove();
                 }
               }
-              listItems(myPath, "#items");
-              getInFolder("#items", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+              window.listItems(myPath, "#items");
+              getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
             } else {
               let justName = checkboxes[i].id.substring(0, removeExt);
               let ext = checkboxes[i].id.substring(removeExt, checkboxes[i].id.length);
@@ -1469,8 +1474,8 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
                   nodes[j].parentNode.remove();
                 }
               }
-              listItems(myPath, "#items");
-              getInFolder("#items", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+              window.listItems(myPath, "#items");
+              getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
             }
           }
           let section = organizeDSglobalPath.value;
@@ -1598,7 +1603,7 @@ const addFilesfunction = async (
       continue;
     }
 
-    //count amount of extensions
+    //count window.amount of extensions
     let extensionCount = checkForMultipleExtensions(fileBase);
     if (extensionCount == 2) {
       //double extension ask if compressed file
@@ -2076,8 +2081,8 @@ const addFilesfunction = async (
   // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
   // and regular files (append to UI)
   if (Object.keys(filesToImport).length > 0) {
-    start = 0;
-    listed_count = 0;
+    window.start = 0;
+    window.listed_count = 0;
     $("#items").empty();
     for (let importedFile in filesToImport) {
       currentLocation["files"][filesToImport[importedFile]["basename"]] = {
@@ -2095,7 +2100,7 @@ const addFilesfunction = async (
         currentLocation["files"][filesToImport[importedFile]["basename"]]["action"].push("renamed");
       }
     }
-    await listItems(currentLocation, uiItem, 500);
+    await window.listItems(currentLocation, uiItem, 500);
     getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue);
     beginScrollListen();
     if (Object.keys(filesToImport).length > 1) {
@@ -2153,27 +2158,27 @@ const check_dataset_value = () => {
     item_box.removeEventListener("scroll", lazyLoad, true);
   }
   if (dataset_path.value != "dataset_root/") {
-    var filtered = getGlobalPath(dataset_path);
-    var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-    amount = 500;
-    listItems(myPath, "items", 500);
-    getInFolder(".single-item", "#items", dataset_path, datasetStructureJSONObj);
+    var filtered = window.getGlobalPath(dataset_path);
+    var myPath = getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
+    window.amount = 500;
+    window.listItems(myPath, "items", 500);
+    getInFolder(".single-item", "#items", dataset_path, window.datasetStructureJSONObj);
     beginScrollListen();
   }
 };
 observeElement(dataset_path, "value", check_dataset_value);
 
-var amount = 500;
+window.amount = 500;
 
 const beginScrollListen = () => {
-  amount = 500;
+  window.amount = 500;
   item_box.addEventListener("scroll", lazyLoad);
 };
 
 const lazyLoad = async () => {
-  let total_items = already_created_elem.length;
-  let filtered = getGlobalPath(dataset_path);
-  let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+  let total_items = window.already_created_elem.length;
+  let filtered = window.getGlobalPath(dataset_path);
+  let myPath = getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
 
   if (item_box.childElementCount != 0) {
     if (
@@ -2187,7 +2192,7 @@ const lazyLoad = async () => {
       ) {
         //for rerendering on scroll up
         //monitors when user scrolls back up to prepend elements
-        let array_select = preprended_items - 1;
+        let array_select = window.preprended_items - 1;
         let remove_limit = 5; //only prepend 500 elements at a time
         let load_spinner = `
         <div id="items_container">
@@ -2198,7 +2203,7 @@ const lazyLoad = async () => {
         item_box.children[0].remove(); //remove loading spinner
         //add elements back to top of item_box
         for (let i = 0; i < remove_limit; i++) {
-          $(uiItems).prepend(already_created_elem[array_select]); //adding on scroll up
+          $(uiItems).prepend(window.already_created_elem[array_select]); //adding on scroll up
           array_select--;
         }
         array_select += 1;
@@ -2211,7 +2216,7 @@ const lazyLoad = async () => {
             item_box.children[0].remove();
           }
         }
-        await getInFolder(".single-item", "#items", dataset_path, datasetStructureJSONObj);
+        await getInFolder(".single-item", "#items", dataset_path, window.datasetStructureJSONObj);
 
         if (item_box.lastChild.id === "items_container") {
           item_box.lastChild.remove();
@@ -2228,10 +2233,10 @@ const lazyLoad = async () => {
             item_box.lastChild.remove();
           }
         }
-        listed_count -= 5;
-        start -= 5;
-        amount -= 500;
-        preprended_items -= 5;
+        window.listed_count -= 5;
+        window.start -= 5;
+        window.amount -= 500;
+        window.preprended_items -= 5;
         $("#items").append(load_spinner); //loading spinner reattached
         item_box.lastChild.style.setProperty("margin-top", "5px");
         item_box.lastChild.style.setProperty("margin-bottom", "30px");
@@ -2250,22 +2255,22 @@ const lazyLoad = async () => {
     if (item_box.scrollTop + 50 > item_box.scrollHeight - item_box.offsetHeight) {
       //user scrolls down, render more items if available
       let wait4items = new Promise(async (resolved) => {
-        amount += 500;
-        await listItems(myPath, uiItems, amount);
-        // add_items_to_view(already_created_elem, 400);
-        await getInFolder(".single-item", "#items", dataset_path, datasetStructureJSONObj);
+        window.amount += 500;
+        await window.listItems(myPath, uiItems, window.amount);
+        // window.add_items_to_view(window.already_created_elem, 400);
+        await getInFolder(".single-item", "#items", dataset_path, window.datasetStructureJSONObj);
         resolved();
       });
     }
   }
 };
 
-already_created_elem = [];
-let listed_count = 0;
-let start = 0;
-let preprended_items = 0;
-const add_items_to_view = async (list, amount_req, reset) => {
-  uiItems = "#items";
+window.already_created_elem = [];
+window.listed_count = 0;
+window.start = 0;
+window.preprended_items = 0;
+window.add_items_to_view = async (list, amount_req, reset) => {
+  let uiItems = "#items";
   let elements_req = amount_req / 100; //array stores 100 elements per index
   let element_items = item_box.childElementCount;
   let load_spinner = `
@@ -2273,18 +2278,18 @@ const add_items_to_view = async (list, amount_req, reset) => {
     <div id="item_load" class="ui medium active inline loader icon-wrapper">
     </div>
   </div>`;
-  if (already_created_elem.length === 0) {
-    listed_count = already_created_elem.length;
+  if (window.already_created_elem.length === 0) {
+    listed_count = window.already_created_elem.length;
   }
   if (reset === true || dataset_path === "dataset_root/") {
     $("#items").empty();
 
-    start = 0;
-    listed_count = 0;
+    window.start = 0;
+    window.listed_count = 0;
     element_items = item_box.childElementCount;
   }
-  start = listed_count;
-  listed_count = 0;
+  window.start = window.listed_count;
+  window.listed_count = 0;
 
   //remove loading spinners before adding more files
   if (item_box.lastChild != undefined) {
@@ -2302,11 +2307,11 @@ const add_items_to_view = async (list, amount_req, reset) => {
   }
 
   //folders and files stored in one array
-  already_created_elem = list[0].concat(list[1]);
+  window.already_created_elem = list[0].concat(list[1]);
 
   if (element_items >= 1000) {
     //at most we want 1000 items rendered
-    preprended_items += 5;
+    window.preprended_items += 5;
 
     for (let i = 0; i < 500; i++) {
       item_box.children[0].remove();
@@ -2315,16 +2320,16 @@ const add_items_to_view = async (list, amount_req, reset) => {
     item_box.children[0].style.setProperty("margin-top", "20px");
   }
 
-  for (let i = start; i < elements_req; i++) {
-    if (i < already_created_elem.length) {
-      $(uiItems).append(already_created_elem[i]);
-      listed_count += 1;
+  for (let i = window.start; i < elements_req; i++) {
+    if (i < window.already_created_elem.length) {
+      $(uiItems).append(window.already_created_elem[i]);
+      window.listed_count += 1;
     } else {
       break;
     }
   }
-  listed_count += start;
-  start = listed_count;
+  window.listed_count += window.start;
+  window.start = window.listed_count;
   if ($(uiItems).children().length >= 500) {
     $(uiItems).append(load_spinner);
     item_box.lastChild.style.setProperty("margin-top", "5px");
@@ -2333,11 +2338,11 @@ const add_items_to_view = async (list, amount_req, reset) => {
 };
 
 const resetLazyLoading = () => {
-  already_created_elem = [];
-  listed_count = 0;
-  start = 0;
-  preprended_items = 0;
-  amount = 500;
+  window.already_created_elem = [];
+  window.listed_count = 0;
+  window.start = 0;
+  window.preprended_items = 0;
+  window.amount = 500;
 };
 
 ///// function to load details to show in display once

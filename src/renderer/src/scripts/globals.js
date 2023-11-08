@@ -1175,7 +1175,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           // then reset the guided mode page
           if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
             // Get the current page that the user is on in the guided mode
-            const currentPage = CURRENT_PAGE.id;
+            const currentPage = window.CURRENT_PAGE.id;
             if (currentPage) {
               await openPage(currentPage);
             }

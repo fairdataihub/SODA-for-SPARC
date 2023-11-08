@@ -7,7 +7,7 @@ import './scripts/globals'
 import './scripts/others/renderer'
 import './scripts/metadata-files/submission'
 import './scripts/manage-dataset/manage-dataset'
-
+import './scripts/organize-dataset/organizeDS'
 
 // Application Lotties
 import './assets/lotties/activate-lotties'

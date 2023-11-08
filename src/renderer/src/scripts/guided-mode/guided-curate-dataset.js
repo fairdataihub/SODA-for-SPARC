@@ -5,6 +5,7 @@ import { resetLazyLoading, guidedUnLockSideBar } from "../../assets/nav";
 import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
 import api from '../others/api/api'
 import lottie from "lottie-web"
+import {dragDrop} from '../../assets/lotties/lotties'
 import Swal from "sweetalert2"
 import Tagify from "@yaireo/tagify";
 import DragSort from '@yaireo/dragsort'
@@ -314,7 +315,7 @@ const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
 };
 
 document.getElementById("guided-button-dataset-contains-code").addEventListener("click", () => {
-  const codeFolder = datasetStructureJSONObj["folders"]["code"];
+  const codeFolder = window.datasetStructureJSONObj["folders"]["code"];
   if (codeFolder) {
     if (folderImportedFromPennsieve(codeFolder)) {
       // If the code folder is imported from Pennsieve, unmark it as deleted
@@ -325,7 +326,7 @@ document.getElementById("guided-button-dataset-contains-code").addEventListener(
 });
 
 document.getElementById("guided-button-has-protocol-data").addEventListener("click", () => {
-  const protocolFolder = datasetStructureJSONObj["folders"]["protocol"];
+  const protocolFolder = window.datasetStructureJSONObj["folders"]["protocol"];
   if (protocolFolder) {
     if (folderImportedFromPennsieve(protocolFolder)) {
       // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
@@ -336,7 +337,7 @@ document.getElementById("guided-button-has-protocol-data").addEventListener("cli
 });
 
 document.getElementById("guided-button-has-docs-data").addEventListener("click", () => {
-  const docsFolder = datasetStructureJSONObj["folders"]["docs"];
+  const docsFolder = window.datasetStructureJSONObj["folders"]["docs"];
   if (docsFolder) {
     if (folderImportedFromPennsieve(docsFolder)) {
       // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
@@ -644,7 +645,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           window.sodaJSONObj["initially-pulled-dataset-structure"] = JSON.parse(
             JSON.stringify(data["soda_object"]["dataset-structure"])
           );
-          datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
+          window.datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
         } catch (error) {
           console.log(error);
           errorArray.push({
@@ -657,7 +658,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
         // Reject if anyh non-sparc folders are in the root of the dataset
         let invalidBaseFolders = [];
-        for (const baseFolder of Object.keys(datasetStructureJSONObj["folders"])) {
+        for (const baseFolder of Object.keys(window.datasetStructureJSONObj["folders"])) {
           if (
             !guidedHighLevelFolders.includes(baseFolder) &&
             !nonGuidedHighLevelFolders.includes(baseFolder)
@@ -679,7 +680,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Datasets pulled into Guided Mode should only have pool-folders or sub-folders inside of the primary, source,
         // and derivative high level folders. If this is not the case with the pulled dataset, reject it.
         const [invalidFolders, invalidFiles] =
-          guidedCheckHighLevelFoldersForImproperFiles(datasetStructureJSONObj);
+          guidedCheckHighLevelFoldersForImproperFiles(window.datasetStructureJSONObj);
         if (invalidFolders.length > 0 || invalidFiles.length > 0) {
           errorArray.push({
             type: "swal",
@@ -697,14 +698,14 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Extract the pool/subject/sample structure from the folders and files pulled from Pennsieve
         // Note: this Also adds the pool/subject/sample structure to the window.sodaJSONObj
         const datasetSubSamStructure =
-          extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
+          extractPoolSubSamStructureFromDataset(window.datasetStructureJSONObj);
         const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
         const subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
         // If no subjects from the dataset structure are found and the dataset does have primary, source, or derivative folders,
         if (subjects.length === 0) {
           for (const highLevelFolder of guidedHighLevelFolders) {
-            if (datasetStructureJSONObj["folders"][highLevelFolder]) {
+            if (window.datasetStructureJSONObj["folders"][highLevelFolder]) {
               errorArray.push({
                 type: "swal",
                 title: "This dataset is not eligible to be edited via Guided Mode",
@@ -716,7 +717,7 @@ const savePageChanges = async (pageBeingLeftID) => {
             }
           }
           // Also throw an error if the dataset does not have a code folder (If the dataset does not contain subjects +prim/src/deriv, then it must have a code folder)
-          if (!datasetStructureJSONObj["folders"]["code"]) {
+          if (!window.datasetStructureJSONObj["folders"]["code"]) {
             errorArray.push({
               type: "swal",
               title: "This dataset is not eligible to be edited via Guided Mode",
@@ -825,7 +826,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
         // Pre-select the buttons that ask if the dataset contains *hlf* data based on the imported dataset structure
         for (const hlf of nonGuidedHighLevelFolders) {
-          if (datasetStructureJSONObj["folders"][hlf]) {
+          if (window.datasetStructureJSONObj["folders"][hlf]) {
             window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-data`] = "yes";
           } else {
             window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-data`] = "no";
@@ -979,13 +980,13 @@ const savePageChanges = async (pageBeingLeftID) => {
           // If Protocol and Docs are empty, skip the Protocol and Docs tabs
           // This is checked so if the user starts from Pennsieve and they have Protocol and Docs data, they can still modify it
           // but the protocol and docs pages will be skipped if the user is started a new computational dataset without subjects
-          if (folderIsEmpty(datasetStructureJSONObj?.["folders"]?.["protocol"])) {
+          if (folderIsEmpty(window.datasetStructureJSONObj?.["folders"]?.["protocol"])) {
             guidedSkipPage("guided-protocol-folder-tab");
           } else {
             guidedUnSkipPage("guided-protocol-folder-tab");
           }
 
-          if (folderIsEmpty(datasetStructureJSONObj?.["folders"]?.["docs"])) {
+          if (folderIsEmpty(window.datasetStructureJSONObj?.["folders"]?.["docs"])) {
             guidedSkipPage("guided-docs-folder-tab");
           } else {
             guidedUnSkipPage("guided-docs-folder-tab");
@@ -1186,7 +1187,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-code-folder-tab") {
-      const codeFolder = datasetStructureJSONObj["folders"]["code"];
+      const codeFolder = window.datasetStructureJSONObj["folders"]["code"];
       if (folderIsEmpty(codeFolder)) {
         errorArray.push({
           type: "notyf",
@@ -1204,7 +1205,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         "guided-button-no-protocol-data"
       );
 
-      const protocolFolder = datasetStructureJSONObj["folders"]["protocol"];
+      const protocolFolder = window.datasetStructureJSONObj["folders"]["protocol"];
 
       if (
         !guidedButtonUserHasProtocolData.classList.contains("selected") &&
@@ -1236,7 +1237,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           if (folderImportedFromPennsieve(protocolFolder)) {
             guidedModifyPennsieveFolder(protocolFolder, "delete");
           } else {
-            delete datasetStructureJSONObj["folders"]["protocol"];
+            delete window.datasetStructureJSONObj["folders"]["protocol"];
           }
         } else {
           const { value: deleteProtocolFolderWithData } = await Swal.fire({
@@ -1255,7 +1256,7 @@ const savePageChanges = async (pageBeingLeftID) => {
             if (folderImportedFromPennsieve(protocolFolder)) {
               guidedModifyPennsieveFolder(protocolFolder, "delete");
             } else {
-              delete datasetStructureJSONObj["folders"]["protocol"];
+              delete window.datasetStructureJSONObj["folders"]["protocol"];
             }
           } else {
             guidedButtonUserHasProtocolData.click();
@@ -1268,7 +1269,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       const guidedButtonUserHasDocsData = document.getElementById("guided-button-has-docs-data");
       const guidedButtonUserNoDocsData = document.getElementById("guided-button-no-docs-data");
 
-      const docsFolder = datasetStructureJSONObj["folders"]["docs"];
+      const docsFolder = window.datasetStructureJSONObj["folders"]["docs"];
 
       if (
         !guidedButtonUserHasDocsData.classList.contains("selected") &&
@@ -1300,7 +1301,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           if (folderImportedFromPennsieve(docsFolder)) {
             guidedModifyPennsieveFolder(docsFolder, "delete");
           } else {
-            delete datasetStructureJSONObj["folders"]["docs"];
+            delete window.datasetStructureJSONObj["folders"]["docs"];
           }
         } else {
           const { value: deleteDocsFolderWithData } = await Swal.fire({
@@ -1319,7 +1320,7 @@ const savePageChanges = async (pageBeingLeftID) => {
             if (folderImportedFromPennsieve(docsFolder)) {
               guidedModifyPennsieveFolder(docsFolder, "delete");
             } else {
-              delete datasetStructureJSONObj["folders"]["docs"];
+              delete window.datasetStructureJSONObj["folders"]["docs"];
             }
           } else {
             guidedButtonUserHasDocsData.click();
@@ -1651,8 +1652,8 @@ const savePageChanges = async (pageBeingLeftID) => {
     if (pageBeingLeftID === "guided-folder-structure-preview-tab") {
       //if folders and files in datasetStruture json obj are empty, warn the user
       if (
-        Object.keys(datasetStructureJSONObj["folders"]).length === 0 &&
-        Object.keys(datasetStructureJSONObj["files"]).length === 0
+        Object.keys(window.datasetStructureJSONObj["folders"]).length === 0 &&
+        Object.keys(window.datasetStructureJSONObj["files"]).length === 0
       ) {
         const { value: continueProgress } = await Swal.fire({
           title: `No folders or files have been added to your dataset.`,
@@ -2060,7 +2061,7 @@ const renderSideBar = (activePage) => {
   );
   for (const guidedNavBarSectionPage of guidedNavBarSectionPages) {
     guidedNavBarSectionPage.addEventListener("click", async (event) => {
-      const currentPageUserIsLeaving = CURRENT_PAGE.id;
+      const currentPageUserIsLeaving = window.CURRENT_PAGE.id;
       const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
       const pageToNaviatetoName = document
         .getElementById(pageToNavigateTo)
@@ -2114,7 +2115,7 @@ const renderSideBar = (activePage) => {
         //All pages have been validated. Open the target page.
         await openPage(pageToNavigateTo);
       } catch (error) {
-        const pageWithErrorName = CURRENT_PAGE.dataset.pageName;
+        const pageWithErrorName = window.CURRENT_PAGE.dataset.pageName;
         const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
           title: "The current page was not able to be saved",
           html: `The following error${
@@ -2611,12 +2612,12 @@ const guidedSaveAndExit = async () => {
     backdrop: "rgba(0,0,0,0.4)",
   });
   if (returnToGuidedHomeScreen) {
-    const currentPageID = CURRENT_PAGE.id;
+    const currentPageID = window.CURRENT_PAGE.id;
 
     try {
       await savePageChanges(currentPageID);
     } catch (error) {
-      const pageWithErrorName = CURRENT_PAGE.dataset.pageName;
+      const pageWithErrorName = window.CURRENT_PAGE.dataset.pageName;
 
       const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
         title: "The current page was not able to be saved before exiting",
@@ -2658,7 +2659,7 @@ let guidedStudyOrganSystemsTagify = null;
 let guidedOtherFundingsourcesTagify = null;
 
 //main nav variables initialized to first page of guided mode
-let CURRENT_PAGE;
+window.CURRENT_PAGE;
 
 /////////////////////////////////////////////////////////
 /////////////       Util functions      /////////////////
@@ -2686,8 +2687,8 @@ const enableElementById = (id) => {
 };
 
 const hideEleShowEle = (elementIdToHide, elementIdToShow) => {
-  elementToHide = document.getElementById(elementIdToHide);
-  elementToShow = document.getElementById(elementIdToShow);
+  let elementToHide = document.getElementById(elementIdToHide);
+  let elementToShow = document.getElementById(elementIdToShow);
   elementToHide.classList.add("hidden");
   elementToShow.classList.remove("hidden");
 };
@@ -2775,7 +2776,7 @@ const guidedTransitionFromHome = async () => {
     page.classList.add("hidden");
   });
 
-  CURRENT_PAGE = document.getElementById("guided-select-starting-point-tab");
+  window.CURRENT_PAGE = document.getElementById("guided-select-starting-point-tab");
 
   //reset sub-page navigation (Set the first sub-page to be the active sub-page
   //for all pages with sub-pages)
@@ -2801,7 +2802,7 @@ const guidedTransitionToHome = () => {
   for (const guidedParentTab of guidedParentTabs) {
     guidedParentTab.classList.add("hidden");
   }
-  CURRENT_PAGE = undefined;
+  window.CURRENT_PAGE = undefined;
 
   //Hide guided headers and footers
   document.getElementById("guided-header-div").classList.add("hidden");
@@ -2844,9 +2845,9 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
     window.sodaJSONObj["dataset-structure"]["files"] = {};
   }
 
-  //Add datasetStructureJSONObj to the window.sodaJSONObj and use to load the
-  //datasetStructureJsonObj when progress resumed
-  window.sodaJSONObj["saved-datset-structure-json-obj"] = datasetStructureJSONObj;
+  //Add window.datasetStructureJSONObj to the window.sodaJSONObj and use to load the
+  //window.datasetStructureJSONObj when progress resumed
+  window.sodaJSONObj["saved-datset-structure-json-obj"] = window.datasetStructureJSONObj;
   window.sodaJSONObj["subjects-table-data"] = subjectsTableData;
   window.sodaJSONObj["samples-table-data"] = samplesTableData;
 
@@ -3249,7 +3250,7 @@ const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
     });
 
     convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
-    datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
+    window.datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
       action: ["new"],
       path: manifestPath,
       type: "local",
@@ -3825,7 +3826,7 @@ const guidedPrepareHomeScreen = async () => {
 };
 
 const guidedShowTreePreview = (new_dataset_name, targetElement) => {
-  const dsJsonObjCopy = JSON.parse(JSON.stringify(datasetStructureJSONObj));
+  const dsJsonObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
 
   //Add the code_description metadata file to the preview if the code_description path has been declared
   if (window.sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
@@ -3913,14 +3914,14 @@ const guidedShowTreePreview = (new_dataset_name, targetElement) => {
 
 const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
   //add high level folder if it does not exist
-  if (!datasetStructureJSONObj["folders"][highLevelFolder]) {
-    datasetStructureJSONObj["folders"][highLevelFolder] = newEmptyFolderObj();
+  if (!window.datasetStructureJSONObj["folders"][highLevelFolder]) {
+    window.datasetStructureJSONObj["folders"][highLevelFolder] = newEmptyFolderObj();
   }
   //Add pools to the datsetStructuresJSONObj if they don't exist
   const pools = Object.keys(window.sodaJSONObj.getPools());
   for (const pool of pools) {
-    if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool]) {
-      datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool] = newEmptyFolderObj();
+    if (!window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool]) {
+      window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool] = newEmptyFolderObj();
     }
   }
   if (subjectsOrSamples === "subjects") {
@@ -3928,18 +3929,18 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
     const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
     for (subject of subjectsInPools) {
       if (
-        !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
+        !window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
           "folders"
         ][subject.subjectName]
       ) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName]["folders"][
+        window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName]["folders"][
           subject.subjectName
         ] = newEmptyFolderObj();
       }
     }
     for (subject of subjectsOutsidePools) {
-      if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName]) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName] =
+      if (!window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName]) {
+        window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName] =
           newEmptyFolderObj();
       }
     }
@@ -3950,59 +3951,59 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
     const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
     for (sample of samplesInPools) {
       /**
-       * Check to see if the sample's pool is in the datasetStructureJSONObj.
+       * Check to see if the sample's pool is in the window.datasetStructureJSONObj.
        * If not, add it.
        */
-      if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName] =
+      if (!window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]) {
+        window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName] =
           newEmptyFolderObj();
       }
       /**
-       * Check to see if the sample's subject is in the datasetStructureJSONObj.
+       * Check to see if the sample's subject is in the window.datasetStructureJSONObj.
        * If not, add it.
        */
       if (
-        !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
+        !window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
           sample.subjectName
         ]
       ) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
+        window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
           sample.subjectName
         ] = newEmptyFolderObj();
       }
       /**
-       * Check to see if the sample's folder is in the datasetStructureJSONObj.
+       * Check to see if the sample's folder is in the window.datasetStructureJSONObj.
        * If not, add it.
        */
       if (
-        !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
+        !window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
           sample.subjectName
         ]["folders"][sample.sampleName]
       ) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
+        window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
           sample.subjectName
         ]["folders"][sample.sampleName] = newEmptyFolderObj();
       }
     }
     for (const sample of samplesOutsidePools) {
       /**
-       * Check to see if the sample's subject is in the datasetStructureJSONObj.
+       * Check to see if the sample's subject is in the window.datasetStructureJSONObj.
        * If not, add it.
        */
-      if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName]) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName] =
+      if (!window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName]) {
+        window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName] =
           newEmptyFolderObj();
       }
       /**
-       * Check to see if the sample's folder is in the datasetStructureJSONObj.
+       * Check to see if the sample's folder is in the window.datasetStructureJSONObj.
        * If not, add it.
        */
       if (
-        !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
+        !window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
           "folders"
         ][sample.sampleName]
       ) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
+        window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
           "folders"
         ][sample.sampleName] = newEmptyFolderObj();
       }
@@ -4127,13 +4128,13 @@ const cleanUpEmptyGuidedStructureFolders = async (
     if (boolCleanUpAllGuidedStructureFolders === true) {
       //delete all folders for samples in pools
       for (const sample of samplesInPools) {
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
+        delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
           "folders"
         ][sample.subjectName]["folders"][sample.sampleName];
       }
       //delete all folders for samples outside of pools
       for (const sample of samplesOutsidePools) {
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
+        delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
           "folders"
         ][sample.sampleName];
       }
@@ -4147,7 +4148,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
       //loop through samplesInPools and add samples with empty folders to samplesWithEmptyFolders
       for (const sample of samplesInPools) {
         const sampleFolder =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
+          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
             "folders"
           ][sample.subjectName]["folders"][sample.sampleName];
 
@@ -4158,7 +4159,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
       //loop through samplesOutsidePools and add samples with empty folders to samplesWithEmptyFolders
       for (const sample of samplesOutsidePools) {
         const sampleFolder =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
+          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
             "folders"
           ][sample.sampleName];
         if (sampleFolder && folderIsEmpty(sampleFolder)) {
@@ -4190,15 +4191,15 @@ const cleanUpEmptyGuidedStructureFolders = async (
         });
 
         if (result.isConfirmed) {
-          //delete empty samples from the datasetStructureJSONObj
+          //delete empty samples from the window.datasetStructureJSONObj
           for (sample of samplesWithEmptyFolders) {
             if (sample.poolName) {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+              delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 sample.poolName
               ]["folders"][sample.subjectName]["folders"][sample.sampleName];
             }
             if (!sample.poolName) {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+              delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 sample.subjectName
               ]["folders"][sample.sampleName];
             }
@@ -4221,11 +4222,11 @@ const cleanUpEmptyGuidedStructureFolders = async (
       //Delete folders for pools
       for (const subject of subjectsInPools) {
         const subjectFolder =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
+          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
             "folders"
           ][subject.subjectName];
         if (subjectFolder && folderIsEmpty(subjectFolder)) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
             "folders"
           ][subject.subjectName];
         }
@@ -4234,9 +4235,9 @@ const cleanUpEmptyGuidedStructureFolders = async (
       //Delete all folders for subjects outside of pools
       for (const subject of subjectsOutsidePools) {
         const subjectFolder =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName];
+          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName];
         if (subjectFolder && folderIsEmpty(subjectFolder)) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
             subject.subjectName
           ];
         }
@@ -4245,16 +4246,16 @@ const cleanUpEmptyGuidedStructureFolders = async (
       //Delete all pools with empty folders
       const pools = window.sodaJSONObj.getPools();
       for (const pool of Object.keys(pools)) {
-        const poolFolder = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        const poolFolder = window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
         if (poolFolder && folderIsEmpty(poolFolder)) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
         }
       }
 
       //Delete the high level folder if no folders or files were added
-      const hlfRoot = datasetStructureJSONObj["folders"][highLevelFolder];
+      const hlfRoot = window.datasetStructureJSONObj["folders"][highLevelFolder];
       if (hlfRoot && folderIsEmpty(hlfRoot)) {
-        delete datasetStructureJSONObj["folders"][highLevelFolder];
+        delete window.datasetStructureJSONObj["folders"][highLevelFolder];
       }
 
       return true;
@@ -4264,7 +4265,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
       //loop through subjectsInPools and add subjects with empty folders to subjectsWithEmptyFolders
       for (const subject of subjectsInPools) {
         const subjectFolder =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
+          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
             "folders"
           ][subject.subjectName];
         if (subjectFolder && folderIsEmpty(subjectFolder)) {
@@ -4275,7 +4276,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
       //loop through subjectsOutsidePools and add subjects with empty folders to subjectsWithEmptyFolders
       for (const subject of subjectsOutsidePools) {
         const subjectFolder =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName];
+          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName];
         if (subjectFolder && folderIsEmpty(subjectFolder)) {
           subjectsWithEmptyFolders.push(subject);
         }
@@ -4303,11 +4304,11 @@ const cleanUpEmptyGuidedStructureFolders = async (
         if (result.isConfirmed) {
           for (subject of subjectsWithEmptyFolders) {
             if (subject.poolName) {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+              delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 subject.poolName
               ]["folders"][subject.subjectName];
             } else {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+              delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 subject.subjectName
               ];
             }
@@ -4315,9 +4316,9 @@ const cleanUpEmptyGuidedStructureFolders = async (
           //Delete all pools with empty folders
           const pools = window.sodaJSONObj.getPools();
           for (const pool of Object.keys(pools)) {
-            const poolFolder = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+            const poolFolder = window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
             if (poolFolder && folderIsEmpty(poolFolder)) {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+              delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
             }
           }
           return true;
@@ -4326,9 +4327,9 @@ const cleanUpEmptyGuidedStructureFolders = async (
         //Delete all pools with empty folders
         const pools = window.sodaJSONObj.getPools();
         for (const pool of Object.keys(pools)) {
-          const poolFolder = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+          const poolFolder = window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
           if (poolFolder && folderIsEmpty(poolFolder)) {
-            delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+            delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
           }
         }
         return true;
@@ -4341,16 +4342,16 @@ const cleanUpEmptyGuidedStructureFolders = async (
     if (boolCleanUpAllGuidedStructureFolders === true) {
       //Delete all pools with empty folders
       for (const pool of Object.keys(pools)) {
-        const poolFolder = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        const poolFolder = window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
         if (poolFolder && folderIsEmpty(poolFolder)) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
         }
       }
     } else {
       const poolsWithNoDataFiles = [];
 
       for (const pool of Object.keys(pools)) {
-        const poolFolder = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        const poolFolder = window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
         if (poolFolder && folderIsEmpty(poolFolder)) {
           poolsWithNoDataFiles.push(pool);
         }
@@ -4384,7 +4385,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
         });
         if (result.isConfirmed) {
           for (const pool of poolsWithNoDataFiles) {
-            delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+            delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
           }
           //Empty pool folders have been deleted, return true
           return true;
@@ -4406,13 +4407,13 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     // First delete the sample folders if they are empty
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
-        datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
+        window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
           "folders"
         ]?.[subjectName]?.["folders"]?.[sample];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
         if (folderIsEmpty(sampleFolder)) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
             "folders"
           ][subjectName]["folders"][sample];
         }
@@ -4420,12 +4421,12 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
 
       // Then delete the subject folder if it is empty
       const subjectFolder =
-        datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
+        window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
           "folders"
         ]?.[subjectName];
       if (subjectFolder) {
         if (folderIsEmpty(subjectFolder)) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
             "folders"
           ][subjectName];
         }
@@ -4433,10 +4434,10 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
 
       // Then delete the pool folder if it is empty
       const poolFolder =
-        datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
+        window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
       if (poolFolder) {
         if (folderIsEmpty(poolFolder)) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
         }
       }
     }
@@ -4449,13 +4450,13 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     // First delete the sample folders if they are empty
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
-        datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName]?.[
+        window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName]?.[
           "folders"
         ]?.[sample];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
         if (folderIsEmpty(sampleFolder)) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName][
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName][
             "folders"
           ][sample];
         }
@@ -4463,10 +4464,10 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     }
     // Then delete the subject folder if it is empty
     const subjectFolder =
-      datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
+      window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
     if (subjectFolder) {
       if (folderIsEmpty(subjectFolder)) {
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
+        delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
       }
     }
   }
@@ -4477,13 +4478,13 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     // First delete the sample folders if they are empty
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
-        datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
+        window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
           "folders"
         ]?.[subjectName]?.["folders"]?.[sample];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
         if (folderIsEmpty(sampleFolder)) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
             "folders"
           ][subjectName]["folders"][sample];
         }
@@ -4491,12 +4492,12 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
 
       // Then delete the subject folder if it is empty
       const subjectFolder =
-        datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
+        window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
           "folders"
         ]?.[subjectName];
       if (subjectFolder) {
         if (folderIsEmpty(subjectFolder)) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
             "folders"
           ][subjectName];
         }
@@ -4504,10 +4505,10 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
 
       // Then delete the pool folder if it is empty
       const poolFolder =
-        datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
+        window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
       if (poolFolder) {
         if (folderIsEmpty(poolFolder)) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
         }
       }
     }
@@ -4520,13 +4521,13 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     // First delete the sample folders if they are empty
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
-        datasetStructureJSONObj["folders"]?.["primary"]?.["folders"]?.[subjectName]?.["folders"]?.[
+        window.datasetStructureJSONObj["folders"]?.["primary"]?.["folders"]?.[subjectName]?.["folders"]?.[
           sample
         ];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
         if (folderIsEmpty(sampleFolder)) {
-          delete datasetStructureJSONObj["folders"]["primary"]["folders"][subjectName]["folders"][
+          delete window.datasetStructureJSONObj["folders"]["primary"]["folders"][subjectName]["folders"][
             sample
           ];
         }
@@ -4534,10 +4535,10 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     }
     // Then delete the subject folder if it is empty
     const subjectFolder =
-      datasetStructureJSONObj["folders"]?.["primary"]?.["folders"]?.[subjectName];
+      window.datasetStructureJSONObj["folders"]?.["primary"]?.["folders"]?.[subjectName];
     if (subjectFolder) {
       if (folderIsEmpty(subjectFolder)) {
-        delete datasetStructureJSONObj["folders"]["primary"]["folders"][subjectName];
+        delete window.datasetStructureJSONObj["folders"]["primary"]["folders"][subjectName];
       }
     }
   }
@@ -5076,10 +5077,10 @@ const openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-code-folder-tab") {
       itemsContainer.classList.add("border-styling");
-      const codeFolder = datasetStructureJSONObj["folders"]["code"];
+      const codeFolder = window.datasetStructureJSONObj["folders"]["code"];
       if (!codeFolder) {
         //create a docs folder
-        datasetStructureJSONObj["folders"]["code"] = newEmptyFolderObj();
+        window.datasetStructureJSONObj["folders"]["code"] = newEmptyFolderObj();
       }
       //Append the guided-file-explorer element to the code folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-code-data"));
@@ -5092,10 +5093,10 @@ const openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-protocol-folder-tab") {
       itemsContainer.classList.add("border-styling");
-      const protocolFolder = datasetStructureJSONObj["folders"]["protocol"];
+      const protocolFolder = window.datasetStructureJSONObj["folders"]["protocol"];
       if (!protocolFolder) {
         //create a docs folder
-        datasetStructureJSONObj["folders"]["protocol"] = newEmptyFolderObj();
+        window.datasetStructureJSONObj["folders"]["protocol"] = newEmptyFolderObj();
       }
       //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-protocol-data"));
@@ -5108,10 +5109,10 @@ const openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-docs-folder-tab") {
       itemsContainer.classList.add("border-styling");
-      const docsFolder = datasetStructureJSONObj["folders"]["docs"];
+      const docsFolder = window.datasetStructureJSONObj["folders"]["docs"];
       if (!docsFolder) {
         //create a docs folder
-        datasetStructureJSONObj["folders"]["docs"] = newEmptyFolderObj();
+        window.datasetStructureJSONObj["folders"]["docs"] = newEmptyFolderObj();
       }
       //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-docs-data"));
@@ -5127,10 +5128,10 @@ const openPage = async (targetPageID) => {
       // They could possibly be empty if the user did not add any subject data
       // These will be added back safely when the user traverses back to the high level folder's page
       for (const folder of guidedHighLevelFolders) {
-        const rootFolderPath = datasetStructureJSONObj["folders"][folder];
+        const rootFolderPath = window.datasetStructureJSONObj["folders"][folder];
 
         if (rootFolderPath && folderIsEmpty(rootFolderPath)) {
-          delete datasetStructureJSONObj["folders"][folder];
+          delete window.datasetStructureJSONObj["folders"][folder];
         }
       }
 
@@ -5224,9 +5225,9 @@ const openPage = async (targetPageID) => {
       // with the ID: guided-button-auto-generate-manifest-files
 
       //Delete any manifest files in the dataset structure.
-      for (const folder of Object.keys(datasetStructureJSONObj["folders"])) {
-        if (datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"]) {
-          delete datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"];
+      for (const folder of Object.keys(window.datasetStructureJSONObj["folders"])) {
+        if (window.datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"]) {
+          delete window.datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"];
         }
       }
 
@@ -5243,7 +5244,7 @@ const openPage = async (targetPageID) => {
       const sodaCopy = { ...window.sodaJSONObj };
       delete sodaCopy["generate-dataset"];
       sodaCopy["metadata-files"] = {};
-      sodaCopy["dataset-structure"] = datasetStructureJSONObj;
+      sodaCopy["dataset-structure"] = window.datasetStructureJSONObj;
 
       const cleanJson = await client.post(
         `/curate_datasets/clean-dataset`,
@@ -6622,7 +6623,7 @@ const openPage = async (targetPageID) => {
       guidedSetDOIUI(pennsieveDOICheck);
     }
 
-    let currentParentTab = CURRENT_PAGE.closest(".guided--parent-tab");
+    let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
 
     //Set all capsules to grey and set capsule of page being traversed to green
     setActiveCapsule(targetPageID);
@@ -6632,20 +6633,20 @@ const openPage = async (targetPageID) => {
     const guidedBody = document.getElementById("guided-body");
     //Check to see if target element has the same parent as current sub step
     if (currentParentTab.id === targetPageParentTab.id) {
-      CURRENT_PAGE.classList.add("hidden");
-      CURRENT_PAGE = targetPage;
-      CURRENT_PAGE.classList.remove("hidden");
+      window.CURRENT_PAGE.classList.add("hidden");
+      window.CURRENT_PAGE = targetPage;
+      window.CURRENT_PAGE.classList.remove("hidden");
       //smooth scroll to top of guidedBody
       guidedBody.scrollTo({
         top: 0,
         behavior: "smooth",
       });
     } else {
-      CURRENT_PAGE.classList.add("hidden");
+      window.CURRENT_PAGE.classList.add("hidden");
       currentParentTab.classList.add("hidden");
       targetPageParentTab.classList.remove("hidden");
-      CURRENT_PAGE = targetPage;
-      CURRENT_PAGE.classList.remove("hidden");
+      window.CURRENT_PAGE = targetPage;
+      window.CURRENT_PAGE.classList.remove("hidden");
       //smooth scroll to top of guidedBody
       guidedBody.scrollTo({
         top: 0,
@@ -7174,7 +7175,7 @@ const setActiveSubPage = (pageIdToActivate) => {
       siblingCapsule.classList.remove("active");
     }
   }
-  // renderSideBar(CURRENT_PAGE.id);
+  // renderSideBar(window.CURRENT_PAGE.id);
 };
 
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
@@ -7570,7 +7571,7 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     window.sodaJSONObj = datasetResumeJsonObj;
     attachGuidedMethodsToSodaJSONObj();
 
-    datasetStructureJSONObj = window.sodaJSONObj["saved-datset-structure-json-obj"];
+    window.datasetStructureJSONObj = window.sodaJSONObj["saved-datset-structure-json-obj"];
     subjectsTableData = window.sodaJSONObj["subjects-table-data"];
     samplesTableData = window.sodaJSONObj["samples-table-data"];
 
@@ -7695,7 +7696,7 @@ const guidedCreateSodaJSONObj = () => {
   window.sodaJSONObj["last-modified"] = "";
   window.sodaJSONObj["button-config"] = {};
   window.sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = "false";
-  datasetStructureJSONObj = { folders: {}, files: {} };
+  window.datasetStructureJSONObj = { folders: {}, files: {} };
   window.sodaJSONObj["dataset-validated"] = "false";
 };
 const guidedHighLevelFolders = ["primary", "source", "derivative"];
@@ -7779,10 +7780,10 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         throw new Error("Pool names must be unique.");
       }
 
-      //Rename the pool folder in the datasetStructureJSONObj
+      //Rename the pool folder in the window.datasetStructureJSONObj
       for (const highLevelFolder of guidedHighLevelFolders) {
         const prevNamePoolInHighLevelFolder =
-          datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[prevPoolName];
+          window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[prevPoolName];
 
         if (prevNamePoolInHighLevelFolder) {
           if (folderImportedFromPennsieve(prevNamePoolInHighLevelFolder)) {
@@ -7791,9 +7792,9 @@ const attachGuidedMethodsToSodaJSONObj = () => {
             }
           }
 
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][newPoolName] =
+          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][newPoolName] =
             prevNamePoolInHighLevelFolder;
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][prevPoolName];
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][prevPoolName];
         }
       }
 
@@ -7838,7 +7839,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           //Rename the subjects folders in the datasetStructJSONObj
           for (const highLevelFolder of guidedHighLevelFolders) {
             const prevNameSubjectFolderInHighLevelFolder =
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+              window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
                 subject.poolName
               ]?.["folders"]?.[prevSubjectName];
 
@@ -7848,11 +7849,11 @@ const attachGuidedMethodsToSodaJSONObj = () => {
                   prevNameSubjectFolderInHighLevelFolder["action"].push("renamed");
                 }
               }
-              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
+              window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
                 "folders"
               ][newSubjectName] = prevNameSubjectFolderInHighLevelFolder;
 
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+              delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 subject.poolName
               ]["folders"][prevSubjectName];
             }
@@ -7871,7 +7872,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           //Rename the subjects folders in the datasetStructeJSONObj
           for (const highLevelFolder of guidedHighLevelFolders) {
             const prevNameSubjectFolderInHighLevelFolder =
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+              window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
                 prevSubjectName
               ];
 
@@ -7881,10 +7882,10 @@ const attachGuidedMethodsToSodaJSONObj = () => {
                   prevNameSubjectFolderInHighLevelFolder["action"].push("renamed");
                 }
 
-                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][newSubjectName] =
+                window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][newSubjectName] =
                   prevNameSubjectFolderInHighLevelFolder;
 
-                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                   prevSubjectName
                 ];
               }
@@ -7936,7 +7937,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
             //Rename the samples folders in the datasetStructeJSONObj
             for (const highLevelFolder of guidedHighLevelFolders) {
               const prevNameSampleFolderInHighLevelFolder =
-                datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
                   sample.poolName
                 ]?.["folders"]?.[sample.subjectName]?.["folders"]?.[prevSampleName];
 
@@ -7947,11 +7948,11 @@ const attachGuidedMethodsToSodaJSONObj = () => {
                   }
                 }
 
-                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
+                window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
                   "folders"
                 ][sample.subjectName]["folders"][newSampleName] =
                   prevNameSampleFolderInHighLevelFolder;
-                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                   sample.poolName
                 ]["folders"][sample.subjectName]["folders"][prevSampleName];
               }
@@ -7971,7 +7972,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
             //Rename the samples folders in the datasetStructeJSONObj
             for (const highLevelFolder of guidedHighLevelFolders) {
               const prevNameSampleFolderInHighLevelFolder =
-                datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
                   sample.subjectName
                 ]?.["folders"]?.[prevSampleName];
 
@@ -7982,10 +7983,10 @@ const attachGuidedMethodsToSodaJSONObj = () => {
                   }
                 }
 
-                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
+                window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
                   "folders"
                 ][newSampleName] = prevNameSampleFolderInHighLevelFolder;
-                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                   sample.subjectName
                 ]["folders"][prevSampleName];
               }
@@ -8025,13 +8026,13 @@ const attachGuidedMethodsToSodaJSONObj = () => {
 
     for (const highLevelFolder of guidedHighLevelFolders) {
       const poolInHighLevelFolder =
-        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
+        window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
 
       if (poolInHighLevelFolder) {
         if (folderImportedFromPennsieve(poolInHighLevelFolder)) {
           guidedModifyPennsieveFolder(poolInHighLevelFolder, "delete");
         } else {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
         }
       }
     }
@@ -8052,7 +8053,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           //Delete the subjects folders in the datasetStructeJSONObj
           for (const highLevelFolder of guidedHighLevelFolders) {
             const subjectFolderInHighLevelFolder =
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+              window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
                 subject.poolName
               ]?.["folders"]?.[subjectName];
 
@@ -8074,7 +8075,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
               if (folderImportedFromPennsieve(subjectFolderInHighLevelFolder)) {
                 guidedModifyPennsieveFolder(subjectFolderInHighLevelFolder, "delete");
               } else {
-                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                   subject.poolName
                 ]["folders"][subjectName];
               }
@@ -8089,7 +8090,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           //Delete the subjects folders in the datasetStructeJSONObj
           for (const highLevelFolder of guidedHighLevelFolders) {
             const subjectFolderInHighLevelFolder =
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
+              window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
 
             if (subjectFolderInHighLevelFolder) {
               if (!warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown) {
@@ -8109,7 +8110,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
               if (folderImportedFromPennsieve(subjectFolderInHighLevelFolder)) {
                 guidedModifyPennsieveFolder(subjectFolderInHighLevelFolder, "delete");
               } else {
-                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
+                delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
               }
             }
           }
@@ -8138,10 +8139,10 @@ const attachGuidedMethodsToSodaJSONObj = () => {
 
       if (sample.sampleName === sampleName) {
         if (sample.poolName) {
-          //Delete the samples folder in the datasetStructureJSONObj
+          //Delete the samples folder in the window.datasetStructureJSONObj
           for (const highLevelFolder of guidedHighLevelFolders) {
             const sampleFolderInHighLevelFolder =
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+              window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
                 sample.poolName
               ]?.["folders"]?.[sample.subjectName]?.["folders"]?.[sampleName];
 
@@ -8163,7 +8164,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
               if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
                 guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
               } else {
-                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                   sample.poolName
                 ]["folders"][sample.subjectName]["folders"][sampleName];
               }
@@ -8175,10 +8176,10 @@ const attachGuidedMethodsToSodaJSONObj = () => {
             sample.poolName
           ][sample.subjectName][sampleName];
         } else {
-          //Delete the samples folder in the datasetStructureJSONObj
+          //Delete the samples folder in the window.datasetStructureJSONObj
           for (const highLevelFolder of guidedHighLevelFolders) {
             const sampleFolderInHighLevelFolder =
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+              window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
                 sample.subjectName
               ]?.["folders"]?.[sampleName];
 
@@ -8200,7 +8201,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
               if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
                 guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
               } else {
-                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                   sample.subjectName
                 ]["folders"][sampleName];
               }
@@ -8227,28 +8228,28 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     //Move the subjects folders in the datasetStructeJSONObj
     for (const highLevelFolder of guidedHighLevelFolders) {
       const subjectFolderOutsidePool =
-        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
+        window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
 
       if (subjectFolderOutsidePool) {
         // If the target folder doesn't exist, create it
-        if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]) {
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName] =
+        if (!window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]) {
+          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName] =
             newEmptyFolderObj();
         }
 
         if (folderImportedFromPennsieve(subjectFolderOutsidePool)) {
           guidedMovePennsieveFolder(
             subjectName,
-            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName],
-            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]
+            window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName],
+            window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]
           );
         } else {
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
+          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
             subjectName
           ] = subjectFolderOutsidePool;
         }
         // Delete the subject folder outside the pool
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
+        delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
       }
     }
 
@@ -8267,23 +8268,23 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     //Copy the subject folders from the pool into the root of the high level folder
     for (const highLevelFolder of guidedHighLevelFolders) {
       const subjectFolderInPoolFolder =
-        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
+        window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
           "folders"
         ]?.[subjectName];
       if (subjectFolderInPoolFolder) {
         if (folderImportedFromPennsieve(subjectFolderInPoolFolder)) {
           guidedMovePennsieveFolder(
             subjectName,
-            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
+            window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
               subjectName
             ],
-            datasetStructureJSONObj["folders"][highLevelFolder]
+            window.datasetStructureJSONObj["folders"][highLevelFolder]
           );
         } else {
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName] =
+          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName] =
             subjectFolderInPoolFolder;
         }
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
+        delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
           subjectName
         ];
       }
@@ -8397,10 +8398,10 @@ const updateFolderStructureUI = (folderPath) => {
   //TODO: Figure out why this is undefined when transitioning with no subjects
   $("#guided-input-global-path").val(`dataset_root/${folderPath}`);
   window.organizeDSglobalPath = $("#guided-input-global-path")[0];
-  var filtered = getGlobalPath(window.organizeDSglobalPath);
+  var filtered = window.getGlobalPath(window.organizeDSglobalPath);
   window.organizeDSglobalPath.value = filtered.slice(0, filtered.length).join("/") + "/";
 
-  var myPath = datasetStructureJSONObj;
+  var myPath = window.datasetStructureJSONObj;
   for (var item of filtered.slice(1, filtered.length)) {
     myPath = myPath["folders"][item];
   }
@@ -8412,8 +8413,8 @@ const updateFolderStructureUI = (folderPath) => {
   // reconstruct div with new elements
 
   //where folder section items will be created
-  listItems(myPath, "#items", 500, (reset = true));
-  getInFolder(".single-item", "#items", window.organizeDSglobalPath, datasetStructureJSONObj);
+  window.listItems(myPath, "#items", 500, true);
+  getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
 };
 
 const getGuidedAdditionalLinks = () => {
@@ -11285,7 +11286,7 @@ const renderPermissionsTable = () => {
 
 $("#guided-button-no-source-data").on("click", () => {
   //ask user to confirm they would like to delete source folder if it exists
-  if (datasetStructureJSONObj["folders"]["source"] != undefined) {
+  if (window.datasetStructureJSONObj["folders"]["source"] != undefined) {
     Swal.fire({
       allowOutsideClick: false,
       allowEscapeKey: false,
@@ -11311,7 +11312,7 @@ $("#guided-button-no-source-data").on("click", () => {
     }).then((result) => {
       if (result.isConfirmed) {
         //User agrees to delete source folder
-        delete datasetStructureJSONObj["folders"]["source"];
+        delete window.datasetStructureJSONObj["folders"]["source"];
       } else {
         //User cancels
         //reset button UI to how it was before the user clicked no source files
@@ -12296,7 +12297,7 @@ $(".guided--radio-button").on("click", async function () {
   if (selectedButton.data("warn-before-click") === true) {
     const buttonId = selectedButton.attr("id");
     if (buttonId === "guided-button-dataset-does-not-contain-code") {
-      const dataInCodeFolder = datasetStructureJSONObj?.["folders"]?.["code"];
+      const dataInCodeFolder = window.datasetStructureJSONObj?.["folders"]?.["code"];
       if (dataInCodeFolder) {
         if (!folderIsEmpty(dataInCodeFolder)) {
           const folderIsFromPennsieve = folderImportedFromPennsieve(dataInCodeFolder);
@@ -12330,7 +12331,7 @@ $(".guided--radio-button").on("click", async function () {
             if (folderIsFromPennsieve) {
               guidedModifyPennsieveFolder(dataInCodeFolder, "delete");
             } else {
-              delete datasetStructureJSONObj["folders"]["code"];
+              delete window.datasetStructureJSONObj["folders"]["code"];
             }
           } else {
             // return and do nothing
@@ -14637,7 +14638,7 @@ const getNextPageNotSkipped = (currentPageID) => {
 //next button click handler
 $("#guided-next-button").on("click", async function () {
   //Get the ID of the current page to handle actions on page leave (next button pressed)
-  window.pageBeingLeftID = CURRENT_PAGE.id;
+  window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
   if (window.pageBeingLeftID === "guided-dataset-generation-tab") {
     guidedUnSkipPage("guided-dataset-dissemination-tab");
@@ -14658,7 +14659,7 @@ $("#guided-next-button").on("click", async function () {
 
     //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
     //if more tabs in parent tab, go to next tab and update capsule
-    let targetPage = getNextPageNotSkipped(CURRENT_PAGE.id);
+    let targetPage = getNextPageNotSkipped(window.CURRENT_PAGE.id);
     let targetPageID = targetPage.id;
 
     await openPage(targetPageID);
@@ -14708,7 +14709,7 @@ const getPrevPageNotSkipped = (currentPageID) => {
 
 //back button click handler
 $("#guided-back-button").on("click", async () => {
-  window.pageBeingLeftID = CURRENT_PAGE.id;
+  window.pageBeingLeftID = window.CURRENT_PAGE.id;
   const targetPage = getPrevPageNotSkipped(window.pageBeingLeftID);
 
   // If the target page when clicking the back button does not exist, then we are on the first not skipped page.
@@ -15237,7 +15238,7 @@ const saveSubPageChanges = async (openSubPageID) => {
 //sub page next button click handler
 $("#guided-button-sub-page-continue").on("click", async () => {
   //Get the id of the parent page that's currently open
-  const currentParentPageID = CURRENT_PAGE.id;
+  const currentParentPageID = window.CURRENT_PAGE.id;
 
   //Get the id of the sub-page that's currently open
   const openSubPageID = getOpenSubPageInPage(currentParentPageID);
@@ -15282,7 +15283,7 @@ const getNonSkippedSubPages = (parentPageID) => {
 //sub page back button click handler
 $("#guided-button-sub-page-back").on("click", () => {
   //Get the id of the parent page that's currently open
-  const currentParentPageID = CURRENT_PAGE.id;
+  const currentParentPageID = window.CURRENT_PAGE.id;
 
   //Get the id of the sub-page that's currently open
   const openSubPageID = getOpenSubPageInPage(currentParentPageID);
@@ -15364,26 +15365,26 @@ window.createDragSort(guidedStudyTechniquesTagify);
 $("#guided-button-back").on("click", function () {
   var slashCount = window.organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount !== 1) {
-    var filtered = getGlobalPath(window.organizeDSglobalPath);
+    var filtered = window.getGlobalPath(window.organizeDSglobalPath);
     if (filtered.length === 1) {
       window.organizeDSglobalPath.value = filtered[0] + "/";
     } else {
       window.organizeDSglobalPath.value = filtered.slice(0, filtered.length - 1).join("/") + "/";
     }
-    var myPath = datasetStructureJSONObj;
+    var myPath = window.datasetStructureJSONObj;
     for (var item of filtered.slice(1, filtered.length - 1)) {
       myPath = myPath["folders"][item];
     }
     // construct UI with files and folders
     $("#items").empty();
-    already_created_elem = [];
+    window.already_created_elem = [];
     let items = loadFileFolder(myPath); //array -
     let total_item_count = items[1].length + items[0].length;
     //we have some items to display
-    listItems(myPath, "#items", 500, (reset = true));
+    window.listItems(myPath, "#items", 500, true);
     organizeLandingUIEffect();
     // reconstruct div with new elements
-    getInFolder(".single-item", "#items", window.organizeDSglobalPath, datasetStructureJSONObj);
+    getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
   }
 });
 
@@ -15468,13 +15469,13 @@ $("#guided-new-folder").on("click", () => {
               return el != "";
             });
 
-            var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+            var myPath = getRecursivePath(filtered, window.datasetStructureJSONObj);
             // update Json object with new folder created
             var renamedNewFolder = newFolderName;
             myPath["folders"][renamedNewFolder] = newEmptyFolderObj();
 
-            listItems(myPath, "#items", 500, (reset = true));
-            getInFolder(".single-item", "#items", window.organizeDSglobalPath, datasetStructureJSONObj);
+            window.listItems(myPath, "#items", 500, true);
+            getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
 
             // log that the folder was successfully added
             logCurationForAnalytics(
