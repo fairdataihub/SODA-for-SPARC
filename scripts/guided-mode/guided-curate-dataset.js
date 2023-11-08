@@ -7769,6 +7769,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       if (throwErrorIfPoolExists) {
         throw new Error("Pool names must be unique.");
       } else {
+        console.log(`${poolName} already exists}`);
         return;
       }
     }
@@ -7784,12 +7785,18 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       if (throwErrorIfSubjectExists) {
         throw new Error("Subject names must be unique.");
       } else {
+        console.log(`Subject ${subjectName} already exists`);
         return;
       }
     }
     this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] = {};
   };
-  sodaJSONObj.addSampleToSubject = function (sampleName, subjectPoolName, subjectName) {
+  sodaJSONObj.addSampleToSubject = function (
+    sampleName,
+    subjectPoolName,
+    subjectName,
+    throwErrorIfSubjectAlreadyHasSample = true
+  ) {
     const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
     //Combine sample data from samples in and out of pools
     let samples = [...samplesInPools, ...samplesOutsidePools];
@@ -7797,9 +7804,13 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     //Check samples already added and throw an error if a sample with the sample name already exists.
     for (const sample of samples) {
       if (sample.sampleName === sampleName) {
-        throw new Error(
-          `Sample names must be unique. \n${sampleName} already exists in ${sample.subjectName}`
-        );
+        if (throwErrorIfSubjectAlreadyHasSample) {
+          throw new Error(
+            `Sample names must be unique. \n${sampleName} already exists in ${sample.subjectName}`
+          );
+        } else {
+          console.log(`${sampleName} already exists in ${sample.subjectName}`);
+        }
       }
     }
 
