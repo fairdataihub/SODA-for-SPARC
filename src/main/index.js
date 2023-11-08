@@ -10,6 +10,8 @@ import { existsSync } from 'fs'
 import { JSONStorage } from "node-localstorage";
 import log from 'electron-log/main';
 
+import "./main-process/native-ui/dialogs/open-file"
+
 // Optional, initialize the logger for any renderer process
 log.initialize({ preload: true });
 

@@ -15469,7 +15469,7 @@ $("#guided-new-folder").on("click", () => {
               return el != "";
             });
 
-            var myPath = getRecursivePath(filtered, window.datasetStructureJSONObj);
+            var myPath = window.getRecursivePath(filtered, window.datasetStructureJSONObj);
             // update Json object with new folder created
             var renamedNewFolder = newFolderName;
             myPath["folders"][renamedNewFolder] = newEmptyFolderObj();
@@ -15510,10 +15510,10 @@ $("#guided-new-folder").on("click", () => {
 });
 
 $("#guided-imoprt-file").on("click", () => {
-  ipcRenderer.send("open-files-organize-datasets-dialog");
+  window.electron.ipcRenderer.send("open-files-organize-datasets-dialog");
 });
 $("#guided-import-folder").on("click", () => {
-  ipcRenderer.send("open-folders-organize-datasets-dialog");
+  window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog");
 });
 
 const guidedSaveDescriptionDatasetInformation = () => {

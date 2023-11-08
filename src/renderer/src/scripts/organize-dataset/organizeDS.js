@@ -134,7 +134,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
       if (result.isConfirmed) {
         let itemToRestore = itemToDelete;
         let filtered = window.getGlobalPath(organizeCurrentLocation);
-        let myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+        let myPath = window.getRecursivePath(filtered.slice(1), inputGlobal);
 
         if (filtered.length == 1) {
           let itemToRestore_new_key = itemToRestore.substring(0, itemToRestore.lastIndexOf("-"));
@@ -219,7 +219,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
       }).then((result) => {
         if (result.isConfirmed) {
           let filtered = window.getGlobalPath(organizeCurrentLocation);
-          let myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+          let myPath = window.getRecursivePath(filtered.slice(1), inputGlobal);
 
           $("div.single-item.selected-item > .folder_desc").each(function (index, current_element) {
             itemToDelete = $(current_element).text();
@@ -282,7 +282,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
         if (result.isConfirmed) {
           /// get current location of folders or files
           var filtered = window.getGlobalPath(organizeCurrentLocation);
-          var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+          var myPath = window.getRecursivePath(filtered.slice(1), inputGlobal);
           // update Json object with new folder created
           if (
             myPath[type][itemToDelete]["type"] === "bf" ||
@@ -544,7 +544,7 @@ const renameFolder = (
 
           // get location of current item in SODA JSON
           let filtered = window.getGlobalPath(organizeCurrentLocation);
-          let myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+          let myPath = window.getRecursivePath(filtered.slice(1), inputGlobal);
 
           // update UI with new name
           event1.parentElement.children[1].innerText = returnedName;
@@ -577,7 +577,7 @@ window.getGlobalPath = (path) => {
   });
 };
 
-const getGlobalPathFromString = (pathString) => {
+window.getGlobalPathFromString = (pathString) => {
   let jsonPathArray = pathString.split("/");
   return jsonPathArray.filter((el) => {
     return el != "";
@@ -681,7 +681,7 @@ const loadFileFolder = (myPath) => {
   return [folder_elem, file_elem];
 };
 
-const getRecursivePath = (filteredList, inputObj) => {
+window.getRecursivePath = (filteredList, inputObj) => {
   let myPath = inputObj;
   for (let item of filteredList) {
     if (item.trim() !== "") {
@@ -907,7 +907,7 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
 
   var filtered = window.getGlobalPath(organizeDSglobalPath);
 
-  var myPath = getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
+  var myPath = window.getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
 
   //SKIP OPTION
   if (btnId === "skip") {
@@ -2159,7 +2159,7 @@ const check_dataset_value = () => {
   }
   if (dataset_path.value != "dataset_root/") {
     var filtered = window.getGlobalPath(dataset_path);
-    var myPath = getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
+    var myPath = window.getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
     window.amount = 500;
     window.listItems(myPath, "items", 500);
     getInFolder(".single-item", "#items", dataset_path, window.datasetStructureJSONObj);
@@ -2178,7 +2178,7 @@ const beginScrollListen = () => {
 const lazyLoad = async () => {
   let total_items = window.already_created_elem.length;
   let filtered = window.getGlobalPath(dataset_path);
-  let myPath = getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
+  let myPath = window.getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
 
   if (item_box.childElementCount != 0) {
     if (

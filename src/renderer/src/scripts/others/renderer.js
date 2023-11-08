@@ -59,6 +59,7 @@ import {
   bfAccountOptions,
 } from '../globals'
 import checkForAnnouncements from './announcements'
+import {swalFileListSingleAction, swalFileListTripleAction} from "../utils/swal-utils"
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -4194,7 +4195,7 @@ window.sodaJSONObj = {};
 //             return el != "";
 //           });
 
-//           let myPath = getRecursivePath(filtered, window.datasetStructureJSONObj);
+//           let myPath = window.getRecursivePath(filtered, window.datasetStructureJSONObj);
 //           let renamedNewFolder = newFolderName;
 //           // update Json object with new folder created
 //           myPath["folders"][renamedNewFolder] = {
@@ -4598,9 +4599,9 @@ const showDefaultBFAccount = async () => {
 //   ipcRenderer.send("open-files-organize-datasets-dialog");
 // });
 
-// ipcRenderer.on("selected-files-organize-datasets", async (event, importedFiles) => {
-//   await addDataArrayToDatasetStructureAtPath(importedFiles);
-// });
+window.electron.ipcRenderer.on("selected-files-organize-datasets", async (event, importedFiles) => {
+  await addDataArrayToDatasetStructureAtPath(importedFiles);
+});
 
 // organizeDSaddFolders.addEventListener("click", function () {
 //   ipcRenderer.send("open-folders-organize-datasets-dialog");
@@ -4625,63 +4626,63 @@ const showDefaultBFAccount = async () => {
 //   return currentObject;
 // };
 
-// const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
-//   const currentFilesAtPath = Object.keys(datasetStructure.files);
-//   for (const fileKey of currentFilesAtPath) {
-//     const fileIsHidden = window.evaluateStringAgainstSdsRequirements(fileKey, "file-is-hidden");
-//     if (fileIsHidden) {
-//       delete datasetStructure["files"][fileKey];
-//     }
-//   }
+const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
+  const currentFilesAtPath = Object.keys(datasetStructure.files);
+  for (const fileKey of currentFilesAtPath) {
+    const fileIsHidden = window.evaluateStringAgainstSdsRequirements(fileKey, "file-is-hidden");
+    if (fileIsHidden) {
+      delete datasetStructure["files"][fileKey];
+    }
+  }
 
-//   const currentFoldersAtPath = Object.keys(datasetStructure.folders);
-//   for (const folderKey of currentFoldersAtPath) {
-//     removeHiddenFilesFromDatasetStructure(datasetStructure["folders"][folderKey]);
-//   }
-// };
+  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+  for (const folderKey of currentFoldersAtPath) {
+    removeHiddenFilesFromDatasetStructure(datasetStructure["folders"][folderKey]);
+  }
+};
 
-// const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
-//   const currentFoldersAtPath = Object.keys(datasetStructure.folders);
-//   for (const folderKey of currentFoldersAtPath) {
-//     const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
-//       folderKey,
-//       "folder-and-file-name-is-valid"
-//     );
-//     if (!folderNameIsValid) {
-//       const newFolderName = folderKey.replace(sparcFolderAndFileRegex, "-");
-//       const newFolderObj = { ...datasetStructure["folders"][folderKey] };
-//       if (!newFolderObj["action"].includes("renamed")) {
-//         newFolderObj["action"].push("renamed");
-//       }
-//       datasetStructure["folders"][newFolderName] = newFolderObj;
-//       delete datasetStructure["folders"][folderKey];
-//       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][newFolderName]);
-//     }
-//   }
-// };
+const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
+  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+  for (const folderKey of currentFoldersAtPath) {
+    const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
+      folderKey,
+      "folder-and-file-name-is-valid"
+    );
+    if (!folderNameIsValid) {
+      const newFolderName = folderKey.replace(sparcFolderAndFileRegex, "-");
+      const newFolderObj = { ...datasetStructure["folders"][folderKey] };
+      if (!newFolderObj["action"].includes("renamed")) {
+        newFolderObj["action"].push("renamed");
+      }
+      datasetStructure["folders"][newFolderName] = newFolderObj;
+      delete datasetStructure["folders"][folderKey];
+      replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][newFolderName]);
+    }
+  }
+};
 
-// const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
-//   const currentFilesAtPath = Object.keys(datasetStructure.files);
-//   for (const fileKey of currentFilesAtPath) {
-//     const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
-//       fileKey,
-//       "folder-and-file-name-is-valid"
-//     );
-//     if (!fileNameIsValid) {
-//       const newFileName = fileKey.replace(sparcFolderAndFileRegex, "-");
-//       const newFileObj = { ...datasetStructure["files"][fileKey] };
-//       if (!newFileObj["action"].includes("renamed")) {
-//         newFileObj["action"].push("renamed");
-//       }
-//       datasetStructure["files"][newFileName] = newFileObj;
-//       delete datasetStructure["files"][fileKey];
-//     }
-//   }
-//   const currentFoldersAtPath = Object.keys(datasetStructure.folders);
-//   for (const folderKey of currentFoldersAtPath) {
-//     replaceProblematicFilesWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
-//   }
-// };
+const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
+  const currentFilesAtPath = Object.keys(datasetStructure.files);
+  for (const fileKey of currentFilesAtPath) {
+    const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
+      fileKey,
+      "folder-and-file-name-is-valid"
+    );
+    if (!fileNameIsValid) {
+      const newFileName = fileKey.replace(sparcFolderAndFileRegex, "-");
+      const newFileObj = { ...datasetStructure["files"][fileKey] };
+      if (!newFileObj["action"].includes("renamed")) {
+        newFileObj["action"].push("renamed");
+      }
+      datasetStructure["files"][newFileName] = newFileObj;
+      delete datasetStructure["files"][fileKey];
+    }
+  }
+  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+  for (const folderKey of currentFoldersAtPath) {
+    replaceProblematicFilesWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
+  }
+};
 
 // const deleteProblematicFilesFromDatasetStructure = (datasetStructure) => {
 //   const currentFilesAtPath = Object.keys(datasetStructure.files);
@@ -4718,362 +4719,364 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
   };
   return testCases[stringCase];
 };
-// let loadingSweetAlert;
-// let loadingSweetAlertTimer;
+let loadingSweetAlert;
+let loadingSweetAlertTimer;
 
-// const showFileImportLoadingSweetAlert = (delayBeforeShowingSweetAlert) => {
-//   // Close any existing loading sweet alert if it exists
-//   closeFileImportLoadingSweetAlert();
+const showFileImportLoadingSweetAlert = (delayBeforeShowingSweetAlert) => {
+  // Close any existing loading sweet alert if it exists
+  closeFileImportLoadingSweetAlert();
 
-//   // Show the loading sweet alert after a short deleay to avoid flickering
-//   // if the loading is quick, the closeFileImportLoadingSweetAlert() function should
-//   // be called so that the loading sweet alert is not shown at all
-//   loadingSweetAlertTimer = setTimeout(() => {
-//     loadingSweetAlert = Swal.fire({
-//       title: "Importing your files and folders into SODA...",
-//       html: `
-//         <div class="lds-roller">
-//           <div></div>
-//           <div></div>
-//           <div></div>
-//           <div></div>
-//           <div></div>
-//           <div></div>
-//           <div></div>
-//           <div></div>
-//         </div>
-//       `,
-//       width: 800,
-//       heightAuto: false,
-//       width: 800,
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       allowOutsideClick: false,
-//       allowEscapeKey: false,
-//       showCancelButton: false,
-//       showConfirmButton: false,
-//       showCloseButton: false,
-//     });
-//   }, delayBeforeShowingSweetAlert);
-// };
+  // Show the loading sweet alert after a short deleay to avoid flickering
+  // if the loading is quick, the closeFileImportLoadingSweetAlert() function should
+  // be called so that the loading sweet alert is not shown at all
+  loadingSweetAlertTimer = setTimeout(() => {
+    loadingSweetAlert = Swal.fire({
+      title: "Importing your files and folders into SODA...",
+      html: `
+        <div class="lds-roller">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      `,
+      width: 800,
+      heightAuto: false,
+      width: 800,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showCancelButton: false,
+      showConfirmButton: false,
+      showCloseButton: false,
+    });
+  }, delayBeforeShowingSweetAlert);
+};
 
-// const closeFileImportLoadingSweetAlert = () => {
-//   // Clear any existing timer
-//   if (loadingSweetAlertTimer) {
-//     clearTimeout(loadingSweetAlertTimer);
-//   }
+const closeFileImportLoadingSweetAlert = () => {
+  // Clear any existing timer
+  if (loadingSweetAlertTimer) {
+    clearTimeout(loadingSweetAlertTimer);
+  }
 
-//   if (loadingSweetAlert) {
-//     loadingSweetAlert.close();
-//   }
-// };
+  if (loadingSweetAlert) {
+    loadingSweetAlert.close();
+  }
+};
 
-// const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileExplorerPath) => {
-//   const inaccessibleItems = [];
-//   const forbiddenFileNames = [];
-//   const problematicFolderNames = [];
-//   const problematicFileNames = [];
-//   const datasetStructure = {};
-//   const hiddenItems = [];
+const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileExplorerPath) => {
+  const inaccessibleItems = [];
+  const forbiddenFileNames = [];
+  const problematicFolderNames = [];
+  const problematicFileNames = [];
+  const datasetStructure = {};
+  const hiddenItems = [];
 
-//   showFileImportLoadingSweetAlert(500);
+  console.log("Selected items: ", itemPaths)
 
-//   // Function to traverse and build JSON structure
-//   const traverseAndBuildJson = async (pathToExplore, currentStructure, currentStructurePath) => {
-//     currentStructure["folders"] = currentStructure["folders"] || {};
-//     currentStructure["files"] = currentStructure["files"] || {};
+  showFileImportLoadingSweetAlert(500);
 
-//     try {
-//       const fsStatsObj = await fs.promises.stat(pathToExplore);
+  // Function to traverse and build JSON structure
+  const traverseAndBuildJson = async (pathToExplore, currentStructure, currentStructurePath) => {
+    currentStructure["folders"] = currentStructure["folders"] || {};
+    currentStructure["files"] = currentStructure["files"] || {};
 
-//       if (fsStatsObj.isDirectory()) {
-//         const folderName = path.basename(pathToExplore);
+    try {
+      if (await window.fs.isDirectory(pathToExplore)) {
+        const folderName = window.path.basename(pathToExplore);
 
-//         const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
-//           folderName,
-//           "folder-and-file-name-is-valid"
-//         );
-//         if (!folderNameIsValid) {
-//           problematicFolderNames.push(`${currentStructurePath}${folderName}`);
-//         }
+        const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
+          folderName,
+          "folder-and-file-name-is-valid"
+        );
+        if (!folderNameIsValid) {
+          problematicFolderNames.push(`${currentStructurePath}${folderName}`);
+        }
 
-//         // Add the folder to the JSON structure
-//         currentStructure["folders"][folderName] = {
-//           path: pathToExplore,
-//           type: "local",
-//           files: {},
-//           folders: {},
-//           action: ["new"],
-//         };
+        // Add the folder to the JSON structure
+        currentStructure["folders"][folderName] = {
+          path: pathToExplore,
+          type: "local",
+          files: {},
+          folders: {},
+          action: ["new"],
+        };
 
-//         // Recursively traverse the folder and build the JSON structure
-//         const folderContents = await fs.promises.readdir(pathToExplore);
-//         await Promise.all(
-//           folderContents.map(async (item) => {
-//             const itemPath = path.join(pathToExplore, item);
-//             await traverseAndBuildJson(
-//               itemPath,
-//               currentStructure["folders"][folderName],
-//               `${currentStructurePath}${folderName}/`
-//             );
-//           })
-//         );
-//       } else if (fsStatsObj.isFile()) {
-//         const fileName = path.basename(pathToExplore);
-//         const fileExtension = path.extname(pathToExplore);
-//         const relativePathToFileObject = currentStructurePath;
-//         const fileObject = {
-//           relativePath: `${relativePathToFileObject}${fileName}`,
-//           localFilePath: pathToExplore,
-//           fileName: fileName,
-//         };
+        // Recursively traverse the folder and build the JSON structure
+        const folderContents = await window.fs.readdir(pathToExplore);
+        await Promise.all(
+          folderContents.map(async (item) => {
+            const itemPath = window.path.join(pathToExplore, item);
+            await traverseAndBuildJson(
+              itemPath,
+              currentStructure["folders"][folderName],
+              `${currentStructurePath}${folderName}/`
+            );
+          })
+        );
+      } else if (await window.fs.isFile(pathToExplore)) {
+        console.log("Dealing with a file now")
+        const fileName = window.path.basename(pathToExplore);
+        const fileExtension = window.path.extname(pathToExplore);
+        const relativePathToFileObject = currentStructurePath;
+        const fileObject = {
+          relativePath: `${relativePathToFileObject}${fileName}`,
+          localFilePath: pathToExplore,
+          fileName: fileName,
+        };
 
-//         const fileIsInForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
-//           fileName,
-//           "file-is-in-forbidden-files-list"
-//         );
+        const fileIsInForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
+          fileName,
+          "file-is-in-forbidden-files-list"
+        );
 
-//         if (fileIsInForbiddenFilesList) {
-//           forbiddenFileNames.push(fileObject);
-//         } else {
-//           // Check if the file name has any characters that do not comply with SPARC naming requirements
-//           const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
-//             fileName,
-//             "folder-and-file-name-is-valid"
-//           );
-//           if (!fileNameIsValid) {
-//             problematicFileNames.push(fileObject);
-//           }
+        if (fileIsInForbiddenFilesList) {
+          forbiddenFileNames.push(fileObject);
+        } else {
+          // Check if the file name has any characters that do not comply with SPARC naming requirements
+          const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
+            fileName,
+            "folder-and-file-name-is-valid"
+          );
+          if (!fileNameIsValid) {
+            problematicFileNames.push(fileObject);
+          }
 
-//           const fileIsHidden = window.evaluateStringAgainstSdsRequirements(fileName, "file-is-hidden");
-//           if (fileIsHidden) {
-//             hiddenItems.push(fileObject);
-//           }
+          const fileIsHidden = window.evaluateStringAgainstSdsRequirements(fileName, "file-is-hidden");
+          if (fileIsHidden) {
+            hiddenItems.push(fileObject);
+          }
 
-//           // Add the file to the current structure
-//           currentStructure["files"][fileName] = {
-//             path: pathToExplore,
-//             type: "local",
-//             description: "",
-//             "additional-metadata": "",
-//             action: ["new"],
-//             extension: fileExtension,
-//           };
-//         }
-//       }
-//     } catch (error) {
-//       inaccessibleItems.push(pathToExplore);
-//     }
-//   };
+          // Add the file to the current structure
+          currentStructure["files"][fileName] = {
+            path: pathToExplore,
+            type: "local",
+            description: "",
+            "additional-metadata": "",
+            action: ["new"],
+            extension: fileExtension,
+          };
+        }
+      }
+    } catch (error) {
+      console.error(error)
+      inaccessibleItems.push(pathToExplore);
+    }
+  };
 
-//   // Process itemPaths in parallel
-//   await Promise.all(
-//     itemPaths.map(async (itemPath) => {
-//       await traverseAndBuildJson(itemPath, datasetStructure, currentFileExplorerPath);
-//     })
-//   );
+  // Process itemPaths in parallel
+  await Promise.all(
+    itemPaths.map(async (itemPath) => {
+      await traverseAndBuildJson(itemPath, datasetStructure, currentFileExplorerPath);
+    })
+  );
 
-//   closeFileImportLoadingSweetAlert();
+  closeFileImportLoadingSweetAlert();
 
-//   if (inaccessibleItems.length > 0) {
-//     await swalFileListSingleAction(
-//       inaccessibleItems,
-//       "SODA was unable to access some of your imported files",
-//       "The files listed below will not be imported into SODA:",
-//       false
-//     );
-//   }
+  if (inaccessibleItems.length > 0) {
+    await swalFileListSingleAction(
+      inaccessibleItems,
+      "SODA was unable to access some of your imported files",
+      "The files listed below will not be imported into SODA:",
+      false
+    );
+  }
 
-//   if (forbiddenFileNames.length > 0) {
-//     await swalFileListSingleAction(
-//       forbiddenFileNames.map((file) => file.relativePath),
-//       "Forbidden file names detected",
-//       "The files listed below do not comply with the SPARC data standards and will not be imported:",
-//       false
-//     );
-//   }
+  if (forbiddenFileNames.length > 0) {
+    await swalFileListSingleAction(
+      forbiddenFileNames.map((file) => file.relativePath),
+      "Forbidden file names detected",
+      "The files listed below do not comply with the SPARC data standards and will not be imported:",
+      false
+    );
+  }
 
-//   if (problematicFolderNames.length > 0) {
-//     const userResponse = await swalFileListTripleAction(
-//       problematicFolderNames,
-//       "<p>Folder name modifications</p>",
-//       `The folders listed below contain the special characters "#", "&", "%", or "+"
-//       which are typically not recommended per the SPARC data standards.
-//       You may choose to either keep them as is, or replace the characters with '-'.
-//       `,
-//       "Replace the special characters with '-'",
-//       "Keep the folder names as they are",
-//       "Cancel import",
-//       "What would you like to do with the folders with special characters?"
-//     );
-//     if (userResponse === "confirm") {
-//       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure);
-//     }
-//     // If the userResponse is "deny", nothing needs to be done
-//     if (userResponse === "cancel") {
-//       throw new Error("Importation cancelled");
-//     }
-//   }
+  if (problematicFolderNames.length > 0) {
+    const userResponse = await swalFileListTripleAction(
+      problematicFolderNames,
+      "<p>Folder name modifications</p>",
+      `The folders listed below contain the special characters "#", "&", "%", or "+"
+      which are typically not recommended per the SPARC data standards.
+      You may choose to either keep them as is, or replace the characters with '-'.
+      `,
+      "Replace the special characters with '-'",
+      "Keep the folder names as they are",
+      "Cancel import",
+      "What would you like to do with the folders with special characters?"
+    );
+    if (userResponse === "confirm") {
+      replaceProblematicFoldersWithSDSCompliantNames(datasetStructure);
+    }
+    // If the userResponse is "deny", nothing needs to be done
+    if (userResponse === "cancel") {
+      throw new Error("Importation cancelled");
+    }
+  }
 
-//   if (problematicFileNames.length > 0) {
-//     const userResponse = await swalFileListTripleAction(
-//       problematicFileNames.map((file) => file.relativePath),
-//       "<p>File name modifications</p>",
-//       `The files listed below contain the special characters "#", "&", "%", or "+"
-//       which are typically not recommended per the SPARC data standards.
-//       You may choose to either keep them as is, or replace the characters with '-'.
-//       `,
-//       "Replace the special characters with '-'",
-//       "Keep the file names as they are",
-//       "Cancel import",
-//       "What would you like to do with the files with special characters?"
-//     );
-//     if (userResponse === "confirm") {
-//       replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
-//     }
-//     // If the userResponse is "deny", nothing needs to be done
-//     if (userResponse === "cancel") {
-//       throw new Error("Importation cancelled");
-//     }
-//   }
+  if (problematicFileNames.length > 0) {
+    const userResponse = await swalFileListTripleAction(
+      problematicFileNames.map((file) => file.relativePath),
+      "<p>File name modifications</p>",
+      `The files listed below contain the special characters "#", "&", "%", or "+"
+      which are typically not recommended per the SPARC data standards.
+      You may choose to either keep them as is, or replace the characters with '-'.
+      `,
+      "Replace the special characters with '-'",
+      "Keep the file names as they are",
+      "Cancel import",
+      "What would you like to do with the files with special characters?"
+    );
+    if (userResponse === "confirm") {
+      replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
+    }
+    // If the userResponse is "deny", nothing needs to be done
+    if (userResponse === "cancel") {
+      throw new Error("Importation cancelled");
+    }
+  }
 
-//   if (hiddenItems.length > 0) {
-//     const userResponse = await swalFileListTripleAction(
-//       hiddenItems.map((file) => file.relativePath),
-//       "<p>Hidden files detected</p>",
-//       `Hidden files are typically not recommend per the SPARC data standards, but you can choose to keep them if you wish.`,
-//       "Import the hidden files into SODA",
-//       "Do not import the hidden files",
-//       "Cancel import",
-//       "What would you like to do with the hidden files?"
-//     );
-//     // If the userResponse is "confirm", nothing needs to be done
-//     if (userResponse === "deny") {
-//       removeHiddenFilesFromDatasetStructure(datasetStructure);
-//     }
-//     if (userResponse === "cancel") {
-//       throw new Error("Importation cancelled");
-//     }
-//   }
+  if (hiddenItems.length > 0) {
+    const userResponse = await swalFileListTripleAction(
+      hiddenItems.map((file) => file.relativePath),
+      "<p>Hidden files detected</p>",
+      `Hidden files are typically not recommend per the SPARC data standards, but you can choose to keep them if you wish.`,
+      "Import the hidden files into SODA",
+      "Do not import the hidden files",
+      "Cancel import",
+      "What would you like to do with the hidden files?"
+    );
+    // If the userResponse is "confirm", nothing needs to be done
+    if (userResponse === "deny") {
+      removeHiddenFilesFromDatasetStructure(datasetStructure);
+    }
+    if (userResponse === "cancel") {
+      throw new Error("Importation cancelled");
+    }
+  }
 
-//   // If the dataset structure is empty after processing the imported files and folders, throw an error
-//   if (
-//     Object.keys(datasetStructure?.["folders"]).length === 0 &&
-//     Object.keys(datasetStructure?.["files"]).length === 0
-//   ) {
-//     throw new Error("Error building dataset structure");
-//   }
+  // If the dataset structure is empty after processing the imported files and folders, throw an error
+  if (
+    Object.keys(datasetStructure?.["folders"]).length === 0 &&
+    Object.keys(datasetStructure?.["files"]).length === 0
+  ) {
+    throw new Error("Error building dataset structure");
+  }
 
-//   return datasetStructure;
-// };
+  return datasetStructure;
+};
 
-// const mergeLocalAndRemoteDatasetStructure = async (
-//   datasetStructureToMerge,
-//   currentFileExplorerPath
-// ) => {
-//   const duplicateFiles = [];
+const mergeLocalAndRemoteDatasetStructure = async (
+  datasetStructureToMerge,
+  currentFileExplorerPath
+) => {
+  const duplicateFiles = [];
 
-//   const traverseAndMergeDatasetJsonObjects = async (datasetStructureToMerge, recursedFilePath) => {
-//     const currentNestedPathArray = getGlobalPathFromString(recursedFilePath);
-//     const existingDatasetJsonAtPath = getRecursivePath(
-//       currentNestedPathArray.slice(1),
-//       window.datasetStructureJSONObj
-//     ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
+  const traverseAndMergeDatasetJsonObjects = async (datasetStructureToMerge, recursedFilePath) => {
+    const currentNestedPathArray = window.getGlobalPathFromString(recursedFilePath);
+    const existingDatasetJsonAtPath = window.getRecursivePath(
+      currentNestedPathArray.slice(1),
+      window.datasetStructureJSONObj
+    ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
 
-//     const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]);
-//     const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]);
-//     const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]);
-//     const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]);
+    const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]);
+    const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]);
+    const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]);
+    const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]);
 
-//     for (const folder of foldersBeingMergedToPath) {
-//       if (ExistingFoldersAtPath.includes(folder)) {
-//         // If the folder already exists, leave it as is...
-//       } else {
-//         // Otherwise add a new folder to the existing dataset structure
-//         existingDatasetJsonAtPath["folders"][folder] = {
-//           type: "local",
-//           files: {},
-//           folders: {},
-//           action: ["new"],
-//         };
-//       }
-//     }
+    for (const folder of foldersBeingMergedToPath) {
+      if (ExistingFoldersAtPath.includes(folder)) {
+        // If the folder already exists, leave it as is...
+      } else {
+        // Otherwise add a new folder to the existing dataset structure
+        existingDatasetJsonAtPath["folders"][folder] = {
+          type: "local",
+          files: {},
+          folders: {},
+          action: ["new"],
+        };
+      }
+    }
 
-//     for (const file of filesBeingMergedToPath) {
-//       if (ExistingFilesAtPath.includes(file)) {
-//         duplicateFiles.push({
-//           fileName: file,
-//           virtualFilePath: recursedFilePath,
-//           fileObject: datasetStructureToMerge["files"][file],
-//         });
-//       } else {
-//         existingDatasetJsonAtPath["files"][file] = datasetStructureToMerge["files"][file];
-//       }
-//     }
+    for (const file of filesBeingMergedToPath) {
+      if (ExistingFilesAtPath.includes(file)) {
+        duplicateFiles.push({
+          fileName: file,
+          virtualFilePath: recursedFilePath,
+          fileObject: datasetStructureToMerge["files"][file],
+        });
+      } else {
+        existingDatasetJsonAtPath["files"][file] = datasetStructureToMerge["files"][file];
+      }
+    }
 
-//     for (const folder of foldersBeingMergedToPath) {
-//       await traverseAndMergeDatasetJsonObjects(
-//         datasetStructureToMerge["folders"][folder],
-//         `${recursedFilePath}${folder}/`
-//       );
-//     }
-//   };
+    for (const folder of foldersBeingMergedToPath) {
+      await traverseAndMergeDatasetJsonObjects(
+        datasetStructureToMerge["folders"][folder],
+        `${recursedFilePath}${folder}/`
+      );
+    }
+  };
 
-//   showFileImportLoadingSweetAlert(500);
+  showFileImportLoadingSweetAlert(500);
 
-//   // DO THE MERGING
-//   await traverseAndMergeDatasetJsonObjects(datasetStructureToMerge, currentFileExplorerPath);
+  // DO THE MERGING
+  await traverseAndMergeDatasetJsonObjects(datasetStructureToMerge, currentFileExplorerPath);
 
-//   closeFileImportLoadingSweetAlert();
+  closeFileImportLoadingSweetAlert();
 
-//   if (duplicateFiles.length > 0) {
-//     const userConfirmedFileOverwrite = await swalFileListDoubleAction(
-//       duplicateFiles.map((file) => `${file.virtualFilePath}${file.fileName}`),
-//       "Duplicate files detected",
-//       ` 
-//         You have two options for the duplicate files:
-//         <br />
-//         <span
-//           class="text-left"
-//           style="display: flex; flex-direction: column; margin-bottom: 1em">
-//           <b>Overwrite the existing files:</b> This option will completely replace existing files with the files being imported.
-//           This option is recommended if the files have changed since they were last imported into SODA.
-//           <br />
-//           <b>Skip the duplicate files:</b> This option will not import the duplicate files into SODA.
-//           This option is recommended if the files have not changed since they were last imported into SODA.
-//         </span>
-//       `,
-//       "Overwrite the existing files",
-//       "Skip the duplicate files",
-//       "What would you like to do with the duplicate files?"
-//     );
-//     if (userConfirmedFileOverwrite) {
-//       for (const file of duplicateFiles) {
-//         const currentNestedPathArray = getGlobalPathFromString(file.virtualFilePath);
-//         // remove first and last elements from array
-//         currentNestedPathArray.shift();
-//         const folderContainingFileToOverwrite = getRecursivePath(
-//           currentNestedPathArray,
-//           window.datasetStructureJSONObj
-//         );
+  if (duplicateFiles.length > 0) {
+    const userConfirmedFileOverwrite = await swalFileListDoubleAction(
+      duplicateFiles.map((file) => `${file.virtualFilePath}${file.fileName}`),
+      "Duplicate files detected",
+      ` 
+        You have two options for the duplicate files:
+        <br />
+        <span
+          class="text-left"
+          style="display: flex; flex-direction: column; margin-bottom: 1em">
+          <b>Overwrite the existing files:</b> This option will completely replace existing files with the files being imported.
+          This option is recommended if the files have changed since they were last imported into SODA.
+          <br />
+          <b>Skip the duplicate files:</b> This option will not import the duplicate files into SODA.
+          This option is recommended if the files have not changed since they were last imported into SODA.
+        </span>
+      `,
+      "Overwrite the existing files",
+      "Skip the duplicate files",
+      "What would you like to do with the duplicate files?"
+    );
+    if (userConfirmedFileOverwrite) {
+      for (const file of duplicateFiles) {
+        const currentNestedPathArray = window.getGlobalPathFromString(file.virtualFilePath);
+        // remove first and last elements from array
+        currentNestedPathArray.shift();
+        const folderContainingFileToOverwrite = window.getRecursivePath(
+          currentNestedPathArray,
+          window.datasetStructureJSONObj
+        );
 
-//         const fileTypeOfObjectToOverwrite =
-//           folderContainingFileToOverwrite["files"][file.fileName]?.["type"];
+        const fileTypeOfObjectToOverwrite =
+          folderContainingFileToOverwrite["files"][file.fileName]?.["type"];
 
-//         // overwrite the existing file with the new file
-//         folderContainingFileToOverwrite["files"][file.fileName] = file.fileObject;
+        // overwrite the existing file with the new file
+        folderContainingFileToOverwrite["files"][file.fileName] = file.fileObject;
 
-//         // if the file being overwritten was from Pennsieve, add the "updated" action to the file
-//         if (
-//           fileTypeOfObjectToOverwrite === "bf" &&
-//           !folderContainingFileToOverwrite["files"][file.fileName]["action"].includes("updated")
-//         ) {
-//           folderContainingFileToOverwrite["files"][file.fileName]["action"].push("updated");
-//         }
-//       }
-//     }
-//   }
-// };
+        // if the file being overwritten was from Pennsieve, add the "updated" action to the file
+        if (
+          fileTypeOfObjectToOverwrite === "bf" &&
+          !folderContainingFileToOverwrite["files"][file.fileName]["action"].includes("updated")
+        ) {
+          folderContainingFileToOverwrite["files"][file.fileName]["action"].push("updated");
+        }
+      }
+    }
+  }
+};
 
 // const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath) => {
 //   const duplicateFolderNames = [];
@@ -5098,54 +5101,54 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 //   };
 // };
 
-// const addDataArrayToDatasetStructureAtPath = async (importedData) => {
-//   // If no data was imported ()
-//   const numberOfItemsToImport = importedData.length;
-//   if (numberOfItemsToImport === 0) {
-//     window.notyf.open({
-//       type: "info",
-//       message: "No folders/files were selected to import",
-//       duration: 4000,
-//     });
-//     return;
-//   }
-//   try {
-//     // STEP 1: Build the JSON object from the imported data
-//     // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
-//     const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
+const addDataArrayToDatasetStructureAtPath = async (importedData) => {
+  // If no data was imported ()
+  const numberOfItemsToImport = importedData.length;
+  if (numberOfItemsToImport === 0) {
+    window.notyf.open({
+      type: "info",
+      message: "No folders/files were selected to import",
+      duration: 4000,
+    });
+    return;
+  }
+  try {
+    // STEP 1: Build the JSON object from the imported data
+    // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
+    const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
 
-//     const builtDatasetStructure = await buildDatasetStructureJsonFromImportedData(
-//       importedData,
-//       currentFileExplorerPath
-//     );
+    const builtDatasetStructure = await buildDatasetStructureJsonFromImportedData(
+      importedData,
+      currentFileExplorerPath
+    );
 
-//     // Step 2: Add the imported data to the dataset structure (This function handles duplicate files, etc)
-//     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
+    // Step 2: Add the imported data to the dataset structure (This function handles duplicate files, etc)
+    await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
 
-//     // Step 3: Update the UI
-//     const currentPathArray = window.getGlobalPath(window.organizeDSglobalPath); // ['dataset_root', 'code']
-//     const nestedJsonDatasetStructure = getRecursivePath(
-//       currentPathArray.slice(1),
-//       window.datasetStructureJSONObj
-//     );
-//     window.listItems(nestedJsonDatasetStructure, "#items", 500, true);
-//     window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
+    // Step 3: Update the UI
+    const currentPathArray = window.getGlobalPath(window.organizeDSglobalPath); // ['dataset_root', 'code']
+    const nestedJsonDatasetStructure = window.getRecursivePath(
+      currentPathArray.slice(1),
+      window.datasetStructureJSONObj
+    );
+    window.listItems(nestedJsonDatasetStructure, "#items", 500, true);
+    window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
 
-//     // Step 4: Update successful, show success message
-//     window.notyf.open({
-//       type: "success",
-//       message: `Data successfully imported`,
-//       duration: 3000,
-//     });
-//   } catch (error) {
-//     closeFileImportLoadingSweetAlert();
-//     window.notyf.open({
-//       type: error.message === "Importation cancelled" ? "info-grey" : "error",
-//       message: error.message || "Error importing data",
-//       duration: 3000,
-//     });
-//   }
-// };
+    // Step 4: Update successful, show success message
+    window.notyf.open({
+      type: "success",
+      message: `Data successfully imported`,
+      duration: 3000,
+    });
+  } catch (error) {
+    closeFileImportLoadingSweetAlert();
+    window.notyf.open({
+      type: error.message === "Importation cancelled" ? "info-grey" : "error",
+      message: error.message || "Error importing data",
+      duration: 3000,
+    });
+  }
+};
 
 // const allowDrop = (ev) => {
 //   ev.preventDefault();
@@ -5734,13 +5737,13 @@ $(document).ready(function () {
 //   }
 // });
 
-// const select_items_ctrl = (items, event, isDragging) => {
-//   if (event["ctrlKey"]) {
-//   } else {
-//     $(".selected-item").removeClass("selected-item");
-//     dragselect_area.clearSelection();
-//   }
-// };
+const select_items_ctrl = (items, event, isDragging) => {
+  if (event["ctrlKey"]) {
+  } else {
+    $(".selected-item").removeClass("selected-item");
+    dragselect_area.clearSelection();
+  }
+};
 
 const select_items = (items, event, isDragging) => {
   let selected_class = "";
@@ -5973,6 +5976,10 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
   let file_elements = [],
     folder_elements = [];
   let count = 0;
+  let cloud_item = "";
+  let deleted_folder = false;
+  let deleted_file = false;
+
 
   //start creating folder elements to be rendered
   if (Object.keys(sortedObj["folders"]).length > 0) {
@@ -6063,8 +6070,8 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         }
       }
 
-      let cloud_item = "";
-      let deleted_folder = false;
+      cloud_item = "";
+      deleted_folder = false;
 
       if ("action" in sortedObj["folders"][item]) {
         if (
@@ -6403,7 +6410,7 @@ window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
       var filtered = jsonPathArray.slice(1).filter(function (el) {
         return el.trim() != "";
       });
-      var myPath = getRecursivePath(filtered, globalObj);
+      var myPath = window.getRecursivePath(filtered, globalObj);
       if (myPath.length === 2) {
         filtered = myPath[1];
         currentLocation.value = "dataset_root/" + filtered.join("/") + "/";
@@ -6432,7 +6439,7 @@ window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
 //   var fileName = ev.parentElement.innerText;
 //   /// get current location of files in JSON object
 //   var filtered = window.getGlobalPath(window.organizeDSglobalPath);
-//   var myPath = getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
+//   var myPath = window.getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
 //   //// load existing metadata/description
 //   loadDetailsContextMenu(
 //     fileName,
@@ -6451,7 +6458,7 @@ window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
 // const updateFileDetails = (ev) => {
 //   var fileName = fileNameForEdit;
 //   var filtered = window.getGlobalPath(window.organizeDSglobalPath);
-//   var myPath = getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
+//   var myPath = window.getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
 //   triggerManageDetailsPrompts(
 //     ev,
 //     fileName,

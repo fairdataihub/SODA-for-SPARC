@@ -1,4 +1,4 @@
-const { default: Swal } = require("sweetalert2");
+import Swal from "sweetalert2";
 
 const swalShowError = async (title, errorText) => {
   await Swal.fire({
@@ -40,7 +40,7 @@ export const swalFileListSingleAction = async (fileList, title, helpText, postAc
   });
 };
 
-const swalFileListDoubleAction = async (
+export const swalFileListDoubleAction = async (
   fileList,
   title,
   helpText,

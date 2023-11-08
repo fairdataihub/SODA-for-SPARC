@@ -71,6 +71,20 @@ if (process.contextIsolated) {
       },
       readdirSync: (dirpath) => {
         return fs.readdirSync(dirpath)
+      },
+      stat: async (filepath) => {
+        return await fs.stat(filepath)
+      },
+      readdir: async (dirpath) => {
+        return await fs.readdir(dirpath)
+      },
+      isDirectory: async (filepath) => {
+        const fsStatsObj = await fs.stat(filepath);
+        return fsStatsObj.isDirectory();
+      },
+      isFile: async (filepath) => {
+        const fsStatsObj = await fs.stat(filepath);
+        return fsStatsObj.isFile();
       }
     })
     contextBridge.exposeInMainWorld('process', {
@@ -91,6 +105,12 @@ if (process.contextIsolated) {
       extname: (fileName) => {
         return path.extname(fileName)
       },
+      basename: (filepath) => {
+        return path.basename(filepath)
+      },
+      extname: (filepath) => {
+        return path.extname(filepath)
+      }
     })
     contextBridge.exposeInMainWorld('log', {
       info: (message) => {
