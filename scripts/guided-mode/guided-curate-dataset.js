@@ -4067,6 +4067,7 @@ const guidedSkipPage = (pageId) => {
   if (page.classList.contains("guided--page")) {
     // replace -tab with -capsule  in pageId string
     const pagesCapsule = pageId.replace("-tab", "-capsule");
+    console.log(pagesCapsule);
     document.getElementById(pagesCapsule).classList.add("hidden");
   }
   if (page.classList.contains("sub-page")) {
@@ -4094,6 +4095,7 @@ const guidedUnSkipPage = (pageId) => {
   if (page.classList.contains("guided--page")) {
     // replace -tab with -capsule  in pageId string
     const pagesCapsule = pageId.replace("-tab", "-capsule");
+    console.log(pagesCapsule);
     document.getElementById(pagesCapsule).classList.remove("hidden");
   }
   if (page.classList.contains("sub-page")) {
@@ -11011,8 +11013,15 @@ document
     const spreadsheet = xlsx.readFile(savedTemplatePath);
     const worksheet = spreadsheet.Sheets[spreadsheet.SheetNames[0]];
     const sheetData = xlsx.utils.sheet_to_json(worksheet, { raw: true });
-    console.log(sheetData);
-    console.log(spreadsheet);
+    const subjects = [];
+    const pools = [];
+    const samples = [];
+    for (const row of sheetData) {
+      const subjectName = row["Subject ID"];
+      subjects.push(subjectName);
+    }
+    console.log("subjects", subjects);
+    guidedAddListOfSubjects(subjects, true);
   });
 
 const guidedExtractEntityNamesFromFolders = async (entityType) => {
@@ -11029,6 +11038,11 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
   const validSubjecNames = [];
   const invalidSubjectNames = [];
   for (const subjectName of subjectNameArray) {
+    if (subjectName.length === 0) {
+      console.log("Skipping empty subject name");
+      continue;
+    }
+
     const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
       subjectName,
       "string-adheres-to-identifier-conventions"
@@ -11048,10 +11062,6 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
     );
   }
 
-  // Get the existing subjects added to the dataset to check for duplicates
-  // const existingSubjects = getExistingSubjectNames();
-  const existingSubjects = ["sub-animal-1", "sub-animal-2", "sub-3"];
-
   // append sub- to each subject name if it doesn't already start with sub-
   const formattedSubjectNameArray = validSubjecNames.map((subjectName) => {
     if (!subjectName.startsWith("sub-")) {
@@ -11059,8 +11069,11 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
     }
     return subjectName;
   });
+  // Remove empty strings from the array
+  formattedSubjectNameArray.filter((subjectName) => subjectName.length > 0);
 
-  console.log("formattedSubjectNameArray", formattedSubjectNameArray);
+  // Get an array of existing subjects to check for duplicates
+  const existingSubjects = getExistingSubjectNames();
 
   // Array of the subjects that already exist in the dataset
   const duplicateSubjects = formattedSubjectNameArray.filter((subjectName) =>
@@ -11111,18 +11124,12 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
 };
 
 ipcRenderer.on("selected-subject-names-from-dialog", async (event, folders) => {
-  const subjectNames = folders.map((folder) => {
-    const folderName = path.basename(folder);
-    return folderName;
-  });
+  const subjectNames = folders.map((folder) => path.basename(folder));
   guidedAddListOfSubjects(subjectNames, true);
 });
 
 ipcRenderer.on("selected-sample-names-from-dialog", async (event, folders) => {
-  const sampleNames = folders.map((folder) => {
-    const folderName = path.basename(folder);
-    return folderName;
-  });
+  const sampleNames = folders.map((folder) => path.basename(folder));
   console.log(sampleNames);
 });
 
