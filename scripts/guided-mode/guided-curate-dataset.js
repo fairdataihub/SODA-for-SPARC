@@ -10915,6 +10915,22 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
   try {
     const workbook = new excel4node.Workbook();
     const worksheet = workbook.addWorksheet("Subject structure");
+    const sodaGreenHeaderStyle = workbook.createStyle({
+      font: {
+        color: "#ffffff",
+        size: 12,
+        bold: true,
+      },
+      fill: {
+        type: "pattern",
+        patternType: "solid",
+        bgColor: "#13716d",
+        fgColor: "#13716d",
+      },
+    });
+
+    // Set the column widths
+    worksheet.column(1).setWidth(30);
 
     const datasetHasPools = document
       .getElementById("guided-button-subjects-are-pooled")
@@ -10923,17 +10939,21 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
       .getElementById("guided-button-subjects-have-samples")
       .classList.contains("selected");
     const headers = ["Subject ID"];
+
     if (datasetHasPools) {
       headers.push("Pool ID");
+      worksheet.column(2).setWidth(30);
     }
     if (datasetHasSamples) {
       headers.push("Sample ID");
+      worksheet.column(3).setWidth(30);
     }
 
     for (i = 0; i < headers.length; i++) {
-      worksheet.cell(1, i + 1).style.fill.backgroundColor = "#13716d";
-      worksheet.cell(1, i + 1).style.font.color = "#ffffff";
-      worksheet.cell(1, i + 1).string(headers[i]);
+      worksheet
+        .cell(1, i + 1)
+        .string(headers[i])
+        .style(sodaGreenHeaderStyle);
     }
 
     // write the subjects to the spreadsheet
