@@ -10913,14 +10913,27 @@ document
   });
 ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (event, path) => {
   try {
-    console.log("Path selected: ", path);
-
     const workbook = new excel4node.Workbook();
     const worksheet = workbook.addWorksheet("Subject structure");
-    // write the columns to the spreadsheet
-    const columns = ["Subject ID"];
-    for (i = 0; i < columns.length; i++) {
-      worksheet.cell(1, i + 1).string(columns[i]);
+
+    const datasetHasPools = document
+      .getElementById("guided-button-subjects-are-pooled")
+      .classList.contains("selected");
+    const datasetHasSamples = document
+      .getElementById("guided-button-subjects-have-samples")
+      .classList.contains("selected");
+    const headers = ["Subject ID"];
+    if (datasetHasPools) {
+      headers.push("Pool ID");
+    }
+    if (datasetHasSamples) {
+      headers.push("Sample ID");
+    }
+
+    for (i = 0; i < headers.length; i++) {
+      worksheet.cell(1, i + 1).style.fill.backgroundColor = "#13716d";
+      worksheet.cell(1, i + 1).style.font.color = "#ffffff";
+      worksheet.cell(1, i + 1).string(headers[i]);
     }
 
     // write the subjects to the spreadsheet
