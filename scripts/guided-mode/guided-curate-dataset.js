@@ -11012,7 +11012,7 @@ document
     const xlsx = require("xlsx");
     const spreadsheet = xlsx.readFile(savedTemplatePath);
     const worksheet = spreadsheet.Sheets[spreadsheet.SheetNames[0]];
-    const sheetData = xlsx.utils.sheet_to_json(worksheet, { raw: true });
+    const sheetData = xlsx.utils.sheet_to_json(worksheet, { defval: "" });
     const subjects = [];
     const pools = [];
     const samples = [];
@@ -11020,7 +11020,8 @@ document
       const subjectName = row["Subject ID"];
       subjects.push(subjectName);
     }
-    console.log("subjects", subjects);
+    const stringTypes = subjects.map((subject) => typeof subject);
+    console.log("stringTypes", stringTypes);
     guidedAddListOfSubjects(subjects, true);
   });
 
