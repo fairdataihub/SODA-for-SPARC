@@ -10914,6 +10914,14 @@ const getExistingSubjectNames = () => {
   return subjectNames;
 };
 
+const getSubjectsSamples = (subjectName) => {
+  const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
+};
+
+const getExistingPoolNames = () => {
+  return Object.keys(sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"]);
+};
+
 const getExistingSampleNames = () => {
   // Get all samples in pools and outside of pools
   const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
@@ -10953,6 +10961,7 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
     const datasetHasSamples = document
       .getElementById("guided-button-subjects-have-samples")
       .classList.contains("selected");
+
     const headers = ["Subject ID"];
 
     if (datasetHasPools) {
@@ -10984,7 +10993,11 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
     sodaJSONObj["dataset-structure-spreadsheet-path"] = filePath;
     const openTemplateForUser = await swalConfirmAction(
       "Template successfully generated",
-      "Would you like to open the template now?",
+      `
+        Would you like to open the template now?
+        <br />
+        Template Path: ${filePath}
+      `,
       "Yes",
       "No"
     );
@@ -11013,16 +11026,68 @@ document
     const spreadsheet = xlsx.readFile(savedTemplatePath);
     const worksheet = spreadsheet.Sheets[spreadsheet.SheetNames[0]];
     const sheetData = xlsx.utils.sheet_to_json(worksheet, { defval: "" });
-    const subjects = [];
-    const pools = [];
-    const samples = [];
+
     for (const row of sheetData) {
-      const subjectName = row["Subject ID"];
-      subjects.push(subjectName);
+      const [existingPooledSubjects, existingUnpooledSubjects] = sodaJSONObj.getAllSubjects();
+      let subjectName = row["Subject ID"];
+      if (subjectName.length === 0) {
+        console.log("Skipping empty subject name");
+        continue;
+      }
+      // Check to see if the subjectName starts with sub- otherwise prepend sub- to it
+      if (!subjectName.startsWith("sub-")) {
+        subjectName = `sub-${subjectName}`;
+      }
+      // Check to see if the subject name meets the SDS requirements
+      const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+        subjectName,
+        "string-adheres-to-identifier-conventions"
+      );
+      if (!subjectNameIsValid) {
+        console.log(`Skipping invalid subject name: ${subjectName}`);
+        continue;
+      }
+      // Check to see if the subject already exists
+      const subjectAlreadyExists = getExistingSubjectNames().includes(subjectName);
+      if (!subjectAlreadyExists) {
+        sodaJSONObj.addSubject(subjectName);
+        const subjectsPool = row["Pool ID"];
+        if (subjectsPool) {
+          let poolName = subjectsPool;
+          if (!poolName.startsWith("pool-")) {
+            poolName = `pool-${poolName}`;
+          }
+          const poolNameIsValid = evaluateStringAgainstSdsRequirements(
+            poolName,
+            "string-adheres-to-identifier-conventions"
+          );
+          if (!poolNameIsValid) {
+            console.log(`Skipping invalid pool name: ${poolName}`);
+            continue;
+          }
+          const poolAlreadyExists = getExistingPoolNames().includes(poolName);
+          if (!poolAlreadyExists) {
+            sodaJSONObj.addPool(poolName);
+          }
+          sodaJSONObj.moveSubjectIntoPool(subjectName, poolName);
+        }
+      }
+
+      let sampleName = row["Sample ID"];
+      if (sampleName) {
+        if (!sampleName.startsWith("sam-")) {
+          sampleName = `sam-${sampleName}`;
+        }
+        const sampleNameIsValid = evaluateStringAgainstSdsRequirements(
+          sampleName,
+          "string-adheres-to-identifier-conventions"
+        );
+        if (!sampleNameIsValid) {
+          console.log(`Skipping invalid sample name: ${sampleName}`);
+          continue;
+        }
+      }
     }
-    const stringTypes = subjects.map((subject) => typeof subject);
-    console.log("stringTypes", stringTypes);
-    guidedAddListOfSubjects(subjects, true);
   });
 
 const guidedExtractEntityNamesFromFolders = async (entityType) => {
