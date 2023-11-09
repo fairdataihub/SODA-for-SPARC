@@ -5073,6 +5073,7 @@ const openPage = async (targetPageID) => {
     if (targetPageID === "guided-subjects-addition-tab") {
       renderSubjectsTable();
     }
+
     if (targetPageID === "guided-samples-addition-tab") {
       renderSamplesTable();
     }
@@ -5824,7 +5825,7 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-samples-folder-tab") {
-      renderSamplesTables();
+      renderSamplesTable();
     }
 
     if (targetPageID === "guided-pennsieve-intro-tab") {
@@ -6751,7 +6752,7 @@ const renderSamplesTable = () => {
     .join("\n");
 
   const subjectSampleAdditionTableContainer = document.getElementById(
-    "guided-section-subjects-tables"
+    "guided-section-samples-tables"
   );
   subjectSampleAdditionTableContainer.innerHTML = subjectSampleAdditionTables;
 };
