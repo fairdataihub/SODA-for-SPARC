@@ -430,7 +430,7 @@ const renameFolder = (
     ".bcl.gz",
   ];
 
-  if (highLevelFolders.includes(currentName)) {
+  if (window.highLevelFolders.includes(currentName)) {
     highLevelFolderBool = true;
   } else {
     highLevelFolderBool = false;
@@ -595,7 +595,7 @@ const loadFileFolder = (myPath) => {
     let emptyFolder = "";
     count += 1;
     if (
-      !highLevelFolders.includes(item) &&
+      !window.highLevelFolders.includes(item) &&
       JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
       JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
     ) {
@@ -2401,7 +2401,7 @@ const triggerManageDetailsPrompts = (ev, fileName, filePath, textareaID1, textar
 // 2. How to show/hide Organize buttons:
 //    a. Hide: display: none (New folder, Import, Back button, and path)
 //    b. Show: display: flex (New folder, Import, Back button, and path) + Center the items
-const organizeLandingUIEffect = () => {
+window.organizeLandingUIEffect = () => {
   if ($("#input-global-path").val() === "dataset_root/") {
     $(".div-organize-dataset-menu").css("visibility", "hidden");
     // $("#organize-path-and-back-button-div").css("visibility", "hidden");

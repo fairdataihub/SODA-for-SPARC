@@ -4106,7 +4106,7 @@ window.sodaJSONObj = {};
 //     let items = loadFileFolder(myPath); //array -
 //     //we have some items to display
 //     window.listItems(myPath, "#items", 500, true);
-//     organizeLandingUIEffect();
+//     window.organizeLandingUIEffect();
 //     // reconstruct div with new elements
 //     window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
 //   }
@@ -6421,7 +6421,7 @@ window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
       //we have some items to display
       window.listItems(myPath, "#items", 500, true);
       window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
-      organizeLandingUIEffect();
+      window.organizeLandingUIEffect();
       // reconstruct folders and files (child elements after emptying the Div)
       // window.getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
     }

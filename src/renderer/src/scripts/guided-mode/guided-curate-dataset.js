@@ -15382,7 +15382,7 @@ $("#guided-button-back").on("click", function () {
     let total_item_count = items[1].length + items[0].length;
     //we have some items to display
     window.listItems(myPath, "#items", 500, true);
-    organizeLandingUIEffect();
+    window.organizeLandingUIEffect();
     // reconstruct div with new elements
     getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
   }
