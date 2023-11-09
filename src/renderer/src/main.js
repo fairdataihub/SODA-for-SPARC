@@ -39,7 +39,7 @@ import './assets/css/spur.css'
 import './assets/css/tablepath.css'
 import './assets/css/variables.css'
 import 'notyf/notyf.min.css'; // for React, Vue and Svelte
-
+import 'jstree/dist/themes/default/style.css';
 
 
 
