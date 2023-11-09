@@ -1,32 +1,39 @@
-const checkDiskSpace = require("check-disk-space").default;
+import Swal from "sweetalert2";
+import checkDiskSpace from "check-disk-space";
+
+
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
+
 
 var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
-const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
+window.nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 
 // Event listeners for opening the dropdown prompt
 document
   .querySelector("#Question-getting-started-BF-account .change-current-account")
   .addEventListener("click", function () {
-    openDropdownPrompt(this, "bf");
+    window.openDropdownPrompt(this, "bf");
   });
 
 document
   .querySelector("#Question-getting-started-BF-dataset .change-current-account")
   .addEventListener("click", function () {
-    openDropdownPrompt(this, "dataset", false);
+    window.openDropdownPrompt(this, "dataset", false);
   });
 
 document
   .querySelector("#Question-generate-dataset-BF-dataset .change-current-account:not(.organization)")
   .addEventListener("click", function () {
-    openDropdownPrompt(this, "dataset", false);
+    window.openDropdownPrompt(this, "dataset", false);
   });
 
 document
   .querySelector("#Question-generate-dataset-BF-account .change-current-account")
   .addEventListener("click", function () {
-    openDropdownPrompt(this, "bf");
+    window.openDropdownPrompt(this, "bf");
   });
 
 $(".button-individual-metadata.remove").click(function () {
@@ -357,9 +364,9 @@ const progressFileDropdown = document.getElementById("progress-files-dropdown");
 const progressFileParse = (ev) => {
   var fileName = $(ev).val();
   if (fileName !== "Select") {
-    var filePath = path.join(progressFilePath, fileName);
+    var filePath = window.path.join(window.progressFilePath, fileName);
     try {
-      var content = fs.readFileSync(filePath);
+      var content = window.fs.readFileSync(filePath);
       contentJson = JSON.parse(content);
       return contentJson;
     } catch (error) {
@@ -399,8 +406,8 @@ const importMetadataFilesProgress = (object) => {
     metadataFileArray.forEach((element) => {
       var fullPath = object["metadata-files"][element]["path"];
 
-      populateMetadataProgress(true, path.parse(element).name, fullPath);
-      if (!fs.existsSync(fullPath)) {
+      populateMetadataProgress(true, window.path.parse(element).name, fullPath);
+      if (!window.fs.existsSync(fullPath)) {
         missing_metadata_files.push(fullPath);
       }
     });
@@ -413,7 +420,7 @@ const recursive_check_for_missing_files = (dataset_folder) => {
       if ("forTreeview" in dataset_folder["files"][file]) {
         continue;
       }
-      if (!fs.existsSync(dataset_folder["files"][file]["path"])) {
+      if (!window.fs.existsSync(dataset_folder["files"][file]["path"])) {
         missing_dataset_files.push(dataset_folder["files"][file]["path"]);
       }
     }
@@ -750,13 +757,13 @@ const recursive_remove_missing_file = (item_path, dataset_folder) => {
 // function to load Progress dropdown
 const importOrganizeProgressPrompt = () => {
   document.getElementById("para-progress-file-status").innerHTML = "";
-  removeOptions(progressFileDropdown);
-  addOption(progressFileDropdown, "Select", "Select");
-  if (fs.existsSync(progressFilePath)) {
-    var fileNames = fs.readdirSync(progressFilePath);
+  window.removeOptions(progressFileDropdown);
+  window.addOption(progressFileDropdown, "Select", "Select");
+  if (window.fs.existsSync(window.progressFilePath)) {
+    var fileNames = window.fs.readdirSync(window.progressFilePath);
     if (fileNames.length > 0) {
       fileNames.forEach((item, i) => {
-        addOption(progressFileDropdown, path.parse(item).name, item);
+        window.addOption(progressFileDropdown, window.path.parse(item).name, item);
       });
     } else {
       document.getElementById("para-progress-file-status").innerHTML =
@@ -857,7 +864,7 @@ const checkPrevDivForConfirmButton = (category) => {
 };
 
 let high_lvl_folder_node = "";
-const create_child_node = (
+window.create_child_node = (
   oldFormatNode,
   nodeName,
   type,
@@ -892,7 +899,7 @@ const create_child_node = (
           if (key === selectedOriginalLocation && parentFolder === high_lvl_folder_node) {
             newFormatNode.state.selected = true;
             newFormatNode.state.opened = true;
-            var new_node = create_child_node(
+            var new_node = window.create_child_node(
               value,
               key,
               "folder",
@@ -907,7 +914,7 @@ const create_child_node = (
           } else {
             newFormatNode.state.selected = true;
             newFormatNode.state.opened = true;
-            var new_node = create_child_node(
+            var new_node = window.create_child_node(
               value,
               key,
               "folder",
@@ -927,7 +934,7 @@ const create_child_node = (
         if (key === selectedOriginalLocation) {
           newFormatNode.state.selected = true;
           newFormatNode.state.opened = true;
-          var new_node = create_child_node(
+          var new_node = window.create_child_node(
             value,
             key,
             "folder",
@@ -940,7 +947,7 @@ const create_child_node = (
             parentFolder
           );
         } else {
-          var new_node = create_child_node(
+          var new_node = window.create_child_node(
             value,
             key,
             "folder",
@@ -977,9 +984,9 @@ const create_child_node = (
                 ".DOCX",
                 ".doc",
                 ".docx",
-              ].includes(path.parse(key).ext)
+              ].includes(window.path.parse(key).ext)
             ) {
-              nodeType = "file " + path.parse(key).ext.slice(1);
+              nodeType = "file " + window.path.parse(key).ext.slice(1);
             } else {
               nodeType = "file other";
             }
@@ -1014,7 +1021,7 @@ const create_child_node = (
 // var selected = false;
 var selectedPath;
 var selectedNode;
-var jsTreeData = create_child_node(
+var jsTreeData = window.create_child_node(
   {
     folders: {},
     files: {},
@@ -1115,9 +1122,9 @@ $(document).ready(function () {
   });
 });
 
-const moveItems = async (ev, category) => {
-  let filtered = getGlobalPath(organizeDSglobalPath);
-  let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+window.moveItems = async (ev, category) => {
+  let filtered = window.getGlobalPath(window.organizeDSglobalPath);
+  let myPath = window.getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   let parentFolder = filtered[1];
   let selectedOriginalLocation = filtered[filtered.length - 1];
   let selectedItem = ev.parentElement.innerText;
@@ -1137,7 +1144,7 @@ const moveItems = async (ev, category) => {
     }
   }
 
-  jsTreeData = create_child_node(
+  jsTreeData = window.create_child_node(
     datasetStructureJSONObj,
     "dataset_root",
     "folder",
@@ -1285,7 +1292,7 @@ const moveItems = async (ev, category) => {
                 }
                 duplicateItems.push(`<li style="font-size: large;">${itemToMove}</li>`);
               } else {
-                moveItemsHelper(itemToMove, selectedPath, itemType, organizeDSglobalPath);
+                moveItemsHelper(itemToMove, selectedPath, itemType, window.organizeDSglobalPath);
                 element.remove();
               }
             });
@@ -1353,8 +1360,8 @@ const moveItems = async (ev, category) => {
         }
 
         // Rerender the file view again
-        listItems(myPath, "#items", 500);
-        getInFolder(".single-item", "#items", organizeDSglobalPath, myPath);
+        window.listItems(myPath, "#items", 500);
+        window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, myPath);
 
         // if moved into an empty folder we need to remove the class 'empty' from the folder destination
         let folderDestinationName = splitSelectedPath[splitSelectedPath.length - 1];
@@ -1376,27 +1383,27 @@ const moveItems = async (ev, category) => {
 };
 
 const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
-  let filtered = getGlobalPath(currentDatasetPath);
-  let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+  let filtered = window.getGlobalPath(currentDatasetPath);
+  let myPath = window.getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
   let selectedNodeList = destination.split("/").slice(1);
-  let destinationPath = getRecursivePath(selectedNodeList, datasetStructureJSONObj);
+  let destinationPath = window.getRecursivePath(selectedNodeList, window.datasetStructureJSONObj);
 
   // handle duplicates in destination folder
   if (category === "files") {
     let uiFiles = {};
     if (JSON.stringify(destinationPath["files"]) !== "{}") {
       for (let file in destinationPath["files"]) {
-        uiFiles[path.parse(file).base] = 1;
+        uiFiles[window.path.parse(file).base] = 1;
       }
     }
-    let fileBaseName = path.basename(item);
-    let originalFileNameWithoutExt = path.parse(fileBaseName).name;
+    let fileBaseName = window.path.basename(item);
+    let originalFileNameWithoutExt = window.path.parse(fileBaseName).name;
     let fileNameWithoutExt = originalFileNameWithoutExt;
     let j = 1;
 
     while (fileBaseName in uiFiles) {
       fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
-      fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext;
+      fileBaseName = fileNameWithoutExt + window.path.parse(fileBaseName).ext;
       j++;
     }
 
@@ -1405,12 +1412,12 @@ const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
       if (!myPath[category][item]["action"].includes("moved")) {
         myPath[category][item]["action"].push("moved");
       }
-      if (fileBaseName !== path.basename(item)) {
+      if (fileBaseName !== window.path.basename(item)) {
         myPath[category][item]["action"].push("renamed");
       }
     } else {
       myPath[category][item]["action"] = ["moved"];
-      if (fileBaseName !== path.basename(item)) {
+      if (fileBaseName !== window.path.basename(item)) {
         myPath[category][item]["action"].push("renamed");
       }
     }
@@ -1422,7 +1429,7 @@ const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
         uiFolders[folder] = 1;
       }
     }
-    let originalFolderName = path.basename(item);
+    let originalFolderName = window.path.basename(item);
     let renamedFolderName = originalFolderName;
     let j = 1;
     while (renamedFolderName in uiFolders) {
@@ -1433,13 +1440,13 @@ const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
     // Add moved action to folder in SODA JSON
     if ("action" in myPath[category][item]) {
       myPath[category][item]["action"].push("moved");
-      addMovedRecursively(myPath[category][item]);
+      window.addMovedRecursively(myPath[category][item]);
       if (renamedFolderName !== originalFolderName) {
         myPath[category][item]["action"].push("renamed");
       }
     } else {
       myPath[category][item]["action"] = ["moved"];
-      addMovedRecursively(myPath[category][item]);
+      window.addMovedRecursively(myPath[category][item]);
       if (renamedFolderName !== originalFolderName) {
         myPath[category][item]["action"].push("renamed");
       }
@@ -1458,7 +1465,7 @@ const updateManifestLabelColor = (el) => {
 };
 
 // helper functions to add "moved" to leaf nodes a.k.a files
-const addMovedRecursively = (object) => {
+window.addMovedRecursively = (object) => {
   Object.keys(object["files"]).forEach((key) => {
     var file = object["files"][key];
     if ("action" in file) {
@@ -1488,7 +1495,7 @@ const addMovedRecursively = (object) => {
       });
     }
     if (Object.keys(folder["folders"]).length > 0) {
-      addMovedRecursively(folder);
+      window.addMovedRecursively(folder);
     }
   });
 };
@@ -1620,7 +1627,7 @@ const showTreeViewPreview = (
     }
   }
 
-  var jsTreePreviewDataManifest = create_child_node(
+  var jsTreePreviewDataManifest = window.create_child_node(
     datasetStructure,
     new_dataset_name,
     "folder",
@@ -1738,17 +1745,17 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
         const savedHeaders = result[0];
         const savedData = result[1];
         let jsonManifest = {};
-        let localFolderPath = path.join(
+        let localFolderPath = window.path.join(
           homeDirectory,
           "SODA",
           "manifest_files",
           highlevelFolderName
         );
-        let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+        let selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
 
-        if (!fs.existsSync(localFolderPath)) {
-          fs.mkdirSync(localFolderPath);
-          fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
+        if (!window.fs.existsSync(localFolderPath)) {
+          window.fs.mkdirSync(localFolderPath);
+          window.fs.closeSync(window.fs.openSync(selectedManifestFilePath, "w"));
         }
 
         jsonManifest = excelToJson({
@@ -1890,18 +1897,18 @@ const ffmCreateManifest = async (sodaJson) => {
         };
         // Will create an excel sheet of the manifest files in case they receive no edits
         let jsonManifest = {};
-        let manifestFolder = path.join(homeDirectory, "SODA", "manifest_files");
-        let localFolderPath = path.join(manifestFolder, highLevelFolderName);
-        let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+        let manifestFolder = window.path.join(homeDirectory, "SODA", "manifest_files");
+        let localFolderPath = window.path.join(manifestFolder, highLevelFolderName);
+        let selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
         // create manifest folders if they don't exist
-        if (!fs.existsSync(manifestFolder)) {
-          fs.mkdirSync(manifestFolder);
+        if (!window.fs.existsSync(manifestFolder)) {
+          window.fs.mkdirSync(manifestFolder);
         }
-        if (!fs.existsSync(localFolderPath)) {
-          fs.mkdirSync(localFolderPath);
-          fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
+        if (!window.fs.existsSync(localFolderPath)) {
+          window.fs.mkdirSync(localFolderPath);
+          window.fs.closeSync(window.fs.openSync(selectedManifestFilePath, "w"));
         }
-        if (!fs.existsSync(selectedManifestFilePath)) {
+        if (!window.fs.existsSync(selectedManifestFilePath)) {
         } else {
           jsonManifest = excelToJson({
             sourceFile: selectedManifestFilePath,

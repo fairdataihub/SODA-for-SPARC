@@ -587,9 +587,9 @@ const nextPrev = (pageIndex) => {
 
     if (Object.keys(sodaJSONObj["metadata-files"]).length > 0) {
       Object.keys(sodaJSONObj["metadata-files"]).forEach((element) => {
-        let file_name = path.parse(element).name;
+        let file_name = window.path.parse(element).name;
         if (!element.includes("-DELETED")) {
-          withoutExtMetadataArray.push(path.parse(element).name);
+          withoutExtMetadataArray.push(window.path.parse(element).name);
         }
         if (requiredFiles.includes(file_name)) {
           let element_index = requiredFiles.indexOf(file_name);
@@ -1241,7 +1241,7 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
   let stats = "";
   // Get high level folders and metadata files first
   fs.readdirSync(root_folder_path).forEach((file) => {
-    full_current_path = path.join(root_folder_path, file);
+    full_current_path = window.path.join(root_folder_path, file);
     stats = fs.statSync(full_current_path);
     if (stats.isDirectory()) {
       if (highLevelFolders.includes(file) && !/(^|\/)\.[^\/\.]/g.test(file)) {
@@ -1271,8 +1271,8 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
   for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
     sodaJSONObj["starting-point"][folder] = {};
     sodaJSONObj["starting-point"][folder]["path"] = "";
-    temp_file_path_xlsx = path.join(root_folder_path, folder, "manifest.xlsx");
-    temp_file_path_csv = path.join(root_folder_path, folder, "manifest.csv");
+    temp_file_path_xlsx = window.path.join(root_folder_path, folder, "manifest.xlsx");
+    temp_file_path_csv = window.path.join(root_folder_path, folder, "manifest.csv");
     if (fs.existsSync(temp_file_path_xlsx)) {
       sodaJSONObj["starting-point"][folder]["path"] = temp_file_path_xlsx;
       sodaJSONObj["starting-point"][folder]["manifest"] = excelToJson({
@@ -1289,7 +1289,7 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
       action,
       sodaJSONObj["dataset-structure"]["folders"][folder],
       folder,
-      path.join(root_folder_path, folder)
+      window.path.join(root_folder_path, folder)
     );
   }
 };
@@ -1319,7 +1319,7 @@ const create_json_object_include_manifest = (action, sodaJSONObj, root_folder_pa
   let stats = "";
   // Get high level folders and metadata files first
   fs.readdirSync(root_folder_path).forEach((file) => {
-    full_current_path = path.join(root_folder_path, file);
+    full_current_path = window.path.join(root_folder_path, file);
     stats = fs.statSync(full_current_path);
     if (stats.isDirectory()) {
       if (highLevelFolders.includes(file) && !/(^|\/)\.[^\/\.]/g.test(file)) {
@@ -1348,8 +1348,8 @@ const create_json_object_include_manifest = (action, sodaJSONObj, root_folder_pa
   for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
     sodaJSONObj["starting-point"][folder] = {};
     sodaJSONObj["starting-point"][folder]["path"] = "";
-    // temp_file_path_xlsx = path.join(root_folder_path, folder, "manifest.xlsx");
-    // temp_file_path_csv = path.join(root_folder_path, folder, "manifest.csv");
+    // temp_file_path_xlsx = window.path.join(root_folder_path, folder, "manifest.xlsx");
+    // temp_file_path_csv = window.path.join(root_folder_path, folder, "manifest.csv");
     // if (fs.existsSync(temp_file_path_xlsx)) {
     //   sodaJSONObj["starting-point"][folder]["path"] = temp_file_path_xlsx;
     //   sodaJSONObj["starting-point"][folder]["manifest"] = excelToJson({
@@ -1365,7 +1365,7 @@ const create_json_object_include_manifest = (action, sodaJSONObj, root_folder_pa
       action,
       sodaJSONObj["dataset-structure"]["folders"][folder],
       folder,
-      path.join(root_folder_path, folder)
+      window.path.join(root_folder_path, folder)
     );
   }
 };
@@ -1373,8 +1373,8 @@ const create_json_object_include_manifest = (action, sodaJSONObj, root_folder_pa
 // replace any duplicate file names
 // Modify for consistency with Pennsieve naming when the update their system
 const check_file_name_for_pennsieve_duplicate = (dataset_folder, filepath) => {
-  file_name = path.parse(filepath).base;
-  file_extension = path.parse(filepath).ext;
+  file_name = window.path.parse(filepath).base;
+  file_extension = window.path.parse(filepath).ext;
   var duplicateFileArray = [];
 
   for (var item in dataset_folder) {
@@ -1385,7 +1385,7 @@ const check_file_name_for_pennsieve_duplicate = (dataset_folder, filepath) => {
 
   var j = 1;
   var fileBaseName = file_name;
-  var originalFileNameWithoutExt = path.parse(fileBaseName).name;
+  var originalFileNameWithoutExt = window.path.parse(fileBaseName).name;
   var fileNameWithoutExt = originalFileNameWithoutExt;
   while (fileBaseName in duplicateFileArray) {
     fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
@@ -1412,16 +1412,16 @@ const recursive_structure_create = (
       "file-type": "",
       "additional-metadata": "",
     };
-    current_file_path = path.join(current_folder_path, file);
+    current_file_path = window.path.join(current_folder_path, file);
     let stats = fs.statSync(current_file_path);
     if (
       stats.isFile() &&
-      path.parse(current_file_path).name != "manifest" &&
+      window.path.parse(current_file_path).name != "manifest" &&
       !/(^|\/)\.[^\/\.]/g.test(file) && //not a hidden file
       high_level_folder != dataset_folder
     ) {
       if (sodaJSONObj["starting-point"][high_level_folder]["path"] !== "") {
-        extension = path.extname(sodaJSONObj["starting-point"][high_level_folder]["path"]);
+        extension = window.path.extname(sodaJSONObj["starting-point"][high_level_folder]["path"]);
         if (extension == ".xlsx") {
           temp_current_file_path = current_file_path.replace(/\\/g, "/");
           root_folder_path = root_folder_path.replace(/\\/g, "/");
@@ -1578,7 +1578,7 @@ const recursive_structure_create_include_manifest = (
     "additional-metadata": "",
   };
   fs.readdirSync(current_folder_path).forEach((file) => {
-    current_file_path = path.join(current_folder_path, file);
+    current_file_path = window.path.join(current_folder_path, file);
     let stats = fs.statSync(current_file_path);
     if (
       stats.isFile() &&
@@ -1586,7 +1586,7 @@ const recursive_structure_create_include_manifest = (
       high_level_folder != dataset_folder
     ) {
       if (sodaJSONObj["starting-point"][high_level_folder]["path"] !== "") {
-        extension = path.extname(sodaJSONObj["starting-point"][high_level_folder]["path"]);
+        extension = window.path.extname(sodaJSONObj["starting-point"][high_level_folder]["path"]);
         if (extension == ".xlsx") {
           temp_current_file_path = current_file_path.replace("\\", "/");
           relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
@@ -1724,7 +1724,7 @@ const verify_sparc_folder = (root_folder_path, type) => {
     if (type === "local") {
       if (
         highLevelFolders.includes(item) ||
-        possible_metadata_files.includes(path.parse(item).name)
+        possible_metadata_files.includes(window.path.parse(item).name)
       ) {
         valid_dataset = true;
         break;
@@ -1734,7 +1734,7 @@ const verify_sparc_folder = (root_folder_path, type) => {
     } else {
       if (
         highLevelFolders.includes(item) ||
-        possible_metadata_files.includes(path.parse(item).name) ||
+        possible_metadata_files.includes(window.path.parse(item).name) ||
         item.substring(0, 1) != "."
       ) {
         valid_dataset = true;
@@ -2575,8 +2575,8 @@ async function switchMetadataSubmissionQuestion() {
 
 // 5. manifest
 async function switchMetadataManifestQuestion() {
-  var userpath1 = path.join(homeDirectory, "SODA", "SODA Manifest Files");
-  var userpath2 = path.join(homeDirectory, "SODA", "manifest_files");
+  var userpath1 = window.path.join(homeDirectory, "SODA", "SODA Manifest Files");
+  var userpath2 = window.path.join(homeDirectory, "SODA", "manifest_files");
   if (
     $("#Question-prepare-manifest-2").hasClass("show") ||
     $("#Question-prepare-manifest-3").hasClass("show")
@@ -2974,7 +2974,7 @@ const populateMetadataObject = (optionList, metadataFilePath, metadataFile, obje
     return;
   }
   if (!optionList.includes(metadataFilePath)) {
-    var mypath = path.basename(metadataFilePath);
+    var mypath = window.path.basename(metadataFilePath);
     object["metadata-files"][mypath] = {
       type: "local",
       action: ["new"],
@@ -2995,7 +2995,7 @@ const populateMetadataObject = (optionList, metadataFilePath, metadataFile, obje
 /// function to populate/reload Organize dataset UI when users move around between tabs and make changes
 // (to high-level folders)
 const populateOrganizeDatasetUI = (currentLocation, datasetFolder) => {
-  var baseName = path.basename(datasetFolder);
+  var baseName = window.path.basename(datasetFolder);
   currentLocation = {
     type: "local",
     folders: {},
@@ -3005,8 +3005,8 @@ const populateOrganizeDatasetUI = (currentLocation, datasetFolder) => {
 
   var myitems = fs.readdirSync(datasetFolder);
   myitems.forEach((element) => {
-    var statsObj = fs.statSync(path.join(datasetFolder, element));
-    var addedElement = path.join(datasetFolder, element);
+    var statsObj = fs.statSync(window.path.join(datasetFolder, element));
+    var addedElement = window.path.join(datasetFolder, element);
     if (statsObj.isDirectory()) {
       currentLocation["folders"][element] = {
         type: "local",
@@ -3590,7 +3590,7 @@ const saveSODAJSONProgress = (progressFileName) => {
     log.error(error);
     console.log(error);
   }
-  var filePath = path.join(progressFilePath, progressFileName + ".json");
+  var filePath = window.path.join(progressFilePath, progressFileName + ".json");
   // record all information listed in SODA JSON Object before saving
   updateJSONObjectProgress();
   // delete sodaJSONObj["dataset-structure"] value that was added only for the Preview tree view

@@ -110,6 +110,9 @@ if (process.contextIsolated) {
       },
       extname: (filepath) => {
         return path.extname(filepath)
+      },
+      parse: (filepath) => {
+        return path.parse(filepath)
       }
     })
     contextBridge.exposeInMainWorld('log', {

@@ -1,3 +1,6 @@
+import Swal from "sweetalert2";
+
+
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100))
 }
@@ -20,7 +23,7 @@ const showTooltips = (ev) => {
   });
 };
 
-const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
+window.recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
   if ("files" in dataset_folder) {
     for (let file in dataset_folder["files"]) {
       if ("forTreeview" in dataset_folder["files"][file]) {
@@ -42,7 +45,7 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
   }
   if ("folders" in dataset_folder && Object.keys(dataset_folder["folders"]).length !== 0) {
     for (let folder in dataset_folder["folders"]) {
-      recursive_mark_sub_files_deleted(dataset_folder["folders"][folder], mode);
+      window.recursive_mark_sub_files_deleted(dataset_folder["folders"][folder], mode);
       if ("action" in dataset_folder["folders"][folder]) {
         if (mode === "delete") {
           if (!dataset_folder["folders"][folder]["action"].includes("recursive_deleted")) {
@@ -61,7 +64,7 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
 };
 
 ///////// Option to delete folders or files
-const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGlobal) => {
+window.delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGlobal) => {
   let itemToDelete = ev.parentElement.innerText;
   let promptVar;
   let type; // renaming files or folders
@@ -157,7 +160,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
         }
 
         if (type === "folders") {
-          recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "restore");
+          window.recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "restore");
         }
 
         // update Json object with the restored object
@@ -169,8 +172,8 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
         // Done using a loop to avoid a case where the same file number exists
         if (itemToRestore_new_key in myPath[type]) {
           myPath[type][itemToRestore]["action"].push("renamed");
-          itemToRestore_new_key_file_name = path.parse(itemToRestore_new_key).name;
-          itemToRestore_new_key_file_ext = path.parse(itemToRestore_new_key).ext;
+          itemToRestore_new_key_file_name = window.path.parse(itemToRestore_new_key).name;
+          itemToRestore_new_key_file_ext = window.path.parse(itemToRestore_new_key).ext;
           file_number = 1;
           while (true) {
             itemToRestore_potential_new_key =
@@ -234,7 +237,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
                 myPath[type][itemToDelete]["action"].includes("existing"))
             ) {
               if (type === "folders") {
-                recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "delete");
+                window.recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "delete");
                 current_element.parentNode.remove();
               }
 
@@ -290,7 +293,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
               myPath[type][itemToDelete]["action"].includes("existing"))
           ) {
             if (type === "folders") {
-              recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "delete");
+              window.recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "delete");
             }
 
             if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
@@ -324,7 +327,7 @@ const checkValidRenameInput = (
   itemElement
   // myBootboxDialog
 ) => {
-  double_extensions = [
+  let double_extensions = [
     ".ome.tiff",
     ".ome.tif",
     ".ome.tf2,",
@@ -346,18 +349,18 @@ const checkValidRenameInput = (
     let double_ext_present = false;
     for (let index in double_extensions) {
       if (oldName.search(double_extensions[index]) != -1) {
-        newName = input.trim() + path.parse(path.parse(oldName).name).ext + path.parse(oldName).ext;
+        newName = input.trim() + window.path.parse(window.path.parse(oldName).name).ext + window.path.parse(oldName).ext;
         double_ext_present = true;
         break;
       }
     }
     if (double_ext_present == false) {
-      newName = input.trim() + path.parse(oldName).ext;
+      newName = input.trim() + window.path.parse(oldName).ext;
     }
     // check for duplicate or files with the same name
     for (var i = 0; i < itemElement.length; i++) {
       if (!itemElement[i].innerText.includes("-DELETED")) {
-        if (newName === path.parse(itemElement[i].innerText).base) {
+        if (newName === window.path.parse(itemElement[i].innerText).base) {
           duplicate = true;
           break;
         }
@@ -384,7 +387,7 @@ const checkValidRenameInput = (
     }
     var itemDivElements = document.getElementById("items").children;
     let organizeCurrentLocation = organizeDSglobalPath;
-    renameFolder(event, organizeCurrentLocation, itemDivElements);
+    window.renameFolder(event, organizeCurrentLocation, itemDivElements);
     if (duplicate) {
       Swal.fire({
         icon: "error",
@@ -399,7 +402,7 @@ const checkValidRenameInput = (
 };
 
 ///// Option to rename a folder and files
-const renameFolder = (
+window.renameFolder = (
   event1, //this
   organizeCurrentLocation, //current section of My_folder
   itemElement, //the elements in the container with items
@@ -414,7 +417,7 @@ const renameFolder = (
   let nameWithoutExtension;
   let highLevelFolderBool;
 
-  double_extensions = [
+  let double_extensions = [
     ".ome.tiff",
     ".ome.tif",
     ".ome.tf2,",
@@ -447,13 +450,13 @@ const renameFolder = (
     let double_ext_present = false;
     for (let index in double_extensions) {
       if (currentName.search(double_extensions[index]) != -1) {
-        nameWithoutExtension = path.parse(path.parse(currentName).name).name;
+        nameWithoutExtension = window.path.parse(window.path.parse(currentName).name).name;
         double_ext_present = true;
         break;
       }
     }
     if (double_ext_present == false) {
-      nameWithoutExtension = path.parse(currentName).name;
+      nameWithoutExtension = window.path.parse(currentName).name;
     }
   } else {
     nameWithoutExtension = currentName;
@@ -498,10 +501,10 @@ const renameFolder = (
         swal_popup.style.width = "42rem";
         $("#rename-folder-input").keyup(function () {
           let val = $("#rename-folder-input").val();
-          for (let char of nonAllowedCharacters) {
+          for (let char of window.nonAllowedCharacters) {
             if (val.includes(char)) {
               Swal.showValidationMessage(
-                `The ${promptVar} name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
+                `The ${promptVar} name cannot contains the following characters ${window.nonAllowedCharacters}, please rename to a different name!`
               );
 
               // Add styling to the error message
@@ -550,7 +553,7 @@ const renameFolder = (
           event1.parentElement.children[1].innerText = returnedName;
 
           /// update jsonObjGlobal with the new name
-          storedValue = myPath[type][currentName];
+          let storedValue = myPath[type][currentName];
           delete myPath[type][currentName];
           myPath[type][returnedName] = storedValue;
           myPath[type][returnedName]["basename"] = returnedName;
@@ -627,7 +630,7 @@ const loadFileFolder = (myPath) => {
     // not the auto-generated manifest
     if (sortedObj["files"][item].length !== 1) {
       if ("path" in sortedObj["files"][item]) {
-        var extension = path.extname(sortedObj["files"][item]["path"]);
+        var extension = window.path.extname(sortedObj["files"][item]["path"]);
         extension = extension.slice(1);
       } else {
         var extension = "other";
@@ -658,7 +661,7 @@ const loadFileFolder = (myPath) => {
       appendString +
       '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
       extension +
-      '" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">' +
+      '" oncontextmenu="window.fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">' +
       item +
       "</div></div>";
     if (count === 100) {
@@ -1287,7 +1290,7 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
                 action: ["new", "renamed"],
               };
               var appendString =
-                '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+                '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="window.fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
                 myPath["files"][fileNames[index]]["basename"] +
                 "</div></div>";
 
@@ -1593,8 +1596,8 @@ const addFilesfunction = async (
   for (let i = 0; i < fileArray.length; i++) {
     let filePath = fileArray[i];
     let slashCount = getPathSlashCount();
-    let fileBase = path.parse(filePath).base; //file name with extension
-    let fileName = path.parse(filePath).name; //file name without extension
+    let fileBase = window.path.parse(filePath).base; //file name with extension
+    let fileName = window.path.parse(filePath).name; //file name without extension
 
     //Check for nonallowed characters
     let warningCharacterBool = warningCharacterCheck(fileBase);
@@ -1755,15 +1758,15 @@ const addFilesfunction = async (
         for (let i = 0; i < doubleExtension.length; i++) {
           if (
             doubleExtension[i] in currentLocation["files"] ||
-            path.parse(doubleExtension[i]).base in Object.keys(filesToImport)
+            window.path.parse(doubleExtension[i]).base in Object.keys(filesToImport)
           ) {
             nonAllowedDuplicateFiles.push(fileName);
             continue;
           } else {
             //not in there or regular files so store?
-            filesToImport[path.parse(doubleExtension[i]).base] = {
+            filesToImport[window.path.parse(doubleExtension[i]).base] = {
               path: doubleExtension[i],
-              basename: path.parse(doubleExtension[i]).base,
+              basename: window.path.parse(doubleExtension[i]).base,
             };
           }
         }
@@ -1830,7 +1833,7 @@ const addFilesfunction = async (
       if (result.isConfirmed) {
         //replace characters
         for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
-          let fileName = path.parse(nonAllowedCharacterFiles[i]).base;
+          let fileName = window.path.parse(nonAllowedCharacterFiles[i]).base;
           let regex = /[\+&\%#]/g;
           let replaceFile = fileName.replace(regex, "-");
           filesToImport[replaceFile] = {
@@ -1844,7 +1847,7 @@ const addFilesfunction = async (
           let fileName = nonAllowedCharacterFiles[i];
           filesToImport[fileName] = {
             path: fileName,
-            basename: path.parse(fileName).base,
+            basename: window.path.parse(fileName).base,
           };
         }
       }
@@ -1885,7 +1888,7 @@ const addFilesfunction = async (
           loadingIcon.style.display = "block";
         }
         for (let i = 0; i < hiddenFiles.length; i++) {
-          let file_name = path.parse(hiddenFiles[i]).base;
+          let file_name = window.path.parse(hiddenFiles[i]).base;
           let path_name = hiddenFiles[i];
 
           if (Object.keys(currentLocation["files"]).length > 0) {
@@ -1935,7 +1938,7 @@ const addFilesfunction = async (
           loadingIcon.style.display = "block";
         }
         for (let i = 0; i < hiddenFiles.length; i++) {
-          let file_name = path.parse(hiddenFiles[i]).base;
+          let file_name = window.path.parse(hiddenFiles[i]).base;
           let path_name = hiddenFiles[i];
 
           if (Object.keys(currentLocation["files"]).length > 0) {
@@ -2093,7 +2096,7 @@ const addFilesfunction = async (
         action: ["new"],
       };
       // append "renamed" to "action" key if file is auto-renamed by UI
-      let originalName = path.parse(
+      let originalName = window.path.parse(
         currentLocation["files"][filesToImport[importedFile]["basename"]]["path"]
       ).base;
       if (importedFile !== originalName) {
@@ -2347,7 +2350,7 @@ const resetLazyLoading = () => {
 
 ///// function to load details to show in display once
 ///// users click Show details
-const loadDetailsContextMenu = (fileName, filePath, textareaID1, textareaID2, paraLocalPath) => {
+window.loadDetailsContextMenu = (fileName, filePath, textareaID1, textareaID2, paraLocalPath) => {
   if ("description" in filePath["files"][fileName]) {
     document.getElementById(textareaID1).value = filePath["files"][fileName]["description"];
   } else {
@@ -2358,7 +2361,7 @@ const loadDetailsContextMenu = (fileName, filePath, textareaID1, textareaID2, pa
   } else {
     document.getElementById(textareaID2).value = "";
   }
-  path_label = document.querySelector(
+  let path_label = document.querySelector(
     "#organize-dataset-tab > div > div > div > div.div-display-details.file > div:nth-child(2) > label"
   );
   if (filePath["files"][fileName]["type"] === "bf") {

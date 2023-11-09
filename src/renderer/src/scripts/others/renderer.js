@@ -1121,7 +1121,7 @@ const get_latest_agent_version = async () => {
     window.reverseSwalButtons = false;
     targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
-      if (path.extname(file_name) == ".deb") {
+      if (window.path.extname(file_name) == ".deb") {
         browser_download_url = asset.browser_download_url;
       }
     });
@@ -1371,28 +1371,28 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
 // ///// Global variables for this section
 
 // /////// Save and load award and milestone info
-// let metadataPath = path.join(homeDirectory, "SODA", "METADATA");
+// let metadataPath = window.path.join(homeDirectory, "SODA", "METADATA");
 // let awardFileName = "awards.json";
 // let affiliationFileName = "affiliations.json";
 // let milestoneFileName = "milestones.json";
 // let protocolConfigFileName = "protocol-config.json";
-// let affiliationConfigPath = path.join(metadataPath, affiliationFileName);
-// let milestonePath = path.join(metadataPath, milestoneFileName);
-// let progressFilePath = path.join(homeDirectory, "SODA", "Progress");
-// let guidedProgressFilePath = path.join(homeDirectory, "SODA", "Guided-Progress");
-// const guidedManifestFilePath = path.join(homeDirectory, "SODA", "guided_manifest_files");
-// let protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
+// let affiliationConfigPath = window.path.join(metadataPath, affiliationFileName);
+// let milestonePath = window.path.join(metadataPath, milestoneFileName);
+window.progressFilePath = window.path.join(homeDirectory, "SODA", "Progress");
+// let guidedProgressFilePath = window.path.join(homeDirectory, "SODA", "Guided-Progress");
+// const guidedManifestFilePath = window.path.join(homeDirectory, "SODA", "guided_manifest_files");
+// let protocolConfigPath = window.path.join(metadataPath, protocolConfigFileName);
 // let allCollectionTags = {};
 // let currentTags = {};
 // let currentCollectionTags = [];
 
 // if (process.platform === "linux") {
 //   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
-//   if (fs.existsSync(path.join(homeDirectory, "Soda"))) {
+//   if (fs.existsSync(window.path.join(homeDirectory, "Soda"))) {
 //     //copy the folder contents of home/Soda to home/SODA
-//     fs.copySync(path.join(homeDirectory, "Soda"), path.join(homeDirectory, "SODA"));
+//     fs.copySync(window.path.join(homeDirectory, "Soda"), window.path.join(homeDirectory, "SODA"));
 //     //delete the old folder
-//     fs.removeSync(path.join(homeDirectory, "Soda"));
+//     fs.removeSync(window.path.join(homeDirectory, "Soda"));
 //   }
 // }
 
@@ -1559,7 +1559,7 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
 // // generate subjects file
 // ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
 //   if (dirpath.length > 0) {
-//     var destinationPath = path.join(dirpath[0], filename);
+//     var destinationPath = window.path.join(dirpath[0], filename);
 //     if (fs.existsSync(destinationPath)) {
 //       var emessage =
 //         "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
@@ -1768,7 +1768,7 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
 // // generate samples file
 // ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
 //   if (dirpath.length > 0) {
-//     var destinationPath = path.join(dirpath[0], filename);
+//     var destinationPath = window.path.join(dirpath[0], filename);
 //     if (fs.existsSync(destinationPath)) {
 //       var emessage =
 //         "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
@@ -2488,13 +2488,7 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
 //   }
 // };
 
-// Function to add options to dropdown list
-window.addOption = (selectbox, text, value)  => {
-  var opt = document.createElement("OPTION");
-  opt.text = text;
-  opt.value = value;
-  selectbox.options.add(opt);
-}
+
 
 // //////////////// Dataset description file ///////////////////////
 // //////////////// //////////////// //////////////// ////////////////
@@ -3679,11 +3673,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetList) {
 
 // General //
 
-window.removeOptions = (selectbox) => {
-  for (let i = selectbox.options.length - 1; i >= 0; i--) {
-    selectbox.remove(i);
-  }
-};
+
 
 // // Manage Datasets //
 
@@ -4246,8 +4236,8 @@ window.sodaJSONObj = {};
 //   let folderContent = fs.readdirSync(folderPath);
 //   folderContent.forEach((itemWithinFolder) => {
 //     //prevented here
-//     let statsObj = fs.statSync(path.join(folderPath, itemWithinFolder));
-//     let addedElement = path.join(folderPath, itemWithinFolder);
+//     let statsObj = fs.statSync(window.path.join(folderPath, itemWithinFolder));
+//     let addedElement = window.path.join(folderPath, itemWithinFolder);
 
 //     if (statsObj.isDirectory() && !/(^|\/)\[^\/\.]/g.test(itemWithinFolder)) {
 //       if (irregularFolderArray.includes(addedElement)) {
@@ -4340,10 +4330,10 @@ document.addEventListener("onmouseover", function (e) {
   }
 });
 
-// // if a file/folder is clicked -> show details in right "sidebar"
-// const showDetailsFile = () => {
-//   $(".div-display-details.file").toggleClass("show");
-// };
+// if a file/folder is clicked -> show details in right "sidebar"
+const showDetailsFile = () => {
+  $(".div-display-details.file").toggleClass("show");
+};
 
 // const pasteFromClipboard = (event, target_element) => {
 //   event.preventDefault();
@@ -4618,7 +4608,7 @@ window.electron.ipcRenderer.on("selected-folders-organize-datasets", async (even
 // /* ################################################################################## */
 
 // const getNestedObjectsFromDatasetStructureByPath = (datasetStructure, path) => {
-//   const pathArray = path.split("/").filter((item) => item !== "");
+//   const pathArray = window.path.split("/").filter((item) => item !== "");
 //   let currentObject = datasetStructure;
 //   for (const item of pathArray) {
 //     currentObject = currentObject["folders"][item];
@@ -5087,7 +5077,7 @@ const mergeLocalAndRemoteDatasetStructure = async (
 //     const currentFilesAtPath = Object.keys(itemsAtPath.files);
 //     fg;
 //     for (const folder of importedFolders) {
-//       folderName = path.basename(folder);
+//       folderName = window.path.basename(folder);
 //       if (currentFoldersAtPath.includes(folderName)) {
 //         duplicateFolderNames.push(folderName);
 //       }
@@ -5228,9 +5218,9 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 //   }
 //   if (fs.lstatSync(pathEle).isDirectory()) {
 //     fs.readdirSync(pathEle).forEach(function (folder) {
-//       var stat = fs.statSync(path.join(pathEle, folder));
+//       var stat = fs.statSync(window.path.join(pathEle, folder));
 //       if (stat && stat.isDirectory()) {
-//         detectIrregularFolders(folder, path.join(pathEle, folder));
+//         detectIrregularFolders(folder, window.path.join(pathEle, folder));
 //       }
 //       return irregularFolderArray;
 //     });
@@ -5238,7 +5228,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 // };
 
 // const checkIrregularNameBoolean = (folderName) => {
-//   //nonAllowedCharacters modified to only allow a-z A-z 0-9 and hyphen "-"
+//   //window.nonAllowedCharacters modified to only allow a-z A-z 0-9 and hyphen "-"
 //   const nonAllowedFolderCharacters = /[^a-zA-Z0-9-]/;
 //   return nonAllowedFolderCharacters.test(folderName);
 // };
@@ -5251,14 +5241,14 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 
 // const replaceIrregularFolders = (pathElement) => {
 //   const reg = /[^a-zA-Z0-9-]/g;
-//   const str = path.basename(pathElement);
+//   const str = window.path.basename(pathElement);
 //   const newFolderName = str.replace(reg, "-");
 //   return newFolderName;
 // };
 
 // const removeIrregularFolders = (pathElement) => {
 //   const reg = /[^a-zA-Z0-9-]/g;
-//   const str = path.basename(pathElement);
+//   const str = window.path.basename(pathElement);
 //   const newFolderName = str.replace(reg, "");
 //   return newFolderName;
 // };
@@ -5301,7 +5291,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 //     imgContainer = document.getElementById("div-img-container");
 //   }
 
-//   if (path.length > 0) {
+//   if (window.path.length > 0) {
 //     let original_image_path = path[0];
 //     let image_path = original_image_path;
 //     let destination_image_path = require("path").join(
@@ -5432,134 +5422,134 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 //   }
 // };
 
-// //////////////////////////////////////////////////////////////////////////////
-// /////////////////// CONTEXT MENU OPTIONS FOR FOLDERS AND FILES ///////////////
-// //////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+/////////////////// CONTEXT MENU OPTIONS FOR FOLDERS AND FILES ///////////////
+//////////////////////////////////////////////////////////////////////////////
 
-// //// helper functions for hiding/showing context menus
-// const showmenu = (ev, category, deleted = false) => {
-//   //stop the real right click menu
-//   let guidedModeFileExporer = false;
-//   let activePages = Array.from(document.querySelectorAll(".is-shown"));
+//// helper functions for hiding/showing context menus
+const showmenu = (ev, category, deleted = false) => {
+  //stop the real right click menu
+  let guidedModeFileExporer = false;
+  let activePages = Array.from(document.querySelectorAll(".is-shown"));
 
-//   ev.preventDefault();
-//   var mouseX;
-//   let element = "";
-//   if (ev.pageX <= 200) {
-//     mouseX = ev.pageX + 10;
-//   } else {
-//     let active_class = $("#sidebarCollapse").attr("class");
-//     if (active_class.search("active") == -1) {
-//       mouseX = ev.pageX - 210;
-//     } else {
-//       mouseX = ev.pageX - 50;
-//     }
-//   }
+  ev.preventDefault();
+  var mouseX;
+  let element = "";
+  if (ev.pageX <= 200) {
+    mouseX = ev.pageX + 10;
+  } else {
+    let active_class = $("#sidebarCollapse").attr("class");
+    if (active_class.search("active") == -1) {
+      mouseX = ev.pageX - 210;
+    } else {
+      mouseX = ev.pageX - 50;
+    }
+  }
 
-//   var mouseY = ev.pageY - 10;
+  var mouseY = ev.pageY - 10;
 
-//   activePages.forEach((page) => {
-//     if (page.id === "guided_mode-section") {
-//       guidedModeFileExporer = true;
-//       mouseX = ev.pageX - 210;
-//       mouseY = ev.pageY - 10;
-//     }
-//   });
+  activePages.forEach((page) => {
+    if (page.id === "guided_mode-section") {
+      guidedModeFileExporer = true;
+      mouseX = ev.pageX - 210;
+      mouseY = ev.pageY - 10;
+    }
+  });
 
-//   if (category === "folder") {
-//     if (deleted) {
-//       $(window.menuFolder).children("#reg-folder-delete").html("<i class='fas fa-undo-alt'></i> Restore");
-//       $(window.menuFolder).children("#reg-folder-rename").hide();
-//       $(window.menuFolder).children("#folder-move").hide();
-//       $(window.menuFolder).children("#folder-description").hide();
-//     } else {
-//       if ($(".selected-item").length > 2) {
-//         $(window.menuFolder)
-//           .children("#reg-folder-delete")
-//           .html('<i class="fas fa-minus-circle"></i> Delete All');
-//         $(window.menuFolder)
-//           .children("#folder-move")
-//           .html('<i class="fas fa-external-link-alt"></i> Move All');
-//         $(window.menuFolder).children("#reg-folder-rename").hide();
-//         $(window.menuFolder).children("#folder-description").hide();
-//       } else {
-//         $(window.menuFolder)
-//           .children("#reg-folder-delete")
-//           .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
-//         $(window.menuFolder)
-//           .children("#folder-move")
-//           .html('<i class="fas fa-external-link-alt"></i> Move');
-//         $(window.menuFolder).children("#folder-move").show();
-//         $(window.menuFolder).children("#reg-folder-rename").show();
-//         $(window.menuFolder).children("#folder-description").show();
-//       }
-//     }
-//     // This is where regular folders context menu will appear
-//     window.menuFolder.style.display = "block";
-//     if (guidedModeFileExporer) {
-//       // $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
-//     }
-//     $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
-//   } else if (category === "high-level-folder") {
-//     if (deleted) {
-//       $(window.menuHighLevelFolders)
-//         .children("#high-folder-delete")
-//         .html("<i class='fas fa-undo-alt'></i> Restore");
-//       $(window.menuHighLevelFolders).children("#high-folder-rename").hide();
-//       $(window.menuHighLevelFolders).children("#folder-move").hide();
-//       $(window.menuHighLevelFolders).children("#tooltip-folders").show();
-//     } else {
-//       if ($(".selected-item").length > 2) {
-//         $(window.menuHighLevelFolders)
-//           .children("#high-folder-delete")
-//           .html('<i class="fas fa-minus-circle"></i> Delete All');
-//         $(window.menuHighLevelFolders).children("#high-folder-delete").show();
-//         $(window.menuHighLevelFolders).children("#high-folder-rename").hide();
-//         $(window.menuHighLevelFolders).children("#folder-move").hide();
-//         $(window.menuHighLevelFolders).children("#tooltip-folders").show();
-//       } else {
-//         $(window.menuHighLevelFolders)
-//           .children("#high-folder-delete")
-//           .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
-//         $(window.menuHighLevelFolders).children("#high-folder-delete").show();
-//         $(window.menuHighLevelFolders).children("#high-folder-rename").hide();
-//         $(window.menuHighLevelFolders).children("#folder-move").hide();
-//         $(window.menuHighLevelFolders).children("#tooltip-folders").show();
-//       }
-//     }
-//     window.menuHighLevelFolders.style.display = "block";
-//     if (guidedModeFileExporer) {
-//       // $(".menu.high-level-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
-//     }
-//     $(".menu.high-level-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
-//   } else {
-//     if (deleted) {
-//       $(window.menuFile).children("#file-delete").html("<i class='fas fa-undo-alt'></i> Restore");
-//       $(window.menuFile).children("#file-rename").hide();
-//       $(window.menuFile).children("#file-move").hide();
-//       $(window.menuFile).children("#file-description").hide();
-//     } else {
-//       if ($(".selected-item").length > 2) {
-//         $(window.menuFile).children("#file-delete").html('<i class="fas fa-minus-circle"></i> Delete All');
-//         $(window.menuFile)
-//           .children("#file-move")
-//           .html('<i class="fas fa-external-link-alt"></i> Move All');
-//         $(window.menuFile).children("#file-rename").hide();
-//         $(window.menuFile).children("#file-description").hide();
-//       } else {
-//         $(window.menuFile).children("#file-delete").html("<i class='far fa-trash-alt fa-fw'></i>Delete");
-//         $(window.menuFile).children("#file-move").html('<i class="fas fa-external-link-alt"></i> Move');
-//         $(window.menuFile).children("#file-rename").show();
-//         $(window.menuFile).children("#file-move").show();
-//         $(window.menuFile).children("#file-description").show();
-//       }
-//     }
+  if (category === "folder") {
+    if (deleted) {
+      $(window.menuFolder).children("#reg-folder-delete").html("<i class='fas fa-undo-alt'></i> Restore");
+      $(window.menuFolder).children("#reg-folder-rename").hide();
+      $(window.menuFolder).children("#folder-move").hide();
+      $(window.menuFolder).children("#folder-description").hide();
+    } else {
+      if ($(".selected-item").length > 2) {
+        $(window.menuFolder)
+          .children("#reg-folder-delete")
+          .html('<i class="fas fa-minus-circle"></i> Delete All');
+        $(window.menuFolder)
+          .children("#folder-move")
+          .html('<i class="fas fa-external-link-alt"></i> Move All');
+        $(window.menuFolder).children("#reg-folder-rename").hide();
+        $(window.menuFolder).children("#folder-description").hide();
+      } else {
+        $(window.menuFolder)
+          .children("#reg-folder-delete")
+          .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+        $(window.menuFolder)
+          .children("#folder-move")
+          .html('<i class="fas fa-external-link-alt"></i> Move');
+        $(window.menuFolder).children("#folder-move").show();
+        $(window.menuFolder).children("#reg-folder-rename").show();
+        $(window.menuFolder).children("#folder-description").show();
+      }
+    }
+    // This is where regular folders context menu will appear
+    window.menuFolder.style.display = "block";
+    if (guidedModeFileExporer) {
+      // $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
+    }
+    $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
+  } else if (category === "high-level-folder") {
+    if (deleted) {
+      $(window.menuHighLevelFolders)
+        .children("#high-folder-delete")
+        .html("<i class='fas fa-undo-alt'></i> Restore");
+      $(window.menuHighLevelFolders).children("#high-folder-rename").hide();
+      $(window.menuHighLevelFolders).children("#folder-move").hide();
+      $(window.menuHighLevelFolders).children("#tooltip-folders").show();
+    } else {
+      if ($(".selected-item").length > 2) {
+        $(window.menuHighLevelFolders)
+          .children("#high-folder-delete")
+          .html('<i class="fas fa-minus-circle"></i> Delete All');
+        $(window.menuHighLevelFolders).children("#high-folder-delete").show();
+        $(window.menuHighLevelFolders).children("#high-folder-rename").hide();
+        $(window.menuHighLevelFolders).children("#folder-move").hide();
+        $(window.menuHighLevelFolders).children("#tooltip-folders").show();
+      } else {
+        $(window.menuHighLevelFolders)
+          .children("#high-folder-delete")
+          .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+        $(window.menuHighLevelFolders).children("#high-folder-delete").show();
+        $(window.menuHighLevelFolders).children("#high-folder-rename").hide();
+        $(window.menuHighLevelFolders).children("#folder-move").hide();
+        $(window.menuHighLevelFolders).children("#tooltip-folders").show();
+      }
+    }
+    window.menuHighLevelFolders.style.display = "block";
+    if (guidedModeFileExporer) {
+      // $(".menu.high-level-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
+    }
+    $(".menu.high-level-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
+  } else {
+    if (deleted) {
+      $(window.menuFile).children("#file-delete").html("<i class='fas fa-undo-alt'></i> Restore");
+      $(window.menuFile).children("#file-rename").hide();
+      $(window.menuFile).children("#file-move").hide();
+      $(window.menuFile).children("#file-description").hide();
+    } else {
+      if ($(".selected-item").length > 2) {
+        $(window.menuFile).children("#file-delete").html('<i class="fas fa-minus-circle"></i> Delete All');
+        $(window.menuFile)
+          .children("#file-move")
+          .html('<i class="fas fa-external-link-alt"></i> Move All');
+        $(window.menuFile).children("#file-rename").hide();
+        $(window.menuFile).children("#file-description").hide();
+      } else {
+        $(window.menuFile).children("#file-delete").html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+        $(window.menuFile).children("#file-move").html('<i class="fas fa-external-link-alt"></i> Move');
+        $(window.menuFile).children("#file-rename").show();
+        $(window.menuFile).children("#file-move").show();
+        $(window.menuFile).children("#file-description").show();
+      }
+    }
 
-//     // This is where the context menu for regular files will be displayed
-//     window.menuFile.style.display = "block";
-//     $(".menu.file").css({ top: mouseY, left: mouseX }).fadeIn("slow");
-//   }
-// };
+    // This is where the context menu for regular files will be displayed
+    window.menuFile.style.display = "block";
+    $(".menu.file").css({ top: mouseY, left: mouseX }).fadeIn("slow");
+  }
+};
 
 // /// options for regular sub-folders
 // const folderContextMenu = (event) => {
@@ -5568,7 +5558,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 //     .click(function () {
 //       if ($(this).attr("id") === "reg-folder-rename") {
 //         var itemDivElements = document.getElementById("items").children;
-//         renameFolder(
+//         window.renameFolder(
 //           event,
 //           window.organizeDSglobalPath,
 //           itemDivElements,
@@ -5577,9 +5567,9 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 //           ".single-item"
 //         );
 //       } else if ($(this).attr("id") === "reg-folder-delete") {
-//         delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", window.datasetStructureJSONObj);
+//         window.delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", window.datasetStructureJSONObj);
 //       } else if ($(this).attr("id") === "folder-move") {
-//         moveItems(event, "folders");
+//         window.moveItems(event, "folders");
 //       }
 //       // Hide it AFTER the action was triggered
 //       window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
@@ -5593,7 +5583,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 //     .click(function () {
 //       if ($(this).attr("id") === "high-folder-rename") {
 //         var itemDivElements = document.getElementById("items").children;
-//         renameFolder(
+//         window.renameFolder(
 //           event,
 //           window.organizeDSglobalPath,
 //           itemDivElements,
@@ -5602,7 +5592,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 //           ".single-item"
 //         );
 //       } else if ($(this).attr("id") === "high-folder-delete") {
-//         delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", window.datasetStructureJSONObj);
+//         window.delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", window.datasetStructureJSONObj);
 //       } else if ($(this).attr("id") === "tooltip-folders") {
 //         showTooltips(event);
 //       }
@@ -5617,36 +5607,41 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 //   window.hideFullName();
 // };
 
-// //////// options for files
-// const fileContextMenu = (event) => {
-//   if ($(".div-display-details.file").hasClass("show")) {
-//     $(".div-display-details.file").removeClass("show");
-//   }
-//   $(".menu.file li")
-//     .unbind()
-//     .click(function () {
-//       if ($(this).attr("id") === "file-rename") {
-//         var itemDivElements = document.getElementById("items").children;
-//         renameFolder(
-//           event,
-//           window.organizeDSglobalPath,
-//           itemDivElements,
-//           window.datasetStructureJSONObj,
-//           "#items",
-//           ".single-item"
-//         );
-//       } else if ($(this).attr("id") === "file-delete") {
-//         delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", window.datasetStructureJSONObj);
-//       } else if ($(this).attr("id") === "file-move") {
-//         moveItems(event, "files");
-//       } else if ($(this).attr("id") === "file-description") {
-//         manageDesc(event);
-//       }
-//       // Hide it AFTER the action was triggered
-//       window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//     });
-//   window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-// };
+//////// options for files
+window.fileContextMenu = (event) => {
+  try{
+  console.log("FIle context menu activated")
+  if ($(".div-display-details.file").hasClass("show")) {
+    $(".div-display-details.file").removeClass("show");
+  }
+  $(".menu.file li")
+    .unbind()
+    .click(function () {
+      if ($(this).attr("id") === "file-rename") {
+        var itemDivElements = document.getElementById("items").children;
+        window.renameFolder(
+          event,
+          window.organizeDSglobalPath,
+          itemDivElements,
+          window.datasetStructureJSONObj,
+          "#items",
+          ".single-item"
+        );
+      } else if ($(this).attr("id") === "file-delete") {
+        window.delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", window.datasetStructureJSONObj);
+      } else if ($(this).attr("id") === "file-move") {
+        window.moveItems(event, "files");
+      } else if ($(this).attr("id") === "file-description") {
+        manageDesc(event);
+      }
+      // Hide it AFTER the action was triggered
+      window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+    });
+  window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+  } catch(e) {
+    console.log(e)
+  }
+};
 
 $(document).ready(function () {
   tippy("[data-tippy-content]:not(.tippy-content-main):not(.guided-tippy-wrapper)", {
@@ -5673,69 +5668,69 @@ $(document).ready(function () {
   });
 });
 
-// // Trigger action when the contexmenu is about to be shown
-// $(document).bind("contextmenu", function (event) {
-//   // Avoid the real one
-//   event.preventDefault();
+// Trigger action when the contexmenu is about to be shown
+$(document).bind("contextmenu", function (event) {
+  // Avoid the real one
+  event.preventDefault();
 
-//   // Right click behaviour for multiple files (Linux os behaviour)
-//   // ** if right click with ctrl -> include file in selection
-//   // ** if right click without ctrl -> remove selection from other files
-//   if (!$(event.target).hasClass("selected-item")) {
-//     if (event.ctrlKey) {
-//       $(event.target).addClass("selected-item");
-//       $(event.target).parent().addClass("selected-item");
-//     } else {
-//       $(".selected-item").removeClass("selected-item");
-//       dragselect_area.clearSelection();
-//     }
-//   }
+  // Right click behaviour for multiple files (Linux os behaviour)
+  // ** if right click with ctrl -> include file in selection
+  // ** if right click without ctrl -> remove selection from other files
+  if (!$(event.target).hasClass("selected-item")) {
+    if (event.ctrlKey) {
+      $(event.target).addClass("selected-item");
+      $(event.target).parent().addClass("selected-item");
+    } else {
+      $(".selected-item").removeClass("selected-item");
+      dragselect_area.clearSelection();
+    }
+  }
 
-//   /// check for high level folders
-//   var highLevelFolderBool = false;
-//   var folderName = event.target.parentElement.innerText;
-//   if (folderName.lastIndexOf("-") != -1) {
-//     folderName = folderName.substring(0, folderName.lastIndexOf("-"));
-//   }
-//   if (window.highLevelFolders.includes(folderName)) {
-//     highLevelFolderBool = true;
-//   }
-//   // Show the rightcontextmenu for each clicked
-//   // category (high-level folders, regular sub-folders, and files)
-//   // The third parameter in show menu is used to show the restore option
-//   if (event.target.classList[0] === "myFol") {
-//     if (highLevelFolderBool) {
-//       if (event.target.classList.contains("deleted_folder")) {
-//         showmenu(event, "high-level-folder", true);
-//       } else {
-//         showmenu(event, "high-level-folder");
-//       }
-//       window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//     } else {
-//       if (event.target.classList.contains("deleted_folder")) {
-//         showmenu(event, "folder", true);
-//       } else {
-//         showmenu(event, "folder");
-//       }
-//       window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//     }
-//   } else if (event.target.classList[0] === "myFile") {
-//     if (event.target.classList.contains("deleted_file")) {
-//       showmenu(event, "file", true);
-//     } else {
-//       showmenu(event, "file");
-//     }
-//     window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//     window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//     // otherwise, do not show any menu
-//   } else {
-//     window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//     window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//     window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//     // hideFullPath()
-//     window.hideFullName();
-//   }
-// });
+  /// check for high level folders
+  var highLevelFolderBool = false;
+  var folderName = event.target.parentElement.innerText;
+  if (folderName.lastIndexOf("-") != -1) {
+    folderName = folderName.substring(0, folderName.lastIndexOf("-"));
+  }
+  if (window.highLevelFolders.includes(folderName)) {
+    highLevelFolderBool = true;
+  }
+  // Show the rightcontextmenu for each clicked
+  // category (high-level folders, regular sub-folders, and files)
+  // The third parameter in show menu is used to show the restore option
+  if (event.target.classList[0] === "myFol") {
+    if (highLevelFolderBool) {
+      if (event.target.classList.contains("deleted_folder")) {
+        showmenu(event, "high-level-folder", true);
+      } else {
+        showmenu(event, "high-level-folder");
+      }
+      window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+    } else {
+      if (event.target.classList.contains("deleted_folder")) {
+        showmenu(event, "folder", true);
+      } else {
+        showmenu(event, "folder");
+      }
+      window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+    }
+  } else if (event.target.classList[0] === "myFile") {
+    if (event.target.classList.contains("deleted_file")) {
+      showmenu(event, "file", true);
+    } else {
+      showmenu(event, "file");
+    }
+    window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+    window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+    // otherwise, do not show any menu
+  } else {
+    window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+    window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+    window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+    // hideFullPath()
+    window.hideFullName();
+  }
+});
 
 const select_items_ctrl = (items, event, isDragging) => {
   if (event["ctrlKey"]) {
@@ -6218,7 +6213,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         let element_creation =
           '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
           extension +
-          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          '" oncontextmenu="window.fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
           cloud_item +
           '">' +
           item +
@@ -6245,7 +6240,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         let elem_creation =
           '<div class="single-item updated-file" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
           extension +
-          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          '" oncontextmenu="window.fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
           cloud_item +
           '">' +
           item +
@@ -6262,7 +6257,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         let element_creation =
           '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
           extension +
-          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          '" oncontextmenu="window.fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
           cloud_item +
           '">' +
           item +
@@ -6433,27 +6428,27 @@ window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
 //   return newString;
 // };
 
-// var fileNameForEdit;
-// ///// Option to manage description for files
-// const manageDesc = (ev) => {
-//   var fileName = ev.parentElement.innerText;
-//   /// get current location of files in JSON object
-//   var filtered = window.getGlobalPath(window.organizeDSglobalPath);
-//   var myPath = window.getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
-//   //// load existing metadata/description
-//   loadDetailsContextMenu(
-//     fileName,
-//     myPath,
-//     "textarea-file-description",
-//     "textarea-file-metadata",
-//     "para-local-path-file"
-//   );
-//   $("#button-confirm-display-details-file").html("Confirm");
-//   showDetailsFile();
-//   window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//   window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//   fileNameForEdit = fileName;
-// };
+var fileNameForEdit;
+///// Option to manage description for files
+const manageDesc = (ev) => {
+  var fileName = ev.parentElement.innerText;
+  /// get current location of files in JSON object
+  var filtered = window.getGlobalPath(window.organizeDSglobalPath);
+  var myPath = window.getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
+  //// load existing metadata/description
+  window.loadDetailsContextMenu(
+    fileName,
+    myPath,
+    "textarea-file-description",
+    "textarea-file-metadata",
+    "para-local-path-file"
+  );
+  $("#button-confirm-display-details-file").html("Confirm");
+  showDetailsFile();
+  window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+  window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+  fileNameForEdit = fileName;
+};
 
 // const updateFileDetails = (ev) => {
 //   var fileName = fileNameForEdit;
@@ -6648,9 +6643,9 @@ window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
 //           irregularFolderArray = [];
 //           let replaced = {};
 
-//           detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
+//           detectIrregularFolders(window.path.basename(filepath[0]), filepath[0]);
 
-//           var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+//           var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${window.nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
 //           if (irregularFolderArray.length > 0) {
 //             Swal.fire({
 //               title:
@@ -6677,7 +6672,7 @@ window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
 //                 if (irregularFolderArray.length > 0) {
 //                   for (let i = 0; i < irregularFolderArray.length; i++) {
 //                     renamedFolderName = replaceIrregularFolders(irregularFolderArray[i]);
-//                     replaced[path.basename(irregularFolderArray[i])] = renamedFolderName;
+//                     replaced[window.path.basename(irregularFolderArray[i])] = renamedFolderName;
 //                   }
 //                 }
 //               } else if (result.isDenied) {
@@ -6830,8 +6825,8 @@ window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
 //       if (valid_dataset == true) {
 //         var action = "";
 //         irregularFolderArray = [];
-//         detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
-//         var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+//         detectIrregularFolders(window.path.basename(filepath[0]), filepath[0]);
+//         var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${window.nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
 //         if (irregularFolderArray.length > 0) {
 //           Swal.fire({
 //             title:
@@ -7981,12 +7976,12 @@ window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
 
 // ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 //   if (mypath.length > 0) {
-//     var dotCount = path.basename(mypath[0]).trim().split(".").length - 1;
+//     var dotCount = window.path.basename(mypath[0]).trim().split(".").length - 1;
 //     if (dotCount === 1) {
 //       var metadataWithoutExtension = path
 //         .basename(mypath[0])
-//         .slice(0, path.basename(mypath[0]).indexOf("."));
-//       var extension = path.basename(mypath[0]).slice(path.basename(mypath[0]).indexOf("."));
+//         .slice(0, window.path.basename(mypath[0]).indexOf("."));
+//       var extension = window.path.basename(mypath[0]).slice(window.path.basename(mypath[0]).indexOf("."));
 
 //       let file_size = 0;
 
@@ -8562,7 +8557,7 @@ window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
 //   // get the UI text that displays the file path
 //   let filePath = metadataFileStatus.text();
 
-//   let fileName = path.basename(filePath);
+//   let fileName = window.path.basename(filePath);
 
 //   // remove the extension
 //   fileName = fileName.slice(0, fileName.indexOf("."));
@@ -8861,15 +8856,15 @@ window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
 //   let homedir = os.homedir();
 //   let file_path = "";
 //   let clientLogsPath = "";
-//   let serverLogsPath = path.join(homedir, "SODA", "logs");
+//   let serverLogsPath = window.path.join(homedir, "SODA", "logs");
 //   let logFiles = ["main.log", "renderer.log", "agent.log", "api.log"];
 
 //   if (os.platform() === "darwin") {
-//     clientLogsPath = path.join(homedir, "/Library/Logs/SODA for SPARC/");
+//     clientLogsPath = window.path.join(homedir, "/Library/Logs/SODA for SPARC/");
 //   } else if (os.platform() === "win32") {
-//     clientLogsPath = path.join(homedir, "AppData", "Roaming", "SODA for SPARC", "logs");
+//     clientLogsPath = window.path.join(homedir, "AppData", "Roaming", "SODA for SPARC", "logs");
 //   } else {
-//     clientLogsPath = path.join(homedir, ".config", "SODA for SPARC", "logs");
+//     clientLogsPath = window.path.join(homedir, ".config", "SODA for SPARC", "logs");
 //   }
 
 //   Swal.fire({
@@ -8920,7 +8915,7 @@ window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
 //           },
 //         });
 
-//         let log_folder = path.join(file_path, "/SODA-For-SPARC-Logs/");
+//         let log_folder = window.path.join(file_path, "/SODA-For-SPARC-Logs/");
 //         try {
 //           fs.mkdirSync(log_folder, { recursive: true });
 //           // destination will be created or overwritten by default.
@@ -8928,17 +8923,17 @@ window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
 //             let logFilePath;
 //             let missingLog = false;
 //             if (logFile === "agent.log") {
-//               logFilePath = path.join(homedir, ".pennsieve", logFile);
+//               logFilePath = window.path.join(homedir, ".pennsieve", logFile);
 //               if (!fs.existsSync(logFilePath)) missingLog = true;
 //             } else if (logFile === "api.log") {
-//               logFilePath = path.join(serverLogsPath, logFile);
+//               logFilePath = window.path.join(serverLogsPath, logFile);
 //               if (!fs.existsSync(logFilePath)) missingLog = true;
 //             } else {
-//               logFilePath = path.join(clientLogsPath, logFile);
+//               logFilePath = window.path.join(clientLogsPath, logFile);
 //               if (!fs.existsSync(logFilePath)) missingLog = true;
 //             }
 //             if (!missingLog) {
-//               let log_copy = path.join(log_folder, logFile);
+//               let log_copy = window.path.join(log_folder, logFile);
 
 //               fs.copyFileSync(logFilePath, log_copy);
 //             }

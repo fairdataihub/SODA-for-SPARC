@@ -218,13 +218,13 @@ const guidedModifyPennsieveFolder = (folderJSONPath, action) => {
       folderJSONPath["action"].push("deleted");
     }
 
-    recursive_mark_sub_files_deleted(folderJSONPath, "delete");
+    window.recursive_mark_sub_files_deleted(folderJSONPath, "delete");
   }
   if (action === "restore") {
     folderJSONPath["action"] = folderJSONPath["action"].filter(
       (action) => action !== "recursive_deleted" || action !== "deleted"
     );
-    recursive_mark_sub_files_deleted(folderJSONPath, "restore");
+    window.recursive_mark_sub_files_deleted(folderJSONPath, "restore");
   }
 };
 
@@ -237,7 +237,7 @@ const guidedMovePennsieveFolder = (movedFolderName, folderJSONPath, newFolderJSO
   }
 
   folderJSONPath["action"] = ["existing", "moved"];
-  addMovedRecursively(folderJSONPath);
+  window.addMovedRecursively(folderJSONPath);
   newFolderJSONPath["folders"][movedFolderName] = folderJSONPath;
 };
 
@@ -3891,7 +3891,7 @@ const guidedShowTreePreview = (new_dataset_name, targetElement) => {
     };
   }
 
-  const guidedJsTreePreviewData = create_child_node(
+  const guidedJsTreePreviewData = window.create_child_node(
     dsJsonObjCopy,
     new_dataset_name,
     "folder",

@@ -158,6 +158,20 @@ const updateDatasetList = (bfaccount) => {
   }, 100)
 }
 
+window.removeOptions = (selectbox) => {
+  for (let i = selectbox.options.length - 1; i >= 0; i--) {
+    selectbox.remove(i);
+  }
+};
+
+// Function to add options to dropdown list
+window.addOption = (selectbox, text, value)  => {
+  var opt = document.createElement("OPTION");
+  opt.text = text;
+  opt.value = value;
+  selectbox.options.add(opt);
+}
+
 
 
 // global variables to be modularized

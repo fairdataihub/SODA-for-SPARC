@@ -8,6 +8,7 @@ import './scripts/others/renderer'
 import './scripts/metadata-files/submission'
 import './scripts/manage-dataset/manage-dataset'
 import './scripts/organize-dataset/organizeDS'
+import './scripts/organize-dataset/curate-functions'
 
 // Application Lotties
 import './assets/lotties/activate-lotties'
