@@ -5074,6 +5074,10 @@ const openPage = async (targetPageID) => {
       renderSubjectsTable();
     }
 
+    if (targetPageID === "guided-subjects-pooling-tab") {
+      renderPoolsTable();
+    }
+
     if (targetPageID === "guided-samples-addition-tab") {
       renderSamplesTable();
     }
@@ -6739,6 +6743,46 @@ document.getElementById("guided-button-add-a-subject").addEventListener("click",
   }
 });
 
+const renderPoolsTable = () => {
+  const pools = sodaJSONObj.getPools();
+  const poolElementRows = Object.keys(pools)
+    .map((pool) => {
+      return generatePoolRowElement(pool);
+    })
+    .join("\n");
+  document.getElementById("guided-section-pools-table").innerHTML = poolElementRows;
+
+  for (const poolName of Object.keys(pools)) {
+    const newPoolSubjectsSelectElement = document.querySelector(
+      `select[name="${poolName}-subjects-selection-dropdown"]`
+    );
+    //create a select2 dropdown for the pool subjects
+    $(newPoolSubjectsSelectElement).select2({
+      placeholder: "Select subjects",
+      tags: true,
+      width: "100%",
+      closeOnSelect: false,
+      createTag: function () {
+        // Disable tagging
+        return null;
+      },
+    });
+    //update the newPoolSubjectsElement with the subjects in the pool
+    updatePoolDropdown($(newPoolSubjectsSelectElement), poolName);
+    $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
+      updatePoolDropdown($(e.currentTarget), poolName);
+    });
+    $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
+      const subjectToRemove = e.params.data.id;
+      sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, poolName);
+    });
+    $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
+      const selectedSubject = e.params.data.id;
+      sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
+    });
+  }
+};
+
 const renderSamplesTable = () => {
   const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
   //Combine sample data from subjects in and out of pools
@@ -6767,44 +6811,6 @@ const setActiveSubPage = (pageIdToActivate) => {
     document.getElementById("guided-section-dataset-subjects-text").classList.add("hidden");
     document.getElementById("guided-section-dataset-pools-text").classList.remove("hidden");
     document.getElementById("guided-section-dataset-samples-text").classList.add("hidden");
-
-    const pools = sodaJSONObj.getPools();
-    const poolElementRows = Object.keys(pools)
-      .map((pool) => {
-        return generatePoolRowElement(pool);
-      })
-      .join("\n");
-    document.getElementById("pools-specification-table-body").innerHTML = poolElementRows;
-
-    for (const poolName of Object.keys(pools)) {
-      const newPoolSubjectsSelectElement = document.querySelector(
-        `select[name="${poolName}-subjects-selection-dropdown"]`
-      );
-      //create a select2 dropdown for the pool subjects
-      $(newPoolSubjectsSelectElement).select2({
-        placeholder: "Select subjects",
-        tags: true,
-        width: "100%",
-        closeOnSelect: false,
-        createTag: function () {
-          // Disable tagging
-          return null;
-        },
-      });
-      //update the newPoolSubjectsElement with the subjects in the pool
-      updatePoolDropdown($(newPoolSubjectsSelectElement), poolName);
-      $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
-        updatePoolDropdown($(e.currentTarget), poolName);
-      });
-      $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
-        const subjectToRemove = e.params.data.id;
-        sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, poolName);
-      });
-      $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
-        const selectedSubject = e.params.data.id;
-        sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
-      });
-    }
   }
   if (pageIdToActivate === "guided-specify-samples-page") {
     document.getElementById("guided-section-dataset-subjects-text").classList.add("hidden");
@@ -11500,7 +11506,7 @@ const generatePoolSpecificationRowElement = () => {
   `;
 };
 const addPoolTableRow = () => {
-  const poolsTableBody = document.getElementById("pools-specification-table-body");
+  const poolsTableBody = document.getElementById("guided-section-pools-table");
   const poolSpecificationTableInput = poolsTableBody.querySelector("input[name='guided-pool-id']");
 
   const re = new RegExp("/^(d|w)+$/g");
