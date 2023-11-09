@@ -965,6 +965,7 @@ window.create_child_node = (
       }
     }
     if ("files" in oldFormatNode) {
+      let nodeType = ""
       if (oldFormatNode["files"] != undefined) {
         for (var [key, value] of Object.entries(oldFormatNode["files"])) {
           if (key !== undefined || value !== undefined) {
@@ -1046,8 +1047,8 @@ $(document).ready(function () {
     },
     plugins: ["types", "changed", "sort"],
     sort: function (a, b) {
-      a1 = this.get_node(a);
-      b1 = this.get_node(b);
+      let a1 = this.get_node(a);
+      let b1 = this.get_node(b);
 
       if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
         //if the word assets is included in the icon then we can assume it is a file

@@ -2354,6 +2354,7 @@ const createChildNodeManifest = (
       // });
     }
     if ("files" in oldFormatNode) {
+      let nodeType = "";
       if (oldFormatNode["files"] != undefined) {
         for (var [key, value] of Object.entries(oldFormatNode["files"])) {
           if (key !== undefined || value !== undefined) {
