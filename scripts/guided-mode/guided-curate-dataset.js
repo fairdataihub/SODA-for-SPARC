@@ -11027,23 +11027,35 @@ document
     const worksheet = spreadsheet.Sheets[spreadsheet.SheetNames[0]];
     const sheetData = xlsx.utils.sheet_to_json(worksheet, { defval: "" });
 
+    const validateAndFormatEntity = (entityPrefix, entityName) => {
+      if (!entityName) {
+        return null;
+      }
+
+      if (!entityName.startsWith(entityPrefix)) {
+        entityName = `${entityPrefix}${entityName}`;
+      }
+
+      if (
+        !evaluateStringAgainstSdsRequirements(
+          entityName,
+          "string-adheres-to-identifier-conventions"
+        )
+      ) {
+        return null;
+      }
+
+      return entityName;
+    };
+
     for (const row of sheetData) {
       const [existingPooledSubjects, existingUnpooledSubjects] = sodaJSONObj.getAllSubjects();
       let subjectName = row["Subject ID"];
-      if (subjectName.length === 0) {
-        console.log("Skipping empty subject name");
-        continue;
-      }
-      // Check to see if the subjectName starts with sub- otherwise prepend sub- to it
-      if (!subjectName.startsWith("sub-")) {
-        subjectName = `sub-${subjectName}`;
-      }
-      // Check to see if the subject name meets the SDS requirements
-      const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
-        subjectName,
-        "string-adheres-to-identifier-conventions"
-      );
-      if (!subjectNameIsValid) {
+      const validSubjectName = validateAndFormatEntity("sub-", row["Subject ID"]);
+      const validPoolName = validateAndFormatEntity("pool-", row["Pool ID"]);
+      const validSampleName = validateAndFormatEntity("sam-", row["Sample ID"]);
+
+      if (!validSubjectName) {
         console.log(`Skipping invalid subject name: ${subjectName}`);
         continue;
       }
@@ -11085,6 +11097,10 @@ document
         if (!sampleNameIsValid) {
           console.log(`Skipping invalid sample name: ${sampleName}`);
           continue;
+        }
+        const sampleAlreadyExists = getExistingSampleNames().includes(sampleName);
+        if (!sampleAlreadyExists) {
+          console.log(`Adding sample ${sampleName} to subject ${subjectName}`);
         }
       }
     }
