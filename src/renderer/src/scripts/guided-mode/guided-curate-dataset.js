@@ -8,6 +8,7 @@ import lottie from "lottie-web"
 import {dragDrop} from '../../assets/lotties/lotties'
 import Swal from "sweetalert2"
 import Tagify from "@yaireo/tagify";
+import tippy from "tippy.js";
 import DragSort from '@yaireo/dragsort'
 import 'jstree'
 
@@ -2591,7 +2592,7 @@ for (const infoDropdown of Array.from(infoDropdowns)) {
   });
 }
 
-const guidedSaveAndExit = async () => {
+window.guidedSaveAndExit = async () => {
   if (!window.sodaJSONObj["digital-metadata"]["name"]) {
     // If a progress file has not been created, then we don't need to save anything
     guidedTransitionToHome();
@@ -2855,27 +2856,13 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
 };
 
 const readDirAsync = async (path) => {
-  return new Promise((resolve, reject) => {
-    window.fs.readdir(path, (error, result) => {
-      if (error) {
-        throw new Error(error);
-      } else {
-        resolve(result);
-      }
-    });
-  });
+  let result = await window.fs.readdir(path)
+  return result
 };
 
 const readFileAsync = async (path) => {
-  return new Promise((resolve, reject) => {
-    window.fs.readFile(path, "utf-8", (error, result) => {
-      if (error) {
-        throw new Error(error);
-      } else {
-        resolve(JSON.parse(result));
-      }
-    });
-  });
+    let result = await window.fs.readFile(path, "utf-8")
+    return result
 };
 
 const getAllProgressFileData = async (progressFiles) => {
@@ -3025,7 +3012,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     return `
     <button
       class="ui positive button ${buttonClass}"
-      onClick="guidedResumeProgress('${progressFileName}')"
+      onClick="window.guidedResumeProgress('${progressFileName}')"
     >
       ${buttonText}
     </button>
@@ -3101,6 +3088,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
 };
 
 const guidedRenderProgressCards = async () => {
+  console.log("Loading the render progress cards func")
   const progressCardsContainer = document.getElementById("guided-container-progress-cards");
   const progressCardLoadingDiv = document.getElementById("guided-section-loading-progress-cards");
 
@@ -7461,7 +7449,7 @@ const patchPreviousGuidedModeVersions = async () => {
 };
 
 //Loads UI when continue curation button is pressed
-const guidedResumeProgress = async (datasetNameToResume) => {
+window.guidedResumeProgress = async (datasetNameToResume) => {
   const loadingSwal = Swal.fire({
     title: "Resuming where you last left off",
     html: `
@@ -14715,7 +14703,7 @@ $("#guided-back-button").on("click", async () => {
   // If the target page when clicking the back button does not exist, then we are on the first not skipped page.
   // In this case, we want to save and exit guided mode.
   if (!targetPage) {
-    await guidedSaveAndExit();
+    await window.guidedSaveAndExit();
     return;
   }
 

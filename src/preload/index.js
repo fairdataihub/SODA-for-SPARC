@@ -85,6 +85,10 @@ if (process.contextIsolated) {
       isFile: async (filepath) => {
         const fsStatsObj = await fs.stat(filepath);
         return fsStatsObj.isFile();
+      },
+      readFile: async (filepath, encoding) => {
+        let result = await fs.readFile(filepath, encoding)
+        return JSON.parse(result)
       }
     })
     contextBridge.exposeInMainWorld('process', {
