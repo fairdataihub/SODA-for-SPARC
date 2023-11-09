@@ -1193,8 +1193,8 @@ window.moveItems = async (ev, category) => {
       popup: "animate__animated animate__fadeOutUp animate_fastest",
     },
     didOpen: () => {
-      document.getElementById("swal2-content").style.overflowY = "auto";
-      document.getElementById("swal2-content").style.maxHeight = "500px";
+      document.getElementById("swal2-html-container").style.overflowY = "auto";
+      document.getElementById("swal2-html-container").style.maxHeight = "500px";
     },
     preConfirm: () => {
       Swal.resetValidationMessage();
