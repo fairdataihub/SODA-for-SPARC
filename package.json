@@ -62,7 +62,7 @@
     "node-localstorage": "^3.0.5",
     "notyf": "^3.10.0",
     "select2": "^4.1.0-rc.0",
-    "sweetalert2": "^11.9.0",
+    "sweetalert2": "^10.16.9",
     "tippy.js": "^6.3.7",
     "tui-date-picker": "^4.3.3",
     "uuid": "^9.0.1",
