@@ -193,7 +193,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
 
         // update UI with updated jsonobj
         window.listItems(myPath, uiItem, 500, true);
-        getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
+        window.getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
         beginScrollListen();
       }
     });
@@ -256,7 +256,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
 
           // update UI with updated jsonobj
           window.listItems(myPath, uiItem, 500, true);
-          getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
+          window.getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
           beginScrollListen();
         }
       });
@@ -306,7 +306,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
           }
           // update UI with updated jsonobj
           window.listItems(myPath, uiItem, 500, true);
-          getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
+          window.getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
           beginScrollListen();
         }
       });
@@ -603,7 +603,7 @@ const loadFileFolder = (myPath) => {
     }
     appendString =
       appendString +
-      '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+      '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
       emptyFolder +
       '"></h1><div class="folder_desc">' +
       item +
@@ -656,7 +656,7 @@ const loadFileFolder = (myPath) => {
     }
     appendString =
       appendString +
-      '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+      '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
       extension +
       '" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">' +
       item +
@@ -1262,9 +1262,9 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
                 action: ["new", "renamed"],
               };
               window.listItems(myPath, "#items");
-              getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
-              hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-              hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+              window.getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
+              window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+              window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
             }
           }
         } else {
@@ -1287,13 +1287,13 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
                 action: ["new", "renamed"],
               };
               var appendString =
-                '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+                '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
                 myPath["files"][fileNames[index]]["basename"] +
                 "</div></div>";
 
               $("#items").html(appendString);
               window.listItems(myPath, "#items");
-              getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
+              window.getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
             }
           }
         }
@@ -1454,7 +1454,7 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
                 }
               }
               window.listItems(myPath, "#items");
-              getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
+              window.getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
             } else {
               let justName = checkboxes[i].id.substring(0, removeExt);
               let ext = checkboxes[i].id.substring(removeExt, checkboxes[i].id.length);
@@ -1475,7 +1475,7 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
                 }
               }
               window.listItems(myPath, "#items");
-              getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
+              window.getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
             }
           }
           let section = organizeDSglobalPath.value;
@@ -2101,7 +2101,7 @@ const addFilesfunction = async (
       }
     }
     await window.listItems(currentLocation, uiItem, 500);
-    getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue);
+    window.getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue);
     beginScrollListen();
     if (Object.keys(filesToImport).length > 1) {
       importToast.open({
@@ -2162,7 +2162,7 @@ const check_dataset_value = () => {
     var myPath = window.getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
     window.amount = 500;
     window.listItems(myPath, "items", 500);
-    getInFolder(".single-item", "#items", dataset_path, window.datasetStructureJSONObj);
+    window.getInFolder(".single-item", "#items", dataset_path, window.datasetStructureJSONObj);
     beginScrollListen();
   }
 };
@@ -2216,7 +2216,7 @@ const lazyLoad = async () => {
             item_box.children[0].remove();
           }
         }
-        await getInFolder(".single-item", "#items", dataset_path, window.datasetStructureJSONObj);
+        await window.getInFolder(".single-item", "#items", dataset_path, window.datasetStructureJSONObj);
 
         if (item_box.lastChild.id === "items_container") {
           item_box.lastChild.remove();
@@ -2258,7 +2258,7 @@ const lazyLoad = async () => {
         window.amount += 500;
         await window.listItems(myPath, uiItems, window.amount);
         // window.add_items_to_view(window.already_created_elem, 400);
-        await getInFolder(".single-item", "#items", dataset_path, window.datasetStructureJSONObj);
+        await window.getInFolder(".single-item", "#items", dataset_path, window.datasetStructureJSONObj);
         resolved();
       });
     }

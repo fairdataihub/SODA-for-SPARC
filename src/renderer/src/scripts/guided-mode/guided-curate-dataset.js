@@ -15486,8 +15486,8 @@ $("#guided-new-folder").on("click", () => {
               determineDatasetLocation()
             );
 
-            hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-            hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+            hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+            hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
           }
         }
       }

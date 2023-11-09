@@ -1223,13 +1223,13 @@ window.electron.ipcRenderer.on("app_version", (event, arg) => {
 // const organizeDSbackButton = document.getElementById("button-back");
 // const organizeDSaddFiles = document.getElementById("add-files");
 // const organizeDSaddNewFolder = document.getElementById("new-folder");
-// const organizeDSaddFolders = document.getElementById("add-folders");
+const organizeDSaddFolders = document.getElementById("add-folders");
 // const contextMenu = document.getElementById("mycontext");
-// const fullNameValue = document.querySelector(".hoverFullName");
+const fullNameValue = document.querySelector(".hoverFullName");
 // const homePathButton = document.getElementById("home-path");
-// const menuFolder = document.querySelector(".menu.reg-folder");
-// const menuFile = document.querySelector(".menu.file");
-// const menuHighLevelFolders = document.querySelector(".menu.high-level-folder");
+window.menuFolder = document.querySelector(".menu.reg-folder");
+window.menuFile = document.querySelector(".menu.file");
+window.menuHighLevelFolders = document.querySelector(".menu.high-level-folder");
 // const organizeNextStepBtn = document.getElementById("button-organize-confirm-create");
 // const organizePrevStepBtn = document.getElementById("button-organize-prev");
 // const manifestFileCheck = document.getElementById("generate-manifest-curate");
@@ -4069,19 +4069,19 @@ const loadDefaultAccount = async () => {
 // var backFolder = [];
 // var forwardFolder = [];
 
-// var highLevelFolders = ["code", "derivative", "docs", "source", "primary", "protocol"];
-// var highLevelFolderToolTip = {
-//   code: "<b>code</b>: This folder contains all the source code used in the study (e.g., Python, MATLAB, etc.)",
-//   derivative:
-//     "<b>derivative</b>: This folder contains data files derived from raw data (e.g., processed image stacks that are annotated via the MBF tools, segmentation files, smoothed overlays of current and voltage that demonstrate a particular effect, etc.)",
-//   docs: "<b>docs</b>: This folder contains all other supporting files that don't belong to any of the other folders (e.g., a representative image for the dataset, figures, etc.)",
-//   source:
-//     "<b>source</b>: This folder contains very raw data i.e. raw or untouched files from an experiment. For example, this folder may include the “truly” raw k-space data for an MR image that has not yet been reconstructed (the reconstructed DICOM or NIFTI files, for example, would be found within the primary folder). Another example is the unreconstructed images for a microscopy dataset.",
-//   primary:
-//     "<b>primary</b>: This folder contains all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines 'raw' (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders.",
-//   protocol:
-//     "<b>protocol</b>: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
-// };
+window.highLevelFolders = ["code", "derivative", "docs", "source", "primary", "protocol"];
+var highLevelFolderToolTip = {
+  code: "<b>code</b>: This folder contains all the source code used in the study (e.g., Python, MATLAB, etc.)",
+  derivative:
+    "<b>derivative</b>: This folder contains data files derived from raw data (e.g., processed image stacks that are annotated via the MBF tools, segmentation files, smoothed overlays of current and voltage that demonstrate a particular effect, etc.)",
+  docs: "<b>docs</b>: This folder contains all other supporting files that don't belong to any of the other folders (e.g., a representative image for the dataset, figures, etc.)",
+  source:
+    "<b>source</b>: This folder contains very raw data i.e. raw or untouched files from an experiment. For example, this folder may include the “truly” raw k-space data for an MR image that has not yet been reconstructed (the reconstructed DICOM or NIFTI files, for example, would be found within the primary folder). Another example is the unreconstructed images for a microscopy dataset.",
+  primary:
+    "<b>primary</b>: This folder contains all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines 'raw' (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders.",
+  protocol:
+    "<b>protocol</b>: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
+};
 
 window.sodaJSONObj = {};
 
@@ -4217,8 +4217,8 @@ window.sodaJSONObj = {};
 //             determineDatasetLocation()
 //           );
 
-//           hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-//           hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+//           window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+//           window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
 //         }
 //       }
 //     });
@@ -4295,50 +4295,50 @@ window.sodaJSONObj = {};
 //   });
 // };
 
-// let full_name_show = false;
+let full_name_show = false;
 
-// const hideFullName = () => {
-//   full_name_show = false;
-//   fullNameValue.style.display = "none";
-//   fullNameValue.style.top = "-250%";
-//   fullNameValue.style.left = "-250%";
-// };
+window.hideFullName = () => {
+  full_name_show = false;
+  fullNameValue.style.display = "none";
+  fullNameValue.style.top = "-250%";
+  fullNameValue.style.left = "-250%";
+};
 
-// //// HOVER FOR FULL NAME (FOLDERS WITH WRAPPED NAME IN UI)
-// const showFullName = (ev, element, text) => {
-//   /// check if the full name of the folder is overflowing or not, if so, show full name on hover
-//   full_name_show = true;
-//   let mouseX = ev.pageX - 200;
-//   let mouseY = ev.pageY;
-//   let isOverflowing =
-//     element.clientWidth < element.scrollWidth || element.clientHeight < element.scrollHeight;
-//   if (isOverflowing) {
-//     fullNameValue.innerHTML = text;
-//     $(".hoverFullName").css({ top: mouseY, left: mouseX });
-//     setTimeout(() => {
-//       if (full_name_show) {
-//         // fullNameValue.style.display = "block";
-//         $(".hoverFullName").fadeIn("slow");
-//       }
-//     }, 800);
-//   }
-// };
+//// HOVER FOR FULL NAME (FOLDERS WITH WRAPPED NAME IN UI)
+const showFullName = (ev, element, text) => {
+  /// check if the full name of the folder is overflowing or not, if so, show full name on hover
+  full_name_show = true;
+  let mouseX = ev.pageX - 200;
+  let mouseY = ev.pageY;
+  let isOverflowing =
+    element.clientWidth < element.scrollWidth || element.clientHeight < element.scrollHeight;
+  if (isOverflowing) {
+    fullNameValue.innerHTML = text;
+    $(".hoverFullName").css({ top: mouseY, left: mouseX });
+    setTimeout(() => {
+      if (full_name_show) {
+        // fullNameValue.style.display = "block";
+        $(".hoverFullName").fadeIn("slow");
+      }
+    }, 800);
+  }
+};
 
-// /// hover over a function for full name
-// const hoverForFullName = (ev) => {
-//   let fullPath = ev.innerText;
-//   // ev.children[1] is the child element folder_desc of div.single-item,
-//   // which we will put through the overflowing check in showFullName function
-//   showFullName(event, ev.children[1], fullPath);
-// };
+/// hover over a function for full name
+window.hoverForFullName = (ev) => {
+  let fullPath = ev.innerText;
+  // ev.children[1] is the child element folder_desc of div.single-item,
+  // which we will put through the overflowing check in showFullName function
+  showFullName(event, ev.children[1], fullPath);
+};
 
-// document.addEventListener("onmouseover", function (e) {
-//   if (e.target.classList.value === "fas fa-folder") {
-//     hoverForFullName(e);
-//   } else {
-//     hideFullName();
-//   }
-// });
+document.addEventListener("onmouseover", function (e) {
+  if (e.target.classList.value === "fas fa-folder") {
+    window.hoverForFullName(e);
+  } else {
+    window.hideFullName();
+  }
+});
 
 // // if a file/folder is clicked -> show details in right "sidebar"
 // const showDetailsFile = () => {
@@ -4463,22 +4463,22 @@ const showDefaultBFAccount = async () => {
   }
 };
 
-// ////// function to trigger action for each context menu option
-// const hideMenu = (category, menu1, menu2, menu3) => {
-//   if (category === "folder") {
-//     menu1.style.display = "none";
-//     menu1.style.top = "-200%";
-//     menu1.style.left = "-200%";
-//   } else if (category === "high-level-folder") {
-//     menu2.style.display = "none";
-//     menu2.style.top = "-220%";
-//     menu2.style.left = "-220%";
-//   } else {
-//     menu3.style.display = "none";
-//     menu3.style.top = "-210%";
-//     menu3.style.left = "-210%";
-//   }
-// };
+////// function to trigger action for each context menu option
+window.hideMenu = (category, menu1, menu2, menu3) => {
+  if (category === "folder") {
+    menu1.style.display = "none";
+    menu1.style.top = "-200%";
+    menu1.style.left = "-200%";
+  } else if (category === "high-level-folder") {
+    menu2.style.display = "none";
+    menu2.style.top = "-220%";
+    menu2.style.left = "-220%";
+  } else {
+    menu3.style.display = "none";
+    menu3.style.top = "-210%";
+    menu3.style.left = "-210%";
+  }
+};
 
 // const changeStepOrganize = (step) => {
 //   if (step.id === "button-organize-prev") {
@@ -4603,15 +4603,15 @@ window.electron.ipcRenderer.on("selected-files-organize-datasets", async (event,
   await addDataArrayToDatasetStructureAtPath(importedFiles);
 });
 
-// organizeDSaddFolders.addEventListener("click", function () {
-//   ipcRenderer.send("open-folders-organize-datasets-dialog");
-// });
+organizeDSaddFolders.addEventListener("click", function () {
+  window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog");
+});
 
-// // Event listener for when folder(s) are imported into the file explorer
-// ipcRenderer.on("selected-folders-organize-datasets", async (event, importedFolders) => {
-//   // Add the imported folders to the dataset structure
-//   await addDataArrayToDatasetStructureAtPath(importedFolders);
-// });
+// Event listener for when folder(s) are imported into the file explorer
+window.electron.ipcRenderer.on("selected-folders-organize-datasets", async (event, importedFolders) => {
+  // Add the imported folders to the dataset structure
+  await addDataArrayToDatasetStructureAtPath(importedFolders);
+});
 
 // /* ################################################################################## */
 // /* ################################################################################## */
@@ -5468,95 +5468,95 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 
 //   if (category === "folder") {
 //     if (deleted) {
-//       $(menuFolder).children("#reg-folder-delete").html("<i class='fas fa-undo-alt'></i> Restore");
-//       $(menuFolder).children("#reg-folder-rename").hide();
-//       $(menuFolder).children("#folder-move").hide();
-//       $(menuFolder).children("#folder-description").hide();
+//       $(window.menuFolder).children("#reg-folder-delete").html("<i class='fas fa-undo-alt'></i> Restore");
+//       $(window.menuFolder).children("#reg-folder-rename").hide();
+//       $(window.menuFolder).children("#folder-move").hide();
+//       $(window.menuFolder).children("#folder-description").hide();
 //     } else {
 //       if ($(".selected-item").length > 2) {
-//         $(menuFolder)
+//         $(window.menuFolder)
 //           .children("#reg-folder-delete")
 //           .html('<i class="fas fa-minus-circle"></i> Delete All');
-//         $(menuFolder)
+//         $(window.menuFolder)
 //           .children("#folder-move")
 //           .html('<i class="fas fa-external-link-alt"></i> Move All');
-//         $(menuFolder).children("#reg-folder-rename").hide();
-//         $(menuFolder).children("#folder-description").hide();
+//         $(window.menuFolder).children("#reg-folder-rename").hide();
+//         $(window.menuFolder).children("#folder-description").hide();
 //       } else {
-//         $(menuFolder)
+//         $(window.menuFolder)
 //           .children("#reg-folder-delete")
 //           .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
-//         $(menuFolder)
+//         $(window.menuFolder)
 //           .children("#folder-move")
 //           .html('<i class="fas fa-external-link-alt"></i> Move');
-//         $(menuFolder).children("#folder-move").show();
-//         $(menuFolder).children("#reg-folder-rename").show();
-//         $(menuFolder).children("#folder-description").show();
+//         $(window.menuFolder).children("#folder-move").show();
+//         $(window.menuFolder).children("#reg-folder-rename").show();
+//         $(window.menuFolder).children("#folder-description").show();
 //       }
 //     }
 //     // This is where regular folders context menu will appear
-//     menuFolder.style.display = "block";
+//     window.menuFolder.style.display = "block";
 //     if (guidedModeFileExporer) {
 //       // $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
 //     }
 //     $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
 //   } else if (category === "high-level-folder") {
 //     if (deleted) {
-//       $(menuHighLevelFolders)
+//       $(window.menuHighLevelFolders)
 //         .children("#high-folder-delete")
 //         .html("<i class='fas fa-undo-alt'></i> Restore");
-//       $(menuHighLevelFolders).children("#high-folder-rename").hide();
-//       $(menuHighLevelFolders).children("#folder-move").hide();
-//       $(menuHighLevelFolders).children("#tooltip-folders").show();
+//       $(window.menuHighLevelFolders).children("#high-folder-rename").hide();
+//       $(window.menuHighLevelFolders).children("#folder-move").hide();
+//       $(window.menuHighLevelFolders).children("#tooltip-folders").show();
 //     } else {
 //       if ($(".selected-item").length > 2) {
-//         $(menuHighLevelFolders)
+//         $(window.menuHighLevelFolders)
 //           .children("#high-folder-delete")
 //           .html('<i class="fas fa-minus-circle"></i> Delete All');
-//         $(menuHighLevelFolders).children("#high-folder-delete").show();
-//         $(menuHighLevelFolders).children("#high-folder-rename").hide();
-//         $(menuHighLevelFolders).children("#folder-move").hide();
-//         $(menuHighLevelFolders).children("#tooltip-folders").show();
+//         $(window.menuHighLevelFolders).children("#high-folder-delete").show();
+//         $(window.menuHighLevelFolders).children("#high-folder-rename").hide();
+//         $(window.menuHighLevelFolders).children("#folder-move").hide();
+//         $(window.menuHighLevelFolders).children("#tooltip-folders").show();
 //       } else {
-//         $(menuHighLevelFolders)
+//         $(window.menuHighLevelFolders)
 //           .children("#high-folder-delete")
 //           .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
-//         $(menuHighLevelFolders).children("#high-folder-delete").show();
-//         $(menuHighLevelFolders).children("#high-folder-rename").hide();
-//         $(menuHighLevelFolders).children("#folder-move").hide();
-//         $(menuHighLevelFolders).children("#tooltip-folders").show();
+//         $(window.menuHighLevelFolders).children("#high-folder-delete").show();
+//         $(window.menuHighLevelFolders).children("#high-folder-rename").hide();
+//         $(window.menuHighLevelFolders).children("#folder-move").hide();
+//         $(window.menuHighLevelFolders).children("#tooltip-folders").show();
 //       }
 //     }
-//     menuHighLevelFolders.style.display = "block";
+//     window.menuHighLevelFolders.style.display = "block";
 //     if (guidedModeFileExporer) {
 //       // $(".menu.high-level-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
 //     }
 //     $(".menu.high-level-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
 //   } else {
 //     if (deleted) {
-//       $(menuFile).children("#file-delete").html("<i class='fas fa-undo-alt'></i> Restore");
-//       $(menuFile).children("#file-rename").hide();
-//       $(menuFile).children("#file-move").hide();
-//       $(menuFile).children("#file-description").hide();
+//       $(window.menuFile).children("#file-delete").html("<i class='fas fa-undo-alt'></i> Restore");
+//       $(window.menuFile).children("#file-rename").hide();
+//       $(window.menuFile).children("#file-move").hide();
+//       $(window.menuFile).children("#file-description").hide();
 //     } else {
 //       if ($(".selected-item").length > 2) {
-//         $(menuFile).children("#file-delete").html('<i class="fas fa-minus-circle"></i> Delete All');
-//         $(menuFile)
+//         $(window.menuFile).children("#file-delete").html('<i class="fas fa-minus-circle"></i> Delete All');
+//         $(window.menuFile)
 //           .children("#file-move")
 //           .html('<i class="fas fa-external-link-alt"></i> Move All');
-//         $(menuFile).children("#file-rename").hide();
-//         $(menuFile).children("#file-description").hide();
+//         $(window.menuFile).children("#file-rename").hide();
+//         $(window.menuFile).children("#file-description").hide();
 //       } else {
-//         $(menuFile).children("#file-delete").html("<i class='far fa-trash-alt fa-fw'></i>Delete");
-//         $(menuFile).children("#file-move").html('<i class="fas fa-external-link-alt"></i> Move');
-//         $(menuFile).children("#file-rename").show();
-//         $(menuFile).children("#file-move").show();
-//         $(menuFile).children("#file-description").show();
+//         $(window.menuFile).children("#file-delete").html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+//         $(window.menuFile).children("#file-move").html('<i class="fas fa-external-link-alt"></i> Move');
+//         $(window.menuFile).children("#file-rename").show();
+//         $(window.menuFile).children("#file-move").show();
+//         $(window.menuFile).children("#file-description").show();
 //       }
 //     }
 
 //     // This is where the context menu for regular files will be displayed
-//     menuFile.style.display = "block";
+//     window.menuFile.style.display = "block";
 //     $(".menu.file").css({ top: mouseY, left: mouseX }).fadeIn("slow");
 //   }
 // };
@@ -5582,9 +5582,9 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 //         moveItems(event, "folders");
 //       }
 //       // Hide it AFTER the action was triggered
-//       hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-//       hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
-//       hideFullName();
+//       window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+//       window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+//       window.hideFullName();
 //     });
 
 //   /// options for high-level folders
@@ -5607,14 +5607,14 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 //         showTooltips(event);
 //       }
 //       // Hide it AFTER the action was triggered
-//       hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-//       hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
-//       hideFullName();
+//       window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+//       window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+//       window.hideFullName();
 //     });
 //   /// hide both menus after an option is clicked
-//   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-//   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
-//   hideFullName();
+//   window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+//   window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+//   window.hideFullName();
 // };
 
 // //////// options for files
@@ -5643,9 +5643,9 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 //         manageDesc(event);
 //       }
 //       // Hide it AFTER the action was triggered
-//       hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
+//       window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
 //     });
-//   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
+//   window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
 // };
 
 $(document).ready(function () {
@@ -5697,7 +5697,7 @@ $(document).ready(function () {
 //   if (folderName.lastIndexOf("-") != -1) {
 //     folderName = folderName.substring(0, folderName.lastIndexOf("-"));
 //   }
-//   if (highLevelFolders.includes(folderName)) {
+//   if (window.highLevelFolders.includes(folderName)) {
 //     highLevelFolderBool = true;
 //   }
 //   // Show the rightcontextmenu for each clicked
@@ -5710,14 +5710,14 @@ $(document).ready(function () {
 //       } else {
 //         showmenu(event, "high-level-folder");
 //       }
-//       hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
+//       window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
 //     } else {
 //       if (event.target.classList.contains("deleted_folder")) {
 //         showmenu(event, "folder", true);
 //       } else {
 //         showmenu(event, "folder");
 //       }
-//       hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
+//       window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
 //     }
 //   } else if (event.target.classList[0] === "myFile") {
 //     if (event.target.classList.contains("deleted_file")) {
@@ -5725,15 +5725,15 @@ $(document).ready(function () {
 //     } else {
 //       showmenu(event, "file");
 //     }
-//     hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-//     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+//     window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+//     window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
 //     // otherwise, do not show any menu
 //   } else {
-//     hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-//     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
-//     hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
+//     window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+//     window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+//     window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
 //     // hideFullPath()
-//     hideFullName();
+//     window.hideFullName();
 //   }
 // });
 
@@ -5770,24 +5770,24 @@ const select_items = (items, event, isDragging) => {
   });
 };
 
-// $(document).bind("click", (event) => {
-//   // If there is weird right click menu behaviour, check the hideMenu block
-//   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-//   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
-//   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
-//   // hideFullPath()
-//   hideFullName();
+$(document).bind("click", (event) => {
+  // If there is weird right click menu behaviour, check the window.hideMenu block
+  window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+  window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+  window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+  // hideFullPath()
+  window.hideFullName();
 
-//   // Handle clearing selection when clicked outside.
-//   // Currently only handles clicks inside the folder holder area
-//   if (event.target.classList[0] === "div-organize-items") {
-//     if (drag_event_fired) {
-//       drag_event_fired = false;
-//     } else {
-//       $(".selected-item").removeClass("selected-item");
-//     }
-//   }
-// });
+  // Handle clearing selection when clicked outside.
+  // Currently only handles clicks inside the folder holder area
+  if (event.target.classList[0] === "div-organize-items") {
+    if (drag_event_fired) {
+      drag_event_fired = false;
+    } else {
+      $(".selected-item").removeClass("selected-item");
+    }
+  }
+});
 
 // sort JSON objects by keys alphabetically (folder by folder, file by file)
 window.sortObjByKeys = (object) => {
@@ -6061,7 +6061,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
 
       count += 1;
       var emptyFolder = "";
-      if (!highLevelFolders.includes(item)) {
+      if (!window.highLevelFolders.includes(item)) {
         if (
           JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
           JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
@@ -6106,7 +6106,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
       if (sortedObj["folders"][item]["action"].includes("updated")) {
         cloud_item = " update-file";
         let elem_creation =
-          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          '<div class="single-item updated-file" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
           emptyFolder +
           '"></h1><div class="folder_desc' +
           cloud_item +
@@ -6124,7 +6124,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         }
       } else {
         let element_creation =
-          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
           emptyFolder +
           '"></h1><div class="folder_desc' +
           cloud_item +
@@ -6216,7 +6216,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
           cloud_item = " pennsieve_file_deleted";
         }
         let element_creation =
-          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
           extension +
           '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
           cloud_item +
@@ -6243,7 +6243,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
           cloud_item = "pennsieve_file_deleted";
         }
         let elem_creation =
-          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          '<div class="single-item updated-file" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
           extension +
           '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
           cloud_item +
@@ -6260,7 +6260,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         }
       } else {
         let element_creation =
-          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
           extension +
           '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
           cloud_item +
@@ -6450,8 +6450,8 @@ window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
 //   );
 //   $("#button-confirm-display-details-file").html("Confirm");
 //   showDetailsFile();
-//   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-//   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+//   window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+//   window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
 //   fileNameForEdit = fileName;
 // };
 
