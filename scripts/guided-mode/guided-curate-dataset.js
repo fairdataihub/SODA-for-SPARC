@@ -5070,10 +5070,10 @@ const openPage = async (targetPageID) => {
       $("#guided-select-sparc-funding-consortium").trigger("change");
     }
 
-    if (targetPageID === "guided-subjects-specification-tab") {
+    if (targetPageID === "guided-subjects-addition-tab") {
       renderSubjectsTable();
     }
-    if (targetPageID === "guided-subjects-folder-tab") {
+    if (targetPageID === "guided-samples-addition-tab") {
       renderSamplesTable();
     }
 
@@ -11009,6 +11009,21 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
   }
 });
 
+const validateDatasetStructureSpreadsheet = (sheetData) => {
+  // Check to see if the spreadsheet has the correct headers
+  const datasetHasPools = document
+    .getElementById("guided-button-subjects-are-pooled")
+    .classList.contains("selected");
+  const datasetHasSamples = document
+    .getElementById("guided-button-subjects-have-samples")
+    .classList.contains("selected");
+
+  const requiredHeaders = ["Subject ID"];
+  console.log(sheetData);
+
+  // Check to see if the spreadsheet has the correct d
+};
+
 // CLICK HANDLER THAT EXTRACTS THE DATASET STRUCTURE FROM A SPREADSHEET
 document
   .getElementById("guided-button-import-dataset-structure-from-spreadsheet")
@@ -11026,6 +11041,13 @@ document
     const spreadsheet = xlsx.readFile(savedTemplatePath);
     const worksheet = spreadsheet.Sheets[spreadsheet.SheetNames[0]];
     const sheetData = xlsx.utils.sheet_to_json(worksheet, { defval: "" });
+
+    try {
+      validateDatasetStructureSpreadsheet(sheetData);
+    } catch (error) {
+      notyf.error(`Error validating dataset structure spreadsheet: ${error}`);
+      return;
+    }
 
     const validateAndFormatEntity = (entityPrefix, entityName) => {
       if (!entityName) {
