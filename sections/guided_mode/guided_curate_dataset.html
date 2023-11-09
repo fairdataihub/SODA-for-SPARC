@@ -1397,7 +1397,21 @@
               SPARC folder structure when generating your dataset in the last step of this process.
             </p>
           </div>
-          <div class="guided--section" id="guided-section-pools-table"></div>
+          <div class="guided--section">
+            <table class="ui celled striped table" style="margin-bottom: 10px; width: 800px">
+              <thead>
+                <tr>
+                  <th class="text-center" style="min-width: 250px" colspan="3">
+                    Enter a unique ID for each of your pools and specify the subjects they contain
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="pools-specification-table-body"></tbody>
+            </table>
+            <button class="ui primary basic button mt-2" onclick="addPoolTableRow()">
+              <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new pool
+            </button>
+          </div>
         </div>
         <div
           id="guided-samples-addition-tab"

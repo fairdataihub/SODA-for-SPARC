@@ -6750,7 +6750,7 @@ const renderPoolsTable = () => {
       return generatePoolRowElement(pool);
     })
     .join("\n");
-  document.getElementById("guided-section-pools-table").innerHTML = poolElementRows;
+  document.getElementById("pools-specification-table-body").innerHTML = poolElementRows;
 
   for (const poolName of Object.keys(pools)) {
     const newPoolSubjectsSelectElement = document.querySelector(
@@ -11506,7 +11506,7 @@ const generatePoolSpecificationRowElement = () => {
   `;
 };
 const addPoolTableRow = () => {
-  const poolsTableBody = document.getElementById("guided-section-pools-table");
+  const poolsTableBody = document.getElementById("pools-specification-table-body");
   const poolSpecificationTableInput = poolsTableBody.querySelector("input[name='guided-pool-id']");
 
   const re = new RegExp("/^(d|w)+$/g");
