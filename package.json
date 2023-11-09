@@ -120,7 +120,7 @@
   "author": "SODA Team",
   "license": "MIT",
   "dependencies": {
-    "@electron/remote": "2.0.8",
+    "@electron/remote": "2.0.12",
     "@fortawesome/fontawesome-free": "^5.15.3",
     "@sweetalert2/theme-bulma": "^4.0.3",
     "@tarekraafat/autocomplete.js": "^10.2.6",
