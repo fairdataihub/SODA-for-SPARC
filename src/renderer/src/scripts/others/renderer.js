@@ -5551,61 +5551,61 @@ const showmenu = (ev, category, deleted = false) => {
   }
 };
 
-// /// options for regular sub-folders
-// const folderContextMenu = (event) => {
-//   $(".menu.reg-folder li")
-//     .unbind()
-//     .click(function () {
-//       if ($(this).attr("id") === "reg-folder-rename") {
-//         var itemDivElements = document.getElementById("items").children;
-//         window.renameFolder(
-//           event,
-//           window.organizeDSglobalPath,
-//           itemDivElements,
-//           window.datasetStructureJSONObj,
-//           "#items",
-//           ".single-item"
-//         );
-//       } else if ($(this).attr("id") === "reg-folder-delete") {
-//         window.delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", window.datasetStructureJSONObj);
-//       } else if ($(this).attr("id") === "folder-move") {
-//         window.moveItems(event, "folders");
-//       }
-//       // Hide it AFTER the action was triggered
-//       window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//       window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//       window.hideFullName();
-//     });
+/// options for regular sub-folders
+window.folderContextMenu = (event) => {
+  $(".menu.reg-folder li")
+    .unbind()
+    .click(function () {
+      if ($(this).attr("id") === "reg-folder-rename") {
+        var itemDivElements = document.getElementById("items").children;
+        window.renameFolder(
+          event,
+          window.organizeDSglobalPath,
+          itemDivElements,
+          window.datasetStructureJSONObj,
+          "#items",
+          ".single-item"
+        );
+      } else if ($(this).attr("id") === "reg-folder-delete") {
+        window.delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", window.datasetStructureJSONObj);
+      } else if ($(this).attr("id") === "folder-move") {
+        window.moveItems(event, "folders");
+      }
+      // Hide it AFTER the action was triggered
+      window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+      window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+      window.hideFullName();
+    });
 
-//   /// options for high-level folders
-//   $(".menu.high-level-folder li")
-//     .unbind()
-//     .click(function () {
-//       if ($(this).attr("id") === "high-folder-rename") {
-//         var itemDivElements = document.getElementById("items").children;
-//         window.renameFolder(
-//           event,
-//           window.organizeDSglobalPath,
-//           itemDivElements,
-//           window.datasetStructureJSONObj,
-//           "#items",
-//           ".single-item"
-//         );
-//       } else if ($(this).attr("id") === "high-folder-delete") {
-//         window.delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", window.datasetStructureJSONObj);
-//       } else if ($(this).attr("id") === "tooltip-folders") {
-//         showTooltips(event);
-//       }
-//       // Hide it AFTER the action was triggered
-//       window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//       window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//       window.hideFullName();
-//     });
-//   /// hide both menus after an option is clicked
-//   window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//   window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-//   window.hideFullName();
-// };
+  /// options for high-level folders
+  $(".menu.high-level-folder li")
+    .unbind()
+    .click(function () {
+      if ($(this).attr("id") === "high-folder-rename") {
+        var itemDivElements = document.getElementById("items").children;
+        window.renameFolder(
+          event,
+          window.organizeDSglobalPath,
+          itemDivElements,
+          window.datasetStructureJSONObj,
+          "#items",
+          ".single-item"
+        );
+      } else if ($(this).attr("id") === "high-folder-delete") {
+        window.delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", window.datasetStructureJSONObj);
+      } else if ($(this).attr("id") === "tooltip-folders") {
+        showTooltips(event);
+      }
+      // Hide it AFTER the action was triggered
+      window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+      window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+      window.hideFullName();
+    });
+  /// hide both menus after an option is clicked
+  window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+  window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+  window.hideFullName();
+};
 
 //////// options for files
 window.fileContextMenu = (event) => {
@@ -6101,7 +6101,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
       if (sortedObj["folders"][item]["action"].includes("updated")) {
         cloud_item = " update-file";
         let elem_creation =
-          '<div class="single-item updated-file" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          '<div class="single-item updated-file" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 oncontextmenu="window.folderContextMenu(this)" class="myFol' +
           emptyFolder +
           '"></h1><div class="folder_desc' +
           cloud_item +
@@ -6119,7 +6119,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         }
       } else {
         let element_creation =
-          '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 oncontextmenu="window.folderContextMenu(this)" class="myFol' +
           emptyFolder +
           '"></h1><div class="folder_desc' +
           cloud_item +

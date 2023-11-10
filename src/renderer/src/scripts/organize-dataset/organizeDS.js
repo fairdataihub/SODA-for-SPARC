@@ -606,7 +606,7 @@ const loadFileFolder = (myPath) => {
     }
     appendString =
       appendString +
-      '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+      '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 oncontextmenu="window.folderContextMenu(this)" class="myFol' +
       emptyFolder +
       '"></h1><div class="folder_desc">' +
       item +
