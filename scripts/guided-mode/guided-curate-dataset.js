@@ -10916,9 +10916,7 @@ const getExistingSubjectNames = () => {
   // Combine the two arrays
   const subjects = [...subjectsInPools, ...subjectsOutsidePools];
   // Map each subject object to its name
-  const subjectNames = subjects.map((subject) => subject["subjectName"]);
-
-  return subjectNames;
+  return subjects.map((subject) => subject["subjectName"]);
 };
 
 const getSubjectsSamples = (subjectName) => {
