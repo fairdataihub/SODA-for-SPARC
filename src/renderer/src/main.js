@@ -40,7 +40,7 @@ import './assets/css/tablepath.css'
 import './assets/css/variables.css'
 import 'notyf/notyf.min.css'; // for React, Vue and Svelte
 import 'jstree/dist/themes/default/style.css';
-
+import 'fomantic-ui/dist/semantic.min.css';
 
 
 
