@@ -11026,6 +11026,14 @@ const validateDatasetStructureSpreadsheet = (sheetData) => {
   const requiredHeaders = ["Subject ID"];
   console.log(sheetData);
 
+  for (const row of sheetData) {
+    for (const header of requiredHeaders) {
+      if (!row[header]) {
+        throw new Error(`Missing required header: ${header}`);
+      }
+    }
+  }
+
   // Check to see if the spreadsheet has the correct d
 };
 
