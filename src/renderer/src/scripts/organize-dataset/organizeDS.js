@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import determineDatasetLocation from "../analytics/analytics-utils"
 
 
 while (!window.htmlPagesAdded) {
@@ -1649,10 +1650,10 @@ const addFilesfunction = async (
         loadingIcon.style.display = "block";
       }
       // log the error
-      logCurationForAnalytics(
+      window.logCurationForAnalytics(
         "Error",
         PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Step 3", "Import", "File"],
         determineDatasetLocation()
       );
@@ -2118,10 +2119,10 @@ const addFilesfunction = async (
       });
     }
     // log the successful import
-    logCurationForAnalytics(
+    window.logCurationForAnalytics(
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE,
-      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       ["Step 3", "Import", "File"],
       determineDatasetLocation()
     );

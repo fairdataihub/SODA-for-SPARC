@@ -45,7 +45,7 @@ import {
   logSelectedUpdateExistingDatasetOptions,
 } from "../analytics/curation-analytics"
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
-import determineDatasetLocation from "../analytics/analytics-utils"
+import determineDatasetLocation, {Destinations} from "../analytics/analytics-utils"
 import {
   clientError,
   userErrorMessage,
@@ -2046,7 +2046,7 @@ window.progressFilePath = window.path.join(homeDirectory, "SODA", "Progress");
 //         logMetadataForAnalytics(
 //           "Error",
 //           MetadataAnalyticsPrefix.SUBJECTS,
-//           AnalyticsGranularity.ALL_LEVELS,
+//           window.AnalyticsGranularity.ALL_LEVELS,
 //           "Existing",
 //           Destinations.LOCAL
 //         );
@@ -2055,7 +2055,7 @@ window.progressFilePath = window.path.join(homeDirectory, "SODA", "Progress");
 //       logMetadataForAnalytics(
 //         "Success",
 //         MetadataAnalyticsPrefix.SUBJECTS,
-//         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+//         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
 //         "Existing",
 //         Destinations.LOCAL
 //       );
@@ -2064,7 +2064,7 @@ window.progressFilePath = window.path.join(homeDirectory, "SODA", "Progress");
 //       logMetadataForAnalytics(
 //         "Error",
 //         MetadataAnalyticsPrefix.SUBJECTS,
-//         AnalyticsGranularity.ALL_LEVELS,
+//         window.AnalyticsGranularity.ALL_LEVELS,
 //         "Existing",
 //         Destinations.LOCAL
 //       );
@@ -2089,7 +2089,7 @@ window.progressFilePath = window.path.join(homeDirectory, "SODA", "Progress");
 //     logMetadataForAnalytics(
 //       "Error",
 //       MetadataAnalyticsPrefix.SUBJECTS,
-//       AnalyticsGranularity.ALL_LEVELS,
+//       window.AnalyticsGranularity.ALL_LEVELS,
 //       "Existing",
 //       Destinations.LOCAL
 //     );
@@ -2129,7 +2129,7 @@ window.progressFilePath = window.path.join(homeDirectory, "SODA", "Progress");
 //         logMetadataForAnalytics(
 //           "Error",
 //           MetadataAnalyticsPrefix.SAMPLES,
-//           AnalyticsGranularity.ALL_LEVELS,
+//           window.AnalyticsGranularity.ALL_LEVELS,
 //           "Existing",
 //           Destinations.LOCAL
 //         );
@@ -2139,7 +2139,7 @@ window.progressFilePath = window.path.join(homeDirectory, "SODA", "Progress");
 //       logMetadataForAnalytics(
 //         "Success",
 //         MetadataAnalyticsPrefix.SAMPLES,
-//         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+//         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
 //         "Existing",
 //         Destinations.LOCAL
 //       );
@@ -2149,7 +2149,7 @@ window.progressFilePath = window.path.join(homeDirectory, "SODA", "Progress");
 //       logMetadataForAnalytics(
 //         "Error",
 //         MetadataAnalyticsPrefix.SAMPLES,
-//         AnalyticsGranularity.ALL_LEVELS,
+//         window.AnalyticsGranularity.ALL_LEVELS,
 //         "Existing",
 //         Destinations.LOCAL
 //       );
@@ -2175,7 +2175,7 @@ window.progressFilePath = window.path.join(homeDirectory, "SODA", "Progress");
 //     logMetadataForAnalytics(
 //       "Error",
 //       MetadataAnalyticsPrefix.SAMPLES,
-//       AnalyticsGranularity.ALL_LEVELS,
+//       window.AnalyticsGranularity.ALL_LEVELS,
 //       "Existing",
 //       Destinations.LOCAL
 //     );
@@ -3533,7 +3533,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetList) {
 //     logGeneralOperationsForAnalytics(
 //       "Error",
 //       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-//       AnalyticsGranularity.ALL_LEVELS,
+//       window.AnalyticsGranularity.ALL_LEVELS,
 //       ["Withdraw dataset"]
 //     );
 //     // This helps signal guided mode to update the UI
@@ -3597,7 +3597,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetList) {
 //     logGeneralOperationsForAnalytics(
 //       "Success",
 //       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-//       AnalyticsGranularity.ALL_LEVELS,
+//       window.AnalyticsGranularity.ALL_LEVELS,
 //       ["Withdraw dataset"]
 //     );
 
@@ -3661,7 +3661,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetList) {
 //     logGeneralOperationsForAnalytics(
 //       "Error",
 //       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-//       AnalyticsGranularity.ALL_LEVELS,
+//       window.AnalyticsGranularity.ALL_LEVELS,
 //       ["Withdraw dataset"]
 //     );
 //   }
@@ -4005,7 +4005,7 @@ const loadDefaultAccount = async () => {
 //         logGeneralOperationsForAnalytics(
 //           "Error",
 //           DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-//           AnalyticsGranularity.ALL_LEVELS,
+//           window.AnalyticsGranularity.ALL_LEVELS,
 //           ["Show publishing status"]
 //         );
 
@@ -4170,10 +4170,10 @@ window.sodaJSONObj = {};
 //             backdrop: "rgba(0,0,0, 0.4)",
 //           });
 
-//           logCurationForAnalytics(
+//           window.logCurationForAnalytics(
 //             "Error",
-//             PrepareDatasetsAnalyticsPrefix.CURATE,
-//             AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+//             window.PrepareDatasetsAnalyticsPrefix.CURATE,
+//             window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
 //             ["Step 3", "Add", "Folder"],
 //             determineDatasetLocation()
 //           );
@@ -4199,10 +4199,10 @@ window.sodaJSONObj = {};
 //           window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
 
 //           // log that the folder was successfully added
-//           logCurationForAnalytics(
+//           window.logCurationForAnalytics(
 //             "Success",
-//             PrepareDatasetsAnalyticsPrefix.CURATE,
-//             AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+//             window.PrepareDatasetsAnalyticsPrefix.CURATE,
+//             window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
 //             ["Step 3", "Add", "Folder"],
 //             determineDatasetLocation()
 //           );
@@ -6609,8 +6609,8 @@ const manageDesc = (ev) => {
 //         // log the success to analytics
 //         logMetadataForAnalytics(
 //           "Success",
-//           PrepareDatasetsAnalyticsPrefix.CURATE,
-//           AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+//           window.PrepareDatasetsAnalyticsPrefix.CURATE,
+//           window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
 //           Actions.EXISTING,
 //           Destinations.LOCAL
 //         );
@@ -6798,8 +6798,8 @@ const manageDesc = (ev) => {
 //           // log the failure to select an appropriate folder to analytics
 //           logMetadataForAnalytics(
 //             "Error",
-//             PrepareDatasetsAnalyticsPrefix.CURATE,
-//             AnalyticsGranularity.ALL_LEVELS,
+//             window.PrepareDatasetsAnalyticsPrefix.CURATE,
+//             window.AnalyticsGranularity.ALL_LEVELS,
 //             Actions.EXISTING,
 //             Destinations.LOCAL
 //           );
@@ -7778,7 +7778,7 @@ const manageDesc = (ev) => {
 //       ipcRenderer.send(
 //         "track-event",
 //         "Success",
-//         PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
+//         window.PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
 //         `${datasetUploadSession.id}`,
 //         500
 //       );
@@ -7788,7 +7788,7 @@ const manageDesc = (ev) => {
 //       ipcRenderer.send(
 //         "track-event",
 //         "Success",
-//         PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
+//         window.PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
 //         `${datasetUploadSession.id}`,
 //         differenceInBytes
 //       );
@@ -8109,10 +8109,10 @@ const manageDesc = (ev) => {
 //       );
 
 //       $("body").removeClass("waiting");
-//       logCurationForAnalytics(
+//       window.logCurationForAnalytics(
 //         "Success",
-//         PrepareDatasetsAnalyticsPrefix.CURATE,
-//         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+//         window.PrepareDatasetsAnalyticsPrefix.CURATE,
+//         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
 //         ["Step 5", "Generate", "Manifest"],
 //         determineDatasetLocation()
 //       );
@@ -8121,10 +8121,10 @@ const manageDesc = (ev) => {
 //       $("body").removeClass("waiting");
 
 //       // log the error to analytics
-//       logCurationForAnalytics(
+//       window.logCurationForAnalytics(
 //         "Error",
-//         PrepareDatasetsAnalyticsPrefix.CURATE,
-//         AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+//         window.PrepareDatasetsAnalyticsPrefix.CURATE,
+//         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
 //         ["Step 5", "Generate", "Manifest"],
 //         determineDatasetLocation()
 //       );
@@ -8284,7 +8284,7 @@ const manageDesc = (ev) => {
 // // Inputs:
 // //  category: string - "Success" indicates a successful operation; "Error" indicates a failed operation
 // //  analyticsActionPrefix: string - One of the analytics action prefixes defined below in an enum
-// //  analyticsGranularity: string - Determines what levels of granularity get logged; options are: "prefix", "action", "action with destination", "all levels of granularity."
+// //  window.AnalyticsGranularity: string - Determines what levels of granularity get logged; options are: "prefix", "action", "action with destination", "all levels of granularity."
 // //  action: string - Optional. Indicates the step in the metadata preparation process the Success or Failure occurs
 // //  destination: string - Optional. The destination where the action is occurring; defined below in an enum
 
@@ -8302,8 +8302,8 @@ const manageDesc = (ev) => {
 
 //   // check if only logging the prefix or all levels of granularity
 //   if (
-//     granularity === AnalyticsGranularity.PREFIX ||
-//     granularity === AnalyticsGranularity.ALL_LEVELS
+//     granularity === window.AnalyticsGranularity.PREFIX ||
+//     granularity === window.AnalyticsGranularity.ALL_LEVELS
 //   ) {
 //     // log the prefix, category of the event
 //     ipcRenderer.send("track-event", `${category}`, actionName);
@@ -8321,18 +8321,18 @@ const manageDesc = (ev) => {
 
 //   // check if the user wants to log the action without the destination
 //   if (
-//     granularity === AnalyticsGranularity.ACTION ||
-//     granularity === AnalyticsGranularity.ALL_LEVELS ||
-//     granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+//     granularity === window.AnalyticsGranularity.ACTION ||
+//     granularity === window.AnalyticsGranularity.ALL_LEVELS ||
+//     granularity === window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
 //   ) {
 //     // track every time the user wanted to generate a metadata file or everytime the user wanted to use a pre-existing metadata file
 //     ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
 //   }
 
 //   if (
-//     granularity === AnalyticsGranularity.ACTION_WITH_DESTINATION ||
-//     granularity === AnalyticsGranularity.ALL_LEVELS ||
-//     granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+//     granularity === window.AnalyticsGranularity.ACTION_WITH_DESTINATION ||
+//     granularity === window.AnalyticsGranularity.ALL_LEVELS ||
+//     granularity === window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
 //   ) {
 //     // add the destination to the action
 //     actionName = actionName + " - " + destination;
@@ -8428,130 +8428,125 @@ const manageDesc = (ev) => {
 //   });
 // };
 
-// const MetadataAnalyticsPrefix = {
-//   DATASET_DESCRIPTION: "Prepare Metadata - dataset_description",
-//   MANIFEST: "Prepare Metadata - manifest",
-//   SUBJECTS: "Prepare Metadata - subjects",
-//   SAMPLES: "Prepare Metadata - samples",
-//   README: "Prepare Metadata - readme",
-//   CHANGES: "Prepare Metadata - changes",
-//   SUBMISSION: "Prepare Metadata - submission",
-// };
+const MetadataAnalyticsPrefix = {
+  DATASET_DESCRIPTION: "Prepare Metadata - dataset_description",
+  MANIFEST: "Prepare Metadata - manifest",
+  SUBJECTS: "Prepare Metadata - subjects",
+  SAMPLES: "Prepare Metadata - samples",
+  README: "Prepare Metadata - readme",
+  CHANGES: "Prepare Metadata - changes",
+  SUBMISSION: "Prepare Metadata - submission",
+};
 
-// const ManageDatasetsAnalyticsPrefix = {
-//   MANAGE_DATASETS_CREATE_DATASET: "Manage Datasets - Create a new dataset",
-//   MANAGE_DATASETS_RENAME_DATASET: "Manage Datasets - Rename an existing dataset",
-//   MANAGE_DATASETS_MAKE_PI_OWNER: "Manage Datasets - Make PI owner of dataset",
-//   MANAGE_DATASETS_ADD_EDIT_PERMISSIONS: "Manage Datasets - Add/Edit Permissions",
-//   MANAGE_DATASETS_ADD_EDIT_SUBTITLE: "Manage Datasets - Add/Edit Subtitle",
-//   MANAGE_DATASETS_ADD_EDIT_README: "Manage Datasets - Add/Edit Readme",
-//   MANAGE_DATASETS_ADD_EDIT_BANNER: "Manage Datasets - Upload a Banner Image",
-//   MANAGE_DATASETS_ADD_EDIT_TAGS: "Manage Datasets - Add/Edit Tags",
-//   MANAGE_DATASETS_ASSIGN_LICENSE: "Manage Datasets - Assign a License",
-//   MANAGE_DATASETS_UPLOAD_LOCAL_DATASET: "Manage Datasets - Upload Local Dataset",
-//   MANAGE_DATASETS_CHANGE_STATUS: "Manage Datasets - Change Dataset Status",
-// };
+const ManageDatasetsAnalyticsPrefix = {
+  MANAGE_DATASETS_CREATE_DATASET: "Manage Datasets - Create a new dataset",
+  MANAGE_DATASETS_RENAME_DATASET: "Manage Datasets - Rename an existing dataset",
+  MANAGE_DATASETS_MAKE_PI_OWNER: "Manage Datasets - Make PI owner of dataset",
+  MANAGE_DATASETS_ADD_EDIT_PERMISSIONS: "Manage Datasets - Add/Edit Permissions",
+  MANAGE_DATASETS_ADD_EDIT_SUBTITLE: "Manage Datasets - Add/Edit Subtitle",
+  MANAGE_DATASETS_ADD_EDIT_README: "Manage Datasets - Add/Edit Readme",
+  MANAGE_DATASETS_ADD_EDIT_BANNER: "Manage Datasets - Upload a Banner Image",
+  MANAGE_DATASETS_ADD_EDIT_TAGS: "Manage Datasets - Add/Edit Tags",
+  MANAGE_DATASETS_ASSIGN_LICENSE: "Manage Datasets - Assign a License",
+  MANAGE_DATASETS_UPLOAD_LOCAL_DATASET: "Manage Datasets - Upload Local Dataset",
+  MANAGE_DATASETS_CHANGE_STATUS: "Manage Datasets - Change Dataset Status",
+};
 
-// const DisseminateDatasetsAnalyticsPrefix = {
-//   DISSEMINATE_REVIEW: "Disseminate Datasets - Pre-publishing Review",
-//   DISSEMINATE_CURATION_TEAM: "Disseminate Datasets - Share with Curation Team",
-//   DISSEMINATE_SPARC_CONSORTIUM: "Disseminate Datasets - Share with SPARC Consortium",
-// };
+const DisseminateDatasetsAnalyticsPrefix = {
+  DISSEMINATE_REVIEW: "Disseminate Datasets - Pre-publishing Review",
+  DISSEMINATE_CURATION_TEAM: "Disseminate Datasets - Share with Curation Team",
+  DISSEMINATE_SPARC_CONSORTIUM: "Disseminate Datasets - Share with SPARC Consortium",
+};
 
-// const PrepareDatasetsAnalyticsPrefix = {
-//   CURATE: "Prepare Datasets - Organize dataset",
-// };
+window.PrepareDatasetsAnalyticsPrefix = {
+  CURATE: "Prepare Datasets - Organize dataset",
+};
 
-// const AnalyticsGranularity = {
-//   PREFIX: "prefix",
-//   ACTION: "action",
-//   ACTION_WITH_DESTINATION: "action with destination",
-//   ACTION_AND_ACTION_WITH_DESTINATION: "action and action with destination",
-//   ALL_LEVELS: "all levels of granularity",
-// };
+window.AnalyticsGranularity = {
+  PREFIX: "prefix",
+  ACTION: "action",
+  ACTION_WITH_DESTINATION: "action with destination",
+  ACTION_AND_ACTION_WITH_DESTINATION: "action and action with destination",
+  ALL_LEVELS: "all levels of granularity",
+};
 
-// const Destinations = {
-//   LOCAL: "Local",
-//   PENNSIEVE: "Pennsieve",
-//   SAVED: "Saved",
-//   NEW: "New",
-// };
 
-// const Actions = {
-//   GENERATE: "Generate",
-//   EXISTING: "Existing",
-//   NEW: "New",
-// };
 
-// const logCurationForAnalytics = (
-//   category,
-//   analyticsActionPrefix,
-//   granularity,
-//   actions,
-//   location,
-//   generalLog
-// ) => {
-//   // if no actions to log return
-//   if (!actions) {
-//     return;
-//   }
+const Actions = {
+  GENERATE: "Generate",
+  EXISTING: "Existing",
+  NEW: "New",
+};
 
-//   // the name of the action being logged
-//   let actionName = analyticsActionPrefix;
+window.logCurationForAnalytics = (
+  category,
+  analyticsActionPrefix,
+  granularity,
+  actions,
+  location,
+  generalLog
+) => {
+  // if no actions to log return
+  if (!actions) {
+    return;
+  }
 
-//   // check if only logging the prefix or all levels of granularity
-//   if (
-//     granularity === AnalyticsGranularity.PREFIX ||
-//     granularity === AnalyticsGranularity.ALL_LEVELS
-//   ) {
-//     // log the prefix, category of the event
-//     ipcRenderer.send("track-event", `${category}`, actionName);
-//   }
+  // the name of the action being logged
+  let actionName = analyticsActionPrefix;
 
-//   // check if the user wants to log the action(s)
-//   if (
-//     granularity === AnalyticsGranularity.ACTION ||
-//     granularity === AnalyticsGranularity.ALL_LEVELS ||
-//     granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
-//   ) {
-//     // iterate through the actions
-//     for (let idx = 0; idx < actions.length; idx++) {
-//       // track the action
-//       actionName = actionName + " - " + actions[idx];
-//       ipcRenderer.send("track-event", `${category}`, actionName, actions[idx], 1);
-//     }
+  // check if only logging the prefix or all levels of granularity
+  if (
+    granularity === window.AnalyticsGranularity.PREFIX ||
+    granularity === window.AnalyticsGranularity.ALL_LEVELS
+  ) {
+    // log the prefix, category of the event
+    window.electron.ipcRenderer.send("track-event", `${category}`, actionName);
+  }
 
-//     // reset the action's name
-//     actionName = analyticsActionPrefix;
-//   }
+  // check if the user wants to log the action(s)
+  if (
+    granularity === window.AnalyticsGranularity.ACTION ||
+    granularity === window.AnalyticsGranularity.ALL_LEVELS ||
+    granularity === window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+  ) {
+    // iterate through the actions
+    for (let idx = 0; idx < actions.length; idx++) {
+      // track the action
+      actionName = actionName + " - " + actions[idx];
+      window.electron.ipcRenderer.send("track-event", `${category}`, actionName, actions[idx], 1);
+    }
 
-//   // check if the user wants to log the action(s) with the destination
-//   if (
-//     granularity === AnalyticsGranularity.ACTION_WITH_DESTINATION ||
-//     granularity === AnalyticsGranularity.ALL_LEVELS ||
-//     granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
-//   ) {
-//     // iterate through the actions
-//     for (let idx = 0; idx < actions.length; idx++) {
-//       // track the action
-//       actionName = actionName + " - " + actions[idx];
-//     }
+    // reset the action's name
+    actionName = analyticsActionPrefix;
+  }
 
-//     if (!generalLog) {
-//       // add the location
-//       actionName = actionName + " - " + location;
-//     }
+  // check if the user wants to log the action(s) with the destination
+  if (
+    granularity === window.AnalyticsGranularity.ACTION_WITH_DESTINATION ||
+    granularity === window.AnalyticsGranularity.ALL_LEVELS ||
+    granularity === window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+  ) {
+    // iterate through the actions
+    for (let idx = 0; idx < actions.length; idx++) {
+      // track the action
+      actionName = actionName + " - " + actions[idx];
+    }
 
-//     // determine logging format
-//     if (location === Destinations.PENNSIEVE) {
-//       // use the datasetid as a label and do not add an aggregation value
-//       ipcRenderer.send("track-event", `${category}`, actionName, window.defaultBfDatasetId);
-//     } else {
-//       // log the location as a label and add an aggregation value
-//       ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
-//     }
-//   }
-// };
+    if (!generalLog) {
+      // add the location
+      actionName = actionName + " - " + location;
+    }
+
+    // determine logging format
+    if (location === Destinations.PENNSIEVE) {
+      // use the datasetid as a label and do not add an aggregation value
+      window.electron.ipcRenderer.send("track-event", `${category}`, actionName, window.defaultBfDatasetId);
+    } else {
+      // log the location as a label and add an aggregation value
+      window.electron.ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
+    }
+  }
+};
 
 // const getMetadataFileNameFromStatus = (metadataFileStatus) => {
 //   // get the UI text that displays the file path
@@ -8585,8 +8580,8 @@ const manageDesc = (ev) => {
 
 //   // check if only logging the prefix or all levels of granularity
 //   if (
-//     granularity === AnalyticsGranularity.PREFIX ||
-//     granularity === AnalyticsGranularity.ALL_LEVELS
+//     granularity === window.AnalyticsGranularity.PREFIX ||
+//     granularity === window.AnalyticsGranularity.ALL_LEVELS
 //   ) {
 //     // log the prefix, category of the event
 //     ipcRenderer.send("track-event", `${category}`, actionName);
@@ -8594,8 +8589,8 @@ const manageDesc = (ev) => {
 
 //   // check if the user wants to log the action(s)
 //   if (
-//     granularity === AnalyticsGranularity.ACTION ||
-//     granularity === AnalyticsGranularity.ALL_LEVELS
+//     granularity === window.AnalyticsGranularity.ACTION ||
+//     granularity === window.AnalyticsGranularity.ALL_LEVELS
 //   ) {
 //     // iterate through the actions
 //     for (let idx = 0; idx < actions.length; idx++) {

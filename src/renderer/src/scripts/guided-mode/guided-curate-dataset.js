@@ -2,6 +2,7 @@
 
 import { existingDataset, modifyDataset, blackArrow, questionList, datasetMetadataIntroLottie, addScienceData, startNew, resumeExisting } from "../../assets/lotties/lotties";
 import { resetLazyLoading, guidedUnLockSideBar } from "../../assets/nav";
+import determineDatasetLocation from "../analytics/analytics-utils"
 import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
 import api from '../others/api/api'
 import lottie from "lottie-web"
@@ -5886,7 +5887,7 @@ const openPage = async (targetPageID) => {
                   logGeneralOperationsForAnalytics(
                     "Error",
                     ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-                    AnalyticsGranularity.ALL_LEVELS,
+                    window.AnalyticsGranularity.ALL_LEVELS,
                     ["Importing Banner Image"]
                   );
                 }
@@ -8402,7 +8403,7 @@ const updateFolderStructureUI = (folderPath) => {
 
   //where folder section items will be created
   window.listItems(myPath, "#items", 500, true);
-  getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
+  window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
 };
 
 const getGuidedAdditionalLinks = () => {
@@ -15372,7 +15373,7 @@ $("#guided-button-back").on("click", function () {
     window.listItems(myPath, "#items", 500, true);
     window.organizeLandingUIEffect();
     // reconstruct div with new elements
-    getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
+    window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
   }
 });
 
@@ -15443,10 +15444,10 @@ $("#guided-new-folder").on("click", () => {
               backdrop: "rgba(0,0,0, 0.4)",
             });
 
-            logCurationForAnalytics(
+            window.logCurationForAnalytics(
               "Error",
-              PrepareDatasetsAnalyticsPrefix.CURATE,
-              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+              window.PrepareDatasetsAnalyticsPrefix.CURATE,
+              window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
               ["Step 3", "Add", "Folder"],
               determineDatasetLocation()
             );
@@ -15463,19 +15464,19 @@ $("#guided-new-folder").on("click", () => {
             myPath["folders"][renamedNewFolder] = newEmptyFolderObj();
 
             window.listItems(myPath, "#items", 500, true);
-            getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
+            window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);
 
             // log that the folder was successfully added
-            logCurationForAnalytics(
+            window.logCurationForAnalytics(
               "Success",
-              PrepareDatasetsAnalyticsPrefix.CURATE,
-              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+              window.PrepareDatasetsAnalyticsPrefix.CURATE,
+              window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
               ["Step 3", "Add", "Folder"],
               determineDatasetLocation()
             );
 
-            hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-            hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+            window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+            window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
           }
         }
       }
