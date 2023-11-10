@@ -10,6 +10,7 @@ import {dragDrop} from '../../assets/lotties/lotties'
 import Swal from "sweetalert2"
 import Tagify from "@yaireo/tagify";
 import tippy from "tippy.js";
+import client from '../client'
 import DragSort from '@yaireo/dragsort'
 import 'jstree'
 
@@ -1731,7 +1732,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
     if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
       const award = document.getElementById("guided-submission-sparc-award-manual").value;
-      const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagifyManual);
+      const milestones = getTagsFromTagifyElement(window.guidedSubmissionTagsTagifyManual);
       const completionDate = document.getElementById(
         "guided-submission-completion-date-manual"
       ).value;
@@ -2429,7 +2430,7 @@ const guidedReserveAndSaveDOI = async () => {
   $("#curate-button-reserve-doi").disabled = true;
 
   let doiInformation = await api.reserveDOI(account, dataset);
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-kombucha",
     kombuchaEnums.Category.DISSEMINATE_DATASETS,
     kombuchaEnums.Action.GUIDED_MODE,
@@ -2838,7 +2839,7 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
     //create Guided-Progress folder if one does not exist
     window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   } catch (error) {
-    log.error(error);
+    window.log.error(error);
   }
   var guidedFilePath = window.path.join(guidedProgressFilePath, guidedProgressFileName + ".json");
 
@@ -3182,7 +3183,7 @@ const renderManifestCards = () => {
 
   manifestFilesCardsContainer.innerHTML = manifestCards;
 
-  smoothScrollToElement(manifestFilesCardsContainer);
+  window.smoothScrollToElement(manifestFilesCardsContainer);
 };
 
 const generateManifestEditCard = (highLevelFolderName) => {
@@ -3202,7 +3203,7 @@ const generateManifestEditCard = (highLevelFolderName) => {
             width: 302px !important;
             height: 40px;
           "
-          onClick="guidedOpenManifestEditSwal('${highLevelFolderName}')"
+          onClick="window.guidedOpenManifestEditSwal('${highLevelFolderName}')"
         >
           Preview/Edit ${highLevelFolderName} manifest file
         </button>
@@ -3247,20 +3248,21 @@ const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
   }
 };
 
-const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
+window.guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   const existingManifestData = window.sodaJSONObj["guided-manifest-files"][highLevelFolderName];
   //send manifest data to main.js to then send to child window
-  ipcRenderer.invoke("spreadsheet", existingManifestData);
+  window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
 
   //upon receiving a reply of the spreadsheet, handle accordingly
-  ipcRenderer.on("spreadsheet-reply", async (event, result) => {
+  window.electron.ipcRenderer.on("spreadsheet-reply", async (event, result) => {
+    console.log("Spreadsheet reply from guided curate")
     if (!result || result === "") {
-      ipcRenderer.removeAllListeners("spreadsheet-reply");
+      window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
       return;
     } else {
       //spreadsheet reply contained results
       await updateManifestJson(highLevelFolderName, result);
-      ipcRenderer.removeAllListeners("spreadsheet-reply");
+      window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
       await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
       renderManifestCards();
     }
@@ -3481,7 +3483,7 @@ document
           origin: guidedGetDatasetOrigin(window.sodaJSONObj),
         };
 
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.VALIDATE_DATASET,
@@ -3490,7 +3492,7 @@ document
           kombuchaEventData
         );
 
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-event",
           "Error",
           "Validation - Number of Files",
@@ -3574,7 +3576,7 @@ document
           origin: guidedGetDatasetOrigin(window.sodaJSONObj),
         };
 
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.VALIDATE_DATASET,
@@ -3583,7 +3585,7 @@ document
           kombuchaEventData
         );
 
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-event",
           "Error",
           "Validation - Number of Files",
@@ -3603,7 +3605,7 @@ document
 
       // log successful validation run to analytics
       if (file_counter > 0) {
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.VALIDATE_DATASET,
@@ -3618,7 +3620,7 @@ document
         );
       }
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-event",
         "Success",
         "Validation - Number of Files",
@@ -5319,7 +5321,7 @@ const openPage = async (targetPageID) => {
       //Reset the manual submission metadata UI
       const sparcAwardInputManual = document.getElementById("guided-submission-sparc-award-manual");
       sparcAwardInputManual.value = "";
-      guidedSubmissionTagsTagifyManual.removeAllTags();
+      window.guidedSubmissionTagsTagifyManual.removeAllTags();
       const completionDateInputManual = document.getElementById(
         "guided-submission-completion-date-manual"
       );
@@ -5344,7 +5346,7 @@ const openPage = async (targetPageID) => {
       }
       const milestones = window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
       if (milestones) {
-        guidedSubmissionTagsTagifyManual.addTags(milestones);
+        window.guidedSubmissionTagsTagifyManual.addTags(milestones);
       }
       const completionDate =
         window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
@@ -7050,7 +7052,7 @@ const setActiveSubPage = (pageIdToActivate) => {
           }
         }
       }
-      unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
+      window.unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
     } else {
       //reset the submission metadata lotties and para text
       dataDeliverableLottieContainer.innerHTML = "";
@@ -7299,7 +7301,7 @@ const guidedGetPageToReturnTo = (sodaJSONObj) => {
 const patchPreviousGuidedModeVersions = async () => {
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
 
-  for (highLevelFolderManifestData in window.sodaJSONObj["guided-manifest-files"]) {
+  for (const highLevelFolderManifestData in window.sodaJSONObj["guided-manifest-files"]) {
     if (
       window.sodaJSONObj["guided-manifest-files"][highLevelFolderManifestData]["headers"][0] ===
       "File Name"
@@ -9506,7 +9508,7 @@ const addContributorField = () => {
   //scroll to the new element
 
   window.createDragSort(tagify);
-  smoothScrollToElement(newlyAddedContributorField);
+  window.smoothScrollToElement(newlyAddedContributorField);
 };
 const getGuidedProtocolLinks = () => {
   try {
@@ -9985,7 +9987,7 @@ const openAddAdditionLinkSwal = async () => {
   otherLinksContainer.appendChild(newOtherLink);
   //select the last protocol field (the one that was just added)
   const newlyAddedOtherLinkField = otherLinksContainer.lastChild;
-  smoothScrollToElement(newlyAddedOtherLinkField);
+  window.smoothScrollToElement(newlyAddedOtherLinkField);
 };
 
 const removeOtherLinkField = (otherLinkDeleteButton) => {
@@ -10937,7 +10939,7 @@ const addSampleTableRow = () => {
     const newSampleRow = sampleSpecificationTableBody.querySelector("tr:last-child");
     //get the input element in newSampleRow
     const newSampleInput = newSampleRow.querySelector("input[name='guided-sample-id']");
-    smoothScrollToElement(newSampleRow);
+    window.smoothScrollToElement(newSampleRow);
     newSampleInput.focus();
   }
 };
@@ -12040,7 +12042,7 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
   window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
   window.organizeDSglobalPath.value = "";
   window.dataset_path = document.getElementById("guided-input-global-path");
-  scroll_box = document.querySelector("#guided-body");
+  let scroll_box = document.querySelector("#guided-body");
   itemsContainer.innerHTML = "";
   resetLazyLoading();
   freeFormItemsContainer.classList.remove("freeform-file-explorer");
@@ -12540,7 +12542,7 @@ $("#guided-button-add-banner-image").click(async () => {
 // Action when user click on "Import image" button for banner image
 $("#guided-button-import-banner-image").click(async () => {
   $("#guided-para-dataset-banner-image-status").html("");
-  let filePaths = await ipcRenderer.invoke("open-file-dialog-import-banner-image");
+  let filePaths = await window.electron.ipcRenderer.invoke("open-file-dialog-import-banner-image");
   handleSelectedBannerImage(filePaths, "guided-mode");
 });
 
@@ -12549,7 +12551,7 @@ $("#guided-button-import-banner-image").click(async () => {
 /////////////////////////////////////////////////////////
 
 $("#guided-input-destination-getting-started-locally").on("click", () => {
-  ipcRenderer.send("guided-open-file-dialog-local-destination-curate");
+  window.electron.ipcRenderer.send("guided-open-file-dialog-local-destination-curate");
 });
 
 //FETCH FUNCTIONS//
@@ -12643,7 +12645,7 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
       dataset_id: createdDatasetsID,
     };
 
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.CREATE_NEW_DATASET,
@@ -12652,7 +12654,7 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
       kombuchaEventData
     );
 
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Dataset ID to Dataset Name Map",
       createdDatasetsID,
@@ -13530,7 +13532,7 @@ const guidedPennsieveDatasetUpload = async () => {
       });
     } catch (error) {
       clientError(error);
-      ipcRenderer.send("track-event", "Error", "Setting Templates Path");
+      window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");
       throw "Error setting templates path";
     }
 
@@ -13554,7 +13556,7 @@ const guidedPennsieveDatasetUpload = async () => {
     }
 
     //Display the Pennsieve metadata upload table
-    unHideAndSmoothScrollToElement("guided-div-pennsieve-metadata-upload-status-table");
+    window.unHideAndSmoothScrollToElement("guided-div-pennsieve-metadata-upload-status-table");
 
     // Create the dataset on Pennsieve
     await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
@@ -13581,7 +13583,7 @@ const guidedPennsieveDatasetUpload = async () => {
     for (const row of datasetMetadataUploadTableRows) {
       row.classList.add("hidden");
     }
-    unHideAndSmoothScrollToElement("guided-div-dataset-metadata-upload-status-table");
+    window.unHideAndSmoothScrollToElement("guided-div-dataset-metadata-upload-status-table");
 
     if (
       guidedSubjectsMetadata.length > 1 &&
@@ -13647,7 +13649,7 @@ const guidedPennsieveDatasetUpload = async () => {
     updateDatasetUploadProgressTable({
       "Upload status": `Preparing dataset for upload`,
     });
-    unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
+    window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
     await guidedCreateManifestFilesAndAddToDatasetStructure();
 
@@ -13780,7 +13782,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       log.info("Completed curate function");
 
       // log that a dataset upload was successful
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.GUIDED_MODE,
         kombuchaEnums.Action.GENERATE_DATASET,
@@ -13798,7 +13800,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       // log the difference again to Google Analytics
       let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
       if (finalFilesCount > 0) {
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.GENERATE_DATASET,
@@ -13815,7 +13817,7 @@ const guidedUploadDatasetToPennsieve = async () => {
         );
       }
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-event",
         "Success",
         "Guided Mode - Generate - Dataset - Number of Files",
@@ -13826,7 +13828,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
 
       if (differenceInBytes > 0) {
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.GENERATE_DATASET,
@@ -13843,7 +13845,7 @@ const guidedUploadDatasetToPennsieve = async () => {
         );
       }
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-event",
         "Success",
         "Guided Mode - Generate - Dataset - Size",
@@ -13888,7 +13890,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       guidedSetNavLoadingState(false);
       clientError(error);
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.GUIDED_MODE,
         kombuchaEnums.Action.GENERATE_DATASET,
@@ -13907,7 +13909,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
 
       if (finalFilesCount > 0) {
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.GENERATE_DATASET,
@@ -13924,7 +13926,7 @@ const guidedUploadDatasetToPennsieve = async () => {
         );
       }
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-event",
         "Success",
         "Guided Mode - Generate - Dataset - Number of Files",
@@ -13935,7 +13937,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
 
       if (differenceInBytes > 0) {
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.GENERATE_DATASET,
@@ -13952,7 +13954,7 @@ const guidedUploadDatasetToPennsieve = async () => {
         );
       }
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-event",
         "Success",
         "Guided Mode - Generate - Dataset - Size",
@@ -13962,7 +13964,7 @@ const guidedUploadDatasetToPennsieve = async () => {
 
       // log the amount of files we attempted to upload -- good for knowing if a certain file amount poses the agent/our own code problems
       if (uploadedFiles > 0) {
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.GENERATE_DATASET,
@@ -13980,7 +13982,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       }
 
       // log the size of the dataset we attempted to upload
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.GUIDED_MODE,
         kombuchaEnums.Action.GENERATE_DATASET,
@@ -14137,7 +14139,7 @@ const guidedUploadDatasetToPennsieve = async () => {
     // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
     if (files >= filesOnPreviousLogPage + 500) {
       filesOnPreviousLogPage += 500;
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.GUIDED_MODE,
         kombuchaEnums.Action.GENERATE_DATASET,
@@ -14153,7 +14155,7 @@ const guidedUploadDatasetToPennsieve = async () => {
         }
       );
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-event",
         "Success",
         "Guided Mode - Generate - Dataset - Number of Files",
@@ -14164,7 +14166,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       let differenceInBytes = bytes - bytesOnPreviousLogPage;
       bytesOnPreviousLogPage = bytes;
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.GUIDED_MODE,
         kombuchaEnums.Action.GENERATE_DATASET,
@@ -14180,7 +14182,7 @@ const guidedUploadDatasetToPennsieve = async () => {
         }
       );
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-event",
         "Success",
         "Guided Mode - Generate - Dataset - Size",

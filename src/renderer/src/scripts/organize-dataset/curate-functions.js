@@ -1711,7 +1711,7 @@ const renderFFManifestCards = () => {
   const manifestFilesCardsContainer = document.getElementById("ffm-container-manifest-file-cards");
   manifestFilesCardsContainer.innerHTML = manifestCards;
 
-  smoothScrollToElement(manifestFilesCardsContainer);
+  window.smoothScrollToElement(manifestFilesCardsContainer);
 };
 
 const ffOpenManifestEditSwal = async (highlevelFolderName) => {

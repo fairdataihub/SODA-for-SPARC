@@ -670,7 +670,7 @@ const beginPrepublishingFlow = async (curationMode) => {
     $("#pre-publishing-continue-btn").disabled = true;
 
     if (!datasetHasBeenPublished) {
-      smoothScrollToElement("prepublishing-checklist");
+      window.smoothScrollToElement("prepublishing-checklist");
 
       let success = await showPrePublishingStatus(true, "freeform");
       if (!success) {

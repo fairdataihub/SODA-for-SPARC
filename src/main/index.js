@@ -57,6 +57,8 @@ ipcMain.handle("exit-soda", () => {
 })
 
 
+
+
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -90,6 +92,60 @@ function createWindow() {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+
+// passing in the spreadsheet data to pass to a modal
+// that will have a jspreadsheet for user edits
+ipcMain.handle("spreadsheet", (event, spreadsheet) => {
+  console.log("Spreadsheet invoked")
+  const windowOptions = {
+    minHeight: 450,
+    width: 1120,
+    height: 550,
+    center: true,
+    show: true,
+    icon: __dirname + "/assets/menu-icon/soda_icon.png",
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+      contextIsolation: false,
+    },
+    // modal: true,
+    parent: mainWindow,
+    closable: true,
+  };
+  let spreadSheetModal = new BrowserWindow(windowOptions);
+  spreadSheetModal.on("close", (e) => {
+    mainWindow.webContents.send("spreadsheet-reply", "");
+    try {
+      spreadSheetModal.destroy();
+      // spreadSheetModal.close();
+    } catch (e) {
+      console.log(e);
+    }
+  });
+  spreadSheetModal.loadFile("./sections/spreadSheetModal/spreadSheet.html");
+  spreadSheetModal.once("ready-to-show", async () => {
+    //display window when ready to show
+    spreadSheetModal.show();
+    //send data to child window
+    spreadSheetModal.send("requested-spreadsheet", spreadsheet);
+  });
+  ipcMain.on("spreadsheet-results", async (ev, res) => {
+    //send back spreadsheet data to main window
+    mainWindow.webContents.send("spreadsheet-reply", res);
+    //destroy window
+    try {
+      spreadSheetModal.destroy();
+      // spreadSheetModal.close();
+    } catch (e) {
+      console.log(e);
+    }
+  });
+});
+
+
+
 }
 
 // This method will be called when Electron has finished

@@ -1,6 +1,10 @@
-const { platform } = require("os");
-const { copyFile, readdir } = require("fs").promises;
-const { join } = require("path");
+import client from '../client'
+import excelToJson from 'convert-excel-to-json';
+
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
+
 let openedEdit = false;
 
 // opendropdown event listeners
@@ -23,11 +27,11 @@ const guidedJsTreePreviewManifest = document.getElementById(
 );
 
 const showLocalDatasetManifest = () => {
-  ipcRenderer.send("open-file-dialog-local-dataset-manifest-purpose");
+  window.electron.ipcRenderer.send("open-file-dialog-local-dataset-manifest-purpose");
 };
 
 const selectManifestGenerationLocation = () => {
-  ipcRenderer.send("open-file-dialog-local-dataset-manifest-generate-purpose");
+  window.electron.ipcRenderer.send("open-file-dialog-local-dataset-manifest-generate-purpose");
 };
 
 const openDirectoryAtManifestGenerationLocation = (generationLocation) => {
@@ -58,7 +62,7 @@ const openFolder = (generationLocation) => {
 $(document).ready(function () {
   let localDataSetImport = false;
   let fileOpenedOnce = {};
-  ipcRenderer.on("selected-local-dataset-manifest-purpose", (event, folderPath) => {
+  window.electron.ipcRenderer.on("selected-local-dataset-manifest-purpose", (event, folderPath) => {
     if (folderPath.length > 0) {
       if (folderPath !== null) {
         localDataSetImport = true;
@@ -81,7 +85,7 @@ $(document).ready(function () {
     }
   });
 
-  ipcRenderer.on("selected-local-dataset-manifest-generate-purpose", (event, folderPath) => {
+  window.electron.ipcRenderer.on("selected-local-dataset-manifest-generate-purpose", (event, folderPath) => {
     if (folderPath.length <= 0 || folderPath === null) {
       document.getElementById("input-manifest-local-gen-location").placeholder = "Browse here";
       return;
@@ -247,6 +251,7 @@ $(document).ready(function () {
 
   //Event listener for the jstree to open manifest files
   $(jstreePreviewManifest).on("select_node.jstree", async function (evt, data) {
+    console.log("Doing this?")
     // Check if pennsieve option was selected to reset localDataSetImport
     if (document.getElementById("pennsieve-option-create-manifest").classList.contains("checked")) {
       localDataSetImport = false;
@@ -286,9 +291,9 @@ $(document).ready(function () {
       }
 
       // TODO: Check if this is needed everytime
-      var localFolderPath = path.join(homeDirectory, "SODA", "manifest_files", parentFolderName);
-      var selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
-      if (fs.existsSync(selectedManifestFilePath)) {
+      var localFolderPath = window.path.join(homeDirectory, "SODA", "manifest_files", parentFolderName);
+      var selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
+      if (window.fs.existsSync(selectedManifestFilePath)) {
         jsonManifest = excelToJson({
           sourceFile: selectedManifestFilePath,
           columnToKey: {
@@ -353,18 +358,18 @@ $(document).ready(function () {
             };
             // Will create an excel sheet of the manifest files in case they receive no edits
             let jsonManifest = {};
-            let manifestFolder = path.join(homeDirectory, "SODA", "manifest_files");
-            let localFolderPath = path.join(manifestFolder, highLevelFolderName);
-            let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+            let manifestFolder = window.path.join(homeDirectory, "SODA", "manifest_files");
+            let localFolderPath = window.path.join(manifestFolder, highLevelFolderName);
+            let selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
             // create manifest folders if they don't exist
-            if (!fs.existsSync(manifestFolder)) {
-              fs.mkdirSync(manifestFolder);
+            if (!window.fs.existsSync(manifestFolder)) {
+              window.fs.mkdirSync(manifestFolder);
             }
-            if (!fs.existsSync(localFolderPath)) {
-              fs.mkdirSync(localFolderPath);
-              fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
+            if (!window.fs.existsSync(localFolderPath)) {
+              window.fs.mkdirSync(localFolderPath);
+              window.fs.closeSync(window.fs.openSync(selectedManifestFilePath, "w"));
             }
-            if (!fs.existsSync(selectedManifestFilePath)) {
+            if (!window.fs.existsSync(selectedManifestFilePath)) {
             } else {
               jsonManifest = excelToJson({
                 sourceFile: selectedManifestFilePath,
@@ -391,7 +396,7 @@ $(document).ready(function () {
           )) {
             for (const [fileName, fileData] of Object.entries(folderData["files"])) {
               if (fileName === "manifest.xlsx") {
-                manifestPaths.push(path.join(folderData["path"], fileName));
+                manifestPaths.push(window.path.join(folderData["path"], fileName));
                 highLvlFolderNames.push(highLevelFolderName);
               }
             }
@@ -403,9 +408,9 @@ $(document).ready(function () {
 
             for (const manifestPath of manifestPaths) {
               let manifestData = [];
-              let highLevelFolderName = path.basename(path.dirname(manifestPath));
+              let highLevelFolderName = window.path.basename(window.path.dirname(manifestPath));
 
-              if (!fs.existsSync(manifestPath)) {
+              if (!window.fs.existsSync(manifestPath)) {
                 // If manifest file doesn't exist then newManifestData will be used
                 // No old manifest to compare to
                 sodaCopy["manifest-files"][highLevelFolderName] =
@@ -503,17 +508,18 @@ $(document).ready(function () {
       const existingManifestData = sodaCopy["manifest-files"]?.[parentFolderName];
       Swal.close();
       // TODO: Lock all other manifest buttons
-      ipcRenderer.invoke("spreadsheet", existingManifestData);
+      window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
 
       //upon receiving a reply of the spreadsheet, handle accordingly
-      ipcRenderer.on("spreadsheet-reply", async (event, result) => {
+      window.electron.ipcRenderer.on("spreadsheet-reply", async (event, result) => {
+        console.log("Spreadsheet reply")
         openedEdit = false;
         if (!result || result === "") {
-          ipcRenderer.removeAllListeners("spreadsheet-reply");
+          window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
           return;
         } else {
           //spreadsheet reply contained results
-          ipcRenderer.removeAllListeners("spreadsheet-reply");
+          window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
           saveManifestFiles = true;
           if (saveManifestFiles) {
             //if additional metadata or description gets added for a file then add to json as well
@@ -521,18 +527,18 @@ $(document).ready(function () {
             const savedHeaders = result[0];
             const savedData = result[1];
             let jsonManifest = {};
-            let localFolderPath = path.join(
+            let localFolderPath = window.path.join(
               homeDirectory,
               "SODA",
               "manifest_files",
               parentFolderName
             );
-            let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+            let selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
 
-            if (!fs.existsSync(localFolderPath)) {
+            if (!window.fs.existsSync(localFolderPath)) {
               // create the manifest folder if it doesn't exist
-              fs.mkdirSync(localFolderPath);
-              fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
+              window.fs.mkdirSync(localFolderPath);
+              window.fs.closeSync(window.fs.openSync(selectedManifestFilePath, "w"));
             }
 
             jsonManifest = excelToJson({
@@ -630,6 +636,7 @@ $(document).ready(function () {
       });
     }
   });
+
   $(guidedJsTreePreviewManifest).on("select_node.jstree", function (evt, data) {
     if (data.node.text === "manifest.xlsx") {
       // Show loading popup
@@ -646,14 +653,14 @@ $(document).ready(function () {
         },
       });
       var parentFolderName = $("#" + data.node.parent + "_anchor").text();
-      var localFolderPath = path.join(
+      var localFolderPath = window.path.join(
         homeDirectory,
         "SODA",
         "Guided-Manifest-Files",
         sodaJSONObj["digital-metadata"]["name"],
         parentFolderName
       );
-      var selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+      var selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
       jsonManifest = excelToJson({
         sourceFile: selectedManifestFilePath,
         columnToKey: {
@@ -665,7 +672,7 @@ $(document).ready(function () {
 });
 
 // function that removes hidden class from js element by id and smooth scrolls to it
-const unHideAndSmoothScrollToElement = (id) => {
+window.unHideAndSmoothScrollToElement = (id) => {
   elementToUnhideAndScrollTo = document.getElementById(id);
   elementToUnhideAndScrollTo.classList.remove("hidden");
   elementToUnhideAndScrollTo.scrollIntoView({
@@ -673,7 +680,7 @@ const unHideAndSmoothScrollToElement = (id) => {
   });
 };
 
-const smoothScrollToElement = (idOrElement, block = "start", inline = "nearest") => {
+window.smoothScrollToElement = (idOrElement, block = "start", inline = "nearest") => {
   //check if idOrElement is an element
   if (typeof idOrElement === "string") {
     elementToScrollTo = document.getElementById(idOrElement);
@@ -1111,7 +1118,7 @@ const generateManifestHelper = async () => {
 
 const generateManifestPreview = async (ev) => {
   // open a file dialog so the user can select their dataset folder
-  ipcRenderer.send("open-folder-dialog-save-manifest-local");
+  window.electron.ipcRenderer.send("open-folder-dialog-save-manifest-local");
 };
 
 /**
@@ -1138,8 +1145,8 @@ const updateJSONStructureManifestGenerate = () => {
     };
   }
   if (starting_point == "local") {
-    var localDestination = path.dirname(sodaJSONObj["starting-point"]["local-path"]);
-    var newDatasetName = path.basename(sodaJSONObj["starting-point"]["local-path"]);
+    var localDestination = window.path.dirname(sodaJSONObj["starting-point"]["local-path"]);
+    var newDatasetName = window.path.basename(sodaJSONObj["starting-point"]["local-path"]);
     sodaJSONObj["generate-dataset"] = {
       destination: "local",
       path: $("#input-manifest-local-folder-dataset").attr("placeholder"),
@@ -1164,7 +1171,7 @@ const initiate_generate_manifest_local = async (manifestEditBoolean, originalDat
     createManifestLocally("local", false, originalDataset);
   } else {
     // SODA Manifest Files folder
-    let dir = path.join(homeDirectory, "SODA", "manifest_files");
+    let dir = window.path.join(homeDirectory, "SODA", "manifest_files");
     // Move manifest files to the local dataset
     let moveFinishedBool;
     let generationLocation;
@@ -1353,7 +1360,7 @@ const initiate_generate_manifest_bf = async () => {
   );
 
   // log the amount of high level manifest files that were created
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-event",
     "Success",
     MetadataAnalyticsPrefix.MANIFEST + " - Generate - Number of Files ",
@@ -1361,7 +1368,7 @@ const initiate_generate_manifest_bf = async () => {
     high_level_folder_num
   );
 
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-kombucha",
     kombuchaEnums.Category.PREPARE_METADATA,
     kombuchaEnums.Action.GENERATE_METADATA,
@@ -1405,14 +1412,14 @@ const initiate_generate_manifest_bf = async () => {
 /// creating manifest files locally by generating them to a local SODA folder, then move them to original dataset folder
 const moveManifestFiles = (sourceFolder, destinationFolder) => {
   return new Promise((resolve) => {
-    fs.readdir(sourceFolder, (err, folders) => {
+    window.window.fs.readdir(sourceFolder, (err, folders) => {
       if (err) {
         console.log(err);
         resolve(false);
       } else {
         folders.forEach(function (folder) {
-          let sourceManifest = path.join(sourceFolder, folder, "manifest.xlsx");
-          let destinationManifest = path.join(destinationFolder, folder, "manifest.xlsx");
+          let sourceManifest = window.path.join(sourceFolder, folder, "manifest.xlsx");
+          let destinationManifest = window.path.join(destinationFolder, folder, "manifest.xlsx");
           const mv = require("mv");
           mv(sourceManifest, destinationManifest, function (err) {
             if (err) {
@@ -1434,7 +1441,7 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
   // get the files/folders in the source folder
   let sourceDir;
   try {
-    sourceDir = await readdir(sourceFolder);
+    sourceDir = await window.window.fs.readdir(sourceFolder);
   } catch (error) {
     clientError(error);
     Swal.fire({
@@ -1469,15 +1476,15 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
   for (const folderIdx in sourceDir) {
     let folder = sourceDir[folderIdx];
 
-    let sourceManifest = path.join(sourceFolder, folder, "manifest.xlsx");
+    let sourceManifest = window.path.join(sourceFolder, folder, "manifest.xlsx");
 
-    let destinationManifestHighLevelFolder = path.join(manifestFolderDirectory, folder);
-    fs.mkdirSync(destinationManifestHighLevelFolder);
+    let destinationManifestHighLevelFolder = window.path.join(manifestFolderDirectory, folder);
+    window.fs.mkdirSync(destinationManifestHighLevelFolder);
 
-    let destinationManifest = path.join(destinationManifestHighLevelFolder, "manifest.xlsx");
+    let destinationManifest = window.path.join(destinationManifestHighLevelFolder, "manifest.xlsx");
 
     try {
-      await copyFile(sourceManifest, destinationManifest);
+      await window.window.fs.copyFile(sourceManifest, destinationManifest);
     } catch (error) {
       clientError(error);
       Swal.fire({
@@ -1507,7 +1514,7 @@ const createDuplicateManifestDirectory = async (destination) => {
   // get the files/folders in the destination folder
   let destinationDir;
   try {
-    destinationDir = await readdir(destination);
+    destinationDir = await window.window.fs.readdir(destination);
   } catch (error) {
     clientError(error);
     Swal.fire({
@@ -1533,14 +1540,14 @@ const createDuplicateManifestDirectory = async (destination) => {
 
   // if there is only one SODA Manifest Files directory create the first copy
   if (manifestFolderCopies.length === 0) {
-    let manifestFolderDirectory = path.join(destination, "SODA Manifest Files");
-    fs.mkdirSync(manifestFolderDirectory);
+    let manifestFolderDirectory = window.path.join(destination, "SODA Manifest Files");
+    window.fs.mkdirSync(manifestFolderDirectory);
     return manifestFolderDirectory;
   }
 
   if (manifestFolderCopies.length === 1) {
-    let manifestFolderDirectory = path.join(destination, "SODA Manifest Files (1)");
-    fs.mkdirSync(manifestFolderDirectory);
+    let manifestFolderDirectory = window.path.join(destination, "SODA Manifest Files (1)");
+    window.fs.mkdirSync(manifestFolderDirectory);
     return manifestFolderDirectory;
   }
 
@@ -1562,37 +1569,37 @@ const createDuplicateManifestDirectory = async (destination) => {
   let lastCopyNumber = copyNumbers[copyNumbers.length - 1];
 
   // create a new SODA Manifest Files directory ending with ' (n)' where n is the number of times the directory has been created
-  let manifestFolderDirectory = path.join(
+  let manifestFolderDirectory = window.path.join(
     destination,
     `SODA Manifest Files (${parseInt(lastCopyNumber) + 1})`
   );
-  fs.mkdirSync(manifestFolderDirectory);
+  window.fs.mkdirSync(manifestFolderDirectory);
 
   // return the path to the new SODA Manifest Files directory
   return manifestFolderDirectory;
 };
 
 const removeDir = function (pathdir) {
-  if (fs.existsSync(pathdir)) {
-    const files = fs.readdirSync(pathdir);
+  if (window.fs.existsSync(pathdir)) {
+    const files = window.fs.readdirSync(pathdir);
     if (files.length > 0) {
       files.forEach(function (filename) {
-        let ele = path.join(pathdir, filename);
-        if (fs.statSync(ele).isDirectory()) {
+        let ele = window.path.join(pathdir, filename);
+        if (window.fs.statSync(ele).isDirectory()) {
           removeDir(ele);
         } else {
           try {
-            fs.unlinkSync(ele);
+            window.fs.unlinkSync(ele);
           } catch {
-            fd = fs.openSync(ele, "r");
-            fs.closeSync(fd);
-            fs.unlinkSync(ele);
+            fd = window.fs.openSync(ele, "r");
+            window.fs.closeSync(fd);
+            window.fs.unlinkSync(ele);
           }
         }
       });
-      fs.rmdirSync(pathdir);
+      window.fs.rmdirSync(pathdir);
     } else {
-      fs.rmdirSync(pathdir);
+      window.fs.rmdirSync(pathdir);
     }
   }
 };
@@ -1860,7 +1867,7 @@ const validateSPARCdataset = () => {
   if (valid_dataset == true) {
     let action = "";
     irregularFolderArray = [];
-    detectIrregularFolders(path.basename(localDatasetFolderPath), localDatasetFolderPath);
+    detectIrregularFolders(window.path.basename(localDatasetFolderPath), localDatasetFolderPath);
     var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
     if (irregularFolderArray.length > 0) {
       Swal.fire({
@@ -2084,7 +2091,7 @@ const generateManifestFolderLocallyForEdit = async (ev) => {
 
 const createManifestLocally = async (type, editBoolean, originalDataset) => {
   var generatePath = "";
-  sodaJSONObj["manifest-files"]["local-destination"] = path.join(homeDirectory, "SODA");
+  sodaJSONObj["manifest-files"]["local-destination"] = window.path.join(homeDirectory, "SODA");
 
   if (type === "local") {
     generatePath = localDatasetFolderPath;
@@ -2164,7 +2171,7 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
       localDatasetFolderPath = "";
     } else {
       // SODA Manifest Files folder
-      let dir = path.join(homeDirectory, "SODA", "SODA Manifest Files");
+      let dir = window.path.join(homeDirectory, "SODA", "SODA Manifest Files");
       let moveFinishedBool;
       let manifestGenerationDirectory;
       if (originalDataset !== finalManifestGenerationPath) {
@@ -2374,9 +2381,9 @@ const createChildNodeManifest = (
                 ".DOCX",
                 ".doc",
                 ".docx",
-              ].includes(path.parse(key).ext)
+              ].includes(window.path.parse(key).ext)
             ) {
-              nodeType = "file " + path.parse(key).ext.slice(1);
+              nodeType = "file " + window.path.parse(key).ext.slice(1);
             } else {
               nodeType = "file other";
             }
@@ -2445,7 +2452,7 @@ const checkInvalidHighLevelFolders = (datasetStructure) => {
 
 // function to generate edited manifest files onto Pennsieve (basically just upload the local SODA Manifest Files folder to Pennsieve)
 const generateAfterEdits = async () => {
-  let dir = path.join(homeDirectory, "SODA", "manifest_files");
+  let dir = window.path.join(homeDirectory, "SODA", "manifest_files");
   // set up sodaJSonObject
   sodaJSONObj = {
     "bf-account-selected": {},

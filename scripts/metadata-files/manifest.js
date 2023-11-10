@@ -665,7 +665,7 @@ $(document).ready(function () {
 });
 
 // function that removes hidden class from js element by id and smooth scrolls to it
-const unHideAndSmoothScrollToElement = (id) => {
+window.unHideAndSmoothScrollToElement = (id) => {
   elementToUnhideAndScrollTo = document.getElementById(id);
   elementToUnhideAndScrollTo.classList.remove("hidden");
   elementToUnhideAndScrollTo.scrollIntoView({
@@ -673,7 +673,7 @@ const unHideAndSmoothScrollToElement = (id) => {
   });
 };
 
-const smoothScrollToElement = (idOrElement, block = "start", inline = "nearest") => {
+window.smoothScrollToElement = (idOrElement, block = "start", inline = "nearest") => {
   //check if idOrElement is an element
   if (typeof idOrElement === "string") {
     elementToScrollTo = document.getElementById(idOrElement);

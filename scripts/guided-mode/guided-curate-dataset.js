@@ -3190,7 +3190,7 @@ const renderManifestCards = () => {
 
   manifestFilesCardsContainer.innerHTML = manifestCards;
 
-  smoothScrollToElement(manifestFilesCardsContainer);
+  window.smoothScrollToElement(manifestFilesCardsContainer);
 };
 
 const generateManifestEditCard = (highLevelFolderName) => {
@@ -7053,7 +7053,7 @@ const setActiveSubPage = (pageIdToActivate) => {
           }
         }
       }
-      unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
+      window.unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
     } else {
       //reset the submission metadata lotties and para text
       dataDeliverableLottieContainer.innerHTML = "";
@@ -9509,7 +9509,7 @@ const addContributorField = () => {
   //scroll to the new element
 
   createDragSort(tagify);
-  smoothScrollToElement(newlyAddedContributorField);
+  window.smoothScrollToElement(newlyAddedContributorField);
 };
 const getGuidedProtocolLinks = () => {
   try {
@@ -9988,7 +9988,7 @@ const openAddAdditionLinkSwal = async () => {
   otherLinksContainer.appendChild(newOtherLink);
   //select the last protocol field (the one that was just added)
   const newlyAddedOtherLinkField = otherLinksContainer.lastChild;
-  smoothScrollToElement(newlyAddedOtherLinkField);
+  window.smoothScrollToElement(newlyAddedOtherLinkField);
 };
 
 const removeOtherLinkField = (otherLinkDeleteButton) => {
@@ -10942,7 +10942,7 @@ const addSampleTableRow = () => {
     const newSampleRow = sampleSpecificationTableBody.querySelector("tr:last-child");
     //get the input element in newSampleRow
     const newSampleInput = newSampleRow.querySelector("input[name='guided-sample-id']");
-    smoothScrollToElement(newSampleRow);
+    window.smoothScrollToElement(newSampleRow);
     newSampleInput.focus();
   }
 };
@@ -13550,7 +13550,7 @@ const guidedPennsieveDatasetUpload = async () => {
     }
 
     //Display the Pennsieve metadata upload table
-    unHideAndSmoothScrollToElement("guided-div-pennsieve-metadata-upload-status-table");
+    window.unHideAndSmoothScrollToElement("guided-div-pennsieve-metadata-upload-status-table");
 
     // Create the dataset on Pennsieve
     await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
@@ -13577,7 +13577,7 @@ const guidedPennsieveDatasetUpload = async () => {
     for (const row of datasetMetadataUploadTableRows) {
       row.classList.add("hidden");
     }
-    unHideAndSmoothScrollToElement("guided-div-dataset-metadata-upload-status-table");
+    window.unHideAndSmoothScrollToElement("guided-div-dataset-metadata-upload-status-table");
 
     if (
       guidedSubjectsMetadata.length > 1 &&
@@ -13643,7 +13643,7 @@ const guidedPennsieveDatasetUpload = async () => {
     updateDatasetUploadProgressTable({
       "Upload status": `Preparing dataset for upload`,
     });
-    unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
+    window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
     await guidedCreateManifestFilesAndAddToDatasetStructure();
 

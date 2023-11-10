@@ -185,8 +185,8 @@ const openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneRe
       milestoneTagify1.addTags(uniqueMilestones);
     }
     if (curationMode === "guided") {
-      guidedSubmissionTagsTagifyManual.removeAllTags();
-      guidedSubmissionTagsTagifyManual.addTags(uniqueMilestones);
+      window.guidedSubmissionTagsTagifyManual.removeAllTags();
+      window.guidedSubmissionTagsTagifyManual.addTags(uniqueMilestones);
     }
 
     if (curationMode === "free-form") {

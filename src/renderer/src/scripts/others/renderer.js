@@ -1398,20 +1398,20 @@ window.progressFilePath = window.path.join(homeDirectory, "SODA", "Progress");
 
 
 
-// const guidedSubmissionTagsInputManual = document.getElementById(
-//   "guided-tagify-submission-milestone-tags-manual"
-// );
-// const guidedSubmissionTagsTagifyManual = new Tagify(guidedSubmissionTagsInputManual, {
-//   duplicates: false,
-//   delimiters: null,
-//   dropdown: {
-//     classname: "color-blue",
-//     maxItems: Infinity,
-//     enabled: 0,
-//     closeOnSelect: true,
-//   },
-// });
-// window.createDragSort(guidedSubmissionTagsTagifyManual);
+const guidedSubmissionTagsInputManual = document.getElementById(
+  "guided-tagify-submission-milestone-tags-manual"
+);
+window.guidedSubmissionTagsTagifyManual = new Tagify(guidedSubmissionTagsInputManual, {
+  duplicates: false,
+  delimiters: null,
+  dropdown: {
+    classname: "color-blue",
+    maxItems: Infinity,
+    enabled: 0,
+    closeOnSelect: true,
+  },
+});
+window.createDragSort(window.guidedSubmissionTagsTagifyManual);
 
 // // initiate Tagify input fields for Dataset description file
 // var keywordInput = document.getElementById("ds-keywords"),
