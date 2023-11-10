@@ -579,7 +579,7 @@ const getGlobalPathFromString = (pathString) => {
   });
 };
 
-const loadFileFolder = (myPath) => {
+const window.loadFileFolder = (myPath) => {
   let appendString = "";
   let sortedObj = sortObjByKeys(myPath);
   let count = 0;

@@ -4093,7 +4093,7 @@ window.sodaJSONObj = {};
 //     // construct UI with files and folders
 //     $("#items").empty();
 //     window.already_created_elem = [];
-//     let items = loadFileFolder(myPath); //array -
+//     let items = window.loadFileFolder(myPath); //array -
 //     //we have some items to display
 //     window.listItems(myPath, "#items", 500, true);
 //     window.organizeLandingUIEffect();
@@ -6412,7 +6412,7 @@ window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
       }
       $("#items").empty();
       window.already_created_elem = [];
-      // let items = loadFileFolder(myPath);
+      // let items = window.loadFileFolder(myPath);
       //we have some items to display
       window.listItems(myPath, "#items", 500, true);
       window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, window.datasetStructureJSONObj);

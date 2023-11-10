@@ -8398,7 +8398,7 @@ const updateFolderStructureUI = (folderPath) => {
     myPath = myPath["folders"][item];
   }
   // construct UI with files and folders
-  //var appendString = loadFileFolder(myPath);
+  //var appendString = window.loadFileFolder(myPath);
 
   /// empty the div
 
@@ -15363,7 +15363,7 @@ $("#guided-button-back").on("click", function () {
     // construct UI with files and folders
     $("#items").empty();
     already_created_elem = [];
-    let items = loadFileFolder(myPath); //array -
+    let items = window.loadFileFolder(myPath); //array -
     let total_item_count = items[1].length + items[0].length;
     //we have some items to display
     listItems(myPath, "#items", 500, (reset = true));

@@ -587,7 +587,7 @@ window.getGlobalPathFromString = (pathString) => {
   });
 };
 
-const loadFileFolder = (myPath) => {
+window.loadFileFolder = (myPath) => {
   let appendString = "";
   let sortedObj = window.sortObjByKeys(myPath);
   let count = 0;

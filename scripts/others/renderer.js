@@ -4367,7 +4367,7 @@ organizeDSbackButton.addEventListener("click", function () {
     // construct UI with files and folders
     $("#items").empty();
     already_created_elem = [];
-    let items = loadFileFolder(myPath); //array -
+    let items = window.loadFileFolder(myPath); //array -
     //we have some items to display
     listItems(myPath, "#items", 500, (reset = true));
     organizeLandingUIEffect();
@@ -6672,7 +6672,7 @@ const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
       }
       $("#items").empty();
       already_created_elem = [];
-      // let items = loadFileFolder(myPath);
+      // let items = window.loadFileFolder(myPath);
       //we have some items to display
       listItems(myPath, "#items", 500, (reset = true));
       getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
