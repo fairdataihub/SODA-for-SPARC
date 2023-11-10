@@ -3915,7 +3915,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
   if (subjectsOrSamples === "subjects") {
     //Add subjects to datsetStructuresJSONObj if they don't exist
     const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
-    for (subject of subjectsInPools) {
+    for (const subject of subjectsInPools) {
       if (
         !window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
           "folders"
@@ -3926,7 +3926,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
         ] = newEmptyFolderObj();
       }
     }
-    for (subject of subjectsOutsidePools) {
+    for (const subject of subjectsOutsidePools) {
       if (!window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName]) {
         window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName] =
           newEmptyFolderObj();
@@ -5131,8 +5131,8 @@ const openPage = async (targetPageID) => {
         },
         plugins: ["types", "sort"],
         sort: function (a, b) {
-          a1 = this.get_node(a);
-          b1 = this.get_node(b);
+          let a1 = this.get_node(a);
+          let b1 = this.get_node(b);
 
           if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
             //if the word assets is included in the icon then we can assume it is a file
