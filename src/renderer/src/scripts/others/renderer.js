@@ -59,7 +59,7 @@ import {
   bfAccountOptions,
 } from '../globals'
 import checkForAnnouncements from './announcements'
-import {swalFileListSingleAction, swalFileListTripleAction} from "../utils/swal-utils"
+import {swalFileListSingleAction, swalFileListTripleAction, swalFileListDoubleAction} from "../utils/swal-utils"
 
 // add jquery to the window object
 window.$ = jQuery;
