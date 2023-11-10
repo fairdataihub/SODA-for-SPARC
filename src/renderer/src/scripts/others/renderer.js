@@ -95,7 +95,7 @@ let introStatus = {
 
 // // Log file settings //
 window.log.setupRendererLogOptions()
-const homeDirectory = await window.electron.ipcRenderer.invoke('get-app-path', 'home')
+window.homeDirectory = await window.electron.ipcRenderer.invoke('get-app-path', 'home')
 
 
 
@@ -1371,16 +1371,16 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
 // ///// Global variables for this section
 
 // /////// Save and load award and milestone info
-// let metadataPath = window.path.join(homeDirectory, "SODA", "METADATA");
+// let metadataPath = window.path.join(window.homeDirectory, "SODA", "METADATA");
 // let awardFileName = "awards.json";
 // let affiliationFileName = "affiliations.json";
 // let milestoneFileName = "milestones.json";
 // let protocolConfigFileName = "protocol-config.json";
 // let affiliationConfigPath = window.path.join(metadataPath, affiliationFileName);
 // let milestonePath = window.path.join(metadataPath, milestoneFileName);
-window.progressFilePath = window.path.join(homeDirectory, "SODA", "Progress");
-// let guidedProgressFilePath = window.path.join(homeDirectory, "SODA", "Guided-Progress");
-// const guidedManifestFilePath = window.path.join(homeDirectory, "SODA", "guided_manifest_files");
+window.progressFilePath = window.path.join(window.homeDirectory, "SODA", "Progress");
+// let guidedProgressFilePath = window.path.join(window.homeDirectory, "SODA", "Guided-Progress");
+// const guidedManifestFilePath = window.path.join(window.homeDirectory, "SODA", "guided_manifest_files");
 // let protocolConfigPath = window.path.join(metadataPath, protocolConfigFileName);
 // let allCollectionTags = {};
 // let currentTags = {};
@@ -1388,11 +1388,11 @@ window.progressFilePath = window.path.join(homeDirectory, "SODA", "Progress");
 
 // if (process.platform === "linux") {
 //   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
-//   if (fs.existsSync(window.path.join(homeDirectory, "Soda"))) {
+//   if (fs.existsSync(window.path.join(window.homeDirectory, "Soda"))) {
 //     //copy the folder contents of home/Soda to home/SODA
-//     fs.copySync(window.path.join(homeDirectory, "Soda"), window.path.join(homeDirectory, "SODA"));
+//     fs.copySync(window.path.join(window.homeDirectory, "Soda"), window.path.join(window.homeDirectory, "SODA"));
 //     //delete the old folder
-//     fs.removeSync(window.path.join(homeDirectory, "Soda"));
+//     fs.removeSync(window.path.join(window.homeDirectory, "Soda"));
 //   }
 // }
 
@@ -5295,7 +5295,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 //     let original_image_path = path[0];
 //     let image_path = original_image_path;
 //     let destination_image_path = require("path").join(
-//       homeDirectory,
+//       window.homeDirectory,
 //       "SODA",
 //       "banner-image-conversion"
 //     );

@@ -9001,7 +9001,7 @@ const handleAddContributorHeaderUI = () => {
   `;
 };
 
-const openGuidedAddContributorSwal = async () => {
+const window.openGuidedAddContributorSwal = async () => {
   let affiliationTagify;
   let contributorRolesTagify;
 

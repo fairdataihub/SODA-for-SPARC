@@ -11,6 +11,7 @@ import './scripts/organize-dataset/organizeDS'
 import './scripts/organize-dataset/curate-functions'
 import './scripts/metadata-files/manifest'
 import './scripts/spreadSheetTools/spreadSheetTools'
+import './scripts/others/contributor-storage'
 
 // Application Lotties
 import './assets/lotties/activate-lotties'

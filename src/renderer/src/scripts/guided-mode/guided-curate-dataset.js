@@ -8939,7 +8939,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
 
 const handleAddContributorHeaderUI = () => {
   const existingContributorORCiDs = getExistingContributorORCiDs();
-  const locallyStoredContributorArray = loadStoredContributors().filter((contributor) => {
+  const locallyStoredContributorArray = window.loadStoredContributors().filter((contributor) => {
     return !existingContributorORCiDs.includes(contributor.ORCiD);
   });
 
@@ -9000,7 +9000,7 @@ const handleAddContributorHeaderUI = () => {
   `;
 };
 
-const openGuidedAddContributorSwal = async () => {
+window.openGuidedAddContributorSwal = async () => {
   let affiliationTagify;
   let contributorRolesTagify;
 
