@@ -136,7 +136,7 @@ const handleSectionTrigger = async (event) => {
     if (sectionRenderFileExplorer != "file-explorer") {
       sodaJSONObj = {};
       datasetStructureJSONObj = {};
-      subjectsTableData = [];
+      window.subjectsTableData = [];
       samplesTableData = [];
     }
 

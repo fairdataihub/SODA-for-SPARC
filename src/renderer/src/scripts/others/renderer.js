@@ -1253,7 +1253,7 @@ window.menuHighLevelFolders = document.querySelector(".menu.high-level-folder");
 // const validateSODAProgressBar = document.getElementById("div-indetermiate-bar-validate-soda");
 
 // // Generate dataset //
-// var subjectsTableData = [];
+// var window.subjectsTableData = [];
 // var samplesTableData = [];
 
 // const newDatasetName = document.querySelector("#new-dataset-name");
@@ -1695,7 +1695,7 @@ window.createDragSort(window.guidedSubmissionTagsTagifyManual);
 //         filepath: subjectsDestinationPath,
 //         selected_account: window.defaultBfDataset,
 //         selected_dataset: bfdataset,
-//         subjects_header_row: subjectsTableData,
+//         subjects_header_row: window.subjectsTableData,
 //       },
 //       {
 //         params: {
@@ -2029,11 +2029,11 @@ window.createDragSort(window.guidedSubmissionTagsTagifyManual);
 //     });
 
 //     let res = import_subjects_file.data.subject_file_rows;
-//     // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
+//     // res is a dataframe, now we load it into our window.subjectsTableData in order to populate the UI
 //     if (res.length > 1) {
 //       result = transformImportedExcelFile("subjects", res);
 //       if (result !== false) {
-//         subjectsTableData = result;
+//         window.subjectsTableData = result;
 //       } else {
 //         Swal.fire({
 //           title: "Couldn't load existing subjects.xlsx file",
@@ -2253,91 +2253,91 @@ window.createDragSort(window.guidedSubmissionTagsTagifyManual);
 //   });
 // }
 
-// const createSpeciesAutocomplete = (id, curationMode) => {
-//   // var listID = "autocomplete" + id;
-//   var autoCompleteJS2 = new autoComplete({
-//     selector: "#" + id,
-//     data: {
-//       src: [
-//         {
-//           "Canis lupus familiaris": "dogs, beagle dogs",
-//           "Mustela putorius furo": "ferrets, black ferrets",
-//           "Mus sp.": "mice",
-//           "Mus musculus": "mouse, house mouse",
-//           "Rattus norvegicus": "Norway rats",
-//           Rattus: "rats",
-//           "Sus scrofa": "pigs, swine, wild boar",
-//           "Sus scrofa domesticus": "domestic pigs",
-//           "Homo sapiens": "humans",
-//           "Felis catus": "domestic cat",
-//         },
-//       ],
-//       keys: [
-//         "Canis lupus familiaris",
-//         "Mustela putorius furo",
-//         "Mus sp.",
-//         "Mus musculus",
-//         "Sus scrofa",
-//         "Sus scrofa domesticus",
-//         "Homo sapiens",
-//         "Rattus",
-//         "Felis catus",
-//         "Rattus norvegicus",
-//       ],
-//     },
-//     resultItem: {
-//       element: (item, data) => {
-//         // Modify Results Item Style
-//         item.style = "display: flex; justify-content: space-between;";
-//         // Modify Results Item Content
-//         item.innerHTML = `
-//         <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
-//           ${data.match}
-//         </span>
-//         <span style="display: flex; align-items: center; font-size: 13px; font-weight: 100; text-transform: uppercase; color: rgba(0,0,0,.2);">
-//           ${data.key}
-//         </span>`;
-//       },
-//       highlight: true,
-//     },
-//     events: {
-//       input: {
-//         focus: () => {
-//           autoCompleteJS2.start();
-//         },
-//       },
-//     },
-//     threshold: 0,
-//     resultsList: {
-//       element: (list, data) => {
-//         const info = document.createElement("div");
+window.createSpeciesAutocomplete = (id, curationMode) => {
+  // var listID = "autocomplete" + id;
+  var autoCompleteJS2 = new autoComplete({
+    selector: "#" + id,
+    data: {
+      src: [
+        {
+          "Canis lupus familiaris": "dogs, beagle dogs",
+          "Mustela putorius furo": "ferrets, black ferrets",
+          "Mus sp.": "mice",
+          "Mus musculus": "mouse, house mouse",
+          "Rattus norvegicus": "Norway rats",
+          Rattus: "rats",
+          "Sus scrofa": "pigs, swine, wild boar",
+          "Sus scrofa domesticus": "domestic pigs",
+          "Homo sapiens": "humans",
+          "Felis catus": "domestic cat",
+        },
+      ],
+      keys: [
+        "Canis lupus familiaris",
+        "Mustela putorius furo",
+        "Mus sp.",
+        "Mus musculus",
+        "Sus scrofa",
+        "Sus scrofa domesticus",
+        "Homo sapiens",
+        "Rattus",
+        "Felis catus",
+        "Rattus norvegicus",
+      ],
+    },
+    resultItem: {
+      element: (item, data) => {
+        // Modify Results Item Style
+        item.style = "display: flex; justify-content: space-between;";
+        // Modify Results Item Content
+        item.innerHTML = `
+        <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+          ${data.match}
+        </span>
+        <span style="display: flex; align-items: center; font-size: 13px; font-weight: 100; text-transform: uppercase; color: rgba(0,0,0,.2);">
+          ${data.key}
+        </span>`;
+      },
+      highlight: true,
+    },
+    events: {
+      input: {
+        focus: () => {
+          autoCompleteJS2.start();
+        },
+      },
+    },
+    threshold: 0,
+    resultsList: {
+      element: (list, data) => {
+        const info = document.createElement("div");
 
-//         if (data.results.length === 0) {
-//           info.setAttribute("class", "no_results_species");
-//           info.setAttribute(
-//             "onclick",
-//             "loadTaxonomySpecies('" + data.query + "', '" + id + "', '" + curationMode + "')"
-//           );
-//           info.innerHTML = `Find the scientific name for <strong>"${data.query}"</strong>`;
-//         }
-//         list.prepend(info);
-//       },
-//       noResults: true,
-//       maxResults: 5,
-//       tabSelect: true,
-//     },
-//   });
+        if (data.results.length === 0) {
+          info.setAttribute("class", "no_results_species");
+          info.setAttribute(
+            "onclick",
+            "loadTaxonomySpecies('" + data.query + "', '" + id + "', '" + curationMode + "')"
+          );
+          info.innerHTML = `Find the scientific name for <strong>"${data.query}"</strong>`;
+        }
+        list.prepend(info);
+      },
+      noResults: true,
+      maxResults: 5,
+      tabSelect: true,
+    },
+  });
 
-//   autoCompleteJS2.input.addEventListener("selection", function (event) {
-//     var feedback = event.detail;
-//     var selection = feedback.selection.key;
-//     // Render selected choice to selection div
-//     document.getElementById(id).value = selection;
-//     // Replace Input value with the selected value
-//     autoCompleteJS2.input.value = selection;
-//     $("#btn-confirm-species").removeClass("confirm-disabled");
-//   });
-// };
+  autoCompleteJS2.input.addEventListener("selection", function (event) {
+    var feedback = event.detail;
+    var selection = feedback.selection.key;
+    // Render selected choice to selection div
+    document.getElementById(id).value = selection;
+    // Replace Input value with the selected value
+    autoCompleteJS2.input.value = selection;
+    $("#btn-confirm-species").removeClass("confirm-disabled");
+  });
+};
 
 // function createStrain(id, type, curationMode) {
 //   var autoCompleteJS4 = new autoComplete({
@@ -2680,7 +2680,7 @@ window.clearDatasetDropdowns = () => {
 //     $(tr).removeClass("grabbed");
 //     // the below functions updates the row index accordingly and update the order of subject IDs in json
 //     updateIndexForTable(document.getElementById("table-subjects"));
-//     updateOrderIDTable(document.getElementById("table-subjects"), subjectsTableData, "subjects");
+//     updateOrderIDTable(document.getElementById("table-subjects"), window.subjectsTableData, "subjects");
 //   }
 //   $(document).mousemove(move).mouseup(up);
 // });

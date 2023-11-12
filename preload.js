@@ -424,7 +424,7 @@ function resetSubjects(askToReset = true) {
 
     $("#Question-prepare-subjects-primary-import").find("input").prop("placeholder", "Browse here");
     subjectsFileData = [];
-    subjectsTableData = [];
+    window.subjectsTableData = [];
 
     $("#existing-subjects-file-destination").attr("placeholder", "Browse here");
 
@@ -488,7 +488,7 @@ function resetSubjects(askToReset = true) {
         .find("input")
         .prop("placeholder", "Browse here");
       subjectsFileData = [];
-      subjectsTableData = [];
+      window.subjectsTableData = [];
 
       $("#existing-subjects-file-destination").attr("placeholder", "Browse here");
 

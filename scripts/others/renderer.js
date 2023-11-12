@@ -1506,7 +1506,7 @@ const validateLocalProgressBar = document.getElementById("div-indetermiate-bar-v
 const validateSODAProgressBar = document.getElementById("div-indetermiate-bar-validate-soda");
 
 // Generate dataset //
-var subjectsTableData = [];
+var window.subjectsTableData = [];
 var samplesTableData = [];
 
 const newDatasetName = document.querySelector("#new-dataset-name");
@@ -1960,7 +1960,7 @@ const generateSubjectsFileHelper = async (uploadBFBoolean) => {
         filepath: subjectsDestinationPath,
         selected_account: window.defaultBfDataset,
         selected_dataset: bfdataset,
-        subjects_header_row: subjectsTableData,
+        subjects_header_row: window.subjectsTableData,
       },
       {
         params: {
@@ -2294,11 +2294,11 @@ async function loadSubjectsFileToDataframe(filePath) {
     });
 
     let res = import_subjects_file.data.subject_file_rows;
-    // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
+    // res is a dataframe, now we load it into our window.subjectsTableData in order to populate the UI
     if (res.length > 1) {
       result = transformImportedExcelFile("subjects", res);
       if (result !== false) {
-        subjectsTableData = result;
+        window.subjectsTableData = result;
       } else {
         Swal.fire({
           title: "Couldn't load existing subjects.xlsx file",
@@ -2951,7 +2951,7 @@ $("#table-subjects").mousedown(function (e) {
     $(tr).removeClass("grabbed");
     // the below functions updates the row index accordingly and update the order of subject IDs in json
     updateIndexForTable(document.getElementById("table-subjects"));
-    updateOrderIDTable(document.getElementById("table-subjects"), subjectsTableData, "subjects");
+    updateOrderIDTable(document.getElementById("table-subjects"), window.subjectsTableData, "subjects");
   }
   $(document).mousemove(move).mouseup(up);
 });

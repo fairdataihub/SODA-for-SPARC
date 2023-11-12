@@ -2467,7 +2467,7 @@ async function switchMetadataRCQuestion(metadataRCFileType) {
 }
 // 2. Subjects and Samples (MetadataSubSam)
 async function switchMetadataSubSamQuestions(metadataSubSamFile) {
-  var tableData = subjectsTableData;
+  var tableData = window.subjectsTableData;
   var singularName = "subject";
   if (metadataSubSamFile === "samples") {
     tableData = samplesTableData;
@@ -2490,7 +2490,7 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
       if (metadataSubSamFile === "samples") {
         samplesTableData = tableData;
       } else {
-        subjectsTableData = tableData;
+        window.subjectsTableData = tableData;
       }
       // delete table rows except headers
       $(`#table-${metadataSubSamFile} tr:gt(0)`).remove();

@@ -1,3 +1,5 @@
+import Swal from "sweetalert2";
+
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100))
 }
@@ -31,7 +33,7 @@ var subjectsFormDiv = document.getElementById("form-add-a-subject");
 window.guidedSubjectsFormDiv = document.getElementById("guided-form-add-a-subject");
 var samplesFormDiv = document.getElementById("form-add-a-sample");
 var guidedSamplesFormDiv = document.getElementById("guided-form-add-a-sample");
-var subjectsTableData = [];
+window.subjectsTableData = [];
 var subjectsFileData = [];
 var samplesTableData = [];
 var samplesFileData = [];
@@ -243,10 +245,10 @@ window.addSubject = (curationMode) => {
     }
 
     addSubjectIDtoDataBase(subjectID);
-    if (subjectsTableData.length !== 0) {
+    if (window.subjectsTableData.length !== 0) {
       $("#div-import-primary-folder-subjects").hide();
     }
-    if (subjectsTableData.length === 2) {
+    if (window.subjectsTableData.length === 2) {
       onboardingMetadata("subject");
     }
   }
@@ -553,7 +555,7 @@ const addSubjectIDToJSON = (subjectID) => {
 };
 
 /// function to add Species - subjects + samples
-const addSpecies = async (ev, type, curationMode) => {
+window.addSpecies = async (ev, type, curationMode) => {
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -574,7 +576,7 @@ const addSpecies = async (ev, type, curationMode) => {
     },
     didOpen: () => {
       $(".swal2-confirm").attr("id", "btn-confirm-species");
-      createSpeciesAutocomplete(`sweetalert-${type}-species`, curationMode);
+      window.createSpeciesAutocomplete(`sweetalert-${type}-species`, curationMode);
     },
     preConfirm: () => {
       if (document.getElementById(`sweetalert-${type}-species`).value === "") {
@@ -767,7 +769,7 @@ const populateRRID = (strain, type, curationMode) => {
 
 const addSubjectMetadataEntriesIntoJSON = (curationMode) => {
   let curationModeSelectorPrefix;
-  let dataLength = subjectsTableData.length;
+  let dataLength = window.subjectsTableData.length;
 
   if (curationMode === "free-form") {
     curationModeSelectorPrefix = "";
@@ -806,22 +808,22 @@ const addSubjectMetadataEntriesIntoJSON = (curationMode) => {
     }
     valuesArr.push(field.value);
   }
-  subjectsTableData[0] = headersArrSubjects;
+  window.subjectsTableData[0] = headersArrSubjects;
 
   if (valuesArr !== undefined && valuesArr.length !== 0) {
     if (curationMode === "free-form") {
-      if (subjectsTableData[dataLength] !== undefined) {
-        subjectsTableData[dataLength + 1] = valuesArr;
+      if (window.subjectsTableData[dataLength] !== undefined) {
+        window.subjectsTableData[dataLength + 1] = valuesArr;
       } else {
-        subjectsTableData[dataLength] = valuesArr;
+        window.subjectsTableData[dataLength] = valuesArr;
       }
     }
     if (curationMode === "guided") {
       let subjectID = document.getElementById("guided-bootbox-subject-id").value;
       //Overwrite existing subject data with new subject data
-      for (let i = 1; i < subjectsTableData.length; i++) {
-        if (subjectsTableData[i][0] === subjectID) {
-          subjectsTableData[i] = valuesArr;
+      for (let i = 1; i < window.subjectsTableData.length; i++) {
+        if (window.subjectsTableData[i][0] === subjectID) {
+          window.subjectsTableData[i] = valuesArr;
         }
       }
     }
@@ -1097,12 +1099,12 @@ window.populateForms = (subjectID, type, curationMode) => {
   }
 
   console.log(fieldArr)
-  console.log(subjectsTableData)
+  console.log(window.subjectsTableData)
 
-  if (subjectsTableData.length > 1) {
-    for (var i = 1; i < subjectsTableData.length; i++) {
-      if (subjectsTableData[i][0] === subjectID) {
-        infoJson = subjectsTableData[i];
+  if (window.subjectsTableData.length > 1) {
+    for (var i = 1; i < window.subjectsTableData.length; i++) {
+      if (window.subjectsTableData[i][0] === subjectID) {
+        infoJson = window.subjectsTableData[i];
         break;
       }
     }
@@ -1337,9 +1339,9 @@ const editSubject = (ev, subjectID) => {
   var currentRow = $(ev).parents()[2];
   var newID = $("#bootbox-subject-id").val();
   if (newID === subjectID) {
-    for (var i = 1; i < subjectsTableData.length; i++) {
-      if (subjectsTableData[i][0] === subjectID) {
-        subjectsTableData[i] = subjectsFileData;
+    for (var i = 1; i < window.subjectsTableData.length; i++) {
+      if (window.subjectsTableData[i][0] === subjectID) {
+        window.subjectsTableData[i] = subjectsFileData;
         break;
       }
     }
@@ -1360,9 +1362,9 @@ const editSubject = (ev, subjectID) => {
         "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id.";
       Swal.fire("Duplicate subject_id", error, "error");
     } else {
-      for (var i = 1; i < subjectsTableData.length; i++) {
-        if (subjectsTableData[i][0] === subjectID) {
-          subjectsTableData[i] = subjectsFileData;
+      for (var i = 1; i < window.subjectsTableData.length; i++) {
+        if (window.subjectsTableData[i][0] === subjectID) {
+          window.subjectsTableData[i] = subjectsFileData;
           break;
         }
       }
@@ -1441,9 +1443,9 @@ const delete_current_subject_id = (ev) => {
       updateIndexForTable(document.getElementById("table-subjects"));
       // 2. Delete from JSON
       var subjectID = $(currentRow)[0].cells[1].innerText;
-      for (var i = 1; i < subjectsTableData.length; i++) {
-        if (subjectsTableData[i][0] === subjectID) {
-          subjectsTableData.splice(i, 1);
+      for (var i = 1; i < window.subjectsTableData.length; i++) {
+        if (window.subjectsTableData[i][0] === subjectID) {
+          window.subjectsTableData.splice(i, 1);
           break;
         }
       }
@@ -1551,13 +1553,13 @@ const copy_current_subject_id = async (ev) => {
       var currentRow = $(ev).parents()[2];
       var id = currentRow.cells[1].innerText;
       // 2. append that to the end of matrix
-      for (var subArr of subjectsTableData.slice(1)) {
+      for (var subArr of window.subjectsTableData.slice(1)) {
         if (subArr[0] === id) {
-          var ind = subjectsTableData.indexOf(subArr);
-          var newArr = [...subjectsTableData[ind]];
-          subjectsTableData.push(newArr);
+          var ind = window.subjectsTableData.indexOf(subArr);
+          var newArr = [...window.subjectsTableData[ind]];
+          window.subjectsTableData.push(newArr);
           // 3. change first entry of that array
-          subjectsTableData[subjectsTableData.length - 1][0] = newSubject;
+          window.subjectsTableData[window.subjectsTableData.length - 1][0] = newSubject;
           break;
         }
       }
@@ -1676,7 +1678,7 @@ const updateOrderIDTable = (table, json, type) => {
     }
   }
   if (type === "subjects") {
-    subjectsTableData = orderedTableData;
+    window.subjectsTableData = orderedTableData;
   } else if (type === "samples") {
     samplesTableData = orderedTableData;
   }
@@ -1736,7 +1738,7 @@ const importPrimaryFolderSubjects = (folderPath) => {
     } else {
       var folders = fs.readdirSync(folderPath);
       var j = 1;
-      subjectsTableData[0] = headersArrSubjects;
+      window.subjectsTableData[0] = headersArrSubjects;
       for (var folder of folders) {
         subjectsFileData = [];
         var stats = fs.statSync(path.join(folderPath, folder));
@@ -1745,14 +1747,14 @@ const importPrimaryFolderSubjects = (folderPath) => {
           for (var i = 1; i < 27; i++) {
             subjectsFileData.push("");
           }
-          subjectsTableData[j] = subjectsFileData;
+          window.subjectsTableData[j] = subjectsFileData;
           j += 1;
         }
       }
       subjectsFileData = [];
       var subIDArray = [];
       // grab and confirm with users about their sub-ids
-      for (var index of subjectsTableData.slice(1)) {
+      for (var index of window.subjectsTableData.slice(1)) {
         subIDArray.push(index[0]);
       }
       Swal.fire({
@@ -1770,7 +1772,7 @@ const importPrimaryFolderSubjects = (folderPath) => {
         backdrop: "rgba(0,0,0, 0.4)",
       }).then((result) => {
         if (result.isConfirmed) {
-          if (subjectsTableData.length > 1) {
+          if (window.subjectsTableData.length > 1) {
             loadSubjectsDataToTable();
             $("#table-subjects").show();
             $("#div-import-primary-folder-subjects").hide();
@@ -1887,8 +1889,8 @@ const loadSubjectsDataToTable = () => {
   //   "Please add or edit your subject_id(s) in the following subjects table.";
   // delete table rows except headers
   $("#table-subjects tr:gt(0)").remove();
-  for (var i = 1; i < subjectsTableData.length; i++) {
-    var message = addNewIDToTable(subjectsTableData[i][0], null, "subjects");
+  for (var i = 1; i < window.subjectsTableData.length; i++) {
+    var message = addNewIDToTable(window.subjectsTableData[i][0], null, "subjects");
   }
   if (message !== "") {
     Swal.fire({
@@ -1961,7 +1963,7 @@ const addCustomField = async (type, curationMode) => {
   }
 
   if (curationMode == "guided") {
-    subjectsHeaderArray = subjectsTableData[0];
+    subjectsHeaderArray = window.subjectsTableData[0];
     samplesHeaderArray = samplesTableData[0];
   }
 
@@ -1989,9 +1991,9 @@ const addCustomField = async (type, curationMode) => {
     if (customField) {
       addCustomHeader("subjects", customField, curationMode);
       if (curationMode == "guided") {
-        subjectsTableData[0].push(customField);
-        for (let i = 1; i < subjectsTableData.length; i++) {
-          subjectsTableData[i].push("");
+        window.subjectsTableData[0].push(customField);
+        for (let i = 1; i < window.subjectsTableData.length; i++) {
+          window.subjectsTableData[i].push("");
         }
       }
     }
@@ -2064,7 +2066,7 @@ const addCustomHeader = (type, customHeaderValue, curationMode) => {
     if (curationMode == "free-form") {
       headersArrSubjects.push(customName);
       // add empty entries for all of the other sub_ids to normalize the size of matrix
-      for (var subId of subjectsTableData.slice(1, subjectsTableData.length)) {
+      for (var subId of window.subjectsTableData.slice(1, window.subjectsTableData.length)) {
         subId.push("");
       }
     }
@@ -2132,11 +2134,11 @@ const deleteCustomField = (ev, customField, category, curationMode) => {
     if (curationMode == "guided") {
       $(ev).parents()[1].remove();
       if (category === 0) {
-        // get the index of the custom field in the subjectsTableData
-        const indexToRemove = subjectsTableData[0].indexOf(customField);
-        // remove the element at indexToRemove for each element in subjectsTableData
-        for (let i = 0; i < subjectsTableData.length; i++) {
-          subjectsTableData[i].splice(indexToRemove, 1);
+        // get the index of the custom field in the window.subjectsTableData
+        const indexToRemove = window.subjectsTableData[0].indexOf(customField);
+        // remove the element at indexToRemove for each element in window.subjectsTableData
+        for (let i = 0; i < window.subjectsTableData.length; i++) {
+          window.subjectsTableData[i].splice(indexToRemove, 1);
         }
       }
     }
@@ -2576,7 +2578,7 @@ const checkBFImportSubjects = async () => {
       "Existing",
       Destinations.PENNSIEVE
     );
-    subjectsTableData = res;
+    window.subjectsTableData = res;
     loadDataFrametoUI("bf");
   } catch (error) {
     clientError(error);
@@ -2671,7 +2673,7 @@ const loadDataFrametoUI = (type) => {
     fieldSubjectEntries.push(field.name.toLowerCase());
   }
   // separate regular headers and custom headers
-  const lowercasedHeaders = subjectsTableData[0].map((header) => header.toLowerCase());
+  const lowercasedHeaders = window.subjectsTableData[0].map((header) => header.toLowerCase());
   const customHeaders = [];
   for (var field of lowercasedHeaders) {
     if (!fieldSubjectEntries.includes(field)) {

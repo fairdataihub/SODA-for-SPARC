@@ -737,8 +737,8 @@ const savePageChanges = async (pageBeingLeftID) => {
 
         // If the dataset has subjects, then we need to fetch the subjects metadata from Pennsieve
         if (subjects.length > 0) {
-          subjectsTableData = [];
-          //Fetch subjects and sample metadata and set subjectsTableData and sampleTableData
+          window.subjectsTableData = [];
+          //Fetch subjects and sample metadata and set window.subjectsTableData and sampleTableData
           try {
             let fieldEntries = [];
             for (const field of $("#guided-form-add-a-subject")
@@ -757,8 +757,8 @@ const savePageChanges = async (pageBeingLeftID) => {
                 },
               }
             );
-            // Set subjectsTableData as the res
-            subjectsTableData = subjectsMetadataResponse.data.subject_file_rows;
+            // Set window.subjectsTableData as the res
+            window.subjectsTableData = subjectsMetadataResponse.data.subject_file_rows;
           } catch (error) {
             const emessage = userErrorMessage(error);
             errorArray.push({
@@ -808,10 +808,10 @@ const savePageChanges = async (pageBeingLeftID) => {
             }
           }
 
-          // If subjectsTableData was found, check if the subject/sample metadata has the same structure as the
+          // If window.subjectsTableData was found, check if the subject/sample metadata has the same structure as the
           // dataset structure. If subject and sample metadata were not found, reset it and we'll add the metadata later
           const metadataSubSamStructure = createGuidedStructureFromSubSamMetadata(
-            subjectsTableData.slice(1),
+            window.subjectsTableData.slice(1),
             samplesTableData.slice(1)
           );
 
@@ -1342,7 +1342,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       const subjectsAsideItemsCount = document.querySelectorAll(
         ".subjects-metadata-aside-item"
       ).length;
-      const subjectsInTableDataCount = subjectsTableData.length - 1;
+      const subjectsInTableDataCount = window.subjectsTableData.length - 1;
       if (subjectsAsideItemsCount !== subjectsInTableDataCount) {
         let result = await Swal.fire({
           heightAuto: false,
@@ -2854,7 +2854,7 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
   //Add window.datasetStructureJSONObj to the window.sodaJSONObj and use to load the
   //window.datasetStructureJSONObj when progress resumed
   window.sodaJSONObj["saved-datset-structure-json-obj"] = window.datasetStructureJSONObj;
-  window.sodaJSONObj["subjects-table-data"] = subjectsTableData;
+  window.sodaJSONObj["subjects-table-data"] = window.subjectsTableData;
   window.sodaJSONObj["samples-table-data"] = samplesTableData;
 
   window.fs.writeFileSync(guidedFilePath, JSON.stringify(window.sodaJSONObj, null, 2));
@@ -3784,7 +3784,7 @@ let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress"
 const guidedResetProgressVariables = () => {
   window.window.sodaJSONObj = {};
   window.datasetStructureJSONObj = {};
-  window.subjectsTableData = [];
+  window.window.subjectsTableData = [];
   window.samplesTableData = [];
 };
 
@@ -3868,7 +3868,7 @@ const guidedShowTreePreview = (new_dataset_name, targetElement) => {
   }
 
   //Add the Subjects metadata file to the preview if at least one subject has been added
-  if (subjectsTableData.length > 0) {
+  if (window.subjectsTableData.length > 0) {
     dsJsonObjCopy["files"]["subjects.xlsx"] = {
       action: ["new"],
       path: "",
@@ -7566,7 +7566,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     attachGuidedMethodsToSodaJSONObj();
 
     window.datasetStructureJSONObj = window.sodaJSONObj["saved-datset-structure-json-obj"];
-    subjectsTableData = window.sodaJSONObj["subjects-table-data"];
+    window.subjectsTableData = window.sodaJSONObj["subjects-table-data"];
     samplesTableData = window.sodaJSONObj["samples-table-data"];
 
     //patches the sodajsonobj if it was created in a previous version of guided mode
@@ -7797,8 +7797,8 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
       delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
 
-      //Rename the pool in the subjectsTableData
-      for (const subjectDataArray of subjectsTableData.slice(1)) {
+      //Rename the pool in the window.subjectsTableData
+      for (const subjectDataArray of window.subjectsTableData.slice(1)) {
         if (subjectDataArray[1] === prevPoolName) {
           subjectDataArray[1] = newPoolName;
         }
@@ -7894,9 +7894,9 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           ];
         }
         //Update the subjects name in the subjects metadata if it exists
-        for (let i = 1; i < subjectsTableData.length; i++) {
-          if (subjectsTableData[i][0] === prevSubjectName) {
-            subjectsTableData[i][0] = newSubjectName;
+        for (let i = 1; i < window.subjectsTableData.length; i++) {
+          if (window.subjectsTableData[i][0] === prevSubjectName) {
+            window.subjectsTableData[i][0] = newSubjectName;
           }
         }
 
@@ -8116,9 +8116,9 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         }
       }
     }
-    for (let i = 1; i < subjectsTableData.length; i++) {
-      if (subjectsTableData[i][0] === subjectName) {
-        subjectsTableData.splice(i, 1);
+    for (let i = 1; i < window.subjectsTableData.length; i++) {
+      if (window.subjectsTableData[i][0] === subjectName) {
+        window.subjectsTableData.splice(i, 1);
       }
     }
   };
@@ -8247,8 +8247,8 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       }
     }
 
-    //Add the pool name to the subjectsTableData if if an entry exists
-    for (const subjectDataArray of subjectsTableData.slice(1)) {
+    //Add the pool name to the window.subjectsTableData if if an entry exists
+    for (const subjectDataArray of window.subjectsTableData.slice(1)) {
       if (subjectDataArray[0] === subjectName) {
         subjectDataArray[1] = poolName;
       }
@@ -8284,10 +8284,10 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       }
     }
 
-    //Remove the pool from the subject's entry in the subjectsTableData
-    for (let i = 1; i < subjectsTableData.length; i++) {
-      if (subjectsTableData[i][0] === subjectName) {
-        subjectsTableData[i][1] = "";
+    //Remove the pool from the subject's entry in the window.subjectsTableData
+    for (let i = 1; i < window.subjectsTableData.length; i++) {
+      if (window.subjectsTableData[i][0] === subjectName) {
+        window.subjectsTableData[i][1] = "";
       }
     }
 
@@ -10059,10 +10059,10 @@ const renderSubjectSampleAdditionTable = (subject) => {
 };
 
 const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
-  //loop through all subjectsTableData elements besides the first one
-  for (let i = 0; i < subjectsTableData.length; i++) {
+  //loop through all window.subjectsTableData elements besides the first one
+  for (let i = 0; i < window.subjectsTableData.length; i++) {
     //check through elements of tableData to find a subject ID match
-    if (subjectsTableData[i][0] === subjectMetadataId) {
+    if (window.subjectsTableData[i][0] === subjectMetadataId) {
       //if the id matches, load the metadata into the form
       window.populateForms(subjectMetadataId, "", "guided");
       return;
@@ -10140,8 +10140,8 @@ const openCopySubjectMetadataPopup = async () => {
   let copyFromMetadata = ``;
   let copyToMetadata = ``;
 
-  for (let i = 1; i < subjectsTableData.length; i++) {
-    const subjectID = subjectsTableData[i][0];
+  for (let i = 1; i < window.subjectsTableData.length; i++) {
+    const subjectID = window.subjectsTableData[i][0];
     copyFromMetadata += `
       <div class="field text-left">
         <div class="ui radio checkbox">
@@ -10196,20 +10196,20 @@ const openCopySubjectMetadataPopup = async () => {
           selectedCopyToSubjects.push($(this).val());
         });
         let copyFromSubjectData = [];
-        for (var i = 1; i < subjectsTableData.length; i++) {
-          if (subjectsTableData[i][0] === selectedCopyFromSubject) {
+        for (var i = 1; i < window.subjectsTableData.length; i++) {
+          if (window.subjectsTableData[i][0] === selectedCopyFromSubject) {
             //copy all elements from matching array except the first two
-            copyFromSubjectData = subjectsTableData[i].slice(2);
+            copyFromSubjectData = window.subjectsTableData[i].slice(2);
           }
         }
         for (subject of selectedCopyToSubjects) {
-          //loop through all subjectsTableData elements besides the first one
-          for (let i = 1; i < subjectsTableData.length; i++) {
+          //loop through all window.subjectsTableData elements besides the first one
+          for (let i = 1; i < window.subjectsTableData.length; i++) {
             //check through elements of tableData to find a subject ID match
-            if (subjectsTableData[i][0] === subject) {
-              subjectsTableData[i] = [
-                subjectsTableData[i][0],
-                subjectsTableData[i][1],
+            if (window.subjectsTableData[i][0] === subject) {
+              window.subjectsTableData[i] = [
+                window.subjectsTableData[i][0],
+                window.subjectsTableData[i][1],
                 ...copyFromSubjectData,
               ];
             }
@@ -11782,8 +11782,8 @@ const renderSubjectsMetadataAsideItems = async () => {
     }
   );
 
-  if (subjectsTableData.length == 0) {
-    subjectsTableData[0] = subjectsFormNames;
+  if (window.subjectsTableData.length == 0) {
+    window.subjectsTableData[0] = subjectsFormNames;
     for (const subject of subjects) {
       const subjectDataArray = [];
       subjectDataArray.push(subject.subjectName);
@@ -11792,14 +11792,14 @@ const renderSubjectsMetadataAsideItems = async () => {
       for (let i = 0; i < subjectsFormNames.length - 2; i++) {
         subjectDataArray.push("");
       }
-      subjectsTableData.push(subjectDataArray);
+      window.subjectsTableData.push(subjectDataArray);
     }
   } else {
     //Add subjects that have not yet been added to the table to the table
     for (const subject of subjects) {
       let subjectAlreadyInTable = false;
-      for (let i = 0; i < subjectsTableData.length; i++) {
-        if (subjectsTableData[i][0] == subject.subjectName) {
+      for (let i = 0; i < window.subjectsTableData.length; i++) {
+        if (window.subjectsTableData[i][0] == subject.subjectName) {
           subjectAlreadyInTable = true;
         }
       }
@@ -11807,33 +11807,33 @@ const renderSubjectsMetadataAsideItems = async () => {
         const subjectDataArray = [];
         subjectDataArray.push(subject.subjectName);
         subjectDataArray.push(subject.poolName ? subject.poolName : "");
-        for (let i = 0; i < subjectsTableData[0].length - 2; i++) {
+        for (let i = 0; i < window.subjectsTableData[0].length - 2; i++) {
           subjectDataArray.push("");
         }
-        subjectsTableData.push(subjectDataArray);
+        window.subjectsTableData.push(subjectDataArray);
       }
     }
 
     // If the subject is in the table but not in the subjects array, remove it
     const subjectNames = subjects.map((subject) => subject.subjectName);
-    for (let i = 1; i < subjectsTableData.length; i++) {
-      if (!subjectNames.includes(subjectsTableData[i][0])) {
-        subjectsTableData.splice(i, 1);
+    for (let i = 1; i < window.subjectsTableData.length; i++) {
+      if (!subjectNames.includes(window.subjectsTableData[i][0])) {
+        window.subjectsTableData.splice(i, 1);
       }
     }
 
-    //If custom fields have been added to the subjectsTableData, create a field for each custom field
+    //If custom fields have been added to the window.subjectsTableData, create a field for each custom field
     //added
     // There are 27 standard fields for subjects so if there are more headers than that, there exists additional information
-    if (subjectsTableData[0].length > 27) {
-      for (let i = 27; i < subjectsTableData[0].length; i++) {
+    if (window.subjectsTableData[0].length > 27) {
+      for (let i = 27; i < window.subjectsTableData[0].length; i++) {
         if (
           !subjectsFormNames.includes(
-            subjectsTableData[0][i].charAt(0).toUpperCase() + subjectsTableData[0][i].slice(1)
+            window.subjectsTableData[0][i].charAt(0).toUpperCase() + window.subjectsTableData[0][i].slice(1)
           ) ||
-          !subjectsFormNames.includes(subjectsTableData[0][i])
+          !subjectsFormNames.includes(window.subjectsTableData[0][i])
         ) {
-          addCustomHeader("subjects", subjectsTableData[0][i], "guided");
+          addCustomHeader("subjects", window.subjectsTableData[0][i], "guided");
         }
       }
     }

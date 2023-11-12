@@ -490,7 +490,7 @@ const confirm_click_function = () => {
 
 //     $('#Question-prepare-subjects-primary-import').find('input').prop('placeholder', 'Browse here')
 //     subjectsFileData = []
-//     subjectsTableData = []
+//     window.subjectsTableData = []
 
 //     $('#existing-subjects-file-destination').attr('placeholder', 'Browse here')
 
@@ -554,7 +554,7 @@ const confirm_click_function = () => {
 //         .find('input')
 //         .prop('placeholder', 'Browse here')
 //       subjectsFileData = []
-//       subjectsTableData = []
+//       window.subjectsTableData = []
 
 //       $('#existing-subjects-file-destination').attr('placeholder', 'Browse here')
 
