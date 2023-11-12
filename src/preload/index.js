@@ -89,6 +89,12 @@ if (process.contextIsolated) {
       readFile: async (filepath, encoding) => {
         let result = await fs.readFile(filepath, encoding)
         return JSON.parse(result)
+      },
+      fileSizeSync: (filepath) => {
+        // use stat library to get the size of the directory
+        const fileStats = fs.statSync(filepath);
+        // return the size of the file 
+        return fileStats.size;
       }
     })
     contextBridge.exposeInMainWorld('process', {

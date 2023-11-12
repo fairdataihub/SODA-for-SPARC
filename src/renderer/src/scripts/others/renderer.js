@@ -29,7 +29,7 @@ import diskCheck from "check-disk-space";
 import validator from "validator";
 import doiRegex from "doi-regex";
 import lottie from "lottie-web";
-import {dragDrop} from '../../assets/lotties/lotties'
+import {dragDrop, successCheck} from '../../assets/lotties/lotties'
 import select2 from "select2"; // TODO: select2()
 select2()
 import autoComplete from "@tarekraafat/autocomplete.js/dist/autoComplete.min.js"
@@ -7932,121 +7932,121 @@ const manageDesc = (ev) => {
 //   return final_message;
 // }
 
-// var metadataIndividualFile = "";
-// var metadataAllowedExtensions = [];
-// var metadataParaElement = "";
-// var metadataCurationMode = "";
+var metadataIndividualFile = "";
+var metadataAllowedExtensions = [];
+var metadataParaElement = "";
+var metadataCurationMode = "";
 
-// function importMetadataFiles(ev, metadataFile, extensionList, paraEle, curationMode) {
-//   document.getElementById(paraEle).innerHTML = "";
-//   metadataIndividualFile = metadataFile;
-//   metadataAllowedExtensions = extensionList;
-//   metadataParaElement = paraEle;
-//   metadataCurationMode = curationMode;
-//   ipcRenderer.send("open-file-dialog-metadata-curate");
-// }
+window.importMetadataFiles = (ev, metadataFile, extensionList, paraEle, curationMode) => {
+  document.getElementById(paraEle).innerHTML = "";
+  metadataIndividualFile = metadataFile;
+  metadataAllowedExtensions = extensionList;
+  metadataParaElement = paraEle;
+  metadataCurationMode = curationMode;
+  window.electron.ipcRenderer.send("open-file-dialog-metadata-curate");
+}
 
-// function importPennsieveMetadataFiles(ev, metadataFile, extensionList, paraEle) {
-//   extensionList.forEach((file_type) => {
-//     file_name = metadataFile + file_type;
-//     if (
-//       file_name in sodaJSONObj["metadata-files"] &&
-//       sodaJSONObj["metadata-files"][file_name]["type"] != "bf"
-//     ) {
-//       delete sodaJSONObj["metadata-files"][file_name];
-//     }
-//     deleted_file_name = file_name + "-DELETED";
-//     if (
-//       deleted_file_name in sodaJSONObj["metadata-files"] &&
-//       sodaJSONObj["metadata-files"][deleted_file_name]["type"] === "bf"
-//     ) {
-//       // update Json object with the restored object
-//       let index = sodaJSONObj["metadata-files"][deleted_file_name]["action"].indexOf("deleted");
-//       sodaJSONObj["metadata-files"][deleted_file_name]["action"].splice(index, 1);
-//       let deleted_file_name_new_key = deleted_file_name.substring(
-//         0,
-//         deleted_file_name.lastIndexOf("-")
-//       );
-//       sodaJSONObj["metadata-files"][deleted_file_name_new_key] =
-//         sodaJSONObj["metadata-files"][deleted_file_name];
-//       delete sodaJSONObj["metadata-files"][deleted_file_name];
-//     }
-//   });
-//   populate_existing_metadata(sodaJSONObj);
-// }
+function importPennsieveMetadataFiles(ev, metadataFile, extensionList, paraEle) {
+  extensionList.forEach((file_type) => {
+    file_name = metadataFile + file_type;
+    if (
+      file_name in window.sodaJSONObj["metadata-files"] &&
+      window.sodaJSONObj["metadata-files"][file_name]["type"] != "bf"
+    ) {
+      delete window.sodaJSONObj["metadata-files"][file_name];
+    }
+    deleted_file_name = file_name + "-DELETED";
+    if (
+      deleted_file_name in window.sodaJSONObj["metadata-files"] &&
+      window.sodaJSONObj["metadata-files"][deleted_file_name]["type"] === "bf"
+    ) {
+      // update Json object with the restored object
+      let index = window.sodaJSONObj["metadata-files"][deleted_file_name]["action"].indexOf("deleted");
+      window.sodaJSONObj["metadata-files"][deleted_file_name]["action"].splice(index, 1);
+      let deleted_file_name_new_key = deleted_file_name.substring(
+        0,
+        deleted_file_name.lastIndexOf("-")
+      );
+      window.sodaJSONObj["metadata-files"][deleted_file_name_new_key] =
+        window.sodaJSONObj["metadata-files"][deleted_file_name];
+      delete window.sodaJSONObj["metadata-files"][deleted_file_name];
+    }
+  });
+  populate_existing_metadata(window.sodaJSONObj);
+}
 
-// ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
-//   if (mypath.length > 0) {
-//     var dotCount = window.path.basename(mypath[0]).trim().split(".").length - 1;
-//     if (dotCount === 1) {
-//       var metadataWithoutExtension = path
-//         .basename(mypath[0])
-//         .slice(0, window.path.basename(mypath[0]).indexOf("."));
-//       var extension = window.path.basename(mypath[0]).slice(window.path.basename(mypath[0]).indexOf("."));
+window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
+  if (mypath.length > 0) {
+    var dotCount = window.path.basename(mypath[0]).trim().split(".").length - 1;
+    if (dotCount === 1) {
+      var metadataWithoutExtension = window.path
+        .basename(mypath[0])
+        .slice(0, window.path.basename(mypath[0]).indexOf("."));
+      var extension = window.path.basename(mypath[0]).slice(window.path.basename(mypath[0]).indexOf("."));
 
-//       let file_size = 0;
+      let file_size = 0;
 
-//       try {
-//         if (fs.existsSync(mypath[0])) {
-//           let stats = fs.statSync(mypath[0]);
-//           file_size = stats.size;
-//         }
-//       } catch (err) {
-//         console.error(err);
-//         document.getElementById(metadataParaElement).innerHTML =
-//           "<span style='color:red'>Your SPARC metadata file does not exist or is unreadable. Please verify that you are importing the correct metadata file from your system. </span>";
+      try {
+        if (window.fs.existsSync(mypath[0])) {
+          let stats = window.fs.fileSizeSync(mypath[0]);
+          file_size = stats.size;
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById(metadataParaElement).innerHTML =
+          "<span style='color:red'>Your SPARC metadata file does not exist or is unreadable. Please verify that you are importing the correct metadata file from your system. </span>";
 
-//         return;
-//       }
+        return;
+      }
 
-//       if (file_size == 0) {
-//         document.getElementById(metadataParaElement).innerHTML =
-//           "<span style='color:red'>Your SPARC metadata file is empty! Please verify that you are importing the correct metadata file from your system.</span>";
+      if (file_size == 0) {
+        document.getElementById(metadataParaElement).innerHTML =
+          "<span style='color:red'>Your SPARC metadata file is empty! Please verify that you are importing the correct metadata file from your system.</span>";
 
-//         return;
-//       }
-//       if (metadataWithoutExtension === metadataIndividualFile) {
-//         if (metadataAllowedExtensions.includes(extension)) {
-//           document.getElementById(metadataParaElement).innerHTML = mypath[0];
-//           if (metadataCurationMode === "free-form") {
-//             $($("#" + metadataParaElement).parents()[1])
-//               .find(".div-metadata-confirm")
-//               .css("display", "flex");
-//             $($("#" + metadataParaElement).parents()[1])
-//               .find(".div-metadata-go-back")
-//               .css("display", "none");
-//           }
-//           if (metadataCurationMode === "guided") {
-//             //Add success checkmark lottie animation inside metadata card
-//             const dragDropContainer = document.getElementById(metadataParaElement).parentElement;
-//             //get the value of data-code-metadata-file-type from dragDropContainer
-//             const metadataFileType = dragDropContainer.dataset.codeMetadataFileType;
-//             //save the path of the metadata file to the json object
-//             sodaJSONObj["dataset-metadata"]["code-metadata"][metadataFileType] = mypath[0];
+        return;
+      }
+      if (metadataWithoutExtension === metadataIndividualFile) {
+        if (metadataAllowedExtensions.includes(extension)) {
+          document.getElementById(metadataParaElement).innerHTML = mypath[0];
+          if (metadataCurationMode === "free-form") {
+            $($("#" + metadataParaElement).parents()[1])
+              .find(".div-metadata-confirm")
+              .css("display", "flex");
+            $($("#" + metadataParaElement).parents()[1])
+              .find(".div-metadata-go-back")
+              .css("display", "none");
+          }
+          if (metadataCurationMode === "guided") {
+            //Add success checkmark lottie animation inside metadata card
+            const dragDropContainer = document.getElementById(metadataParaElement).parentElement;
+            //get the value of data-code-metadata-file-type from dragDropContainer
+            const metadataFileType = dragDropContainer.dataset.codeMetadataFileType;
+            //save the path of the metadata file to the json object
+            sodaJSONObj["dataset-metadata"]["code-metadata"][metadataFileType] = mypath[0];
 
-//             const lottieContainer = dragDropContainer.querySelector(
-//               ".code-metadata-lottie-container"
-//             );
-//             lottieContainer.innerHTML = "";
-//             lottie.loadAnimation({
-//               container: lottieContainer,
-//               animationData: successCheck,
-//               renderer: "svg",
-//               loop: false,
-//               autoplay: true,
-//             });
-//           }
-//         } else {
-//           document.getElementById(metadataParaElement).innerHTML =
-//             "<span style='color:red'>Your SPARC metadata file must be in one of the formats listed above!</span>";
-//         }
-//       } else {
-//         document.getElementById(metadataParaElement).innerHTML =
-//           "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
-//       }
-//     }
-//   }
-// });
+            const lottieContainer = dragDropContainer.querySelector(
+              ".code-metadata-lottie-container"
+            );
+            lottieContainer.innerHTML = "";
+            lottie.loadAnimation({
+              container: lottieContainer,
+              animationData: successCheck,
+              renderer: "svg",
+              loop: false,
+              autoplay: true,
+            });
+          }
+        } else {
+          document.getElementById(metadataParaElement).innerHTML =
+            "<span style='color:red'>Your SPARC metadata file must be in one of the formats listed above!</span>";
+        }
+      } else {
+        document.getElementById(metadataParaElement).innerHTML =
+          "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
+      }
+    }
+  }
+});
 
 // $("#button-generate-manifest-locally").click(() => {
 //   ipcRenderer.send("open-folder-dialog-save-manifest-local");

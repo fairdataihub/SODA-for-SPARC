@@ -8196,7 +8196,7 @@ var metadataAllowedExtensions = [];
 var metadataParaElement = "";
 var metadataCurationMode = "";
 
-function importMetadataFiles(ev, metadataFile, extensionList, paraEle, curationMode) {
+function window.importMetadataFiles(ev, metadataFile, extensionList, paraEle, curationMode) {
   document.getElementById(paraEle).innerHTML = "";
   metadataIndividualFile = metadataFile;
   metadataAllowedExtensions = extensionList;

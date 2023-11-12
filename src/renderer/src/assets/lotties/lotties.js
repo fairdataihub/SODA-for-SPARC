@@ -927,7 +927,7 @@ export const dragDrop = {
   markers: [],
 };
 
-const successCheck = {
+export const successCheck = {
   v: "4.8.0",
   meta: { g: "LottieFiles AE 1.0.0", a: "", k: "", d: "", tc: "" },
   fr: 60,
