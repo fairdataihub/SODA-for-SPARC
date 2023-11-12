@@ -8668,7 +8668,7 @@ const editContributorByOrcid = (
   }
 };
 
-const deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
+window.deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
   const contributorField = clickedDelContribuButton.parentElement.parentElement;
   const contributorsBeforeDelete =
     window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
@@ -9359,7 +9359,7 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
         <button
           type="button"
           class="btn btn-danger btn-sm" 
-          onclick="deleteContributor(this, '${contributorOrcid}')"
+          onclick="window.deleteContributor(this, '${contributorOrcid}')"
         >
           Delete
         </button>
