@@ -46,6 +46,10 @@ import 'notyf/notyf.min.css'; // for React, Vue and Svelte
 import 'jstree/dist/themes/default/style.css';
 import 'fomantic-ui/dist/semantic.min.css';
 import '@yaireo/tagify/dist/tagify.css'
+import "@tarekraafat/autocomplete.js/dist/css/autoComplete.01.css";
+import "@tarekraafat/autocomplete.js/dist/css/autoComplete.02.css";
+import "@tarekraafat/autocomplete.js/dist/css/autoComplete.css";
+
 
 
 

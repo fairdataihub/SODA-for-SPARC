@@ -32,6 +32,7 @@ import lottie from "lottie-web";
 import {dragDrop} from '../../assets/lotties/lotties'
 import select2 from "select2"; // TODO: select2()
 select2()
+import autoComplete from "@tarekraafat/autocomplete.js/dist/autoComplete.min.js"
 import DragSort from "@yaireo/dragsort";
 import axios from "axios";
 import Swal from "sweetalert2";
