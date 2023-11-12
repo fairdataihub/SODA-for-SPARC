@@ -1507,7 +1507,7 @@ const validateSODAProgressBar = document.getElementById("div-indetermiate-bar-va
 
 // Generate dataset //
 var window.subjectsTableData = [];
-var samplesTableData = [];
+var window.samplesTableData = [];
 
 const newDatasetName = document.querySelector("#new-dataset-name");
 const manifestStatus = document.querySelector("#generate-manifest");
@@ -2167,7 +2167,7 @@ const generateSamplesFileHelper = async (uploadBFBoolean) => {
         filepath: samplesDestinationPath,
         selected_account: window.defaultBfDataset,
         selected_dataset: $("#bf_dataset_load_samples").text().trim(),
-        samples_str: samplesTableData,
+        samples_str: window.samplesTableData,
       },
       {
         params: {
@@ -2377,11 +2377,11 @@ async function loadSamplesFileToDataframe(filePath) {
     });
 
     let res = importSamplesResponse.data.sample_file_rows;
-    // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
+    // res is a dataframe, now we load it into our window.samplesTableData in order to populate the UI
     if (res.length > 1) {
       result = transformImportedExcelFile("samples", res);
       if (result !== false) {
-        samplesTableData = result;
+        window.samplesTableData = result;
       } else {
         Swal.fire({
           title: "Couldn't load existing samples.xlsx file",
@@ -2993,7 +2993,7 @@ $("#table-samples").mousedown(function (e) {
     $(tr).removeClass("grabbed");
     // the below functions updates the row index accordingly and update the order of sample IDs in json
     updateIndexForTable(document.getElementById("table-samples"));
-    updateOrderIDTable(document.getElementById("table-samples"), samplesTableData, "samples");
+    updateOrderIDTable(document.getElementById("table-samples"), window.samplesTableData, "samples");
   }
   $(document).mousemove(move).mouseup(up);
 });

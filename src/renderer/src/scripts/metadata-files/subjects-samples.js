@@ -36,7 +36,7 @@ var samplesFormDiv = document.getElementById("form-add-a-sample");
 window.guidedSamplesFormDiv = document.getElementById("guided-form-add-a-sample");
 window.subjectsTableData = [];
 var subjectsFileData = [];
-var samplesTableData = [];
+window.samplesTableData = [];
 var samplesFileData = [];
 var headersArrSubjects = [];
 var headersArrSamples = [];
@@ -98,7 +98,7 @@ const promptImportPrevInfoSamples = (arr1, arr2) => {
   }).then((result) => {
     if (result.isConfirmed) {
       if ($("#previous-subject").val() !== "Select" && $("#previous-sample").val() !== "Select") {
-        populateFormsSamples(prevSubID, prevSamID, "import", "free-form");
+        window.populateFormsSamples(prevSubID, prevSamID, "import", "free-form");
       }
     } else {
       hideForm("sample");
@@ -193,7 +193,7 @@ const displayPreviousSample = () => {
     prevSubID = $("#previous-subject").val();
     // load previous sample ids accordingly for a particular subject
     var prevSampleArr = [];
-    for (var subject of samplesTableData.slice(1)) {
+    for (var subject of window.samplesTableData.slice(1)) {
       if (subject[0] === prevSubID) {
         prevSampleArr.push(subject[1]);
       }
@@ -231,7 +231,7 @@ window.addSubject = (curationMode) => {
       return;
     }
 
-    const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+    const subjectNameIsValid = window.evaluateStringAgainstSdsRequirements(
       subjectID,
       "string-adheres-to-identifier-conventions"
     );
@@ -259,7 +259,7 @@ window.addSubject = (curationMode) => {
 };
 
 // for "Done adding" button - samples
-const addSample = (curationMode) => {
+window.addSample = (curationMode) => {
   let sampleID = "";
   let subjectID = "";
   if (curationMode === "free-form") {
@@ -274,7 +274,7 @@ const addSample = (curationMode) => {
       return;
     }
 
-    const sampleNameIsValid = evaluateStringAgainstSdsRequirements(
+    const sampleNameIsValid = window.evaluateStringAgainstSdsRequirements(
       sampleID,
       "string-adheres-to-identifier-conventions"
     );
@@ -286,7 +286,7 @@ const addSample = (curationMode) => {
       });
       return;
     }
-    const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+    const subjectNameIsValid = window.evaluateStringAgainstSdsRequirements(
       subjectID,
       "string-adheres-to-identifier-conventions"
     );
@@ -300,10 +300,10 @@ const addSample = (curationMode) => {
     }
 
     addSampleIDtoDataBase(sampleID, subjectID);
-    if (samplesTableData.length !== 0) {
+    if (window.samplesTableData.length !== 0) {
       $("#div-import-primary-folder-samples").hide();
     }
-    if (samplesTableData.length === 2) {
+    if (window.samplesTableData.length === 2) {
       onboardingMetadata("sample");
     }
   }
@@ -356,7 +356,7 @@ const validateSubSamID = (ev) => {
   var id = $(ev).prop("id");
   var value = $("#" + id).val();
   //Validate TextBox value against the Regex.
-  var isValid = evaluateStringAgainstSdsRequirements(
+  var isValid = window.evaluateStringAgainstSdsRequirements(
     value,
     "string-adheres-to-identifier-conventions"
   );
@@ -839,7 +839,7 @@ const addSubjectMetadataEntriesIntoJSON = (curationMode) => {
 
 const addSampleMetadataEntriesIntoJSON = (curationMode) => {
   let curationModeSelectorPrefix = "";
-  var dataLength = samplesTableData.length;
+  var dataLength = window.samplesTableData.length;
   if (curationMode === "free-form") {
     curationModeSelectorPrefix = "";
   }
@@ -869,22 +869,22 @@ const addSampleMetadataEntriesIntoJSON = (curationMode) => {
     }
     valuesArr.push(field.value);
   }
-  samplesTableData[0] = headersArrSamples;
+  window.samplesTableData[0] = headersArrSamples;
   if (valuesArr !== undefined && valuesArr.length !== 0) {
     if (curationMode === "free-form") {
-      if (samplesTableData[dataLength] !== undefined) {
-        samplesTableData[dataLength + 1] = valuesArr;
+      if (window.samplesTableData[dataLength] !== undefined) {
+        window.samplesTableData[dataLength + 1] = valuesArr;
       } else {
-        samplesTableData[dataLength] = valuesArr;
+        window.samplesTableData[dataLength] = valuesArr;
       }
     }
   }
   if (curationMode === "guided") {
     let subjectID = document.getElementById("guided-bootbox-subject-id-samples").value;
     let sampleID = document.getElementById("guided-bootbox-sample-id").value;
-    for (let i = 1; i < samplesTableData.length; i++) {
-      if (samplesTableData[i][0] === subjectID && samplesTableData[i][1] === sampleID) {
-        samplesTableData[i] = valuesArr;
+    for (let i = 1; i < window.samplesTableData.length; i++) {
+      if (window.samplesTableData[i][0] === subjectID && window.samplesTableData[i][1] === sampleID) {
+        window.samplesTableData[i] = valuesArr;
         break;
       }
     }
@@ -1193,7 +1193,7 @@ window.populateForms = (subjectID, type, curationMode) => {
   }
 };
 
-const populateFormsSamples = (subjectID, sampleID, type, curationMode) => {
+window.populateFormsSamples = (subjectID, sampleID, type, curationMode) => {
   //Initialize variables shared between different curation modes and set them
   //based on curationMode passed in as parameter
   let fieldArr;
@@ -1208,10 +1208,10 @@ const populateFormsSamples = (subjectID, sampleID, type, curationMode) => {
     curationModeSelectorPrefix = "guided-";
     fieldArr = $(window.guidedSamplesFormDiv).children().find(".samples-form-entry");
   }
-  if (samplesTableData.length > 1) {
-    for (var i = 1; i < samplesTableData.length; i++) {
-      if (samplesTableData[i][0] === subjectID && samplesTableData[i][1] === sampleID) {
-        infoJson = samplesTableData[i];
+  if (window.samplesTableData.length > 1) {
+    for (var i = 1; i < window.samplesTableData.length; i++) {
+      if (window.samplesTableData[i][0] === subjectID && window.samplesTableData[i][1] === sampleID) {
+        infoJson = window.samplesTableData[i];
         break;
       }
     }
@@ -1301,7 +1301,7 @@ const loadSampleInformation = (ev, subjectID, sampleID) => {
   $("#btn-edit-sample").css("display", "inline-block");
   $("#btn-add-sample").css("display", "none");
   window.clearAllSubjectFormFields(samplesFormDiv);
-  populateFormsSamples(subjectID, sampleID, "", "free-form");
+  window.populateFormsSamples(subjectID, sampleID, "", "free-form");
   $("#btn-edit-sample").unbind("click");
   $("#btn-edit-sample").click(function () {
     editSample(ev, sampleID);
@@ -1387,9 +1387,9 @@ const editSample = (ev, sampleID) => {
   var currentRow = $(ev).parents()[2];
   var newID = $("#bootbox-sample-id").val();
   if (newID === sampleID) {
-    for (var i = 1; i < samplesTableData.length; i++) {
-      if (samplesTableData[i][1] === sampleID) {
-        samplesTableData[i] = samplesFileData;
+    for (var i = 1; i < window.samplesTableData.length; i++) {
+      if (window.samplesTableData[i][1] === sampleID) {
+        window.samplesTableData[i] = samplesFileData;
         break;
       }
     }
@@ -1411,9 +1411,9 @@ const editSample = (ev, sampleID) => {
         "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id.";
       Swal.fire("Duplicate sample_id", error, "error");
     } else {
-      for (var i = 1; i < samplesTableData.length; i++) {
-        if (samplesTableData[i][1] === sampleID) {
-          samplesTableData[i] = samplesFileData;
+      for (var i = 1; i < window.samplesTableData.length; i++) {
+        if (window.samplesTableData[i][1] === sampleID) {
+          window.samplesTableData[i] = samplesFileData;
           break;
         }
       }
@@ -1474,9 +1474,9 @@ const delete_current_sample_id = (ev) => {
       updateIndexForTable(document.getElementById("table-samples"));
       // 2. Delete from JSON
       var sampleId = $(currentRow)[0].cells[1].innerText;
-      for (var i = 1; i < samplesTableData.length; i++) {
-        if (samplesTableData[i][1] === sampleId) {
-          samplesTableData.splice(i, 1);
+      for (var i = 1; i < window.samplesTableData.length; i++) {
+        if (window.samplesTableData[i][1] === sampleId) {
+          window.samplesTableData.splice(i, 1);
           break;
         }
       }
@@ -1598,14 +1598,14 @@ const copy_current_sample_id = async (ev) => {
       var id1 = currentRow.cells[1].innerText;
       var id2 = currentRow.cells[2].innerText;
       // 2. append that to the end of matrix
-      for (var samArr of samplesTableData.slice(1)) {
+      for (var samArr of window.samplesTableData.slice(1)) {
         if (samArr[0] === id1 && samArr[1] === id2) {
-          var ind = samplesTableData.indexOf(samArr);
-          var newArr = [...samplesTableData[ind]];
-          samplesTableData.push(newArr);
+          var ind = window.samplesTableData.indexOf(samArr);
+          var newArr = [...window.samplesTableData[ind]];
+          window.samplesTableData.push(newArr);
           // 3. change first entry of that array
-          samplesTableData[samplesTableData.length - 1][0] = newSubSam[0];
-          samplesTableData[samplesTableData.length - 1][1] = newSubSam[1];
+          window.samplesTableData[window.samplesTableData.length - 1][0] = newSubSam[0];
+          window.samplesTableData[window.samplesTableData.length - 1][1] = newSubSam[1];
           break;
         }
       }
@@ -1681,7 +1681,7 @@ const updateOrderIDTable = (table, json, type) => {
   if (type === "subjects") {
     window.subjectsTableData = orderedTableData;
   } else if (type === "samples") {
-    samplesTableData = orderedTableData;
+    window.samplesTableData = orderedTableData;
   }
 };
 
@@ -1819,7 +1819,7 @@ const importPrimaryFolderSamples = (folderPath) => {
     } else {
       var folders = fs.readdirSync(folderPath);
       var j = 1;
-      samplesTableData[0] = headersArrSamples;
+      window.samplesTableData[0] = headersArrSamples;
       for (var folder of folders) {
         var statsSubjectID = fs.statSync(path.join(folderPath, folder));
         if (statsSubjectID.isDirectory()) {
@@ -1833,7 +1833,7 @@ const importPrimaryFolderSamples = (folderPath) => {
               for (var i = 2; i < 18; i++) {
                 samplesFileData.push("");
               }
-              samplesTableData[j] = samplesFileData;
+              window.samplesTableData[j] = samplesFileData;
               j += 1;
             }
           }
@@ -1843,7 +1843,7 @@ const importPrimaryFolderSamples = (folderPath) => {
       var subIDArray = [];
       var samIDArray = [];
       // grab and confirm with users about their sub-ids
-      for (var index of samplesTableData.slice(1)) {
+      for (var index of window.samplesTableData.slice(1)) {
         subIDArray.push(index[0]);
         samIDArray.push(index[1]);
       }
@@ -1864,7 +1864,7 @@ const importPrimaryFolderSamples = (folderPath) => {
         backdrop: "rgba(0,0,0, 0.4)",
       }).then((result) => {
         if (result.isConfirmed) {
-          if (samplesTableData.length > 1) {
+          if (window.samplesTableData.length > 1) {
             loadSamplesDataToTable();
             $("#table-samples").show();
             $("#div-import-primary-folder-samples").hide();
@@ -1928,8 +1928,8 @@ const loadSubjectsDataToTable = () => {
 const loadSamplesDataToTable = () => {
   // delete table rows except headers
   $("#table-samples tr:gt(0)").remove();
-  for (var i = 1; i < samplesTableData.length; i++) {
-    var message = addNewIDToTable(samplesTableData[i][1], samplesTableData[i][0], "samples");
+  for (var i = 1; i < window.samplesTableData.length; i++) {
+    var message = addNewIDToTable(window.samplesTableData[i][1], window.samplesTableData[i][0], "samples");
   }
   if (message !== "") {
     Swal.fire({
@@ -1965,7 +1965,7 @@ window.addCustomField = async (type, curationMode) => {
 
   if (curationMode == "guided") {
     subjectsHeaderArray = window.subjectsTableData[0];
-    samplesHeaderArray = samplesTableData[0];
+    samplesHeaderArray = window.samplesTableData[0];
   }
 
   if (type === "subjects") {
@@ -2022,9 +2022,9 @@ window.addCustomField = async (type, curationMode) => {
     });
     if (customField) {
       if (curationMode == "guided") {
-        samplesTableData[0].push(customField);
-        for (let i = 1; i < samplesTableData.length; i++) {
-          samplesTableData[i].push("");
+        window.samplesTableData[0].push(customField);
+        for (let i = 1; i < window.samplesTableData.length; i++) {
+          window.samplesTableData[i].push("");
         }
       }
       addCustomHeader("samples", customField, curationMode);
@@ -2099,7 +2099,7 @@ const addCustomHeader = (type, customHeaderValue, curationMode) => {
     if (curationMode == "free-form") {
       headersArrSamples.push(customName);
       // add empty entries for all of the other sub_ids to normalize the size of matrix
-      for (var sampleId of samplesTableData.slice(1, samplesTableData.length)) {
+      for (var sampleId of window.samplesTableData.slice(1, window.samplesTableData.length)) {
         sampleId.push("");
       }
     }
@@ -2144,11 +2144,11 @@ window.deleteCustomField = (ev, customField, category, curationMode) => {
       }
     }
     if (category === 1) {
-      // get the index of the custom field in the samplesTableData
-      const indexToRemove = samplesTableData[0].indexOf(customField);
-      // remove the element at indexToRemove for each element in samplesTableData
-      for (let i = 0; i < samplesTableData.length; i++) {
-        samplesTableData[i].splice(indexToRemove, 1);
+      // get the index of the custom field in the window.samplesTableData
+      const indexToRemove = window.samplesTableData[0].indexOf(customField);
+      // remove the element at indexToRemove for each element in window.samplesTableData
+      for (let i = 0; i < window.samplesTableData.length; i++) {
+        window.samplesTableData[i].splice(indexToRemove, 1);
       }
     }
   });
@@ -2645,7 +2645,7 @@ const checkBFImportSamples = async () => {
       "Existing",
       Destinations.PENNSIEVE
     );
-    samplesTableData = res;
+    window.samplesTableData = res;
     loadDataFrametoUISamples("bf");
   } catch (error) {
     clientError(error);
@@ -2702,7 +2702,7 @@ const loadDataFrametoUI = (type) => {
 
 const loadDataFrametoUISamples = (type) => {
   // separate regular headers and custom headers
-  const lowercasedHeaders = samplesTableData[0].map((header) => header.toLowerCase());
+  const lowercasedHeaders = window.samplesTableData[0].map((header) => header.toLowerCase());
   var fieldSampleEntries = [];
   for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
     fieldSampleEntries.push(field.name.toLowerCase());

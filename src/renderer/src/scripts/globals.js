@@ -610,7 +610,7 @@ const confirm_click_function = () => {
 //       .find('input')
 //       .prop('placeholder', 'Browse here')
 //     samplesFileData = []
-//     samplesTableData = []
+//     window.samplesTableData = []
 
 //     $('#existing-samples-file-destination').attr('placeholder', 'Browse here')
 //     $('#div-confirm-existing-samples-import').hide()
@@ -668,7 +668,7 @@ const confirm_click_function = () => {
 //         .find('input')
 //         .prop('placeholder', 'Browse here')
 //       samplesFileData = []
-//       samplesTableData = []
+//       window.samplesTableData = []
 
 //       $('#existing-samples-file-destination').attr('placeholder', 'Browse here')
 //       $('#div-confirm-existing-samples-import').hide()

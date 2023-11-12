@@ -137,7 +137,7 @@ const handleSectionTrigger = async (event) => {
       sodaJSONObj = {};
       datasetStructureJSONObj = {};
       window.subjectsTableData = [];
-      samplesTableData = [];
+      window.samplesTableData = [];
     }
 
     //Transition file explorer elements to guided mode

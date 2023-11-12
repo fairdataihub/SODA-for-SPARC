@@ -774,7 +774,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
           const samples = [...samplesInPools, ...samplesOutsidePools];
 
-          samplesTableData = [];
+          window.samplesTableData = [];
 
           if (samples.length > 0) {
             try {
@@ -793,8 +793,8 @@ const savePageChanges = async (pageBeingLeftID) => {
                   },
                 }
               );
-              // Set the samplesTableData as the samples metadata response
-              samplesTableData = samplesMetadataResponse.data.sample_file_rows;
+              // Set the window.samplesTableData as the samples metadata response
+              window.samplesTableData = samplesMetadataResponse.data.sample_file_rows;
             } catch (error) {
               const emessage = userErrorMessage(error);
               errorArray.push({
@@ -812,7 +812,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           // dataset structure. If subject and sample metadata were not found, reset it and we'll add the metadata later
           const metadataSubSamStructure = createGuidedStructureFromSubSamMetadata(
             window.subjectsTableData.slice(1),
-            samplesTableData.slice(1)
+            window.samplesTableData.slice(1)
           );
 
           if (!objectsHaveSameKeys(metadataSubSamStructure, datasetSubSamStructure)) {
@@ -1364,12 +1364,12 @@ const savePageChanges = async (pageBeingLeftID) => {
 
     if (pageBeingLeftID === "guided-create-samples-metadata-tab") {
       //Save the sample metadata from the sample currently being modified
-      addSample("guided");
+      window.addSample("guided");
 
       const samplesAsideItemsCount = document.querySelectorAll(
         ".samples-metadata-aside-item"
       ).length;
-      const samplesInTableDataCount = samplesTableData.length - 1;
+      const samplesInTableDataCount = window.samplesTableData.length - 1;
       if (samplesAsideItemsCount !== samplesInTableDataCount) {
         let result = await Swal.fire({
           heightAuto: false,
@@ -2855,7 +2855,7 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
   //window.datasetStructureJSONObj when progress resumed
   window.sodaJSONObj["saved-datset-structure-json-obj"] = window.datasetStructureJSONObj;
   window.sodaJSONObj["subjects-table-data"] = window.subjectsTableData;
-  window.sodaJSONObj["samples-table-data"] = samplesTableData;
+  window.sodaJSONObj["samples-table-data"] = window.samplesTableData;
 
   window.fs.writeFileSync(guidedFilePath, JSON.stringify(window.sodaJSONObj, null, 2));
 };
@@ -3785,7 +3785,7 @@ const guidedResetProgressVariables = () => {
   window.window.sodaJSONObj = {};
   window.datasetStructureJSONObj = {};
   window.window.subjectsTableData = [];
-  window.samplesTableData = [];
+  window.window.samplesTableData = [];
 };
 
 const guidedPrepareHomeScreen = async () => {
@@ -3859,7 +3859,7 @@ const guidedShowTreePreview = (new_dataset_name, targetElement) => {
   }
 
   //Add the Samples metadata file to the preview if at least one sample has been added
-  if (samplesTableData.length > 0) {
+  if (window.samplesTableData.length > 0) {
     dsJsonObjCopy["files"]["samples.xlsx"] = {
       action: ["new"],
       path: "",
@@ -7567,7 +7567,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
 
     window.datasetStructureJSONObj = window.sodaJSONObj["saved-datset-structure-json-obj"];
     window.subjectsTableData = window.sodaJSONObj["subjects-table-data"];
-    samplesTableData = window.sodaJSONObj["samples-table-data"];
+    window.samplesTableData = window.sodaJSONObj["samples-table-data"];
 
     //patches the sodajsonobj if it was created in a previous version of guided mode
     await patchPreviousGuidedModeVersions();
@@ -7804,8 +7804,8 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         }
       }
 
-      //Rename the pool in the samplesTableData
-      for (const sampleDataArray of samplesTableData.slice(1)) {
+      //Rename the pool in the window.samplesTableData
+      for (const sampleDataArray of window.samplesTableData.slice(1)) {
         if (sampleDataArray[3] === prevPoolName) {
           sampleDataArray[3] = newPoolName;
         }
@@ -7901,9 +7901,9 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         }
 
         //Update the subjects name for all samples the subject had
-        for (let i = 1; i < samplesTableData.length; i++) {
-          if (samplesTableData[i][0] === prevSubjectName) {
-            samplesTableData[i][0] = newSubjectName;
+        for (let i = 1; i < window.samplesTableData.length; i++) {
+          if (window.samplesTableData[i][0] === prevSubjectName) {
+            window.samplesTableData[i][0] = newSubjectName;
           }
         }
       }
@@ -7998,9 +7998,9 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           }
 
           //Update the samples name in the samples metadata if it exists
-          for (let i = 1; i < samplesTableData.length; i++) {
-            if (samplesTableData[i][1] === prevSampleName) {
-              samplesTableData[i][1] = newSampleName;
+          for (let i = 1; i < window.samplesTableData.length; i++) {
+            if (window.samplesTableData[i][1] === prevSampleName) {
+              window.samplesTableData[i][1] = newSampleName;
             }
           }
         }
@@ -8211,9 +8211,9 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
 
     // Remove the sample from the samples metadata
-    for (let i = 1; i < samplesTableData.length; i++) {
-      if (samplesTableData[i][1] === sampleName) {
-        samplesTableData.splice(i, 1);
+    for (let i = 1; i < window.samplesTableData.length; i++) {
+      if (window.samplesTableData[i][1] === sampleName) {
+        window.samplesTableData.splice(i, 1);
       }
     }
   };
@@ -8292,9 +8292,9 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
 
     //Remove the pool from the samples that belong to the subject
-    for (let i = 1; i < samplesTableData.length; i++) {
-      if (samplesTableData[i][0] === subjectName) {
-        samplesTableData[i][3] = "";
+    for (let i = 1; i < window.samplesTableData.length; i++) {
+      if (window.samplesTableData[i][0] === subjectName) {
+        window.samplesTableData[i][3] = "";
       }
     }
 
@@ -10121,13 +10121,13 @@ const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
       .join("\n")}))
   `;
 
-  for (let i = 1; i < samplesTableData.length; i++) {
+  for (let i = 1; i < window.samplesTableData.length; i++) {
     if (
-      samplesTableData[i][0] === samplesSubjectID &&
-      samplesTableData[i][1] === sampleMetadataID
+      window.samplesTableData[i][0] === samplesSubjectID &&
+      window.samplesTableData[i][1] === sampleMetadataID
     ) {
       //if the id matches, load the metadata into the form
-      populateFormsSamples(samplesSubjectID, sampleMetadataID, "", "guided");
+      window.populateFormsSamples(samplesSubjectID, sampleMetadataID, "", "guided");
       return;
     }
   }
@@ -10227,13 +10227,13 @@ const openCopySubjectMetadataPopup = async () => {
 };
 
 const openCopySampleMetadataPopup = async () => {
-  addSample("guided");
+  window.addSample("guided");
 
   let copyFromMetadata = ``;
   let copyToMetadata = ``;
 
-  for (let i = 1; i < samplesTableData.length; i++) {
-    const sampleID = samplesTableData[i][1];
+  for (let i = 1; i < window.samplesTableData.length; i++) {
+    const sampleID = window.samplesTableData[i][1];
 
     copyFromMetadata += `
       <div class="field text-left">
@@ -10296,19 +10296,19 @@ const openCopySampleMetadataPopup = async () => {
         let wasDerivedFrom = "";
 
         //Add the data from the selected copy fro sample to cpoyFromSampleData array
-        for (let i = 1; i < samplesTableData.length; i++) {
-          if (samplesTableData[i][1] === selectedCopyFromSample) {
+        for (let i = 1; i < window.samplesTableData.length; i++) {
+          if (window.samplesTableData[i][1] === selectedCopyFromSample) {
             //copy all elements from matching array except the first one
-            wasDerivedFrom = samplesTableData[i][2];
-            copyFromSampleData = samplesTableData[i].slice(4);
+            wasDerivedFrom = window.samplesTableData[i][2];
+            copyFromSampleData = window.samplesTableData[i].slice(4);
           }
         }
         for (sample of selectedCopyToSamples) {
-          samplesTableData.forEach((sampleData, index) => {
+          window.samplesTableData.forEach((sampleData, index) => {
             if (sampleData[1] === sample) {
               sampleData = [sampleData[0], sampleData[1], wasDerivedFrom, sampleData[3]];
               sampleData = sampleData.concat(copyFromSampleData);
-              samplesTableData[index] = sampleData;
+              window.samplesTableData[index] = sampleData;
             }
           });
         }
@@ -11919,9 +11919,9 @@ const renderSamplesMetadataAsideItems = async () => {
     return entry.name;
   });
 
-  if (samplesTableData.length == 0) {
+  if (window.samplesTableData.length == 0) {
     //Get items with class "samples-form-entry" from samplesForDiv
-    samplesTableData[0] = samplesFormNames;
+    window.samplesTableData[0] = samplesFormNames;
     for (const sample of samples) {
       const sampleDataArray = [];
       sampleDataArray.push(sample.subjectName);
@@ -11932,14 +11932,14 @@ const renderSamplesMetadataAsideItems = async () => {
       for (let i = 0; i < samplesFormNames.length - 4; i++) {
         sampleDataArray.push("");
       }
-      samplesTableData.push(sampleDataArray);
+      window.samplesTableData.push(sampleDataArray);
     }
   } else {
     //Add samples that have not yet been added to the table to the table
     for (const sample of samples) {
       let sampleAlreadyInTable = false;
-      for (let i = 0; i < samplesTableData.length; i++) {
-        if (samplesTableData[i][1] == sample.sampleName) {
+      for (let i = 0; i < window.samplesTableData.length; i++) {
+        if (window.samplesTableData[i][1] == sample.sampleName) {
           sampleAlreadyInTable = true;
         }
       }
@@ -11950,33 +11950,33 @@ const renderSamplesMetadataAsideItems = async () => {
         //Push an empty string for was derived from
         sampleDataArray.push("");
         sampleDataArray.push(sample.poolName ? sample.poolName : "");
-        for (let i = 0; i < samplesTableData[0].length - 4; i++) {
+        for (let i = 0; i < window.samplesTableData[0].length - 4; i++) {
           sampleDataArray.push("");
         }
-        samplesTableData.push(sampleDataArray);
+        window.samplesTableData.push(sampleDataArray);
       }
     }
   }
 
   // If the subject is in the table but not in the subjects array, remove it
-  for (let i = 1; i < samplesTableData.length; i++) {
-    if (!sampleNames.includes(samplesTableData[i][1])) {
-      samplesTableData.splice(i, 1);
+  for (let i = 1; i < window.samplesTableData.length; i++) {
+    if (!sampleNames.includes(window.samplesTableData[i][1])) {
+      window.samplesTableData.splice(i, 1);
     }
   }
 
-  //If custom fields have been added to the samplesTableData, create a field for each custom field
+  //If custom fields have been added to the window.samplesTableData, create a field for each custom field
   //added
   // Samples metadata have 19 standard fields to fill, if the sample has more then additional fields are included
-  if (samplesTableData[0].length > 19) {
-    for (let i = 19; i < samplesTableData[0].length; i++) {
+  if (window.samplesTableData[0].length > 19) {
+    for (let i = 19; i < window.samplesTableData[0].length; i++) {
       if (
-        !samplesFormNames.includes(samplesTableData[0][i]) ||
+        !samplesFormNames.includes(window.samplesTableData[0][i]) ||
         !samplesFormNames.includes(
-          samplesTableData[0][i].charAt(0).toUpperCase() + samplesTableData[0][i].slice(1)
+          window.samplesTableData[0][i].charAt(0).toUpperCase() + window.samplesTableData[0][i].slice(1)
         )
       ) {
-        addCustomHeader("samples", samplesTableData[0][i], "guided");
+        addCustomHeader("samples", window.samplesTableData[0][i], "guided");
       }
     }
   }
@@ -12008,11 +12008,11 @@ const renderSamplesMetadataAsideItems = async () => {
         hideEleShowEle("guided-form-add-a-sample-intro", "guided-form-add-a-sample");
       }
 
-      previousSample = document.getElementById("guided-bootbox-sample-id").value;
+      let previousSample = document.getElementById("guided-bootbox-sample-id").value;
 
       //check to see if previousSample is empty
       if (previousSample) {
-        addSample("guided");
+        window.addSample("guided");
         await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
       }
 
@@ -14396,7 +14396,7 @@ $("#guided-generate-subjects-file").on("click", () => {
   window.clearAllSubjectFormFields(window.guidedSubjectsFormDiv);
 });
 $("#guided-generate-samples-file").on("click", () => {
-  addSample("guided");
+  window.addSample("guided");
   returnToSampleMetadataTableFromSampleMetadataForm();
 });
 $("#guided-generate-submission-file").on("click", () => {

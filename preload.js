@@ -544,7 +544,7 @@ function resetSamples(askToReset = true) {
       .find("input")
       .prop("placeholder", "Browse here");
     samplesFileData = [];
-    samplesTableData = [];
+    window.samplesTableData = [];
 
     $("#existing-samples-file-destination").attr("placeholder", "Browse here");
     $("#div-confirm-existing-samples-import").hide();
@@ -602,7 +602,7 @@ function resetSamples(askToReset = true) {
         .find("input")
         .prop("placeholder", "Browse here");
       samplesFileData = [];
-      samplesTableData = [];
+      window.samplesTableData = [];
 
       $("#existing-samples-file-destination").attr("placeholder", "Browse here");
       $("#div-confirm-existing-samples-import").hide();

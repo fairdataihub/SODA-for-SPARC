@@ -2470,7 +2470,7 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
   var tableData = window.subjectsTableData;
   var singularName = "subject";
   if (metadataSubSamFile === "samples") {
-    tableData = samplesTableData;
+    tableData = window.samplesTableData;
     singularName = "sample";
   }
 
@@ -2488,7 +2488,7 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
       $(`#existing-${metadataSubSamFile}-file-destination`).val("");
       tableData = [];
       if (metadataSubSamFile === "samples") {
-        samplesTableData = tableData;
+        window.samplesTableData = tableData;
       } else {
         window.subjectsTableData = tableData;
       }
