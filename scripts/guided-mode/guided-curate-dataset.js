@@ -10010,7 +10010,7 @@ const returnToSubjectMetadataTableFromSubjectMetadataForm = () => {
 };
 const returnToSampleMetadataTableFromSampleMetadataForm = () => {
   //Clear metadata form inputs
-  clearAllSubjectFormFields(guidedSamplesFormDiv);
+  clearAllSubjectFormFields(window.guidedSamplesFormDiv);
   openPage("guided-create-samples-metadata-tab");
   $("#guided-footer-div").css("display", "flex");
 };
@@ -11909,7 +11909,7 @@ const renderSamplesMetadataAsideItems = async () => {
     sampleMetadataCopyTip.classList.add("hidden");
   }
 
-  const samplesFormEntries = guidedSamplesFormDiv.querySelectorAll(".samples-form-entry");
+  const samplesFormEntries = window.guidedSamplesFormDiv.querySelectorAll(".samples-form-entry");
 
   //Create an array of samplesFormEntries name attribute
   const samplesFormNames = [...samplesFormEntries].map((entry) => {
@@ -12023,7 +12023,7 @@ const renderSamplesMetadataAsideItems = async () => {
       });
 
       //clear all sample form fields
-      clearAllSubjectFormFields(guidedSamplesFormDiv);
+      clearAllSubjectFormFields(window.guidedSamplesFormDiv);
 
       openModifySampleMetadataPage(
         e.target.innerText.split("/")[1],

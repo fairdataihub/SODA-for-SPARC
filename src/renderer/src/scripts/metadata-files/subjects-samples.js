@@ -1,3 +1,4 @@
+import https from "https";
 import Swal from "sweetalert2";
 
 while (!window.htmlPagesAdded) {
@@ -32,7 +33,7 @@ document.querySelectorAll(".samples-change-current-ds").forEach((element) => {
 var subjectsFormDiv = document.getElementById("form-add-a-subject");
 window.guidedSubjectsFormDiv = document.getElementById("guided-form-add-a-subject");
 var samplesFormDiv = document.getElementById("form-add-a-sample");
-var guidedSamplesFormDiv = document.getElementById("guided-form-add-a-sample");
+window.guidedSamplesFormDiv = document.getElementById("guided-form-add-a-sample");
 window.subjectsTableData = [];
 var subjectsFileData = [];
 var samplesTableData = [];
@@ -588,14 +589,14 @@ window.addSpecies = async (ev, type, curationMode) => {
   if (value) {
     if (value !== "") {
       $(`#${curationModeSelectorPrefix}bootbox-${type}-species`).val(value);
-      switchSpeciesStrainInput("species", "edit", curationMode);
+      window.switchSpeciesStrainInput("species", "edit", curationMode);
     }
   } else {
-    switchSpeciesStrainInput("species", "add", curationMode);
+    window.switchSpeciesStrainInput("species", "add", curationMode);
   }
 };
 
-const switchSpeciesStrainInput = (type, mode, curationMode) => {
+window.switchSpeciesStrainInput = (type, mode, curationMode) => {
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -632,7 +633,7 @@ const guidedSetStrainRRID = (RRID) => {
   rridInput.value = RRID;
 };
 
-const addStrain = async (ev, type, curationMode) => {
+window.addStrain = async (ev, type, curationMode) => {
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -655,7 +656,7 @@ const addStrain = async (ev, type, curationMode) => {
     },
     didOpen: () => {
       $(".swal2-confirm").attr("id", "btn-confirm-strain");
-      createStrain("sweetalert-" + type + "-strain", type, curationMode);
+      window.createStrain("sweetalert-" + type + "-strain", type, curationMode);
     },
     preConfirm: () => {
       if (document.getElementById("sweetalert-" + type + "-strain").value === "") {
@@ -667,15 +668,15 @@ const addStrain = async (ev, type, curationMode) => {
   if (value) {
     if (value !== "") {
       $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(value);
-      switchSpeciesStrainInput("strain", "edit", curationMode);
+      window.switchSpeciesStrainInput("strain", "edit", curationMode);
     }
   } else {
-    switchSpeciesStrainInput("strain", "add", curationMode);
+    window.switchSpeciesStrainInput("strain", "add", curationMode);
   }
 };
 
 // populate RRID
-const populateRRID = (strain, type, curationMode) => {
+window.populateRRID = (strain, type, curationMode) => {
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -1152,10 +1153,10 @@ window.populateForms = (subjectID, type, curationMode) => {
           } else if (field.name === "Species" && infoJson[i] !== "") {
             $(`#${curationModeSelectorPrefix}bootbox-subject-species`).val(infoJson[i]);
             // manipulate the Add Strains/Species UI accordingly
-            switchSpeciesStrainInput("species", "edit", curationMode);
+            window.switchSpeciesStrainInput("species", "edit", curationMode);
           } else if (field.name === "Strain" && infoJson[i] !== "") {
             $(`#${curationModeSelectorPrefix}bootbox-subject-strain`).val(infoJson[i]);
-            switchSpeciesStrainInput("strain", "edit", curationMode);
+            window.switchSpeciesStrainInput("strain", "edit", curationMode);
           } else if (curationMode === "guided" && field.name === "RRID for strain") {
             guidedSetStrainRRID(infoJson[i]);
           } else if (curationMode == "guided" && field.name === "protocol url or doi") {
@@ -1205,7 +1206,7 @@ const populateFormsSamples = (subjectID, sampleID, type, curationMode) => {
   }
   if (curationMode === "guided") {
     curationModeSelectorPrefix = "guided-";
-    fieldArr = $(guidedSamplesFormDiv).children().find(".samples-form-entry");
+    fieldArr = $(window.guidedSamplesFormDiv).children().find(".samples-form-entry");
   }
   if (samplesTableData.length > 1) {
     for (var i = 1; i < samplesTableData.length; i++) {
@@ -1954,7 +1955,7 @@ const loadSamplesDataToTable = () => {
 };
 
 // functions below are to show/add/cancel a custom header
-const addCustomField = async (type, curationMode) => {
+window.addCustomField = async (type, curationMode) => {
   let subjectsHeaderArray = null;
   let samplesHeaderArray = null;
   if (curationMode == "free-form") {
@@ -2054,7 +2055,7 @@ const addCustomHeader = (type, customHeaderValue, curationMode) => {
           </div>
         </div>
         <div class="tooltipnew demo-controls-end">
-          <svg onclick="deleteCustomField(this,'${customName}',0,'${curationMode}')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
+          <svg onclick="window.deleteCustomField(this,'${customName}',0,'${curationMode}')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
             <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
             <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
           </svg>
@@ -2087,7 +2088,7 @@ const addCustomHeader = (type, customHeaderValue, curationMode) => {
             </div>
           </div>
           <div class="tooltipnew demo-controls-end">
-            <svg onclick="deleteCustomField(this,'${customName}',1,'${curationMode}')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
+            <svg onclick="window.deleteCustomField(this,'${customName}',1,'${curationMode}')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
               <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
               <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
             </svg>
@@ -2105,7 +2106,7 @@ const addCustomHeader = (type, customHeaderValue, curationMode) => {
   }
 };
 
-const deleteCustomField = (ev, customField, category, curationMode) => {
+window.deleteCustomField = (ev, customField, category, curationMode) => {
   // category 0 => subjects;
   // category 1 => samples
   Swal.fire({
@@ -2170,7 +2171,7 @@ const addExistingCustomHeader = (customName) => {
         </div>
       </div>
       <div class="tooltipnew demo-controls-end">
-        <svg onclick="deleteCustomField(this,'${customName}',0,'free-form')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
+        <svg onclick="window.deleteCustomField(this,'${customName}',0,'free-form')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
           <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
           <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
         </svg>
@@ -2198,7 +2199,7 @@ const addExistingCustomHeaderSamples = (customName) => {
         </div>
       </div>
       <div class="tooltipnew demo-controls-end">
-        <svg onclick="deleteCustomField(this,'${customName}',0,'free-form')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
+        <svg onclick="window.deleteCustomField(this,'${customName}',0,'free-form')" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-trash custom-fields" viewBox="0 0 16 16">
           <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
           <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
         </svg>

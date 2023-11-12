@@ -2604,7 +2604,7 @@ const createSpeciesAutocomplete = (id, curationMode) => {
   });
 };
 
-function createStrain(id, type, curationMode) {
+function window.createStrain(id, type, curationMode) {
   var autoCompleteJS4 = new autoComplete({
     selector: "#" + id,
     data: {
@@ -2638,7 +2638,7 @@ function createStrain(id, type, curationMode) {
           info.setAttribute("class", "no_results_species");
           info.setAttribute(
             "onclick",
-            "populateRRID('" + data.query + "', '" + type + "', '" + curationMode + "')"
+            "window.populateRRID('" + data.query + "', '" + type + "', '" + curationMode + "')"
           );
           info.innerHTML = `Click here to check <strong>"${data.query}"</strong>`;
         }
@@ -2656,7 +2656,7 @@ function createStrain(id, type, curationMode) {
     document.querySelector("#" + id).value = selection;
     var strain = $("#sweetalert-" + type + "-strain").val();
     if (strain !== "") {
-      populateRRID(strain, type, curationMode);
+      window.populateRRID(strain, type, curationMode);
     }
     autoCompleteJS4.input.value = selection;
   });
@@ -2726,7 +2726,7 @@ const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) =
           res[commonName]["ScientificName"]
         );
         // $("#bootbox-subject-species").css("display", "inline-block");
-        switchSpeciesStrainInput("species", "edit", curationMode);
+        window.switchSpeciesStrainInput("species", "edit", curationMode);
       }
 
       if (destinationInput.includes("subject")) {
@@ -2734,7 +2734,7 @@ const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) =
           res[commonName]["ScientificName"]
         );
         // $(`#${curationModeSelectorPrefix}bootbox-subject-species`).css("display", "inline-block");
-        switchSpeciesStrainInput("species", "edit", curationMode);
+        window.switchSpeciesStrainInput("species", "edit", curationMode);
       }
 
       $("#" + destinationInput).val(res[commonName]["ScientificName"]);
