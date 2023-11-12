@@ -7331,7 +7331,7 @@ const patchPreviousGuidedModeVersions = async () => {
 
   const contributors = window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
   if (contributors) {
-    for (contributor of window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]) {
+    for (const contributor of window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]) {
       //if contributor is in old format (string), convert to new format (array)
       if (!Array.isArray(contributor.conAffliation)) {
         contributor.conAffliation = [contributor.conAffliation];
@@ -8616,7 +8616,7 @@ const addContributor = (
 
   // Store the contributor locally so they can import the contributor's data in the future
   try {
-    addOrUpdateStoredContributor(
+    window.addOrUpdateStoredContributor(
       contributorFirstName,
       contributorLastName,
       contributorORCID,
@@ -8656,7 +8656,7 @@ const editContributorByOrcid = (
 
   // Update the contributor's locally stored data
   try {
-    addOrUpdateStoredContributor(
+    window.addOrUpdateStoredContributor(
       contributorFirstName,
       contributorLastName,
       newContributorOrcid,
@@ -8702,7 +8702,7 @@ const verifyOrcidID = (event) => {
   }
 };
 
-const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
+window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
   const contributorData = getContributorByOrcid(contibuttorOrcidToEdit);
   const contributorFirstName = contributorData.contributorFirstName;
   const contributorLastName = contributorData.contributorLastName;
@@ -9350,7 +9350,7 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
           type="button"
           class="btn btn-sm"
           style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
-          onclick="openGuidedEditContributorSwal('${contributorOrcid}')"
+          onclick="window.openGuidedEditContributorSwal('${contributorOrcid}')"
         >
         View/Edit
         </button>
@@ -9387,7 +9387,7 @@ const renderDatasetDescriptionContributorsTable = () => {
   } else {
     contributorsTableHTML = contributors
       .map((contributor, index) => {
-        contributorIndex = index + 1;
+        let contributorIndex = index + 1;
         return generateContributorTableRow(contributor, contributorIndex);
       })
       .join("\n");
@@ -9777,7 +9777,7 @@ const renderAdditionalLinksTable = () => {
       "warning",
       `You currently have no additional links. To add a link, click the "Add additional link" button below.`
     );
-    warningRowElement = `<tr><td colspan="5">${emptyRowWarning}</td></tr>`;
+    let warningRowElement = `<tr><td colspan="5">${emptyRowWarning}</td></tr>`;
     //add empty rowWarning to additionalLinksTableBody
     additionalLinksTableBody.innerHTML = warningRowElement;
   }

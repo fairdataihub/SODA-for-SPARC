@@ -22,7 +22,7 @@ const loadStoredContributors = () => {
 
 // Add a new contributor to the JSON file
 // If a contributor with the same ORCiD already exists, update the existing contributor
-const addOrUpdateStoredContributor = (
+window.addOrUpdateStoredContributor = (
   firstName,
   lastName,
   ORCiD,
