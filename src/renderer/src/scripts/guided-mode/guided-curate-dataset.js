@@ -11,6 +11,9 @@ import Swal from "sweetalert2"
 import Tagify from "@yaireo/tagify";
 import tippy from "tippy.js";
 import client from '../client'
+import jQuery from 'jquery'
+import bootstrap from 'bootstrap'
+import 'bootstrap-select'
 import DragSort from '@yaireo/dragsort'
 import 'jstree'
 
@@ -8481,7 +8484,7 @@ const generateContributorField = (
             color: black;
             cursor: pointer;
           "
-          onclick="removeContributorField(this)"
+          onclick="window.removeContributorField(this)"
         >
         </i>
         <h2 class="text-sub-step-title">
@@ -8541,7 +8544,7 @@ const generateContributorField = (
     `;
 };
 
-const removeContributorField = (contributorDeleteButton) => {
+window.removeContributorField = (contributorDeleteButton) => {
   const contributorField = contributorDeleteButton.parentElement;
   const { contributorFirstName, contributorLastName } = contributorField.dataset;
 
@@ -9081,6 +9084,7 @@ window.openGuidedAddContributorSwal = async () => {
     confirmButtonText: "Add contributor",
     confirmButtonColor: "#3085d6 !important",
     willOpen: () => {
+      console.log("Loading up the add contributor modal. ON wil open")
       //Create Affiliation(s) tagify for each contributor
       const contributorAffiliationInput = document.getElementById(
         "guided-contributor-affiliation-input"
@@ -9392,6 +9396,7 @@ const renderDatasetDescriptionContributorsTable = () => {
 };
 
 const addContributorField = () => {
+  console.log("Adding contributor")
   const contributorsContainer = document.getElementById("contributors-container");
   //create a new div to hold contributor fields
   const newContributorField = document.createElement("div");
@@ -9412,7 +9417,7 @@ const addContributorField = () => {
         color: black;
         cursor: pointer;
       "
-      onclick="removeContributorField(this)"
+      onclick="window.removeContributorField(this)"
     >
     </i>
     <h2 class="text-sub-step-title">
@@ -9425,7 +9430,7 @@ const addContributorField = () => {
           class="guided--input guided-last-name-input"
           type="text"
           placeholder="Enter last name here"
-          onkeyup="validateInput($(this))"
+          onkeyup="validateInput(window.$(this))"
         />
       </div>
       <div class="guided--flex-center mt-sm" style="width: 45%">
@@ -9434,7 +9439,7 @@ const addContributorField = () => {
           class="guided--input guided-first-name-input"
           type="text"
           placeholder="Enter first name here"
-          onkeyup="validateInput($(this))"
+          onkeyup="validateInput(window.$(this))"
         />
       </div>
     </div>
