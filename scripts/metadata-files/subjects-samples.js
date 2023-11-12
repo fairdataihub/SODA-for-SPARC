@@ -172,7 +172,7 @@ const promptImportPrevInfoSubject = (arr1) => {
     if (result.isConfirmed) {
       if ($("#previous-subject-single").val() !== "Select") {
         prevSubIDSingle = $("#previous-subject-single").val();
-        populateForms(prevSubIDSingle, "import", "free-form");
+        window.populateForms(prevSubIDSingle, "import", "free-form");
       }
     } else {
       hideForm("subject");
@@ -211,7 +211,7 @@ const confirmSample = () => {
 };
 
 // for "Done adding" button - subjects
-const addSubject = (curationMode) => {
+const window.addSubject = (curationMode) => {
   let subjectID = "";
   if (curationMode === "free-form") {
     subjectID = $("#bootbox-subject-id").val().trim();
@@ -1061,7 +1061,7 @@ const loadSubjectInformation = (ev, subjectID) => {
   $("#btn-edit-subject").css("display", "inline-block");
   $("#btn-add-subject").css("display", "none");
   clearAllSubjectFormFields(subjectsFormDiv);
-  populateForms(subjectID, "", "free-form");
+  window.populateForms(subjectID, "", "free-form");
   $("#btn-edit-subject").unbind("click");
   $("#btn-edit-subject").click(function () {
     editSubject(ev, subjectID);
@@ -1076,7 +1076,7 @@ const loadSubjectInformation = (ev, subjectID) => {
   });
 };
 
-const populateForms = (subjectID, type, curationMode) => {
+const window.populateForms = (subjectID, type, curationMode) => {
   //Initialize variables shared between different curation modes and set them
   //based on curationMode passed in as parameter
   let fieldArr;

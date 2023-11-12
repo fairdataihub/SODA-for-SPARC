@@ -1337,7 +1337,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
     if (pageBeingLeftID === "guided-create-subjects-metadata-tab") {
       //Save the subject metadata from the subject currently being modified
-      addSubject("guided");
+      window.addSubject("guided");
 
       const subjectsAsideItemsCount = document.querySelectorAll(
         ".subjects-metadata-aside-item"
@@ -5594,7 +5594,7 @@ const openPage = async (targetPageID) => {
             // If the ink has already been added, delete it and add the updated data
             // from Pennsieve
             if (currentAddtionalLinks.includes(additionalLinkLink)) {
-              deleteAdditionalLink(additionalLinkLink);
+              window.deleteAdditionalLink(additionalLinkLink);
             }
             window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].push({
               link: additionalLinkLink,
@@ -8418,7 +8418,7 @@ const getGuidedAdditionalLinks = () => {
 };
 //Description metadata functions
 
-const deleteAdditionalLink = (linkName) => {
+window.deleteAdditionalLink = (linkName) => {
   const additionalLinks =
     window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"];
   //filter additional links to remove the one to be deleted
@@ -8447,7 +8447,7 @@ const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
         <button
           type="button"
           class="btn btn-danger btn-sm"
-          onclick="deleteAdditionalLink('${link}')"
+          onclick="window.deleteAdditionalLink('${link}')"
         >   
           Delete link
         </button>
@@ -9867,7 +9867,7 @@ const openAddAdditionLinkSwal = async () => {
         Swal.showValidationMessage(`Please enter a short description.`);
         return;
       }
-      var duplicate = checkLinkDuplicate(link, document.getElementById("other-link-table-dd"));
+      var duplicate = window.checkLinkDuplicate(link, document.getElementById("other-link-table-dd"));
       if (duplicate) {
         Swal.showValidationMessage("Duplicate URL/DOI. The URL/DOI you entered is already added.");
       }
@@ -10010,11 +10010,11 @@ const returnToTableFromFolderStructure = (clickedBackButton) => {
 
 const returnToSubjectMetadataTableFromSubjectMetadataForm = () => {
   //Clear metadata form inputs
-  clearAllSubjectFormFields(guidedSubjectsFormDiv);
+  window.clearAllSubjectFormFields(window.guidedSubjectsFormDiv);
 };
 const returnToSampleMetadataTableFromSampleMetadataForm = () => {
   //Clear metadata form inputs
-  clearAllSubjectFormFields(guidedSamplesFormDiv);
+  window.clearAllSubjectFormFields(guidedSamplesFormDiv);
   openPage("guided-create-samples-metadata-tab");
   $("#guided-footer-div").css("display", "flex");
 };
@@ -10064,7 +10064,7 @@ const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
     //check through elements of tableData to find a subject ID match
     if (subjectsTableData[i][0] === subjectMetadataId) {
       //if the id matches, load the metadata into the form
-      populateForms(subjectMetadataId, "", "guided");
+      window.populateForms(subjectMetadataId, "", "guided");
       return;
     }
   }
@@ -10135,7 +10135,7 @@ const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
 
 const openCopySubjectMetadataPopup = async () => {
   //save current subject metadata entered in the form
-  addSubject("guided");
+  window.addSubject("guided");
 
   let copyFromMetadata = ``;
   let copyToMetadata = ``;
@@ -10218,7 +10218,7 @@ const openCopySubjectMetadataPopup = async () => {
         const currentSubjectOpenInView = document.getElementById("guided-bootbox-subject-id").value;
         if (currentSubjectOpenInView) {
           //If a subject was open in the UI, update it with the new metadata
-          populateForms(currentSubjectOpenInView, "", "guided");
+          window.populateForms(currentSubjectOpenInView, "", "guided");
         }
 
         await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
@@ -11776,7 +11776,7 @@ const renderSubjectsMetadataAsideItems = async () => {
     subjectMetadataCopyTip.classList.add("hidden");
   }
 
-  const subjectsFormNames = [...guidedSubjectsFormDiv.querySelectorAll(".subjects-form-entry")].map(
+  const subjectsFormNames = [...window.guidedSubjectsFormDiv.querySelectorAll(".subjects-form-entry")].map(
     (entry) => {
       return entry.name;
     }
@@ -11865,16 +11865,16 @@ const renderSubjectsMetadataAsideItems = async () => {
         hideEleShowEle("guided-form-add-a-subject-intro", "guided-form-add-a-subject");
       }
       //Save the subject metadata from the previous subject being worked on
-      previousSubject = document.getElementById("guided-bootbox-subject-id").value;
+      let previousSubject = document.getElementById("guided-bootbox-subject-id").value;
       //check to see if previousSubject is empty
       if (previousSubject) {
-        addSubject("guided");
+        window.addSubject("guided");
         await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
       }
 
-      clearAllSubjectFormFields(guidedSubjectsFormDiv);
+      window.clearAllSubjectFormFields(window.guidedSubjectsFormDiv);
 
-      populateForms(e.target.innerText, "", "guided");
+      window.populateForms(e.target.innerText, "", "guided");
 
       //add selected class to clicked element
       e.target.classList.add("is-selected");
@@ -12026,7 +12026,7 @@ const renderSamplesMetadataAsideItems = async () => {
       });
 
       //clear all sample form fields
-      clearAllSubjectFormFields(guidedSamplesFormDiv);
+      window.clearAllSubjectFormFields(guidedSamplesFormDiv);
 
       openModifySampleMetadataPage(
         e.target.innerText.split("/")[1],
@@ -14392,8 +14392,8 @@ const guidedSaveRCFile = async (type) => {
   });
 };
 $("#guided-generate-subjects-file").on("click", () => {
-  addSubject("guided");
-  clearAllSubjectFormFields(guidedSubjectsFormDiv);
+  window.addSubject("guided");
+  window.clearAllSubjectFormFields(window.guidedSubjectsFormDiv);
 });
 $("#guided-generate-samples-file").on("click", () => {
   addSample("guided");

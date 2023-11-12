@@ -1,3 +1,7 @@
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
+
 // event listeners for open dropdown prompt
 document.querySelectorAll(".subjects-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
@@ -24,7 +28,7 @@ document.querySelectorAll(".samples-change-current-ds").forEach((element) => {
 });
 
 var subjectsFormDiv = document.getElementById("form-add-a-subject");
-var guidedSubjectsFormDiv = document.getElementById("guided-form-add-a-subject");
+window.guidedSubjectsFormDiv = document.getElementById("guided-form-add-a-subject");
 var samplesFormDiv = document.getElementById("form-add-a-sample");
 var guidedSamplesFormDiv = document.getElementById("guided-form-add-a-sample");
 var subjectsTableData = [];
@@ -37,7 +41,7 @@ let guidedSamplesTableData = [];
 
 const showForm = (type, editBoolean) => {
   if (type !== "edit") {
-    clearAllSubjectFormFields(subjectsFormDiv);
+    window.clearAllSubjectFormFields(subjectsFormDiv);
   }
   subjectsFormDiv.style.display = "flex";
   $("#create_subjects-tab").removeClass("show");
@@ -49,7 +53,7 @@ const showForm = (type, editBoolean) => {
 
 const showFormSamples = (type, editBoolean) => {
   if (type !== "edit") {
-    clearAllSubjectFormFields(samplesFormDiv);
+    window.clearAllSubjectFormFields(samplesFormDiv);
   }
   samplesFormDiv.style.display = "flex";
   $("#create_samples-tab").removeClass("show");
@@ -172,7 +176,7 @@ const promptImportPrevInfoSubject = (arr1) => {
     if (result.isConfirmed) {
       if ($("#previous-subject-single").val() !== "Select") {
         prevSubIDSingle = $("#previous-subject-single").val();
-        populateForms(prevSubIDSingle, "import", "free-form");
+        window.populateForms(prevSubIDSingle, "import", "free-form");
       }
     } else {
       hideForm("subject");
@@ -211,7 +215,7 @@ const confirmSample = () => {
 };
 
 // for "Done adding" button - subjects
-const addSubject = (curationMode) => {
+window.addSubject = (curationMode) => {
   let subjectID = "";
   if (curationMode === "free-form") {
     subjectID = $("#bootbox-subject-id").val().trim();
@@ -504,7 +508,7 @@ const addSampleIDtoDataBase = (samID, subID) => {
   }
 };
 
-const clearAllSubjectFormFields = (form) => {
+window.clearAllSubjectFormFields = (form) => {
   for (var field of $(form).children().find("input")) {
     $(field).val("");
   }
@@ -515,12 +519,12 @@ const clearAllSubjectFormFields = (form) => {
   $(form).find(".content").removeClass("active");
 
   // hide Strains and Species
-  if (form === subjectsFormDiv || form === guidedSubjectsFormDiv) {
+  if (form === subjectsFormDiv || form === window.guidedSubjectsFormDiv) {
     let curationModeSelectorPrefix = "";
     if (form === subjectsFormDiv) {
       curationModeSelectorPrefix = "";
     }
-    if (form === guidedSubjectsFormDiv) {
+    if (form === window.guidedSubjectsFormDiv) {
       curationModeSelectorPrefix = "guided-";
     }
 
@@ -528,7 +532,7 @@ const clearAllSubjectFormFields = (form) => {
     $(`#${curationModeSelectorPrefix}bootbox-${keyword}-species`).css("display", "none");
     $(`#${curationModeSelectorPrefix}bootbox-${keyword}-strain`).css("display", "none");
 
-    if (form === guidedSubjectsFormDiv) {
+    if (form === window.guidedSubjectsFormDiv) {
       guidedSetStrainRRID("");
     }
 
@@ -825,7 +829,7 @@ const addSubjectMetadataEntriesIntoJSON = (curationMode) => {
   if (curationMode === "free-form") {
     $("#table-subjects").css("display", "block");
     $("#button-generate-subjects").css("display", "block");
-    clearAllSubjectFormFields(subjectsFormDiv);
+    window.clearAllSubjectFormFields(subjectsFormDiv);
     hideForm("subject");
   }
 };
@@ -885,7 +889,7 @@ const addSampleMetadataEntriesIntoJSON = (curationMode) => {
   if (curationMode === "free-form") {
     $("#table-samples").css("display", "block");
     $("#button-generate-samples").css("display", "block");
-    clearAllSubjectFormFields(samplesFormDiv);
+    window.clearAllSubjectFormFields(samplesFormDiv);
     hideForm("sample");
   }
 };
@@ -969,7 +973,7 @@ const edit_current_protocol_id = async (ev) => {
       }
 
       if (protocolEdited) {
-        let duplicate = checkLinkDuplicate(
+        let duplicate = window.checkLinkDuplicate(
           $("#DD-protocol-link").val(),
           document.getElementById("protocol-link-table-dd")
         );
@@ -1060,8 +1064,8 @@ const loadSubjectInformation = (ev, subjectID) => {
   showForm("display", true);
   $("#btn-edit-subject").css("display", "inline-block");
   $("#btn-add-subject").css("display", "none");
-  clearAllSubjectFormFields(subjectsFormDiv);
-  populateForms(subjectID, "", "free-form");
+  window.clearAllSubjectFormFields(subjectsFormDiv);
+  window.populateForms(subjectID, "", "free-form");
   $("#btn-edit-subject").unbind("click");
   $("#btn-edit-subject").click(function () {
     editSubject(ev, subjectID);
@@ -1076,7 +1080,7 @@ const loadSubjectInformation = (ev, subjectID) => {
   });
 };
 
-const populateForms = (subjectID, type, curationMode) => {
+window.populateForms = (subjectID, type, curationMode) => {
   //Initialize variables shared between different curation modes and set them
   //based on curationMode passed in as parameter
   let fieldArr;
@@ -1089,8 +1093,11 @@ const populateForms = (subjectID, type, curationMode) => {
   }
   if (curationMode === "guided") {
     curationModeSelectorPrefix = "guided-";
-    fieldArr = $(guidedSubjectsFormDiv).children().find(".subjects-form-entry");
+    fieldArr = $(window.guidedSubjectsFormDiv).children().find(".subjects-form-entry");
   }
+
+  console.log(fieldArr)
+  console.log(subjectsTableData)
 
   if (subjectsTableData.length > 1) {
     for (var i = 1; i < subjectsTableData.length; i++) {
@@ -1100,6 +1107,8 @@ const populateForms = (subjectID, type, curationMode) => {
       }
     }
   }
+
+  console.log(infoJson)
 
   if (subjectID !== "clear" && subjectID.trim() !== "") {
     if (curationMode === "guided") {
@@ -1288,7 +1297,7 @@ const loadSampleInformation = (ev, subjectID, sampleID) => {
   showFormSamples("display", true);
   $("#btn-edit-sample").css("display", "inline-block");
   $("#btn-add-sample").css("display", "none");
-  clearAllSubjectFormFields(samplesFormDiv);
+  window.clearAllSubjectFormFields(samplesFormDiv);
   populateFormsSamples(subjectID, sampleID, "", "free-form");
   $("#btn-edit-sample").unbind("click");
   $("#btn-edit-sample").click(function () {
@@ -1693,10 +1702,10 @@ const updateOrderContributorTable = (table, json) => {
 };
 
 const showPrimaryBrowseFolder = () => {
-  ipcRenderer.send("open-file-dialog-local-primary-folder");
+  window.electron.ipcRenderer.send("open-file-dialog-local-primary-folder");
 };
 const showPrimaryBrowseFolderSamples = () => {
-  ipcRenderer.send("open-file-dialog-local-primary-folder-samples");
+  window.electron.ipcRenderer.send("open-file-dialog-local-primary-folder-samples");
 };
 
 const importPrimaryFolderSubjects = (folderPath) => {
@@ -2216,11 +2225,11 @@ $(document).ready(function () {
     headersArrSamples.push(field.name);
   }
 
-  ipcRenderer.on("selected-existing-subjects", (event, filepath) => {
+  window.electron.ipcRenderer.on("selected-existing-subjects", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath != null) {
         document.getElementById("existing-subjects-file-destination").placeholder = filepath[0];
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-event",
           "Success",
           "Prepare Metadata - Continue with existing subjects.xlsx",
@@ -2245,7 +2254,7 @@ $(document).ready(function () {
     }
   });
 
-  ipcRenderer.on("selected-existing-samples", (event, filepath) => {
+  window.electron.ipcRenderer.on("selected-existing-samples", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath != null) {
         document.getElementById("existing-samples-file-destination").placeholder = filepath[0];
@@ -2276,11 +2285,11 @@ $(document).ready(function () {
     }
   });
 
-  ipcRenderer.on("selected-existing-DD", (event, filepath) => {
+  window.electron.ipcRenderer.on("selected-existing-DD", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath !== null) {
         document.getElementById("existing-dd-file-destination").placeholder = filepath[0];
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-event",
           "Success",
           "Prepare Metadata - Continue with existing dataset_description.xlsx",
@@ -2304,7 +2313,7 @@ $(document).ready(function () {
   });
 
   // generate subjects file
-  ipcRenderer.on("selected-destination-generate-subjects-locally", (event, dirpath) => {
+  window.electron.ipcRenderer.on("selected-destination-generate-subjects-locally", (event, dirpath) => {
     if (dirpath.length > 0) {
       document.getElementById("input-destination-generate-subjects-locally").placeholder =
         dirpath[0];
@@ -2315,7 +2324,7 @@ $(document).ready(function () {
   });
 
   // generate samples file
-  ipcRenderer.on("selected-destination-generate-samples-locally", (event, dirpath) => {
+  window.electron.ipcRenderer.on("selected-destination-generate-samples-locally", (event, dirpath) => {
     if (dirpath.length > 0) {
       document.getElementById("input-destination-generate-samples-locally").placeholder =
         dirpath[0];
@@ -2387,7 +2396,7 @@ const showExistingSubjectsFile = () => {
       reverseButtons: window.reverseSwalButtons,
     }).then((boolean) => {
       if (boolean.isConfirmed) {
-        ipcRenderer.send("open-file-dialog-existing-subjects");
+        window.electron.ipcRenderer.send("open-file-dialog-existing-subjects");
         document.getElementById("existing-subjects-file-destination").placeholder = "Browse here";
         $("#div-confirm-existing-subjects-import").hide();
         $($("#div-confirm-existing-subjects-import button")[0]).hide();
@@ -2395,7 +2404,7 @@ const showExistingSubjectsFile = () => {
       }
     });
   } else {
-    ipcRenderer.send("open-file-dialog-existing-subjects");
+    window.electron.ipcRenderer.send("open-file-dialog-existing-subjects");
   }
 };
 
@@ -2415,7 +2424,7 @@ const showExistingSamplesFile = () => {
       reverseButtons: window.reverseSwalButtons,
     }).then((boolean) => {
       if (boolean.isConfirmed) {
-        ipcRenderer.send("open-file-dialog-existing-samples");
+        window.electron.ipcRenderer.send("open-file-dialog-existing-samples");
         document.getElementById("existing-samples-file-destination").placeholder = "Browse here";
         $("#div-confirm-existing-samples-import").hide();
         $($("#div-confirm-existing-samples-import button")[0]).hide();
@@ -2423,7 +2432,7 @@ const showExistingSamplesFile = () => {
       }
     });
   } else {
-    ipcRenderer.send("open-file-dialog-existing-samples");
+    window.electron.ipcRenderer.send("open-file-dialog-existing-samples");
   }
 };
 
@@ -2771,7 +2780,7 @@ const addAdditionalLink = async () => {
       if ($("#DD-other-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description.`);
       }
-      var duplicate = checkLinkDuplicate(link, document.getElementById("other-link-table-dd"));
+      var duplicate = window.checkLinkDuplicate(link, document.getElementById("other-link-table-dd"));
       if (duplicate) {
         Swal.showValidationMessage(
           `Duplicate ${protocolLink}. The ${protocolLink} you entered is already added.`
@@ -2795,7 +2804,7 @@ const addAdditionalLink = async () => {
   }
 };
 
-const checkLinkDuplicate = (link, table) => {
+window.checkLinkDuplicate = (link, table) => {
   var duplicate = false;
   var rowcount = table.rows.length;
   for (var i = 1; i < rowcount; i++) {

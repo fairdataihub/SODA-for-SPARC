@@ -681,7 +681,7 @@ const addProtocol = async () => {
       if ($("#DD-protocol-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description!`);
       }
-      var duplicate = checkLinkDuplicate(
+      var duplicate = window.checkLinkDuplicate(
         $("#DD-protocol-link").val(),
         document.getElementById("protocol-link-table-dd")
       );
