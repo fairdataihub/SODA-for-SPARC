@@ -49,6 +49,7 @@ const handleGuidedModeOrgSwitch = async (buttonClicked) => {
 };
 
 const guidedGetCurrentUserWorkSpace = () => {
+  return null;
   // Returns null if the user has not selected a workspace
   const workSpaceFromUI = document.getElementById(
     "guided-pennsive-selected-organization"
@@ -11026,12 +11027,10 @@ const validateDatasetStructureSpreadsheet = (sheetData) => {
   const requiredHeaders = ["Subject ID"];
   console.log(sheetData);
 
+  // 1. Loop through the spreadsheet rows and find subs, pools, and sams that do not have valid names
   for (const row of sheetData) {
-    for (const header of requiredHeaders) {
-      if (!row[header]) {
-        throw new Error(`Missing required header: ${header}`);
-      }
-    }
+    const subjectName = row["Subject ID"]
+    console.log("subjectName", subjectName)
   }
 
   // Check to see if the spreadsheet has the correct d
