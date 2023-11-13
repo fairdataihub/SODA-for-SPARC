@@ -3376,7 +3376,7 @@ const guidedCropOptions = {
 };
 
 var imageExtension;
-var myCropper = new Cropper(bfViewImportedImage, cropOptions);
+var window.myCropper = new Cropper(bfViewImportedImage, cropOptions);
 
 const setupPublicationOptionsPopover = () => {
   // setup the calendar that is in the popup
@@ -5621,8 +5621,8 @@ const handleSelectedBannerImage = async (path, curationMode) => {
 
                       $(paraImagePath).html(image_path);
                       viewImportedImage.src = converted_image_file;
-                      myCropper.destroy();
-                      myCropper = new Cropper(viewImportedImage, cropperOptions);
+                      window.myCropper.destroy();
+                      window.myCropper = new Cropper(viewImportedImage, cropperOptions);
                       $(saveBannerImage).css("visibility", "visible");
                       $("body").removeClass("waiting");
                     });
@@ -5646,8 +5646,8 @@ const handleSelectedBannerImage = async (path, curationMode) => {
               imageExtension = "jpg";
               $(paraImagePath).html(image_path);
               viewImportedImage.src = image_path;
-              myCropper.destroy();
-              myCropper = new Cropper(viewImportedImage, cropperOptions);
+              window.myCropper.destroy();
+              window.myCropper = new Cropper(viewImportedImage, cropperOptions);
               $(paraImagePath).css("visibility", "visible");
             }
           });
@@ -5675,8 +5675,8 @@ const handleSelectedBannerImage = async (path, curationMode) => {
 
       $(paraImagePath).html(image_path);
       viewImportedImage.src = image_path;
-      myCropper.destroy();
-      myCropper = new Cropper(viewImportedImage, cropperOptions);
+      window.myCropper.destroy();
+      window.myCropper = new Cropper(viewImportedImage, cropperOptions);
 
       $(saveBannerImage).css("visibility", "visible");
     }

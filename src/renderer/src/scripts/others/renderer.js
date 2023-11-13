@@ -3106,7 +3106,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetList) {
 // };
 
 // var imageExtension;
-// var myCropper = new Cropper(bfViewImportedImage, cropOptions);
+window.myCropper = new Cropper(bfViewImportedImage, cropOptions);
 
 // const setupPublicationOptionsPopover = () => {
 //   // setup the calendar that is in the popup
@@ -5353,8 +5353,8 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 
 //                       $(paraImagePath).html(image_path);
 //                       viewImportedImage.src = converted_image_file;
-//                       myCropper.destroy();
-//                       myCropper = new Cropper(viewImportedImage, cropperOptions);
+//                       window.myCropper.destroy();
+//                       window.myCropper = new Cropper(viewImportedImage, cropperOptions);
 //                       $(saveBannerImage).css("visibility", "visible");
 //                       $("body").removeClass("waiting");
 //                     });
@@ -5378,8 +5378,8 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 //               imageExtension = "jpg";
 //               $(paraImagePath).html(image_path);
 //               viewImportedImage.src = image_path;
-//               myCropper.destroy();
-//               myCropper = new Cropper(viewImportedImage, cropperOptions);
+//               window.myCropper.destroy();
+//               window.myCropper = new Cropper(viewImportedImage, cropperOptions);
 //               $(paraImagePath).css("visibility", "visible");
 //             }
 //           });
@@ -5407,8 +5407,8 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 
 //       $(paraImagePath).html(image_path);
 //       viewImportedImage.src = image_path;
-//       myCropper.destroy();
-//       myCropper = new Cropper(viewImportedImage, cropperOptions);
+//       window.myCropper.destroy();
+//       window.myCropper = new Cropper(viewImportedImage, cropperOptions);
 
 //       $(saveBannerImage).css("visibility", "visible");
 //     }

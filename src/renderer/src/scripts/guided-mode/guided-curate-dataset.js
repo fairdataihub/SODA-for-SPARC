@@ -5919,8 +5919,8 @@ const openPage = async (targetPageID) => {
             document.getElementById("guided-div-img-container").style.display = "block";
 
             //set new cropper for imported image
-            myCropper.destroy();
-            myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
+            window.myCropper.destroy();
+            window.myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
 
             $("#guided-save-banner-image").css("visibility", "visible");
           }
@@ -12540,8 +12540,8 @@ document
 // function for importing a banner image if one already exists
 $("#guided-button-add-banner-image").click(async () => {
   $("#guided-banner-image-modal").modal("show");
-  myCropper.destroy();
-  myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
+  window.myCropper.destroy();
+  window.myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
 });
 
 // Action when user click on "Import image" button for banner image
@@ -14514,7 +14514,7 @@ const guidedSaveBannerImage = async () => {
   }
   let datasetName = window.sodaJSONObj["digital-metadata"]["name"];
   let imagePath = path.join(imageFolder, `${datasetName}.` + imageExtension);
-  let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
+  let croppedImageDataURI = window.myCropper.getCroppedCanvas().toDataURL(imageType);
 
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
     let image_file_size = window.fs.statSync(imagePath)["size"];

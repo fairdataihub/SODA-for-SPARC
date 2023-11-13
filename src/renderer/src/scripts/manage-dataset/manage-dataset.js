@@ -1748,8 +1748,8 @@ $("#edit_banner_image_button").click(async () => {
       ["Importing Banner Image"]
     );
 
-    myCropper.destroy();
-    myCropper = new Cropper(document.getElementById("image-banner"), cropOptions);
+    window.myCropper.destroy();
+    window.myCropper = new Cropper(document.getElementById("image-banner"), cropOptions);
   }
 });
 
@@ -1817,8 +1817,8 @@ const displayBannerImage = async (path) => {
 
                       $("#para-path-image").html(image_path);
                       bfViewImportedImage.src = converted_image_file;
-                      myCropper.destroy();
-                      myCropper = new Cropper(bfViewImportedImage, cropOptions);
+                      window.myCropper.destroy();
+                      window.myCropper = new Cropper(bfViewImportedImage, cropOptions);
                       $("#save-banner-image").css("visibility", "visible");
                       $("body").removeClass("waiting");
                     });
@@ -1842,8 +1842,8 @@ const displayBannerImage = async (path) => {
               imageExtension = "jpg";
               $("#para-path-image").html(image_path);
               bfViewImportedImage.src = image_path;
-              myCropper.destroy();
-              myCropper = new Cropper(bfViewImportedImage, cropOptions);
+              window.myCropper.destroy();
+              window.myCropper = new Cropper(bfViewImportedImage, cropOptions);
               $("#save-banner-image").css("visibility", "visible");
             }
           });
@@ -1871,8 +1871,8 @@ const displayBannerImage = async (path) => {
 
       $("#para-path-image").html(image_path);
       bfViewImportedImage.src = image_path;
-      myCropper.destroy();
-      myCropper = new Cropper(bfViewImportedImage, cropOptions);
+      window.myCropper.destroy();
+      window.myCropper = new Cropper(bfViewImportedImage, cropOptions);
 
       $("#save-banner-image").css("visibility", "visible");
     }
@@ -1911,7 +1911,7 @@ const uploadBannerImage = async () => {
 
   //creating path of the image and then getting cropped image information
   let imagePath = path.join(imageFolder, "banner-image-SODA." + imageExtension);
-  let croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
+  let croppedImageDataURI = window.myCropper.getCroppedCanvas().toDataURL(imageType);
 
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
     //image is created here into temp folder
@@ -2208,7 +2208,7 @@ const showCurrentBannerImage = async () => {
     $("#div-img-container").css("display", "none");
     $("#save-banner-image").css("visibility", "hidden");
 
-    myCropper.destroy();
+    window.myCropper.destroy();
 
     return;
   }
@@ -2237,7 +2237,7 @@ const showCurrentBannerImage = async () => {
       $("#div-img-container").css("display", "none");
       $("#save-banner-image").css("visibility", "hidden");
 
-      myCropper.destroy();
+      window.myCropper.destroy();
     } else {
       document.getElementById("para-current-banner-img").innerHTML = "";
       bfCurrentBannerImg.src = res;
@@ -2262,7 +2262,7 @@ const showCurrentBannerImage = async () => {
       ["Get Banner Image"]
     );
 
-    myCropper.destroy();
+    window.myCropper.destroy();
   }
 };
 
