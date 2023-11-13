@@ -1,5 +1,7 @@
 // sourcery skip: merge-nested-ifs
 
+const { map } = require("jquery");
+
 const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
@@ -11015,22 +11017,14 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
   }
 });
 
-const validateDatasetStructureSpreadsheet = (sheetData) => {
-  // Check to see if the spreadsheet has the correct headers
-  const datasetHasPools = document
-    .getElementById("guided-button-subjects-are-pooled")
-    .classList.contains("selected");
-  const datasetHasSamples = document
-    .getElementById("guided-button-subjects-have-samples")
-    .classList.contains("selected");
-
-  const requiredHeaders = ["Subject ID"];
-  console.log(sheetData);
+const validateDatasetStructureSpreadsheet = async (sheetData) => {
   const invalidSubjectNames = [];
   const invalidPoolNames = [];
   const invalidSampleNames = [];
   const duplicateSampleNames = [];
   const validSampleNames = [];
+  const subjectsWithMismatchedPools = [];
+  const pooledSubjects = new Map();
   // 1. Loop through the spreadsheet rows and find subs, pools, and sams that do not have valid names
   for (const row of sheetData) {
     const subjectName = row["Subject ID"];
@@ -11065,6 +11059,15 @@ const validateDatasetStructureSpreadsheet = (sheetData) => {
         invalidPoolNames.push(poolName);
         continue;
       }
+
+      if (pooledSubjects.has(subjectName)) {
+        const subjectsPool = pooledSubjects.get(subjectName);
+        if (subjectsPool !== poolName) {
+          subjectsWithMismatchedPools.push(subjectName);
+        }
+      } else {
+        pooledSubjects.set(subjectName, poolName);
+      }
     }
 
     const sampleName = row["Sample ID"];
@@ -11090,7 +11093,57 @@ const validateDatasetStructureSpreadsheet = (sheetData) => {
     }
   }
 
-  // Check to see if the spreadsheet has the correct d
+  if (invalidSubjectNames.length > 0) {
+    await swalFileListSingleAction(
+      invalidSubjectNames,
+      "Invalid subject names detected",
+      "Subject names must start with 'sub-' and may not contain spaces or special characters",
+      "Please fix the invalid subject names in the spreadsheet and try again"
+    );
+    return false;
+  }
+
+  if (invalidPoolNames.length > 0) {
+    await swalFileListSingleAction(
+      invalidPoolNames,
+      "Invalid pool names detected",
+      "Pool names must start with 'pool-' and may not contain spaces or special characters",
+      "Please fix the invalid pool names in the spreadsheet and try again"
+    );
+    return false;
+  }
+
+  if (invalidSampleNames.length > 0) {
+    await swalFileListSingleAction(
+      invalidSampleNames,
+      "Invalid sample names detected",
+      "Sample names must start with 'sam-' and may not contain spaces or special characters",
+      "Please fix the invalid sample names in the spreadsheet and try again"
+    );
+    return false;
+  }
+
+  if (duplicateSampleNames.length > 0) {
+    await swalFileListSingleAction(
+      duplicateSampleNames,
+      "Duplicate sample names detected",
+      "Sample names must be unique",
+      "Please fix the duplicate sample names in the spreadsheet and try again"
+    );
+    return false;
+  }
+
+  if (subjectsWithMismatchedPools.length > 0) {
+    await swalFileListSingleAction(
+      subjectsWithMismatchedPools,
+      "Subjects with mismatched pools detected",
+      "Subjects can only be in one pool",
+      "Please fix the subjects with mismatched pools in the spreadsheet and try again"
+    );
+    return false;
+  }
+
+  return true;
 };
 
 // CLICK HANDLER THAT EXTRACTS THE DATASET STRUCTURE FROM A SPREADSHEET
