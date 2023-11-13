@@ -33,6 +33,7 @@ import {dragDrop, successCheck} from '../../assets/lotties/lotties'
 import select2 from "select2"; // TODO: select2()
 select2()
 import autoComplete from "@tarekraafat/autocomplete.js/dist/autoComplete.min.js"
+import Cropper from 'cropperjs'
 import DragSort from "@yaireo/dragsort";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -969,7 +970,7 @@ const apiVersionsMatch = async () => {
   if (hasConnectedAccountWithPennsieve()) {
 
     try {
-      updateBfAccountList();
+      window.updateBfAccountList();
     } catch (error) {
       clientError(error);
     }
@@ -1275,13 +1276,13 @@ window.datasetPermissionDiv = document.getElementById("div-permission-list-2");
 
 // const bfCurrentBannerImg = document.getElementById("current-banner-img");
 
-// const bfViewImportedImage = document.querySelector("#image-banner");
-// const guidedBfViewImportedImage = document.querySelector("#guided-image-banner");
+const bfViewImportedImage = document.querySelector("#image-banner");
+window.guidedBfViewImportedImage = document.querySelector("#guided-image-banner");
 
 // const bfSaveBannerImageBtn = document.getElementById("save-banner-image");
 // const datasetBannerImageStatus = document.querySelector("#para-dataset-banner-image-status");
 // const formBannerHeight = document.getElementById("form-banner-height");
-// const guidedFormBannerHeight = document.getElementById("guided-form-banner-height");
+window.guidedFormBannerHeight = document.getElementById("guided-form-banner-height");
 // const currentDatasetLicense = document.querySelector("#para-dataset-license-current");
 // const bfListLicense = document.querySelector("#bf-license-list");
 // const bfAddLicenseBtn = document.getElementById("button-add-license");
@@ -3032,80 +3033,81 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetList) {
 // const { rename } = require("fs");
 // const { resolveSoa } = require("dns");
 // const internal = require("stream");
-// var cropOptions = {
-//   aspectRatio: 1,
-//   movable: false,
-//   // Enable to rotate the image
-//   rotatable: false,
-//   // Enable to scale the image
-//   scalable: false,
-//   // Enable to zoom the image
-//   zoomable: false,
-//   // Enable to zoom the image by dragging touch
-//   zoomOnTouch: false,
-//   // Enable to zoom the image by wheeling mouse
-//   zoomOnWheel: false,
-//   // preview: '.preview',
-//   viewMode: 1,
-//   responsive: true,
-//   crop: function (event) {
-//     var data = event.detail;
-//     let image_height = Math.round(data.height);
+var cropOptions = {
+  aspectRatio: 1,
+  movable: false,
+  // Enable to rotate the image
+  rotatable: false,
+  // Enable to scale the image
+  scalable: false,
+  // Enable to zoom the image
+  zoomable: false,
+  // Enable to zoom the image by dragging touch
+  zoomOnTouch: false,
+  // Enable to zoom the image by wheeling mouse
+  zoomOnWheel: false,
+  // preview: '.preview',
+  viewMode: 1,
+  responsive: true,
+  crop: function (event) {
+    var data = event.detail;
+    let image_height = Math.round(data.height);
 
-//     formBannerHeight.value = image_height;
-//     //if image-height exceeds 2048 then prompt about scaling image down
-//     if (image_height < 512) {
-//       $("#save-banner-image").prop("disabled", true);
-//       $("#form-banner-height").css("color", "red");
-//       $("#form-banner-height").css("border", "1px solid red");
-//       $(".crop-image-text").css("color", "red");
-//     } else {
-//       $("#save-banner-image").prop("disabled", false);
-//       $("#form-banner-height").css("color", "black");
-//       $("#form-banner-height").css("border", "1px solid black");
-//       $(".crop-image-text").css("color", "black");
-//     }
+    formBannerHeight.value = image_height;
+    //if image-height exceeds 2048 then prompt about scaling image down
+    if (image_height < 512) {
+      $("#save-banner-image").prop("disabled", true);
+      $("#form-banner-height").css("color", "red");
+      $("#form-banner-height").css("border", "1px solid red");
+      $(".crop-image-text").css("color", "red");
+    } else {
+      $("#save-banner-image").prop("disabled", false);
+      $("#form-banner-height").css("color", "black");
+      $("#form-banner-height").css("border", "1px solid black");
+      $(".crop-image-text").css("color", "black");
+    }
 
-//     // formBannerWidth.value = Math.round(data.width)
-//   },
-// };
-// const guidedCropOptions = {
-//   aspectRatio: 1,
-//   movable: false,
-//   // Enable to rotate the image
-//   rotatable: false,
-//   // Enable to scale the image
-//   scalable: false,
-//   // Enable to zoom the image
-//   zoomable: false,
-//   // Enable to zoom the image by dragging touch
-//   zoomOnTouch: false,
-//   // Enable to zoom the image by wheeling mouse
-//   zoomOnWheel: false,
-//   // preview: '.preview',
-//   viewMode: 1,
-//   responsive: true,
-//   crop: function (event) {
-//     var data = event.detail;
-//     let image_height = Math.round(data.height);
+    // formBannerWidth.value = Math.round(data.width)
+  },
+};
 
-//     guidedFormBannerHeight.value = image_height;
+window.guidedCropOptions = {
+  aspectRatio: 1,
+  movable: false,
+  // Enable to rotate the image
+  rotatable: false,
+  // Enable to scale the image
+  scalable: false,
+  // Enable to zoom the image
+  zoomable: false,
+  // Enable to zoom the image by dragging touch
+  zoomOnTouch: false,
+  // Enable to zoom the image by wheeling mouse
+  zoomOnWheel: false,
+  // preview: '.preview',
+  viewMode: 1,
+  responsive: true,
+  crop: function (event) {
+    var data = event.detail;
+    let image_height = Math.round(data.height);
 
-//     if (image_height < 512) {
-//       $("#guided-save-banner-image").prop("disabled", true);
-//       $("#guided-form-banner-height").css("color", "red");
-//       $("#guided-form-banner-height").css("border", "1px solid red");
-//       $(".crop-image-text").css("color", "red");
-//     } else {
-//       $("#guided-save-banner-image").prop("disabled", false);
-//       $("#guided-form-banner-height").css("color", "black");
-//       $("#guided-form-banner-height").css("border", "1px solid black");
-//       $(".crop-image-text").css("color", "black");
-//     }
-//   },
-// };
+    window.guidedFormBannerHeight.value = image_height;
 
-// var imageExtension;
+    if (image_height < 512) {
+      $("#guided-save-banner-image").prop("disabled", true);
+      $("#guided-form-banner-height").css("color", "red");
+      $("#guided-form-banner-height").css("border", "1px solid red");
+      $(".crop-image-text").css("color", "red");
+    } else {
+      $("#guided-save-banner-image").prop("disabled", false);
+      $("#guided-form-banner-height").css("color", "black");
+      $("#guided-form-banner-height").css("border", "1px solid black");
+      $(".crop-image-text").css("color", "black");
+    }
+  },
+};
+
+window.imageExtension;
 window.myCropper = new Cropper(bfViewImportedImage, cropOptions);
 
 // const setupPublicationOptionsPopover = () => {
@@ -5265,163 +5267,181 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 //   });
 // });
 
-// // displays the user selected banner image using Jimp in the edit banner image modal
-// //path: array
-// //curationMode: string (guided-moded) (freeform)
-// const handleSelectedBannerImage = async (path, curationMode) => {
-//   let imgContainer = "";
-//   let imgHolder = "";
-//   let paraImagePath = "";
-//   let viewImportedImage = "";
-//   let saveBannerImage = "";
-//   let cropperOptions = "";
-//   if (curationMode === "guided-mode") {
-//     imgHolder = document.getElementById("guided-div-img-container-holder");
-//     imgContainer = document.getElementById("guided-div-img-container");
-//     viewImportedImage = guidedBfViewImportedImage;
-//     paraImagePath = "#guided-para-path-image";
-//     saveBannerImage = "#guided-save-banner-image";
-//     cropperOptions = guidedCropOptions;
-//   }
-//   if (curationMode === "freeform") {
-//     cropperOptions = cropOptions;
-//     paraImagePath = "#para-path-image";
-//     saveBannerImage = "#save-banner-image";
-//     viewImportedImage = bfViewImportedImage;
-//     imgHolder = document.getElementById("div-img-container-holder");
-//     imgContainer = document.getElementById("div-img-container");
-//   }
+// displays the user selected banner image using Jimp in the edit banner image modal
+//path: array
+//curationMode: string (guided-moded) (freeform)
+window.handleSelectedBannerImage = async (path, curationMode) => {
+  console.log("Banner image here")
+  let imgContainer = "";
+  let imgHolder = "";
+  let paraImagePath = "";
+  let viewImportedImage = "";
+  let saveBannerImage = "";
+  let cropperOptions = "";
+  if (curationMode === "guided-mode") {
+    imgHolder = document.getElementById("guided-div-img-container-holder");
+    imgContainer = document.getElementById("guided-div-img-container");
+    viewImportedImage = window.guidedBfViewImportedImage;
+    paraImagePath = "#guided-para-path-image";
+    saveBannerImage = "#guided-save-banner-image";
+    cropperOptions = window.guidedCropOptions;
+  }
+  if (curationMode === "freeform") {
+    cropperOptions = cropOptions;
+    paraImagePath = "#para-path-image";
+    saveBannerImage = "#save-banner-image";
+    viewImportedImage = bfViewImportedImage;
+    imgHolder = document.getElementById("div-img-container-holder");
+    imgContainer = document.getElementById("div-img-container");
+  }
 
-//   if (window.path.length > 0) {
-//     let original_image_path = path[0];
-//     let image_path = original_image_path;
-//     let destination_image_path = require("path").join(
-//       window.homeDirectory,
-//       "SODA",
-//       "banner-image-conversion"
-//     );
-//     let converted_image_file = require("path").join(destination_image_path, "converted-tiff.jpg");
-//     let conversion_success = true;
-//     imageExtension = path[0].split(".").pop();
+  console.log("AS")
 
-//     if (imageExtension.toLowerCase() == "tiff") {
-//       Swal.fire({
-//         title: "Image conversion in progress!",
-//         html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
-//         heightAuto: false,
-//         backdrop: "rgba(0,0,0, 0.4)",
-//         showClass: {
-//           popup: "animate__animated animate__fadeInDown animate__faster",
-//         },
-//         hideClass: {
-//           popup: "animate__animated animate__fadeOutUp animate__faster",
-//         },
-//         didOpen: () => {
-//           Swal.showLoading();
-//         },
-//       });
+  if (path.length > 0) {
+    console.log("ASHSH")
+    let original_image_path = path[0];
+    let image_path = original_image_path;
+    let destination_image_path = window.path.join(
+      window.homeDirectory,
+      "SODA",
+      "banner-image-conversion"
+    );
+    let converted_image_file = window.path.join(destination_image_path, "converted-tiff.jpg");
+    let conversion_success = true;
+    window.imageExtension = path[0].split(".").pop();
 
-//       await Jimp.read(original_image_path)
-//         .then(async (file) => {
-//           if (!fs.existsSync(destination_image_path)) {
-//             fs.mkdirSync(destination_image_path, { recursive: true });
-//           }
+    console.log("comverted image file: ", converted_image_file)
 
-//           try {
-//             if (fs.existsSync(converted_image_file)) {
-//               fs.unlinkSync(converted_image_file);
-//             }
-//           } catch (err) {
-//             conversion_success = false;
-//             console.error(err);
-//           }
+    if (window.imageExtension.toLowerCase() == "tiff") {
+      Swal.fire({
+        title: "Image conversion in progress!",
+        html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp animate__faster",
+        },
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
 
-//           return file.write(converted_image_file, async () => {
-//             if (fs.existsSync(converted_image_file)) {
-//               let stats = fs.statSync(converted_image_file);
-//               let fileSizeInBytes = stats.size;
-//               let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+      console.log("About to Jimp")
 
-//               if (fileSizeInMegabytes > 5) {
-//                 fs.unlinkSync(converted_image_file);
+      await window.Jimp.read(original_image_path)
+        .then(async (file) => {
+          console.log("Jimping")
 
-//                 await Jimp.read(original_image_path)
-//                   .then((file) => {
-//                     return file.resize(1024, 1024).write(converted_image_file, () => {
-//                       imgHolder.style.display = "none";
-//                       imgContainer.style.display = "block";
+          if (!window.fs.existsSync(destination_image_path)) {
+            window.fs.mkdirSync(destination_image_path, { recursive: true });
+          }
 
-//                       $(paraImagePath).html(image_path);
-//                       viewImportedImage.src = converted_image_file;
-//                       window.myCropper.destroy();
-//                       window.myCropper = new Cropper(viewImportedImage, cropperOptions);
-//                       $(saveBannerImage).css("visibility", "visible");
-//                       $("body").removeClass("waiting");
-//                     });
-//                   })
-//                   .catch((err) => {
-//                     conversion_success = false;
-//                     console.error(err);
-//                   });
-//                 if (fs.existsSync(converted_image_file)) {
-//                   let stats = fs.statSync(converted_image_file);
-//                   let fileSizeInBytes = stats.size;
-//                   let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+          try {
+            if (window.fs.existsSync(converted_image_file)) {
+              window.fs.unlinkSync(converted_image_file);
+            }
+          } catch (err) {
+            conversion_success = false;
+            console.error(err);
+          }
 
-//                   if (fileSizeInMegabytes > 5) {
-//                     conversion_success = false;
-//                     // SHOW ERROR
-//                   }
-//                 }
-//               }
-//               image_path = converted_image_file;
-//               imageExtension = "jpg";
-//               $(paraImagePath).html(image_path);
-//               viewImportedImage.src = image_path;
-//               window.myCropper.destroy();
-//               window.myCropper = new Cropper(viewImportedImage, cropperOptions);
-//               $(paraImagePath).css("visibility", "visible");
-//             }
-//           });
-//         })
-//         .catch((err) => {
-//           conversion_success = false;
-//           console.error(err);
-//           Swal.fire({
-//             icon: "error",
-//             text: "Something went wrong",
-//             confirmButtonText: "OK",
-//             heightAuto: false,
-//             backdrop: "rgba(0,0,0, 0.4)",
-//           });
-//         });
-//       if (conversion_success == false) {
-//         $("body").removeClass("waiting");
-//         return;
-//       } else {
-//         Swal.close();
-//       }
-//     } else {
-//       imgHolder.style.display = "none";
-//       imgContainer.style.display = "block";
+          return file.write(converted_image_file, async () => {
+            if (window.fs.existsSync(converted_image_file)) {
+              let stats = window.fs.statSync(converted_image_file);
+              let fileSizeInBytes = stats.size;
+              let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
 
-//       $(paraImagePath).html(image_path);
-//       viewImportedImage.src = image_path;
-//       window.myCropper.destroy();
-//       window.myCropper = new Cropper(viewImportedImage, cropperOptions);
+              if (fileSizeInMegabytes > 5) {
+                window.fs.unlinkSync(converted_image_file);
 
-//       $(saveBannerImage).css("visibility", "visible");
-//     }
-//   } else {
-//     if (curationMode == "freeform") {
-//       if ($("#para-current-banner-img").text() === "None") {
-//         $(saveBannerImage).css("visibility", "hidden");
-//       } else {
-//         $(saveBannerImage).css("visibility", "visible");
-//       }
-//     }
-//   }
-// };
+                await window.Jimp.read(original_image_path)
+                  .then((file) => {
+                    return file.resize(1024, 1024).write(converted_image_file, () => {
+                      imgHolder.style.display = "none";
+                      imgContainer.style.display = "block";
+
+                      $(paraImagePath).html(image_path);
+                      viewImportedImage.src = converted_image_file;
+                      window.myCropper.destroy();
+                      window.myCropper = new Cropper(viewImportedImage, cropperOptions);
+                      $(saveBannerImage).css("visibility", "visible");
+                      $("body").removeClass("waiting");
+                    });
+                  })
+                  .catch((err) => {
+                    conversion_success = false;
+                    console.error(err);
+                  });
+                if (window.fs.existsSync(converted_image_file)) {
+                  let stats = window.fs.statSync(converted_image_file);
+                  let fileSizeInBytes = stats.size;
+                  let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+                  if (fileSizeInMegabytes > 5) {
+                    conversion_success = false;
+                    // SHOW ERROR
+                  }
+                }
+              }
+              image_path = converted_image_file;
+              window.imageExtension = "jpg";
+              $(paraImagePath).html(image_path);
+              viewImportedImage.src = image_path;
+              window.myCropper.destroy();
+              console.log("New cropper")
+              window.myCropper = new Cropper(viewImportedImage, cropperOptions);
+              console.log("New cropper created")
+
+              $(paraImagePath).css("visibility", "visible");
+            }
+          });
+        })
+        .catch((err) => {
+          conversion_success = false;
+          console.error(err);
+          Swal.fire({
+            icon: "error",
+            text: "Something went wrong",
+            confirmButtonText: "OK",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+        });
+      if (conversion_success == false) {
+        $("body").removeClass("waiting");
+        return;
+      } else {
+        Swal.close();
+      }
+    } else {
+      console.log("Not a tiff")
+      imgHolder.style.display = "none";
+      imgContainer.style.display = "block";
+
+      $(paraImagePath).html(image_path);
+      // console.log("Image path being passed into cropper")
+      console.log(image_path)
+      // prepend the file protocol to the image_path 
+      // TODO: Only do on dev serevrs? 
+      image_path = "file://" + image_path;
+      viewImportedImage.src = image_path;
+      window.myCropper.destroy();
+      window.myCropper = new Cropper(viewImportedImage, cropperOptions);
+      $(saveBannerImage).css("visibility", "visible");
+    }
+  } else {
+    if (curationMode == "freeform") {
+      if ($("#para-current-banner-img").text() === "None") {
+        $(saveBannerImage).css("visibility", "hidden");
+      } else {
+        $(saveBannerImage).css("visibility", "visible");
+      }
+    }
+  }
+};
 
 //////////////////////////////////////////////////////////////////////////////
 /////////////////// CONTEXT MENU OPTIONS FOR FOLDERS AND FILES ///////////////

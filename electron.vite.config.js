@@ -24,7 +24,7 @@ export default defineConfig({
       jQuery: 'jquery'
     })], 
     optimizeDeps: {
-      exclude: ['bootbox']
+      exclude: ['bootbox', 'Jimp/es']
     }
   },
   pyflask: {

@@ -15,6 +15,8 @@ import jQuery from 'jquery'
 import bootstrap from 'bootstrap'
 import 'bootstrap-select'
 import DragSort from '@yaireo/dragsort'
+import Cropper from 'cropperjs'
+
 import 'jstree'
 
 
@@ -5868,14 +5870,14 @@ const openPage = async (targetPageID) => {
               let new_position = new_img_src.lastIndexOf("."); //
 
               if (new_position != -1) {
-                imageExtension = new_img_src.substring(new_position + 1);
+                window.imageExtension = new_img_src.substring(new_position + 1);
 
-                if (imageExtension.toLowerCase() == "png") {
+                if (window.imageExtension.toLowerCase() == "png") {
                   fullBase64Image = "data:image/png;base64," + img_base64;
                   imageType = "png";
                 } else if (
-                  imageExtension.toLowerCase() == "jpeg" ||
-                  imageExtension.toLowerCase() == "jpg"
+                  window.imageExtension.toLowerCase() == "jpeg" ||
+                  window.imageExtension.toLowerCase() == "jpg"
                 ) {
                   fullBase64Image = "data:image/jpg;base64," + img_base64;
                   imageType = "jpg";
@@ -5920,7 +5922,7 @@ const openPage = async (targetPageID) => {
 
             //set new cropper for imported image
             window.myCropper.destroy();
-            window.myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
+            window.myCropper = new Cropper(window.guidedBfViewImportedImage, window.guidedCropOptions);
 
             $("#guided-save-banner-image").css("visibility", "visible");
           }
@@ -12541,14 +12543,14 @@ document
 $("#guided-button-add-banner-image").click(async () => {
   $("#guided-banner-image-modal").modal("show");
   window.myCropper.destroy();
-  window.myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
+  window.myCropper = new Cropper(window.guidedBfViewImportedImage, window.guidedCropOptions);
 });
 
 // Action when user click on "Import image" button for banner image
 $("#guided-button-import-banner-image").click(async () => {
   $("#guided-para-dataset-banner-image-status").html("");
   let filePaths = await window.electron.ipcRenderer.invoke("open-file-dialog-import-banner-image");
-  handleSelectedBannerImage(filePaths, "guided-mode");
+  window.handleSelectedBannerImage(filePaths, "guided-mode");
 });
 
 /////////////////////////////////////////////////////////
@@ -14498,6 +14500,7 @@ $("#guided-generate-dataset-button").on("click", async function () {
 });
 
 const guidedSaveBannerImage = async () => {
+  console.log("Wowawhoo")
   $("#guided-para-dataset-banner-image-status").html("Please wait...");
   //Save cropped image locally and check size
   let imageFolder = path.join(homeDirectory, "SODA", "guided-banner-images");
@@ -14507,13 +14510,13 @@ const guidedSaveBannerImage = async () => {
     window.fs.mkdirSync(imageFolder, { recursive: true });
   }
 
-  if (imageExtension == "png") {
+  if (window.imageExtension == "png") {
     imageType = "image/png";
   } else {
     imageType = "image/jpeg";
   }
   let datasetName = window.sodaJSONObj["digital-metadata"]["name"];
-  let imagePath = path.join(imageFolder, `${datasetName}.` + imageExtension);
+  let imagePath = path.join(imageFolder, `${datasetName}.` + window.imageExtension);
   let croppedImageDataURI = window.myCropper.getCroppedCanvas().toDataURL(imageType);
 
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
@@ -14537,8 +14540,8 @@ const guidedSaveBannerImage = async () => {
 $("#guided-save-banner-image").click(async (event) => {
   $("#guided-para-dataset-banner-image-status").html("");
 
-  if (guidedBfViewImportedImage.src.length > 0) {
-    if (guidedFormBannerHeight.value > 511) {
+  if (window.guidedBfViewImportedImage.src.length > 0) {
+    if (window.guidedFormBannerHeight.value > 511) {
       Swal.fire({
         icon: "warning",
         text: `As per NIH guidelines, banner image must not display animals or graphic/bloody tissues. Do you confirm that?`,
@@ -14556,10 +14559,10 @@ $("#guided-save-banner-image").click(async (event) => {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
       }).then(async (result) => {
-        if (guidedFormBannerHeight.value < 1024) {
+        if (window.guidedFormBannerHeight.value < 1024) {
           Swal.fire({
             icon: "warning",
-            text: `Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is ${guidedFormBannerHeight.value} px. Would you like to continue?`,
+            text: `Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is ${window.guidedFormBannerHeight.value} px. Would you like to continue?`,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showCancelButton: true,
@@ -14578,7 +14581,7 @@ $("#guided-save-banner-image").click(async (event) => {
               guidedSaveBannerImage();
             }
           });
-        } else if (guidedFormBannerHeight.value > 2048) {
+        } else if (window.guidedFormBannerHeight.value > 2048) {
           Swal.fire({
             icon: "warning",
             text: `Your cropped image is ${formBannerHeight.value} px and is bigger than the 2048px standard. Would you like to scale this image down to fit the entire cropped image?`,

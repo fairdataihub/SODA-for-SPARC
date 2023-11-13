@@ -158,6 +158,9 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('Jimp', {
       read: (imagePath) => {
         return Jimp.read(imagePath)
+      },
+      write: (convertedImagePath) => {
+        return Jimp.write(convertedImagePath)
       }
     })
     contextBridge.exposeInMainWorld('excel4node', {
