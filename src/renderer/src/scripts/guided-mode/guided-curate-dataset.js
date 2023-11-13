@@ -4576,13 +4576,17 @@ const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
 };
 
 const guidedAddUsersAndTeamsToDropdown = (usersArray, teamsArray) => {
+  console.log("HERE?")
   const guidedUsersAndTeamsDropdown = document.getElementById("guided_bf_list_users_and_teams");
   // Reset the dropdown
   guidedUsersAndTeamsDropdown.innerHTML =
     "<option>Select individuals or teams to grant permissions to</option>";
 
+    console.log(usersArray)
+
   // Loop through the users and add them to the dropdown
   for (const userString of usersArray) {
+    console.log(userString)
     const userNameAndEmail = userString.split("!|**|!")[0].trim();
     const userID = userString.split("!|**|!")[1].trim();
     const userOption = `
@@ -11137,7 +11141,7 @@ const removePennsievePermission = (clickedPermissionRemoveButton) => {
   }
 };
 
-const removePermission = (clickedPermissionRemoveButton) => {
+window.removePermission = (clickedPermissionRemoveButton) => {
   let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
   let permissionEntityType = permissionElementToRemove.attr("data-entity-type");
   let permissionNameToRemove = permissionElementToRemove.find(".permission-name-cell").text();
@@ -11190,7 +11194,7 @@ const createPermissionsTableRowElement = (entityType, name, permission) => {
       <td class="middle aligned permission-name-cell">${name}</td>
       <td class="middle aligned remove-left-border permission-type-cell">${permission}</td>
       <td class="middle aligned text-center remove-left-border" style="width: 20px">
-        <button type="button" class="btn btn-danger btn-sm" onclick="removePermission($(this))">Delete</button>
+        <button type="button" class="btn btn-danger btn-sm" onclick="window.removePermission($(this))">Delete</button>
       </td>
     </tr>
   `;
@@ -11222,6 +11226,7 @@ const createPennsievePermissionsTableRowElement = (entityType, name, permission,
   }
 };
 const renderPermissionsTable = () => {
+  console.log("Rendering permissions table?")
   // when rendering permissions we will need to check if the permission was fetched from pennsieve
   // we will then create a different table element that will behave differently
   // visually showing user that the permission will be deleted upon upload
@@ -11232,7 +11237,7 @@ const renderPermissionsTable = () => {
   const teams = window.sodaJSONObj["digital-metadata"]["team-permissions"];
   permissionsTableElements.push(createPermissionsTableRowElement("owner", owner, "owner"));
 
-  for (user of users) {
+  for (const user of users) {
     if (user?.["permissonSource"]) {
       // user was pull from pennsieve, create pennsieve element
       if (user?.["deleteFromPennsieve"] === true) {
@@ -11264,7 +11269,7 @@ const renderPermissionsTable = () => {
       );
     }
   }
-  for (team of teams) {
+  for (const team of teams) {
     if (team?.["permissionSource"]) {
       //team was pulled from Pennsieve, create Pennsieve element
       permissionsTableElements.push(
@@ -11493,6 +11498,7 @@ const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
 };
 
 const guidedAddUserPermission = (newUserPermissionObj) => {
+  console.log("Adding user permissions")
   //If an existing user with the same ID already exists, update the existing user's position
   for (userPermission of window.sodaJSONObj["digital-metadata"]["user-permissions"]) {
     if (
@@ -12090,6 +12096,7 @@ document.querySelector("#button-homepage-freeform-mode").addEventListener("click
 });
 
 $("#guided-button-add-permission-user-or-team").on("click", function () {
+  console.log("Here finally")
   try {
     //get the selected permission element
     const newPermissionElement = $("#guided_bf_list_users_and_teams option:selected");
@@ -12114,10 +12121,10 @@ $("#guided-button-add-permission-user-or-team").on("click", function () {
 
     if (newPermissionElement[0].getAttribute("permission-type") == "user") {
       //if the selected element is a user, add the user to the user permissions array
-      userString = newPermissionElement.text().trim();
-      userName = userString.split("(")[0].trim();
-      UUID = newPermissionElement.val().trim();
-      userPermission = newPermissionRoleElement.val().trim();
+      let userString = newPermissionElement.text().trim();
+      let userName = userString.split("(")[0].trim();
+      let UUID = newPermissionElement.val().trim();
+      let userPermission = newPermissionRoleElement.val().trim();
       const newUserPermissionObj = {
         userString: userString,
         userName: userName,
