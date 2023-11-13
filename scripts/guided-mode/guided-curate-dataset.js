@@ -11029,8 +11029,8 @@ const validateDatasetStructureSpreadsheet = (sheetData) => {
 
   // 1. Loop through the spreadsheet rows and find subs, pools, and sams that do not have valid names
   for (const row of sheetData) {
-    const subjectName = row["Subject ID"]
-    console.log("subjectName", subjectName)
+    const subjectName = row["Subject ID"];
+    console.log("subjectName", subjectName);
   }
 
   // Check to see if the spreadsheet has the correct d
