@@ -2100,7 +2100,7 @@ $("#save-banner-image").click((event) => {
   //bfViewImportedImage holds the entire image
   $("#para-dataset-banner-image-status").html("");
   if (bfViewImportedImage.src.length > 0) {
-    if (formBannerHeight.value > 511) {
+    if (window.formBannerHeight.value > 511) {
       Swal.fire({
         icon: "warning",
         text: `As per NIH guidelines, banner image must not display animals or graphic/bloody tissues. Do you confirm that?`,
@@ -2119,10 +2119,10 @@ $("#save-banner-image").click((event) => {
         },
       }).then((result) => {
         //then check if height is more than 2048 and handle accordingly
-        if (formBannerHeight.value < 1024) {
+        if (window.formBannerHeight.value < 1024) {
           Swal.fire({
             icon: "warning",
-            text: `Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is ${formBannerHeight.value} px. Would you like to continue?`,
+            text: `Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is ${window.formBannerHeight.value} px. Would you like to continue?`,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showCancelButton: true,
@@ -2141,10 +2141,10 @@ $("#save-banner-image").click((event) => {
               uploadBannerImage();
             }
           });
-        } else if (formBannerHeight.value > 2048) {
+        } else if (window.formBannerHeight.value > 2048) {
           Swal.fire({
             icon: "warning",
-            text: `Your cropped image is ${formBannerHeight.value} px and is bigger than the 2048px standard. Would you like to scale this image down to fit the entire cropped image?`,
+            text: `Your cropped image is ${window.formBannerHeight.value} px and is bigger than the 2048px standard. Would you like to scale this image down to fit the entire cropped image?`,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showCancelButton: true,

@@ -5956,7 +5956,7 @@ const openPage = async (targetPageID) => {
 
       const usersThatCanBeGrantedPermissions = usersReq.data.users;
 
-      const teamsThatCanBeGrantedPermissions = getSortedTeamStrings(teamsReq.data.teams);
+      const teamsThatCanBeGrantedPermissions = window.getSortedTeamStrings(teamsReq.data.teams);
 
       // Reset the dropdown with the new users and teams
       guidedAddUsersAndTeamsToDropdown(
@@ -11449,6 +11449,11 @@ const guidedShowBannerImagePreview = (imagePath, imported) => {
     //if imported = true then add imagepath without cachebreaker
     let guidedbannerImageElem = document.createElement("img");
 
+    // prepend file protocol prefix to imagePath 
+    // TODO: CHeck if this sjould be done in builds
+    imagePath = "file://" + imagePath;
+
+
     guidedbannerImageElem.src = imagePath;
     guidedbannerImageElem.alt = "Preview of banner image";
     guidedbannerImageElem.style = "max-height: 300px";
@@ -11463,6 +11468,7 @@ const guidedShowBannerImagePreview = (imagePath, imported) => {
     let guidedbannerImageElem = document.createElement("img");
 
     //imagePath + cachebreakeer at the end to update image every time
+    imagePath = "file://" + imagePath;
     guidedbannerImageElem.src = `${imagePath}?${date.getMilliseconds()}`;
     guidedbannerImageElem.alt = "Preview of banner image";
     guidedbannerImageElem.style = "max-height: 300px";
@@ -14520,7 +14526,7 @@ const guidedSaveBannerImage = async () => {
   let croppedImageDataURI = window.myCropper.getCroppedCanvas().toDataURL(imageType);
 
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
-    let image_file_size = window.fs.statSync(imagePath)["size"];
+    let image_file_size = window.fs.fileSizeSync(imagePath)
     if (image_file_size < 5 * 1024 * 1024) {
       $("#guided-para-dataset-banner-image-status").html("");
       setGuidedBannerImage(imagePath);
@@ -14584,7 +14590,7 @@ $("#guided-save-banner-image").click(async (event) => {
         } else if (window.guidedFormBannerHeight.value > 2048) {
           Swal.fire({
             icon: "warning",
-            text: `Your cropped image is ${formBannerHeight.value} px and is bigger than the 2048px standard. Would you like to scale this image down to fit the entire cropped image?`,
+            text: `Your cropped image is ${window.formBannerHeight.value} px and is bigger than the 2048px standard. Would you like to scale this image down to fit the entire cropped image?`,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showCancelButton: true,

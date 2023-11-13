@@ -1281,7 +1281,7 @@ window.guidedBfViewImportedImage = document.querySelector("#guided-image-banner"
 
 // const bfSaveBannerImageBtn = document.getElementById("save-banner-image");
 // const datasetBannerImageStatus = document.querySelector("#para-dataset-banner-image-status");
-// const formBannerHeight = document.getElementById("form-banner-height");
+window.formBannerHeight = document.getElementById("form-banner-height");
 window.guidedFormBannerHeight = document.getElementById("guided-form-banner-height");
 // const currentDatasetLicense = document.querySelector("#para-dataset-license-current");
 // const bfListLicense = document.querySelector("#bf-license-list");
@@ -3053,7 +3053,7 @@ var cropOptions = {
     var data = event.detail;
     let image_height = Math.round(data.height);
 
-    formBannerHeight.value = image_height;
+    window.formBannerHeight.value = image_height;
     //if image-height exceeds 2048 then prompt about scaling image down
     if (image_height < 512) {
       $("#save-banner-image").prop("disabled", true);
@@ -3726,7 +3726,7 @@ const refreshBfUsersList = () => {
 };
 
 // Takes in a pennsieve teams JSON response and returns a sorted list of team strings
-const getSortedTeamStrings = (pennsieveTeamsJsonResponse) => {
+window.getSortedTeamStrings = (pennsieveTeamsJsonResponse) => {
   const teamStrings = pennsieveTeamsJsonResponse.map((teamElement) => {
     return teamElement.team.name;
   });
@@ -3747,7 +3747,7 @@ const refreshBfTeamsList = async (teamList) => {
       const teamsReq = await client.get(
         `manage_datasets/ps_get_teams?selected_account=${window.defaultBfAccount}`
       );
-      const teamsThatCanBeGrantedPermissions = getSortedTeamStrings(teamsReq.data.teams);
+      const teamsThatCanBeGrantedPermissions = window.getSortedTeamStrings(teamsReq.data.teams);
 
       // The window.removeOptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
       $("#bf_list_teams").selectpicker("refresh");

@@ -14570,7 +14570,7 @@ $("#guided-save-banner-image").click(async (event) => {
         } else if (guidedFormBannerHeight.value > 2048) {
           Swal.fire({
             icon: "warning",
-            text: `Your cropped image is ${formBannerHeight.value} px and is bigger than the 2048px standard. Would you like to scale this image down to fit the entire cropped image?`,
+            text: `Your cropped image is ${window.formBannerHeight.value} px and is bigger than the 2048px standard. Would you like to scale this image down to fit the entire cropped image?`,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showCancelButton: true,

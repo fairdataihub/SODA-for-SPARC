@@ -1534,7 +1534,7 @@ const guidedBfViewImportedImage = document.querySelector("#guided-image-banner")
 
 const bfSaveBannerImageBtn = document.getElementById("save-banner-image");
 const datasetBannerImageStatus = document.querySelector("#para-dataset-banner-image-status");
-const formBannerHeight = document.getElementById("form-banner-height");
+const window.formBannerHeight = document.getElementById("form-banner-height");
 const guidedFormBannerHeight = document.getElementById("guided-form-banner-height");
 const currentDatasetLicense = document.querySelector("#para-dataset-license-current");
 const bfListLicense = document.querySelector("#bf-license-list");
@@ -3322,7 +3322,7 @@ var cropOptions = {
     var data = event.detail;
     let image_height = Math.round(data.height);
 
-    formBannerHeight.value = image_height;
+    window.formBannerHeight.value = image_height;
     //if image-height exceeds 2048 then prompt about scaling image down
     if (image_height < 512) {
       $("#save-banner-image").prop("disabled", true);
