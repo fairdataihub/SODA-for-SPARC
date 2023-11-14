@@ -7194,8 +7194,8 @@ const manageDesc = (ev) => {
 //   //document.getElementById("dismiss-status-bar").style = "display: none;";
 // }
 
-// let file_counter = 0;
-// let folder_counter = 0;
+let file_counter = 0;
+let folder_counter = 0;
 // var uploadComplete = new Notyf({
 //   position: { x: "right", y: "bottom" },
 //   dismissible: true,
@@ -7893,20 +7893,20 @@ const manageDesc = (ev) => {
 //   });
 // };
 
-// const get_num_files_and_folders = (dataset_folders) => {
-//   if ("files" in dataset_folders) {
-//     for (let file in dataset_folders["files"]) {
-//       file_counter += 1;
-//     }
-//   }
-//   if ("folders" in dataset_folders) {
-//     for (let folder in dataset_folders["folders"]) {
-//       folder_counter += 1;
-//       get_num_files_and_folders(dataset_folders["folders"][folder]);
-//     }
-//   }
-//   return;
-// };
+const get_num_files_and_folders = (dataset_folders) => {
+  if ("files" in dataset_folders) {
+    for (let file in dataset_folders["files"]) {
+      file_counter += 1;
+    }
+  }
+  if ("folders" in dataset_folders) {
+    for (let folder in dataset_folders["folders"]) {
+      folder_counter += 1;
+      get_num_files_and_folders(dataset_folders["folders"][folder]);
+    }
+  }
+  return;
+};
 
 // const determineDatasetDestination = () => {
 //   if (sodaJSONObj["generate-dataset"]) {
