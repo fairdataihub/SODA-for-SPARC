@@ -11317,65 +11317,83 @@ ipcRenderer.on("selected-sample-names-from-dialog", async (event, folders) => {
   console.log(sampleNames);
 });
 
-const guidedOpenSubjectAdditionSwal = async () => {
-  // Get a list of the existing subject names so we can check for duplicates
+const guidedOpenEntityAdditionSwal = async (entityName) => {
+  // Get a list of the existing entities so we can check for duplicates
   // const subjects = getExistingSubjectNames();
-  const preExistingSubjects = ["sub-1", "sub-2", "sub-3"];
+  let preExistingEntities;
+  let entityNameSingular;
+  let entityPrefix;
 
-  const subjects = [...preExistingSubjects, "sub-4", "sub-5", "sub-6"];
+  if (entityName === "subjects") {
+    preExistingEntities = getExistingSubjectNames();
+    entityNameSingular = "subject";
+    entityPrefix = "sub-";
+  }
+  if (entityName === "samples") {
+    preExistingEntities = getExistingSampleNames();
+    entityNameSingular = "sample";
+    entityPrefix = "sam-";
+  }
+  if (entityName === "pools") {
+    preExistingEntities = getExistingPoolNames();
+    entityNameSingular = "pool";
+    entityPrefix = "pool-";
+  }
 
-  const addSwalSubject = (subjectName) => {
-    if (subjectName.length < 1) {
-      throw new Error("Subject name cannot be empty");
+  const newEntities = [];
+
+  const handleSwalEntityAddition = (entityName) => {
+    if (entityName.length < 1) {
+      throw new Error(`Please enter a ${entityNameSingular} name`);
     }
     // Check to see if the subjectName starts with sub- otherwise prepend sub- to it
-    if (!subjectName.startsWith("sub-")) {
-      subjectName = `sub-${subjectName}`;
+    if (!entityName.startsWith(entityPrefix)) {
+      entityName = `${entityPrefix}${entityName}`;
     }
     // Check to see if the subjectName already exists
-    if (subjects.includes(subjectName)) {
-      throw new Error("Subject name already exists");
+    if (preExistingEntities.includes(entityName)) {
+      throw new Error(`${entityNameSingular} name has already been added`);
     }
 
-    if (preExistingSubjects.includes(subjectName)) {
-      throw new Error("Subject name already exists");
+    if (newEntities.includes(entityName)) {
+      throw new Error(`${entityNameSingular} name has already been added`);
     }
 
     // Hide any validation messages that may exist in the sweet alert
     Swal.resetValidationMessage();
 
     // Add the subject to the beginning of the subjects array
-    subjects.unshift(subjectName);
+    newEntities.unshift(entityName);
     // Re-render the subjects in the Swal
-    renderSubjectsInSwal();
+    renderEntitiesInSwal();
   };
 
-  const deleteSwalSubject = (subjectName) => {
-    console.log("deleteSwalSubject", subjectName);
+  const deleteSwalEntity = (entityName) => {
+    console.log("deleteSwalEntity", entityName);
     // Remove subject from subjects array
-    const index = subjects.indexOf(subjectName);
+    const index = newEntities.indexOf(entityName);
     if (index > -1) {
-      subjects.splice(index, 1);
+      newEntities.splice(index, 1);
     }
-    resetValidationMessage();
+    Swal.resetValidationMessage();
   };
 
-  const renderSubjectsInSwal = () => {
-    const subjectsList = document.getElementById("subjects-list");
-    subjectsList.innerHTML = subjects
+  const renderEntitiesInSwal = () => {
+    const entitiesList = document.getElementById("entities-liest");
+    entitiesList.innerHTML = newEntities
       .map(
-        (subject) => `
+        (entity) => `
       <div class="swal-file-row px-2">
-        <span class="swal-file-text">${subject}</span>
-        <button class="delete-button btn btn-sm btn-outline-danger" data-subject-name="${subject}">Delete</button>
+        <span class="swal-file-text">${entity}</span>
+        <button class="delete-button btn btn-sm btn-outline-danger" data-entity-name="${entity}">Delete</button>
       </div>
     `
       )
       .join("");
 
-    subjectsList.querySelectorAll(".delete-button").forEach((button) => {
+    entitiesList.querySelectorAll(".delete-button").forEach((button) => {
       button.addEventListener("click", () => {
-        deleteSwalSubject(button.dataset.subjectName);
+        deleteSwalEntity(button.dataset.entityName);
       });
     });
   };
@@ -11384,8 +11402,9 @@ const guidedOpenSubjectAdditionSwal = async () => {
     title: "Enter subject ID and press enter",
     html: `
       <p class="help-text">Instructions yada yada</p>
-      <div class="space-between w-100">
-        <input id='input-subject-addition' class='guided--input' type='text' name='guided-subject-id' placeholder='Enter subject ID and press enter'/>
+      <div class="space-between w-100" style="align-items: center;">
+        <p class="help-text mr-1">sub-</p>
+        <input id='input-entity-addition' class='guided--input' type='text' name='guided-subject-id' placeholder='Enter subject ID and press enter'/>
         <button
           class="ui positive button soda-green-background ml-1"
           style="width: 180px;"
@@ -11394,7 +11413,7 @@ const guidedOpenSubjectAdditionSwal = async () => {
           Add subject
         </button>
       </div>
-      <div id="subjects-list" class="swal-file-list my-3">
+      <div id="entities-liest" class="swal-file-list my-3">
       </div>
     `,
     width: 800,
@@ -11407,38 +11426,26 @@ const guidedOpenSubjectAdditionSwal = async () => {
     cancelButtonText: "Cancel subject addition",
     didOpen: () => {
       // Render the initial subjects in the Swal
-      renderSubjectsInSwal();
-      const subjectNameInput = document.getElementById("input-subject-addition");
-
-      if (!subjectNameInput.isVisible) {
-        console.log("input is not visible");
-      }
-
-      if (subjectNameInput.disabled) {
-        console.log("input is disabled");
-      }
-
-      setTimeout(() => {
-        subjectNameInput.focus();
-      }, 500);
+      renderEntitiesInSwal();
+      const swalEntityNameInput = document.getElementById("input-entity-addition");
 
       // Add an event listener for the enter key so the user can press enter to add the subject
-      subjectNameInput.addEventListener("keyup", (event) => {
+      swalEntityNameInput.addEventListener("keyup", (event) => {
         if (event.key === "Enter") {
           try {
-            addSwalSubject(subjectNameInput.value);
-            subjectNameInput.value = "";
+            handleSwalEntityAddition(swalEntityNameInput.value);
+            swalEntityNameInput.value = "";
           } catch (error) {
             Swal.showValidationMessage(error);
           }
         }
       });
 
-      const addSubjectButton = document.getElementById("guided-button-add-subject-in-swal");
-      addSubjectButton.addEventListener("click", () => {
+      const addEntityButton = document.getElementById("guided-button-add-subject-in-swal");
+      addEntityButton.addEventListener("click", () => {
         try {
-          addSwalSubject(subjectNameInput.value);
-          subjectNameInput.value = "";
+          handleSwalEntityAddition(swalEntityNameInput.value);
+          swalEntityNameInput.value = "";
         } catch (error) {
           Swal.showValidationMessage(error);
         }
@@ -11448,7 +11455,7 @@ const guidedOpenSubjectAdditionSwal = async () => {
 };
 
 document.getElementById("guided-button-add-subjects").addEventListener("click", async () => {
-  guidedOpenSubjectAdditionSwal();
+  guidedOpenEntityAdditionSwal("subjects");
 });
 const addSubjectSpecificationTableRow = () => {
   const subjectSpecificationTableBody = document.getElementById("subject-specification-table-body");
