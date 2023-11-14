@@ -13447,7 +13447,7 @@ const guidedUploadREADMEorCHANGESMetadata = async (
 const guidedPennsieveDatasetUpload = async () => {
   guidedSetNavLoadingState(true);
   try {
-    const guidedBfAccount = window.defaultBfDataset;
+    const guidedBfAccount = window.defaultBfAccount;
     const guidedDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
     const guidedDatasetSubtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];
     const guidedUsers = window.sodaJSONObj["digital-metadata"]["user-permissions"];
