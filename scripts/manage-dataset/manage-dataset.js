@@ -210,12 +210,12 @@ $("#button-create-bf-new-dataset").click(async () => {
         window.window.defaultBfDatasetId,
         window.defaultBfDataset
       );
-      refreshDatasetList();
+      window.refreshDatasetList();
       currentDatasetPermission.innerHTML = "";
       currentAddEditDatasetPermission.innerHTML = "";
       $("#button-create-bf-new-dataset").prop("disabled", false);
 
-      addNewDatasetToList(bfNewDatasetName);
+      window.addNewDatasetToList(bfNewDatasetName);
       ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.MANAGE_DATASETS,
@@ -243,7 +243,7 @@ $("#button-create-bf-new-dataset").click(async () => {
 
       $(".bf-dataset-span").html(bfNewDatasetName);
 
-      refreshDatasetList();
+      window.refreshDatasetList();
       updateDatasetList();
 
       $(".confirm-button").click();
@@ -285,7 +285,7 @@ $("#button-create-bf-new-dataset").click(async () => {
 });
 
 /// add new datasets to dataset List without calling Python to retrieve new list from Pennsieve
-const addNewDatasetToList = (newDataset) => {
+const window.addNewDatasetToList = (newDataset) => {
   datasetList.push({ name: newDataset, role: "owner" });
 };
 
@@ -377,7 +377,7 @@ $("#button-rename-dataset").on("click", async () => {
       log.info("Dataset rename success");
       window.defaultBfDataset = renamedDatasetName;
       $(".bf-dataset-span").html(renamedDatasetName);
-      refreshDatasetList();
+      window.refreshDatasetList();
       $("#bf-rename-dataset-name").val(renamedDatasetName);
       Swal.fire({
         title: `Renamed dataset ${currentDatasetName} to ${renamedDatasetName}`,
@@ -423,7 +423,7 @@ $("#button-rename-dataset").on("click", async () => {
       try {
         datasetList = [];
         datasetList = await api.getDatasetsForAccount(window.defaultBfDataset);
-        refreshDatasetList();
+        window.refreshDatasetList();
       } catch (error) {
         clientError(error);
       }
@@ -3090,7 +3090,7 @@ $("#button-submit-dataset").click(async () => {
   $("#para-please-wait-manage-dataset").html("Please wait while we verify a few things...");
   $("#para-progress-bar-status").html("");
 
-  let supplementary_checks = await run_pre_flight_checks(false);
+  let supplementary_checks = await window.run_pre_flight_checks(false);
   if (!supplementary_checks) {
     // hide the progress bar as an upload will not occur yet
     $("#upload_local_dataset_progress_div").hide();

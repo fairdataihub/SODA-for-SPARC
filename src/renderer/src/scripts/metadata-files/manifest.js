@@ -673,7 +673,7 @@ $(document).ready(function () {
 
 // function that removes hidden class from js element by id and smooth scrolls to it
 window.unHideAndSmoothScrollToElement = (id) => {
-  elementToUnhideAndScrollTo = document.getElementById(id);
+  let elementToUnhideAndScrollTo = document.getElementById(id);
   elementToUnhideAndScrollTo.classList.remove("hidden");
   elementToUnhideAndScrollTo.scrollIntoView({
     behavior: "smooth",
@@ -1105,7 +1105,7 @@ const generateManifestHelper = async () => {
     }
   }
   if (dataset_destination == "Pennsieve") {
-    let supplementary_checks = await run_pre_flight_checks(false);
+    let supplementary_checks = await window.run_pre_flight_checks(false);
     if (!supplementary_checks) {
       $("#sidebarCollapse").prop("disabled", false);
       return;
@@ -1251,7 +1251,7 @@ const initiate_generate_manifest_bf = async () => {
     }
   }
 
-  let supplementary_checks = await run_pre_flight_checks(false);
+  let supplementary_checks = await window.run_pre_flight_checks(false);
 
   if (!supplementary_checks) {
     // hide the progress bar as an upload will not occur yet
@@ -1278,8 +1278,8 @@ const initiate_generate_manifest_bf = async () => {
     get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
     try {
-      datasetList = [];
-      datasetList = await api.getDatasetsForAccount(window.defaultBfDataset);
+      window.datasetList = [];
+      window.datasetList = await api.getDatasetsForAccount(window.defaultBfDataset);
     } catch (error) {
       clientError(error);
     }

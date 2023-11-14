@@ -58,7 +58,7 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
 
   if (uploadBFBoolean) {
     // Run pre-flight checks before uploading the changes or readme file to Pennsieve
-    const supplementary_checks = await run_pre_flight_checks(false);
+    const supplementary_checks = await window.run_pre_flight_checks(false);
     if (!supplementary_checks) {
       return;
     }

@@ -560,7 +560,7 @@ ipcRenderer.on("start_pre_flight_checks", async (event, arg) => {
   log.info("Done with startup");
 
   // check integrity of all the core systems
-  await run_pre_flight_checks();
+  await window.run_pre_flight_checks();
 
   log.info("Running pre flight checks finished");
 });
@@ -743,7 +743,7 @@ const agent_installed = () => {
 };
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
-const run_pre_flight_checks = async (check_update = true) => {
+const window.run_pre_flight_checks = async (check_update = true) => {
   try {
     log.info("Running pre flight checks");
 
@@ -938,7 +938,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       });
       // If the user clicks the retry button, rerun the pre flight checks
       if (rerunPreFlightChecks) {
-        return await run_pre_flight_checks();
+        return await window.run_pre_flight_checks();
       }
 
       // Dismiss the preflight check notification if it is still open
@@ -981,7 +981,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       });
       // If the user clicks the retry button, rerun the pre flight checks
       if (rerunPreFlightChecks) {
-        return await run_pre_flight_checks();
+        return await window.run_pre_flight_checks();
       }
 
       // Dismiss the preflight check notification if it is still open
@@ -1031,7 +1031,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       });
       // If the user clicks the retry button, rerun the pre flight checks
       if (rerunPreFlightChecks) {
-        return await run_pre_flight_checks();
+        return await window.run_pre_flight_checks();
       }
       // Dismiss the preflight check notification if it is still open
       if (preFlightCheckNotyf) {
@@ -1108,7 +1108,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     });
     // If the user clicks retry, then run the preflight checks again
     if (retryChecks) {
-      return await run_pre_flight_checks();
+      return await window.run_pre_flight_checks();
     }
     // If the user clicks skip for now, then return false
     return false;
@@ -1877,7 +1877,7 @@ const generateSubjectsFileHelper = async (uploadBFBoolean) => {
   let bfdataset = document.getElementById("bf_dataset_load_subjects").innerText.trim();
   if (uploadBFBoolean) {
     // Run pre-flight checks before uploading the subjects file to Pennsieve
-    let supplementary_checks = await run_pre_flight_checks(false);
+    let supplementary_checks = await window.run_pre_flight_checks(false);
     if (!supplementary_checks) {
       return;
     }
@@ -2086,7 +2086,7 @@ const generateSamplesFileHelper = async (uploadBFBoolean) => {
   let bfDataset = $("#bf_dataset_load_samples").text().trim();
   if (uploadBFBoolean) {
     // Run pre-flight checks before uploading the samples file to Pennsieve
-    const supplementary_checks = await run_pre_flight_checks(false);
+    const supplementary_checks = await window.run_pre_flight_checks(false);
     if (!supplementary_checks) {
       return;
     }
@@ -3236,7 +3236,7 @@ async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
     datasetList = [];
     datasetList = responseObject.data.datasets;
     populateDatasetDropdownCurate(datasetDropdown, datasetList);
-    refreshDatasetList();
+    window.refreshDatasetList();
   } catch (error) {
     clientError(error);
     curateBFAccountLoadStatus.innerHTML = `<span style='color: red'>${userErrorMessage(
@@ -4051,7 +4051,7 @@ const selectOptionColor = (mylist) => {
 
 // this function now is only used to load all datasets ("All" permission)
 // onto the dataset_description file ds-name select
-const refreshDatasetList = () => {
+const window.refreshDatasetList = () => {
   let datasetPermission = "All";
   let filteredDatasets = [];
 
@@ -4700,7 +4700,7 @@ const showWindow.defaultBfDataset = async () => {
 
         $("#div-bf-account-load-progress").css("display", "none");
         showHideDropdownButtons("account", "show");
-        // refreshDatasetList()
+        // window.refreshDatasetList()
         updateDatasetList();
         updateOrganizationList();
       } catch (error) {
@@ -7353,7 +7353,7 @@ document.getElementById("button-generate").addEventListener("click", async funct
 
   statusText = "Please wait while we verify a few things...";
   if (dataset_destination == "Pennsieve") {
-    let supplementary_checks = await run_pre_flight_checks(false);
+    let supplementary_checks = await window.run_pre_flight_checks(false);
     if (!supplementary_checks) {
       $("#sidebarCollapse").prop("disabled", false);
 
@@ -8108,7 +8108,7 @@ const show_curation_shortcut = async () => {
 
       window.defaultBfDataset = datasetName;
       // document.getElementById("ds-description").innerHTML = "";
-      refreshDatasetList();
+      window.refreshDatasetList();
       $("#dataset-loaded-message").hide();
 
       // showHideDropdownButtons("dataset", "show");

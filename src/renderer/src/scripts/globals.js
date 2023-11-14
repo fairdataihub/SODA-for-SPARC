@@ -959,7 +959,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       $(".bf-dataset-span").html("None");
       window.defaultBfDataset = "Select dataset";
       document.getElementById("ds-description").innerHTML = "";
-      refreshDatasetList();
+      window.refreshDatasetList();
       $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "none");
       $("#button-confirm-bf-dataset-getting-started").hide();
 
@@ -997,7 +997,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           window.datasetList = [];
           window.datasetList = responseObject.data.datasets;
           window.clearDatasetDropdowns();
-          refreshDatasetList();
+          window.refreshDatasetList();
         } catch (error) {
           clientError(error);
           document.getElementById(
@@ -1359,7 +1359,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           let result = responseObject.data.datasets;
           window.datasetList = [];
           window.datasetList = result;
-          refreshDatasetList();
+          window.refreshDatasetList();
         }
       }
 
@@ -1548,7 +1548,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
             window.defaultBfDataset = bfDataset;
             // document.getElementById("ds-description").innerHTML = "";
-            refreshDatasetList();
+            window.refreshDatasetList();
             $("#dataset-loaded-message").hide();
 
             showHideDropdownButtons("dataset", "show");
@@ -1619,7 +1619,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         );
 
         // document.getElementById("ds-description").innerHTML = "";
-        refreshDatasetList();
+        window.refreshDatasetList();
         $("#dataset-loaded-message").hide();
 
         showHideDropdownButtons("dataset", "show");

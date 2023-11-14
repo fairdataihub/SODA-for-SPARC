@@ -1312,7 +1312,7 @@ export const successCheck = {
   markers: [],
 };
 
-const errorMark = {
+export const errorMark = {
   v: "5.7.11",
   fr: 30,
   ip: 0,

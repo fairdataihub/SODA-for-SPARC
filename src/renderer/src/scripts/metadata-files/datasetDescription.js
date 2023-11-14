@@ -378,7 +378,7 @@ const generateDDFile = async (uploadBFBoolean) => {
     /// get current, selected Pennsieve account
 
     // Run pre-flight checks before uploading the dataset_description file to Pennsieve
-    const supplementary_checks = await run_pre_flight_checks(false);
+    const supplementary_checks = await window.run_pre_flight_checks(false);
     if (!supplementary_checks) {
       return;
     }

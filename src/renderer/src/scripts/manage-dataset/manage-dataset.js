@@ -218,12 +218,12 @@ $("#button-create-bf-new-dataset").click(async () => {
         window.window.defaultBfDatasetId,
         window.defaultBfDataset
       );
-      refreshDatasetList();
+      window.refreshDatasetList();
       currentDatasetPermission.innerHTML = "";
       currentAddEditDatasetPermission.innerHTML = "";
       $("#button-create-bf-new-dataset").prop("disabled", false);
 
-      addNewDatasetToList(bfNewDatasetName);
+      window.addNewDatasetToList(bfNewDatasetName);
       ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.MANAGE_DATASETS,
@@ -245,13 +245,13 @@ $("#button-create-bf-new-dataset").click(async () => {
 
       log.info(`Requesting list of datasets`);
 
-      datasetList = [];
-      datasetList = await api.getDatasetsForAccount(window.defaultBfDataset);
+      window.datasetList = [];
+      window.datasetList = await api.getDatasetsForAccount(window.defaultBfDataset);
       log.info(`Requested list of datasets successfully`);
 
       $(".bf-dataset-span").html(bfNewDatasetName);
 
-      refreshDatasetList();
+      window.refreshDatasetList();
       updateDatasetList();
 
       $(".confirm-button").click();
@@ -293,8 +293,8 @@ $("#button-create-bf-new-dataset").click(async () => {
 });
 
 /// add new datasets to dataset List without calling Python to retrieve new list from Pennsieve
-const addNewDatasetToList = (newDataset) => {
-  datasetList.push({ name: newDataset, role: "owner" });
+window.addNewDatasetToList = (newDataset) => {
+  window.datasetList.push({ name: newDataset, role: "owner" });
 };
 
 // Rename dataset on pennsieve
@@ -385,7 +385,7 @@ $("#button-rename-dataset").on("click", async () => {
       log.info("Dataset rename success");
       window.defaultBfDataset = renamedDatasetName;
       $(".bf-dataset-span").html(renamedDatasetName);
-      refreshDatasetList();
+      window.refreshDatasetList();
       $("#bf-rename-dataset-name").val(renamedDatasetName);
       Swal.fire({
         title: `Renamed dataset ${currentDatasetName} to ${renamedDatasetName}`,
@@ -429,9 +429,9 @@ $("#button-rename-dataset").on("click", async () => {
       log.info("Requesting list of datasets");
 
       try {
-        datasetList = [];
-        datasetList = await api.getDatasetsForAccount(window.defaultBfDataset);
-        refreshDatasetList();
+        window.datasetList = [];
+        window.datasetList = await api.getDatasetsForAccount(window.defaultBfDataset);
+        window.refreshDatasetList();
       } catch (error) {
         clientError(error);
       }
@@ -574,9 +574,9 @@ $("#button-add-permission-pi").click(async () => {
 
 /// change PI owner status to manager
 const changeDatasetRolePI = (selectedDataset) => {
-  for (let i = 0; i < datasetList.length; i++) {
-    if (datasetList[i].name === selectedDataset) {
-      datasetList[i].role = "manager";
+  for (let i = 0; i < window.datasetList.length; i++) {
+    if (window.datasetList[i].name === selectedDataset) {
+      window.datasetList[i].role = "manager";
     }
   }
 };
@@ -726,17 +726,17 @@ const addPermissionUser = async (
     let { username } = get_username.data;
 
     if (selectedRole === "owner") {
-      for (let i = 0; i < datasetList.length; i++) {
-        if (datasetList[i].name === selectedBfDataset) {
-          datasetList[i].role = "manager";
+      for (let i = 0; i < window.datasetList.length; i++) {
+        if (window.datasetList[i].name === selectedBfDataset) {
+          window.datasetList[i].role = "manager";
         }
       }
     }
     if (selectedUser === username) {
       // then change role of dataset and refresh dataset list
-      for (let i = 0; i < datasetList.length; i++) {
-        if (datasetList[i].name === selectedBfDataset) {
-          datasetList[i].role = selectedRole.toLowerCase();
+      for (let i = 0; i < window.datasetList.length; i++) {
+        if (window.datasetList[i].name === selectedBfDataset) {
+          window.datasetList[i].role = selectedRole.toLowerCase();
         }
       }
     }
@@ -3098,7 +3098,7 @@ $("#button-submit-dataset").click(async () => {
   $("#para-please-wait-manage-dataset").html("Please wait while we verify a few things...");
   $("#para-progress-bar-status").html("");
 
-  let supplementary_checks = await run_pre_flight_checks(false);
+  let supplementary_checks = await window.run_pre_flight_checks(false);
   if (!supplementary_checks) {
     // hide the progress bar as an upload will not occur yet
     $("#upload_local_dataset_progress_div").hide();

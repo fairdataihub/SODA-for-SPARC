@@ -752,7 +752,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
   let datasetName = $("#bf_dataset_load_submission").text().trim();
   if (uploadBFBoolean) {
     // Run pre-flight checks before uploading the submission file to Pennsieve
-    let supplementary_checks = await run_pre_flight_checks(false);
+    let supplementary_checks = await window.run_pre_flight_checks(false);
     if (!supplementary_checks) {
       return;
     }

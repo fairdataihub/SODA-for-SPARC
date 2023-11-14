@@ -1098,7 +1098,7 @@ const generateManifestHelper = async () => {
     }
   }
   if (dataset_destination == "Pennsieve") {
-    let supplementary_checks = await run_pre_flight_checks(false);
+    let supplementary_checks = await window.run_pre_flight_checks(false);
     if (!supplementary_checks) {
       $("#sidebarCollapse").prop("disabled", false);
       return;
@@ -1244,7 +1244,7 @@ const initiate_generate_manifest_bf = async () => {
     }
   }
 
-  let supplementary_checks = await run_pre_flight_checks(false);
+  let supplementary_checks = await window.run_pre_flight_checks(false);
 
   if (!supplementary_checks) {
     // hide the progress bar as an upload will not occur yet

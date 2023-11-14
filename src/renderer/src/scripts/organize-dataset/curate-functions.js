@@ -496,9 +496,9 @@ const importGenerateDatasetStep = async (object) => {
           let bfDatasetSelected = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
           setTimeout(() => {
             let valid_dataset = false;
-            for (index in datasetList) {
-              let x = datasetList[index]["name"];
-              if (bfDatasetSelected == datasetList[index]["name"]) {
+            for (const index in window.datasetList) {
+              let x = window.datasetList[index]["name"];
+              if (bfDatasetSelected == window.datasetList[index]["name"]) {
                 valid_dataset = true;
               }
             }
