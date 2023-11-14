@@ -4088,16 +4088,21 @@ const guidedUnSkipPage = (pageId) => {
   // If the page no longer exists, return
   if (!page) {
     return;
+  } else {
+    console.log(pageId);
   }
 
   page.dataset.skipPage = "false";
 
   //Show the parent page or sub page capsule
   if (page.classList.contains("guided--page")) {
-    // replace -tab with -capsule  in pageId string
-    const pagesCapsule = pageId.replace("-tab", "-capsule");
-    console.log(pagesCapsule);
-    document.getElementById(pagesCapsule).classList.remove("hidden");
+    const pagesCapsuleID = pageId.replace("-tab", "-capsule");
+    console.log(pagesCapsuleID);
+    const domElement = document.getElementById(pagesCapsuleID);
+    if (!domElement) {
+      console.log(`Could not find element with id ${pagesCapsuleID}`);
+    }
+    document.getElementById(pagesCapsuleID).classList.remove("hidden");
   }
   if (page.classList.contains("sub-page")) {
     const subPagesCapsule = `${pageId}-capsule`;
@@ -5071,6 +5076,10 @@ const openPage = async (targetPageID) => {
       $("#guided-select-sparc-funding-consortium").trigger("change");
     }
 
+    if (targetPageID === "guided-subjects-specification-tab") {
+      // If the user has already added pooled subjects, disallow them from selecting that their subjects aren't pooled
+      const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+    }
     if (targetPageID === "guided-subjects-addition-tab") {
       renderSubjectsTable();
     }
@@ -11437,6 +11446,10 @@ const guidedOpenSubjectAdditionSwal = async () => {
     },
   });
 };
+
+document.getElementById("guided-button-add-subjects").addEventListener("click", async () => {
+  guidedOpenSubjectAdditionSwal();
+});
 const addSubjectSpecificationTableRow = () => {
   const subjectSpecificationTableBody = document.getElementById("subject-specification-table-body");
   //check if subject specification table body has an input with the name guided-subject-id

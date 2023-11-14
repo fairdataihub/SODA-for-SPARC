@@ -120,7 +120,6 @@
       >
         <div class="guided--capsule-container" id="structure-dataset-capsule-container">
           <div class="guided--capsule" id="guided-select-starting-point-capsule"></div>
-
           <div class="guided--capsule" id="guided-curation-preparation-intro-capsule"></div>
           <div class="guided--capsule" id="guided-ask-if-submission-is-sparc-funded-capsule"></div>
           <div class="guided--capsule" id="guided-pennsieve-intro-capsule"></div>
@@ -1163,6 +1162,7 @@
           <div class="guided--capsule" id="guided-samples-addition-capsule"></div>
           <div class="guided--capsule" id="guided-samples-specification-capsule"></div>
           <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
+          <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
           <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
           <div class="guided--capsule" id="guided-derivative-data-organization-capsule"></div>
           <div class="guided--capsule" id="guided-code-folder-capsule"></div>
@@ -1327,6 +1327,10 @@
             </div>
 
             <div class="guided--section" id="guided-section-add-subjects-manual">
+              <h2 class="guided--text-user-directions">
+                Click "<span class="next-button-span"></span>" below to begin adding subjects to
+                your dataset
+              </h2>
               <button
                 class="ui positive button soda-green-background"
                 id="guided-button-open-subject-import-flow"
@@ -1373,6 +1377,12 @@
             </p>
           </div>
           <div class="guided--section" id="guided-section-subjects-table">
+            <button
+              class="ui positive button soda-green-background"
+              id="guided-button-add-subjects"
+            >
+              Add subjects
+            </button>
             <table class="ui celled striped table mt-md" style="margin-bottom: 10px; width: 800px">
               <thead>
                 <tr>
