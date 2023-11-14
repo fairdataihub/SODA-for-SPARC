@@ -1,7 +1,5 @@
 // sourcery skip: merge-nested-ifs
 
-const { map } = require("jquery");
-
 const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
@@ -11149,7 +11147,7 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
 // CLICK HANDLER THAT EXTRACTS THE DATASET STRUCTURE FROM A SPREADSHEET
 document
   .getElementById("guided-button-import-dataset-structure-from-spreadsheet")
-  .addEventListener("click", () => {
+  .addEventListener("click", async () => {
     const savedTemplatePath = sodaJSONObj["dataset-structure-spreadsheet-path"];
     if (!savedTemplatePath) {
       notyf.error("No dataset structure spreadsheet has been saved");
@@ -11164,63 +11162,26 @@ document
     const worksheet = spreadsheet.Sheets[spreadsheet.SheetNames[0]];
     const sheetData = xlsx.utils.sheet_to_json(worksheet, { defval: "" });
 
-    try {
-      validateDatasetStructureSpreadsheet(sheetData);
-    } catch (error) {
-      notyf.error(`Error validating dataset structure spreadsheet: ${error}`);
+    const spreadsheetIsValid = await validateDatasetStructureSpreadsheet(sheetData);
+
+    if (!spreadsheetIsValid) {
+      await swalShowError(
+        "Invalid dataset structure spreadsheet",
+        "Please fix the errors in the spreadsheet and try again"
+      );
       return;
     }
 
-    const validateAndFormatEntity = (entityPrefix, entityName) => {
-      if (!entityName) {
-        return null;
-      }
-
-      if (!entityName.startsWith(entityPrefix)) {
-        entityName = `${entityPrefix}${entityName}`;
-      }
-
-      if (
-        !evaluateStringAgainstSdsRequirements(
-          entityName,
-          "string-adheres-to-identifier-conventions"
-        )
-      ) {
-        return null;
-      }
-
-      return entityName;
-    };
-
     for (const row of sheetData) {
-      const [existingPooledSubjects, existingUnpooledSubjects] = sodaJSONObj.getAllSubjects();
-      let subjectName = row["Subject ID"];
-      const validSubjectName = validateAndFormatEntity("sub-", row["Subject ID"]);
-      const validPoolName = validateAndFormatEntity("pool-", row["Pool ID"]);
-      const validSampleName = validateAndFormatEntity("sam-", row["Sample ID"]);
+      const subjectName = row["Subject ID"];
+      const subjectsPool = row["Pool ID"];
+      const sampleName = row["Sample ID"];
 
-      if (!validSubjectName) {
-        console.log(`Skipping invalid subject name: ${subjectName}`);
-        continue;
-      }
       // Check to see if the subject already exists
       const subjectAlreadyExists = getExistingSubjectNames().includes(subjectName);
       if (!subjectAlreadyExists) {
         sodaJSONObj.addSubject(subjectName);
-        const subjectsPool = row["Pool ID"];
         if (subjectsPool) {
-          let poolName = subjectsPool;
-          if (!poolName.startsWith("pool-")) {
-            poolName = `pool-${poolName}`;
-          }
-          const poolNameIsValid = evaluateStringAgainstSdsRequirements(
-            poolName,
-            "string-adheres-to-identifier-conventions"
-          );
-          if (!poolNameIsValid) {
-            console.log(`Skipping invalid pool name: ${poolName}`);
-            continue;
-          }
           const poolAlreadyExists = getExistingPoolNames().includes(poolName);
           if (!poolAlreadyExists) {
             sodaJSONObj.addPool(poolName);
@@ -11229,22 +11190,10 @@ document
         }
       }
 
-      let sampleName = row["Sample ID"];
       if (sampleName) {
-        if (!sampleName.startsWith("sam-")) {
-          sampleName = `sam-${sampleName}`;
-        }
-        const sampleNameIsValid = evaluateStringAgainstSdsRequirements(
-          sampleName,
-          "string-adheres-to-identifier-conventions"
-        );
-        if (!sampleNameIsValid) {
-          console.log(`Skipping invalid sample name: ${sampleName}`);
-          continue;
-        }
         const sampleAlreadyExists = getExistingSampleNames().includes(sampleName);
         if (!sampleAlreadyExists) {
-          console.log(`Adding sample ${sampleName} to subject ${subjectName}`);
+          sodaJSONObj.addSampleToSubject(sampleName, subjectsPool, subjectName);
         }
       }
     }
