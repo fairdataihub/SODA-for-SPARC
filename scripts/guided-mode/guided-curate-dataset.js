@@ -49,6 +49,7 @@ const handleGuidedModeOrgSwitch = async (buttonClicked) => {
 };
 
 const guidedGetCurrentUserWorkSpace = () => {
+  return null;
   // Returns null if the user has not selected a workspace
   const workSpaceFromUI = document.getElementById(
     "guided-pennsive-selected-organization"
@@ -60,6 +61,13 @@ const guidedGetCurrentUserWorkSpace = () => {
     return null;
   }
   return workSpaceFromUI;
+};
+
+const lowercaseFirstLetter = (string) => {
+  if (!string) {
+    return string;
+  }
+  return string.charAt(0).toLowerCase() + string.slice(1);
 };
 
 const lottieAnimationManager = {
@@ -1057,6 +1065,25 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
         sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
         sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
+      }
+    }
+
+    if (pageBeingLeftID === "guided-subjects-specification-tab") {
+      const subjectsArePooled = document
+        .getElementById("guided-button-subjects-are-pooled")
+        .classList.contains("selected");
+      if (subjectsArePooled) {
+        guidedUnSkipPage("guided-subjects-pooling-tab");
+      } else {
+        guidedSkipPage("guided-subjects-pooling-tab");
+      }
+      const subjectsHaveSamples = document
+        .getElementById("guided-button-subjects-have-samples")
+        .classList.contains("selected");
+      if (subjectsHaveSamples) {
+        guidedUnSkipPage("guided-samples-addition-tab");
+      } else {
+        guidedSkipPage("guided-samples-addition-tab");
       }
     }
 
@@ -6741,17 +6768,6 @@ const renderSubjectsTable = () => {
   document.getElementById("subject-specification-table-body").innerHTML = subjectElementRows;
 };
 
-document.getElementById("guided-button-add-a-subject").addEventListener("click", async () => {
-  const subjectName = await swalGetUserTextInput(
-    "Enter a name for the subject",
-    "Subject name",
-    "Subject name"
-  );
-  if (subjectName) {
-    console.log("subjectName", subjectName);
-  }
-});
-
 const renderPoolsTable = () => {
   const pools = sodaJSONObj.getPools();
   const poolElementRows = Object.keys(pools)
@@ -10993,13 +11009,6 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
       worksheet.column(i + 1).setWidth(30);
     }
 
-    // write the subjects to the spreadsheet
-    const subjects = ["sub-1", "sub-2", "sub-3"];
-    for (i = 0; i < subjects.length; i++) {
-      worksheet.cell(i + 2, 1).string(subjects[i]);
-    }
-    console.log("subjects", subjects);
-
     // write the spreadsheet to the selected
     const filePath = path + "/dataset_structure.xlsx";
     const buffer = await workbook.writeToBuffer();
@@ -11009,8 +11018,6 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
       "Template successfully generated",
       `
         Would you like to open the template now?
-        <br />
-        Template Path: ${filePath}
       `,
       "Yes",
       "No"
@@ -11033,7 +11040,7 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
   const pooledSubjects = new Map();
   // 1. Loop through the spreadsheet rows and find subs, pools, and sams that do not have valid names
   for (const row of sheetData) {
-    const subjectName = row["Subject ID"];
+    const subjectName = lowercaseFirstLetter(row["Subject ID"]);
     if (!subjectName) {
       continue;
     }
@@ -11050,7 +11057,8 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
       continue;
     }
 
-    const poolName = row["Pool ID"];
+    const poolName = lowercaseFirstLetter(row["Pool ID"]);
+
     if (poolName) {
       if (!poolName.startsWith("pool-")) {
         invalidPoolNames.push(poolName);
@@ -11076,7 +11084,7 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
       }
     }
 
-    const sampleName = row["Sample ID"];
+    const sampleName = lowercaseFirstLetter(row["Sample ID"]);
     if (sampleName) {
       if (!sampleName.startsWith("sam-")) {
         invalidSampleNames.push(sampleName);
@@ -11089,12 +11097,10 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
       );
       if (!sampleNameIsValid) {
         invalidSampleNames.push(sampleName);
+      } else if (validSampleNames.includes(sampleName)) {
+        duplicateSampleNames.push(sampleName);
       } else {
-        if (validSampleNames.includes(sampleName)) {
-          duplicateSampleNames.push(sampleName);
-        } else {
-          validSampleNames.push(sampleName);
-        }
+        validSampleNames.push(sampleName);
       }
     }
   }
@@ -11172,6 +11178,11 @@ document
 
     const spreadsheetIsValid = await validateDatasetStructureSpreadsheet(sheetData);
 
+    // Get the count of existing subjects, pools, and samples to compare after the import is done
+    const preImportSubjectCount = getExistingSubjectNames().length;
+    const preImportPoolCount = getExistingPoolNames().length;
+    const preImportSampleCount = getExistingSampleNames().length;
+
     if (!spreadsheetIsValid) {
       await swalShowError(
         "Invalid dataset structure spreadsheet",
@@ -11204,6 +11215,39 @@ document
           sodaJSONObj.addSampleToSubject(sampleName, subjectsPool, subjectName);
         }
       }
+    }
+
+    // Get the count of existing subjects, pools, and samples to compare after the import is done
+    const postImportSubjectCount = getExistingSubjectNames().length;
+    const postImportPoolCount = getExistingPoolNames().length;
+    const postImportSampleCount = getExistingSampleNames().length;
+
+    const subjectsAdded = postImportSubjectCount - preImportSubjectCount;
+    const poolsAdded = postImportPoolCount - preImportPoolCount;
+    const samplesAdded = postImportSampleCount - preImportSampleCount;
+
+    if (subjectsAdded > 0) {
+      notyf.open({
+        duration: "3000",
+        type: "success",
+        message: `${subjectsAdded} subjects added`,
+      });
+    }
+
+    if (poolsAdded > 0) {
+      notyf.open({
+        duration: "3000",
+        type: "success",
+        message: `${poolsAdded} pools added`,
+      });
+    }
+
+    if (samplesAdded > 0) {
+      notyf.open({
+        duration: "3000",
+        type: "success",
+        message: `${samplesAdded} samples added`,
+      });
     }
   });
 
@@ -11378,23 +11422,28 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
   };
 
   const renderEntitiesInSwal = () => {
-    const entitiesList = document.getElementById("entities-liest");
-    entitiesList.innerHTML = newEntities
-      .map(
-        (entity) => `
-      <div class="swal-file-row px-2">
-        <span class="swal-file-text">${entity}</span>
-        <button class="delete-button btn btn-sm btn-outline-danger" data-entity-name="${entity}">Delete</button>
-      </div>
-    `
-      )
-      .join("");
+    const entitiesList = document.getElementById("entities-list");
+    if (newEntities.length === 0) {
+      entitiesList.classList.add("hidden");
+    } else {
+      entitiesList.classList.remove("hidden");
+      entitiesList.innerHTML = newEntities
+        .map(
+          (entity) => `
+            <div class="swal-file-row px-2">
+              <span class="swal-file-text">${entity}</span>
+              <button class="delete-button btn btn-sm btn-outline-danger" data-entity-name="${entity}">Delete</button>
+            </div>
+          `
+        )
+        .join("");
 
-    entitiesList.querySelectorAll(".delete-button").forEach((button) => {
-      button.addEventListener("click", () => {
-        deleteSwalEntity(button.dataset.entityName);
+      entitiesList.querySelectorAll(".delete-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          deleteSwalEntity(button.dataset.entityName);
+        });
       });
-    });
+    }
   };
 
   await Swal.fire({
@@ -11412,8 +11461,7 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
           Add subject
         </button>
       </div>
-      <div id="entities-liest" class="swal-file-list my-3">
-      </div>
+      <div id="entities-list" class="swal-file-list my-3"></div>
     `,
     width: 800,
     heightAuto: false,

@@ -1241,19 +1241,37 @@
         <div
           id="guided-subjects-specification-tab"
           class="guided--page"
-          data-page-name="Subjects specification"
+          data-page-name="Dataset structure"
         >
-          <h1 class="text-sub-step-title">Subjects specification</h1>
+          <h1 class="text-sub-step-title">Dataset structure</h1>
           <div class="guided--section">
             <p class="help-text">
-              Create a unique ID for each of the subjects that data was collected from in the
-              interface below. If you have a large amount of subjects (greater than 20), view the
-              dropdown below for an alternative method of importing subjects.
+              Tell us about the structure of your dataset. This will help determine the best flow
+              for getting your data into SODA.
             </p>
             <div class="guided--section">
               <label class="guided--form-label centered">
                 Are the subjects in your study organized into pools?
               </label>
+              <div class="info-dropdown" style="align-self: center">
+                <p class="info-dropdown-text" data-dropdown-type="info">What are pools?</p>
+                <i class="fas fa-chevron-right"></i>
+              </div>
+              <div class="info-container">
+                <p class="help-text">
+                  <b>Subjects</b> are experimental units that are being studied. A subject can be a
+                  living human, animal, or a biological specimen.
+                </p>
+                <p class="help-text">
+                  <b>Samples</b> are a portion of a subject's tissue, fluid, or other biological
+                  materal that data is collected from.
+                </p>
+                <p class="help-text">
+                  <b>For example:</b> If a study is being done on liver tissue, a subject could be a
+                  human donor, and a sample could be a piece of liver tissue that was collected for
+                  analysis.
+                </p>
+              </div>
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
                   class="ui positive basic button guided--radio-button"
@@ -1278,6 +1296,25 @@
               <label class="guided--form-label centered">
                 Did you collect data from samples in this study?
               </label>
+              <div class="info-dropdown" style="align-self: center">
+                <p class="info-dropdown-text" data-dropdown-type="info">What are samples?</p>
+                <i class="fas fa-chevron-right"></i>
+              </div>
+              <div class="info-container">
+                <p class="help-text">
+                  <b>Subjects</b> are experimental units that are being studied. A subject can be a
+                  living human, animal, or a biological specimen.
+                </p>
+                <p class="help-text">
+                  <b>Samples</b> are a portion of a subject's tissue, fluid, or other biological
+                  materal that data is collected from.
+                </p>
+                <p class="help-text">
+                  <b>For example:</b> If a study is being done on liver tissue, a subject could be a
+                  human donor, and a sample could be a piece of liver tissue that was collected for
+                  analysis.
+                </p>
+              </div>
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
                   class="ui positive basic button guided--radio-button"
@@ -1301,10 +1338,10 @@
 
             <div class="guided--section" id="guided-section-ask-subject-addition-method">
               <label class="guided--form-label centered">
-                The SDS requires a unique ID for each subjects, samples and pools in your dataset
-                [adapt this based on previous answers]. You can provide these IDs in the SODA UI or
-                import them through a spreadsheet (more convenient if you have a large number of
-                subjects/samples/pools [again, adapt]. What would you like to do?
+                The SDS requires a unique ID for each subject and sample in your dataset. You can
+                provide these IDs in the SODA UI or import them through a spreadsheet (more
+                convenient if you have a large amount of subjects/samples). What would you like to
+                do?
               </label>
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
@@ -1340,25 +1377,33 @@
             </div>
 
             <div class="guided--section" id="guided-section-add-subjects-via-spreadsheet">
-              <p class="help-text">
-                The SPARC guidelines require all datasets to be organized according to a strict
-                folder structure. Over the next steps, you will be asked to specify folders and
-                files to be included in your dataset so SODA can automatically organize them
-                according to the SPARC folder structure when generating your dataset in the last
-                step of this process.
-              </p>
-              <button
-                class="ui positive button soda-green-background"
-                id="guided-button-create-dataset-structure-spreadsheet"
-              >
-                Create spreadsheet to fill out
-              </button>
-              <button
-                class="ui positive button soda-green-background"
-                id="guided-button-import-dataset-structure-from-spreadsheet"
-              >
-                Import values from spreadsheet
-              </button>
+              <div class="guided--section">
+                <p class="help-text">
+                  <b>1. </b>To import your subjects and samples through a spreadsheet, click the
+                  button below to save a blank subject/sample spreadsheet template to your computer.
+                  (This will likely have a seperate docs page explaining how to fill it out.......)
+                </p>
+                <button
+                  class="ui positive button soda-green-background"
+                  id="guided-button-create-dataset-structure-spreadsheet"
+                  style="width: 300px !important"
+                >
+                  Create spreadsheet to fill out
+                </button>
+              </div>
+              <div class="guided--section">
+                <p class="help-text">
+                  <b>2. </b>Once you have filled out the spreadsheet, import it below and SODA will
+                  add the provided subjects and samples to your dataset.
+                </p>
+                <button
+                  class="ui positive button soda-green-background"
+                  id="guided-button-import-dataset-structure-from-spreadsheet"
+                  style="width: 300px !important"
+                >
+                  Import values from spreadsheet
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1436,7 +1481,7 @@
           <div class="guided--section" id="guided-section-samples-tables"></div>
         </div>
 
-        <div
+        <!--<div
           id="guided-subjects-folder-tab"
           class="guided--page"
           data-page-name="Dataset structuring"
@@ -1493,7 +1538,7 @@
           </div>
           <button id="guided-button-add-a-subject">Add an individual subject</button>
           <button>Add subjects from folders</button>
-        </div>
+        </div>-->
         <div
           id="guided-primary-data-organization-tab"
           class="guided--page"
