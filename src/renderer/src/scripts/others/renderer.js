@@ -1074,6 +1074,7 @@ const check_api_key = async () => {
 // };
 
 const get_latest_agent_version = async () => {
+  console.log("In this place now and about to fail here")
   let browser_download_url = undefined;
 
   // let the error raise up to the caller if one occurs
@@ -1119,7 +1120,8 @@ const get_latest_agent_version = async () => {
     });
   }
 
-  if (process.platform == "linux") {
+  if (window.process.platform() == "linux") {
+    console.log("IN linucx platform path")
     window.reverseSwalButtons = false;
     targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
