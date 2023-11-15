@@ -40,13 +40,13 @@ const disseminatePublish = async (curationMode) => {
 
   // begin the dataset publishing flow
   try {
-    let status = await showPublishingStatus(submitReviewDatasetCheck, curationMode);
+    let status = await window.showPublishingStatus(submitReviewDatasetCheck, curationMode);
     let embargoReleaseDate = status[1];
     $("#prepublishing-submit-btn").removeClass("loading");
 
     if (status[0] && curationMode === "freeform") {
       // submit the dataset for review with the given embargoReleaseDate
-      await submitReviewDataset(embargoReleaseDate, curationMode);
+      await window.submitReviewDataset(embargoReleaseDate, curationMode);
       $("#prepublishing-submit-btn-container").hide();
       resetffmPrepublishingUI();
     }
@@ -99,7 +99,7 @@ const disseminateShowPublishingStatus = async (callback, account, dataset) => {
     if (callback == "noClear") {
       var nothing;
     } else {
-      await showPublishingStatus("noClear");
+      await window.showPublishingStatus("noClear");
     }
   }
   $("#submit_prepublishing_review-spinner").hide();

@@ -2399,7 +2399,7 @@ guidedUnHideSidebar = () => {};
 
 // This function reads the innerText of the textSharedWithCurationTeamStatus element
 // and hides or shows the share and unshare buttons accordingly
-const guidedSetCurationTeamUI = () => {
+const window.guidedSetCurationTeamUI = () => {
   const textSharedWithCurationTeamStatus = document.getElementById(
     "guided--para-review-dataset-info-disseminate"
   );
@@ -2498,7 +2498,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
     // Will return false if there are issues running the precheck flow
     if (publishPreCheckStatus[0]) {
       guidedShareWithCurationTeamButton.classList.add("hidden");
-      await submitReviewDataset(embargoDetails[1], curationMode);
+      await window.submitReviewDataset(embargoDetails[1], curationMode);
       guidedUnshareMessage.classList.remove("hidden");
     }
     guidedShareWithCurationTeamButton.classList.remove("loading");
@@ -6610,8 +6610,8 @@ const openPage = async (targetPageID) => {
       let pennsieveDOICheck = await api.getDatasetDOI(currentAccount, currentDataset);
 
       //Set the ui for curation team and DOI information
-      await showPublishingStatus("", "guided");
-      guidedSetCurationTeamUI();
+      await window.showPublishingStatus("", "guided");
+      window.guidedSetCurationTeamUI();
       guidedSetDOIUI(pennsieveDOICheck);
     }
 

@@ -3291,7 +3291,7 @@ const datasetStatusListChange = () => {
 const postCurationListChange = () => {
   // display the pre-publishing page
   showPrePublishingPageElements();
-  showPublishingStatus();
+  window.showPublishingStatus();
 };
 
 // upload banner image //
@@ -3526,7 +3526,7 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
       return;
     }
     // submit the dataset for review with the given embargoReleaseDate
-    await submitReviewDataset(embargoReleaseDate, curationMode);
+    await window.submitReviewDataset(embargoReleaseDate, curationMode);
   } else {
     // status is NOT_PUBLISHED
     // embargo release date represents the time a dataset that has been reviewed for publication becomes public
@@ -3621,20 +3621,20 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
 
 ipcRenderer.on("warning-publish-dataset-selection", (event, index) => {
   if (index === 0) {
-    submitReviewDataset();
+    window.submitReviewDataset();
   }
   $("#submit_prepublishing_review-spinner").hide();
 });
 
 ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   if (index === 0) {
-    submitReviewDataset();
+    window.submitReviewDataset();
   }
   $("#submit_prepublishing_review-spinner").hide();
 });
 
 // Go about removing the feature and see how it effects dataset submissions
-const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
+const window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   let currentAccount = window.defaultBfDataset;
   let currentDataset = window.defaultBfDataset;
 
@@ -3704,7 +3704,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   }
 
   // update the publishing status UI element
-  await showPublishingStatus("noClear", curationMode);
+  await window.showPublishingStatus("noClear", curationMode);
 
   // track success
   ipcRenderer.send(
@@ -3744,7 +3744,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
     $("#guided-button-share-dataset-with-curation-team").removeClass("loading");
     $("#guided-button-share-dataset-with-curation-team").disabled = false;
 
-    guidedSetCurationTeamUI();
+    window.guidedSetCurationTeamUI();
   }
 };
 
@@ -3781,7 +3781,7 @@ const withdrawDatasetSubmission = async (curationMode = "") => {
   // get the publishing status of the currently selected dataset
   // then check if it can be withdrawn, then withdraw it
   // catch any uncaught errors at this level (aka greacefully catch any exceptions to alert the user we cannot withdraw their dataset)
-  let status = await showPublishingStatus(withdrawDatasetCheck, curationMode).catch((error) => {
+  let status = await window.showPublishingStatus(withdrawDatasetCheck, curationMode).catch((error) => {
     log.error(error);
     console.error(error);
     Swal.fire({
@@ -3873,7 +3873,7 @@ const withdrawReviewDataset = async (curationMode) => {
     );
 
     // show the user their dataset's updated publishing status
-    await showPublishingStatus("noClear", curationMode);
+    await window.showPublishingStatus("noClear", curationMode);
 
     await Swal.fire({
       title: "Dataset has been withdrawn from review!",
@@ -3905,7 +3905,7 @@ const withdrawReviewDataset = async (curationMode) => {
       guidedUnshareWithCurationTeamButton.classList.remove("loading");
       guidedUnshareWithCurationTeamButton.classList.remove("hidden");
 
-      guidedSetCurationTeamUI();
+      window.guidedSetCurationTeamUI();
     }
 
     // scroll to the submit button
@@ -4200,7 +4200,7 @@ const showPrePublishingPageElements = () => {
 
 // The callback argument is used to determine whether or not to publish or unpublish the dataset
 // If callback is empty then the dataset status will only be fetched and displayed
-const showPublishingStatus = async (callback, curationMode = "") => {
+const window.showPublishingStatus = async (callback, curationMode = "") => {
   return new Promise(async function (resolve, reject) {
     if (callback == "noClear") {
       let nothing;
