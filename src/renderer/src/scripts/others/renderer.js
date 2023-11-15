@@ -398,8 +398,11 @@ const startupServerAndApiCheck = async () => {
   }
 
   // get apps base path
-  const basepath = await window.electron.ipcRenderer.invoke("get-app-path", "home")
+  const basepath = await window.electron.ipcRenderer.invoke("get-app-path", undefined)
   const resourcesPath = window.process.resourcesPath();
+
+  console.log(basepath)
+  console.log(resourcesPath)
 
   // set the templates path
   try {

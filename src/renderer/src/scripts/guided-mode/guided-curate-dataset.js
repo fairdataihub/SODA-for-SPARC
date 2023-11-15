@@ -13545,7 +13545,7 @@ const guidedPennsieveDatasetUpload = async () => {
     const guidedReadMeMetadata = window.sodaJSONObj["dataset-metadata"]["README"];
 
     // get apps base path
-    const basepath = await window.electron.ipcRenderer.invoke("get-app-path", "home")
+    const basepath = await window.electron.ipcRenderer.invoke("get-app-path", undefined)
     const resourcesPath = window.process.resourcesPath();
 
     // set the templates path
