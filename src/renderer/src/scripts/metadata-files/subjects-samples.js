@@ -2265,7 +2265,7 @@ $(document).ready(function () {
         logMetadataForAnalytics(
           "Success",
           MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           "Existing",
           Destinations.LOCAL
         );
@@ -2448,7 +2448,7 @@ const importExistingSubjectsFile = () => {
     logMetadataForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.SUBJECTS,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
     );
@@ -2466,7 +2466,7 @@ const importExistingSubjectsFile = () => {
       logMetadataForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.SUBJECTS,
-        AnalyticsGranularity.ALL_LEVELS,
+        window.AnalyticsGranularity.ALL_LEVELS,
         "Existing",
         Destinations.LOCAL
       );
@@ -2497,7 +2497,7 @@ const importExistingSamplesFile = () => {
     logMetadataForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.SAMPLES,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
     );
@@ -2515,7 +2515,7 @@ const importExistingSamplesFile = () => {
       logMetadataForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.SAMPLES,
-        AnalyticsGranularity.ALL_LEVELS,
+        window.AnalyticsGranularity.ALL_LEVELS,
         "Existing",
         Destinations.LOCAL
       );
@@ -2575,7 +2575,7 @@ const checkBFImportSubjects = async () => {
     logMetadataForAnalytics(
       "Success",
       MetadataAnalyticsPrefix.SUBJECTS,
-      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       "Existing",
       Destinations.PENNSIEVE
     );
@@ -2595,7 +2595,7 @@ const checkBFImportSubjects = async () => {
     logMetadataForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.SUBJECTS,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.PENNSIEVE
     );
@@ -2641,7 +2641,7 @@ const checkBFImportSamples = async () => {
     logMetadataForAnalytics(
       "Success",
       MetadataAnalyticsPrefix.SAMPLES,
-      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       "Existing",
       Destinations.PENNSIEVE
     );
@@ -2661,7 +2661,7 @@ const checkBFImportSamples = async () => {
     logMetadataForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.SAMPLES,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.PENNSIEVE
     );

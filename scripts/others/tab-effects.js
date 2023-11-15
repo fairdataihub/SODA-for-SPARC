@@ -967,7 +967,7 @@ const transitionSubQuestions = async (ev, currentDiv, parentDiv, button, categor
     // logCurationForAnalytics(
     //   "Success",
     //   PrepareDatasetsAnalyticsPrefix.CURATE,
-    //   AnalyticsGranularity.ACTION,
+    //   window.AnalyticsGranularity.ACTION,
     //   ["New"],
     //   "Local",
     //   true
@@ -1820,7 +1820,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
       logCurationForAnalytics(
         "Error",
         PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION,
+        window.AnalyticsGranularity.ACTION,
         ["Dataset Locked"],
         "Pennsieve",
         true
@@ -1864,7 +1864,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
       logCurationForAnalytics(
         "Error",
         PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION,
+        window.AnalyticsGranularity.ACTION,
         ["Existing"],
         "Pennsieve",
         false
@@ -1916,7 +1916,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
           logCurationForAnalytics(
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
             ["Existing"],
             "Pennsieve",
             false
@@ -1942,7 +1942,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
       logCurationForAnalytics(
         "Success",
         PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Existing"],
         "Pennsieve",
         false

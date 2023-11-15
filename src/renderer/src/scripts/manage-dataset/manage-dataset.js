@@ -658,10 +658,10 @@ const addPermissionUser = async (
       backdrop: "rgba(0,0,0, 0.4)",
     });
 
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       ["Add User Permissions"]
     );
 
@@ -707,10 +707,10 @@ const addPermissionUser = async (
 
   log.info("Added permission ${selectedRole} to ${selectedUser} for ${selectedBfDataset}");
 
-  logGeneralOperationsForAnalytics(
+  window.logGeneralOperationsForAnalytics(
     "Success",
     ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-    AnalyticsGranularity.ALL_LEVELS,
+    window.AnalyticsGranularity.ALL_LEVELS,
     ["Add User Permissions"]
   );
 
@@ -813,10 +813,10 @@ $("#button-add-permission-team").click(async () => {
 
       let res = bf_add_team_permission.data.message;
       log.info("Added permission for the team");
-      logGeneralOperationsForAnalytics(
+      window.logGeneralOperationsForAnalytics(
         "Success",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-        AnalyticsGranularity.ALL_LEVELS,
+        window.AnalyticsGranularity.ALL_LEVELS,
         ["Add Team Permissions"]
       );
 
@@ -868,10 +868,10 @@ $("#button-add-permission-team").click(async () => {
         }
       );
 
-      logGeneralOperationsForAnalytics(
+      window.logGeneralOperationsForAnalytics(
         "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-        AnalyticsGranularity.ALL_LEVELS,
+        window.AnalyticsGranularity.ALL_LEVELS,
         ["Add Team Permissions"]
       );
     }
@@ -1025,10 +1025,10 @@ const showCurrentSubtitle = async () => {
 
   try {
     let subtitle = await api.getDatasetSubtitle(selectedBfAccount, selectedBfDataset);
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Success",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
-      AnalyticsGranularity.ACTION,
+      window.AnalyticsGranularity.ACTION,
       ["Get Subtitle"]
     );
     $("#bf-dataset-subtitle").val(subtitle);
@@ -1041,10 +1041,10 @@ const showCurrentSubtitle = async () => {
     }
   } catch (error) {
     clientError(error);
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       ["Get Subtitle"]
     );
     $("#ds-description").val("");
@@ -1090,19 +1090,19 @@ const showCurrentDescription = async () => {
     readme = await api.getDatasetReadme(selectedBfAccount, selectedBfDataset);
   } catch (error) {
     clientError(error);
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       ["Get Readme"]
     );
     return;
   }
 
-  logGeneralOperationsForAnalytics(
+  window.logGeneralOperationsForAnalytics(
     "Success",
     ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
-    AnalyticsGranularity.ACTION,
+    window.AnalyticsGranularity.ACTION,
     ["Get Readme"]
   );
 
@@ -1115,19 +1115,19 @@ const showCurrentDescription = async () => {
     log.error(error);
     console.error(error);
 
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       ["Parse Readme"]
     );
     return;
   }
 
-  logGeneralOperationsForAnalytics(
+  window.logGeneralOperationsForAnalytics(
     "Success",
     ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
-    AnalyticsGranularity.ACTION,
+    window.AnalyticsGranularity.ACTION,
     ["Parse Readme"]
   );
 
@@ -1294,10 +1294,10 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
       backdrop: "rgba(0,0,0, 0.4)",
     });
 
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       ["Get Readme"]
     );
     return;
@@ -1691,10 +1691,10 @@ $("#edit_banner_image_button").click(async () => {
             heightAuto: false,
           });
 
-          logGeneralOperationsForAnalytics(
+          window.logGeneralOperationsForAnalytics(
             "Error",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-            AnalyticsGranularity.ALL_LEVELS,
+            window.AnalyticsGranularity.ALL_LEVELS,
             ["Importing Banner Image"]
           );
 
@@ -1711,10 +1711,10 @@ $("#edit_banner_image_button").click(async () => {
           heightAuto: false,
         });
 
-        logGeneralOperationsForAnalytics(
+        window.logGeneralOperationsForAnalytics(
           "Error",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-          AnalyticsGranularity.ALL_LEVELS,
+          window.AnalyticsGranularity.ALL_LEVELS,
           ["Importing Banner Image"]
         );
 
@@ -1731,20 +1731,20 @@ $("#edit_banner_image_button").click(async () => {
         heightAuto: false,
       });
 
-      logGeneralOperationsForAnalytics(
+      window.logGeneralOperationsForAnalytics(
         "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-        AnalyticsGranularity.ALL_LEVELS,
+        window.AnalyticsGranularity.ALL_LEVELS,
         ["Importing Banner Image"]
       );
 
       return;
     }
 
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Success",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-      AnalyticsGranularity.ACTION,
+      window.AnalyticsGranularity.ACTION,
       ["Importing Banner Image"]
     );
 
@@ -2221,10 +2221,10 @@ const showCurrentBannerImage = async () => {
 
   try {
     let res = await api.getDatasetBannerImageURL(selectedBfAccount, selectedBfDataset);
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Success",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-      AnalyticsGranularity.ACTION,
+      window.AnalyticsGranularity.ACTION,
       ["Get Banner Image"]
     );
 
@@ -2255,10 +2255,10 @@ const showCurrentBannerImage = async () => {
     $("#div-img-container").css("display", "none");
     $("#save-banner-image").css("visibility", "hidden");
 
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       ["Get Banner Image"]
     );
 
@@ -2417,10 +2417,10 @@ const showCurrentTags = async () => {
       backdrop: "rgba(0,0,0, 0.4)",
     });
 
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       ["Get Tags"]
     );
 
@@ -2602,10 +2602,10 @@ const showCurrentLicense = async () => {
     }
   } catch (error) {
     clientError(error);
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       ["Get License"]
     );
   }
@@ -3539,10 +3539,10 @@ const showCurrentDatasetStatus = async (callback) => {
       backdrop: "rgba(0,0,0, 0.4)",
     });
 
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       ["Get Dataset Status"]
     );
 

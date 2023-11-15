@@ -915,7 +915,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
   logMetadataForAnalytics(
     "Success",
     MetadataAnalyticsPrefix.SUBMISSION,
-    AnalyticsGranularity.ALL_LEVELS,
+    window.AnalyticsGranularity.ALL_LEVELS,
     "Generate",
     uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
   );
@@ -1045,7 +1045,7 @@ const importExistingSubmissionFile = (type) => {
     logMetadataForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.SUBMISSION,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
     );
@@ -1062,7 +1062,7 @@ const importExistingSubmissionFile = (type) => {
       logMetadataForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.SUBMISSION,
-        AnalyticsGranularity.ALL_LEVELS,
+        window.AnalyticsGranularity.ALL_LEVELS,
         "Existing",
         Destinations.LOCAL
       );
@@ -1109,7 +1109,7 @@ const loadExistingSubmissionFile = async (filepath) => {
     logMetadataForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.SUBMISSION,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
     );
@@ -1184,7 +1184,7 @@ const loadSubmissionFileToUI = (data, type) => {
   logMetadataForAnalytics(
     "Success",
     MetadataAnalyticsPrefix.SUBMISSION,
-    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+    window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
     "Existing",
     type === "local" ? Destinations.LOCAL : Destinations.PENNSIEVE
   );
@@ -1241,7 +1241,7 @@ const checkBFImportSubmission = async () => {
     logMetadataForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.SUBMISSION,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.PENNSIEVE
     );

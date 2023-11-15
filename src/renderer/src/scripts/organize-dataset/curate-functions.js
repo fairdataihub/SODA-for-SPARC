@@ -79,7 +79,7 @@ const confirmMetadataFilePath = (ev) => {
     logCurationForAnalytics(
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE,
-      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       [
         "Step 4",
         "Import",
@@ -97,7 +97,7 @@ const confirmMetadataFilePath = (ev) => {
     logCurationForAnalytics(
       "Error",
       PrepareDatasetsAnalyticsPrefix.CURATE,
-      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       [
         "Step 4",
         "Import",
@@ -332,7 +332,7 @@ const checkAvailableSpace = () => {
         logCurationForAnalytics(
           "Error",
           PrepareDatasetsAnalyticsPrefix.CURATE,
-          AnalyticsGranularity.ACTION_WITH_DESTINATION,
+          window.AnalyticsGranularity.ACTION_WITH_DESTINATION,
           ["Step 6", "Check Storage Space", determineDatasetLocation()],
           determineDatasetLocation()
         );
@@ -344,7 +344,7 @@ const checkAvailableSpace = () => {
       logCurationForAnalytics(
         "Success",
         PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_WITH_DESTINATION,
+        window.AnalyticsGranularity.ACTION_WITH_DESTINATION,
         ["Step 6", "Check Storage Space", determineDatasetLocation()],
         determineDatasetLocation()
       );
@@ -379,7 +379,7 @@ const progressFileParse = (ev) => {
       logMetadataForAnalytics(
         "Error",
         PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ALL_LEVELS,
+        window.AnalyticsGranularity.ALL_LEVELS,
         Actions.EXISTING,
         Destinations.SAVED
       );
@@ -625,7 +625,7 @@ const loadProgressFile = (ev) => {
         logMetadataForAnalytics(
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           Actions.EXISTING,
           Destinations.SAVED
         );
@@ -699,7 +699,7 @@ const verify_missing_files = (mode) => {
         logMetadataForAnalytics(
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           Actions.EXISTING,
           Destinations.SAVED
         );

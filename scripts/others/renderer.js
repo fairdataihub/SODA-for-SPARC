@@ -2311,7 +2311,7 @@ async function loadSubjectsFileToDataframe(filePath) {
         logMetadataForAnalytics(
           "Error",
           MetadataAnalyticsPrefix.SUBJECTS,
-          AnalyticsGranularity.ALL_LEVELS,
+          window.AnalyticsGranularity.ALL_LEVELS,
           "Existing",
           Destinations.LOCAL
         );
@@ -2320,7 +2320,7 @@ async function loadSubjectsFileToDataframe(filePath) {
       logMetadataForAnalytics(
         "Success",
         MetadataAnalyticsPrefix.SUBJECTS,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         "Existing",
         Destinations.LOCAL
       );
@@ -2329,7 +2329,7 @@ async function loadSubjectsFileToDataframe(filePath) {
       logMetadataForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.SUBJECTS,
-        AnalyticsGranularity.ALL_LEVELS,
+        window.AnalyticsGranularity.ALL_LEVELS,
         "Existing",
         Destinations.LOCAL
       );
@@ -2354,7 +2354,7 @@ async function loadSubjectsFileToDataframe(filePath) {
     logMetadataForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.SUBJECTS,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
     );
@@ -2394,7 +2394,7 @@ async function loadSamplesFileToDataframe(filePath) {
         logMetadataForAnalytics(
           "Error",
           MetadataAnalyticsPrefix.SAMPLES,
-          AnalyticsGranularity.ALL_LEVELS,
+          window.AnalyticsGranularity.ALL_LEVELS,
           "Existing",
           Destinations.LOCAL
         );
@@ -2404,7 +2404,7 @@ async function loadSamplesFileToDataframe(filePath) {
       logMetadataForAnalytics(
         "Success",
         MetadataAnalyticsPrefix.SAMPLES,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         "Existing",
         Destinations.LOCAL
       );
@@ -2414,7 +2414,7 @@ async function loadSamplesFileToDataframe(filePath) {
       logMetadataForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.SAMPLES,
-        AnalyticsGranularity.ALL_LEVELS,
+        window.AnalyticsGranularity.ALL_LEVELS,
         "Existing",
         Destinations.LOCAL
       );
@@ -2440,7 +2440,7 @@ async function loadSamplesFileToDataframe(filePath) {
     logMetadataForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.SAMPLES,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
     );
@@ -3421,7 +3421,7 @@ const setupPublicationOptionsPopover = () => {
   });
 };
 
-const submitReviewDatasetCheck = async (res, curationMode) => {
+const window.submitReviewDatasetCheck = async (res, curationMode) => {
   let reviewstatus = res["review_request_status"];
   let publishingStatus = res["publishing_status"];
   if (res["publishing_status"] === "PUBLISH_IN_PROGRESS") {
@@ -3801,10 +3801,10 @@ const withdrawDatasetSubmission = async (curationMode = "") => {
     });
 
     // track the error for analysis
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Error",
-      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+      window.AnalyticsGranularity.ALL_LEVELS,
       ["Withdraw dataset"]
     );
     // This helps signal guided mode to update the UI
@@ -3865,10 +3865,10 @@ const withdrawReviewDataset = async (curationMode) => {
   try {
     await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
 
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Success",
-      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+      window.AnalyticsGranularity.ALL_LEVELS,
       ["Withdraw dataset"]
     );
 
@@ -3929,10 +3929,10 @@ const withdrawReviewDataset = async (curationMode) => {
     });
 
     // track the error for analysis
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Error",
-      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+      window.AnalyticsGranularity.ALL_LEVELS,
       ["Withdraw dataset"]
     );
   }
@@ -4243,7 +4243,7 @@ const window.showPublishingStatus = async (callback, curationMode = "") => {
             publishStatusOutputConversion(res)
           );
 
-          if (callback === submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
+          if (callback === window.submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
             return resolve(callback(res, curationMode));
           }
           if (curationMode === "" || curationMode === "freeform") {
@@ -4276,10 +4276,10 @@ const window.showPublishingStatus = async (callback, curationMode = "") => {
           },
         });
 
-        logGeneralOperationsForAnalytics(
+        window.logGeneralOperationsForAnalytics(
           "Error",
-          DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-          AnalyticsGranularity.ALL_LEVELS,
+          window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+          window.AnalyticsGranularity.ALL_LEVELS,
           ["Show publishing status"]
         );
 
@@ -4447,7 +4447,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
           logCurationForAnalytics(
             "Error",
             PrepareDatasetsAnalyticsPrefix.CURATE,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
             ["Step 3", "Add", "Folder"],
             determineDatasetLocation()
           );
@@ -4476,7 +4476,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
           logCurationForAnalytics(
             "Success",
             PrepareDatasetsAnalyticsPrefix.CURATE,
-            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
             ["Step 3", "Add", "Folder"],
             determineDatasetLocation()
           );
@@ -6870,7 +6870,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
         logMetadataForAnalytics(
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           Actions.EXISTING,
           Destinations.LOCAL
         );
@@ -7059,7 +7059,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
           logMetadataForAnalytics(
             "Error",
             PrepareDatasetsAnalyticsPrefix.CURATE,
-            AnalyticsGranularity.ALL_LEVELS,
+            window.AnalyticsGranularity.ALL_LEVELS,
             Actions.EXISTING,
             Destinations.LOCAL
           );
@@ -8372,7 +8372,7 @@ ipcRenderer.on("selected-manifest-folder", async (event, result) => {
       logCurationForAnalytics(
         "Success",
         PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Step 5", "Generate", "Manifest"],
         determineDatasetLocation()
       );
@@ -8384,7 +8384,7 @@ ipcRenderer.on("selected-manifest-folder", async (event, result) => {
       logCurationForAnalytics(
         "Error",
         PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Step 5", "Generate", "Manifest"],
         determineDatasetLocation()
       );
@@ -8544,7 +8544,7 @@ Analytics Logging Section
 // Inputs:
 //  category: string - "Success" indicates a successful operation; "Error" indicates a failed operation
 //  analyticsActionPrefix: string - One of the analytics action prefixes defined below in an enum
-//  analyticsGranularity: string - Determines what levels of granularity get logged; options are: "prefix", "action", "action with destination", "all levels of granularity."
+//  window.AnalyticsGranularity: string - Determines what levels of granularity get logged; options are: "prefix", "action", "action with destination", "all levels of granularity."
 //  action: string - Optional. Indicates the step in the metadata preparation process the Success or Failure occurs
 //  destination: string - Optional. The destination where the action is occurring; defined below in an enum
 
@@ -8562,8 +8562,8 @@ function logMetadataForAnalytics(
 
   // check if only logging the prefix or all levels of granularity
   if (
-    granularity === AnalyticsGranularity.PREFIX ||
-    granularity === AnalyticsGranularity.ALL_LEVELS
+    granularity === window.AnalyticsGranularity.PREFIX ||
+    granularity === window.AnalyticsGranularity.ALL_LEVELS
   ) {
     // log the prefix, category of the event
     ipcRenderer.send("track-event", `${category}`, actionName);
@@ -8581,18 +8581,18 @@ function logMetadataForAnalytics(
 
   // check if the user wants to log the action without the destination
   if (
-    granularity === AnalyticsGranularity.ACTION ||
-    granularity === AnalyticsGranularity.ALL_LEVELS ||
-    granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+    granularity === window.AnalyticsGranularity.ACTION ||
+    granularity === window.AnalyticsGranularity.ALL_LEVELS ||
+    granularity === window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
   ) {
     // track every time the user wanted to generate a metadata file or everytime the user wanted to use a pre-existing metadata file
     ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
   }
 
   if (
-    granularity === AnalyticsGranularity.ACTION_WITH_DESTINATION ||
-    granularity === AnalyticsGranularity.ALL_LEVELS ||
-    granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+    granularity === window.AnalyticsGranularity.ACTION_WITH_DESTINATION ||
+    granularity === window.AnalyticsGranularity.ALL_LEVELS ||
+    granularity === window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
   ) {
     // add the destination to the action
     actionName = actionName + " - " + destination;
@@ -8712,7 +8712,7 @@ const ManageDatasetsAnalyticsPrefix = {
   MANAGE_DATASETS_CHANGE_STATUS: "Manage Datasets - Change Dataset Status",
 };
 
-const DisseminateDatasetsAnalyticsPrefix = {
+window.DisseminateDatasetsAnalyticsPrefix = {
   DISSEMINATE_REVIEW: "Disseminate Datasets - Pre-publishing Review",
   DISSEMINATE_CURATION_TEAM: "Disseminate Datasets - Share with Curation Team",
   DISSEMINATE_SPARC_CONSORTIUM: "Disseminate Datasets - Share with SPARC Consortium",
@@ -8722,7 +8722,7 @@ const PrepareDatasetsAnalyticsPrefix = {
   CURATE: "Prepare Datasets - Organize dataset",
 };
 
-const AnalyticsGranularity = {
+const window.AnalyticsGranularity = {
   PREFIX: "prefix",
   ACTION: "action",
   ACTION_WITH_DESTINATION: "action with destination",
@@ -8761,8 +8761,8 @@ const logCurationForAnalytics = (
 
   // check if only logging the prefix or all levels of granularity
   if (
-    granularity === AnalyticsGranularity.PREFIX ||
-    granularity === AnalyticsGranularity.ALL_LEVELS
+    granularity === window.AnalyticsGranularity.PREFIX ||
+    granularity === window.AnalyticsGranularity.ALL_LEVELS
   ) {
     // log the prefix, category of the event
     ipcRenderer.send("track-event", `${category}`, actionName);
@@ -8770,9 +8770,9 @@ const logCurationForAnalytics = (
 
   // check if the user wants to log the action(s)
   if (
-    granularity === AnalyticsGranularity.ACTION ||
-    granularity === AnalyticsGranularity.ALL_LEVELS ||
-    granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+    granularity === window.AnalyticsGranularity.ACTION ||
+    granularity === window.AnalyticsGranularity.ALL_LEVELS ||
+    granularity === window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
   ) {
     // iterate through the actions
     for (let idx = 0; idx < actions.length; idx++) {
@@ -8787,9 +8787,9 @@ const logCurationForAnalytics = (
 
   // check if the user wants to log the action(s) with the destination
   if (
-    granularity === AnalyticsGranularity.ACTION_WITH_DESTINATION ||
-    granularity === AnalyticsGranularity.ALL_LEVELS ||
-    granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+    granularity === window.AnalyticsGranularity.ACTION_WITH_DESTINATION ||
+    granularity === window.AnalyticsGranularity.ALL_LEVELS ||
+    granularity === window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
   ) {
     // iterate through the actions
     for (let idx = 0; idx < actions.length; idx++) {
@@ -8834,7 +8834,7 @@ const determineLocationFromStatus = (metadataFileStatus) => {
   return pennsieveFile;
 };
 
-const logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularity, actions) => {
+const window.logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularity, actions) => {
   // if no actions to log return
   if (!actions) {
     return;
@@ -8845,8 +8845,8 @@ const logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularity
 
   // check if only logging the prefix or all levels of granularity
   if (
-    granularity === AnalyticsGranularity.PREFIX ||
-    granularity === AnalyticsGranularity.ALL_LEVELS
+    granularity === window.AnalyticsGranularity.PREFIX ||
+    granularity === window.AnalyticsGranularity.ALL_LEVELS
   ) {
     // log the prefix, category of the event
     ipcRenderer.send("track-event", `${category}`, actionName);
@@ -8854,8 +8854,8 @@ const logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularity
 
   // check if the user wants to log the action(s)
   if (
-    granularity === AnalyticsGranularity.ACTION ||
-    granularity === AnalyticsGranularity.ALL_LEVELS
+    granularity === window.AnalyticsGranularity.ACTION ||
+    granularity === window.AnalyticsGranularity.ALL_LEVELS
   ) {
     // iterate through the actions
     for (let idx = 0; idx < actions.length; idx++) {

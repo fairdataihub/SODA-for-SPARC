@@ -236,7 +236,7 @@ $(document).ready(function () {
         logMetadataForAnalytics(
           "Success",
           MetadataAnalyticsPrefix.CHANGES,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           "Existing",
           Destinations.PENNSIEVE
         );
@@ -267,7 +267,7 @@ $(document).ready(function () {
         logMetadataForAnalytics(
           "Success",
           MetadataAnalyticsPrefix.README,
-          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           "Existing",
           Destinations.LOCAL
         );
@@ -384,7 +384,7 @@ async function saveRCFile(type) {
       logMetadataForAnalytics(
         "Error",
         type === "changes" ? MetadataAnalyticsPrefix.CHANGES : MetadataAnalyticsPrefix.README,
-        AnalyticsGranularity.ALL_LEVELS,
+        window.AnalyticsGranularity.ALL_LEVELS,
         "Generate",
         Destinations.LOCAL
       );
@@ -571,7 +571,7 @@ const getRC = async (type) => {
     logMetadataForAnalytics(
       "Success",
       shortName === "changes" ? MetadataAnalyticsPrefix.CHANGES : MetadataAnalyticsPrefix.README,
-      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       "Existing",
       Destinations.PENNSIEVE
     );
@@ -611,7 +611,7 @@ const getRC = async (type) => {
     logMetadataForAnalytics(
       "Error",
       shortName === "changes" ? MetadataAnalyticsPrefix.CHANGES : MetadataAnalyticsPrefix.README,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.PENNSIEVE
     );
@@ -636,7 +636,7 @@ function importExistingRCFile(type) {
     logMetadataForAnalytics(
       "Error",
       type === "changes" ? MetadataAnalyticsPrefix.CHANGES : MetadataAnalyticsPrefix.README,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
     );
@@ -653,7 +653,7 @@ function importExistingRCFile(type) {
       logMetadataForAnalytics(
         "Error",
         type === "changes" ? MetadataAnalyticsPrefix.CHANGES : MetadataAnalyticsPrefix.README,
-        AnalyticsGranularity.ALL_LEVELS,
+        window.AnalyticsGranularity.ALL_LEVELS,
         "Existing",
         Destinations.LOCAL
       );
@@ -718,7 +718,7 @@ const loadExistingRCFile = (filepath, type) => {
       logMetadataForAnalytics(
         "Success",
         type === "changes" ? MetadataAnalyticsPrefix.CHANGES : MetadataAnalyticsPrefix.README,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         "Existing",
         Destinations.LOCAL
       );

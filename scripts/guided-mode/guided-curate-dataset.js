@@ -2417,7 +2417,7 @@ const window.guidedSetCurationTeamUI = () => {
 };
 
 // Function used to reserve a DOI for the current dataset and account
-const guidedReserveAndSaveDOI = async () => {
+const window.guidedReserveAndSaveDOI = async () => {
   let account = sodaJSONObj["bf-account-selected"]["account-name"];
   let dataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
   $("#curate-button-reserve-doi").addClass("loading");
@@ -2476,7 +2476,7 @@ const guidedSetDOIUI = (doiInformation) => {
 };
 
 // This function is for when a user clicks the share/unshare with curation team (requires Dataset to be published and locked)
-const guidedModifyCurationTeamAccess = async (action) => {
+const window.guidedModifyCurationTeamAccess = async (action) => {
   const guidedShareWithCurationTeamButton = document.getElementById(
     "guided-button-share-dataset-with-curation-team"
   );
@@ -2492,7 +2492,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
     guidedShareWithCurationTeamButton.disabled = true;
     guidedShareWithCurationTeamButton.classList.add("loading");
 
-    let publishPreCheckStatus = await beginPrepublishingFlow(curationMode);
+    let publishPreCheckStatus = await window.beginPrepublishingFlow(curationMode);
     let embargoDetails = publishPreCheckStatus[1];
 
     // Will return false if there are issues running the precheck flow
@@ -5887,10 +5887,10 @@ const openPage = async (targetPageID) => {
                     heightAuto: false,
                   });
 
-                  logGeneralOperationsForAnalytics(
+                  window.logGeneralOperationsForAnalytics(
                     "Error",
                     ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-                    AnalyticsGranularity.ALL_LEVELS,
+                    window.AnalyticsGranularity.ALL_LEVELS,
                     ["Importing Banner Image"]
                   );
                 }
@@ -15442,7 +15442,7 @@ $("#guided-new-folder").on("click", () => {
             logCurationForAnalytics(
               "Error",
               PrepareDatasetsAnalyticsPrefix.CURATE,
-              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+              window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
               ["Step 3", "Add", "Folder"],
               determineDatasetLocation()
             );
@@ -15465,7 +15465,7 @@ $("#guided-new-folder").on("click", () => {
             logCurationForAnalytics(
               "Success",
               PrepareDatasetsAnalyticsPrefix.CURATE,
-              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+              window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
               ["Step 3", "Add", "Folder"],
               determineDatasetLocation()
             );

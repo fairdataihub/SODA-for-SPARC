@@ -3158,7 +3158,7 @@ const setupPublicationOptionsPopover = () => {
   });
 };
 
-const submitReviewDatasetCheck = async (res, curationMode) => {
+window.submitReviewDatasetCheck = async (res, curationMode) => {
   let reviewstatus = res["review_request_status"];
   let publishingStatus = res["publishing_status"];
   if (res["publishing_status"] === "PUBLISH_IN_PROGRESS") {
@@ -3538,9 +3538,9 @@ window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
 //     });
 
 //     // track the error for analysis
-//     logGeneralOperationsForAnalytics(
+//     window.logGeneralOperationsForAnalytics(
 //       "Error",
-//       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+//       window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
 //       window.AnalyticsGranularity.ALL_LEVELS,
 //       ["Withdraw dataset"]
 //     );
@@ -3602,9 +3602,9 @@ const withdrawReviewDataset = async (curationMode) => {
   try {
     await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
 
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Success",
-      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+      window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
       window.AnalyticsGranularity.ALL_LEVELS,
       ["Withdraw dataset"]
     );
@@ -3667,9 +3667,9 @@ const withdrawReviewDataset = async (curationMode) => {
     });
 
     // track the error for analysis
-    logGeneralOperationsForAnalytics(
+    window.logGeneralOperationsForAnalytics(
       "Error",
-      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+      window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
       window.AnalyticsGranularity.ALL_LEVELS,
       ["Withdraw dataset"]
     );
@@ -3978,7 +3978,7 @@ window.showPublishingStatus = async (callback, curationMode = "") => {
             publishStatusOutputConversion(res)
           );
 
-          if (callback === submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
+          if (callback === window.submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
             return resolve(callback(res, curationMode));
           }
           if (curationMode === "" || curationMode === "freeform") {
@@ -4011,9 +4011,9 @@ window.showPublishingStatus = async (callback, curationMode = "") => {
           },
         });
 
-        logGeneralOperationsForAnalytics(
+        window.logGeneralOperationsForAnalytics(
           "Error",
-          DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+          window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
           window.AnalyticsGranularity.ALL_LEVELS,
           ["Show publishing status"]
         );
@@ -8479,7 +8479,7 @@ const ManageDatasetsAnalyticsPrefix = {
   MANAGE_DATASETS_CHANGE_STATUS: "Manage Datasets - Change Dataset Status",
 };
 
-const DisseminateDatasetsAnalyticsPrefix = {
+window.DisseminateDatasetsAnalyticsPrefix = {
   DISSEMINATE_REVIEW: "Disseminate Datasets - Pre-publishing Review",
   DISSEMINATE_CURATION_TEAM: "Disseminate Datasets - Share with Curation Team",
   DISSEMINATE_SPARC_CONSORTIUM: "Disseminate Datasets - Share with SPARC Consortium",
@@ -8596,7 +8596,7 @@ window.logCurationForAnalytics = (
 //   return pennsieveFile;
 // };
 
-const logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularity, actions) => {
+window.logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularity, actions) => {
   // if no actions to log return
   if (!actions) {
     return;

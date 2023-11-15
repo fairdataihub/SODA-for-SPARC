@@ -14,6 +14,7 @@ import './scripts/spreadSheetTools/spreadSheetTools'
 import './scripts/others/contributor-storage'
 import './scripts/metadata-files/subjects-samples'
 import './scripts/others/tab-effects'
+import './scripts/disseminate/prePublishingReview'
 
 // Application Lotties
 import './assets/lotties/activate-lotties'

@@ -1644,7 +1644,7 @@ const addFilesfunction = async (
       logCurationForAnalytics(
         "Error",
         PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Step 3", "Import", "File"],
         determineDatasetLocation()
       );
@@ -2113,7 +2113,7 @@ const addFilesfunction = async (
     logCurationForAnalytics(
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE,
-      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       ["Step 3", "Import", "File"],
       determineDatasetLocation()
     );

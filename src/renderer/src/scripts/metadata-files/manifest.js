@@ -848,7 +848,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
         logMetadataForAnalytics(
           "Error",
           MetadataAnalyticsPrefix.MANIFEST,
-          AnalyticsGranularity.ALL_LEVELS,
+          window.AnalyticsGranularity.ALL_LEVELS,
           "Generate",
           Destinations.LOCAL
         );
@@ -856,7 +856,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
         logMetadataForAnalytics(
           "Error",
           MetadataAnalyticsPrefix.MANIFEST,
-          AnalyticsGranularity.ACTION,
+          window.AnalyticsGranularity.ACTION,
           "Generate - Check Storage Space",
           Destinations.LOCAL
         );
@@ -868,7 +868,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
         logMetadataForAnalytics(
           "Success",
           MetadataAnalyticsPrefix.MANIFEST,
-          AnalyticsGranularity.ACTION,
+          window.AnalyticsGranularity.ACTION,
           "Generate - Check Storage Space",
           Destinations.LOCAL
         );
@@ -907,7 +907,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
           logMetadataForAnalytics(
             "Error",
             MetadataAnalyticsPrefix.MANIFEST,
-            AnalyticsGranularity.ALL_LEVELS,
+            window.AnalyticsGranularity.ALL_LEVELS,
             "Generate",
             Destinations.LOCAL
           );
@@ -935,7 +935,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
           logMetadataForAnalytics(
             "Error",
             MetadataAnalyticsPrefix.MANIFEST,
-            AnalyticsGranularity.ALL_LEVELS,
+            window.AnalyticsGranularity.ALL_LEVELS,
             "Generate",
             Destinations.LOCAL
           );
@@ -963,7 +963,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
           logMetadataForAnalytics(
             "Error",
             MetadataAnalyticsPrefix.MANIFEST,
-            AnalyticsGranularity.ALL_LEVELS,
+            window.AnalyticsGranularity.ALL_LEVELS,
             "Generate",
             Destinations.LOCAL
           );
@@ -1126,7 +1126,7 @@ const initiate_generate_manifest_local = async (manifestEditBoolean, originalDat
       logMetadataForAnalytics(
         "Success",
         MetadataAnalyticsPrefix.MANIFEST,
-        AnalyticsGranularity.ALL_LEVELS,
+        window.AnalyticsGranularity.ALL_LEVELS,
         "Generate",
         Destinations.LOCAL
       );
@@ -1220,7 +1220,7 @@ const initiate_generate_manifest_bf = async () => {
     logMetadataForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.MANIFEST,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       "Generate",
       Destinations.PENNSIEVE
     );
@@ -1261,7 +1261,7 @@ const initiate_generate_manifest_bf = async () => {
   logMetadataForAnalytics(
     "Success",
     MetadataAnalyticsPrefix.MANIFEST,
-    AnalyticsGranularity.ALL_LEVELS,
+    window.AnalyticsGranularity.ALL_LEVELS,
     "Generate",
     Destinations.PENNSIEVE
   );
@@ -1562,7 +1562,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
     logMetadataForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.MANIFEST,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       "Generate",
       Destinations.PENNSIEVE
     );
@@ -1614,7 +1614,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
       logMetadataForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.MANIFEST,
-        AnalyticsGranularity.ALL_LEVELS,
+        window.AnalyticsGranularity.ALL_LEVELS,
         "Generate",
         Destinations.PENNSIEVE
       );
@@ -1656,7 +1656,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
       logMetadataForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.MANIFEST,
-        AnalyticsGranularity.ALL_LEVELS,
+        window.AnalyticsGranularity.ALL_LEVELS,
         "Generate",
         Destinations.PENNSIEVE
       );
@@ -1690,7 +1690,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
       logMetadataForAnalytics(
         "Error",
         MetadataAnalyticsPrefix.MANIFEST,
-        AnalyticsGranularity.ALL_LEVELS,
+        window.AnalyticsGranularity.ALL_LEVELS,
         "Generate",
         Destinations.PENNSIEVE
       );
@@ -2131,7 +2131,7 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
         logMetadataForAnalytics(
           "Success",
           MetadataAnalyticsPrefix.MANIFEST,
-          AnalyticsGranularity.ALL_LEVELS,
+          window.AnalyticsGranularity.ALL_LEVELS,
           "Generate",
           Destinations.LOCAL
         );

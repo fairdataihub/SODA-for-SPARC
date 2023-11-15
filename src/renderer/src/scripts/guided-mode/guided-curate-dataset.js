@@ -2430,7 +2430,7 @@ window.guidedSetCurationTeamUI = () => {
 };
 
 // Function used to reserve a DOI for the current dataset and account
-const guidedReserveAndSaveDOI = async () => {
+window.guidedReserveAndSaveDOI = async () => {
   let account = window.sodaJSONObj["bf-account-selected"]["account-name"];
   let dataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
   $("#curate-button-reserve-doi").addClass("loading");
@@ -2489,7 +2489,7 @@ const guidedSetDOIUI = (doiInformation) => {
 };
 
 // This function is for when a user clicks the share/unshare with curation team (requires Dataset to be published and locked)
-const guidedModifyCurationTeamAccess = async (action) => {
+window.guidedModifyCurationTeamAccess = async (action) => {
   const guidedShareWithCurationTeamButton = document.getElementById(
     "guided-button-share-dataset-with-curation-team"
   );
@@ -2505,7 +2505,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
     guidedShareWithCurationTeamButton.disabled = true;
     guidedShareWithCurationTeamButton.classList.add("loading");
 
-    let publishPreCheckStatus = await beginPrepublishingFlow(curationMode);
+    let publishPreCheckStatus = await window.beginPrepublishingFlow(curationMode);
     let embargoDetails = publishPreCheckStatus[1];
 
     // Will return false if there are issues running the precheck flow
@@ -5898,7 +5898,7 @@ const openPage = async (targetPageID) => {
                     heightAuto: false,
                   });
 
-                  logGeneralOperationsForAnalytics(
+                  window.logGeneralOperationsForAnalytics(
                     "Error",
                     ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
                     window.AnalyticsGranularity.ALL_LEVELS,

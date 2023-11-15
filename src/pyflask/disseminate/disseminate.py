@@ -8,6 +8,10 @@ from permissions import pennsieve_get_current_user_permissions, has_edit_permiss
 from utils import connect_pennsieve_client, get_dataset_id, authenticate_user_with_client, create_request_headers
 from errorHandlers import handle_http_error
 from authentication import get_access_token
+from namespaces import NamespaceEnum, get_namespace_logger
+
+namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
+
 
 
 
@@ -109,15 +113,21 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
 
+    namespace_logger.info(f"bf_get_publishing_status: selected_dataset_id: {selected_dataset_id}")
+
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", headers=create_request_headers(token))
     r.raise_for_status()
     review_request_status = r.json()["publication"]["status"]
+
+    namespace_logger.info("Passed the first request")
 
 
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/published", headers=create_request_headers(token))
     r.raise_for_status()
     publishing_status = r.json()["status"]
 
+    namespace_logger.info("Passed the second request")
+    namespace_logger.info(f"bf_get_publishing_status: publishing_status: {publishing_status}")
 
     return { 
         "publishing_status": publishing_status, 

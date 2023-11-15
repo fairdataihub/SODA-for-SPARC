@@ -1559,7 +1559,7 @@ const checkBFImportDD = async () => {
     logMetadataForAnalytics(
       "Success",
       MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       "Existing",
       Destinations.PENNSIEVE
     );
@@ -1576,7 +1576,7 @@ const checkBFImportDD = async () => {
     logMetadataForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.PENNSIEVE
     );
@@ -1599,7 +1599,7 @@ const loadDDfileDataframe = async (filePath) => {
     logMetadataForAnalytics(
       "Success",
       MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       "Existing",
       Destinations.LOCAL
     );
@@ -1618,7 +1618,7 @@ const loadDDfileDataframe = async (filePath) => {
     logMetadataForAnalytics(
       "Error",
       MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-      AnalyticsGranularity.ALL_LEVELS,
+      window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
     );
