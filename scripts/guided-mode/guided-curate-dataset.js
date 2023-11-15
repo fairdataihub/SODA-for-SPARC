@@ -49,7 +49,6 @@ const handleGuidedModeOrgSwitch = async (buttonClicked) => {
 };
 
 const guidedGetCurrentUserWorkSpace = () => {
-  return null;
   // Returns null if the user has not selected a workspace
   const workSpaceFromUI = document.getElementById(
     "guided-pennsive-selected-organization"

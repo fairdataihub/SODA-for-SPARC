@@ -546,7 +546,7 @@ const startupServerAndApiCheck = async () => {
   apiVersionChecked = true;
 };
 
-// startupServerAndApiCheck();
+startupServerAndApiCheck();
 
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
