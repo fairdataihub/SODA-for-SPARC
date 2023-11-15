@@ -15,7 +15,7 @@ const transitionToValidateQuestionTwo = async () => {
   localSection.style = "display: none !important";
 
   // allow time for the check box to get checked
-  await wait(300);
+  await window.wait(300);
 
   // check if the local validation option has been checked
   let localDatasetCard = document.querySelector("#validate-1-Local");

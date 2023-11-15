@@ -15,6 +15,8 @@ import './scripts/others/contributor-storage'
 import './scripts/metadata-files/subjects-samples'
 import './scripts/others/tab-effects'
 import './scripts/disseminate/prePublishingReview'
+import './scripts/others/pennsieveDatasetImporter'
+import './scripts/others/progressContainer'
 
 // Application Lotties
 import './assets/lotties/activate-lotties'

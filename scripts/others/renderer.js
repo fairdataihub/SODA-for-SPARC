@@ -416,7 +416,7 @@ const wait = async (delay) => {
 // verify the api versions match
 const startupServerAndApiCheck = async () => {
   // wait for SWAL to be loaded in
-  await wait(2000);
+  await window.wait(2000);
 
   // notify the user that the application is starting connecting to the server
   Swal.fire({
@@ -456,7 +456,7 @@ const startupServerAndApiCheck = async () => {
     if (time_pass > 300000) {
       break;
     } //break after five minutes
-    await wait(2000);
+    await window.wait(2000);
   }
 
   if (!status) {
@@ -554,7 +554,7 @@ ipcRenderer.on("start_pre_flight_checks", async (event, arg) => {
   // run pre flight checks once the server connection is confirmed
   // wait until soda is connected to the backend server
   while (!sodaIsConnected || !apiVersionChecked) {
-    await wait(1000);
+    await window.wait(1000);
   }
 
   log.info("Done with startup");
@@ -1246,7 +1246,7 @@ const check_api_key = async () => {
     type: "api_key_search",
     message: "Checking for Pennsieve account...",
   });
-  await wait(800);
+  await window.wait(800);
   // If no accounts are found, return false.
   let responseObject;
 
@@ -4642,7 +4642,7 @@ var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve ac
 (async () => {
   // wait until soda is connected to the backend server
   while (!sodaIsConnected) {
-    await wait(1000);
+    await window.wait(1000);
   }
 
   retrieveBFAccounts();

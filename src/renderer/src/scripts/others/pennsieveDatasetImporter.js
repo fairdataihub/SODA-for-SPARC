@@ -1,4 +1,8 @@
 // Tracks if window.bf_request_and_populate_dataset has has an error
+
+import { clientError, userErrorMessage } from "./http-error-handler/error-handler";
+import client from "../client";
+
 let importError = false;
 
 /**
@@ -61,7 +65,7 @@ const trackPennsieveImportProgress = async (progressContainer, hide) => {
  *    "manifest_error_message": ""
  * }
  */
-const window.bf_request_and_populate_dataset = async (
+window.bf_request_and_populate_dataset = async (
   sodaJSONObj,
   progressContainer = undefined,
   hide = true
@@ -82,13 +86,13 @@ const window.bf_request_and_populate_dataset = async (
 
     const { data } = filesFoldersResponse;
 
-    ipcRenderer.send("track-event", "Success", "Retrieve Dataset - Pennsieve", window.window.defaultBfDatasetId);
+    window.electron.ipcRenderer.send("track-event", "Success", "Retrieve Dataset - Pennsieve", window.defaultBfDatasetId);
     return data;
   } catch (error) {
     importError = true;
     progressContainer.style.display = "none";
     clientError(error);
-    ipcRenderer.send("track-event", "Error", "Retrieve Dataset - Pennsieve", window.window.defaultBfDatasetId);
+    window.electron.ipcRenderer.send("track-event", "Error", "Retrieve Dataset - Pennsieve", window.defaultBfDatasetId);
     throw Error(userErrorMessage(error));
   }
 };

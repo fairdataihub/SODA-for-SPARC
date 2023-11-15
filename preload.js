@@ -163,7 +163,7 @@ const updateOrganizationList = async (bfaccount) => {
   $(".selectpicker").selectpicker("refresh");
   $("#bf-organization-select-div").hide();
 
-  await wait(100);
+  await window.wait(100);
 
   $("#curatebforganizationlist").find("option:not(:first)").remove();
 
@@ -1585,7 +1585,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     $(".ui.active.green.inline.loader.small.organization-loader").css("display", "block");
 
     // hacky: wait for animations
-    await wait(10);
+    await window.wait(10);
 
     // disable the Continue btn first
     $("#nextBtn").prop("disabled", true);

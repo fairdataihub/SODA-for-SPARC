@@ -50,7 +50,7 @@ const createValidationReport = async (sodaJSONObj) => {
   );
 
   while (true) {
-    await wait(15000);
+    await window.wait(15000);
     let results = await pollForValidationResults(clientUUID);
     if (!results) {
       continue;
@@ -419,7 +419,7 @@ const validatePennsieveDatasetStandAlone = async () => {
   // import the dataset from Pennsieve
   let datasetPopulationResponse;
   try {
-    datasetPopulationResponse = await bf_request_and_populate_dataset(localSodaJSONObj);
+    datasetPopulationResponse = await window.bf_request_and_populate_dataset(localSodaJSONObj);
   } catch (err) {
     clientError(err);
     await Swal.fire({
@@ -704,7 +704,7 @@ const transitionToValidateQuestionTwo = async () => {
   localSection.style = "display: none !important";
 
   // allow time for the check box to get checked
-  await wait(300);
+  await window.wait(300);
 
   // check if the local validation option has been checked
   let localDatasetCard = document.querySelector("#validate-1-Local");

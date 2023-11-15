@@ -621,7 +621,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         importProgressCircle.classList.remove("hidden");
 
         try {
-          let data = await bf_request_and_populate_dataset(sodaJSONObj, importProgressCircle, true);
+          let data = await window.bf_request_and_populate_dataset(sodaJSONObj, importProgressCircle, true);
           // Save a copy of the dataset structure used to make sure the user doesn't change it
           // on future progress continuations
           sodaJSONObj["initially-pulled-dataset-structure"] = JSON.parse(
@@ -3566,7 +3566,7 @@ document
 
       let validationReport = undefined;
       while (validationReport === undefined) {
-        await wait(15000);
+        await window.wait(15000);
         validationReport = await pollForValidationResults(clientUUID);
       }
 

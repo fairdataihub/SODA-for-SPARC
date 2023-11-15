@@ -844,7 +844,7 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
     localGenerationDifferentDestination = true;
   }
 
-  await wait(500);
+  await window.wait(500);
   if (!localGenerationDifferentDestination) {
     // Check if dataset is locked before generating manifest
     const isLocked = await api.isDatasetLocked(window.defaultBfDataset, window.defaultBfDataset);
@@ -1619,7 +1619,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
 
   var result;
   try {
-    var res = await bf_request_and_populate_dataset(
+    var res = await window.bf_request_and_populate_dataset(
       sodaJSONObj,
       document.getElementById("loading_pennsieve_dataset_manifest"),
       false
@@ -1707,7 +1707,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
       return;
     }
 
-    await wait(1000);
+    await window.wait(1000);
     var continueErrorManifest;
     try {
       let res = await extractBFManifestFile();
@@ -1716,7 +1716,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
       continueErrorManifest = [true, err];
     }
 
-    await wait(1000);
+    await window.wait(1000);
 
     if (continueErrorManifest[0]) {
       Swal.fire({
@@ -1913,9 +1913,9 @@ const trackManifestImportProgress = async () => {
   let progressContainer = document.getElementById("loading_pennsieve_dataset_manifest");
 
   let { percentage_text, left_progress_bar, right_progress_bar } =
-    getProgressContainerElements(progressContainer);
+    window.getProgressContainerElements(progressContainer);
 
-  await resetProgressContainer(
+  await window.resetProgressContainer(
     progressContainer,
     percentage_text,
     left_progress_bar,
@@ -1941,7 +1941,7 @@ const trackManifestImportProgress = async () => {
     let manifestProgress = progressResponse.data;
     let finished = manifestProgress.finished;
 
-    updateProgressContainer(
+    window.updateProgressContainer(
       progressContainer,
       percentage_text,
       left_progress_bar,
@@ -2033,7 +2033,7 @@ const generateManifestFolderLocallyForEdit = async (ev) => {
     });
 
     // give the swal a chace to load in
-    await wait(500);
+    await window.wait(500);
 
     let continueProgressValidateDataset = true;
     let continueProgressEmptyFolder = true;

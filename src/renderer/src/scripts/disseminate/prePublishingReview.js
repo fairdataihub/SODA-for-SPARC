@@ -262,7 +262,7 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
 
   // wait until a value has been loaded into the status field
   while ($(`#${curationModeID}para-review-dataset-info-disseminate`).text().trim() == "None") {
-    await wait(1000);
+    await window.wait(1000);
   }
 
   if (currentDataset === "Select dataset") {
@@ -674,7 +674,7 @@ window.beginPrepublishingFlow = async (curationMode) => {
 
   // wait for the Review status to be filled
   if ($(`#${curationModeID}para-review-dataset-info-disseminate`).text() === "") {
-    await wait(1000);
+    await window.wait(1000);
   }
 
   // transition to the next question if not in guided mode

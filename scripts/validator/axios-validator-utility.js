@@ -1,7 +1,7 @@
 const handleAxiosValidationErrors = async (errorObject) => {
   // prevent dreaded Sweet Alert error where the didLoading property's spinner doesn't disappear
   // and overwrites/obfuscates the confirm button text
-  await wait(500);
+  await window.wait(500);
   if (errorObject.response) {
     Swal.fire({
       title: `Your dataset could not be validated`,

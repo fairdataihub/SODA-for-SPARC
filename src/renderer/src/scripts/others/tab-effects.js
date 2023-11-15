@@ -1838,7 +1838,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
     let sodaObject = {};
     let manifestErrorMessage = [];
     try {
-      let data = await bf_request_and_populate_dataset(
+      let data = await window.bf_request_and_populate_dataset(
         sodaJSONObj,
         document.querySelector("#loading_pennsieve_dataset-organize"),
         true

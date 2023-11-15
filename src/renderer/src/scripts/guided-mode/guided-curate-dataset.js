@@ -298,7 +298,7 @@ const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
   const invalidFolders = [];
   const invalidFiles = [];
 
-  for (hlf of guidedHighLevelFolders) {
+  for (const hlf of guidedHighLevelFolders) {
     if (datasetStructure["folders"][hlf]) {
       const hlfFolders = Object.keys(datasetStructure["folders"][hlf]["folders"]);
       //filter out hlfFolders that do not start with pool- or sub-
@@ -649,7 +649,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         importProgressCircle.classList.remove("hidden");
 
         try {
-          let data = await bf_request_and_populate_dataset(window.sodaJSONObj, importProgressCircle, true);
+          let data = await window.bf_request_and_populate_dataset(window.sodaJSONObj, importProgressCircle, true);
           // Save a copy of the dataset structure used to make sure the user doesn't change it
           // on future progress continuations
           window.sodaJSONObj["initially-pulled-dataset-structure"] = JSON.parse(
@@ -2194,190 +2194,190 @@ const updateDatasetUploadProgressTable = (progressObject) => {
   datasetUploadTableBody.insertAdjacentHTML("beforeend", uploadStatusElement);
 };
 
-// const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMetadataRows) => {
-//   const poolSubSamStructure = {
-//     pools: {},
-//     subjects: {},
-//   };
+const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMetadataRows) => {
+  const poolSubSamStructure = {
+    pools: {},
+    subjects: {},
+  };
 
-//   const datasetPools = [
-//     ...new Set(
-//       subjectsMetadataRows
-//         .map((subjectDataArray) => subjectDataArray[1])
-//         .filter((pool) => pool !== "")
-//     ),
-//   ];
+  const datasetPools = [
+    ...new Set(
+      subjectsMetadataRows
+        .map((subjectDataArray) => subjectDataArray[1])
+        .filter((pool) => pool !== "")
+    ),
+  ];
 
-//   for (const pool of datasetPools) {
-//     poolSubSamStructure["pools"][pool] = {};
-//   }
+  for (const pool of datasetPools) {
+    poolSubSamStructure["pools"][pool] = {};
+  }
 
-//   for (const subject of subjectsMetadataRows) {
-//     const subjectID = subject[0];
-//     const poolID = subject[1];
-//     if (poolID !== "") {
-//       poolSubSamStructure["pools"][poolID][subjectID] = {};
-//     } else {
-//       poolSubSamStructure["subjects"][subjectID] = {};
-//     }
-//   }
+  for (const subject of subjectsMetadataRows) {
+    const subjectID = subject[0];
+    const poolID = subject[1];
+    if (poolID !== "") {
+      poolSubSamStructure["pools"][poolID][subjectID] = {};
+    } else {
+      poolSubSamStructure["subjects"][subjectID] = {};
+    }
+  }
 
-//   for (const sample of samplesMetadataRows) {
-//     const subjectID = sample[0];
-//     const sampleID = sample[1];
-//     const poolID = sample[3];
-//     if (poolID !== "") {
-//       poolSubSamStructure["pools"][poolID][subjectID][sampleID] = {};
-//     } else {
-//       poolSubSamStructure["subjects"][subjectID][sampleID] = {};
-//     }
-//   }
-//   return poolSubSamStructure;
-// };
+  for (const sample of samplesMetadataRows) {
+    const subjectID = sample[0];
+    const sampleID = sample[1];
+    const poolID = sample[3];
+    if (poolID !== "") {
+      poolSubSamStructure["pools"][poolID][subjectID][sampleID] = {};
+    } else {
+      poolSubSamStructure["subjects"][subjectID][sampleID] = {};
+    }
+  }
+  return poolSubSamStructure;
+};
 
-// // This function extracts the pool, subject, and sample structure from an imported dataset
-// // and adds the pools, subjects, and samples to the guided mode structure if they exist.
-// // This function also handles setting the button config options, for example, if the function
-// // detects that there's primary subject data in the dataset, the yes button will be selected.
-// const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
-//   const guidedFoldersInDataset = guidedHighLevelFolders.filter((folder) =>
-//     Object.keys(datasetStructure["folders"]).includes(folder)
-//   );
+// This function extracts the pool, subject, and sample structure from an imported dataset
+// and adds the pools, subjects, and samples to the guided mode structure if they exist.
+// This function also handles setting the button config options, for example, if the function
+// detects that there's primary subject data in the dataset, the yes button will be selected.
+const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
+  const guidedFoldersInDataset = guidedHighLevelFolders.filter((folder) =>
+    Object.keys(datasetStructure["folders"]).includes(folder)
+  );
 
-//   const addedSubjects = [];
-//   const subjectsMovedIntoPools = [];
-//   const addedPools = [];
-//   const addedSamples = [];
+  const addedSubjects = [];
+  const subjectsMovedIntoPools = [];
+  const addedPools = [];
+  const addedSamples = [];
 
-//   // Loop through prim, src, and deriv if they exist in the datasetStructure
-//   for (const hlf of guidedFoldersInDataset) {
-//     //Get the names of the subfolders directly in the hlf
-//     const hlfFolderNames = Object.keys(datasetStructure["folders"][hlf]["folders"]);
-//     const subjectFoldersInBase = hlfFolderNames.filter((folder) => folder.startsWith("sub-"));
-//     const poolFoldersInBase = hlfFolderNames.filter((folder) => folder.startsWith("pool-"));
+  // Loop through prim, src, and deriv if they exist in the datasetStructure
+  for (const hlf of guidedFoldersInDataset) {
+    //Get the names of the subfolders directly in the hlf
+    const hlfFolderNames = Object.keys(datasetStructure["folders"][hlf]["folders"]);
+    const subjectFoldersInBase = hlfFolderNames.filter((folder) => folder.startsWith("sub-"));
+    const poolFoldersInBase = hlfFolderNames.filter((folder) => folder.startsWith("pool-"));
 
-//     // Loop through any folders starting with sub- in the hlf
-//     for (const subjectFolder of subjectFoldersInBase) {
-//       if (!addedSubjects.includes(subjectFolder)) {
-//         try {
-//           window.sodaJSONObj.addSubject(subjectFolder);
-//           addedSubjects.push(subjectFolder);
-//         } catch (error) {
-//           console.log(error);
-//         }
-//       }
-//       // Get the names of the subfolders directly in the subject folder
-//       const potentialSampleFolderNames = Object.keys(
-//         datasetStructure["folders"][hlf]["folders"][subjectFolder]["folders"]
-//       );
-//       const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
-//         folder.startsWith("sam-")
-//       );
-//       if (sampleFoldersInSubject.length > 0) {
-//         window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-sample-data`] = "yes";
-//       }
-//       // Loop through any folders starting with sam- in the subject folder
-//       for (const sampleFolder of sampleFoldersInSubject) {
-//         if (!addedSamples.includes(sampleFolder)) {
-//           try {
-//             window.sodaJSONObj.addSampleToSubject(sampleFolder, null, subjectFolder);
-//             addedSamples.push(sampleFolder);
-//           } catch (error) {
-//             console.log(error);
-//           }
-//         }
-//       }
-//     }
+    // Loop through any folders starting with sub- in the hlf
+    for (const subjectFolder of subjectFoldersInBase) {
+      if (!addedSubjects.includes(subjectFolder)) {
+        try {
+          window.sodaJSONObj.addSubject(subjectFolder);
+          addedSubjects.push(subjectFolder);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      // Get the names of the subfolders directly in the subject folder
+      const potentialSampleFolderNames = Object.keys(
+        datasetStructure["folders"][hlf]["folders"][subjectFolder]["folders"]
+      );
+      const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
+        folder.startsWith("sam-")
+      );
+      if (sampleFoldersInSubject.length > 0) {
+        window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-sample-data`] = "yes";
+      }
+      // Loop through any folders starting with sam- in the subject folder
+      for (const sampleFolder of sampleFoldersInSubject) {
+        if (!addedSamples.includes(sampleFolder)) {
+          try {
+            window.sodaJSONObj.addSampleToSubject(sampleFolder, null, subjectFolder);
+            addedSamples.push(sampleFolder);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
+    }
 
-//     if (subjectFoldersInBase.length > 0) {
-//       window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-subject-data`] = "yes";
-//     }
+    if (subjectFoldersInBase.length > 0) {
+      window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-subject-data`] = "yes";
+    }
 
-//     // Loop through any folders starting with pool- in the hlf
-//     for (const poolFolder of poolFoldersInBase) {
-//       if (!addedPools.includes(poolFolder)) {
-//         try {
-//           window.sodaJSONObj.addPool(poolFolder);
-//           addedPools.push(poolFolder);
-//         } catch (error) {
-//           console.log(error);
-//         }
-//       }
-//       // Get the names of the subfolders directly in the pool folder
-//       const potentialSubjectFolderNames = Object.keys(
-//         datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"]
-//       );
-//       const subjectFoldersInPool = potentialSubjectFolderNames.filter((folder) =>
-//         folder.startsWith("sub-")
-//       );
+    // Loop through any folders starting with pool- in the hlf
+    for (const poolFolder of poolFoldersInBase) {
+      if (!addedPools.includes(poolFolder)) {
+        try {
+          window.sodaJSONObj.addPool(poolFolder);
+          addedPools.push(poolFolder);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      // Get the names of the subfolders directly in the pool folder
+      const potentialSubjectFolderNames = Object.keys(
+        datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"]
+      );
+      const subjectFoldersInPool = potentialSubjectFolderNames.filter((folder) =>
+        folder.startsWith("sub-")
+      );
 
-//       if (subjectFoldersInPool.length > 0) {
-//         window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-subject-data`] = "yes";
-//       }
-//       // Loop through any folders starting with sub- in the pool folder
-//       for (const subjectFolder of subjectFoldersInPool) {
-//         if (!addedSubjects.includes(subjectFolder)) {
-//           try {
-//             window.sodaJSONObj.addSubject(subjectFolder);
-//             addedSubjects.push(subjectFolder);
-//           } catch (error) {
-//             console.log(error);
-//           }
-//         }
+      if (subjectFoldersInPool.length > 0) {
+        window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-subject-data`] = "yes";
+      }
+      // Loop through any folders starting with sub- in the pool folder
+      for (const subjectFolder of subjectFoldersInPool) {
+        if (!addedSubjects.includes(subjectFolder)) {
+          try {
+            window.sodaJSONObj.addSubject(subjectFolder);
+            addedSubjects.push(subjectFolder);
+          } catch (error) {
+            console.log(error);
+          }
+        }
 
-//         if (!subjectsMovedIntoPools.includes(subjectFolder)) {
-//           try {
-//             window.sodaJSONObj.moveSubjectIntoPool(subjectFolder, poolFolder);
-//             subjectsMovedIntoPools.push(subjectFolder);
-//           } catch (error) {
-//             console.log(error);
-//           }
-//         }
+        if (!subjectsMovedIntoPools.includes(subjectFolder)) {
+          try {
+            window.sodaJSONObj.moveSubjectIntoPool(subjectFolder, poolFolder);
+            subjectsMovedIntoPools.push(subjectFolder);
+          } catch (error) {
+            console.log(error);
+          }
+        }
 
-//         const potentialSampleFolderNames = Object.keys(
-//           datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"][subjectFolder][
-//             "folders"
-//           ]
-//         );
-//         const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
-//           folder.startsWith("sam-")
-//         );
-//         if (sampleFoldersInSubject.length > 0) {
-//           window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-sample-data`] = "yes";
-//         }
-//         // Loop through any folders starting with sam- in the subject folder
-//         for (const sampleFolder of sampleFoldersInSubject) {
-//           if (!addedSamples.includes(sampleFolder)) {
-//             try {
-//               window.sodaJSONObj.addSampleToSubject(sampleFolder, poolFolder, subjectFolder);
-//               addedSamples.push(sampleFolder);
-//             } catch (error) {
-//               console.log(error);
-//             }
-//           }
-//         }
-//       }
-//     }
+        const potentialSampleFolderNames = Object.keys(
+          datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"][subjectFolder][
+            "folders"
+          ]
+        );
+        const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
+          folder.startsWith("sam-")
+        );
+        if (sampleFoldersInSubject.length > 0) {
+          window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-sample-data`] = "yes";
+        }
+        // Loop through any folders starting with sam- in the subject folder
+        for (const sampleFolder of sampleFoldersInSubject) {
+          if (!addedSamples.includes(sampleFolder)) {
+            try {
+              window.sodaJSONObj.addSampleToSubject(sampleFolder, poolFolder, subjectFolder);
+              addedSamples.push(sampleFolder);
+            } catch (error) {
+              console.log(error);
+            }
+          }
+        }
+      }
+    }
 
-//     if (poolFoldersInBase.length > 0) {
-//       window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-pool-data`] = "yes";
-//     }
-//   }
+    if (poolFoldersInBase.length > 0) {
+      window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-pool-data`] = "yes";
+    }
+  }
 
-//   if (addedSubjects.length > 0) {
-//     window.sodaJSONObj["button-config"]["dataset-contains-subjects"] = "yes";
-//   }
-//   if (addedPools.length > 0) {
-//     window.sodaJSONObj["button-config"]["dataset-contains-pools"] = "yes";
-//   } else {
-//     window.sodaJSONObj["button-config"]["dataset-contains-pools"] = "no";
-//   }
-//   if (addedSamples.length > 0) {
-//     window.sodaJSONObj["button-config"]["dataset-contains-samples"] = "yes";
-//   }
+  if (addedSubjects.length > 0) {
+    window.sodaJSONObj["button-config"]["dataset-contains-subjects"] = "yes";
+  }
+  if (addedPools.length > 0) {
+    window.sodaJSONObj["button-config"]["dataset-contains-pools"] = "yes";
+  } else {
+    window.sodaJSONObj["button-config"]["dataset-contains-pools"] = "no";
+  }
+  if (addedSamples.length > 0) {
+    window.sodaJSONObj["button-config"]["dataset-contains-samples"] = "yes";
+  }
 
-//   return window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
-// };
+  return window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
+};
 
 const guidedLockSideBar = (boolShowNavBar) => {
   const sidebar = document.getElementById("sidebarCollapse");
@@ -3568,7 +3568,7 @@ document
 
       let validationReport = undefined;
       while (validationReport === undefined) {
-        await wait(15000);
+        await window.wait(15000);
         validationReport = await pollForValidationResults(clientUUID);
       }
 
