@@ -9,6 +9,7 @@ import {spawn, execFile} from "node:child_process"
 import { existsSync } from 'fs'
 import { JSONStorage } from "node-localstorage";
 import log from 'electron-log/main';
+import  "./manifest-workbook"
 
 import "./main-process/native-ui/dialogs/open-file"
 

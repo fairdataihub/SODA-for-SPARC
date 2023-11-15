@@ -1758,9 +1758,9 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
           },
         })["Sheet1"];
 
-        let sortedJSON = processManifestInfo(savedHeaders, savedData);
+        let sortedJSON = window.processManifestInfo(savedHeaders, savedData);
         jsonManifest = JSON.stringify(sortedJSON);
-        convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+        window.convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
         //Update the metadata in json object
         for (let i = 0; i < savedData.length; i++) {
           let fileName = savedData[i][0];
@@ -1912,9 +1912,9 @@ const ffmCreateManifest = async (sodaJson) => {
         }
         // If file doesn't exist then that means it didn't get imported properly
 
-        let sortedJSON = processManifestInfo(manifestHeader, manifestFileData);
+        let sortedJSON = window.processManifestInfo(manifestHeader, manifestFileData);
         jsonManifest = JSON.stringify(sortedJSON);
-        convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+        window.convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
       }
     }
 

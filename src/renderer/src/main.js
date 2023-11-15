@@ -13,6 +13,7 @@ import './scripts/metadata-files/manifest'
 import './scripts/spreadSheetTools/spreadSheetTools'
 import './scripts/others/contributor-storage'
 import './scripts/metadata-files/subjects-samples'
+import './scripts/others/tab-effects'
 
 // Application Lotties
 import './assets/lotties/activate-lotties'

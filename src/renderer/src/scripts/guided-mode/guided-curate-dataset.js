@@ -4,6 +4,7 @@ import { existingDataset, modifyDataset, blackArrow, questionList, datasetMetada
 import { resetLazyLoading, guidedUnLockSideBar } from "../../assets/nav";
 import determineDatasetLocation from "../analytics/analytics-utils"
 import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
+import datasetUploadSession from "../analytics/upload-session-tracker";
 import api from '../others/api/api'
 import lottie from "lottie-web"
 import {dragDrop, successCheck, errorMark} from '../../assets/lotties/lotties'
@@ -2166,32 +2167,32 @@ const renderSideBar = (activePage) => {
   }
 };
 
-// const updateDatasetUploadProgressTable = (progressObject) => {
-//   const datasetUploadTableBody = document.getElementById("guided-tbody-dataset-upload");
-//   //delete datasetUPloadTableBody children with class "upload-status-tr"
-//   const uploadStatusTRs = datasetUploadTableBody.querySelectorAll(".upload-status-tr");
-//   for (const uploadStatusTR of uploadStatusTRs) {
-//     datasetUploadTableBody.removeChild(uploadStatusTR);
-//   }
-//   //remove dtasetUploadTableBody children that don't have the id guided-upload-progress-bar-tr
-//   for (const child of datasetUploadTableBody.children) {
-//     if (!child.getAttribute("id") === "guided-upload-progress-bar-tr") {
-//       datasetUploadTableBody.removeChild(child);
-//     }
-//   }
-//   let uploadStatusElement = "";
-//   for (const [uploadStatusKey, uploadStatusValue] of Object.entries(progressObject))
-//     uploadStatusElement += `
-//       <tr class="upload-status-tr">
-//         <td class="middle aligned progress-bar-table-left">
-//           <b>${uploadStatusKey}:</b>
-//         </td>
-//         <td class="middle aligned remove-left-border">${uploadStatusValue}</td>
-//       </tr>
-//     `;
-//   //insert adjustStatusElement at the end of datasetUploadTablebody
-//   datasetUploadTableBody.insertAdjacentHTML("beforeend", uploadStatusElement);
-// };
+const updateDatasetUploadProgressTable = (progressObject) => {
+  const datasetUploadTableBody = document.getElementById("guided-tbody-dataset-upload");
+  //delete datasetUPloadTableBody children with class "upload-status-tr"
+  const uploadStatusTRs = datasetUploadTableBody.querySelectorAll(".upload-status-tr");
+  for (const uploadStatusTR of uploadStatusTRs) {
+    datasetUploadTableBody.removeChild(uploadStatusTR);
+  }
+  //remove dtasetUploadTableBody children that don't have the id guided-upload-progress-bar-tr
+  for (const child of datasetUploadTableBody.children) {
+    if (!child.getAttribute("id") === "guided-upload-progress-bar-tr") {
+      datasetUploadTableBody.removeChild(child);
+    }
+  }
+  let uploadStatusElement = "";
+  for (const [uploadStatusKey, uploadStatusValue] of Object.entries(progressObject))
+    uploadStatusElement += `
+      <tr class="upload-status-tr">
+        <td class="middle aligned progress-bar-table-left">
+          <b>${uploadStatusKey}:</b>
+        </td>
+        <td class="middle aligned remove-left-border">${uploadStatusValue}</td>
+      </tr>
+    `;
+  //insert adjustStatusElement at the end of datasetUploadTablebody
+  datasetUploadTableBody.insertAdjacentHTML("beforeend", uploadStatusElement);
+};
 
 // const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMetadataRows) => {
 //   const poolSubSamStructure = {
@@ -3229,23 +3230,24 @@ const updateManifestJson = async (highLvlFolderName, result) => {
 
 const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
   // First, empty the guided_manifest_files so we can add the new manifest files
-  window.fs.emptyDirSync(guidedManifestFilePath);
+  window.fs.emptyDirSync(window.guidedManifestFilePath);
 
   const guidedManifestData = window.sodaJSONObj["guided-manifest-files"];
   for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
-    let manifestJSON = processManifestInfo(
+    let manifestJSON = window.processManifestInfo(
       guidedManifestData[highLevelFolder]["headers"],
       guidedManifestData[highLevelFolder]["data"]
     );
-    jsonManifest = JSON.stringify(manifestJSON);
+    // TODO: Doesnt have to be global?
+    let jsonManifest = JSON.stringify(manifestJSON);
 
-    const manifestPath = path.join(guidedManifestFilePath, highLevelFolder, "manifest.xlsx");
+    const manifestPath = window.path.join(window.guidedManifestFilePath, highLevelFolder, "manifest.xlsx");
 
-    window.fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
+    window.fs.mkdirSync(window.path.join(window.guidedManifestFilePath, highLevelFolder), {
       recursive: true,
     });
 
-    convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
+    window.convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
     window.datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
       action: ["new"],
       path: manifestPath,
@@ -13667,7 +13669,6 @@ const guidedPennsieveDatasetUpload = async () => {
     }
 
     console.log("We made it to the end")
-    return 
 
     //Reset Upload Progress Bar and then scroll to it
     setGuidedProgressBarValue(0);
@@ -13757,7 +13758,7 @@ const openGuidedDatasetRenameSwal = async () => {
 };
 
 const guidedUploadDatasetToPennsieve = async () => {
-  updateJSONStructureDSstructure();
+  window.updateJSONStructureDSstructure();
 
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
@@ -13782,7 +13783,7 @@ const guidedUploadDatasetToPennsieve = async () => {
     dataset_name = window.sodaJSONObj["digital-metadata"]["name"];
     window.sodaJSONObj["bf-dataset-selected"] = {};
     window.sodaJSONObj["bf-dataset-selected"]["dataset-name"] = dataset_name;
-    window.sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfDataset;
+    window.sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfAccount;
     dataset_destination = "Pennsieve";
   }
 
@@ -13804,7 +13805,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       guidedSetNavLoadingState(false);
 
       $("#sidebarCollapse").prop("disabled", false);
-      log.info("Completed curate function");
+      window.log.info("Completed curate function");
 
       // log that a dataset upload was successful
       window.electron.ipcRenderer.send(
@@ -13902,7 +13903,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
           params: {
-            selected_account: window.defaultBfDataset,
+            selected_account: window.defaultBfAccount,
           },
         });
         // TODO: This is window?
@@ -14028,7 +14029,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
           params: {
-            selected_account: window.defaultBfDataset,
+            selected_account: window.defaultBfAccount,
           },
         });
         window.datasetList = [];
@@ -14062,6 +14063,7 @@ const guidedUploadDatasetToPennsieve = async () => {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
       });
+      // TODO: This needs to be redone as we cant access app i dont think?
       app.showExitPrompt = false;
       app.quit();
     });
@@ -14138,7 +14140,8 @@ const guidedUploadDatasetToPennsieve = async () => {
       });
     }
 
-    logProgressToAnalytics(totalUploadedFiles, main_generated_dataset_size);
+    // TODO: Reintegrate
+    // logProgressToAnalytics(totalUploadedFiles, main_generated_dataset_size);
 
     //If the curate function is complete, clear the interval
     if (main_curate_status === "Done") {

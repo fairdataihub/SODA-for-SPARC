@@ -8,6 +8,7 @@ import logger from 'electron-log/renderer'
 import imageDataURI from "image-data-uri" // TODO: fix this
 import Jimp from "jimp";
 import excel4node from "excel4node";
+// import * as excel4node from 'excel4node';
 import { spawn } from "node:child_process"
 
 import "v8-compile-cache";

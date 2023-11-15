@@ -3230,23 +3230,23 @@ const updateManifestJson = async (highLvlFolderName, result) => {
 
 const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
   // First, empty the guided_manifest_files so we can add the new manifest files
-  fs.emptyDirSync(guidedManifestFilePath);
+  fs.emptyDirSync(window.guidedManifestFilePath);
 
   const guidedManifestData = sodaJSONObj["guided-manifest-files"];
   for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
-    let manifestJSON = processManifestInfo(
+    let manifestJSON = window.processManifestInfo(
       guidedManifestData[highLevelFolder]["headers"],
       guidedManifestData[highLevelFolder]["data"]
     );
     jsonManifest = JSON.stringify(manifestJSON);
 
-    const manifestPath = path.join(guidedManifestFilePath, highLevelFolder, "manifest.xlsx");
+    const manifestPath = path.join(window.guidedManifestFilePath, highLevelFolder, "manifest.xlsx");
 
-    fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
+    fs.mkdirSync(path.join(window.guidedManifestFilePath, highLevelFolder), {
       recursive: true,
     });
 
-    convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
+    window.convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
     datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
       action: ["new"],
       path: manifestPath,
@@ -13726,7 +13726,7 @@ const openGuidedDatasetRenameSwal = async () => {
 };
 
 const guidedUploadDatasetToPennsieve = async () => {
-  updateJSONStructureDSstructure();
+  window.updateJSONStructureDSstructure();
 
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
@@ -13751,7 +13751,7 @@ const guidedUploadDatasetToPennsieve = async () => {
     dataset_name = sodaJSONObj["digital-metadata"]["name"];
     sodaJSONObj["bf-dataset-selected"] = {};
     sodaJSONObj["bf-dataset-selected"]["dataset-name"] = dataset_name;
-    sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfDataset;
+    sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfAccount;
     dataset_destination = "Pennsieve";
   }
 

@@ -374,9 +374,9 @@ $(document).ready(function () {
               })["Sheet1"];
             }
             // If file doesn't exist then that means it didn't get imported properly
-            let sortedJSON = processManifestInfo(manifestHeader, manifestFileData);
+            let sortedJSON = window.processManifestInfo(manifestHeader, manifestFileData);
             jsonManifest = JSON.stringify(sortedJSON);
-            convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+            window.convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
           }
         }
 
@@ -465,7 +465,7 @@ $(document).ready(function () {
 
                 // Header and data should be formatted correctly
 
-                let sortedJSON = processManifestInfo(manifestHeader, manifestData);
+                let sortedJSON = window.processManifestInfo(manifestHeader, manifestData);
                 sodaCopy["manifest-files"][highLevelFolderName] = {
                   headers: manifestHeader,
                   data: manifestData,
@@ -542,9 +542,9 @@ $(document).ready(function () {
               },
             })["Sheet1"];
 
-            let sortedJSON = processManifestInfo(savedHeaders, savedData);
+            let sortedJSON = window.processManifestInfo(savedHeaders, savedData);
             jsonManifest = JSON.stringify(sortedJSON);
-            convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+            window.convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
             //Update the metadata in json object
             // If extra columns are added preserve them into sodaJSONObj
             for (let i = 0; i < savedData.length; i++) {
@@ -691,7 +691,7 @@ window.smoothScrollToElement = (idOrElement, block = "start", inline = "nearest"
   }
 };
 
-const processManifestInfo = (headers, data) => {
+const window.processManifestInfo = (headers, data) => {
   let sortedArr = [];
   // sort json data by appending ordered entries (by columns) to each object's element
   for (let i = 0; i < data.length; i++) {
@@ -739,7 +739,7 @@ const createWorkbookStyle = (wb, color) => {
   });
 };
 
-const convertJSONToXlsx = (jsondata, excelfile) => {
+const window.convertJSONToXlsx = (jsondata, excelfile) => {
   const requiredManifestHeaders = [
     "filename",
     "timestamp",

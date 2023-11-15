@@ -1,5 +1,11 @@
-const { rgba } = require("jimp");
-const { relative } = require("path");
+// event listeners for opening dataset or account selection dropdown
+import Accordion from 'accordion-js';
+// TODO: Follow up that this is the way to import it
+import 'accordion-js/dist/accordion.min.css';
+
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
 
 // JSON object of all the tabs
 var allParentStepsJSON = {
@@ -3706,7 +3712,9 @@ $(document).ready(() => {
     });
   });
 
-  $(".ui.accordion").accordion();
+  // let dsAccordion = new Accordion("#dd-accordion")
+  // TODO: What does this do? BUNDLING CHANGE WAS TO COMMENT THIS CHANGE BACK IF NECESSARY
+  // $(".ui.accordion").accordion();
   $(".content-button").click(function () {
     let section = $(this).data("section");
 
@@ -3810,7 +3818,7 @@ $("#bf_list_roles_teams").on("change", () => {
   }
 });
 
-initRipple = function (buttonEle) {
+const initRipple = function (buttonEle) {
   var inside = document.createElement("div");
   inside.classList.add("btn_animated-inside");
   inside.innerHTML = buttonEle.innerHTML;
@@ -3820,7 +3828,7 @@ initRipple = function (buttonEle) {
     ripple(event, this);
   });
 };
-ripple = function (event, buttonEle) {
+const ripple = function (event, buttonEle) {
   var rippleEle = document.createElement("span");
   rippleEle.setAttribute("class", "ripple");
   rippleEle.style.top = event.offsetY + "px";
@@ -3845,7 +3853,7 @@ ripple = function (event, buttonEle) {
 
 var buttons = document.getElementsByClassName("btn_animated");
 for (var i = 0; i < buttons.length; i++) {
-  button = buttons[i];
+  let button = buttons[i];
   initRipple(button);
 }
 
