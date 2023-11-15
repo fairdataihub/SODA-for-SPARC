@@ -2890,14 +2890,14 @@ const getProgressFileData = async (progressFile) => {
 
 const deleteProgresFile = async (progressFileName) => {
   //Get the path of the progress file to delete
-  const progressFilePathToDelete = path.join(guidedProgressFilePath, progressFileName + ".json");
+  const progressFilePathToDelete = window.path.join(guidedProgressFilePath, progressFileName + ".json");
   //delete the progress file
   window.fs.unlinkSync(progressFilePathToDelete, (err) => {
     console.log(err);
   });
 };
 
-const deleteProgressCard = async (progressCardDeleteButton) => {
+window.deleteProgressCard = async (progressCardDeleteButton) => {
   const progressCard = progressCardDeleteButton.parentElement.parentElement;
   const progressCardNameToDelete = progressCard.querySelector(".progress-file-name").textContent;
 
@@ -3085,7 +3085,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
           progressFileName,
           workspaceUserNeedsToSwitchTo
         )}
-        <h2 class="dataset-card-button-delete" onclick="deleteProgressCard(this)">
+        <h2 class="dataset-card-button-delete" onclick="window.deleteProgressCard(this)">
           <i
             class="fas fa-trash mr-sm-1"
           ></i>
