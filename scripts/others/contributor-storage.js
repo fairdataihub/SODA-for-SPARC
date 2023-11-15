@@ -1,9 +1,9 @@
-const storedContributorsPath = path.join(homeDirectory, "SODA", "stored-contributors.json");
+const window.storedContributorsPath = path.join(homeDirectory, "SODA", "stored-contributors.json");
 
 // Save the contributors array to the JSON file
 const saveStoredContributors = (contributors) => {
   try {
-    fs.writeFileSync(storedContributorsPath, JSON.stringify(contributors));
+    fs.writeFileSync(window.storedContributorsPath, JSON.stringify(contributors));
   } catch (err) {
     log.info("Error saving stored contributors file: " + err);
   }
@@ -13,7 +13,7 @@ const saveStoredContributors = (contributors) => {
 // If the file doesn't exist, return an empty array
 const loadStoredContributors = () => {
   try {
-    const contributorFileData = fs.readFileSync(storedContributorsPath);
+    const contributorFileData = fs.readFileSync(window.storedContributorsPath);
     return JSON.parse(contributorFileData);
   } catch (err) {
     return [];
@@ -51,9 +51,9 @@ window.addOrUpdateStoredContributor = (
   }
 
   // If the stored contributors file doesn't exist, create it and write an empty array to it
-  if (!fs.existsSync(storedContributorsPath)) {
+  if (!fs.existsSync(window.storedContributorsPath)) {
     try {
-      fs.writeFileSync(storedContributorsPath, "[]");
+      fs.writeFileSync(window.storedContributorsPath, "[]");
     } catch (err) {
       log.info("Error creating stored contributors file: " + err);
       return;

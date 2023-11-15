@@ -193,6 +193,12 @@ window.organizeDSglobalPath = "";
 // TODO: Organize ds related global variable; so modularize that appropriately 
 window.dataset_path = document.getElementById("input-global-path");
 
+// GM Contributors page
+const homeDirectory = await window.electron.ipcRenderer.invoke('get-app-path', 'home')
+window.storedContributorsPath = window.path.join(homeDirectory, "SODA", "stored-contributors.json");
+
+
+
 
 
 
