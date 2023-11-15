@@ -4929,6 +4929,38 @@ const openPage = async (targetPageID) => {
       importProgressCircle.classList.add("hidden");
     }
 
+    if (targetPageID === "guided-subjects-specification-tab") {
+      const subjectPoolingQuerySection = document.getElementById(
+        "guided-section-subject-pooling-yes-no"
+      );
+      const subjectPoolingBlockText = document.getElementById("subject-pooling-block-text");
+
+      const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+      if (subjectsInPools.length > 0) {
+        console.log("disabling subject pooling query");
+        subjectPoolingQuerySection.classList.add("section-disabled");
+        subjectPoolingBlockText.classList.remove("hidden");
+      } else {
+        console.log("enabling subject pooling query");
+        subjectPoolingQuerySection.classList.remove("section-disabled");
+        subjectPoolingBlockText.classList.add("hidden");
+      }
+
+      const sampleAdditionQuerySection = document.getElementById(
+        "guided-section-ask-if-subjects-have-samples"
+      );
+      const sampleAdditionBlockText = document.getElementById("sample-deletion-block-text");
+      const sampleNames = getExistingSampleNames();
+      if (sampleNames.length > 0) {
+        console.log("disabling sample query");
+        sampleAdditionQuerySection.classList.add("section-disabled");
+        sampleAdditionBlockText.classList.remove("hidden");
+      } else {
+        console.log("enabling sample query");
+        sampleAdditionQuerySection.classList.remove("section-disabled");
+        sampleAdditionBlockText.classList.add("hidden");
+      }
+    }
     if (targetPageID === "guided-prepare-dataset-structure-tab") {
       // If the user has already added subjects, disallow them from selecting no (they have to go to the subject
       // page to delete subjects but this would be a very strange case anyways)
