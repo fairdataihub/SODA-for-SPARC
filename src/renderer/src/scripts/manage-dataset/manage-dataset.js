@@ -1,3 +1,4 @@
+import axios from "axios"
 // event listeners for opening dataset or account selection dropdown
 import Accordion from 'accordion-js';
 // TODO: Follow up that this is the way to import it
@@ -1640,13 +1641,8 @@ const showDatasetDescription = async () => {
   $("#ds-description").prop("disabled", false);
 };
 
-const getBase64 = async (url) => {
-  const axios = require("axios");
-  return axios
-    .get(url, {
-      responseType: "arraybuffer",
-    })
-    .then((response) => Buffer.from(response.data, "binary").toString("base64"));
+window.getBase64 = async (url) => {
+  return await window.electron.ipcRenderer.invoke("get-string-representation-of-buffer", url, "binary")
 };
 
 // function for importing a banner image if one already exists
@@ -1656,7 +1652,9 @@ $("#edit_banner_image_button").click(async () => {
     //Do nothing... regular import
   } else {
     let img_src = $("#current-banner-img").attr("src");
-    let img_base64 = await getBase64(img_src); // encode image to base64
+    console.log(img_src)
+    img_src = "file://" + img_src;
+    let img_base64 = await window.getBase64(img_src); // encode image to base64
 
     $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
     $("#save-banner-image").css("visibility", "visible");

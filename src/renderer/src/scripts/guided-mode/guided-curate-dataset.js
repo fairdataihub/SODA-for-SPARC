@@ -4811,7 +4811,6 @@ const openPage = async (targetPageID) => {
     hideSubNavAndShowMainNav(false);
 
     if (
-      targetPageID === "guided-dataset-generation-confirmation-tab" ||
       targetPageID === "guided-dataset-generation-tab" ||
       targetPageID === "guided-dataset-dissemination-tab"
     ) {
@@ -5865,7 +5864,10 @@ const openPage = async (targetPageID) => {
             //Banner is returned as an s3 bucket url but image needs to be converted as
             //base64 to save and write to users local system
 
-            let img_base64 = await getBase64(res); // encode image to base64
+            console.log(res)
+
+            let img_base64 = await window.getBase64(res); // encode image to base64
+            console.log("Not failing hehjasfhjk")
             let guided_img_url = res;
             let imageType = "";
             let fullBase64Image = "";
@@ -5935,6 +5937,7 @@ const openPage = async (targetPageID) => {
           }
           window.sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-banner-image-tab");
         } catch (error) {
+          console.log("Failure is here")
           clientError(error);
           const emessage = error.response.data.message;
           await guidedShowOptionalRetrySwal(emessage, "guided-banner-image-tab");

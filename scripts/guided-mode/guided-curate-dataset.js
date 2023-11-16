@@ -5854,7 +5854,7 @@ const openPage = async (targetPageID) => {
             //Banner is returned as an s3 bucket url but image needs to be converted as
             //base64 to save and write to users local system
 
-            let img_base64 = await getBase64(res); // encode image to base64
+            let img_base64 = await window.getBase64(res); // encode image to base64
             let guided_img_url = res;
             let imageType = "";
             let fullBase64Image = "";

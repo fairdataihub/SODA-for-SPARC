@@ -1632,7 +1632,7 @@ const showDatasetDescription = async () => {
   $("#ds-description").prop("disabled", false);
 };
 
-const getBase64 = async (url) => {
+const window.getBase64 = async (url) => {
   const axios = require("axios");
   return axios
     .get(url, {
@@ -1648,7 +1648,7 @@ $("#edit_banner_image_button").click(async () => {
     //Do nothing... regular import
   } else {
     let img_src = $("#current-banner-img").attr("src");
-    let img_base64 = await getBase64(img_src); // encode image to base64
+    let img_base64 = await window.getBase64(img_src); // encode image to base64
 
     $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
     $("#save-banner-image").css("visibility", "visible");
