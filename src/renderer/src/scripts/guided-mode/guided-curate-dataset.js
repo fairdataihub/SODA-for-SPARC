@@ -6490,8 +6490,8 @@ const openPage = async (targetPageID) => {
         },
         plugins: ["types", "sort"],
         sort: function (a, b) {
-          a1 = this.get_node(a);
-          b1 = this.get_node(b);
+          let a1 = this.get_node(a);
+          let b1 = this.get_node(b);
 
           if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
             //if the word assets is included in the icon then we can assume it is a file
@@ -11082,7 +11082,7 @@ window.openSampleRenameInput = (subjectNameEditButton) => {
   sampleIdCellToRename.html(sampleRenameElement);
 };
 
-const removePennsievePermission = (clickedPermissionRemoveButton) => {
+window.removePennsievePermission = (clickedPermissionRemoveButton) => {
   let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
   let permissionEntityType = permissionElementToRemove.attr("data-entity-type");
   let permissionNameToRemove = permissionElementToRemove.find(".permission-name-cell").text();
@@ -11213,8 +11213,8 @@ const createPennsievePermissionsTableRowElement = (entityType, name, permission,
       <td style="opacity: 0.5" class="middle aligned permission-name-cell">${name}</td>
       <td style="opacity: 0.5" class="middle aligned remove-left-border permission-type-cell">${permission}</td>
       <td class="middle aligned text-center remove-left-border" style="width: 20px">
-        <button type="button" style="display: none" class="btn btn-danger btn-sm" onclick="removePennsievePermission($(this))">Delete</button>
-        <button type="button" class="btn btn-sm" style="display: inline-block;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="removePennsievePermission($(this))">Restore</button>
+        <button type="button" style="display: none" class="btn btn-danger btn-sm" onclick="window.removePennsievePermission($(this))">Delete</button>
+        <button type="button" class="btn btn-sm" style="display: inline-block;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="window.removePennsievePermission($(this))">Restore</button>
       </td>
     </tr>
   `;
@@ -11224,8 +11224,8 @@ const createPennsievePermissionsTableRowElement = (entityType, name, permission,
         <td class="middle aligned permission-name-cell">${name}</td>
         <td class="middle aligned remove-left-border permission-type-cell">${permission}</td>
         <td class="middle aligned text-center remove-left-border" style="width: 20px">
-          <button type="button" class="btn btn-danger btn-sm" onclick="removePennsievePermission($(this))">Delete</button>
-          <button type="button" class="btn btn-sm" style="display: none;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="removePennsievePermission($(this))">Restore</button>
+          <button type="button" class="btn btn-danger btn-sm" onclick="window.removePennsievePermission($(this))">Delete</button>
+          <button type="button" class="btn btn-sm" style="display: none;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="window.removePennsievePermission($(this))">Restore</button>
         </td>
       </tr>
     `;
