@@ -2936,7 +2936,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
   } else {
     progressFileImage = `
       <img
-        src='${progressFileImage}'
+        src='file://${progressFileImage}'
         alt="Dataset banner image"
         style="height: 80px; width: 80px"
       />
