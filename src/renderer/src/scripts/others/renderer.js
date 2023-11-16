@@ -2945,7 +2945,7 @@ window.clearDatasetDropdowns = () => {
 // //////////////////////////End of Ds description section ///////////////////////////////////
 // //////////////// //////////////// //////////////// //////////////// ////////////////////////
 
-// var displaySize = 1000;
+window.displaySIze = 1000;
 
 // //////////////////////////////////
 // // Manage Dataset
@@ -7665,16 +7665,16 @@ let folder_counter = 0;
 //       var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
 //       generateProgressBar.value = value;
 //       statusMeter.value = value;
-//       if (main_total_generate_dataset_size < displaySize) {
+//       if (main_total_generate_dataset_size < window.displaySIze) {
 //         var totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
-//       } else if (main_total_generate_dataset_size < displaySize * displaySize) {
-//         var totalSizePrint = (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
-//       } else if (main_total_generate_dataset_size < displaySize * displaySize * displaySize) {
+//       } else if (main_total_generate_dataset_size < window.displaySIze * window.displaySIze) {
+//         var totalSizePrint = (main_total_generate_dataset_size / window.displaySIze).toFixed(2) + " KB";
+//       } else if (main_total_generate_dataset_size < window.displaySIze * window.displaySIze * window.displaySIze) {
 //         var totalSizePrint =
-//           (main_total_generate_dataset_size / displaySize / displaySize).toFixed(2) + " MB";
+//           (main_total_generate_dataset_size / window.displaySIze / window.displaySIze).toFixed(2) + " MB";
 //       } else {
 //         var totalSizePrint =
-//           (main_total_generate_dataset_size / displaySize / displaySize / displaySize).toFixed(2) +
+//           (main_total_generate_dataset_size / window.displaySIze / window.displaySIze / window.displaySIze).toFixed(2) +
 //           " GB";
 //       }
 

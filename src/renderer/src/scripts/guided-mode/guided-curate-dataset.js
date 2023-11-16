@@ -4191,7 +4191,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
 
         if (result.isConfirmed) {
           //delete empty samples from the window.datasetStructureJSONObj
-          for (sample of samplesWithEmptyFolders) {
+          for (const sample of samplesWithEmptyFolders) {
             if (sample.poolName) {
               delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 sample.poolName
@@ -4301,7 +4301,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
           allowOutsideClick: false,
         });
         if (result.isConfirmed) {
-          for (subject of subjectsWithEmptyFolders) {
+          for (const subject of subjectsWithEmptyFolders) {
             if (subject.poolName) {
               delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 subject.poolName
@@ -14107,16 +14107,16 @@ const guidedUploadDatasetToPennsieve = async () => {
         setGuidedProgressBarValue(percentOfDatasetUploaded);
 
         let totalSizePrint;
-        if (main_total_generate_dataset_size < displaySize) {
+        if (main_total_generate_dataset_size < window.displaySIze) {
           totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
-        } else if (main_total_generate_dataset_size < displaySize * displaySize) {
-          totalSizePrint = (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
-        } else if (main_total_generate_dataset_size < displaySize * displaySize * displaySize) {
+        } else if (main_total_generate_dataset_size < window.displaySIze * window.displaySIze) {
+          totalSizePrint = (main_total_generate_dataset_size / window.displaySIze).toFixed(2) + " KB";
+        } else if (main_total_generate_dataset_size < window.displaySIze * window.displaySIze * window.displaySIze) {
           totalSizePrint =
-            (main_total_generate_dataset_size / displaySize / displaySize).toFixed(2) + " MB";
+            (main_total_generate_dataset_size / window.displaySIze / window.displaySIze).toFixed(2) + " MB";
         } else {
           totalSizePrint =
-            (main_total_generate_dataset_size / displaySize / displaySize / displaySize).toFixed(
+            (main_total_generate_dataset_size / window.displaySIze / window.displaySIze / window.displaySIze).toFixed(
               2
             ) + " GB";
         }

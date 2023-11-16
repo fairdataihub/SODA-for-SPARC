@@ -2779,15 +2779,15 @@ $("#button-submit-dataset").click(async () => {
           cloneMeter.value = value;
           let totalSizePrint = "";
 
-          if (totalFileSize < displaySize) {
+          if (totalFileSize < window.displaySIze) {
             totalSizePrint = totalFileSize.toFixed(2) + " B";
-          } else if (totalFileSize < displaySize * displaySize) {
-            totalSizePrint = (totalFileSize / displaySize).toFixed(2) + " KB";
-          } else if (totalFileSize < displaySize * displaySize * displaySize) {
-            totalSizePrint = (totalFileSize / displaySize / displaySize).toFixed(2) + " MB";
+          } else if (totalFileSize < window.displaySIze * window.displaySIze) {
+            totalSizePrint = (totalFileSize / window.displaySIze).toFixed(2) + " KB";
+          } else if (totalFileSize < window.displaySIze * window.displaySIze * window.displaySIze) {
+            totalSizePrint = (totalFileSize / window.displaySIze / window.displaySIze).toFixed(2) + " MB";
           } else {
             totalSizePrint =
-              (totalFileSize / displaySize / displaySize / displaySize).toFixed(2) + " GB";
+              (totalFileSize / window.displaySIze / window.displaySIze / window.displaySIze).toFixed(2) + " GB";
           }
 
           $("#para-please-wait-manage-dataset").html("");
