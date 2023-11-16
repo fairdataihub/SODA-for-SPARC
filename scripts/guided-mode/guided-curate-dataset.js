@@ -4952,11 +4952,9 @@ const openPage = async (targetPageID) => {
       const sampleAdditionBlockText = document.getElementById("sample-deletion-block-text");
       const sampleNames = getExistingSampleNames();
       if (sampleNames.length > 0) {
-        console.log("disabling sample query");
         sampleAdditionQuerySection.classList.add("section-disabled");
         sampleAdditionBlockText.classList.remove("hidden");
       } else {
-        console.log("enabling sample query");
         sampleAdditionQuerySection.classList.remove("section-disabled");
         sampleAdditionBlockText.classList.add("hidden");
       }
@@ -11426,11 +11424,7 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
       entityName = `${entityPrefix}${entityName}`;
     }
     // Check to see if the subjectName already exists
-    if (preExistingEntities.includes(entityName)) {
-      throw new Error(`${entityNameSingular} name has already been added`);
-    }
-
-    if (newEntities.includes(entityName)) {
+    if (preExistingEntities.includes(entityName) || newEntities.includes(entityName)) {
       throw new Error(`${entityNameSingular} name has already been added`);
     }
 
@@ -11479,18 +11473,18 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
   };
 
   await Swal.fire({
-    title: "Enter subject ID and press enter",
+    title: `Enter ${entityNameSingular} ID and press enter`,
     html: `
       <p class="help-text">Instructions yada yada</p>
-      <div class="space-between w-100" style="align-items: center;">
-        <p class="help-text mr-1">sub-</p>
-        <input id='input-entity-addition' class='guided--input' type='text' name='guided-subject-id' placeholder='Enter subject ID and press enter'/>
+      <div class="space-between w-100 align-flex-center">
+        <p class="help-text m-0 mr-1">sub-</p>
+        <input id='input-entity-addition' class='guided--input' type='text' name='guided-subject-id' placeholder='Enter ${entityNameSingular} ID and press enter'/>
         <button
           class="ui positive button soda-green-background ml-1"
           style="width: 180px;"
           id="guided-button-add-subject-in-swal"
         >
-          Add subject
+          Add ${entityNameSingular}
         </button>
       </div>
       <div id="entities-list" class="swal-file-list my-3"></div>
