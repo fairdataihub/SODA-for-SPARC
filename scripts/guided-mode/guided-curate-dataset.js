@@ -10129,7 +10129,7 @@ const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
   }
 };
 
-const openCopySubjectMetadataPopup = async () => {
+const window.openCopySubjectMetadataPopup = async () => {
   //save current subject metadata entered in the form
   window.addSubject("guided");
 
@@ -10222,7 +10222,7 @@ const openCopySubjectMetadataPopup = async () => {
     });
 };
 
-const openCopySampleMetadataPopup = async () => {
+const window.openCopySampleMetadataPopup = async () => {
   window.addSample("guided");
 
   let copyFromMetadata = ``;

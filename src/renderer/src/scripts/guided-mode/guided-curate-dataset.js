@@ -10145,7 +10145,7 @@ const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
   }
 };
 
-const openCopySubjectMetadataPopup = async () => {
+window.openCopySubjectMetadataPopup = async () => {
   //save current subject metadata entered in the form
   window.addSubject("guided");
 
@@ -10188,7 +10188,7 @@ const openCopySubjectMetadataPopup = async () => {
       </div>
     </div>
   `;
-  swal
+  Swal
     .fire({
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -10214,7 +10214,7 @@ const openCopySubjectMetadataPopup = async () => {
             copyFromSubjectData = window.subjectsTableData[i].slice(2);
           }
         }
-        for (subject of selectedCopyToSubjects) {
+        for (const subject of selectedCopyToSubjects) {
           //loop through all window.subjectsTableData elements besides the first one
           for (let i = 1; i < window.subjectsTableData.length; i++) {
             //check through elements of tableData to find a subject ID match
@@ -10238,7 +10238,7 @@ const openCopySubjectMetadataPopup = async () => {
     });
 };
 
-const openCopySampleMetadataPopup = async () => {
+window.openCopySampleMetadataPopup = async () => {
   window.addSample("guided");
 
   let copyFromMetadata = ``;
@@ -10282,7 +10282,7 @@ const openCopySampleMetadataPopup = async () => {
     </div>
   `;
 
-  swal
+  Swal
     .fire({
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -10315,7 +10315,7 @@ const openCopySampleMetadataPopup = async () => {
             copyFromSampleData = window.samplesTableData[i].slice(4);
           }
         }
-        for (sample of selectedCopyToSamples) {
+        for (const sample of selectedCopyToSamples) {
           window.samplesTableData.forEach((sampleData, index) => {
             if (sampleData[1] === sample) {
               sampleData = [sampleData[0], sampleData[1], wasDerivedFrom, sampleData[3]];
