@@ -3,7 +3,7 @@ import excel4node from "excel4node";
 
 
 
-ipcMain.handle("convertJSONToSxlsx", async (jsondata, excelfile) => {
+ipcMain.handle("convertJSONToSxlsx", async (event, jsondata, excelfile) => {
   return await convertJSONToXlsx(jsondata, excelfile);
 })
 
