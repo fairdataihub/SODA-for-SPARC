@@ -2217,48 +2217,48 @@ window.createDragSort(window.guidedSubmissionTagsTagifyManual);
 
 // createMetadataDir();
 
-// const specimenType = [
-//   "whole organism",
-//   "whole organ",
-//   "fluid specimen",
-//   "tissue",
-//   "nerve",
-//   "slice",
-//   "section",
-//   "cryosection",
-//   "cell",
-//   "nucleus",
-//   "nucleic acid",
-//   "slide",
-//   "whole mount",
-// ];
-// function createSpecimenTypeAutocomplete(id) {
-//   var autoCompleteJS3 = new autoComplete({
-//     selector: "#" + id,
-//     data: {
-//       cache: true,
-//       src: specimenType,
-//     },
-//     onSelection: (feedback) => {
-//       var selection = feedback.selection.value;
-//       document.querySelector("#" + id).value = selection;
-//     },
-//     trigger: {
-//       event: ["input", "focus"],
-//       // condition: () => true
-//     },
-//     resultItem: {
-//       destination: "#" + id,
-//       highlight: {
-//         render: true,
-//       },
-//     },
-//     resultsList: {
-//       // id: listID,
-//       maxResults: 5,
-//     },
-//   });
-// }
+const specimenType = [
+  "whole organism",
+  "whole organ",
+  "fluid specimen",
+  "tissue",
+  "nerve",
+  "slice",
+  "section",
+  "cryosection",
+  "cell",
+  "nucleus",
+  "nucleic acid",
+  "slide",
+  "whole mount",
+];
+function createSpecimenTypeAutocomplete(id) {
+  var autoCompleteJS3 = new autoComplete({
+    selector: "#" + id,
+    data: {
+      cache: true,
+      src: specimenType,
+    },
+    onSelection: (feedback) => {
+      var selection = feedback.selection.value;
+      document.querySelector("#" + id).value = selection;
+    },
+    trigger: {
+      event: ["input", "focus"],
+      // condition: () => true
+    },
+    resultItem: {
+      destination: "#" + id,
+      highlight: {
+        render: true,
+      },
+    },
+    resultsList: {
+      // id: listID,
+      maxResults: 5,
+    },
+  });
+}
 
 window.createSpeciesAutocomplete = (id, curationMode) => {
   // var listID = "autocomplete" + id;
