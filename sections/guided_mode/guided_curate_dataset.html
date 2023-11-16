@@ -1323,7 +1323,7 @@
               </div>
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
-                  class="ui positive basic button guided--radio-button"
+                  class="ui positive basic button guided--radio-button button-controls-sub-pools-sam-text"
                   id="guided-button-subjects-have-samples"
                   data-next-element="guided-section-ask-subject-addition-method"
                   data-button-config-value="dataset-contains-samples"
@@ -1332,7 +1332,7 @@
                   Yes
                 </button>
                 <button
-                  class="ui negative basic button guided--radio-button"
+                  class="ui negative basic button guided--radio-button button-controls-sub-pools-sam-text"
                   data-next-element="guided-section-ask-subject-addition-method"
                   data-button-config-value="dataset-contains-samples"
                   data-button-config-value-state="no"
@@ -1350,14 +1350,15 @@
 
             <div class="guided--section" id="guided-section-ask-subject-addition-method">
               <label class="guided--form-label centered">
-                The SDS requires a unique ID for each subject and sample in your dataset. You can
-                provide these IDs in the SODA UI or import them through a spreadsheet (more
+                The SDS requires a unique ID for each
+                <span class="sub-pool-sample-structure-description-text"></span> in your dataset.
+                You can provide these IDs in the SODA UI or import them through a spreadsheet (more
                 convenient if you have a large amount of subjects/samples). What would you like to
                 do?
               </label>
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
-                  class="ui positive basic button guided--radio-button"
+                  class="ui primary basic button guided--radio-button"
                   data-next-element="guided-section-add-subjects-via-spreadsheet"
                   data-button-config-value="subject-addition-method"
                   data-button-config-value-state="spreadsheet"
@@ -1365,7 +1366,7 @@
                   Enter IDs in SODA/Import IDs through spreadsheet
                 </button>
                 <button
-                  class="ui negative basic button guided--radio-button"
+                  class="ui primary basic button guided--radio-button"
                   data-next-element="guided-section-add-subjects-manual"
                   data-button-config-value="subject-addition-method"
                   data-button-config-value-state="manual"
@@ -1377,8 +1378,8 @@
 
             <div class="guided--section" id="guided-section-add-subjects-manual">
               <h2 class="guided--text-user-directions">
-                Click "<span class="next-button-span"></span>" below to begin adding subjects to
-                your dataset
+                Click "<span class="next-button-span"></span>" below to begin adding
+                <span class="sub-pool-sample-structure-description-text"></span> to your dataset
               </h2>
               <button
                 class="ui positive button soda-green-background"

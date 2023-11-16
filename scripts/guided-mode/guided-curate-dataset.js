@@ -11390,6 +11390,48 @@ ipcRenderer.on("selected-sample-names-from-dialog", async (event, folders) => {
   console.log(sampleNames);
 });
 
+const convertArrayToCommaSeparatedString = (array) => {
+  // Convert the array to a comma separated string with an "and" before the last element if there are more than 2 elements
+  if (array.length === 0) {
+    return "";
+  }
+  if (array.length === 1) {
+    return array[0];
+  }
+  if (array.length === 2) {
+    return `${array[0]} and ${array[1]}`;
+  }
+  if (array.length > 2) {
+    const lastElement = array.pop();
+    return `${array.join(", ")}, and ${lastElement}`;
+  }
+};
+document.querySelectorAll(".button-controls-sub-pools-sam-text").forEach((button) => {
+  button.addEventListener("click", () => {
+    const datasetHasPools = document
+      .getElementById("guided-button-subjects-are-pooled")
+      .classList.contains("selected");
+    const subjectsHaveSamples = document
+      .getElementById("guided-button-subjects-have-samples")
+      .classList.contains("selected");
+
+    const datasetEntities = ["subject"];
+    if (datasetHasPools) {
+      datasetEntities.push("pool");
+    }
+    if (subjectsHaveSamples) {
+      datasetEntities.push("sample");
+    }
+
+    const spansToInsertTextInto = document.querySelectorAll(
+      ".sub-pool-sample-structure-description-text"
+    );
+    spansToInsertTextInto.forEach((span) => {
+      span.innerHTML = convertArrayToCommaSeparatedString(datasetEntities);
+    });
+  });
+});
+
 const guidedOpenEntityAdditionSwal = async (entityName) => {
   // Get a list of the existing entities so we can check for duplicates
   // const subjects = getExistingSubjectNames();
@@ -11438,7 +11480,6 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
   };
 
   const deleteSwalEntity = (entityName) => {
-    console.log("deleteSwalEntity", entityName);
     // Remove subject from subjects array
     const index = newEntities.indexOf(entityName);
     if (index > -1) {
