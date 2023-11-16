@@ -362,7 +362,7 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
     const changesRes = await client.get(`/prepare_metadata/readme_changes_file`, {
       params: {
         file_type: "CHANGES",
-        selected_account: window.defaultBfDataset,
+        selected_account: window.defaultBfAccount,
         selected_dataset: pennsieveDatasetID,
       },
     });
@@ -371,7 +371,7 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
   } catch (error) {
     const emessage = userErrorMessage(error);
 
-    const datasetInfo = await api.getDatasetInformation(window.defaultBfDataset, pennsieveDatasetID);
+    const datasetInfo = await api.getDatasetInformation(window.defaultBfAccount, pennsieveDatasetID);
     const isPublished = datasetInfo?.publication?.status === "completed";
 
     if (isPublished) {
