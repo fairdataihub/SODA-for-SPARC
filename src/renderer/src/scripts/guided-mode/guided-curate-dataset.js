@@ -5911,15 +5911,15 @@ const openPage = async (targetPageID) => {
             }
 
             let imageFolder = path.join(homeDirectory, "SODA", "guided-banner-images");
-            let buf = new Buffer(img_base64, "base64");
-
             if (!window.fs.existsSync(imageFolder)) {
               //create SODA/guided-banner-images if it doesn't exist
               window.fs.mkdirSync(imageFolder, { recursive: true });
             }
             let imagePath = path.join(imageFolder, `${datasetName}.` + imageType);
             //store file at imagePath destination
-            window.fs.writeFileSync(imagePath, buf);
+
+            await window.electron.ipcRenderer.invoke("write-banner-image", img_base64, imagePath)
+
             //save imagePath to sodaJson
             window.sodaJSONObj["digital-metadata"]["banner-image-path"] = imagePath;
 
@@ -5939,7 +5939,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           console.log("Failure is here")
           clientError(error);
-          const emessage = error.response.data.message;
+          const emessage = userErrorMessage(error);
           await guidedShowOptionalRetrySwal(emessage, "guided-banner-image-tab");
           // If the user chooses not to retry re-fetching the page data, mark the page as fetched
           // so the the fetch does not occur again

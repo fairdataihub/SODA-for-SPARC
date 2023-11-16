@@ -1642,6 +1642,7 @@ const showDatasetDescription = async () => {
 };
 
 window.getBase64 = async (url) => {
+  console.log("THe url passed down will be: ", url)
   return await window.electron.ipcRenderer.invoke("get-string-representation-of-buffer", url, "binary")
 };
 
