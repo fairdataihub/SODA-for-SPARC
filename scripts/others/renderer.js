@@ -764,7 +764,7 @@ const window.run_pre_flight_checks = async (check_update = true) => {
     }
 
     // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
-    const account_present = await check_api_key();
+    const account_present = await window.check_api_key();
 
     // TODO: Reimplement this section to work with the new agent
     if (!account_present) {
@@ -798,7 +798,7 @@ const window.run_pre_flight_checks = async (check_update = true) => {
 
       // If user chose to log in, open the dropdown prompt
       if (userChoseToLogIn) {
-        await openDropdownPrompt(null, "bf");
+        await window.openDropdownPrompt(null, "bf");
       } else {
         return false;
       }
@@ -1240,7 +1240,7 @@ const checkInternetConnection = async () => {
   }
 };
 
-const check_api_key = async () => {
+const window.check_api_key = async () => {
   let notification = null;
   notification = notyf.open({
     type: "api_key_search",
@@ -1515,7 +1515,7 @@ const manifestStatus = document.querySelector("#generate-manifest");
 // Manage datasets //
 let myitem;
 let datasetList = [];
-let organizationList = [];
+let window.organizationList = [];
 let sodaCopy = {};
 let datasetStructCopy = {};
 const bfUploadRefreshDatasetBtn = document.getElementById("button-upload-refresh-dataset-list");
@@ -4075,15 +4075,15 @@ const window.refreshDatasetList = () => {
  * Prerequisite: Organizations have been fetched for the user otherwise nothing happens.
  * @returns length of the organizations list
  */
-const refreshOrganizationList = () => {
-  organizationList.sort(function (a, b) {
+const window.refreshOrganizationList = () => {
+  window.organizationList.sort(function (a, b) {
     return a.toLowerCase().localeCompare(b.toLowerCase());
   });
 
-  populateOrganizationDropdowns(organizationList);
+  populateOrganizationDropdowns(window.organizationList);
 
   // parentDSTagify.settings.whitelist = getParentDatasets();
-  return organizationList.length;
+  return window.organizationList.length;
 };
 
 /// populate the dropdowns with refreshed dataset list
@@ -8475,7 +8475,7 @@ async function showBFAddAccountSweetalert(ev) {
                     // reset the current owner span in the manage dataset make pi owner of a dataset tab
                     $(".current-permissions").html("None");
 
-                    refreshOrganizationList();
+                    window.refreshOrganizationList();
 
                     // If the button that triggered the organization has the class
                     // guided-change-workspace (from guided mode), handle changes based on the ev id

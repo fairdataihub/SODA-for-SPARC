@@ -57,7 +57,7 @@ import fixPath from "./update-path-darwin"
 import api from "./api/api"
 import {
   confirm_click_account_function, showHideDropdownButtons,
-  updateDatasetList, openDropdownPrompt,
+  updateDatasetList, 
   bfAccountOptions,
 } from '../globals'
 import checkForAnnouncements from './announcements'
@@ -512,7 +512,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
     console.log("Internet connected")
 
     // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
-    const account_present = await check_api_key();
+    const account_present = await window.check_api_key();
     console.log("THe account value is: ", account_present)
 
 
@@ -548,7 +548,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
 
       // If user chose to log in, open the dropdown prompt
       if (userChoseToLogIn) {
-        await openDropdownPrompt(null, "bf");
+        await window.openDropdownPrompt(null, "bf");
       } else {
         return false;
       }
@@ -994,7 +994,7 @@ const checkInternetConnection = async () => {
   }
 };
 
-const check_api_key = async () => {
+window.check_api_key = async () => {
   let notification = null;
   notification = window.notyf.open({
     type: "api_key_search",
@@ -2572,13 +2572,13 @@ window.clearDatasetDropdowns = () => {
   }
 };
 
-// const clearOrganizationDropdowns = () => {
-//   for (let list of [window.curateOrganizationDropdown]) {
-//     window.removeOptions(list);
-//     window.addOption(list, "Search here...", "Select organization");
-//     list.options[0].disabled = true;
-//   }
-// };
+const clearOrganizationDropdowns = () => {
+  for (let list of [window.curateOrganizationDropdown]) {
+    window.removeOptions(list);
+    window.addOption(list, "Search here...", "Select organization");
+    list.options[0].disabled = true;
+  }
+};
 
 // //////////////////////// Current Contributor(s) /////////////////////
 
@@ -3803,22 +3803,22 @@ window.refreshDatasetList = () => {
   return filteredDatasets.length;
 };
 
-// /**
-//  *
-//  * Sorts the user's available organizations and adds them to the organization picker dropdown.
-//  * Prerequisite: Organizations have been fetched for the user otherwise nothing happens.
-//  * @returns length of the organizations list
-//  */
-// const refreshOrganizationList = () => {
-//   organizationList.sort(function (a, b) {
-//     return a.toLowerCase().localeCompare(b.toLowerCase());
-//   });
+/**
+ *
+ * Sorts the user's available organizations and adds them to the organization picker dropdown.
+ * Prerequisite: Organizations have been fetched for the user otherwise nothing happens.
+ * @returns length of the organizations list
+ */
+window.refreshOrganizationList = () => {
+  window.organizationList.sort(function (a, b) {
+    return a.toLowerCase().localeCompare(b.toLowerCase());
+  });
 
-//   populateOrganizationDropdowns(organizationList);
+  populateOrganizationDropdowns(window.organizationList);
 
-//   // parentDSTagify.settings.whitelist = getParentDatasets();
-//   return organizationList.length;
-// };
+  // parentDSTagify.settings.whitelist = getParentDatasets();
+  return window.organizationList.length;
+};
 
 /// populate the dropdowns with refreshed dataset list
 const populateDatasetDropdowns = (mylist) => {
@@ -3839,20 +3839,20 @@ const populateDatasetDropdowns = (mylist) => {
   // datasetStatusListChange();
 };
 
-// const populateOrganizationDropdowns = (organizations) => {
-//   clearOrganizationDropdowns();
+const populateOrganizationDropdowns = (organizations) => {
+  clearOrganizationDropdowns();
 
-//   for (const organization in organizations) {
-//     let myitemselect = organizations[organization];
-//     let option = document.createElement("option");
-//     let option1 = document.createElement("option");
-//     option.textContent = myitemselect;
-//     option.value = myitemselect;
-//     option1 = option.cloneNode(true);
+  for (const organization in organizations) {
+    let myitemselect = organizations[organization];
+    let option = document.createElement("option");
+    let option1 = document.createElement("option");
+    option.textContent = myitemselect;
+    option.value = myitemselect;
+    option1 = option.cloneNode(true);
 
-//     window.curateOrganizationDropdown.appendChild(option1);
-//   }
-// };
+    window.curateOrganizationDropdown.appendChild(option1);
+  }
+};
 // ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
 window.updateBfAccountList = async () => {
@@ -8242,7 +8242,7 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 //                     // reset the current owner span in the manage dataset make pi owner of a dataset tab
 //                     $(".current-permissions").html("None");
 
-//                     refreshOrganizationList();
+//                     window.refreshOrganizationList();
 
 //                     // If the button that triggered the organization has the class
 //                     // guided-change-workspace (from guided mode), handle changes based on the ev id

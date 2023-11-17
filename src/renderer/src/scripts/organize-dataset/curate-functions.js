@@ -15,25 +15,25 @@ window.nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 document
   .querySelector("#Question-getting-started-BF-account .change-current-account")
   .addEventListener("click", function () {
-    window.openDropdownPrompt(this, "bf");
+    window.window.openDropdownPrompt(this, "bf");
   });
 
 document
   .querySelector("#Question-getting-started-BF-dataset .change-current-account")
   .addEventListener("click", function () {
-    window.openDropdownPrompt(this, "dataset", false);
+    window.window.openDropdownPrompt(this, "dataset", false);
   });
 
 document
   .querySelector("#Question-generate-dataset-BF-dataset .change-current-account:not(.organization)")
   .addEventListener("click", function () {
-    window.openDropdownPrompt(this, "dataset", false);
+    window.window.openDropdownPrompt(this, "dataset", false);
   });
 
 document
   .querySelector("#Question-generate-dataset-BF-account .change-current-account")
   .addEventListener("click", function () {
-    window.openDropdownPrompt(this, "bf");
+    window.window.openDropdownPrompt(this, "bf");
   });
 
 $(".button-individual-metadata.remove").click(function () {

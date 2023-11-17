@@ -10,13 +10,13 @@ let openedEdit = false;
 // opendropdown event listeners
 document.querySelectorAll(".manifest-change-current-account").forEach((element) => {
   element.addEventListener("click", () => {
-    openDropdownPrompt(null, "bf");
+    window.openDropdownPrompt(null, "bf");
   });
 });
 
 document.querySelectorAll(".manifest-change-current-ds").forEach((element) => {
   element.addEventListener("click", () => {
-    openDropdownPrompt(null, "dataset");
+    window.openDropdownPrompt(null, "dataset");
   });
 });
 

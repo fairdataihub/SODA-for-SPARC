@@ -12,13 +12,13 @@ window.sparcFundingConsortiums = ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"]
 // event listeners for opendropdown prompt
 document.querySelectorAll(".submission-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
-    openDropdownPrompt(null, "bf");
+    window.openDropdownPrompt(null, "bf");
   });
 });
 
 document.querySelectorAll(".submission-change-current-ds").forEach((element) => {
   element.addEventListener("click", function () {
-    openDropdownPrompt(null, "dataset");
+    window.openDropdownPrompt(null, "dataset");
   });
 });
 

@@ -269,7 +269,7 @@ document
       document.querySelector("#validate_dataset-question-4").classList.remove("show");
     }
 
-    openDropdownPrompt(null, "dataset");
+    window.openDropdownPrompt(null, "dataset");
   });
 
 // verifies if the user wants to reset any current validation table results to run the validator on a different validation track

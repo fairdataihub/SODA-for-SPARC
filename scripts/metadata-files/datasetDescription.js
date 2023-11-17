@@ -1,13 +1,13 @@
 // opendropdown event listeners
 document.querySelectorAll(".dd-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
-    openDropdownPrompt(null, "bf");
+    window.openDropdownPrompt(null, "bf");
   });
 });
 
 document.querySelectorAll(".dd-change-current-ds").forEach((element) => {
   element.addEventListener("click", function () {
-    openDropdownPrompt(element, "dataset");
+    window.openDropdownPrompt(element, "dataset");
   });
 });
 

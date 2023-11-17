@@ -1172,7 +1172,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
 };
 
 var dropdownEventID = "";
-const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
+const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
   if (dropdown === "bf") {
     await addBfAccount(ev, false);
@@ -1227,7 +1227,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
       try {
-        var accountPresent = await check_api_key();
+        var accountPresent = await window.check_api_key();
       } catch (error) {
         console.error(error);
         $(".ui.active.green.inline.loader.small").css("display", "none");
@@ -1254,7 +1254,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           },
         }).then(async (result) => {
           if (result.isConfirmed) {
-            await openDropdownPrompt(this, "bf");
+            await window.openDropdownPrompt(this, "bf");
             $(".ui.active.green.inline.loader.small").css("display", "none");
             $(".svg-change-current-account.dataset").css("display", "block");
           } else {
@@ -1596,7 +1596,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     // check if there is an account
     let accountPresent = false;
     try {
-      accountPresent = await check_api_key();
+      accountPresent = await window.check_api_key();
     } catch (error) {
       clientError(error);
       $(".ui.active.green.inline.loader.small").css("display", "none");
@@ -1626,7 +1626,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       });
 
       if (result.isConfirmed) {
-        await openDropdownPrompt(this, "bf");
+        await window.openDropdownPrompt(this, "bf");
         $(".ui.active.green.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
       } else {
@@ -1664,7 +1664,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     // get the list of the user's available organizations
     //account is signed in but no datasets have been fetched or created
     //invoke dataset request to ensure no datasets have been created
-    if (organizationList.length === 0) {
+    if (window.organizationList.length === 0) {
       let responseObject;
       try {
         responseObject = await client.get(`user/organizations`, {
@@ -1679,22 +1679,22 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       }
 
       let orgs = responseObject.data.organizations;
-      organizationList = [];
-      organizationNameToIdMapping = {};
+      window.organizationList = [];
+      window.organizationNameToIdMapping = {};
 
       // deconstruct the names to the organization list
       for (const org in orgs) {
-        organizationList.push(orgs[org]["organization"]["name"]);
-        organizationNameToIdMapping[orgs[org]["organization"]["name"]] =
+        window.organizationList.push(orgs[org]["organization"]["name"]);
+        window.organizationNameToIdMapping[orgs[org]["organization"]["name"]] =
           orgs[org]["organization"]["id"];
       }
 
-      refreshOrganizationList();
+      window.refreshOrganizationList();
     }
 
     //datasets do exist so display popup with dataset options
     //else datasets have been created
-    if (organizationList.length > 0) {
+    if (window.organizationList.length > 0) {
       const { value: result } = await Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         cancelButtonText: "Cancel",
@@ -1735,7 +1735,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#bf-dataset-select-div").hide();
           $("#bf-dataset-select-header").hide();
 
-          bfOrganization = $("#curatebforganizationlist").val();
+          window.bfOrganization = $("#curatebforganizationlist").val();
           let sweet_al = document.getElementsByClassName("swal2-content")[0];
           let sweet_alrt = document.getElementsByClassName("swal2-actions")[0];
           sweet_alrt.style.marginTop = "1rem";
@@ -1751,8 +1751,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           sweet_al.appendChild(tip_container);
         },
         preConfirm: () => {
-          bfOrganization = $("#curatebforganizationlist").val();
-          if (!bfOrganization) {
+          window.bfOrganization = $("#curatebforganizationlist").val();
+          if (!window.bfOrganization) {
             Swal.showValidationMessage("Please select an organization!");
 
             $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
@@ -1763,7 +1763,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             return undefined;
           }
 
-          if (bfOrganization === "Select organization") {
+          if (window.bfOrganization === "Select organization") {
             Swal.showValidationMessage("Please select an organization!");
 
             $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
@@ -1776,7 +1776,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
           $("#license-lottie-div").css("display", "none");
           $("#license-assigned").css("display", "none");
-          return bfOrganization;
+          return window.bfOrganization;
         },
       });
 
@@ -1791,7 +1791,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       }
 
       if (dropdownEventID === "dd-select-pennsieve-organization") {
-        $("#ds-name").val(bfOrganization);
+        $("#ds-name").val(window.bfOrganization);
         $("#ds-description").val = $("#bf-dataset-subtitle").val;
         $("body").removeClass("waiting");
         $(".svg-change-current-account.dataset").css("display", "block");
@@ -1799,7 +1799,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         return;
       }
 
-      refreshOrganizationList();
+      window.refreshOrganizationList();
       $("#dataset-loaded-message").hide();
 
       showHideDropdownButtons("organization", "show");
@@ -1854,7 +1854,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
 
           try {
-            let organizationId = organizationNameToIdMapping[bfOrganization];
+            let organizationId = window.organizationNameToIdMapping[window.bfOrganization];
             await api.setPreferredOrganization(login, password, organizationId, "soda-pennsieve");
           } catch (err) {
             clientError(err);
@@ -1873,9 +1873,9 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
 
           // set the new organization information in the appropriate fields
-          $("#current-bf-organization").text(bfOrganization);
-          $("#current-bf-organization-generate").text(bfOrganization);
-          $(".bf-organization-span").html(bfOrganization);
+          $("#current-bf-organization").text(window.bfOrganization);
+          $("#current-bf-organization-generate").text(window.bfOrganization);
+          $(".bf-organization-span").html(window.bfOrganization);
           // set the permissions content to an empty string
           await loadDefaultAccount();
 

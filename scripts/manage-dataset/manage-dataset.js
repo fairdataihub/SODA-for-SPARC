@@ -3,19 +3,19 @@
 // TODO: Add logic so this doesnt apply to the organization fields
 document.querySelectorAll(".ds-dd:not(.organization)").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
-    openDropdownPrompt(this, "dataset");
+    window.openDropdownPrompt(this, "dataset");
   });
 });
 
 document.querySelectorAll(".md-change-current-account").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
-    openDropdownPrompt(this, "bf");
+    window.openDropdownPrompt(this, "bf");
   });
 });
 
 document.querySelectorAll(".ds-dd.organization").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
-    openDropdownPrompt(this, "organization");
+    window.openDropdownPrompt(this, "organization");
   });
 });
 

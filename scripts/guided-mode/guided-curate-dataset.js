@@ -2987,7 +2987,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
           <button
             class="ui positive button guided--progress-button-login-to-pennsieve"
             data-reset-guided-mode-page="true"
-            onclick="openDropdownPrompt(this, 'bf')"
+            onclick="window.openDropdownPrompt(this, 'bf')"
           >
             Log in to Pennsieve to resume curation
           </button>
@@ -2998,7 +2998,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
       return `
         <button
           class="ui positive button guided-change-workspace guided--progress-button-switch-workspace"
-          onClick="openDropdownPrompt(this, 'organization')"
+          onClick="window.openDropdownPrompt(this, 'organization')"
         >
           Switch to ${workspaceUserNeedsToSwitchTo} workspace to resume curation
         </button>
