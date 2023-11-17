@@ -6768,10 +6768,6 @@ const openPage = async (targetPageID) => {
   guidedSetNavLoadingState(false);
 };
 
-document.getElementById("guided-button-open-subject-import-flow").addEventListener("click", () => {
-  console.log("open subject import flow");
-});
-
 const renderSubjectsTable = () => {
   const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
   //Combine sample data from subjects in and out of pools
@@ -6854,6 +6850,14 @@ const renderSamplesTable = () => {
     "guided-section-samples-tables"
   );
   subjectSampleAdditionTableContainer.innerHTML = subjectSampleAdditionTables;
+
+  document.querySelectorAll(".button-subject-add-samples").forEach((button) => {
+    button.addEventListener("click", async () => {
+      console.log("clicked");
+      const subjectName = button.dataset.samplesSubjectName;
+      await guidedOpenEntityAdditionSwal(subjectName);
+    });
+  });
 };
 
 const setActiveSubPage = (pageIdToActivate) => {
@@ -10144,23 +10148,16 @@ const renderSubjectSampleAdditionTable = (subject) => {
     <table
       class="ui celled striped table"
       style="margin-bottom: 10px; width: 800px"
-      data-samples-subject-name="${subject.subjectName}"
-      data-samples-subjects-pool-name="${subject.poolName ? subject.poolName : ""}"
     >
       <thead>
         <tr>
-          <th class="text-center" colspan="2" style="position: relative">
-            <div class="space-between w-100 hidden">
-              <span class="samples-subjects-pool">${subject.poolName ? subject.poolName : ""}</span>
-              <span class="samples-subject-name">${subject.subjectName}</span>
-            </div>
-          
+          <th class="text-center" colspan="2" style="position: relative">   
             Enter a unique sample ID for each sample taken from subject ${subject.subjectName}
             <button
               type="button"
-              class="btn btn-primary btn-sm"
+              class="btn btn-primary btn-sm button-subject-add-samples"
               style="position: absolute; top: 10px; right: 20px;"
-              onclick="addSampleSpecificationTableRow(this)"
+              data-samples-subject-name="${subject.subjectName}"
             >
               Add sample
             </button>
@@ -10974,8 +10971,29 @@ const getExistingSubjectNames = () => {
   return subjects.map((subject) => subject["subjectName"]);
 };
 
+const getSubjectsPool = (subjectName) => {
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  for (const subject of subjectsInPools) {
+    if (subject["subjectName"] === subjectName) {
+      return subject["poolName"];
+    }
+  }
+  return "";
+};
+
 const getSubjectsSamples = (subjectName) => {
-  const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  for (const subject of subjectsInPools) {
+    if (subject["subjectName"] === subjectName) {
+      return subject["samples"];
+    }
+  }
+  for (const subject of subjectsOutsidePools) {
+    if (subject["subjectName"] === subjectName) {
+      return subject["samples"];
+    }
+  }
+  return [];
 };
 
 const getExistingPoolNames = () => {
@@ -11443,23 +11461,28 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
   let entityNameSingular;
   let entityPrefix;
 
+  // case when adding subjects
   if (entityName === "subjects") {
     preExistingEntities = getExistingSubjectNames();
     entityNameSingular = "subject";
     entityPrefix = "sub-";
   }
-  if (entityName === "samples") {
+
+  // case when adding samples to a subject
+  if (entityName.startsWith("sub-")) {
     preExistingEntities = getExistingSampleNames();
     entityNameSingular = "sample";
     entityPrefix = "sam-";
   }
+
+  // case when adding pools
   if (entityName === "pools") {
     preExistingEntities = getExistingPoolNames();
     entityNameSingular = "pool";
     entityPrefix = "pool-";
   }
 
-  const newEntities = [];
+  let newEntities = [];
 
   const handleSwalEntityAddition = (entityName) => {
     if (entityName.length < 1) {
@@ -11517,7 +11540,7 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
     }
   };
 
-  await Swal.fire({
+  const additionConfirmed = await Swal.fire({
     title: `Enter ${entityNameSingular} ID and press enter`,
     html: `
       <p class="help-text">Instructions yada yada</p>
@@ -11540,8 +11563,8 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
     showConfirmButton: true,
     showCancelButton: true,
     showCloseButton: false,
-    confirmButtonText: "Add subject(s)",
-    cancelButtonText: "Cancel subject addition",
+    confirmButtonText: `Add ${entityNameSingular}(s)`,
+    cancelButtonText: `Cancel ${entityNameSingular} addition`,
     didOpen: () => {
       // Render the initial subjects in the Swal
       renderEntitiesInSwal();
@@ -11570,11 +11593,43 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
       });
     },
   });
+
+  // If the user confirmed the addition of the entities, add them to the sodaJSONObj
+  // and re-render the table
+  if (additionConfirmed.isConfirmed) {
+    // reverse newEntities array
+    newEntities.reverse();
+    if (entityName === "subjects") {
+      for (const subjectName of newEntities) {
+        sodaJSONObj.addSubject(subjectName);
+      }
+      renderSubjectsTable();
+    }
+    if (entityName === "pools") {
+      for (const poolName of newEntities) {
+        sodaJSONObj.addPool(poolName);
+      }
+      renderPoolsTable();
+    }
+    if (entityName.startsWith("sub-")) {
+      const subjectsPool = getSubjectsPool(entityName);
+      for (const sampleName of newEntities) {
+        sodaJSONObj.addSampleToSubject(sampleName, subjectsPool, entityName);
+      }
+      renderSamplesTable();
+    }
+  } else {
+    console.log("additionCancelled");
+  }
 };
 
 document.getElementById("guided-button-add-subjects").addEventListener("click", async () => {
   guidedOpenEntityAdditionSwal("subjects");
 });
+document.getElementById("guided-button-add-pools").addEventListener("click", async () => {
+  guidedOpenEntityAdditionSwal("pools");
+});
+
 const addSubjectSpecificationTableRow = () => {
   const subjectSpecificationTableBody = document.getElementById("subject-specification-table-body");
   //check if subject specification table body has an input with the name guided-subject-id

@@ -1112,3 +1112,7 @@
   font-size: 16px;
   color: #000;
 }
+
+.align-flex-center {
+  align-items: center;
+}
