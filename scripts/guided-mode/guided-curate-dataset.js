@@ -11392,6 +11392,7 @@ ipcRenderer.on("selected-sample-names-from-dialog", async (event, folders) => {
 
 const convertArrayToCommaSeparatedString = (array) => {
   // Convert the array to a comma separated string with an "and" before the last element if there are more than 2 elements
+  console.log("convertArray", array);
   if (array.length === 0) {
     return "";
   }
@@ -11411,23 +11412,26 @@ document.querySelectorAll(".button-controls-sub-pools-sam-text").forEach((button
     const datasetHasPools = document
       .getElementById("guided-button-subjects-are-pooled")
       .classList.contains("selected");
-    const subjectsHaveSamples = document
-      .getElementById("guided-button-subjects-have-samples")
-      .classList.contains("selected");
 
-    const datasetEntities = ["subject"];
+    // If the clicked button is the subjects have samples buttons, then the subjects have samples
+    // so we want to add samples to the array (if it's not, the user is saying they do not have samples)
+    const subjectsHaveSamples = button.id === "guided-button-subjects-have-samples";
+
+    const datasetEntities = ["subjects"];
     if (datasetHasPools) {
-      datasetEntities.push("pool");
+      datasetEntities.push("pools");
     }
     if (subjectsHaveSamples) {
-      datasetEntities.push("sample");
+      datasetEntities.push("samples");
     }
+
+    const textFormattedEntities = convertArrayToCommaSeparatedString(datasetEntities);
 
     const spansToInsertTextInto = document.querySelectorAll(
       ".sub-pool-sample-structure-description-text"
     );
     spansToInsertTextInto.forEach((span) => {
-      span.innerHTML = convertArrayToCommaSeparatedString(datasetEntities);
+      span.innerHTML = textFormattedEntities;
     });
   });
 });
