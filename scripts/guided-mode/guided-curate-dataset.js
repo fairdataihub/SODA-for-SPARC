@@ -4958,6 +4958,19 @@ const openPage = async (targetPageID) => {
         sampleAdditionQuerySection.classList.remove("section-disabled");
         sampleAdditionBlockText.classList.add("hidden");
       }
+
+      const allSubjects = [...subjectsInPools, ...subjectsOutsidePools];
+      const spreadsheetImportSection = document.getElementById("section-spreadsheet-import");
+      const spreadsheetImportSectionDisabled = document.getElementById(
+        "section-spreadsheet-import-disabled"
+      );
+      if (allSubjects.length === 0) {
+        spreadsheetImportSection.classList.remove("hidden");
+        spreadsheetImportSectionDisabled.classList.add("hidden");
+      } else {
+        spreadsheetImportSection.classList.add("hidden");
+        spreadsheetImportSectionDisabled.classList.remove("hidden");
+      }
     }
     if (targetPageID === "guided-prepare-dataset-structure-tab") {
       // If the user has already added subjects, disallow them from selecting no (they have to go to the subject
