@@ -1288,7 +1288,7 @@ window.guidedBfViewImportedImage = document.querySelector("#guided-image-banner"
 // const datasetBannerImageStatus = document.querySelector("#para-dataset-banner-image-status");
 window.formBannerHeight = document.getElementById("form-banner-height");
 window.guidedFormBannerHeight = document.getElementById("guided-form-banner-height");
-// const currentDatasetLicense = document.querySelector("#para-dataset-license-current");
+window.currentDatasetLicense = document.querySelector("#para-dataset-license-current");
 // const bfListLicense = document.querySelector("#bf-license-list");
 // const bfAddLicenseBtn = document.getElementById("button-add-license");
 
@@ -3874,7 +3874,7 @@ window.updateBfAccountList = async () => {
     option.textContent = myitemselect;
     option.value = myitemselect;
   }
-  await loadDefaultAccount();
+  await window.loadDefaultAccount();
   if (accountList[0] === "Select" && accountList.length === 1) {
     // todo: no existing accounts to load
   }
@@ -3882,7 +3882,7 @@ window.updateBfAccountList = async () => {
   refreshBfTeamsList(bfListTeams);
 };
 
-const loadDefaultAccount = async () => {
+window.loadDefaultAccount = async () => {
   let responseObject;
 
   try {
@@ -8249,7 +8249,7 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 //                     // otherwise, reset the FFM UI based on the ev class
 //                     // NOTE: For API Key sign in flow it is more simple to just reset the UI as the new user may be in a separate workspace than the prior user.
 //                     target?.classList.contains("data-reset-guided-mode-page")
-//                       ? handleGuidedModeOrgSwitch(target)
+//                       ? window.handleGuidedModeOrgSwitch(target)
 //                       : resetFFMUI(target);
 
 //                     window.datasetList = [];

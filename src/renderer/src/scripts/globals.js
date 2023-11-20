@@ -1858,7 +1858,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
         $("#license-lottie-div").css("display", "block");
         $("#license-assigned").css("display", "block");
-        currentDatasetLicense.innerText = currentDatasetLicense.innerText;
+        window.currentDatasetLicense.innerText = window.currentDatasetLicense.innerText;
         initializeBootstrapSelect("#curatebforganizationlist", "show");
         return;
       }
@@ -1950,7 +1950,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#current-bf-organization-generate").text(window.bfOrganization);
           $(".bf-organization-span").html(window.bfOrganization);
           // set the permissions content to an empty string
-          await window.loadDefaultAccount();
+          await window.window.loadDefaultAccount();
 
           // confirm_click_function();
 
@@ -1976,7 +1976,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       // guided-change-workspace (from guided mode), handle changes based on the ev id
       // otherwise, reset the FFM UI based on the ev class
       ev.classList.contains("guided-change-workspace")
-        ? handleGuidedModeOrgSwitch(ev)
+        ? window.handleGuidedModeOrgSwitch(ev)
         : resetFFMUI(ev);
 
       // reset the dataset list

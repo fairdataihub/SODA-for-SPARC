@@ -2558,11 +2558,11 @@ const showCurrentLicense = async () => {
   }
 
   if (selectedBfDataset === "Select dataset") {
-    currentDatasetLicense.innerHTML = "None";
+    window.currentDatasetLicense.innerHTML = "None";
     return;
   }
 
-  currentDatasetLicense.innerHTML = `Loading current license... <div class="ui active green inline loader tiny"></div>`;
+  window.currentDatasetLicense.innerHTML = `Loading current license... <div class="ui active green inline loader tiny"></div>`;
   log.info(`Getting current license for dataset ${selectedBfDataset}`);
 
   try {
@@ -2573,7 +2573,7 @@ const showCurrentLicense = async () => {
       },
     });
     let { license } = bf_get_license.data;
-    currentDatasetLicense.innerHTML = license;
+    window.currentDatasetLicense.innerHTML = license;
 
     let licenseContainer = document.getElementById("license-lottie-div");
     if (licenseContainer.children.length < 1) {

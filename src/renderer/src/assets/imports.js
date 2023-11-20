@@ -1,3 +1,5 @@
+import addDatasetAndOrganizationCardComponents  from '../assets/component-utils/addDatasetAndOrganizationCards'
+
 
 // adds the apps HTML pages to the DOM
 window.htmlPagesAdded = false
@@ -50,6 +52,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   await waitForHtmlSectionsToInsertIntoDOM()
+  addDatasetAndOrganizationCardComponents();
   window.htmlPagesAdded = true
 })
 

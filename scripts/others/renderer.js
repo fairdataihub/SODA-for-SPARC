@@ -1536,7 +1536,7 @@ const bfSaveBannerImageBtn = document.getElementById("save-banner-image");
 const datasetBannerImageStatus = document.querySelector("#para-dataset-banner-image-status");
 const window.formBannerHeight = document.getElementById("form-banner-height");
 const guidedFormBannerHeight = document.getElementById("guided-form-banner-height");
-const currentDatasetLicense = document.querySelector("#para-dataset-license-current");
+const window.currentDatasetLicense = document.querySelector("#para-dataset-license-current");
 const bfListLicense = document.querySelector("#bf-license-list");
 const bfAddLicenseBtn = document.getElementById("button-add-license");
 
@@ -4140,7 +4140,7 @@ const updateBfAccountList = async () => {
     option.textContent = myitemselect;
     option.value = myitemselect;
   }
-  await loadDefaultAccount();
+  await window.loadDefaultAccount();
   if (accountList[0] === "Select" && accountList.length === 1) {
     // todo: no existing accounts to load
   }
@@ -4148,7 +4148,7 @@ const updateBfAccountList = async () => {
   refreshBfTeamsList(bfListTeams);
 };
 
-const loadDefaultAccount = async () => {
+const window.loadDefaultAccount = async () => {
   let responseObject;
 
   try {
@@ -8482,7 +8482,7 @@ async function showBFAddAccountSweetalert(ev) {
                     // otherwise, reset the FFM UI based on the ev class
                     // NOTE: For API Key sign in flow it is more simple to just reset the UI as the new user may be in a separate workspace than the prior user.
                     target?.classList.contains("data-reset-guided-mode-page")
-                      ? handleGuidedModeOrgSwitch(target)
+                      ? window.handleGuidedModeOrgSwitch(target)
                       : resetFFMUI(target);
 
                     datasetList = [];

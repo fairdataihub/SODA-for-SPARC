@@ -66,7 +66,7 @@ const guidedGetDatasetOrigin = (sodaJSON) => {
   return "New";
 };
 
-const handleGuidedModeOrgSwitch = async (buttonClicked) => {
+window.handleGuidedModeOrgSwitch = async (buttonClicked) => {
   const clickedButtonId = buttonClicked.id;
   if (clickedButtonId === "guided-button-change-workspace-dataset-import") {
     renderGuidedResumePennsieveDatasetSelectionDropdown();

@@ -1877,7 +1877,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#current-bf-organization-generate").text(window.bfOrganization);
           $(".bf-organization-span").html(window.bfOrganization);
           // set the permissions content to an empty string
-          await loadDefaultAccount();
+          await window.loadDefaultAccount();
 
           // confirm_click_function();
 
@@ -1903,7 +1903,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       // guided-change-workspace (from guided mode), handle changes based on the ev id
       // otherwise, reset the FFM UI based on the ev class
       ev.classList.contains("guided-change-workspace")
-        ? handleGuidedModeOrgSwitch(ev)
+        ? window.handleGuidedModeOrgSwitch(ev)
         : resetFFMUI(ev);
 
       // reset the dataset list
