@@ -1766,7 +1766,7 @@ createDragSort(datasetTagsTagify);
 const descriptionDateInput = document.getElementById("submission-completion-date");
 
 const milestoneInput1 = document.getElementById("selected-milestone-1");
-var milestoneTagify1 = new Tagify(milestoneInput1, {
+var window.milestoneTagify1 = new Tagify(milestoneInput1, {
   duplicates: false,
   delimiters: null,
   dropdown: {
@@ -1792,7 +1792,7 @@ const showElementsWithClass = (className) => {
 };
 
 // Listen to the changes of the milestone tagify
-milestoneTagify1.on("change", (e) => {
+window.milestoneTagify1.on("change", (e) => {
   // If e.detail.value.length string is greater than 0, then there are milestone tags entered in the tagify
   if (e.detail.value.length > 0) {
     // Filter out the N/A milestone tag
@@ -1819,7 +1819,7 @@ milestoneTagify1.on("change", (e) => {
   }
 });
 
-createDragSort(milestoneTagify1);
+createDragSort(window.milestoneTagify1);
 
 // generate subjects file
 ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
@@ -8483,7 +8483,7 @@ async function showBFAddAccountSweetalert(ev) {
                     // NOTE: For API Key sign in flow it is more simple to just reset the UI as the new user may be in a separate workspace than the prior user.
                     target?.classList.contains("data-reset-guided-mode-page")
                       ? window.handleGuidedModeOrgSwitch(target)
-                      : resetFFMUI(target);
+                      : window.resetFFMUI(target);
 
                     datasetList = [];
                     window.defaultBfDataset = null;

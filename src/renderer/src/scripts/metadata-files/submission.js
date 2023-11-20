@@ -46,7 +46,7 @@ const renderMilestoneSelectionTable = (milestoneData) => {
   milestonesTableContainer.innerHTML = milestoneTableRows;
 };
 
-const resetFundingConsortiumDropdown = () => {
+window.resetFundingConsortiumDropdown = () => {
   $("#ffm-select-sparc-funding-consortium").val("").change();
 };
 
@@ -181,8 +181,8 @@ const openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneRe
     );
 
     if (curationMode === "free-form") {
-      milestoneTagify1.removeAllTags();
-      milestoneTagify1.addTags(uniqueMilestones);
+      window.milestoneTagify1.removeAllTags();
+      window.milestoneTagify1.addTags(uniqueMilestones);
     }
     if (curationMode === "guided") {
       window.guidedSubmissionTagsTagifyManual.removeAllTags();
@@ -482,7 +482,7 @@ function validateSubmissionFileInputs() {
   }
 
   // If milestones were added, check for a completion date
-  const milestones = getTagsFromTagifyElement(milestoneTagify1);
+  const milestones = getTagsFromTagifyElement(window.milestoneTagify1);
   if (milestones.length > 0) {
     const selectedCompletionDate = $("#submission-completion-date").val();
     if (selectedCompletionDate === "") {
@@ -564,7 +564,7 @@ $("#ffm-select-sparc-funding-consortium").on("change", function (e) {
   }
 });
 // Reset the dropdown so it starts with the default option
-resetFundingConsortiumDropdown();
+window.resetFundingConsortiumDropdown();
 
 var submissionDestinationPath = "";
 
@@ -834,7 +834,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
 
   const fundingConsortiumFromDropdown = $("#ffm-select-sparc-funding-consortium").val();
   const awardNumber = $("#submission-sparc-award").val();
-  const milestones = getTagsFromTagifyElement(milestoneTagify1);
+  const milestones = getTagsFromTagifyElement(window.milestoneTagify1);
   const completionDate = $("#submission-completion-date").val();
 
   const submissionMetadataArray = [];
@@ -1117,7 +1117,7 @@ const loadExistingSubmissionFile = async (filepath) => {
 };
 
 const loadSubmissionFileToUI = (data, type) => {
-  milestoneTagify1.removeAllTags();
+  window.milestoneTagify1.removeAllTags();
   $("#submission-completion-date").val("");
   $("#submission-sparc-award").val("");
 
@@ -1126,7 +1126,7 @@ const loadSubmissionFileToUI = (data, type) => {
     $("#ffm-select-sparc-funding-consortium").val(data["Funding consortium"]).change();
   } else {
     // reset the funding consortium dropdown
-    resetFundingConsortiumDropdown();
+    window.resetFundingConsortiumDropdown();
   }
 
   // 2. populate SPARC award
@@ -1140,7 +1140,7 @@ const loadSubmissionFileToUI = (data, type) => {
 
   // 3. populate milestones
   if (typeof data["Milestone achieved"] === "string") {
-    milestoneTagify1.addTags(data["Milestone achieved"]);
+    window.milestoneTagify1.addTags(data["Milestone achieved"]);
     milestonesImported = true;
   } else {
     // Filter out milestones that are empty strings or N/A
@@ -1154,7 +1154,7 @@ const loadSubmissionFileToUI = (data, type) => {
     }
 
     for (const milestone of filteredMilestones) {
-      milestoneTagify1.addTags(milestone);
+      window.milestoneTagify1.addTags(milestone);
     }
   }
 

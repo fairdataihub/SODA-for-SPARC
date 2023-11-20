@@ -463,7 +463,7 @@
                         margin: 10px auto;
                       ">
                       <button id="button-confirm-bf-dataset-getting-started" class="btn_animated"
-                        onclick="transitionSubQuestionsButton(this, 'Question-getting-started-BF-dataset', 'getting-started-tab', 'delete', 'individual-question getting-started')"
+                        onclick="window.transitionSubQuestionsButton(this, 'Question-getting-started-BF-dataset', 'getting-started-tab', 'delete', 'individual-question getting-started')"
                         data-next="Question-getting-started-final" style="
                           display: none;
                           margin: 10px auto;
@@ -2108,7 +2108,7 @@
                             margin: 10px auto;
                           ">
                           <button id="btn-bf-account" class="btn_animated"
-                            onclick="transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"
+                            onclick="window.transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"
                             data-next="Question-generate-dataset-BF-workspace"
                             style="margin: 0 10px; width: 100px; border: none !important">
                             Confirm
@@ -2163,7 +2163,7 @@
                         <div id="div-bf-workspace-btns"
                           style="flex-direction: row; justify-content: center; margin: 10px auto">
                           <button id="btn-bf-workspace" class="btn_animated"
-                            onclick="transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-workspace', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"
+                            onclick="window.transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-workspace', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"
                             data-next="Question-generate-dataset-options" style="
                               margin: 0 10px;
                               width: 100px;
@@ -2258,7 +2258,7 @@
                           margin: 0 auto;
                         ">
                         <button id="btn-confirm-new-dataset-name"
-                          onclick="transitionSubQuestionsButton(this, 'Question-generate-dataset-choose-ds-name', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"
+                          onclick="window.transitionSubQuestionsButton(this, 'Question-generate-dataset-choose-ds-name', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"
                           data-next="Question-generate-dataset-generate-div-old" style="
                             cursor: pointer;
                             border-radius: 4px;
@@ -2384,7 +2384,7 @@
                               margin: 10px auto;
                             ">
                             <button id="button-confirm-bf-dataset" class="btn_animated"
-                              onclick="transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-dataset', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"
+                              onclick="window.transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-dataset', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"
                               data-next="Question-generate-dataset-existing-folders-options" style="
                                 display: none;
                                 margin: 10px auto;
@@ -2997,7 +2997,7 @@
                 ">
                 <i class="fas fa-undo-alt" style="margin-right: 15px"></i>Return
               </button>
-              <button onclick="exitCurate(true)" class="btn_animated skip exit" style="
+              <button onclick="window.exitCurate(true)" class="btn_animated skip exit" style="
                   display: flex;
                   flex-direction: row;
                   justify-content: center;

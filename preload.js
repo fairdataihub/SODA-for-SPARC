@@ -276,10 +276,10 @@ function resetSubmissionFields() {
   for (var field of textAreaFields) {
     $(field).val("");
   }
-  milestoneTagify1.removeAllTags();
+  window.milestoneTagify1.removeAllTags();
 
   // Reset the funding consortium dropdown
-  resetFundingConsortiumDropdown();
+  window.resetFundingConsortiumDropdown();
 
   // make accordion active again
   $("#submission-title-accordion").addClass("active");
@@ -700,7 +700,7 @@ function resetManifest(askToReset = true) {
 /**
  * Resets the FFM manage-dataset, prepare-metadata, disseminate-dataset UI to their initial state.  Note: Does not reset Account, or organization information in the user details cards.
  */
-const resetFFMUI = (ev) => {
+const window.resetFFMUI = (ev) => {
   // reset the manage dataset UI
   $("#div_add_edit_subtitle").removeClass("show");
   $("#div_add_edit_subtitle_tab").removeClass("prev");
@@ -781,7 +781,7 @@ const resetFFMUI = (ev) => {
         // show the confirm button under the workspace selection question
         $("#btn-bf-workspace").css("display", "flex");
         // hide the dataset options selection section
-        transitionSubQuestionsButton(
+        window.transitionSubQuestionsButton(
           document.querySelector("#btn-bf-workspace"),
           "Question-generate-dataset-BF-workspace",
           "generate-dataset-tab",
@@ -1904,7 +1904,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       // otherwise, reset the FFM UI based on the ev class
       ev.classList.contains("guided-change-workspace")
         ? window.handleGuidedModeOrgSwitch(ev)
-        : resetFFMUI(ev);
+        : window.resetFFMUI(ev);
 
       // reset the dataset list
       datasetList = [];

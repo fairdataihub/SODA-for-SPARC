@@ -977,7 +977,7 @@ const transitionSubQuestions = async (ev, currentDiv, parentDiv, button, categor
       $("#progress-files-dropdown").val("Select");
       $("#para-progress-file-status").text("");
       $("#nextBtn").prop("disabled", true);
-      exitCurate(false);
+      window.exitCurate(false);
       globalGettingStarted1stQuestionBool = false;
     } else {
       globalGettingStarted1stQuestionBool = false;
@@ -1135,7 +1135,7 @@ const transitionSubQuestions = async (ev, currentDiv, parentDiv, button, categor
     $("#nextBtn").prop("disabled", true);
     $("#para-continue-prepare-new-getting-started").text("");
     if ($("#prepare-new").prop("checked")) {
-      exitCurate(false);
+      window.exitCurate(false);
       $("#prepare-new").prop("checked", true);
       $($("#prepare-new").parents()[2]).addClass("checked");
       $($($("#div-getting-started-prepare-new").parents()[0]).siblings().children()).addClass(
@@ -1153,7 +1153,7 @@ const transitionSubQuestions = async (ev, currentDiv, parentDiv, button, categor
       }, 600);
     } else if ($("#existing-bf").is(":checked")) {
       $("#nextBtn").prop("disabled", true);
-      // this exitCurate function gets called in the beginning here
+      // this window.exitCurate function gets called in the beginning here
       // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
       $("#Question-getting-started-existing-BF-account").show();
       $("#Question-getting-started-existing-BF-account").children().show();
@@ -1748,7 +1748,7 @@ const verify_sparc_folder = (root_folder_path, type) => {
 };
 
 // function similar to transitionSubQuestions, but for buttons
-const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, category) => {
+const window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, category) => {
   /*
     ev: the button being clicked
     currentDiv: current option-card (question)
@@ -1922,7 +1922,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
             false
           );
         } else {
-          exitCurate();
+          window.exitCurate();
         }
       });
     } else {
@@ -3453,7 +3453,7 @@ const resetCuration = () => {
   globalGettingStarted1stQuestionBool = false;
 };
 
-const exitCurate = async (resetProgressTabs, start_over = false) => {
+const window.exitCurate = async (resetProgressTabs, start_over = false) => {
   $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
@@ -3664,7 +3664,7 @@ const saveOrganizeProgressPrompt = () => {
 };
 
 $("#start-over-btn").click(() => {
-  exitCurate(true, true);
+  window.exitCurate(true, true);
 });
 
 const description_text = {

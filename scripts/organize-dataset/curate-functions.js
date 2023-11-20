@@ -529,7 +529,7 @@ const importGenerateDatasetStep = async (object) => {
         $($($("#div-getting-started-previous-progress").parents()[0]).siblings()[0]).children()[0]
       ).toggleClass("non-selected");
     } else {
-      exitCurate();
+      window.exitCurate();
     }
   }
 };

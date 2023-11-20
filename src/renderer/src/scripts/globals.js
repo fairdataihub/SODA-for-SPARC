@@ -278,645 +278,645 @@ const confirm_click_function = () => {
 }
 
 // RESET UI LOGIC SECTION ---------------------------------------------------------------------
-// function resetSubmission(askToReset = true) {
-//   if (!askToReset) {
-//     // 1. remove Prev and Show from all individual-question except for the first one
-//     // 2. empty all input, textarea, select, para-elements
-//     $('#Question-prepare-submission-1').removeClass('prev')
-//     $('#Question-prepare-submission-1').nextAll().removeClass('show')
-//     $('#Question-prepare-submission-1').nextAll().removeClass('prev')
-//     $('#Question-prepare-submission-1 .option-card')
-//       .removeClass('checked')
-//       .removeClass('disabled')
-//       .removeClass('non-selected')
-//     $('#Question-prepare-submission-1 .option-card .folder-input-check').prop('checked', false)
-//     resetSubmissionFields()
-//     return
-//   }
-
-//   Swal.fire({
-//     backdrop: 'rgba(0,0,0, 0.4)',
-//     confirmButtonText: 'I want to start over!',
-//     focusCancel: true,
-//     heightAuto: false,
-//     icon: 'warning',
-//     reverseButtons: window.reverseSwalButtons,
-//     showCancelButton: true,
-//     text: 'Are you sure you want to start over and reset your progress?',
-//     showClass: {
-//       popup: 'animate__animated animate__zoomIn animate__faster'
-//     },
-//     hideClass: {
-//       popup: 'animate__animated animate__zoomOut animate__faster'
-//     }
-//   }).then((result) => {
-//     if (result.isConfirmed) {
-//       // 1. remove Prev and Show from all individual-question except for the first one
-//       // 2. empty all input, textarea, select, para-elements
-//       $('#Question-prepare-submission-1').removeClass('prev')
-//       $('#Question-prepare-submission-1').nextAll().removeClass('show')
-//       $('#Question-prepare-submission-1').nextAll().removeClass('prev')
-//       $('#Question-prepare-submission-1 .option-card')
-//         .removeClass('checked')
-//         .removeClass('disabled')
-//         .removeClass('non-selected')
-//       $('#Question-prepare-submission-1 .option-card .folder-input-check').prop('checked', false)
-//       resetSubmissionFields()
-//     }
-//   })
-// }
-
-// function resetSubmissionFields() {
-//   $('#existing-submission-file-destination').attr('placeholder', 'Browse here')
-
-//   $('#div-confirm-existing-submission-import').hide()
-
-//   if ($('#bf_dataset_load_submission').text().trim() !== 'None') {
-//     $($('#div-check-bf-import-submission').children()[0]).show()
-//     $('#div-check-bf-import-submission').css('display', 'flex')
-//   } else {
-//     $('#div-check-bf-import-submission').hide()
-//   }
-
-//   var inputFields = $('#Question-prepare-submission-1').nextAll().find('input')
-//   var textAreaFields = $('#Question-prepare-submission-1').nextAll().find('textarea')
-//   var selectFields = $('#Question-prepare-submission-1').nextAll().find('select')
-
-//   for (var field of inputFields) {
-//     $(field).val('')
-//   }
-//   for (var field of textAreaFields) {
-//     $(field).val('')
-//   }
-//   milestoneTagify1.removeAllTags()
-
-//   // Reset the funding consortium dropdown
-//   resetFundingConsortiumDropdown()
-
-//   // make accordion active again
-//   $('#submission-title-accordion').addClass('active')
-//   $('#submission-accordion').addClass('active')
-
-//   // show generate button again
-//   $('#button-generate-submission').show()
-
-//   for (var field of selectFields) {
-//     $(field).val('Select')
-//   }
-
-//   // reset the completion date dropdown
-//   const completionDateDropdown = document.getElementById('submission-completion-date')
-
-//   completionDateDropdown.innerHTML = `
-//     <option value="">Select a completion date</option>
-//     <option value="Enter my own date">Enter my own date</option>
-//     <option value="N/A">N/A</option>
-//   `
-// }
-
-// function resetDD(askToReset = true) {
-//   if (!askToReset) {
-//     // 1. remove Prev and Show from all individual-question except for the first one
-//     // 2. empty all input, textarea, select, para-elements
-//     $('#Question-prepare-dd-1').removeClass('prev')
-//     $('#Question-prepare-dd-1').nextAll().removeClass('show')
-//     $('#Question-prepare-dd-1').nextAll().removeClass('prev')
-//     $('#Question-prepare-dd-1 .option-card')
-//       .removeClass('checked')
-//       .removeClass('disabled')
-//       .removeClass('non-selected')
-//     $('#Question-prepare-dd-1 .option-card .folder-input-check').prop('checked', false)
-//     resetDDFields()
-//     return
-//   }
-
-//   Swal.fire({
-//     backdrop: 'rgba(0,0,0, 0.4)',
-//     confirmButtonText: 'I want to start over!',
-//     focusCancel: true,
-//     heightAuto: false,
-//     icon: 'warning',
-//     reverseButtons: window.reverseSwalButtons,
-//     showCancelButton: true,
-//     text: 'Are you sure you want to start over and reset your progress?',
-//     showClass: {
-//       popup: 'animate__animated animate__zoomIn animate__faster'
-//     },
-//     hideClass: {
-//       popup: 'animate__animated animate__zoomOut animate__faster'
-//     }
-//   }).then((result) => {
-//     if (result.isConfirmed) {
-//       // 1. remove Prev and Show from all individual-question except for the first one
-//       // 2. empty all input, textarea, select, para-elements
-//       $('#Question-prepare-dd-1').removeClass('prev')
-//       $('#Question-prepare-dd-1').nextAll().removeClass('show')
-//       $('#Question-prepare-dd-1').nextAll().removeClass('prev')
-//       $('#Question-prepare-dd-1 .option-card')
-//         .removeClass('checked')
-//         .removeClass('disabled')
-//         .removeClass('non-selected')
-//       $('#Question-prepare-dd-1 .option-card .folder-input-check').prop('checked', false)
-//       resetDDFields()
-//     }
-//   })
-// }
-
-// function resetDDFields() {
-//   // 1. empty all input, textarea, select, para-elements
-//   // 2. delete all rows from table Contributor
-//   // 3. delete all rows from table Links
-//   var inputFields = $('#Question-prepare-dd-2').find('input')
-//   var textAreaFields = $('#Question-prepare-dd-2').find('textarea')
-
-//   // var selectFields = $("#Question-prepare-dd-4-sections").find("select");
-
-//   for (var field of inputFields) {
-//     $(field).val('')
-//   }
-//   for (var field of textAreaFields) {
-//     $(field).val('')
-//   }
-
-//   $('#existing-dd-file-destination').attr('placeholder', 'Browse here')
-
-//   $('#div-confirm-existing-dd-import').hide()
-
-//   if ($('#bf_dataset_load_dd').text().trim() !== 'None') {
-//     $($('#div-check-bf-import-dd').children()[0]).show()
-//     $('#div-check-bf-import-dd').css('display', 'flex')
-//   } else {
-//     $('#div-check-bf-import-dd').hide()
-//   }
-
-//   // show generate button again
-//   $('#button-generate-dd').show()
-
-//   keywordTagify.removeAllTags()
-//   otherFundingTagify.removeAllTags()
-//   studyTechniquesTagify.removeAllTags()
-//   studyOrganSystemsTagify.removeAllTags()
-//   studyApproachesTagify.removeAllTags()
-
-//   // 3. deleting table rows
-//   globalContributorNameObject = {}
-//   currentContributorsLastNames = []
-//   contributorArray = []
-//   $('#contributor-table-dd tr:gt(0)').remove()
-//   $('#protocol-link-table-dd tr:gt(0)').remove()
-//   $('#other-link-table-dd tr:gt(0)').remove()
-
-//   $('#div-contributor-table-dd').css('display', 'none')
-//   document.getElementById('protocol-link-table-dd').style.display = 'none'
-//   document.getElementById('div-protocol-link-table-dd').style.display = 'none'
-//   document.getElementById('div-other-link-table-dd').style.display = 'none'
-//   document.getElementById('other-link-table-dd').style.display = 'none'
-
-//   $('#dd-accordion').find('.title').removeClass('active')
-//   $('#dd-accordion').find('.content').removeClass('active')
-
-//   $('#input-destination-generate-dd-locally').attr('placeholder', 'Browse here')
-//   $('#div-confirm-destination-dd-locally').css('display', 'none')
-// }
-
-// function resetSubjects(askToReset = true) {
-//   if (!askToReset) {
-//     // 1. remove Prev and Show from all individual-question except for the first one
-//     // 2. empty all input, textarea, select, para-elements
-//     $('#Question-prepare-subjects-1').removeClass('prev')
-//     $('#Question-prepare-subjects-1').nextAll().removeClass('show')
-//     $('#Question-prepare-subjects-1').nextAll().removeClass('prev')
-//     $('#Question-prepare-subjects-1 .option-card')
-//       .removeClass('checked')
-//       .removeClass('disabled')
-//       .removeClass('non-selected')
-//     $('#Question-prepare-subjects-1 .option-card .folder-input-check').prop('checked', false)
-//     $('#Question-prepare-subjects-2').find('button').show()
-//     $('#div-confirm-primary-folder-import').find('button').hide()
-
-//     $('#Question-prepare-subjects-primary-import').find('input').prop('placeholder', 'Browse here')
-//     subjectsFileData = []
-//     window.subjectsTableData = []
-
-//     $('#existing-subjects-file-destination').attr('placeholder', 'Browse here')
-
-//     $('#div-confirm-existing-subjects-import').hide()
-
-//     // hide Strains and Species
-//     $('#bootbox-subject-species').css('display', 'none')
-//     $('#bootbox-subject-strain').css('display', 'none')
-
-//     // delete custom subjects metadata fields (if any)
-//     document
-//       .getElementById('accordian-custom-fields')
-//       .querySelectorAll('.div-dd-info')
-//       .forEach((customField) => {
-//         customField.remove()
-//       })
-
-//     // show Primary import hyperlink again
-//     $('#div-import-primary-folder-subjects').show()
-
-//     // delete table rows except headers
-//     $('#table-subjects tr:gt(0)').remove()
-//     $('#table-subjects').css('display', 'none')
-
-//     $('#div-import-primary-folder-subjects').show()
-
-//     // Hide Generate button
-//     $('#button-generate-subjects').css('display', 'none')
-
-//     $('#button-add-a-subject').show()
-
-//     $('#input-destination-generate-subjects-locally').attr('placeholder', 'Browse here')
-//     $('#div-confirm-destination-subjects-locally').css('display', 'none')
-//     return
-//   }
-
-//   Swal.fire({
-//     text: 'Are you sure you want to start over and reset your progress?',
-//     icon: 'warning',
-//     showCancelButton: true,
-//     reverseButtons: window.reverseSwalButtons,
-//     heightAuto: false,
-//     backdrop: 'rgba(0,0,0, 0.4)',
-//     confirmButtonText: 'I want to start over'
-//   }).then((result) => {
-//     if (result.isConfirmed) {
-//       // 1. remove Prev and Show from all individual-question except for the first one
-//       // 2. empty all input, textarea, select, para-elements
-//       $('#Question-prepare-subjects-1').removeClass('prev')
-//       $('#Question-prepare-subjects-1').nextAll().removeClass('show')
-//       $('#Question-prepare-subjects-1').nextAll().removeClass('prev')
-//       $('#Question-prepare-subjects-1 .option-card')
-//         .removeClass('checked')
-//         .removeClass('disabled')
-//         .removeClass('non-selected')
-//       $('#Question-prepare-subjects-1 .option-card .folder-input-check').prop('checked', false)
-//       $('#Question-prepare-subjects-2').find('button').show()
-//       $('#div-confirm-primary-folder-import').find('button').hide()
-
-//       $('#Question-prepare-subjects-primary-import')
-//         .find('input')
-//         .prop('placeholder', 'Browse here')
-//       subjectsFileData = []
-//       window.subjectsTableData = []
-
-//       $('#existing-subjects-file-destination').attr('placeholder', 'Browse here')
-
-//       $('#div-confirm-existing-subjects-import').hide()
-
-//       // hide Strains and Species
-//       $('#bootbox-subject-species').css('display', 'none')
-//       $('#bootbox-subject-strain').css('display', 'none')
-
-//       // delete custom fields (if any)
-//       var fieldLength = $('.subjects-form-entry').length
-//       if (fieldLength > 18) {
-//         for (var field of $('.subjects-form-entry').slice(18, fieldLength)) {
-//           $($(field).parents()[2]).remove()
-//         }
-//       }
-//       // show Primary import hyperlink again
-//       $('#div-import-primary-folder-subjects').show()
-
-//       // delete table rows except headers
-//       $('#table-subjects tr:gt(0)').remove()
-//       $('#table-subjects').css('display', 'none')
-
-//       $('#div-import-primary-folder-subjects').show()
-
-//       // Hide Generate button
-//       $('#button-generate-subjects').css('display', 'none')
-
-//       $('#button-add-a-subject').show()
-
-//       $('#input-destination-generate-subjects-locally').attr('placeholder', 'Browse here')
-//       $('#div-confirm-destination-subjects-locally').css('display', 'none')
-//     }
-//   })
-// }
-
-// function resetSamples(askToReset = true) {
-//   if (!askToReset) {
-//     // 1. remove Prev and Show from all individual-question except for the first one
-//     // 2. empty all input, textarea, select, para-elements
-//     $('#Question-prepare-samples-1').removeClass('prev')
-//     $('#Question-prepare-samples-1').nextAll().removeClass('show')
-//     $('#Question-prepare-samples-1').nextAll().removeClass('prev')
-//     $('#Question-prepare-samples-1 .option-card')
-//       .removeClass('checked')
-//       .removeClass('disabled')
-//       .removeClass('non-selected')
-//     $('#Question-prepare-samples-1 .option-card .folder-input-check').prop('checked', false)
-//     $('#Question-prepare-samples-2').find('button').show()
-//     $('#div-confirm-primary-folder-import-samples').find('button').hide()
-
-//     $('#Question-prepare-subjects-primary-import-samples')
-//       .find('input')
-//       .prop('placeholder', 'Browse here')
-//     samplesFileData = []
-//     window.samplesTableData = []
-
-//     $('#existing-samples-file-destination').attr('placeholder', 'Browse here')
-//     $('#div-confirm-existing-samples-import').hide()
-
-//     // hide Strains and Species
-//     $('#bootbox-sample-species').css('display', 'none')
-//     $('#bootbox-sample-strain').css('display', 'none')
-
-//     // delete custom fields (if any)
-//     // delete custom samples metadata fields (if any)
-//     document
-//       .getElementById('accordian-custom-fields-samples')
-//       .querySelectorAll('.div-dd-info')
-//       .forEach((customField) => {
-//         customField.remove()
-//       })
-//     $('#div-import-primary-folder-samples').show()
-//     // delete table rows except headers
-//     $('#table-samples tr:gt(0)').remove()
-//     $('#table-samples').css('display', 'none')
-//     // Hide Generate button
-//     $('#button-generate-samples').css('display', 'none')
-
-//     $('#button-add-a-sample').show()
-
-//     $('#input-destination-generate-samples-locally').attr('placeholder', 'Browse here')
-//     $('#div-confirm-destination-samples-locally').css('display', 'none')
-//     return
-//   }
-
-//   Swal.fire({
-//     text: 'Are you sure you want to start over and reset your progress?',
-//     icon: 'warning',
-//     showCancelButton: true,
-//     reverseButtons: window.reverseSwalButtons,
-//     heightAuto: false,
-//     backdrop: 'rgba(0,0,0, 0.4)',
-//     confirmButtonText: 'I want to start over'
-//   }).then((result) => {
-//     if (result.isConfirmed) {
-//       // 1. remove Prev and Show from all individual-question except for the first one
-//       // 2. empty all input, textarea, select, para-elements
-//       $('#Question-prepare-samples-1').removeClass('prev')
-//       $('#Question-prepare-samples-1').nextAll().removeClass('show')
-//       $('#Question-prepare-samples-1').nextAll().removeClass('prev')
-//       $('#Question-prepare-samples-1 .option-card')
-//         .removeClass('checked')
-//         .removeClass('disabled')
-//         .removeClass('non-selected')
-//       $('#Question-prepare-samples-1 .option-card .folder-input-check').prop('checked', false)
-//       $('#Question-prepare-samples-2').find('button').show()
-//       $('#div-confirm-primary-folder-import-samples').find('button').hide()
-
-//       $('#Question-prepare-subjects-primary-import-samples')
-//         .find('input')
-//         .prop('placeholder', 'Browse here')
-//       samplesFileData = []
-//       window.samplesTableData = []
-
-//       $('#existing-samples-file-destination').attr('placeholder', 'Browse here')
-//       $('#div-confirm-existing-samples-import').hide()
-
-//       // hide Strains and Species
-//       $('#bootbox-sample-species').css('display', 'none')
-//       $('#bootbox-sample-strain').css('display', 'none')
-
-//       // delete custom samples metadata fields (if any)
-//       document
-//         .getElementById('accordian-custom-fields-samples')
-//         .querySelectorAll('.div-dd-info')
-//         .forEach((customField) => {
-//           customField.remove()
-//         })
-//       $('#div-import-primary-folder-samples').show()
-//       // delete table rows except headers
-//       $('#table-samples tr:gt(0)').remove()
-//       $('#table-samples').css('display', 'none')
-//       // Hide Generate button
-//       $('#button-generate-samples').css('display', 'none')
-
-//       $('#button-add-a-sample').show()
-
-//       $('#input-destination-generate-samples-locally').attr('placeholder', 'Browse here')
-//       $('#div-confirm-destination-samples-locally').css('display', 'none')
-//     }
-//   })
-// }
-
-// function resetManifest(askToReset = true) {
-//   if (askToReset) {
-//     Swal.fire({
-//       backdrop: 'rgba(0,0,0, 0.4)',
-//       confirmButtonText: 'I want to start over!',
-//       focusCancel: true,
-//       heightAuto: false,
-//       icon: 'warning',
-//       reverseButtons: window.reverseSwalButtons,
-//       showCancelButton: true,
-//       text: 'Are you sure you want to start over and reset your progress?',
-//       showClass: {
-//         popup: 'animate__animated animate__zoomIn animate__faster'
-//       },
-//       hideClass: {
-//         popup: 'animate__animated animate__zoomOut animate__faster'
-//       }
-//     }).then((result) => {
-//       if (result.isConfirmed) {
-//         // 1. remove Prev and Show from all individual-question except for the first one
-//         // 2. empty all input, textarea, select, para-elements
-//         $('#Question-prepare-manifest-1').removeClass('prev')
-//         $('#Question-prepare-manifest-1').nextAll().removeClass('show')
-//         $('#Question-prepare-manifest-1').nextAll().removeClass('prev')
-//         $('#Question-prepare-manifest-1 .option-card')
-//           .removeClass('checked')
-//           .removeClass('disabled')
-//           .removeClass('non-selected')
-//         $('#Question-prepare-manifest-1 .option-card .folder-input-check').prop('checked', false)
-//         $('#input-manifest-local-folder-dataset').attr('placeholder', 'Browse here')
-//         $('#div-confirm-manifest-local-folder-dataset').hide()
-//         $('#bf_dataset_create_manifest').text('None')
-//         let dir1 = path.join(homeDirectory, 'SODA', 'manifest_files')
-//         let dir2 = path.join(homeDirectory, 'SODA', 'SODA Manifest Files')
-//         removeDir(dir1)
-//         removeDir(dir2)
-//       } else {
-//         return
-//       }
-//     })
-//   } else {
-//     // 1. remove Prev and Show from all individual-question except for the first one
-//     // 2. empty all input, textarea, select, para-elements
-//     $('#Question-prepare-manifest-1').removeClass('prev')
-//     $('#Question-prepare-manifest-1').nextAll().removeClass('show')
-//     $('#Question-prepare-manifest-1').nextAll().removeClass('prev')
-//     $('#Question-prepare-manifest-1 .option-card')
-//       .removeClass('checked')
-//       .removeClass('disabled')
-//       .removeClass('non-selected')
-//     $('#Question-prepare-manifest-1 .option-card .folder-input-check').prop('checked', false)
-//     $('#input-manifest-local-folder-dataset').attr('placeholder', 'Browse here')
-//     $('#div-confirm-manifest-local-folder-dataset').hide()
-//     $('#bf_dataset_create_manifest').text('None')
-//     let dir1 = path.join(homeDirectory, 'SODA', 'manifest_files')
-//     let dir2 = path.join(homeDirectory, 'SODA', 'SODA Manifest Files')
-//     removeDir(dir1)
-//     removeDir(dir2)
-
-//     // reset the global variables for detecting the manifest path
-//     finalManifestGenerationPath = ''
-//   }
-// }
-
-// /**
-//  * Resets the FFM manage-dataset, prepare-metadata, disseminate-dataset UI to their initial state.  Note: Does not reset Account, or organization information in the user details cards.
-//  */
-// const resetFFMUI = (ev) => {
-//   // reset the manage dataset UI
-//   $('#div_add_edit_subtitle').removeClass('show')
-//   $('#div_add_edit_subtitle_tab').removeClass('prev')
-
-//   $('#div-rename-bf-dataset').removeClass('show')
-//   $('#rename_dataset_BF_account_tab').removeClass('prev')
-
-//   $('#div_make_pi_owner_permissions').removeClass('show')
-//   $('#pi_dataset_owner_tab').removeClass('prev')
-
-//   $('#add_edit_permissions_choice_div').removeClass('show')
-//   $('#add_edit_permissions_choice_div').removeClass('prev')
-//   $('#add_edit_permissions_choice_tab').removeClass('prev')
-//   $('#add_edit_team_permissions_div').removeClass('show')
-//   $('#add_edit_user_permissions_div').removeClass('show')
-//   $('#para-add-edit-dataset-permission-current').text('None')
-
-//   $('#div_add_edit_description').removeClass('show')
-//   $('#add_edit_description_tab').removeClass('prev')
-
-//   $('#div_add_edit_banner').removeClass('show')
-//   // $("#div_add_edit_banner").hide();
-//   $('#add_edit_banner_tab').removeClass('prev')
-
-//   $('#add_license_tab').removeClass('prev')
-//   $('#div_add_license').removeClass('show')
-//   $('#para-dataset-license-current').text('None')
-
-//   $('#add_tags_tab').removeClass('prev')
-//   $('#div_add_tags').removeClass('show')
-
-//   $('#view_change_dataset_status_tab').removeClass('prev')
-//   $('#div_view_change_dataset_status').removeClass('show')
-
-//   $('#collection_BF_account_tab').removeClass('prev')
-//   $('#div-collection-bf-dataset').removeClass('show')
-
-//   $('#upload_local_dataset_tab').removeClass('prev')
-//   $('#upload_local_dataset_div').removeClass('show')
-
-//   // reset the prepare metadata UI -- only reset if the user is not in that section of the UI
-//   let resetSubmissionTab = true
-//   let resetSubjectsTab = true
-//   let resetSamplesTab = true
-//   let resetDDTab = true
-//   let resetManifestTab = true
-//   let resetValidation = true
-//   let resetOrganizationTab = true
-//   if (ev?.parentNode?.parentNode) {
-//     if (ev.parentNode.parentNode.classList.contains('prepare-submission')) {
-//       resetSubmissionTab = false
-//     }
-//     if (ev.parentNode.parentNode.classList.contains('prepare-subjects')) {
-//       resetSubjectsTab = false
-//     }
-//     if (ev.parentNode.parentNode.classList.contains('prepare-samples')) {
-//       resetSamplesTab = false
-//     }
-//     if (ev.parentNode.parentNode.classList.contains('prepare-dataset-description')) {
-//       resetDDTab = false
-//     }
-//     if (ev.parentNode.parentNode.classList.contains('prepare-manifest')) {
-//       resetManifestTab = false
-//     }
-//     // if (ev.parentNode.parentNode.classList.contains("prepare-validation")) {
-//     //   resetValidation = false;
-//     // }
-//     if (ev.parentNode.parentNode.classList.contains('organize-dataset')) {
-//       resetOrganizationTab = false
-//       if (ev.parentNode.parentNode.id === 'bf-organization-curate-first-question-container') {
-//         $('#current-bf-dataset').text('None')
-//         $('#para-continue-bf-dataset-getting-started').hide()
-//         $('#button-confirm-bf-dataset-getting-started').css('display', 'none')
-//       } else if (
-//         ev.parentNode.parentNode.id === 'bf-organization-curate-second-question-container'
-//       ) {
-//         $('#current-bf-dataset-generate').text('None')
-//         // show the confirm button under the workspace selection question
-//         $('#btn-bf-workspace').css('display', 'flex')
-//         // hide the dataset options selection section
-//         transitionSubQuestionsButton(
-//           document.querySelector('#btn-bf-workspace'),
-//           'Question-generate-dataset-BF-workspace',
-//           'generate-dataset-tab',
-//           'delete',
-//           'individual-question generate-dataset'
-//         )
-//       }
-//     }
-//   }
-
-//   if (resetSubmissionTab) {
-//     resetSubmission(false)
-//   }
-
-//   if (resetDDTab) {
-//     resetDD(false)
-//   }
-
-//   if (resetSubjectsTab) {
-//     resetSubjects(false)
-//   }
-
-//   if (resetSamplesTab) {
-//     resetSamples(false)
-//   }
-
-//   if (resetManifestTab) {
-//     resetManifest(false)
-//   }
-
-//   // reset the prepare datasets sections
-//   // do not wipe curation progress when resetting in GM or from within Organize Datasets
-//   if (resetOrganizationTab) {
-//     // if we are going to reset the organization and are not within the organize flow, set the first dataset field value to None -- the second dataset field gets reset within resetCuration
-//     $('#current-bf-dataset').text('None')
-//     $('#button-confirm-bf-dataset-getting-started').css('display', 'none')
-//     resetCuration()
-//   }
-
-//   // validation reset
-//   let validationErrorsTable = document.querySelector('#validation-errors-container tbody')
-//   if (resetValidation) {
-//     // Function only resets the table and hides the validation section
-//     // If they have selected the first cards those will not be reset
-//     // $("#div-check-bf-import-validator").css("display", "flex");
-//     $('#validate_dataset-question-3').removeClass('show')
-//     $('#validate_dataset-question-3').removeClass('prev')
-//     $('#validate_dataset-question-4').removeClass('show')
-//     clearValidationResults(validationErrorsTable)
-//   }
-//   // reset the Disseminate Datasets sections
-//   $('#share_curation_team-question-1').removeClass('prev')
-//   $('#share_curation_team-question-2').removeClass('show')
-
-//   $('#share_sparc_consortium-question-1').removeClass('prev')
-//   $('#share_sparc_consortium-question-2').removeClass('show')
-
-//   $('#submit_prepublishing_review-question-1').removeClass('prev')
-//   $('#submit_prepublishing_review-question-2').addClass('hidden')
-//   $('#submit_prepublishing_review-question-3').removeClass('show')
-//   $('#submit_prepublishing_review-question-4').removeClass('show')
-//   $('#para-review-dataset-info-disseminate').text('None')
-// }
+function resetSubmission(askToReset = true) {
+  if (!askToReset) {
+    // 1. remove Prev and Show from all individual-question except for the first one
+    // 2. empty all input, textarea, select, para-elements
+    $('#Question-prepare-submission-1').removeClass('prev')
+    $('#Question-prepare-submission-1').nextAll().removeClass('show')
+    $('#Question-prepare-submission-1').nextAll().removeClass('prev')
+    $('#Question-prepare-submission-1 .option-card')
+      .removeClass('checked')
+      .removeClass('disabled')
+      .removeClass('non-selected')
+    $('#Question-prepare-submission-1 .option-card .folder-input-check').prop('checked', false)
+    resetSubmissionFields()
+    return
+  }
+
+  Swal.fire({
+    backdrop: 'rgba(0,0,0, 0.4)',
+    confirmButtonText: 'I want to start over!',
+    focusCancel: true,
+    heightAuto: false,
+    icon: 'warning',
+    reverseButtons: window.reverseSwalButtons,
+    showCancelButton: true,
+    text: 'Are you sure you want to start over and reset your progress?',
+    showClass: {
+      popup: 'animate__animated animate__zoomIn animate__faster'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__zoomOut animate__faster'
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 1. remove Prev and Show from all individual-question except for the first one
+      // 2. empty all input, textarea, select, para-elements
+      $('#Question-prepare-submission-1').removeClass('prev')
+      $('#Question-prepare-submission-1').nextAll().removeClass('show')
+      $('#Question-prepare-submission-1').nextAll().removeClass('prev')
+      $('#Question-prepare-submission-1 .option-card')
+        .removeClass('checked')
+        .removeClass('disabled')
+        .removeClass('non-selected')
+      $('#Question-prepare-submission-1 .option-card .folder-input-check').prop('checked', false)
+      resetSubmissionFields()
+    }
+  })
+}
+
+function resetSubmissionFields() {
+  $('#existing-submission-file-destination').attr('placeholder', 'Browse here')
+
+  $('#div-confirm-existing-submission-import').hide()
+
+  if ($('#bf_dataset_load_submission').text().trim() !== 'None') {
+    $($('#div-check-bf-import-submission').children()[0]).show()
+    $('#div-check-bf-import-submission').css('display', 'flex')
+  } else {
+    $('#div-check-bf-import-submission').hide()
+  }
+
+  var inputFields = $('#Question-prepare-submission-1').nextAll().find('input')
+  var textAreaFields = $('#Question-prepare-submission-1').nextAll().find('textarea')
+  var selectFields = $('#Question-prepare-submission-1').nextAll().find('select')
+
+  for (var field of inputFields) {
+    $(field).val('')
+  }
+  for (var field of textAreaFields) {
+    $(field).val('')
+  }
+  window.milestoneTagify1.removeAllTags()
+
+  // Reset the funding consortium dropdown
+  window.resetFundingConsortiumDropdown()
+
+  // make accordion active again
+  $('#submission-title-accordion').addClass('active')
+  $('#submission-accordion').addClass('active')
+
+  // show generate button again
+  $('#button-generate-submission').show()
+
+  for (var field of selectFields) {
+    $(field).val('Select')
+  }
+
+  // reset the completion date dropdown
+  const completionDateDropdown = document.getElementById('submission-completion-date')
+
+  completionDateDropdown.innerHTML = `
+    <option value="">Select a completion date</option>
+    <option value="Enter my own date">Enter my own date</option>
+    <option value="N/A">N/A</option>
+  `
+}
+
+function resetDD(askToReset = true) {
+  if (!askToReset) {
+    // 1. remove Prev and Show from all individual-question except for the first one
+    // 2. empty all input, textarea, select, para-elements
+    $('#Question-prepare-dd-1').removeClass('prev')
+    $('#Question-prepare-dd-1').nextAll().removeClass('show')
+    $('#Question-prepare-dd-1').nextAll().removeClass('prev')
+    $('#Question-prepare-dd-1 .option-card')
+      .removeClass('checked')
+      .removeClass('disabled')
+      .removeClass('non-selected')
+    $('#Question-prepare-dd-1 .option-card .folder-input-check').prop('checked', false)
+    resetDDFields()
+    return
+  }
+
+  Swal.fire({
+    backdrop: 'rgba(0,0,0, 0.4)',
+    confirmButtonText: 'I want to start over!',
+    focusCancel: true,
+    heightAuto: false,
+    icon: 'warning',
+    reverseButtons: window.reverseSwalButtons,
+    showCancelButton: true,
+    text: 'Are you sure you want to start over and reset your progress?',
+    showClass: {
+      popup: 'animate__animated animate__zoomIn animate__faster'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__zoomOut animate__faster'
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 1. remove Prev and Show from all individual-question except for the first one
+      // 2. empty all input, textarea, select, para-elements
+      $('#Question-prepare-dd-1').removeClass('prev')
+      $('#Question-prepare-dd-1').nextAll().removeClass('show')
+      $('#Question-prepare-dd-1').nextAll().removeClass('prev')
+      $('#Question-prepare-dd-1 .option-card')
+        .removeClass('checked')
+        .removeClass('disabled')
+        .removeClass('non-selected')
+      $('#Question-prepare-dd-1 .option-card .folder-input-check').prop('checked', false)
+      resetDDFields()
+    }
+  })
+}
+
+function resetDDFields() {
+  // 1. empty all input, textarea, select, para-elements
+  // 2. delete all rows from table Contributor
+  // 3. delete all rows from table Links
+  var inputFields = $('#Question-prepare-dd-2').find('input')
+  var textAreaFields = $('#Question-prepare-dd-2').find('textarea')
+
+  // var selectFields = $("#Question-prepare-dd-4-sections").find("select");
+
+  for (var field of inputFields) {
+    $(field).val('')
+  }
+  for (var field of textAreaFields) {
+    $(field).val('')
+  }
+
+  $('#existing-dd-file-destination').attr('placeholder', 'Browse here')
+
+  $('#div-confirm-existing-dd-import').hide()
+
+  if ($('#bf_dataset_load_dd').text().trim() !== 'None') {
+    $($('#div-check-bf-import-dd').children()[0]).show()
+    $('#div-check-bf-import-dd').css('display', 'flex')
+  } else {
+    $('#div-check-bf-import-dd').hide()
+  }
+
+  // show generate button again
+  $('#button-generate-dd').show()
+
+  keywordTagify.removeAllTags()
+  otherFundingTagify.removeAllTags()
+  studyTechniquesTagify.removeAllTags()
+  studyOrganSystemsTagify.removeAllTags()
+  studyApproachesTagify.removeAllTags()
+
+  // 3. deleting table rows
+  globalContributorNameObject = {}
+  currentContributorsLastNames = []
+  contributorArray = []
+  $('#contributor-table-dd tr:gt(0)').remove()
+  $('#protocol-link-table-dd tr:gt(0)').remove()
+  $('#other-link-table-dd tr:gt(0)').remove()
+
+  $('#div-contributor-table-dd').css('display', 'none')
+  document.getElementById('protocol-link-table-dd').style.display = 'none'
+  document.getElementById('div-protocol-link-table-dd').style.display = 'none'
+  document.getElementById('div-other-link-table-dd').style.display = 'none'
+  document.getElementById('other-link-table-dd').style.display = 'none'
+
+  $('#dd-accordion').find('.title').removeClass('active')
+  $('#dd-accordion').find('.content').removeClass('active')
+
+  $('#input-destination-generate-dd-locally').attr('placeholder', 'Browse here')
+  $('#div-confirm-destination-dd-locally').css('display', 'none')
+}
+
+function resetSubjects(askToReset = true) {
+  if (!askToReset) {
+    // 1. remove Prev and Show from all individual-question except for the first one
+    // 2. empty all input, textarea, select, para-elements
+    $('#Question-prepare-subjects-1').removeClass('prev')
+    $('#Question-prepare-subjects-1').nextAll().removeClass('show')
+    $('#Question-prepare-subjects-1').nextAll().removeClass('prev')
+    $('#Question-prepare-subjects-1 .option-card')
+      .removeClass('checked')
+      .removeClass('disabled')
+      .removeClass('non-selected')
+    $('#Question-prepare-subjects-1 .option-card .folder-input-check').prop('checked', false)
+    $('#Question-prepare-subjects-2').find('button').show()
+    $('#div-confirm-primary-folder-import').find('button').hide()
+
+    $('#Question-prepare-subjects-primary-import').find('input').prop('placeholder', 'Browse here')
+    subjectsFileData = []
+    window.subjectsTableData = []
+
+    $('#existing-subjects-file-destination').attr('placeholder', 'Browse here')
+
+    $('#div-confirm-existing-subjects-import').hide()
+
+    // hide Strains and Species
+    $('#bootbox-subject-species').css('display', 'none')
+    $('#bootbox-subject-strain').css('display', 'none')
+
+    // delete custom subjects metadata fields (if any)
+    document
+      .getElementById('accordian-custom-fields')
+      .querySelectorAll('.div-dd-info')
+      .forEach((customField) => {
+        customField.remove()
+      })
+
+    // show Primary import hyperlink again
+    $('#div-import-primary-folder-subjects').show()
+
+    // delete table rows except headers
+    $('#table-subjects tr:gt(0)').remove()
+    $('#table-subjects').css('display', 'none')
+
+    $('#div-import-primary-folder-subjects').show()
+
+    // Hide Generate button
+    $('#button-generate-subjects').css('display', 'none')
+
+    $('#button-add-a-subject').show()
+
+    $('#input-destination-generate-subjects-locally').attr('placeholder', 'Browse here')
+    $('#div-confirm-destination-subjects-locally').css('display', 'none')
+    return
+  }
+
+  Swal.fire({
+    text: 'Are you sure you want to start over and reset your progress?',
+    icon: 'warning',
+    showCancelButton: true,
+    reverseButtons: window.reverseSwalButtons,
+    heightAuto: false,
+    backdrop: 'rgba(0,0,0, 0.4)',
+    confirmButtonText: 'I want to start over'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 1. remove Prev and Show from all individual-question except for the first one
+      // 2. empty all input, textarea, select, para-elements
+      $('#Question-prepare-subjects-1').removeClass('prev')
+      $('#Question-prepare-subjects-1').nextAll().removeClass('show')
+      $('#Question-prepare-subjects-1').nextAll().removeClass('prev')
+      $('#Question-prepare-subjects-1 .option-card')
+        .removeClass('checked')
+        .removeClass('disabled')
+        .removeClass('non-selected')
+      $('#Question-prepare-subjects-1 .option-card .folder-input-check').prop('checked', false)
+      $('#Question-prepare-subjects-2').find('button').show()
+      $('#div-confirm-primary-folder-import').find('button').hide()
+
+      $('#Question-prepare-subjects-primary-import')
+        .find('input')
+        .prop('placeholder', 'Browse here')
+      subjectsFileData = []
+      window.subjectsTableData = []
+
+      $('#existing-subjects-file-destination').attr('placeholder', 'Browse here')
+
+      $('#div-confirm-existing-subjects-import').hide()
+
+      // hide Strains and Species
+      $('#bootbox-subject-species').css('display', 'none')
+      $('#bootbox-subject-strain').css('display', 'none')
+
+      // delete custom fields (if any)
+      var fieldLength = $('.subjects-form-entry').length
+      if (fieldLength > 18) {
+        for (var field of $('.subjects-form-entry').slice(18, fieldLength)) {
+          $($(field).parents()[2]).remove()
+        }
+      }
+      // show Primary import hyperlink again
+      $('#div-import-primary-folder-subjects').show()
+
+      // delete table rows except headers
+      $('#table-subjects tr:gt(0)').remove()
+      $('#table-subjects').css('display', 'none')
+
+      $('#div-import-primary-folder-subjects').show()
+
+      // Hide Generate button
+      $('#button-generate-subjects').css('display', 'none')
+
+      $('#button-add-a-subject').show()
+
+      $('#input-destination-generate-subjects-locally').attr('placeholder', 'Browse here')
+      $('#div-confirm-destination-subjects-locally').css('display', 'none')
+    }
+  })
+}
+
+function resetSamples(askToReset = true) {
+  if (!askToReset) {
+    // 1. remove Prev and Show from all individual-question except for the first one
+    // 2. empty all input, textarea, select, para-elements
+    $('#Question-prepare-samples-1').removeClass('prev')
+    $('#Question-prepare-samples-1').nextAll().removeClass('show')
+    $('#Question-prepare-samples-1').nextAll().removeClass('prev')
+    $('#Question-prepare-samples-1 .option-card')
+      .removeClass('checked')
+      .removeClass('disabled')
+      .removeClass('non-selected')
+    $('#Question-prepare-samples-1 .option-card .folder-input-check').prop('checked', false)
+    $('#Question-prepare-samples-2').find('button').show()
+    $('#div-confirm-primary-folder-import-samples').find('button').hide()
+
+    $('#Question-prepare-subjects-primary-import-samples')
+      .find('input')
+      .prop('placeholder', 'Browse here')
+    samplesFileData = []
+    window.samplesTableData = []
+
+    $('#existing-samples-file-destination').attr('placeholder', 'Browse here')
+    $('#div-confirm-existing-samples-import').hide()
+
+    // hide Strains and Species
+    $('#bootbox-sample-species').css('display', 'none')
+    $('#bootbox-sample-strain').css('display', 'none')
+
+    // delete custom fields (if any)
+    // delete custom samples metadata fields (if any)
+    document
+      .getElementById('accordian-custom-fields-samples')
+      .querySelectorAll('.div-dd-info')
+      .forEach((customField) => {
+        customField.remove()
+      })
+    $('#div-import-primary-folder-samples').show()
+    // delete table rows except headers
+    $('#table-samples tr:gt(0)').remove()
+    $('#table-samples').css('display', 'none')
+    // Hide Generate button
+    $('#button-generate-samples').css('display', 'none')
+
+    $('#button-add-a-sample').show()
+
+    $('#input-destination-generate-samples-locally').attr('placeholder', 'Browse here')
+    $('#div-confirm-destination-samples-locally').css('display', 'none')
+    return
+  }
+
+  Swal.fire({
+    text: 'Are you sure you want to start over and reset your progress?',
+    icon: 'warning',
+    showCancelButton: true,
+    reverseButtons: window.reverseSwalButtons,
+    heightAuto: false,
+    backdrop: 'rgba(0,0,0, 0.4)',
+    confirmButtonText: 'I want to start over'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 1. remove Prev and Show from all individual-question except for the first one
+      // 2. empty all input, textarea, select, para-elements
+      $('#Question-prepare-samples-1').removeClass('prev')
+      $('#Question-prepare-samples-1').nextAll().removeClass('show')
+      $('#Question-prepare-samples-1').nextAll().removeClass('prev')
+      $('#Question-prepare-samples-1 .option-card')
+        .removeClass('checked')
+        .removeClass('disabled')
+        .removeClass('non-selected')
+      $('#Question-prepare-samples-1 .option-card .folder-input-check').prop('checked', false)
+      $('#Question-prepare-samples-2').find('button').show()
+      $('#div-confirm-primary-folder-import-samples').find('button').hide()
+
+      $('#Question-prepare-subjects-primary-import-samples')
+        .find('input')
+        .prop('placeholder', 'Browse here')
+      samplesFileData = []
+      window.samplesTableData = []
+
+      $('#existing-samples-file-destination').attr('placeholder', 'Browse here')
+      $('#div-confirm-existing-samples-import').hide()
+
+      // hide Strains and Species
+      $('#bootbox-sample-species').css('display', 'none')
+      $('#bootbox-sample-strain').css('display', 'none')
+
+      // delete custom samples metadata fields (if any)
+      document
+        .getElementById('accordian-custom-fields-samples')
+        .querySelectorAll('.div-dd-info')
+        .forEach((customField) => {
+          customField.remove()
+        })
+      $('#div-import-primary-folder-samples').show()
+      // delete table rows except headers
+      $('#table-samples tr:gt(0)').remove()
+      $('#table-samples').css('display', 'none')
+      // Hide Generate button
+      $('#button-generate-samples').css('display', 'none')
+
+      $('#button-add-a-sample').show()
+
+      $('#input-destination-generate-samples-locally').attr('placeholder', 'Browse here')
+      $('#div-confirm-destination-samples-locally').css('display', 'none')
+    }
+  })
+}
+
+function resetManifest(askToReset = true) {
+  if (askToReset) {
+    Swal.fire({
+      backdrop: 'rgba(0,0,0, 0.4)',
+      confirmButtonText: 'I want to start over!',
+      focusCancel: true,
+      heightAuto: false,
+      icon: 'warning',
+      reverseButtons: window.reverseSwalButtons,
+      showCancelButton: true,
+      text: 'Are you sure you want to start over and reset your progress?',
+      showClass: {
+        popup: 'animate__animated animate__zoomIn animate__faster'
+      },
+      hideClass: {
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // 1. remove Prev and Show from all individual-question except for the first one
+        // 2. empty all input, textarea, select, para-elements
+        $('#Question-prepare-manifest-1').removeClass('prev')
+        $('#Question-prepare-manifest-1').nextAll().removeClass('show')
+        $('#Question-prepare-manifest-1').nextAll().removeClass('prev')
+        $('#Question-prepare-manifest-1 .option-card')
+          .removeClass('checked')
+          .removeClass('disabled')
+          .removeClass('non-selected')
+        $('#Question-prepare-manifest-1 .option-card .folder-input-check').prop('checked', false)
+        $('#input-manifest-local-folder-dataset').attr('placeholder', 'Browse here')
+        $('#div-confirm-manifest-local-folder-dataset').hide()
+        $('#bf_dataset_create_manifest').text('None')
+        let dir1 = path.join(homeDirectory, 'SODA', 'manifest_files')
+        let dir2 = path.join(homeDirectory, 'SODA', 'SODA Manifest Files')
+        removeDir(dir1)
+        removeDir(dir2)
+      } else {
+        return
+      }
+    })
+  } else {
+    // 1. remove Prev and Show from all individual-question except for the first one
+    // 2. empty all input, textarea, select, para-elements
+    $('#Question-prepare-manifest-1').removeClass('prev')
+    $('#Question-prepare-manifest-1').nextAll().removeClass('show')
+    $('#Question-prepare-manifest-1').nextAll().removeClass('prev')
+    $('#Question-prepare-manifest-1 .option-card')
+      .removeClass('checked')
+      .removeClass('disabled')
+      .removeClass('non-selected')
+    $('#Question-prepare-manifest-1 .option-card .folder-input-check').prop('checked', false)
+    $('#input-manifest-local-folder-dataset').attr('placeholder', 'Browse here')
+    $('#div-confirm-manifest-local-folder-dataset').hide()
+    $('#bf_dataset_create_manifest').text('None')
+    let dir1 = path.join(homeDirectory, 'SODA', 'manifest_files')
+    let dir2 = path.join(homeDirectory, 'SODA', 'SODA Manifest Files')
+    removeDir(dir1)
+    removeDir(dir2)
+
+    // reset the global variables for detecting the manifest path
+    finalManifestGenerationPath = ''
+  }
+}
+
+/**
+ * Resets the FFM manage-dataset, prepare-metadata, disseminate-dataset UI to their initial state.  Note: Does not reset Account, or organization information in the user details cards.
+ */
+window.resetFFMUI = (ev) => {
+  // reset the manage dataset UI
+  $('#div_add_edit_subtitle').removeClass('show')
+  $('#div_add_edit_subtitle_tab').removeClass('prev')
+
+  $('#div-rename-bf-dataset').removeClass('show')
+  $('#rename_dataset_BF_account_tab').removeClass('prev')
+
+  $('#div_make_pi_owner_permissions').removeClass('show')
+  $('#pi_dataset_owner_tab').removeClass('prev')
+
+  $('#add_edit_permissions_choice_div').removeClass('show')
+  $('#add_edit_permissions_choice_div').removeClass('prev')
+  $('#add_edit_permissions_choice_tab').removeClass('prev')
+  $('#add_edit_team_permissions_div').removeClass('show')
+  $('#add_edit_user_permissions_div').removeClass('show')
+  $('#para-add-edit-dataset-permission-current').text('None')
+
+  $('#div_add_edit_description').removeClass('show')
+  $('#add_edit_description_tab').removeClass('prev')
+
+  $('#div_add_edit_banner').removeClass('show')
+  // $("#div_add_edit_banner").hide();
+  $('#add_edit_banner_tab').removeClass('prev')
+
+  $('#add_license_tab').removeClass('prev')
+  $('#div_add_license').removeClass('show')
+  $('#para-dataset-license-current').text('None')
+
+  $('#add_tags_tab').removeClass('prev')
+  $('#div_add_tags').removeClass('show')
+
+  $('#view_change_dataset_status_tab').removeClass('prev')
+  $('#div_view_change_dataset_status').removeClass('show')
+
+  $('#collection_BF_account_tab').removeClass('prev')
+  $('#div-collection-bf-dataset').removeClass('show')
+
+  $('#upload_local_dataset_tab').removeClass('prev')
+  $('#upload_local_dataset_div').removeClass('show')
+
+  // reset the prepare metadata UI -- only reset if the user is not in that section of the UI
+  let resetSubmissionTab = true
+  let resetSubjectsTab = true
+  let resetSamplesTab = true
+  let resetDDTab = true
+  let resetManifestTab = true
+  let resetValidation = true
+  let resetOrganizationTab = true
+  if (ev?.parentNode?.parentNode) {
+    if (ev.parentNode.parentNode.classList.contains('prepare-submission')) {
+      resetSubmissionTab = false
+    }
+    if (ev.parentNode.parentNode.classList.contains('prepare-subjects')) {
+      resetSubjectsTab = false
+    }
+    if (ev.parentNode.parentNode.classList.contains('prepare-samples')) {
+      resetSamplesTab = false
+    }
+    if (ev.parentNode.parentNode.classList.contains('prepare-dataset-description')) {
+      resetDDTab = false
+    }
+    if (ev.parentNode.parentNode.classList.contains('prepare-manifest')) {
+      resetManifestTab = false
+    }
+    // if (ev.parentNode.parentNode.classList.contains("prepare-validation")) {
+    //   resetValidation = false;
+    // }
+    if (ev.parentNode.parentNode.classList.contains('organize-dataset')) {
+      resetOrganizationTab = false
+      if (ev.parentNode.parentNode.id === 'bf-organization-curate-first-question-container') {
+        $('#current-bf-dataset').text('None')
+        $('#para-continue-bf-dataset-getting-started').hide()
+        $('#button-confirm-bf-dataset-getting-started').css('display', 'none')
+      } else if (
+        ev.parentNode.parentNode.id === 'bf-organization-curate-second-question-container'
+      ) {
+        $('#current-bf-dataset-generate').text('None')
+        // show the confirm button under the workspace selection question
+        $('#btn-bf-workspace').css('display', 'flex')
+        // hide the dataset options selection section
+        window.transitionSubQuestionsButton(
+          document.querySelector('#btn-bf-workspace'),
+          'Question-generate-dataset-BF-workspace',
+          'generate-dataset-tab',
+          'delete',
+          'individual-question generate-dataset'
+        )
+      }
+    }
+  }
+
+  if (resetSubmissionTab) {
+    resetSubmission(false)
+  }
+
+  if (resetDDTab) {
+    resetDD(false)
+  }
+
+  if (resetSubjectsTab) {
+    resetSubjects(false)
+  }
+
+  if (resetSamplesTab) {
+    resetSamples(false)
+  }
+
+  if (resetManifestTab) {
+    resetManifest(false)
+  }
+
+  // reset the prepare datasets sections
+  // do not wipe curation progress when resetting in GM or from within Organize Datasets
+  if (resetOrganizationTab) {
+    // if we are going to reset the organization and are not within the organize flow, set the first dataset field value to None -- the second dataset field gets reset within resetCuration
+    $('#current-bf-dataset').text('None')
+    $('#button-confirm-bf-dataset-getting-started').css('display', 'none')
+    resetCuration()
+  }
+
+  // validation reset
+  let validationErrorsTable = document.querySelector('#validation-errors-container tbody')
+  if (resetValidation) {
+    // Function only resets the table and hides the validation section
+    // If they have selected the first cards those will not be reset
+    // $("#div-check-bf-import-validator").css("display", "flex");
+    $('#validate_dataset-question-3').removeClass('show')
+    $('#validate_dataset-question-3').removeClass('prev')
+    $('#validate_dataset-question-4').removeClass('show')
+    clearValidationResults(validationErrorsTable)
+  }
+  // reset the Disseminate Datasets sections
+  $('#share_curation_team-question-1').removeClass('prev')
+  $('#share_curation_team-question-2').removeClass('show')
+
+  $('#share_sparc_consortium-question-1').removeClass('prev')
+  $('#share_sparc_consortium-question-2').removeClass('show')
+
+  $('#submit_prepublishing_review-question-1').removeClass('prev')
+  $('#submit_prepublishing_review-question-2').addClass('hidden')
+  $('#submit_prepublishing_review-question-3').removeClass('show')
+  $('#submit_prepublishing_review-question-4').removeClass('show')
+  $('#para-review-dataset-info-disseminate').text('None')
+}
 
 const addBfAccount = async (ev, verifyingOrganization = False) => {
   var resolveMessage = "";
@@ -1094,7 +1094,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           api_button.appendChild(api_arrow);
           swal_actions.parentElement.insertBefore(api_button, div_footer);
           swal_actions.parentElement.insertBefore(helpText, div_footer);
-          api_button.addEventListener("click", (e) => showBFAddAccountSweetalert(e));
+          api_button.addEventListener("click", (e) => window.showBFAddAccountSweetalert(e));
         } else {
           // hide the cancel button
           let cancel_button = document.getElementsByClassName("swal2-cancel")[0];
@@ -1189,7 +1189,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
 
           showHideDropdownButtons("account", "show");
           confirm_click_account_function();
-          updateBfAccountList();
+          window.updateBfAccountList();
 
           // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
           // then reset the guided mode page
@@ -1977,7 +1977,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       // otherwise, reset the FFM UI based on the ev class
       ev.classList.contains("guided-change-workspace")
         ? window.handleGuidedModeOrgSwitch(ev)
-        : resetFFMUI(ev);
+        : window.resetFFMUI(ev);
 
       // reset the dataset list
       window.datasetList = [];

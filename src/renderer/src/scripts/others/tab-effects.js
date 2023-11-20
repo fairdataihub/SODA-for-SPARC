@@ -2,6 +2,8 @@
 import Accordion from 'accordion-js';
 // TODO: Follow up that this is the way to import it
 import 'accordion-js/dist/accordion.min.css';
+import { showHideDropdownButtons } from '../globals';
+import {clearValidationResults} from '../validator/validate';
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100))
@@ -970,9 +972,9 @@ var divList = [];
 const transitionSubQuestions = async (ev, currentDiv, parentDiv, button, category) => {
   if (currentDiv === "Question-getting-started-1") {
     // log the start of a new curation process from scratch
-    // logCurationForAnalytics(
+    // window.logCurationForAnalytics(
     //   "Success",
-    //   PrepareDatasetsAnalyticsPrefix.CURATE,
+    //   window.PrepareDatasetsAnalyticsPrefix.CURATE,
     //   window.AnalyticsGranularity.ACTION,
     //   ["New"],
     //   "Local",
@@ -983,7 +985,7 @@ const transitionSubQuestions = async (ev, currentDiv, parentDiv, button, categor
       $("#progress-files-dropdown").val("Select");
       $("#para-progress-file-status").text("");
       $("#nextBtn").prop("disabled", true);
-      exitCurate(false);
+      window.exitCurate(false);
       globalGettingStarted1stQuestionBool = false;
     } else {
       globalGettingStarted1stQuestionBool = false;
@@ -1141,7 +1143,7 @@ const transitionSubQuestions = async (ev, currentDiv, parentDiv, button, categor
     $("#nextBtn").prop("disabled", true);
     $("#para-continue-prepare-new-getting-started").text("");
     if ($("#prepare-new").prop("checked")) {
-      exitCurate(false);
+      window.exitCurate(false);
       $("#prepare-new").prop("checked", true);
       $($("#prepare-new").parents()[2]).addClass("checked");
       $($($("#div-getting-started-prepare-new").parents()[0]).siblings().children()).addClass(
@@ -1159,7 +1161,7 @@ const transitionSubQuestions = async (ev, currentDiv, parentDiv, button, categor
       }, 600);
     } else if ($("#existing-bf").is(":checked")) {
       $("#nextBtn").prop("disabled", true);
-      // this exitCurate function gets called in the beginning here
+      // this window.exitCurate function gets called in the beginning here
       // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
       $("#Question-getting-started-existing-BF-account").show();
       $("#Question-getting-started-existing-BF-account").children().show();
@@ -1754,7 +1756,7 @@ const verify_sparc_folder = (root_folder_path, type) => {
 };
 
 // function similar to transitionSubQuestions, but for buttons
-const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, category) => {
+window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, category) => {
   /*
     ev: the button being clicked
     currentDiv: current option-card (question)
@@ -1765,7 +1767,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
   if (currentDiv === "Question-getting-started-BF-dataset") {
     let selectedDataset = $("#current-bf-dataset").text();
     $("#nextBtn").prop("disabled", true);
-    sodaJSONObj = {
+    window.sodaJSONObj = {
       "bf-account-selected": {
         "account-name": {},
       },
@@ -1782,8 +1784,8 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
     };
 
     // Set the default Pennsieve account and dataset
-    sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfDataset;
-    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedDataset;
+    window.sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfAccount;
+    window.sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedDataset;
 
     $("#para-continue-bf-dataset-getting-started").text("");
     $("body").addClass("waiting");
@@ -1793,7 +1795,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
     $("#bf-dataset-spinner").css("visibility", "visible");
 
     // Check if dataset is locked before trying to import
-    const isDatasetLocked = await api.isDatasetLocked(window.defaultBfDataset, selectedDataset);
+    const isDatasetLocked = await api.isDatasetLocked(window.defaultBfAccount, selectedDataset);
     if (isDatasetLocked) {
       Swal.fire({
         icon: "info",
@@ -1823,9 +1825,9 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
       $("body").removeClass("waiting");
 
       // log the event to analytics
-      logCurationForAnalytics(
+      window.logCurationForAnalytics(
         "Error",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
+        window.PrepareDatasetsAnalyticsPrefix.CURATE,
         window.AnalyticsGranularity.ACTION,
         ["Dataset Locked"],
         "Pennsieve",
@@ -1867,9 +1869,9 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
       $("body").removeClass("waiting");
 
       // log the error to analytics
-      logCurationForAnalytics(
+      window.logCurationForAnalytics(
         "Error",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
+        window.PrepareDatasetsAnalyticsPrefix.CURATE,
         window.AnalyticsGranularity.ACTION,
         ["Existing"],
         "Pennsieve",
@@ -1907,36 +1909,36 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
         },
       }).then((response) => {
         if (response.isConfirmed) {
-          sodaJSONObj = sodaObject;
-          if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
-            datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+          window.sodaJSONObj = sodaObject;
+          if (JSON.stringify(window.sodaJSONObj["dataset-structure"]) !== "{}") {
+            window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
           } else {
-            datasetStructureJSONObj = { folders: {}, files: {} };
+            window.datasetStructureJSONObj = { folders: {}, files: {} };
           }
-          populate_existing_folders(datasetStructureJSONObj);
-          populate_existing_metadata(sodaJSONObj);
+          populate_existing_folders(window.datasetStructureJSONObj);
+          populate_existing_metadata(window.sodaJSONObj);
           $("#nextBtn").prop("disabled", false);
           $("#para-continue-bf-dataset-getting-started").text("Please continue below.");
           showHideDropdownButtons("dataset", "show");
           // log the successful Pennsieve import to analytics- no matter if the user decided to cancel
-          logCurationForAnalytics(
+          window.logCurationForAnalytics(
             "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE,
+            window.PrepareDatasetsAnalyticsPrefix.CURATE,
             window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
             ["Existing"],
             "Pennsieve",
             false
           );
         } else {
-          exitCurate();
+          window.exitCurate();
         }
       });
     } else {
-      sodaJSONObj = sodaObject;
-      if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
-        datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+      window.sodaJSONObj = sodaObject;
+      if (JSON.stringify(window.sodaJSONObj["dataset-structure"]) !== "{}") {
+        window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
       } else {
-        datasetStructureJSONObj = { folders: {}, files: {} };
+        window.datasetStructureJSONObj = { folders: {}, files: {} };
       }
 
       populate_existing_folders(datasetStructureJSONObj);
@@ -1945,9 +1947,9 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
       $("#para-continue-bf-dataset-getting-started").text("Please continue below.");
       showHideDropdownButtons("dataset", "show");
 
-      logCurationForAnalytics(
+      window.logCurationForAnalytics(
         "Success",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
+        window.PrepareDatasetsAnalyticsPrefix.CURATE,
         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         ["Existing"],
         "Pennsieve",
@@ -2033,7 +2035,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
     $("#existing-bf").is(":checked")
   ) {
     $("#nextBtn").prop("disabled", true);
-    if (sodaJSONObj["dataset-structure"] != {}) {
+    if (window.sodaJSONObj["dataset-structure"] != {}) {
       $("#nextBtn").prop("disabled", false);
     }
   }
@@ -2043,7 +2045,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
     $("#existing-local").is(":checked") &&
     currentDiv == "Question-getting-started-1"
   ) {
-    sodaJSONObj = {
+    window.sodaJSONObj = {
       "bf-account-selected": {},
       "bf-dataset-selected": {},
       "dataset-structure": {},
@@ -3459,7 +3461,7 @@ const resetCuration = () => {
   globalGettingStarted1stQuestionBool = false;
 };
 
-const exitCurate = async (resetProgressTabs, start_over = false) => {
+window.exitCurate = async (resetProgressTabs, start_over = false) => {
   $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
@@ -3670,7 +3672,7 @@ const saveOrganizeProgressPrompt = () => {
 };
 
 $("#start-over-btn").click(() => {
-  exitCurate(true, true);
+  window.exitCurate(true, true);
 });
 
 const description_text = {

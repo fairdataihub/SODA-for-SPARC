@@ -1505,63 +1505,63 @@ window.createDragSort(window.guidedSubmissionTagsTagifyManual);
 // //////////////// //////////////// //////////////// //////////////// ///////////
 
 // ////////////////////////Import Milestone Info//////////////////////////////////
-// const descriptionDateInput = document.getElementById("submission-completion-date");
+const descriptionDateInput = document.getElementById("submission-completion-date");
 
-// const milestoneInput1 = document.getElementById("selected-milestone-1");
-// var milestoneTagify1 = new Tagify(milestoneInput1, {
-//   duplicates: false,
-//   delimiters: null,
-//   dropdown: {
-//     classname: "color-blue",
-//     maxItems: Infinity,
-//     enabled: 0,
-//     closeOnSelect: true,
-//   },
-// });
+const milestoneInput1 = document.getElementById("selected-milestone-1");
+window.milestoneTagify1 = new Tagify(milestoneInput1, {
+  duplicates: false,
+  delimiters: null,
+  dropdown: {
+    classname: "color-blue",
+    maxItems: Infinity,
+    enabled: 0,
+    closeOnSelect: true,
+  },
+});
 
-// const hideElementsWithClass = (className) => {
-//   const elements = document.querySelectorAll(`.${className}`);
-//   elements.forEach((element) => {
-//     element.classList.add("hidden");
-//   });
-// };
+const hideElementsWithClass = (className) => {
+  const elements = document.querySelectorAll(`.${className}`);
+  elements.forEach((element) => {
+    element.classList.add("hidden");
+  });
+};
 
-// const showElementsWithClass = (className) => {
-//   const elements = document.querySelectorAll(`.${className}`);
-//   elements.forEach((element) => {
-//     element.classList.remove("hidden");
-//   });
-// };
+const showElementsWithClass = (className) => {
+  const elements = document.querySelectorAll(`.${className}`);
+  elements.forEach((element) => {
+    element.classList.remove("hidden");
+  });
+};
 
-// // Listen to the changes of the milestone tagify
-// milestoneTagify1.on("change", (e) => {
-//   // If e.detail.value.length string is greater than 0, then there are milestone tags entered in the tagify
-//   if (e.detail.value.length > 0) {
-//     // Filter out the N/A milestone tag
-//     // Note: If only N/A is entered, the completion date will be set to N/A and remain hidden so user doesn't have to fill it out
-//     const filteredMilestones = JSON.parse(e.detail.value)
-//       .map((milestone) => {
-//         return milestone.value;
-//       })
-//       .filter((milestone) => {
-//         return milestone !== "N/A";
-//       });
+// Listen to the changes of the milestone tagify
+window.milestoneTagify1.on("change", (e) => {
+  // If e.detail.value.length string is greater than 0, then there are milestone tags entered in the tagify
+  if (e.detail.value.length > 0) {
+    // Filter out the N/A milestone tag
+    // Note: If only N/A is entered, the completion date will be set to N/A and remain hidden so user doesn't have to fill it out
+    const filteredMilestones = JSON.parse(e.detail.value)
+      .map((milestone) => {
+        return milestone.value;
+      })
+      .filter((milestone) => {
+        return milestone !== "N/A";
+      });
 
-//     // If there are milestone tags other than N/A, then show the completion date form component
-//     if (filteredMilestones.length > 0) {
-//       showElementsWithClass("completion-date-form-component");
-//     } else {
-//       // If there are no milestone tags other than N/A, then hide the completion date form component
-//       hideElementsWithClass("completion-date-form-component");
-//       $("#submission-completion-date").val("");
-//     }
-//   } else {
-//     hideElementsWithClass("completion-date-form-component");
-//     $("#submission-completion-date").val("");
-//   }
-// });
+    // If there are milestone tags other than N/A, then show the completion date form component
+    if (filteredMilestones.length > 0) {
+      showElementsWithClass("completion-date-form-component");
+    } else {
+      // If there are no milestone tags other than N/A, then hide the completion date form component
+      hideElementsWithClass("completion-date-form-component");
+      $("#submission-completion-date").val("");
+    }
+  } else {
+    hideElementsWithClass("completion-date-form-component");
+    $("#submission-completion-date").val("");
+  }
+});
 
-// window.createDragSort(milestoneTagify1);
+window.createDragSort(window.milestoneTagify1);
 
 // // generate subjects file
 // ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
@@ -4353,25 +4353,25 @@ const showDetailsFile = () => {
 //   }
 // };
 
-// var bfAddAccountBootboxMessage = `<form>
-//     <div class="form-group row" style="justify-content: center; margin-top: .5rem; margin-bottom: 2rem;">
-//       <div style="display: flex; width: 100%">
-//         <input placeholder="Enter key name" type="text" style="width: 100%; margin: 0;" id="bootbox-key-name" class="swal2-input" />
-//       </div>
-//     </div>
-//     <div style="justify-content: center;">
-//       <div style="display:flex; align-items: flex-end; width: 100%;">
-//         <input placeholder="Enter API key" id="bootbox-api-key" type="text" class="swal2-input" style="width: 100%; margin: 0;" />
-//       </div>
-//     </div>
-//     <div style="justify-content: center; margin-bottom: .5rem; margin-top: 2rem;">
-//       <div style="display:flex; align-items: flex-end; width: 100%">
-//         <input placeholder="Enter API secret" id="bootbox-api-secret" class="swal2-input" type="text" style="margin: 0; width: 100%" />
-//       </div>
-//     </div>
-//   </form>`;
+var bfAddAccountBootboxMessage = `<form>
+    <div class="form-group row" style="justify-content: center; margin-top: .5rem; margin-bottom: 2rem;">
+      <div style="display: flex; width: 100%">
+        <input placeholder="Enter key name" type="text" style="width: 100%; margin: 0;" id="bootbox-key-name" class="swal2-input" />
+      </div>
+    </div>
+    <div style="justify-content: center;">
+      <div style="display:flex; align-items: flex-end; width: 100%;">
+        <input placeholder="Enter API key" id="bootbox-api-key" type="text" class="swal2-input" style="width: 100%; margin: 0;" />
+      </div>
+    </div>
+    <div style="justify-content: center; margin-bottom: .5rem; margin-top: 2rem;">
+      <div style="display:flex; align-items: flex-end; width: 100%">
+        <input placeholder="Enter API secret" id="bootbox-api-secret" class="swal2-input" type="text" style="margin: 0; width: 100%" />
+      </div>
+    </div>
+  </form>`;
 
-// var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve account using an API key</h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve account using an API key</h3>`;
 
 // once connected to SODA get the user's accounts
 (async () => {
@@ -8159,146 +8159,146 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 //   }
 // });
 
-// async function showBFAddAccountSweetalert(ev) {
-//   let target = ev.target;
-//   await Swal.fire({
-//     title: bfaddaccountTitle,
-//     html: bfAddAccountBootboxMessage,
-//     showLoaderOnConfirm: true,
-//     showCancelButton: true,
-//     focusCancel: true,
-//     cancelButtonText: "Cancel",
-//     confirmButtonText: "Connect to Pennsieve",
-//     reverseButtons: window.reverseSwalButtons,
-//     backdrop: "rgba(0,0,0, 0.4)",
-//     heightAuto: false,
-//     allowOutsideClick: false,
-//     footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/connecting-to-pennsieve/connecting-with-api-key" style="text-decoration: none;">Help me get an API key</a>`,
-//     didOpen: () => {
-//       let swal_container = document.getElementsByClassName("swal2-popup")[0];
-//       swal_container.style.width = "43rem";
-//     },
-//     showClass: {
-//       popup: "animate__animated animate__fadeInDown animate__faster",
-//     },
-//     hideClass: {
-//       popup: "animate__animated animate__fadeOutUp animate__faster",
-//     },
-//     preConfirm: (result) => {
-//       if (result === true) {
-//         var name = $("#bootbox-key-name").val();
-//         var apiKey = $("#bootbox-api-key").val();
-//         var apiSecret = $("#bootbox-api-secret").val();
-//         return new Promise(() => {
-//           client
-//             .put("/manage_datasets/account/api_key", {
-//               keyname: name,
-//               key: apiKey,
-//               secret: apiSecret,
-//             })
-//             .then((response) => {
-//               $("#bootbox-key-name").val("");
-//               $("#bootbox-api-key").val("");
-//               $("#bootbox-api-secret").val("");
-//               bfAccountOptions[name] = name;
-//               window.defaultBfDataset = name;
-//               window.defaultBfDataset = "Select dataset";
-//               return new Promise((resolve, reject) => {
-//                 client
-//                   .get("/manage_datasets/bf_account_details", {
-//                     params: {
-//                       selected_account: name,
-//                     },
-//                   })
-//                   .then(async (response) => {
-//                     let user_email = response.data.email;
-//                     $("#current-bf-account").text(user_email);
-//                     $("#current-bf-account-generate").text(user_email);
-//                     $("#create_empty_dataset_BF_account_span").text(user_email);
-//                     $(".bf-account-span").text(user_email);
-//                     $("#current-bf-dataset").text("None");
-//                     $("#current-bf-dataset-generate").text("None");
-//                     $(".bf-dataset-span").html("None");
-//                     $("#para-continue-bf-dataset-getting-started").text("");
-//                     // set the workspace field values to the user's current workspace
-//                     let org = response.data.organization;
-//                     $(".bf-organization-span").text(org);
-//                     showHideDropdownButtons("account", "show");
-//                     confirm_click_account_function();
-//                     updateBfAccountList();
+window.showBFAddAccountSweetalert = async (ev) => {
+  let target = ev.target;
+  await Swal.fire({
+    title: bfaddaccountTitle,
+    html: bfAddAccountBootboxMessage,
+    showLoaderOnConfirm: true,
+    showCancelButton: true,
+    focusCancel: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Connect to Pennsieve",
+    reverseButtons: window.reverseSwalButtons,
+    backdrop: "rgba(0,0,0, 0.4)",
+    heightAuto: false,
+    allowOutsideClick: false,
+    footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/connecting-to-pennsieve/connecting-with-api-key" style="text-decoration: none;">Help me get an API key</a>`,
+    didOpen: () => {
+      let swal_container = document.getElementsByClassName("swal2-popup")[0];
+      swal_container.style.width = "43rem";
+    },
+    showClass: {
+      popup: "animate__animated animate__fadeInDown animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__fadeOutUp animate__faster",
+    },
+    preConfirm: (result) => {
+      if (result === true) {
+        var name = $("#bootbox-key-name").val();
+        var apiKey = $("#bootbox-api-key").val();
+        var apiSecret = $("#bootbox-api-secret").val();
+        return new Promise(() => {
+          client
+            .put("/manage_datasets/account/api_key", {
+              keyname: name,
+              key: apiKey,
+              secret: apiSecret,
+            })
+            .then((response) => {
+              $("#bootbox-key-name").val("");
+              $("#bootbox-api-key").val("");
+              $("#bootbox-api-secret").val("");
+              bfAccountOptions[name] = name;
+              window.defaultBfAccount = name;
+              window.defaultBfDataset = "Select dataset";
+              return new Promise((resolve, reject) => {
+                client
+                  .get("/manage_datasets/bf_account_details", {
+                    params: {
+                      selected_account: name,
+                    },
+                  })
+                  .then(async (response) => {
+                    let user_email = response.data.email;
+                    $("#current-bf-account").text(user_email);
+                    $("#current-bf-account-generate").text(user_email);
+                    $("#create_empty_dataset_BF_account_span").text(user_email);
+                    $(".bf-account-span").text(user_email);
+                    $("#current-bf-dataset").text("None");
+                    $("#current-bf-dataset-generate").text("None");
+                    $(".bf-dataset-span").html("None");
+                    $("#para-continue-bf-dataset-getting-started").text("");
+                    // set the workspace field values to the user's current workspace
+                    let org = response.data.organization;
+                    $(".bf-organization-span").text(org);
+                    showHideDropdownButtons("account", "show");
+                    confirm_click_account_function();
+                    window.updateBfAccountList();
 
-//                     // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
-//                     // then reset the guided mode page
-//                     if (target?.getAttribute("data-reset-guided-mode-page") == "true") {
-//                       // Get the current page that the user is on in the guided mode
-//                       const currentPage = window.CURRENT_PAGE.id;
-//                       if (currentPage) {
-//                         await window.openPage(currentPage);
-//                       }
-//                     }
+                    // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
+                    // then reset the guided mode page
+                    if (target?.getAttribute("data-reset-guided-mode-page") == "true") {
+                      // Get the current page that the user is on in the guided mode
+                      const currentPage = window.CURRENT_PAGE.id;
+                      if (currentPage) {
+                        await window.openPage(currentPage);
+                      }
+                    }
 
-//                     // reset the selected dataset to None
-//                     $(".bf-dataset-span").html("None");
-//                     // reset the current owner span in the manage dataset make pi owner of a dataset tab
-//                     $(".current-permissions").html("None");
+                    // reset the selected dataset to None
+                    $(".bf-dataset-span").html("None");
+                    // reset the current owner span in the manage dataset make pi owner of a dataset tab
+                    $(".current-permissions").html("None");
 
-//                     window.refreshOrganizationList();
+                    window.refreshOrganizationList();
 
-//                     // If the button that triggered the organization has the class
-//                     // guided-change-workspace (from guided mode), handle changes based on the ev id
-//                     // otherwise, reset the FFM UI based on the ev class
-//                     // NOTE: For API Key sign in flow it is more simple to just reset the UI as the new user may be in a separate workspace than the prior user.
-//                     target?.classList.contains("data-reset-guided-mode-page")
-//                       ? window.handleGuidedModeOrgSwitch(target)
-//                       : resetFFMUI(target);
+                    // If the button that triggered the organization has the class
+                    // guided-change-workspace (from guided mode), handle changes based on the ev id
+                    // otherwise, reset the FFM UI based on the ev class
+                    // NOTE: For API Key sign in flow it is more simple to just reset the UI as the new user may be in a separate workspace than the prior user.
+                    target?.classList.contains("data-reset-guided-mode-page")
+                      ? window.handleGuidedModeOrgSwitch(target)
+                      : window.resetFFMUI(target);
 
-//                     window.datasetList = [];
-//                     window.defaultBfDataset = null;
-//                     window.clearDatasetDropdowns();
-//                   })
-//                   .catch((error) => {
-//                     Swal.showValidationMessage(userErrorMessage(error));
-//                     document.getElementsByClassName(
-//                       "swal2-actions"
-//                     )[0].children[1].disabled = false;
-//                     document.getElementsByClassName(
-//                       "swal2-actions"
-//                     )[0].children[3].disabled = false;
-//                     document.getElementsByClassName("swal2-actions")[0].children[0].style.display =
-//                       "none";
-//                     document.getElementsByClassName("swal2-actions")[0].children[1].style.display =
-//                       "inline-block";
-//                     showHideDropdownButtons("account", "hide");
-//                     confirm_click_account_function();
-//                   });
+                    window.datasetList = [];
+                    window.defaultBfDataset = null;
+                    window.clearDatasetDropdowns();
+                  })
+                  .catch((error) => {
+                    Swal.showValidationMessage(userErrorMessage(error));
+                    document.getElementsByClassName(
+                      "swal2-actions"
+                    )[0].children[1].disabled = false;
+                    document.getElementsByClassName(
+                      "swal2-actions"
+                    )[0].children[3].disabled = false;
+                    document.getElementsByClassName("swal2-actions")[0].children[0].style.display =
+                      "none";
+                    document.getElementsByClassName("swal2-actions")[0].children[1].style.display =
+                      "inline-block";
+                    showHideDropdownButtons("account", "hide");
+                    confirm_click_account_function();
+                  });
 
-//                 Swal.fire({
-//                   icon: "success",
-//                   title: "Successfully added! <br/>Loading your account details...",
-//                   timer: 3000,
-//                   timerProgressBar: true,
-//                   allowEscapeKey: false,
-//                   heightAuto: false,
-//                   backdrop: "rgba(0,0,0, 0.4)",
-//                   showConfirmButton: false,
-//                 });
-//               });
-//             })
-//             .catch((error) => {
-//               clientError(error);
-//               Swal.showValidationMessage(userErrorMessage(error));
-//               document.getElementsByClassName("swal2-actions")[0].children[1].disabled = false;
-//               document.getElementsByClassName("swal2-actions")[0].children[3].disabled = false;
-//               document.getElementsByClassName("swal2-actions")[0].children[0].style.display =
-//                 "none";
-//               document.getElementsByClassName("swal2-actions")[0].children[1].style.display =
-//                 "inline-block";
-//             });
-//         });
-//       }
-//     },
-//   });
-// }
+                Swal.fire({
+                  icon: "success",
+                  title: "Successfully added! <br/>Loading your account details...",
+                  timer: 3000,
+                  timerProgressBar: true,
+                  allowEscapeKey: false,
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  showConfirmButton: false,
+                });
+              });
+            })
+            .catch((error) => {
+              clientError(error);
+              Swal.showValidationMessage(userErrorMessage(error));
+              document.getElementsByClassName("swal2-actions")[0].children[1].disabled = false;
+              document.getElementsByClassName("swal2-actions")[0].children[3].disabled = false;
+              document.getElementsByClassName("swal2-actions")[0].children[0].style.display =
+                "none";
+              document.getElementsByClassName("swal2-actions")[0].children[1].style.display =
+                "inline-block";
+            });
+        });
+      }
+    },
+  });
+}
 // /*
 // ******************************************************
 // ******************************************************

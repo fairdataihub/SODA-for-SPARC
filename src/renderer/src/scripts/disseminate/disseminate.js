@@ -70,7 +70,7 @@ const disseminatePublish = async (curationMode) => {
     });
 
     // log the failure to publish to analytics
-    logCurationForAnalytics(
+    window.logCurationForAnalytics(
       "Error",
       window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
       window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,

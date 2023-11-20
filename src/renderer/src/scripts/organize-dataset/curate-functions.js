@@ -76,7 +76,7 @@ const confirmMetadataFilePath = (ev) => {
     $(metadataFile).addClass("done");
 
     // log the import to analytics
-    logCurationForAnalytics(
+    window.logCurationForAnalytics(
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE,
       window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
@@ -94,7 +94,7 @@ const confirmMetadataFilePath = (ev) => {
     $(metadataFile).removeClass("done");
     $(metadataFileStatus).text("");
     // log the import attempt to analytics
-    logCurationForAnalytics(
+    window.logCurationForAnalytics(
       "Error",
       PrepareDatasetsAnalyticsPrefix.CURATE,
       window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
@@ -329,7 +329,7 @@ const checkAvailableSpace = () => {
           },
         });
 
-        logCurationForAnalytics(
+        window.logCurationForAnalytics(
           "Error",
           PrepareDatasetsAnalyticsPrefix.CURATE,
           window.AnalyticsGranularity.ACTION_WITH_DESTINATION,
@@ -341,7 +341,7 @@ const checkAvailableSpace = () => {
         return;
       }
 
-      logCurationForAnalytics(
+      window.logCurationForAnalytics(
         "Success",
         PrepareDatasetsAnalyticsPrefix.CURATE,
         window.AnalyticsGranularity.ACTION_WITH_DESTINATION,
@@ -479,7 +479,7 @@ const importGenerateDatasetStep = async (object) => {
               selected_account: bfAccountSelected,
             },
           });
-          updateBfAccountList();
+          window.updateBfAccountList();
         } catch (error) {
           clientError(error);
           showHideDropdownButtons("account", "hide");
@@ -536,7 +536,7 @@ const importGenerateDatasetStep = async (object) => {
         $($($("#div-getting-started-previous-progress").parents()[0]).siblings()[0]).children()[0]
       ).toggleClass("non-selected");
     } else {
-      exitCurate();
+      window.exitCurate();
     }
   }
 };

@@ -823,7 +823,7 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   pennsievePreview = false;
   const type = determineStandaloneManifestGeneratorOrigin();
 
-  exitCurate();
+  window.exitCurate();
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-structure"] = {};
   datasetStructureJSONObj = { folders: {}, files: {} };
@@ -2005,7 +2005,7 @@ const generateManifestFolderLocallyForEdit = async (ev) => {
     document.querySelector("#generate_step_5-manifest").style.display = "block";
   }
 
-  exitCurate();
+  window.exitCurate();
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-structure"] = {};
   datasetStructureJSONObj = { folders: {}, files: {} };

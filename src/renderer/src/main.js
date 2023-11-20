@@ -17,6 +17,7 @@ import './scripts/others/tab-effects'
 import './scripts/disseminate/prePublishingReview'
 import './scripts/others/pennsieveDatasetImporter'
 import './scripts/others/progressContainer'
+import './scripts/validator/validate'
 
 // Application Lotties
 import './assets/lotties/activate-lotties'
