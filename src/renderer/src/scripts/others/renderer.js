@@ -8233,7 +8233,7 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 //                       // Get the current page that the user is on in the guided mode
 //                       const currentPage = window.CURRENT_PAGE.id;
 //                       if (currentPage) {
-//                         await openPage(currentPage);
+//                         await window.openPage(currentPage);
 //                       }
 //                     }
 

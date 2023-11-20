@@ -8466,7 +8466,7 @@ async function showBFAddAccountSweetalert(ev) {
                       // Get the current page that the user is on in the guided mode
                       const currentPage = CURRENT_PAGE.id;
                       if (currentPage) {
-                        await openPage(currentPage);
+                        await window.openPage(currentPage);
                       }
                     }
 

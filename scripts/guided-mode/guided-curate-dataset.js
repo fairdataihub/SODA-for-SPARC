@@ -537,7 +537,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
         // Open the first page
         const firstPage = getNonSkippedGuidedModePages(document)[0];
-        await openPage(firstPage.id);
+        await window.openPage(firstPage.id);
       }
 
       if (resumingExistingProgress) {
@@ -2073,7 +2073,7 @@ const renderSideBar = (activePage) => {
             await checkIfPageIsValid(page);
           } catch (error) {
             const pageWithErrorName = document.getElementById(page).getAttribute("data-page-name");
-            await openPage(page);
+            await window.openPage(page);
             await Swal.fire({
               title: `An error occured on an intermediate page: ${pageWithErrorName}`,
               html: `Please address the issues before continuing to ${pageToNaviatetoName}:
@@ -2095,7 +2095,7 @@ const renderSideBar = (activePage) => {
         }
 
         //All pages have been validated. Open the target page.
-        await openPage(pageToNavigateTo);
+        await window.openPage(pageToNavigateTo);
       } catch (error) {
         const pageWithErrorName = CURRENT_PAGE.dataset.pageName;
         const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
@@ -2122,7 +2122,7 @@ const renderSideBar = (activePage) => {
           width: 700,
         });
         if (continueWithoutSavingCurrPageChanges) {
-          await openPage(pageToNavigateTo);
+          await window.openPage(pageToNavigateTo);
         }
       }
     });
@@ -4632,7 +4632,7 @@ const validatePageArray = async (arrayOfPagesToCheck) => {
     try {
       await checkIfPageIsValid(page.id);
     } catch (error) {
-      await openPage(page.id);
+      await window.openPage(page.id);
       break;
     }
   }
@@ -4640,7 +4640,7 @@ const validatePageArray = async (arrayOfPagesToCheck) => {
 
 const checkIfPageIsValid = async (pageID) => {
   try {
-    await openPage(pageID);
+    await window.openPage(pageID);
     await savePageChanges(pageID);
   } catch (error) {
     throw error;
@@ -4691,7 +4691,7 @@ const guidedShowOptionalRetrySwal = async (errorMessage, pageIdToRetryOpening) =
   });
 
   if (!addDataManually) {
-    await openPage(pageIdToRetryOpening);
+    await window.openPage(pageIdToRetryOpening);
   }
 };
 
@@ -4770,7 +4770,7 @@ const handleNextButtonVisibility = (targetPageID) => {
 //The general flow is to check if there is values for the keys relevant to the page
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
 //If the keys do not exist, reset the page (inputs, tables etc.) to the default state
-const openPage = async (targetPageID) => {
+const window.openPage = async (targetPageID) => {
   //NOTE: 2 Bottom back buttons (one handles sub pages, and the other handles main pages)
   //Back buttons should be disabled and the function setLoading should be (set as false?)
 
@@ -7263,7 +7263,7 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
 };
 
 const guidedGetPageToReturnTo = (sodaJSONObj) => {
-  // Set by openPage function
+  // Set by window.openPage function
   const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
 
   //If the dataset was successfully uploaded, send the user to the share with curation team
@@ -7584,13 +7584,13 @@ const guidedResumeProgress = async (datasetNameToResume) => {
 
     //Hide the sub-page navigation and show the main page navigation footer
     //If the user traverses to a page that requires the sub-page navigation,
-    //the sub-page will be shown during openPage() function
+    //the sub-page will be shown during window.openPage() function
     hideSubNavAndShowMainNav(false);
 
     // pageToReturnTo will be set to the page the user will return to
     const pageToReturnTo = guidedGetPageToReturnTo(sodaJSONObj);
 
-    await openPage(pageToReturnTo);
+    await window.openPage(pageToReturnTo);
 
     // Close the loading screen, the user should be on the page they left off on now
     loadingSwal.close();
@@ -9999,7 +9999,7 @@ const removeOtherLinkField = (otherLinkDeleteButton) => {
 //SUBJECT TABLE FUNCTIONS
 const returnToTableFromFolderStructure = (clickedBackButton) => {
   previousFolderStructurePage = clickedBackButton.attr("data-prev-page");
-  openPage(previousFolderStructurePage);
+  window.openPage(previousFolderStructurePage);
   $("#guided-footer-div").css("display", "flex");
   clickedBackButton.remove();
 };
@@ -10011,7 +10011,7 @@ const returnToSubjectMetadataTableFromSubjectMetadataForm = () => {
 const returnToSampleMetadataTableFromSampleMetadataForm = () => {
   //Clear metadata form inputs
   clearAllSubjectFormFields(window.guidedSamplesFormDiv);
-  openPage("guided-create-samples-metadata-tab");
+  window.openPage("guided-create-samples-metadata-tab");
   $("#guided-footer-div").css("display", "flex");
 };
 
@@ -12058,7 +12058,7 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
   guidedUnLockSideBar();
 
   guidedUnSkipPage("guided-select-starting-point-tab");
-  await openPage("guided-select-starting-point-tab");
+  await window.openPage("guided-select-starting-point-tab");
 });
 
 $("#button-homepage-freeform-mode").on("click", async () => {
@@ -14482,7 +14482,7 @@ $("#guided-generate-dataset-button").on("click", async function () {
   if (!supplementary_checks) {
     return;
   }
-  await openPage("guided-dataset-generation-tab");
+  await window.openPage("guided-dataset-generation-tab");
   guidedPennsieveDatasetUpload();
 });
 
@@ -14627,7 +14627,7 @@ $("#guided-next-button").on("click", async function () {
 
   if (pageBeingLeftID === "guided-dataset-generation-tab") {
     guidedUnSkipPage("guided-dataset-dissemination-tab");
-    await openPage("guided-dataset-dissemination-tab");
+    await window.openPage("guided-dataset-dissemination-tab");
     return;
   }
 
@@ -14647,7 +14647,7 @@ $("#guided-next-button").on("click", async function () {
     let targetPage = getNextPageNotSkipped(CURRENT_PAGE.id);
     let targetPageID = targetPage.id;
 
-    await openPage(targetPageID);
+    await window.openPage(targetPageID);
   } catch (error) {
     log.error(error);
     if (Array.isArray(error)) {
@@ -14708,7 +14708,7 @@ $("#guided-back-button").on("click", async () => {
   const targetPageID = targetPage.id;
 
   // open the target page
-  await openPage(targetPageID);
+  await window.openPage(targetPageID);
 });
 
 const saveSubPageChanges = async (openSubPageID) => {
