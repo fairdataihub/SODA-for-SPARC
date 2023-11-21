@@ -299,11 +299,11 @@ document.querySelector("#shortcut-navigate-to-create_submission").addEventListen
 
 document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
   //Free form mode will open through here
-  guidedPrepareHomeScreen();
+  window.guidedPrepareHomeScreen();
 
   // guidedResetSkippedPages();
 
-  directToFreeFormMode();
+  window.directToFreeFormMode();
   document.getElementById("guided_mode_view").classList.add("is-selected");
 });
 

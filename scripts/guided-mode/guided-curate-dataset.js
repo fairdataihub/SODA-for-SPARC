@@ -2791,7 +2791,7 @@ const guidedTransitionFromHome = async () => {
 
 const guidedTransitionToHome = () => {
   guidedUnLockSideBar();
-  guidedPrepareHomeScreen();
+  window.guidedPrepareHomeScreen();
 
   document.getElementById("guided-home").classList.remove("hidden");
   // Hide all of the parent tabs
@@ -3788,7 +3788,7 @@ const guidedResetProgressVariables = () => {
   window.samplesTableData = [];
 };
 
-const guidedPrepareHomeScreen = async () => {
+const window.guidedPrepareHomeScreen = async () => {
   //Wipe out existing progress if it exists
   guidedResetProgressVariables();
   //Check if Guided-Progress folder exists. If not, create it.
@@ -12063,7 +12063,7 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
 
 $("#button-homepage-freeform-mode").on("click", async () => {
   //Free form mode will open through here
-  guidedPrepareHomeScreen();
+  window.guidedPrepareHomeScreen();
 
   // guidedResetSkippedPages();
 
