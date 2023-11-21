@@ -50,7 +50,7 @@ const validateOrganizedDataset = async () => {
     }
 
     // get validation table body
-    clearValidationResults(validationErrorsTable);
+    window.clearValidationResults(validationErrorsTable);
   }
 
   Swal.fire({
@@ -311,7 +311,7 @@ const validateOrganizedDataset = async () => {
     return;
   }
 
-  clearValidationResults(validationErrorsTable);
+  window.clearValidationResults(validationErrorsTable);
 
   // display errors onto the page
   displayValidationErrors(

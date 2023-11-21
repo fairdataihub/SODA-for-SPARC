@@ -775,7 +775,7 @@ document.querySelector("#validate_dataset-1-local").addEventListener("click", as
 
   // reset validation table
   let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
-  clearValidationResults(validationErrorsTable);
+  window.clearValidationResults(validationErrorsTable);
 
   document.querySelector("#run_validator_btn").style.display = "none";
 
@@ -813,7 +813,7 @@ document
 
     // reset validation table
     let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
-    clearValidationResults(validationErrorsTable);
+    window.clearValidationResults(validationErrorsTable);
 
     document.querySelector("#run_validator_btn").style.display = "none";
 
@@ -851,7 +851,7 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
     let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
 
     // reset validation table
-    clearValidationResults(validationErrorsTable);
+    window.clearValidationResults(validationErrorsTable);
 
     // clear the input value
     this.value = "";
@@ -924,7 +924,7 @@ document.querySelector("#run_validator_btn").addEventListener("click", async fun
 
     // get validation table body
     let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
-    clearValidationResults(validationErrorsTable);
+    window.clearValidationResults(validationErrorsTable);
 
     // hide question 3
     // let questionThreeSection = document.querySelector("#validate_dataset-question-3");
@@ -998,7 +998,7 @@ document
 
       // get validation table body
       let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
-      clearValidationResults(validationErrorsTable);
+      window.clearValidationResults(validationErrorsTable);
 
       // hide question 3
       let questionThreeSection = document.querySelector("#validate_dataset-question-3");
@@ -1067,7 +1067,7 @@ const undoOptionCardSelection = (activeOptionCard) => {
   activeOptionCard.classList.remove("checked");
 };
 
-export const clearValidationResults = (validationTableElement) => {
+window.clearValidationResults = (validationTableElement) => {
   // remove its children
   while (validationTableElement.firstChild) {
     validationTableElement.removeChild(validationTableElement.firstChild);

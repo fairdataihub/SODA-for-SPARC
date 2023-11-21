@@ -29,7 +29,7 @@ import diskCheck from "check-disk-space";
 import validator from "validator";
 import doiRegex from "doi-regex";
 import lottie from "lottie-web";
-import {dragDrop, successCheck} from '../../assets/lotties/lotties'
+import { dragDrop, successCheck } from '../../assets/lotties/lotties'
 import select2 from "select2"; // TODO: select2()
 select2()
 import autoComplete from "@tarekraafat/autocomplete.js/dist/autoComplete.min.js"
@@ -47,7 +47,7 @@ import {
   logSelectedUpdateExistingDatasetOptions,
 } from "../analytics/curation-analytics"
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
-import determineDatasetLocation, {Destinations} from "../analytics/analytics-utils"
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
 import {
   clientError,
   userErrorMessage,
@@ -57,11 +57,11 @@ import fixPath from "./update-path-darwin"
 import api from "./api/api"
 import {
   confirm_click_account_function, showHideDropdownButtons,
-  updateDatasetList, 
+  updateDatasetList,
   bfAccountOptions,
 } from '../globals'
 import checkForAnnouncements from './announcements'
-import {swalFileListSingleAction, swalFileListTripleAction, swalFileListDoubleAction} from "../utils/swal-utils"
+import { swalFileListSingleAction, swalFileListTripleAction, swalFileListDoubleAction } from "../utils/swal-utils"
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -451,11 +451,11 @@ const stopPennsieveAgent = async () => {
 
 };
 const startPennsieveAgent = async () => {
-  try{
+  try {
     let agentStartSpawn = await window.spawn.startPennsieveAgentStart()
     console.log("Agent start spawn: ", agentStartSpawn)
     return agentStartSpawn
-  } catch(e) {
+  } catch (e) {
     window.log.error(e)
     throw e;
   }
@@ -468,7 +468,7 @@ const getPennsieveAgentVersion = async () => {
     let agentVersion = await window.spawn.getPennsieveAgentVersion()
     console.log("Agent version: ", agentVersion)
     return agentVersion
-  } catch(error) {
+  } catch (error) {
     clientError(error)
     throw error
   }
@@ -478,14 +478,14 @@ const getPennsieveAgentVersion = async () => {
 let preFlightCheckNotyf = null;
 
 const agent_installed = async () => {
-    try{
-      let agentStartSpawn = await window.spawn.startPennsieveAgent()
-      console.log("Agent start spawn: ", agentStartSpawn)
-      return agentStartSpawn
-    } catch(e) {
-      window.log.info(e);
-      throw e;
-    }
+  try {
+    let agentStartSpawn = await window.spawn.startPennsieveAgent()
+    console.log("Agent start spawn: ", agentStartSpawn)
+    return agentStartSpawn
+  } catch (e) {
+    window.log.info(e);
+    throw e;
+  }
 };
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
@@ -1420,91 +1420,91 @@ window.guidedSubmissionTagsTagifyManual = new Tagify(guidedSubmissionTagsInputMa
 });
 window.createDragSort(window.guidedSubmissionTagsTagifyManual);
 
-// // initiate Tagify input fields for Dataset description file
-// var keywordInput = document.getElementById("ds-keywords"),
-//   keywordTagify = new Tagify(keywordInput, {
-//     duplicates: false,
-//   });
+// initiate Tagify input fields for Dataset description file
+var keywordInput = document.getElementById("ds-keywords")
+window.keywordTagify = new Tagify(keywordInput, {
+  duplicates: false,
+});
 
-// window.createDragSort(keywordTagify);
+window.createDragSort(window.keywordTagify);
 
-// var otherFundingInput = document.getElementById("ds-other-funding"),
-//   otherFundingTagify = new Tagify(otherFundingInput, {
-//     duplicates: false,
-//   });
-// window.createDragSort(otherFundingTagify);
+var otherFundingInput = document.getElementById("ds-other-funding");
+window.otherFundingTagify = new Tagify(otherFundingInput, {
+  duplicates: false,
+});
+window.createDragSort(window.otherFundingTagify);
 
-// var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
-//   collectionDatasetTags = new Tagify(collectionDatasetInput, {
-//     whitelist: [],
-//     duplicates: false,
-//     dropdown: {
-//       enabled: 0,
-//       closeOnSelect: true,
-//       enforceWhitelist: true,
-//       maxItems: Infinity,
-//     },
-//     autoComplete: {
-//       enabled: true,
-//       rightKey: true,
-//     },
-//   });
-// window.createDragSort(collectionDatasetTags);
+var collectionDatasetInput = document.getElementById("tagify-collection-tags")
+window.collectionDatasetTags = new Tagify(collectionDatasetInput, {
+  whitelist: [],
+  duplicates: false,
+  dropdown: {
+    enabled: 0,
+    closeOnSelect: true,
+    enforceWhitelist: true,
+    maxItems: Infinity,
+  },
+  autoComplete: {
+    enabled: true,
+    rightKey: true,
+  },
+});
+window.createDragSort(window.collectionDatasetTags);
 
-// var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
-//   studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
-//     whitelist: [
-//       "autonomic ganglion",
-//       "brain",
-//       "colon",
-//       "heart",
-//       "intestine",
-//       "kidney",
-//       "large intestine",
-//       "liver",
-//       "lower urinary tract",
-//       "lung",
-//       "nervous system",
-//       "pancreas",
-//       "peripheral nervous system",
-//       "small intestine",
-//       "spinal cord",
-//       "spleen",
-//       "stomach",
-//       "sympathetic nervous system",
-//       "urinary bladder",
-//     ],
-//     duplicates: false,
-//     dropdown: {
-//       maxItems: Infinity,
-//       enabled: 0,
-//       closeOnSelect: true,
-//     },
-//   });
-// window.createDragSort(studyOrganSystemsTagify);
+var studyOrganSystemsInput = document.getElementById("ds-study-organ-system")
+window.studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
+  whitelist: [
+    "autonomic ganglion",
+    "brain",
+    "colon",
+    "heart",
+    "intestine",
+    "kidney",
+    "large intestine",
+    "liver",
+    "lower urinary tract",
+    "lung",
+    "nervous system",
+    "pancreas",
+    "peripheral nervous system",
+    "small intestine",
+    "spinal cord",
+    "spleen",
+    "stomach",
+    "sympathetic nervous system",
+    "urinary bladder",
+  ],
+  duplicates: false,
+  dropdown: {
+    maxItems: Infinity,
+    enabled: 0,
+    closeOnSelect: true,
+  },
+});
+window.createDragSort(window.studyOrganSystemsTagify);
 
-// var studyTechniquesInput = document.getElementById("ds-study-technique"),
-//   studyTechniquesTagify = new Tagify(studyTechniquesInput, {
-//     duplicates: false,
-//   });
-// window.createDragSort(studyTechniquesTagify);
+var studyTechniquesInput = document.getElementById("ds-study-technique")
+window.studyTechniquesTagify = new Tagify(studyTechniquesInput, {
+  duplicates: false,
+});
+window.createDragSort(window.studyTechniquesTagify);
 
-// var studyApproachesInput = document.getElementById("ds-study-approach"),
-//   studyApproachesTagify = new Tagify(studyApproachesInput, {
-//     duplicates: false,
-//   });
-// window.createDragSort(studyApproachesTagify);
+var studyApproachesInput = document.getElementById("ds-study-approach")
+window.studyApproachesTagify = new Tagify(studyApproachesInput, {
+  duplicates: false,
+});
+window.createDragSort(window.studyApproachesTagify);
 
-// // tagify the input inside of the "Add/edit tags" manage dataset section
-// var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
-//   // initialize Tagify on the above input node reference
-//   datasetTagsTagify = new Tagify(datasetTagsInput);
-// window.createDragSort(datasetTagsTagify);
+// tagify the input inside of the "Add/edit tags" manage dataset section
+var datasetTagsInput = document.getElementById("tagify-dataset-tags")
+// initialize Tagify on the above input node reference
+window.datasetTagsTagify = new Tagify(datasetTagsInput);
+window.createDragSort(window.datasetTagsTagify);
 
-// /////////////////// Provide Grant Information section /////////////////////////
-// //////////////// //////////////// //////////////// //////////////// ///////////
+/////////////////// Provide Grant Information section /////////////////////////
+//////////////// //////////////// //////////////// //////////////// ///////////
 
-// ////////////////////////Import Milestone Info//////////////////////////////////
+////////////////////////Import Milestone Info//////////////////////////////////
 const descriptionDateInput = document.getElementById("submission-completion-date");
 
 const milestoneInput1 = document.getElementById("selected-milestone-1");
@@ -2420,7 +2420,7 @@ const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) =
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
@@ -2518,9 +2518,9 @@ const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) =
 //     window.addOption(dsContributorArrayFirst1, "Select an option", "Select an option");
 //   }
 
-//   currentContributorsLastNames = [];
+//   window.currentContributorsLastNames = [];
 //   currentContributorsFirstNames = [];
-//   globalContributorNameObject = {};
+//   window.globalContributorNameObject = {};
 
 //   /// delete old table
 //   $("#table-current-contributors").find("tr").slice(1, -1).remove();
@@ -2550,14 +2550,14 @@ const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) =
 //   $("#dd-contributor-first-name").attr("disabled", true);
 //   var conLastname = $("#dd-contributor-last-name").val();
 //   window.removeOptions(document.getElementById("dd-contributor-first-name"));
-//   if (conLastname in globalContributorNameObject) {
+//   if (conLastname in window.globalContributorNameObject) {
 //     window.addOption(
 //       document.getElementById("dd-contributor-first-name"),
-//       globalContributorNameObject[conLastname],
-//       globalContributorNameObject[conLastname]
+//       window.globalContributorNameObject[conLastname],
+//       window.globalContributorNameObject[conLastname]
 //     );
 //     $("#dd-contributor-first-name")
-//       .val(globalContributorNameObject[conLastname])
+//       .val(window.globalContributorNameObject[conLastname])
 //       .trigger("onchange");
 //   }
 //   $("#dd-contributor-first-name").attr("disabled", false);
@@ -2590,8 +2590,8 @@ const clearOrganizationDropdowns = () => {
 //   ) {
 //     var deletedLastName = $("#ds-description-contributor-list-last-" + no).val();
 //     var deletedFirstName = $("#ds-description-contributor-list-first-" + no).val();
-//     globalContributorNameObject[deletedLastName] = deletedFirstName;
-//     currentContributorsLastNames.push(deletedLastName);
+//     window.globalContributorNameObject[deletedLastName] = deletedFirstName;
+//     window.currentContributorsLastNames.push(deletedLastName);
 //   }
 //   document.getElementById("row-current-name" + no + "").outerHTML = "";
 // };
@@ -2770,7 +2770,7 @@ const clearOrganizationDropdowns = () => {
 // //     $(document).unbind("mousemove", move).unbind("mouseup", up);
 // //     $(tr).removeClass("grabbed");
 // //     updateIndexForTable(document.getElementById("contributor-table-dd"));
-// //     updateOrderContributorTable(document.getElementById("contributor-table-dd"), contributorArray);
+// //     updateOrderContributorTable(document.getElementById("contributor-table-dd"), window.contributorArray);
 // //   }
 // //   $(document).mousemove(move).mouseup(up);
 // // });
@@ -5636,36 +5636,36 @@ window.folderContextMenu = (event) => {
 
 //////// options for files
 window.fileContextMenu = (event) => {
-  try{
-  console.log("FIle context menu activated")
-  if ($(".div-display-details.file").hasClass("show")) {
-    $(".div-display-details.file").removeClass("show");
-  }
-  $(".menu.file li")
-    .unbind()
-    .click(function () {
-      if ($(this).attr("id") === "file-rename") {
-        var itemDivElements = document.getElementById("items").children;
-        window.renameFolder(
-          event,
-          window.organizeDSglobalPath,
-          itemDivElements,
-          window.datasetStructureJSONObj,
-          "#items",
-          ".single-item"
-        );
-      } else if ($(this).attr("id") === "file-delete") {
-        window.delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", window.datasetStructureJSONObj);
-      } else if ($(this).attr("id") === "file-move") {
-        window.moveItems(event, "files");
-      } else if ($(this).attr("id") === "file-description") {
-        manageDesc(event);
-      }
-      // Hide it AFTER the action was triggered
-      window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-    });
-  window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-  } catch(e) {
+  try {
+    console.log("FIle context menu activated")
+    if ($(".div-display-details.file").hasClass("show")) {
+      $(".div-display-details.file").removeClass("show");
+    }
+    $(".menu.file li")
+      .unbind()
+      .click(function () {
+        if ($(this).attr("id") === "file-rename") {
+          var itemDivElements = document.getElementById("items").children;
+          window.renameFolder(
+            event,
+            window.organizeDSglobalPath,
+            itemDivElements,
+            window.datasetStructureJSONObj,
+            "#items",
+            ".single-item"
+          );
+        } else if ($(this).attr("id") === "file-delete") {
+          window.delFolder(event, window.organizeDSglobalPath, "#items", ".single-item", window.datasetStructureJSONObj);
+        } else if ($(this).attr("id") === "file-move") {
+          window.moveItems(event, "files");
+        } else if ($(this).attr("id") === "file-description") {
+          manageDesc(event);
+        }
+        // Hide it AFTER the action was triggered
+        window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+      });
+    window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+  } catch (e) {
     console.log(e)
   }
 };
@@ -6398,9 +6398,8 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
           ${dragDropInstructionsText}
         </p>
         <p class="text-center">
-          You may also <b>add</b> or <b>import</b> ${
-            folderType === undefined ? "folders or files" : folderType + " data"
-          } using the buttons in the upper right corner
+          You may also <b>add</b> or <b>import</b> ${folderType === undefined ? "folders or files" : folderType + " data"
+      } using the buttons in the upper right corner
         </p>
       </div>`
     );
@@ -6978,7 +6977,7 @@ const manageDesc = (ev) => {
 //     document.getElementById("prevBtn").style.display = "inline";
 //     document.getElementById("nextBtn").style.display = "inline";
 //     document.getElementById("start-over-btn").style.display = "inline-block";
-//     showParentTab(currentTab, 1);
+//     showParentTab(window.currentTab, 1);
 //     if (
 //       sodaJSONObj["starting-point"]["type"] == "new" &&
 //       "local-path" in sodaJSONObj["starting-point"]
@@ -7890,7 +7889,7 @@ let folder_counter = 0;
 //       $("#Question-getting-started-1").addClass("show");
 //       $("#generate-dataset-progress-tab").css("display", "none");
 
-//       currentTab = 0;
+//       window.currentTab = 0;
 //       await wipeOutCurateProgress();
 //       $("#guided-button-start-modify-component").click();
 //       $("#disseminate_dataset_tab").click();

@@ -723,7 +723,7 @@ const determineStandaloneManifestGeneratorOrigin = () => {
 };
 
 var localDatasetFolderPath = "";
-var finalManifestGenerationPath = "";
+window.finalManifestGenerationPath = "";
 let pennsievePreview = false;
 
 const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
@@ -822,16 +822,16 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
 const generateManifest = async (action, type, manifestEditBoolean, ev) => {
   // Case 1: Local dataset
   if (type === "local") {
-    if (finalManifestGenerationPath === "") {
+    if (window.finalManifestGenerationPath === "") {
       let localManifestGeneratePath = document.querySelector(
         "#input-manifest-local-gen-location"
       ).placeholder;
-      finalManifestGenerationPath = localManifestGeneratePath;
+      window.finalManifestGenerationPath = localManifestGeneratePath;
     }
-    window.sodaJSONObj["starting-point"]["local-path"] = finalManifestGenerationPath;
+    window.sodaJSONObj["starting-point"]["local-path"] = window.finalManifestGenerationPath;
 
     //checking size of local folder path
-    checkDiskSpace(finalManifestGenerationPath).then(async (diskSpace) => {
+    checkDiskSpace(window.finalManifestGenerationPath).then(async (diskSpace) => {
       let freeMem = diskSpace.free;
       //if free memory is less than 3MB
       if (freeMem < 3145728) {
@@ -1082,18 +1082,18 @@ const initiate_generate_manifest_local = async (manifestEditBoolean, originalDat
     // Move manifest files to the local dataset
     let moveFinishedBool;
     let generationLocation;
-    if (finalManifestGenerationPath == originalDataset) {
+    if (window.finalManifestGenerationPath == originalDataset) {
       moveFinishedBool = await moveManifestFiles(dir, originalDataset);
     } else {
       [moveFinishedBool, generationLocation] = await moveManifestFilesPreview(
         dir,
-        finalManifestGenerationPath
+        window.finalManifestGenerationPath
       );
     }
 
     openDirectoryAtManifestGenerationLocation(
-      finalManifestGenerationPath == originalDataset
-        ? finalManifestGenerationPath
+      window.finalManifestGenerationPath == originalDataset
+        ? window.finalManifestGenerationPath
         : generationLocation
     );
 
@@ -1486,14 +1486,15 @@ const createDuplicateManifestDirectory = async (destination) => {
   return manifestFolderDirectory;
 };
 
-const removeDir = function (pathdir) {
+window.removeDir = function (pathdir) {
   if (window.fs.existsSync(pathdir)) {
     const files = window.fs.readdirSync(pathdir);
     if (files.length > 0) {
       files.forEach(function (filename) {
         let ele = window.path.join(pathdir, filename);
-        if (window.fs.statSync(ele).isDirectory()) {
-          removeDir(ele);
+        let isDirectory = window.fs.isDirectorySync(ele)
+        if (isDirectory) {
+          window.removeDir(ele);
         } else {
           try {
             window.fs.unlinkSync(ele);
@@ -2081,11 +2082,11 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
       let dir = window.path.join(homeDirectory, "SODA", "SODA Manifest Files");
       let moveFinishedBool;
       let manifestGenerationDirectory;
-      if (originalDataset !== finalManifestGenerationPath) {
+      if (originalDataset !== window.finalManifestGenerationPath) {
         // Move manifest files to the local dataset
         [moveFinishedBool, manifestGenerationDirectory] = await moveManifestFilesPreview(
           dir,
-          finalManifestGenerationPath
+          window.finalManifestGenerationPath
         );
       } else {
         // Move manifest files to the local dataset
@@ -2093,7 +2094,7 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
       }
 
       openDirectoryAtManifestGenerationLocation(
-        originalDataset !== finalManifestGenerationPath
+        originalDataset !== window.finalManifestGenerationPath
           ? manifestGenerationDirectory
           : originalDataset
       );
@@ -2386,7 +2387,7 @@ const generateAfterEdits = async () => {
 
   // move the generated manifest files to the user selected location for preview
   if (pennsievePreview) {
-    let [moved, location] = await moveManifestFilesPreview(dir, finalManifestGenerationPath);
+    let [moved, location] = await moveManifestFilesPreview(dir, window.finalManifestGenerationPath);
     openDirectoryAtManifestGenerationLocation(location);
     Swal.fire({
       title: "Successfully generated manifest files at the specified location!",

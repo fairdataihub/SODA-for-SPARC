@@ -4740,7 +4740,7 @@ const handleValidationTableUi = (errors) => {
       "#guided-section-dataset-validation-table tbody"
     );
     // clear the table
-    clearValidationResults(validationErrorsTable);
+    window.clearValidationResults(validationErrorsTable);
     // display errors onto the page
     displayValidationErrors(
       errors,
@@ -5438,12 +5438,12 @@ window.openPage = async (targetPageID) => {
 
           // Loop through the contributorData array besides the first row (which is the header)
           for (let i = 1; i < contributorData.length; i++) {
-            const contributorArray = contributorData[i];
+            const contributors = contributorData[i];
             // split the name into first and last name with the first name being the first element and last name being the rest of the elements
-            const contributorFullName = contributorArray[0];
-            const contributorID = contributorArray[1];
-            const contributorAffiliation = contributorArray[2].split(", ");
-            const contributorRoles = contributorArray[3].split(", ");
+            const contributorFullName = contributors[0];
+            const contributorID = contributors[1];
+            const contributorAffiliation = contributors[2].split(", ");
+            const contributorRoles = contributors[3].split(", ");
             try {
               addContributor(
                 contributorFullName,

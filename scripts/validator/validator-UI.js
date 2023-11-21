@@ -81,7 +81,7 @@ document.querySelector("#validate_dataset-1-local").addEventListener("click", as
   }
 
   // reset validation table
-  clearValidationResults();
+  window.clearValidationResults();
 
   // transition to the next question - uses transitionToValidateQuestionTwo
   transitionFreeFormMode(
@@ -111,7 +111,7 @@ document
     }
 
     // reset validation table
-    clearValidationResults();
+    window.clearValidationResults();
 
     // move to next question
     transitionFreeFormMode(
@@ -142,7 +142,7 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
     }
 
     // reset validation table
-    clearValidationResults();
+    window.clearValidationResults();
 
     // clear the input value
     this.value = "";
@@ -258,7 +258,7 @@ document
         return;
       }
 
-      clearValidationResults();
+      window.clearValidationResults();
 
       // hide question 3
       let questionThreeSection = document.querySelector("#validate_dataset-question-3");
@@ -327,7 +327,7 @@ const undoOptionCardSelection = (activeOptionCard) => {
   activeOptionCard.classList.remove("checked");
 };
 
-const clearValidationResults = () => {
+const window.clearValidationResults = () => {
   // get validation table body
   let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
 

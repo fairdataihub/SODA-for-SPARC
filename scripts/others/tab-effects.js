@@ -12,7 +12,7 @@ var allParentStepsJSON = {
   "generate-dataset": "generate-dataset-tab",
 };
 
-var currentTab = 0; // Current tab is set to be the first tab (0)
+var window.currentTab = 0; // Current tab is set to be the first tab (0)
 // showParentTab(0, 1);
 
 const delay = 250;
@@ -492,7 +492,7 @@ const nextPrev = (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
   let parentTabs = document.getElementsByClassName("parent-tabs");
 
-  if (pageIndex == -1 && parentTabs[currentTab].id === "getting-started-tab") {
+  if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
     let event = new CustomEvent("custom-back", {
       detail: {
         target: { dataset: { section: "main_tabs" }, classList: ["someclass"] },
@@ -509,18 +509,18 @@ const nextPrev = (pageIndex) => {
   }
 
   // update JSON structure
-  updateOverallJSONStructure(parentTabs[currentTab].id);
+  updateOverallJSONStructure(parentTabs[window.currentTab].id);
 
   // reset datasetStructureObject["files"] back to {},
   // and delete ui preview-added manifest files
-  if (parentTabs[currentTab].id === "high-level-folders-tab") {
+  if (parentTabs[window.currentTab].id === "high-level-folders-tab") {
     $("#items").empty();
     $("#items").append(already_created_elem);
     getInFolder(".single-item", "#items", dataset_path, datasetStructureJSONObj);
   }
   if (
-    parentTabs[currentTab].id === "high-level-folders-tab" ||
-    parentTabs[currentTab].id === "metadata-files-tab"
+    parentTabs[window.currentTab].id === "high-level-folders-tab" ||
+    parentTabs[window.currentTab].id === "metadata-files-tab"
   ) {
     organizeLandingUIEffect();
     // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
@@ -542,7 +542,7 @@ const nextPrev = (pageIndex) => {
 
   if (
     pageIndex === 1 &&
-    parentTabs[currentTab].id === "organize-dataset-tab" &&
+    parentTabs[window.currentTab].id === "organize-dataset-tab" &&
     sodaJSONObj["dataset-structure"] === { folders: {} }
   ) {
     Swal.fire({
@@ -562,19 +562,19 @@ const nextPrev = (pageIndex) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        $(parentTabs[currentTab]).removeClass("tab-active");
+        $(parentTabs[window.currentTab]).removeClass("tab-active");
         // Increase or decrease the current tab by 1:
-        currentTab = currentTab + pageIndex;
+        window.currentTab = window.currentTab + pageIndex;
         // For step 1,2,3, check for High level folders input to disable Continue button
-        if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
+        if (window.currentTab === 1 || window.currentTab === 2 || window.currentTab === 3) {
           highLevelFoldersDisableOptions();
         }
         // Display the correct tab:
-        showParentTab(currentTab, pageIndex);
+        showParentTab(window.currentTab, pageIndex);
       }
     });
     // check if required metadata files are included
-  } else if (pageIndex === 1 && parentTabs[currentTab].id === "metadata-files-tab") {
+  } else if (pageIndex === 1 && parentTabs[window.currentTab].id === "metadata-files-tab") {
     var requiredFiles = ["submission", "dataset_description", "subjects", "README"];
     let missingFiles = [];
     var withoutExtMetadataArray = [];
@@ -641,41 +641,41 @@ const nextPrev = (pageIndex) => {
       }).then((result) => {
         if (result.isConfirmed) {
           // Hide the current tab:
-          $(parentTabs[currentTab]).removeClass("tab-active");
+          $(parentTabs[window.currentTab]).removeClass("tab-active");
           // Increase or decrease the current tab by 1:
-          currentTab = currentTab + pageIndex;
+          window.currentTab = window.currentTab + pageIndex;
           // Display the correct tab:
-          showParentTab(currentTab, pageIndex);
+          showParentTab(window.currentTab, pageIndex);
         }
       });
     } else {
       // Hide the current tab:
-      $(parentTabs[currentTab]).removeClass("tab-active");
+      $(parentTabs[window.currentTab]).removeClass("tab-active");
       // Increase or decrease the current tab by 1:
-      currentTab = currentTab + pageIndex;
+      window.currentTab = window.currentTab + pageIndex;
       // Display the correct tab:
-      showParentTab(currentTab, pageIndex);
+      showParentTab(window.currentTab, pageIndex);
     }
   } else if (
-    parentTabs[currentTab].id === "preview-dataset-tab" &&
+    parentTabs[window.currentTab].id === "preview-dataset-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
-    $(parentTabs[currentTab]).removeClass("tab-active");
-    currentTab = currentTab - 1;
-    showParentTab(currentTab, pageIndex);
+    $(parentTabs[window.currentTab]).removeClass("tab-active");
+    window.currentTab = window.currentTab - 1;
+    showParentTab(window.currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
   } else if (
-    parentTabs[currentTab].id === "manifest-file-tab" &&
+    parentTabs[window.currentTab].id === "manifest-file-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
     // skip step 6 ( options irrelevant for existing bf/pennsieve workflow)
-    $(parentTabs[currentTab]).removeClass("tab-active");
+    $(parentTabs[window.currentTab]).removeClass("tab-active");
     if (pageIndex == 1) {
-      currentTab = currentTab + 2;
+      window.currentTab = window.currentTab + 2;
       $("#nextBtn").prop("disabled", false);
       fixStepDone(4);
 
-      showParentTab(currentTab, pageIndex);
+      showParentTab(window.currentTab, pageIndex);
 
       // check if skip card or the validate card have been checked
       const validationOptionSelected = document.querySelector(
@@ -690,18 +690,18 @@ const nextPrev = (pageIndex) => {
         $("#nextBtn").prop("disabled", true);
       }
     } else {
-      currentTab = currentTab - 1;
+      window.currentTab = window.currentTab - 1;
       // fixStepDone(4);
       $("#nextBtn").prop("disabled", true);
-      showParentTab(currentTab, pageIndex);
+      showParentTab(window.currentTab, pageIndex);
     }
   } else if (
-    parentTabs[currentTab].id === "manifest-file-tab" &&
+    parentTabs[window.currentTab].id === "manifest-file-tab" &&
     (sodaJSONObj["starting-point"]["type"] === "new" ||
       sodaJSONObj["starting-point"]["type"] === "local")
   ) {
-    $(parentTabs[currentTab]).removeClass("tab-active");
-    currentTab = currentTab + pageIndex;
+    $(parentTabs[window.currentTab]).removeClass("tab-active");
+    window.currentTab = window.currentTab + pageIndex;
     $("#Question-generate-dataset").show();
     $("#Question-generate-dataset").children().show();
     $("#Question-generate-dataset-generate-div").hide();
@@ -721,29 +721,29 @@ const nextPrev = (pageIndex) => {
       $("#generate-dataset-replace-existing").children().hide();
     }
     $("#nextBtn").prop("disabled", true);
-    showParentTab(currentTab, pageIndex);
+    showParentTab(window.currentTab, pageIndex);
   } else if (
-    parentTabs[currentTab].id === "validate-dataset-tab" &&
+    parentTabs[window.currentTab].id === "validate-dataset-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf" &&
     pageIndex === -1
   ) {
     // if moving backwards fron the validate step
-    $(parentTabs[currentTab]).removeClass("tab-active");
+    $(parentTabs[window.currentTab]).removeClass("tab-active");
     // skip step 6 ( options irrelevant for existing bf/pennsieve workflow)
-    currentTab = currentTab - 2;
-    showParentTab(currentTab, pageIndex);
+    window.currentTab = window.currentTab - 2;
+    showParentTab(window.currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
-  } else if (parentTabs[currentTab].id === "generate-dataset-tab") {
+  } else if (parentTabs[window.currentTab].id === "generate-dataset-tab") {
     // Hide the current tab:
-    $(parentTabs[currentTab]).removeClass("tab-active");
+    $(parentTabs[window.currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
-    currentTab = currentTab + pageIndex;
+    window.currentTab = window.currentTab + pageIndex;
     // For step 1,2,3, check for High level folders input to disable Continue button
-    if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
+    if (window.currentTab === 1 || window.currentTab === 2 || window.currentTab === 3) {
       highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
-    showParentTab(currentTab, pageIndex);
+    showParentTab(window.currentTab, pageIndex);
 
     // check if skip card or the validate card have been checked
     const validationOptionSelected = document.querySelector(
@@ -759,15 +759,15 @@ const nextPrev = (pageIndex) => {
     }
   } else {
     // Hide the current tab:
-    $(parentTabs[currentTab]).removeClass("tab-active");
+    $(parentTabs[window.currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
-    currentTab = currentTab + pageIndex;
+    window.currentTab = window.currentTab + pageIndex;
     // For step 1,2,3, check for High level folders input to disable Continue button
-    if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
+    if (window.currentTab === 1 || window.currentTab === 2 || window.currentTab === 3) {
       highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
-    showParentTab(currentTab, pageIndex);
+    showParentTab(window.currentTab, pageIndex);
   }
 };
 
@@ -1956,7 +1956,7 @@ const window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, bu
 
     // clear the validation table results
     let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
-    clearValidationResults(validationErrorsTable);
+    window.clearValidationResults(validationErrorsTable);
     // hide the table
     document.querySelector("#organize--table-validation-errors").style.visibility = "hidden";
     // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
@@ -2650,7 +2650,7 @@ const reset_ui = () => {
 
   // clear the validation table results
   let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
-  clearValidationResults(validationErrorsTable);
+  window.clearValidationResults(validationErrorsTable);
   // hide the table
   document.querySelector("#organize--table-validation-errors").style.visibility = "hidden";
 };
@@ -3397,7 +3397,7 @@ function raiseWarningExit(message) {
   });
 }
 
-const resetCuration = () => {
+const window.resetCuration = () => {
   $("#dataset-loaded-message").hide();
   $(".vertical-progress-bar-step").removeClass("is-current");
   $(".vertical-progress-bar-step").removeClass("done");
@@ -3407,7 +3407,7 @@ const resetCuration = () => {
   $("#Question-getting-started-1").addClass("show");
   $("#generate-dataset-progress-tab").css("display", "none");
 
-  currentTab = 0;
+  window.currentTab = 0;
   // uncheck all radio buttons and checkboxes
   $("#organize-section").find(".option-card").removeClass("checked");
   $("#organize-section").find(".option-card.radio-button").removeClass("non-selected");
@@ -3477,7 +3477,7 @@ const window.exitCurate = async (resetProgressTabs, start_over = false) => {
       $("#Question-getting-started-1").addClass("show");
       $("#generate-dataset-progress-tab").css("display", "none");
 
-      currentTab = 0;
+      window.currentTab = 0;
       wipeOutCurateProgress();
       $("#main_tabs_view")[0].click();
       globalGettingStarted1stQuestionBool = false;
@@ -3553,7 +3553,7 @@ const wipeOutCurateProgress = async () => {
 document.getElementById("button-section-organize-dataset").addEventListener("click", () => {
   $(".vertical-progress-bar").css("display", "flex");
   document.getElementById("generate-dataset-progress-tab").style.display = "none";
-  showParentTab(currentTab, 1);
+  showParentTab(window.currentTab, 1);
 });
 
 document.getElementById("organize_dataset_btn").addEventListener("click", () => {
@@ -3561,7 +3561,7 @@ document.getElementById("organize_dataset_btn").addEventListener("click", () => 
   document.getElementById("generate-dataset-progress-tab").style.display = "none";
   $("#save-progress-btn").css("display", "none");
   $("#start-over-btn").css("display", "none");
-  showParentTab(currentTab, 1);
+  showParentTab(window.currentTab, 1);
 });
 
 const hideNextDivs = (currentDiv) => {

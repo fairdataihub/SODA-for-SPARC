@@ -2283,7 +2283,7 @@ $("#button-add-tags").click(async () => {
   }).then((result) => {});
 
   // get the current tags from the input inside of the manage_datasets.html file inside of the tags section
-  const tags = Array.from(datasetTagsTagify.getTagElms()).map((tag) => {
+  const tags = Array.from(window.datasetTagsTagify.getTagElms()).map((tag) => {
     return tag.textContent;
   });
 
@@ -2393,10 +2393,10 @@ const showCurrentTags = async () => {
   log.info(`Getting current tags for dataset ${selectedBfDataset}`);
 
   // remove all of the tags from the current input
-  datasetTagsTagify.removeAllTags();
+  window.datasetTagsTagify.removeAllTags();
 
   // make the tags input display a loading spinner after a user selects a new dataset
-  datasetTagsTagify.loading(true);
+  window.datasetTagsTagify.loading(true);
 
   // get the tags from the Pennsieve API
   let tagsResponse;
@@ -2424,7 +2424,7 @@ const showCurrentTags = async () => {
     );
 
     // stop the loader -- no data can be fetched for this dataset
-    datasetTagsTagify.loading(false);
+    window.datasetTagsTagify.loading(false);
 
     // halt execution
     return;
@@ -2441,10 +2441,10 @@ const showCurrentTags = async () => {
   }
 
   // stop displaying the tag loading spinner
-  datasetTagsTagify.loading(false);
+  window.datasetTagsTagify.loading(false);
 
   // display the retrieved tags
-  datasetTagsTagify.addTags(tags);
+  window.datasetTagsTagify.addTags(tags);
 };
 
 // Add license //

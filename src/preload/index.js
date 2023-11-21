@@ -83,6 +83,10 @@ if (process.contextIsolated) {
         const fsStatsObj = await fs.stat(filepath);
         return fsStatsObj.isDirectory();
       },
+      isDirectorySync: (filepath) => {
+        const fsStatsObj = fs.statSync(filepath);
+        return fsStatsObj.isDirectory();
+      },
       isFile: async (filepath) => {
         const fsStatsObj = await fs.stat(filepath);
         return fsStatsObj.isFile();

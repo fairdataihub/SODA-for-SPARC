@@ -1680,20 +1680,20 @@ createDragSort(guidedSubmissionTagsTagifyManual);
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
-  keywordTagify = new Tagify(keywordInput, {
+  window.keywordTagify = new Tagify(keywordInput, {
     duplicates: false,
   });
 
-createDragSort(keywordTagify);
+createDragSort(window.keywordTagify);
 
 var otherFundingInput = document.getElementById("ds-other-funding"),
-  otherFundingTagify = new Tagify(otherFundingInput, {
+  window.otherFundingTagify = new Tagify(otherFundingInput, {
     duplicates: false,
   });
-createDragSort(otherFundingTagify);
+createDragSort(window.otherFundingTagify);
 
 var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
-  collectionDatasetTags = new Tagify(collectionDatasetInput, {
+  window.collectionDatasetTags = new Tagify(collectionDatasetInput, {
     whitelist: [],
     duplicates: false,
     dropdown: {
@@ -1707,10 +1707,10 @@ var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
       rightKey: true,
     },
   });
-createDragSort(collectionDatasetTags);
+createDragSort(window.collectionDatasetTags);
 
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
-  studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
+  window.studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
     whitelist: [
       "autonomic ganglion",
       "brain",
@@ -1739,25 +1739,25 @@ var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
       closeOnSelect: true,
     },
   });
-createDragSort(studyOrganSystemsTagify);
+createDragSort(window.studyOrganSystemsTagify);
 
 var studyTechniquesInput = document.getElementById("ds-study-technique"),
-  studyTechniquesTagify = new Tagify(studyTechniquesInput, {
+  window.studyTechniquesTagify = new Tagify(studyTechniquesInput, {
     duplicates: false,
   });
-createDragSort(studyTechniquesTagify);
+createDragSort(window.studyTechniquesTagify);
 
 var studyApproachesInput = document.getElementById("ds-study-approach"),
-  studyApproachesTagify = new Tagify(studyApproachesInput, {
+  window.studyApproachesTagify = new Tagify(studyApproachesInput, {
     duplicates: false,
   });
-createDragSort(studyApproachesTagify);
+createDragSort(window.studyApproachesTagify);
 
 // tagify the input inside of the "Add/edit tags" manage dataset section
 var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   // initialize Tagify on the above input node reference
-  datasetTagsTagify = new Tagify(datasetTagsInput);
-createDragSort(datasetTagsTagify);
+  window.datasetTagsTagify = new Tagify(datasetTagsInput);
+createDragSort(window.datasetTagsTagify);
 
 /////////////////// Provide Grant Information section /////////////////////////
 //////////////// //////////////// //////////////// //////////////// ///////////
@@ -2782,9 +2782,9 @@ function changeAwardInputDsDescription() {
     addOption(dsContributorArrayFirst1, "Select an option", "Select an option");
   }
 
-  currentContributorsLastNames = [];
+  window.currentContributorsLastNames = [];
   currentContributorsFirstNames = [];
-  globalContributorNameObject = {};
+  window.globalContributorNameObject = {};
 
   /// delete old table
   $("#table-current-contributors").find("tr").slice(1, -1).remove();
@@ -2814,14 +2814,14 @@ const onchangeLastNames = () => {
   $("#dd-contributor-first-name").attr("disabled", true);
   var conLastname = $("#dd-contributor-last-name").val();
   removeOptions(document.getElementById("dd-contributor-first-name"));
-  if (conLastname in globalContributorNameObject) {
+  if (conLastname in window.globalContributorNameObject) {
     addOption(
       document.getElementById("dd-contributor-first-name"),
-      globalContributorNameObject[conLastname],
-      globalContributorNameObject[conLastname]
+      window.globalContributorNameObject[conLastname],
+      window.globalContributorNameObject[conLastname]
     );
     $("#dd-contributor-first-name")
-      .val(globalContributorNameObject[conLastname])
+      .val(window.globalContributorNameObject[conLastname])
       .trigger("onchange");
   }
   $("#dd-contributor-first-name").attr("disabled", false);
@@ -2854,8 +2854,8 @@ const delete_current_con = (no) => {
   ) {
     var deletedLastName = $("#ds-description-contributor-list-last-" + no).val();
     var deletedFirstName = $("#ds-description-contributor-list-first-" + no).val();
-    globalContributorNameObject[deletedLastName] = deletedFirstName;
-    currentContributorsLastNames.push(deletedLastName);
+    window.globalContributorNameObject[deletedLastName] = deletedFirstName;
+    window.currentContributorsLastNames.push(deletedLastName);
   }
   document.getElementById("row-current-name" + no + "").outerHTML = "";
 };
@@ -3034,7 +3034,7 @@ $("#table-samples").mousedown(function (e) {
 //     $(document).unbind("mousemove", move).unbind("mouseup", up);
 //     $(tr).removeClass("grabbed");
 //     updateIndexForTable(document.getElementById("contributor-table-dd"));
-//     updateOrderContributorTable(document.getElementById("contributor-table-dd"), contributorArray);
+//     updateOrderContributorTable(document.getElementById("contributor-table-dd"), window.contributorArray);
 //   }
 //   $(document).mousemove(move).mouseup(up);
 // });
@@ -7211,7 +7211,7 @@ document.getElementById("button-generate-comeback").addEventListener("click", fu
     document.getElementById("prevBtn").style.display = "inline";
     document.getElementById("nextBtn").style.display = "inline";
     document.getElementById("start-over-btn").style.display = "inline-block";
-    showParentTab(currentTab, 1);
+    showParentTab(window.currentTab, 1);
     if (
       sodaJSONObj["starting-point"]["type"] == "new" &&
       "local-path" in sodaJSONObj["starting-point"]
@@ -8123,7 +8123,7 @@ const show_curation_shortcut = async () => {
       $("#Question-getting-started-1").addClass("show");
       $("#generate-dataset-progress-tab").css("display", "none");
 
-      currentTab = 0;
+      window.currentTab = 0;
       await wipeOutCurateProgress();
       $("#guided-button-start-modify-component").click();
       $("#disseminate_dataset_tab").click();

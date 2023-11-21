@@ -7,7 +7,7 @@ const addDatasetAndOrganizationCardComponents = () => {
   let addEditSubtitlesCard = UserDetailsCard({
     tabName: "manage-dataset",
     buttonId: "button_add_edit_subtitle_confirm",
-    currentTab: "add_edit_subtitle_tab",
+    window.currentTab: "add_edit_subtitle_tab",
     currentParentTab: "add_edit_subtitle_parent-tab",
     action: "delete",
     section: "individual-question manage-dataset",
@@ -28,7 +28,7 @@ const addDatasetAndOrganizationCardComponents = () => {
   let createEmptyDatasetCard = UserDetailsCard({
     tabName: "manage-dataset",
     buttonId: "create_empty_dataset",
-    currentTab: "create_empty_dataset_BF_account_tab",
+    window.currentTab: "create_empty_dataset_BF_account_tab",
     currentParentTab: "create_new_bf_dataset-tab",
     action: "delete",
     section: "individual-question manage-dataset",
@@ -43,7 +43,7 @@ const addDatasetAndOrganizationCardComponents = () => {
   let addOrRemoveCollectionCard = UserDetailsCard({
     tabName: "manage-dataset",
     buttonId: "button-collection-dataset-confirm",
-    currentTab: "collection_BF_account_tab",
+    window.currentTab: "collection_BF_account_tab",
     currentParentTab: "bf_collection-tab",
     action: "delete",
     section: "individual-question manage-dataset",
@@ -63,7 +63,7 @@ const addDatasetAndOrganizationCardComponents = () => {
   let renameDatasetCard = UserDetailsCard({
     tabName: "manage-dataset",
     buttonId: "button-rename-dataset-confirm",
-    currentTab: "rename_dataset_BF_account_tab",
+    window.currentTab: "rename_dataset_BF_account_tab",
     currentParentTab: "rename_bf_dataset-tab",
     action: "delete",
     section: "individual-question manage-dataset",
@@ -83,7 +83,7 @@ const addDatasetAndOrganizationCardComponents = () => {
   let makePiOwnerCard = UserDetailsCard({
     tabName: "manage-dataset",
     buttonId: "button_pi_dataset_owner_confirm",
-    currentTab: "pi_dataset_owner_tab",
+    window.currentTab: "pi_dataset_owner_tab",
     currentParentTab: "pi_dataset_owner_parent-tab",
     action: "delete",
     section: "individual-question manage-dataset",
@@ -102,7 +102,7 @@ const addDatasetAndOrganizationCardComponents = () => {
   let addEditPermissionsCard = UserDetailsCard({
     tabName: "manage-dataset",
     buttonId: "button_add_edit_permissions_confirm",
-    currentTab: "add_edit_permissions_choice_tab",
+    window.currentTab: "add_edit_permissions_choice_tab",
     currentParentTab: "add_edit_permissions_parent-tab",
     action: "delete",
     section: "individual-question manage-dataset",
@@ -123,7 +123,7 @@ const addDatasetAndOrganizationCardComponents = () => {
   let addTagsCard = UserDetailsCard({
     tabName: "manage-dataset",
     buttonId: "button_add_tags_confirm",
-    currentTab: "add_tags_tab",
+    window.currentTab: "add_tags_tab",
     currentParentTab: "add_tags_parent-tab",
     action: "delete",
     section: "individual-question manage-dataset",
@@ -141,7 +141,7 @@ const addDatasetAndOrganizationCardComponents = () => {
   let addEditDescriptionCard = UserDetailsCard({
     tabName: "manage-dataset",
     buttonId: "button_add_edit_description_confirm",
-    currentTab: "add_edit_description_tab",
+    window.currentTab: "add_edit_description_tab",
     currentParentTab: "add_edit_description_parent-tab",
     action: "delete",
     section: "individual-question manage-dataset",
@@ -161,7 +161,7 @@ const addDatasetAndOrganizationCardComponents = () => {
   let addEditBanner = UserDetailsCard({
     tabName: "manage-dataset",
     buttonId: "button_add_edit_banner_confirm",
-    currentTab: "add_edit_banner_tab",
+    window.currentTab: "add_edit_banner_tab",
     currentParentTab: "add_edit_banner_parent-tab",
     action: "delete",
     section: "individual-question manage-dataset",
@@ -179,7 +179,7 @@ const addDatasetAndOrganizationCardComponents = () => {
   let addLicenseCard = UserDetailsCard({
     tabName: "manage-dataset",
     buttonId: "button_add_license_confirm",
-    currentTab: "add_license_tab",
+    window.currentTab: "add_license_tab",
     currentParentTab: "add_license_parent-tab",
     action: "delete",
     section: "individual-question manage-dataset",
@@ -198,7 +198,7 @@ const addDatasetAndOrganizationCardComponents = () => {
   let uploadLocalDatasetCard = UserDetailsCard({
     tabName: "manage-dataset",
     buttonId: "button_upload_local_dataset_confirm",
-    currentTab: "upload_local_dataset_tab",
+    window.currentTab: "upload_local_dataset_tab",
     currentParentTab: "upload_local_dataset_parent-tab",
     action: "delete",
     section: "individual-question manage-dataset",
@@ -218,7 +218,7 @@ const addDatasetAndOrganizationCardComponents = () => {
   let changeDatasetStatusCard = UserDetailsCard({
     tabName: "manage-dataset",
     buttonId: "button_view_change_dataset_status_confirm",
-    currentTab: "view_change_dataset_status_tab",
+    window.currentTab: "view_change_dataset_status_tab",
     currentParentTab: "view_change_dataset_status_parent-tab",
     action: "delete",
     section: "individual-question manage-dataset",

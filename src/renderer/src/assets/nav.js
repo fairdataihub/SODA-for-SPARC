@@ -131,7 +131,7 @@ const handleSectionTrigger = async (event) => {
             buttonContinueExistingPennsieve.classList.contains("checked")
               ? `To continue making modifications to your existing Pennsieve dataset, press Cancel.`
               : `To save your progress, press Cancel${
-                  currentTab < 2 ? ", progress to the third step," : ""
+                  window.currentTab < 2 ? ", progress to the third step," : ""
                 } and press "Save Progress" in the Organize Dataset tab.`
           }
         `;
@@ -163,7 +163,7 @@ const handleSectionTrigger = async (event) => {
         $(".getting-started").removeClass("test2");
         $("#Question-getting-started-1").addClass("show");
         $("#generate-dataset-progress-tab").css("display", "none");
-        currentTab = 0;
+        window.currentTab = 0;
         wipeOutCurateProgress();
         globalGettingStarted1stQuestionBool = false;
         document.getElementById("nextBtn").disabled = true;

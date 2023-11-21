@@ -380,16 +380,16 @@ function resetDDFields() {
   // show generate button again
   $("#button-generate-dd").show();
 
-  keywordTagify.removeAllTags();
-  otherFundingTagify.removeAllTags();
-  studyTechniquesTagify.removeAllTags();
-  studyOrganSystemsTagify.removeAllTags();
-  studyApproachesTagify.removeAllTags();
+  window.keywordTagify.removeAllTags();
+  window.otherFundingTagify.removeAllTags();
+  window.studyTechniquesTagify.removeAllTags();
+  window.studyOrganSystemsTagify.removeAllTags();
+  window.studyApproachesTagify.removeAllTags();
 
   // 3. deleting table rows
-  globalContributorNameObject = {};
-  currentContributorsLastNames = [];
-  contributorArray = [];
+  window.globalContributorNameObject = {};
+  window.currentContributorsLastNames = [];
+  window.contributorArray = [];
   $("#contributor-table-dd tr:gt(0)").remove();
   $("#protocol-link-table-dd tr:gt(0)").remove();
   $("#other-link-table-dd tr:gt(0)").remove();
@@ -423,7 +423,7 @@ function resetSubjects(askToReset = true) {
     $("#div-confirm-primary-folder-import").find("button").hide();
 
     $("#Question-prepare-subjects-primary-import").find("input").prop("placeholder", "Browse here");
-    subjectsFileData = [];
+    window.subjectsFileData = [];
     window.subjectsTableData = [];
 
     $("#existing-subjects-file-destination").attr("placeholder", "Browse here");
@@ -487,7 +487,7 @@ function resetSubjects(askToReset = true) {
       $("#Question-prepare-subjects-primary-import")
         .find("input")
         .prop("placeholder", "Browse here");
-      subjectsFileData = [];
+      window.subjectsFileData = [];
       window.subjectsTableData = [];
 
       $("#existing-subjects-file-destination").attr("placeholder", "Browse here");
@@ -543,7 +543,7 @@ function resetSamples(askToReset = true) {
     $("#Question-prepare-subjects-primary-import-samples")
       .find("input")
       .prop("placeholder", "Browse here");
-    samplesFileData = [];
+    window.samplesFileData = [];
     window.samplesTableData = [];
 
     $("#existing-samples-file-destination").attr("placeholder", "Browse here");
@@ -601,7 +601,7 @@ function resetSamples(askToReset = true) {
       $("#Question-prepare-subjects-primary-import-samples")
         .find("input")
         .prop("placeholder", "Browse here");
-      samplesFileData = [];
+      window.samplesFileData = [];
       window.samplesTableData = [];
 
       $("#existing-samples-file-destination").attr("placeholder", "Browse here");
@@ -667,8 +667,8 @@ function resetManifest(askToReset = true) {
         $("#bf_dataset_create_manifest").text("None");
         let dir1 = path.join(homeDirectory, "SODA", "manifest_files");
         let dir2 = path.join(homeDirectory, "SODA", "SODA Manifest Files");
-        removeDir(dir1);
-        removeDir(dir2);
+        window.removeDir(dir1);
+        window.removeDir(dir2);
       } else {
         return;
       }
@@ -689,18 +689,18 @@ function resetManifest(askToReset = true) {
     $("#bf_dataset_create_manifest").text("None");
     let dir1 = path.join(homeDirectory, "SODA", "manifest_files");
     let dir2 = path.join(homeDirectory, "SODA", "SODA Manifest Files");
-    removeDir(dir1);
-    removeDir(dir2);
+    window.removeDir(dir1);
+    window.removeDir(dir2);
 
     // reset the global variables for detecting the manifest path
-    finalManifestGenerationPath = "";
+    window.finalManifestGenerationPath = "";
   }
 }
 
 /**
  * Resets the FFM manage-dataset, prepare-metadata, disseminate-dataset UI to their initial state.  Note: Does not reset Account, or organization information in the user details cards.
  */
-const window.resetFFMUI = (ev) => {
+window.resetFFMUI = (ev) => {
   // reset the manage dataset UI
   $("#div_add_edit_subtitle").removeClass("show");
   $("#div_add_edit_subtitle_tab").removeClass("prev");
@@ -815,10 +815,10 @@ const window.resetFFMUI = (ev) => {
   // reset the prepare datasets sections
   // do not wipe curation progress when resetting in GM or from within Organize Datasets
   if (resetOrganizationTab) {
-    // if we are going to reset the organization and are not within the organize flow, set the first dataset field value to None -- the second dataset field gets reset within resetCuration
+    // if we are going to reset the organization and are not within the organize flow, set the first dataset field value to None -- the second dataset field gets reset within window.resetCuration
     $("#current-bf-dataset").text("None");
     $("#button-confirm-bf-dataset-getting-started").css("display", "none");
-    resetCuration();
+    window.resetCuration();
   }
 
   // validation reset
@@ -830,7 +830,7 @@ const window.resetFFMUI = (ev) => {
     $("#validate_dataset-question-3").removeClass("show");
     $("#validate_dataset-question-3").removeClass("prev");
     $("#validate_dataset-question-4").removeClass("show");
-    clearValidationResults(validationErrorsTable);
+    window.clearValidationResults(validationErrorsTable);
   }
   // reset the Disseminate Datasets sections
   $("#share_curation_team-question-1").removeClass("prev");

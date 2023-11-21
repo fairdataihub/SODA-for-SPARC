@@ -16,9 +16,9 @@ const dsAwardArray = document.getElementById("ds-description-award-list");
 const dsContributorArrayLast1 = document.getElementById("ds-description-contributor-list-last-1");
 const dsContributorArrayFirst1 = document.getElementById("ds-description-contributor-list-first-1");
 
-var currentContributorsLastNames = [];
+window.currentContributorsLastNames = [];
 var currentContributorsFirstNames = [];
-var globalContributorNameObject = {};
+window.globalContributorNameObject = {};
 
 // const affiliationInput = document.getElementById("input-con-affiliation-1");
 const addCurrentContributorsBtn = document.getElementById("button-ds-add-contributor");
@@ -146,8 +146,8 @@ const checkContributorNameDuplicates = (table, currentRow) => {
 const cloneConNamesSelect = (selectLast) => {
   removeOptions(document.getElementById(selectLast));
   addOption(document.getElementById(selectLast), "Select an option", "Select");
-  for (var i = 0; i < currentContributorsLastNames.length; i++) {
-    var opt = currentContributorsLastNames[i];
+  for (var i = 0; i < window.currentContributorsLastNames.length; i++) {
+    var opt = window.currentContributorsLastNames[i];
     if (document.getElementById(selectLast)) {
       addOption(document.getElementById(selectLast), opt, opt);
     }
@@ -585,7 +585,7 @@ const grabConInfoEntries = () => {
     fundingArray = [funding];
   }
   /// other funding sources
-  var otherFunding = otherFundingTagify.value;
+  var otherFunding = window.otherFundingTagify.value;
   for (var i = 0; i < otherFunding.length; i++) {
     fundingArray.push(otherFunding[i].value);
   }
@@ -594,7 +594,7 @@ const grabConInfoEntries = () => {
 
   contributorInfo["funding"] = fundingArray;
   contributorInfo["acknowledgment"] = acknowledgment;
-  contributorInfo["contributors"] = contributorArray;
+  contributorInfo["contributors"] = window.contributorArray;
   return contributorInfo;
 };
 
@@ -845,14 +845,14 @@ var contributorElement = `<div id="contributor-popup"><div style="display:flex">
 var contributorElementRaw =
   '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div></div>';
 
-var contributorArray = [];
+window.contributorArray = [];
 var affiliationSuggestions = [];
 
 const showContributorSweetalert = (key) => {
   var currentContributortagify;
   var currentAffliationtagify;
   if (key === false) {
-    if (Object.keys(globalContributorNameObject).length !== 0) {
+    if (Object.keys(window.globalContributorNameObject).length !== 0) {
       var footer =
         "<a style='text-decoration: none !important' onclick='showContributorSweetalert(\"pass\")' target='_blank'>I want to add a contributor not listed above</a>";
       var element = contributorElement;
@@ -938,7 +938,7 @@ const showContributorSweetalert = (key) => {
       createDragSort(currentAffliationtagify);
 
       // load contributor names onto Select
-      if (Object.keys(globalContributorNameObject).length !== 0) {
+      if (Object.keys(window.globalContributorNameObject).length !== 0) {
         if (key === false) {
           cloneConNamesSelect("dd-contributor-last-name");
         }
@@ -987,10 +987,10 @@ const showContributorSweetalert = (key) => {
             conAffliation: affiliationVals,
             conRole: roleVals,
           };
-          contributorArray.push(myCurrentCon);
+          window.contributorArray.push(myCurrentCon);
           return [myCurrentCon];
           // if ($("#ds-contact-person").prop("checked")) {
-          //   contributorArray.push(myCurrentCon);
+          //   window.contributorArray.push(myCurrentCon);
           //   return [myCurrentCon.conName, "No"];
           //   var contactPersonExists = checkContactPersonStatus("add", null);
           //   // if (contactPersonExists) {
@@ -1004,7 +1004,7 @@ const showContributorSweetalert = (key) => {
           //   //     conAffliation: affiliationVals,
           //   //     conRole: roleVals + ", CorrespondingAuthor",
           //   //   };
-          //   //   contributorArray.push(myCurrentCon);
+          //   //   window.contributorArray.push(myCurrentCon);
           //   //   return [myCurrentCon.conName, "Yes"];
           //   // }
           // } else {
@@ -1047,9 +1047,9 @@ const delete_current_con_id = (ev) => {
       updateIndexForTable(document.getElementById("contributor-table-dd"), false);
       // 2. Delete from JSON
       var contributorName = $(currentRow)[0].cells[0].innerText;
-      for (var i = 0; i < contributorArray.length; i++) {
-        if (contributorArray[i].conName.trim() === contributorName.trim()) {
-          contributorArray.splice(i, 1);
+      for (var i = 0; i < window.contributorArray.length; i++) {
+        if (window.contributorArray[i].conName.trim() === contributorName.trim()) {
+          window.contributorArray.splice(i, 1);
           break;
         }
       }
@@ -1137,7 +1137,7 @@ const edit_current_con_id = (ev) => {
       });
       createDragSort(currentAffliationtagify);
 
-      for (var contributor of contributorArray) {
+      for (var contributor of window.contributorArray) {
         if (contributor.conName === name) {
           // add existing tags to tagifies
           let splitNames = [];
@@ -1211,9 +1211,9 @@ const edit_current_con_id = (ev) => {
           conRole: roleVals,
           // conContact: "No",
         };
-        for (var contributor of contributorArray) {
+        for (var contributor of window.contributorArray) {
           if (contributor.conName === name) {
-            contributorArray[contributorArray.indexOf(contributor)] = myCurrentCon;
+            window.contributorArray[window.contributorArray.indexOf(contributor)] = myCurrentCon;
             break;
           }
         }
@@ -1235,9 +1235,9 @@ const edit_current_con_id = (ev) => {
         //       conRole: roleVals + ", CorrespondingAuthor",
         //       // conContact: "Yes",
         //     };
-        //     for (var contributor of contributorArray) {
+        //     for (var contributor of window.contributorArray) {
         //       if (contributor.conName === name) {
-        //         contributorArray[contributorArray.indexOf(contributor)] = myCurrentCon;
+        //         window.contributorArray[window.contributorArray.indexOf(contributor)] = myCurrentCon;
         //         break;
         //       }
         //     }
@@ -1369,7 +1369,7 @@ const grabDSInfoEntries = () => {
   let name = document.getElementById("ds-name").value;
   let description = document.getElementById("ds-description").value;
   let type = $("#ds-type").val();
-  let keywordArray = keywordTagify.value;
+  let keywordArray = window.keywordTagify.value;
   let samplesNo = document.getElementById("ds-samples-no").value;
   let subjectsNo = document.getElementById("ds-subjects-no").value;
 
@@ -1385,9 +1385,9 @@ const grabDSInfoEntries = () => {
 
 // study info
 const grabStudyInfoEntries = () => {
-  let studyOrganSystem = studyOrganSystemsTagify.value;
-  let studyApproach = studyApproachesTagify.value;
-  let studyTechnique = studyTechniquesTagify.value;
+  let studyOrganSystem = window.studyOrganSystemsTagify.value;
+  let studyApproach = window.studyApproachesTagify.value;
+  let studyTechnique = window.studyTechniquesTagify.value;
   let studyPurpose = document.getElementById("ds-study-purpose").value;
   let studyDataCollection = document.getElementById("ds-study-data-collection").value;
   let studyPrimaryConclusion = document.getElementById("ds-study-primary-conclusion").value;
@@ -1646,7 +1646,7 @@ const loadDDFileToUI = (object, file_type) => {
       $("#ds-samples-no").val(arr[1]);
     } else if (arr[0] === "Keywords") {
       // populate keywords
-      populateTagifyDD(keywordTagify, arr.splice(1));
+      populateTagifyDD(window.keywordTagify, arr.splice(1));
     }
   }
   //// populating Study info UI
@@ -1659,13 +1659,13 @@ const loadDDFileToUI = (object, file_type) => {
       $("#ds-study-primary-conclusion").val(arr[1]);
     } else if (arr[0] === "Study organ system") {
       // populate organ systems
-      populateTagifyDD(studyOrganSystemsTagify, arr.splice(1));
+      populateTagifyDD(window.studyOrganSystemsTagify, arr.splice(1));
     } else if (arr[0] === "Study approach") {
       // populate approach
-      populateTagifyDD(studyApproachesTagify, arr.splice(1));
+      populateTagifyDD(window.studyApproachesTagify, arr.splice(1));
     } else if (arr[0] === "Study technique") {
       // populate technique
-      populateTagifyDD(studyTechniquesTagify, arr.splice(1));
+      populateTagifyDD(window.studyTechniquesTagify, arr.splice(1));
     } else if (arr[0] === "Study collection title") {
       // populate collection title
       $("#ds-study-collection-title").val(arr[1]);
@@ -1679,7 +1679,7 @@ const loadDDFileToUI = (object, file_type) => {
       // populate awards
       $("#ds-description-award-input").val(arr[1]);
       changeAward(arr[1]);
-      populateTagifyDD(otherFundingTagify, arr.splice(2));
+      populateTagifyDD(window.otherFundingTagify, arr.splice(2));
     }
   }
 
@@ -1722,7 +1722,7 @@ const populateTagifyDD = (tagify, values) => {
 };
 
 const loadContributorsToTable = (array) => {
-  contributorArray = [];
+  window.contributorArray = [];
   $("#contributor-table-dd tr:gt(0)").remove();
   $("#div-contributor-table-dd").css("display", "none");
 
@@ -1743,7 +1743,7 @@ const loadContributorsToTable = (array) => {
         conAffliation: arr[2].trim(),
         conRole: arr[3].trim(),
       };
-      contributorArray.push(myCurrentCon);
+      window.contributorArray.push(myCurrentCon);
       // var contact = "";
       // if (myCurrentCon.conRole.includes("CorrespondingAuthor")) {
       //   contact = "Yes";

@@ -28,9 +28,9 @@ var guidedSubjectsFormDiv = document.getElementById("guided-form-add-a-subject")
 var samplesFormDiv = document.getElementById("form-add-a-sample");
 var window.guidedSamplesFormDiv = document.getElementById("guided-form-add-a-sample");
 var window.subjectsTableData = [];
-var subjectsFileData = [];
+var window.subjectsFileData = [];
 var window.samplesTableData = [];
-var samplesFileData = [];
+var window.samplesFileData = [];
 var headersArrSubjects = [];
 var headersArrSamples = [];
 let guidedSamplesTableData = [];
@@ -1320,9 +1320,9 @@ const editSubject = (ev, subjectID) => {
           field.value = field.value;
         }
       }
-      subjectsFileData.push(field.value);
+      window.subjectsFileData.push(field.value);
     } else {
-      subjectsFileData.push("");
+      window.subjectsFileData.push("");
     }
   }
   var currentRow = $(ev).parents()[2];
@@ -1330,7 +1330,7 @@ const editSubject = (ev, subjectID) => {
   if (newID === subjectID) {
     for (var i = 1; i < window.subjectsTableData.length; i++) {
       if (window.subjectsTableData[i][0] === subjectID) {
-        window.subjectsTableData[i] = subjectsFileData;
+        window.subjectsTableData[i] = window.subjectsFileData;
         break;
       }
     }
@@ -1353,7 +1353,7 @@ const editSubject = (ev, subjectID) => {
     } else {
       for (var i = 1; i < window.subjectsTableData.length; i++) {
         if (window.subjectsTableData[i][0] === subjectID) {
-          window.subjectsTableData[i] = subjectsFileData;
+          window.subjectsTableData[i] = window.subjectsFileData;
           break;
         }
       }
@@ -1361,15 +1361,15 @@ const editSubject = (ev, subjectID) => {
       hideForm("subject");
     }
   }
-  subjectsFileData = [];
+  window.subjectsFileData = [];
 };
 
 const editSample = (ev, sampleID) => {
   for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
     if (field.value.trim() !== "" && field.value !== undefined && field.value !== "Select") {
-      samplesFileData.push(field.value);
+      window.samplesFileData.push(field.value);
     } else {
-      samplesFileData.push("");
+      window.samplesFileData.push("");
     }
   }
   var currentRow = $(ev).parents()[2];
@@ -1377,11 +1377,11 @@ const editSample = (ev, sampleID) => {
   if (newID === sampleID) {
     for (var i = 1; i < window.samplesTableData.length; i++) {
       if (window.samplesTableData[i][1] === sampleID) {
-        window.samplesTableData[i] = samplesFileData;
+        window.samplesTableData[i] = window.samplesFileData;
         break;
       }
     }
-    $(currentRow)[0].cells[1].innerText = samplesFileData[0];
+    $(currentRow)[0].cells[1].innerText = window.samplesFileData[0];
     hideForm("sample");
   } else {
     var table = document.getElementById("table-samples");
@@ -1401,7 +1401,7 @@ const editSample = (ev, sampleID) => {
     } else {
       for (var i = 1; i < window.samplesTableData.length; i++) {
         if (window.samplesTableData[i][1] === sampleID) {
-          window.samplesTableData[i] = samplesFileData;
+          window.samplesTableData[i] = window.samplesFileData;
           break;
         }
       }
@@ -1409,7 +1409,7 @@ const editSample = (ev, sampleID) => {
       hideForm("sample");
     }
   }
-  samplesFileData = [];
+  window.samplesFileData = [];
 };
 
 const delete_current_subject_id = (ev) => {
@@ -1689,7 +1689,7 @@ const updateOrderContributorTable = (table, json) => {
       }
     }
   }
-  contributorArray = orderedTableData;
+  window.contributorArray = orderedTableData;
 };
 
 const showPrimaryBrowseFolder = () => {
@@ -1729,18 +1729,18 @@ const importPrimaryFolderSubjects = (folderPath) => {
       var j = 1;
       window.subjectsTableData[0] = headersArrSubjects;
       for (var folder of folders) {
-        subjectsFileData = [];
+        window.subjectsFileData = [];
         var stats = fs.statSync(path.join(folderPath, folder));
         if (stats.isDirectory()) {
-          subjectsFileData[0] = folder;
+          window.subjectsFileData[0] = folder;
           for (var i = 1; i < 27; i++) {
-            subjectsFileData.push("");
+            window.subjectsFileData.push("");
           }
-          window.subjectsTableData[j] = subjectsFileData;
+          window.subjectsTableData[j] = window.subjectsFileData;
           j += 1;
         }
       }
-      subjectsFileData = [];
+      window.subjectsFileData = [];
       var subIDArray = [];
       // grab and confirm with users about their sub-ids
       for (var index of window.subjectsTableData.slice(1)) {
@@ -1815,19 +1815,19 @@ const importPrimaryFolderSamples = (folderPath) => {
           for (var subfolder of subjectFolder) {
             var statsSampleID = fs.statSync(path.join(folderPath, folder, subfolder));
             if (statsSampleID.isDirectory()) {
-              samplesFileData = [];
-              samplesFileData[0] = folder;
-              samplesFileData[1] = subfolder;
+              window.samplesFileData = [];
+              window.samplesFileData[0] = folder;
+              window.samplesFileData[1] = subfolder;
               for (var i = 2; i < 18; i++) {
-                samplesFileData.push("");
+                window.samplesFileData.push("");
               }
-              window.samplesTableData[j] = samplesFileData;
+              window.samplesTableData[j] = window.samplesFileData;
               j += 1;
             }
           }
         }
       }
-      samplesFileData = [];
+      window.samplesFileData = [];
       var subIDArray = [];
       var samIDArray = [];
       // grab and confirm with users about their sub-ids

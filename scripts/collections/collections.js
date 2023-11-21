@@ -25,8 +25,8 @@ $(document).ready(function () {
       });
 
       //user selected/created collection tags are gathered
-      for (let i = 0; i < collectionDatasetTags.value.length; i++) {
-        let tagName = collectionDatasetTags.value[i]["value"];
+      for (let i = 0; i < window.collectionDatasetTags.value.length; i++) {
+        let tagName = window.collectionDatasetTags.value[i]["value"];
         if (tagName.includes("，")) {
           let originalCommaName = tagName.replace(/，/g, ",");
           newCollectionTags.push(originalCommaName);
@@ -202,11 +202,11 @@ $(document).ready(function () {
     collectionNames.sort();
 
     //remove old tags before attaching current collection tags
-    collectionDatasetTags.removeAllTags();
-    collectionDatasetTags.addTags(currentCollectionNames);
+    window.collectionDatasetTags.removeAllTags();
+    window.collectionDatasetTags.addTags(currentCollectionNames);
 
     //add collection tags to whitelist of tagify
-    collectionDatasetTags.settings.whitelist = collectionNames;
+    window.collectionDatasetTags.settings.whitelist = collectionNames;
   };
 
   //object with both id and name of collection tags
@@ -243,10 +243,10 @@ $(document).ready(function () {
     collectionNames.sort();
 
     //put the gathered collection names to the tagify whitelist
-    collectionDatasetTags.settings.whitelist = collectionNames;
+    window.collectionDatasetTags.settings.whitelist = collectionNames;
     currentCollectionTags = currentCollectionNames;
-    collectionDatasetTags.removeAllTags();
-    collectionDatasetTags.addTags(currentCollectionNames);
+    window.collectionDatasetTags.removeAllTags();
+    window.collectionDatasetTags.addTags(currentCollectionNames);
 
     //if on collection section close the shown sweet alert
     if (collection_section.classList.contains("is-shown")) {
