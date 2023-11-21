@@ -1274,19 +1274,22 @@
               </div>
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
-                  class="ui positive basic button guided--radio-button"
+                  class="ui positive basic button guided--radio-button button-controls-sub-pools-sam-text"
                   id="guided-button-subjects-are-pooled"
                   data-next-element="guided-section-ask-if-subjects-have-samples"
                   data-button-config-value="dataset-contains-pools"
                   data-button-config-value-state="yes"
+                  data-controls-section="section-spreadsheet-import"
                 >
                   Yes
                 </button>
                 <button
-                  class="ui negative basic button guided--radio-button"
+                  class="ui negative basic button guided--radio-button button-controls-sub-pools-sam-text"
+                  id="guided-button-subjects-are-not-pooled"
                   data-next-element="guided-section-ask-if-subjects-have-samples"
                   data-button-config-value="dataset-contains-pools"
                   data-button-config-value-state="no"
+                  data-controls-section="section-spreadsheet-import"
                 >
                   No
                 </button>
@@ -1328,6 +1331,7 @@
                   data-next-element="guided-section-ask-subject-addition-method"
                   data-button-config-value="dataset-contains-samples"
                   data-button-config-value-state="yes"
+                  data-controls-section="section-spreadsheet-import"
                 >
                   Yes
                 </button>
@@ -1337,6 +1341,7 @@
                   data-next-element="guided-section-ask-subject-addition-method"
                   data-button-config-value="dataset-contains-samples"
                   data-button-config-value-state="no"
+                  data-controls-section="section-spreadsheet-import"
                 >
                   No
                 </button>
@@ -1386,6 +1391,18 @@
 
             <div class="guided--section" id="guided-section-add-subjects-via-spreadsheet">
               <div class="guided--section" id="section-spreadsheet-import">
+                <div class="sub-section" id="import-instructions-subjects">
+                  Subjects instructions
+                </div>
+                <div class="sub-section" id="import-instructions-subjects-pools">
+                  Subjects pools instructions
+                </div>
+                <div class="sub-section" id="import-instructions-subjects-samples">
+                  Subjects samples instructions
+                </div>
+                <div class="sub-section" id="import-instructions-subjects-pools-samples">
+                  Subjects pools samples instructions
+                </div>
                 <p class="help-text">
                   <b>1. </b>To import your subjects and samples through a spreadsheet, click the
                   button below to save a blank subject/sample spreadsheet template to your computer.

@@ -11438,34 +11438,6 @@ const convertArrayToCommaSeparatedString = (array) => {
     return `${array.join(", ")}, and ${lastElement}`;
   }
 };
-document.querySelectorAll(".button-controls-sub-pools-sam-text").forEach((button) => {
-  button.addEventListener("click", () => {
-    const datasetHasPools = document
-      .getElementById("guided-button-subjects-are-pooled")
-      .classList.contains("selected");
-
-    // If the clicked button is the subjects have samples buttons, then the subjects have samples
-    // so we want to add samples to the array (if it's not, the user is saying they do not have samples)
-    const subjectsHaveSamples = button.id === "guided-button-subjects-have-samples";
-
-    const datasetEntities = ["subjects"];
-    if (datasetHasPools) {
-      datasetEntities.push("pools");
-    }
-    if (subjectsHaveSamples) {
-      datasetEntities.push("samples");
-    }
-
-    const textFormattedEntities = convertArrayToCommaSeparatedString(datasetEntities);
-
-    const spansToInsertTextInto = document.querySelectorAll(
-      ".sub-pool-sample-structure-description-text"
-    );
-    spansToInsertTextInto.forEach((span) => {
-      span.innerHTML = textFormattedEntities;
-    });
-  });
-});
 
 const guidedOpenEntityAdditionSwal = async (entityName) => {
   // Get a list of the existing entities so we can check for duplicates
@@ -12948,7 +12920,20 @@ $("#guided-button-add-permission-team").on("click", function () {
   guidedAddTeamPermission(newTeamPermissionObj);
 });
 
+const arraysHaveSameElements = (arr1, arr2) => {
+  if (arr1.length != arr2.length) {
+    return false;
+  }
+  for (const elementValue of arr1) {
+    if (!arr2.includes(elementValue)) {
+      return false;
+    }
+  }
+  return true;
+};
+
 const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
+  console.log("controlledSectionID: ", controlledSectionID);
   const controlledElementContainer = document.getElementById(controlledSectionID);
   // Hide the children of the controlled element
   // (There should be logic below that shows the correct child)
@@ -13072,6 +13057,71 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
         .getElementById("guided-sub-section-experimental-confirmation")
         .classList.remove("hidden");
     }
+  }
+
+  if (controlledSectionID === "section-spreadsheet-import") {
+    const datasetHasPools = document
+      .getElementById("guided-button-subjects-are-pooled")
+      .classList.contains("selected");
+    const datasetDoesNotHavePools = document
+      .getElementById("guided-button-subjects-are-not-pooled")
+      .classList.contains("selected");
+    if (!datasetHasPools && !datasetDoesNotHavePools) {
+      return;
+    }
+
+    const datasetHasSamples = document
+      .getElementById("guided-button-subjects-have-samples")
+      .classList.contains("selected");
+    const datasetDoesNotHaveSamples = document
+      .getElementById("guided-button-subjects-do-not-have-samples")
+      .classList.contains("selected");
+    if (!datasetHasSamples && !datasetDoesNotHaveSamples) {
+      return;
+    }
+
+    const datasetEntities = ["subjects"];
+    if (datasetHasPools) {
+      datasetEntities.push("pools");
+    }
+    if (datasetHasSamples) {
+      datasetEntities.push("samples");
+    }
+
+    const showCorrectSpreadsheetInstructionSection = (datasetEntities) => {
+      console.log("datasetEntities: ", datasetEntities);
+      if (arraysHaveSameElements(datasetEntities, ["subjects"])) {
+        console.log("subjects only array detected");
+        document.getElementById("import-instructions-subjects").classList.remove("hidden");
+        // show the subjects only spreadsheet instructions
+      }
+      if (arraysHaveSameElements(datasetEntities, ["subjects", "pools"])) {
+        // show the subjects and pools spreadsheet instructions
+        document.getElementById("import-instructions-subjects-pools").classList.remove("hidden");
+      }
+      if (arraysHaveSameElements(datasetEntities, ["subjects", "samples"])) {
+        document.getElementById("import-instructions-subjects-samples").classList.remove("hidden");
+
+        // show the subjects and samples spreadsheet instructions
+      }
+      if (arraysHaveSameElements(datasetEntities, ["subjects", "pools", "samples"])) {
+        // show the subjects, pools, and samples spreadsheet instructions
+        document
+          .getElementById("import-instructions-subjects-pools-samples")
+          .classList.remove("hidden");
+      }
+    };
+
+    showCorrectSpreadsheetInstructionSection(datasetEntities);
+
+    const textFormattedEntities = convertArrayToCommaSeparatedString(datasetEntities);
+
+    const spansToInsertTextInto = document.querySelectorAll(
+      ".sub-pool-sample-structure-description-text"
+    );
+    spansToInsertTextInto.forEach((span) => {
+      span.innerHTML = textFormattedEntities;
+    });
   }
 };
 
