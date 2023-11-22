@@ -7193,7 +7193,7 @@ const manageDesc = (ev) => {
 //   }
 // };
 
-window.dismissStatus(id) {
+window.dismissStatus = (id) =>  {
   document.getElementById(id).style = "display: none;";
   //document.getElementById("dismiss-status-bar").style = "display: none;";
 }
