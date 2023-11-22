@@ -157,7 +157,7 @@ $(document).ready(function () {
           {
             value: whiteListTags.length + newTags.length - removeTags.length,
             dataset_name: window.defaultBfDataset,
-            dataset_id: window.window.defaultBfDatasetId,
+            dataset_id: window.defaultBfDatasetId,
           }
         );
       } else {
@@ -179,13 +179,13 @@ $(document).ready(function () {
           {
             value: 1,
             dataset_name: window.defaultBfDataset,
-            dataset_id: window.window.defaultBfDatasetId,
+            dataset_id: window.defaultBfDatasetId,
           }
         );
       }
 
       log.info(`Adding dataset '${selectedDataset}' to Collection'`);
-    }, delayAnimation);
+    }, window.delayAnimation);
   });
 
   const updateCollectionWhiteList = async () => {

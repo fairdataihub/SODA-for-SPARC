@@ -131,7 +131,7 @@ const updateDatasetList = (bfaccount) => {
     // The window.removeOptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
     $('#curatebfdatasetlist').find('option:not(:first)').remove()
 
-    for (myitem in filteredDatasets) {
+    for (const myitem in filteredDatasets) {
       var myitemselect = filteredDatasets[myitem]
       var option = document.createElement('option')
       option.textContent = myitemselect
@@ -1198,7 +1198,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
             // Get the current page that the user is on in the guided mode
             const currentPage = window.CURRENT_PAGE.id;
             if (currentPage) {
-              await window.window.openPage(currentPage);
+              await window.openPage(currentPage);
             }
           }
         } catch (error) {
@@ -1272,7 +1272,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     $("#div-permission-list-2").css("display", "none");
     $(".ui.active.green.inline.loader.small:not(.organization-loader)").css("display", "block");
     let currentLicenseText = currentDatasetLicense.innerText;
-    let currentPermissionsText = currentAddEditDatasetPermission.innerText;
+    let currentPermissionsText = window.currentAddEditDatasetPermission.innerText;
 
     setTimeout(async function () {
       // disable the Continue btn first
@@ -1570,7 +1570,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             // checkPrevDivForConfirmButton("dataset");
           } else if (result.isDismissed) {
             currentDatasetLicense.innerText = currentLicenseText;
-            currentAddEditDatasetPermission.innerText = currentPermissionsText;
+            window.currentAddEditDatasetPermission.innerText = currentPermissionsText;
           }
         });
 
@@ -1951,7 +1951,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#current-bf-organization-generate").text(window.bfOrganization);
           $(".bf-organization-span").html(window.bfOrganization);
           // set the permissions content to an empty string
-          await window.window.loadDefaultAccount();
+          await window.loadDefaultAccount();
 
           // confirm_click_function();
 

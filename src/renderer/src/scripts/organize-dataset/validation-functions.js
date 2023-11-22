@@ -217,7 +217,7 @@ const validateOrganizedDataset = async () => {
       kombuchaEnums.Status.FAIL,
       {
         value: file_counter,
-        dataset_id: window.window.defaultBfDatasetId,
+        dataset_id: window.defaultBfDatasetId,
         origin: datasetOrigin,
         destination: datasetDestination,
       }
@@ -251,7 +251,7 @@ const validateOrganizedDataset = async () => {
     kombuchaEnums.Status.SUCCESS,
     {
       value: file_counter,
-      dataset_id: window.window.defaultBfDatasetId,
+      dataset_id: window.defaultBfDatasetId,
       origin: datasetOrigin,
       destination: datasetDestination,
     }

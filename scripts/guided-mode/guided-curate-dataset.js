@@ -5889,7 +5889,7 @@ const window.openPage = async (targetPageID) => {
 
                   window.logGeneralOperationsForAnalytics(
                     "Error",
-                    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+                    window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
                     window.AnalyticsGranularity.ALL_LEVELS,
                     ["Importing Banner Image"]
                   );

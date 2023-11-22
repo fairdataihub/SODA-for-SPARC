@@ -74,7 +74,7 @@
                 class="option-card radio-button"
                 data-next="Question-prepare-manifest-2"
                 data-current="Question-prepare-manifest-1"
-                onclick="transitionFreeFormMode(this, 'Question-prepare-manifest-1', 'create_manifest-tab', '', 'prepare-manifest')"
+                onclick="window.transitionFreeFormMode(this, 'Question-prepare-manifest-1', 'create_manifest-tab', '', 'prepare-manifest')"
               >
                 <div class="card-head">
                   <div class="folder-checkbox">
@@ -113,7 +113,7 @@
                 class="option-card radio-button"
                 data-next="Question-prepare-manifest-3"
                 data-current="Question-prepare-manifest-1"
-                onclick="transitionFreeFormMode(this, 'Question-prepare-manifest-1', 'create_manifest-tab', '', 'prepare-manifest')"
+                onclick="window.transitionFreeFormMode(this, 'Question-prepare-manifest-1', 'create_manifest-tab', '', 'prepare-manifest')"
               >
                 <div class="card-head">
                   <div class="folder-checkbox">
@@ -199,7 +199,7 @@
             class="btn_question"
             data-next="Question-prepare-manifest-5"
             id="preview-manifest-fake-confirm-local"
-            onclick="transitionFreeFormMode(this, 'Question-prepare-manifest-2', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
+            onclick="window.transitionFreeFormMode(this, 'Question-prepare-manifest-2', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
             style="
               cursor: pointer;
               border-radius: 8px;
@@ -352,7 +352,7 @@
                 class="btn_question"
                 data-next="Question-prepare-manifest-5"
                 id="preview-manifest-fake-confirm-pennsieve"
-                onclick="transitionFreeFormMode(this, 'Question-prepare-manifest-3', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
+                onclick="window.transitionFreeFormMode(this, 'Question-prepare-manifest-3', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
                 style="
                   cursor: pointer;
                   border-radius: 8px;
@@ -561,7 +561,7 @@
           <!-- A continue button for step; appears during Local manifest file generation only-->
           <div style="display: flex; justify-content: center; margin-top: 25px">
             <button
-              onclick="transitionFreeFormMode(this, 'Question-prepare-manifest-5', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
+              onclick="window.transitionFreeFormMode(this, 'Question-prepare-manifest-5', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
               class="btn_question"
               id="continue_step_5-manifest"
               data-next="Question-prepare-manifest-6"

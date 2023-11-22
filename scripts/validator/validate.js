@@ -775,7 +775,7 @@ document.querySelector("#validate_dataset-1-local").addEventListener("click", as
   document.querySelector("#run_validator_btn").style.display = "none";
 
   // transition to the next question - uses transitionToValidateQuestionTwo
-  transitionFreeFormMode(
+  window.transitionFreeFormMode(
     document.querySelector("#validate_dataset-1-local"),
     "validate_dataset-question-1",
     "validate_dataset-tab",
@@ -813,7 +813,7 @@ document
     document.querySelector("#run_validator_btn").style.display = "none";
 
     // move to next question
-    transitionFreeFormMode(
+    window.transitionFreeFormMode(
       this,
       "validate_dataset-question-1",
       "validate_dataset-tab",
@@ -886,7 +886,7 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
 
     document.querySelector("#run_validator_btn").style.display = "flex";
 
-    transitionFreeFormMode(
+    window.transitionFreeFormMode(
       this,
       "validate_dataset-question-2",
       "validate_dataset-tab",
@@ -937,7 +937,7 @@ document.querySelector("#run_validator_btn").addEventListener("click", async fun
   }
 
   if (getValidationResultsCount() > 0) {
-    transitionFreeFormMode(
+    window.transitionFreeFormMode(
       this,
       "validate_dataset-question-3",
       "validate_dataset-tab",
@@ -953,7 +953,7 @@ const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
   // once a dataset has been selected show the run validator button if the current question is active
   if ($("#bf_dataset_load_validator").text().trim() !== "None") {
     // transition to the next question
-    transitionFreeFormMode(
+    window.transitionFreeFormMode(
       document.querySelector("#confirm-dataset-selection--validator"),
       "validate_dataset-question-2",
       "validate_dataset-tab",

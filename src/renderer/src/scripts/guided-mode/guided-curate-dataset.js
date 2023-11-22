@@ -3787,10 +3787,10 @@ let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home")
 let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress")
 
 const guidedResetProgressVariables = () => {
-  window.window.sodaJSONObj = {};
+  window.sodaJSONObj = {};
   window.datasetStructureJSONObj = {};
-  window.window.subjectsTableData = [];
-  window.window.samplesTableData = [];
+  window.subjectsTableData = [];
+  window.samplesTableData = [];
 };
 
 window.guidedPrepareHomeScreen = async () => {
@@ -5902,7 +5902,7 @@ window.openPage = async (targetPageID) => {
 
                   window.logGeneralOperationsForAnalytics(
                     "Error",
-                    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+                    window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
                     window.AnalyticsGranularity.ALL_LEVELS,
                     ["Importing Banner Image"]
                   );

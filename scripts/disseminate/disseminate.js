@@ -107,10 +107,10 @@ const disseminateShowPublishingStatus = async (callback, account, dataset) => {
 
 const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
   if (bfDS === "Select dataset") {
-    currentDatasetPermission.innerHTML = "None";
+    window.currentDatasetPermission.innerHTML = "None";
     return;
   }
-  currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
+  window.currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
 
   let permissions;
   try {
@@ -121,7 +121,7 @@ const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
       "track-event",
       "Error",
       "Disseminate Datasets - Show current dataset permission",
-      window.window.defaultBfDatasetId
+      window.defaultBfDatasetId
     );
     return;
   }
@@ -137,13 +137,13 @@ const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
     }
   }
 
-  currentDatasetPermission.innerHTML = datasetOwner;
+  window.currentDatasetPermission.innerHTML = datasetOwner;
 
   ipcRenderer.send(
     "track-event",
     "Success",
     "Disseminate Datasets - Show current dataset permission",
-    window.window.defaultBfDatasetId
+    window.defaultBfDatasetId
   );
 };
 
@@ -171,7 +171,7 @@ const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) 
         "track-event",
         "Success",
         "Disseminate Datasets - Show current dataset status",
-        window.window.defaultBfDatasetId
+        window.defaultBfDatasetId
       );
       var myitemselect = [];
       removeOptions(bfListDatasetStatus);
@@ -198,7 +198,7 @@ const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) 
         "track-event",
         "Error",
         "Disseminate Datasets - Show current dataset status",
-        window.window.defaultBfDatasetId
+        window.defaultBfDatasetId
       );
     }
   }

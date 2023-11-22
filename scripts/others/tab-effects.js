@@ -2056,7 +2056,7 @@ const window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, bu
   }
 };
 
-const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, category) => {
+const window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, category) => {
   let continueProgressRC = true;
   let continueProgressDD = true;
 

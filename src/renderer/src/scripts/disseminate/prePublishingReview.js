@@ -230,7 +230,7 @@ const orcidSignIn = async (ev, curationMode) => {
         "track-event",
         "Success",
         window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Integrate ORCID iD",
-        window.window.defaultBfDatasetId
+        window.defaultBfDatasetId
       );
 
       // mark the orcid item green

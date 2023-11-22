@@ -1283,7 +1283,7 @@ const initiate_generate_manifest_bf = async () => {
     kombuchaEnums.Status.SUCCESS,
     {
       value: high_level_folder_num,
-      dataset_id: window.window.defaultBfDatasetId,
+      dataset_id: window.defaultBfDatasetId,
       origin: origin,
       destination: destination,
     }
@@ -1319,7 +1319,7 @@ const initiate_generate_manifest_bf = async () => {
 /// creating manifest files locally by generating them to a local SODA folder, then move them to original dataset folder
 const moveManifestFiles = (sourceFolder, destinationFolder) => {
   return new Promise((resolve) => {
-    window.window.fs.readdir(sourceFolder, (err, folders) => {
+    window.fs.readdir(sourceFolder, (err, folders) => {
       if (err) {
         console.log(err);
         resolve(false);
@@ -1348,7 +1348,7 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
   // get the files/folders in the source folder
   let sourceDir;
   try {
-    sourceDir = await window.window.fs.readdir(sourceFolder);
+    sourceDir = await window.fs.readdir(sourceFolder);
   } catch (error) {
     clientError(error);
     Swal.fire({
@@ -1391,7 +1391,7 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
     let destinationManifest = window.path.join(destinationManifestHighLevelFolder, "manifest.xlsx");
 
     try {
-      await window.window.fs.copyFile(sourceManifest, destinationManifest);
+      await window.fs.copyFile(sourceManifest, destinationManifest);
     } catch (error) {
       clientError(error);
       Swal.fire({
@@ -1421,7 +1421,7 @@ const createDuplicateManifestDirectory = async (destination) => {
   // get the files/folders in the destination folder
   let destinationDir;
   try {
-    destinationDir = await window.window.fs.readdir(destination);
+    destinationDir = await window.fs.readdir(destination);
   } catch (error) {
     clientError(error);
     Swal.fire({
@@ -2159,7 +2159,7 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
     $("#bf_dataset_create_manifest").text("None");
   }
 
-  transitionFreeFormMode(
+  window.transitionFreeFormMode(
     document.querySelector("#div-confirm-manifest-local-folder-dataset .btn_animated"),
     "Question-prepare-manifest-2",
     "create_manifest-tab",

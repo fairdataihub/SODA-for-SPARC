@@ -1198,7 +1198,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     $("#div-permission-list-2").css("display", "none");
     $(".ui.active.green.inline.loader.small:not(.organization-loader)").css("display", "block");
     let currentLicenseText = currentDatasetLicense.innerText;
-    let currentPermissionsText = currentAddEditDatasetPermission.innerText;
+    let currentPermissionsText = window.currentAddEditDatasetPermission.innerText;
 
     setTimeout(async function () {
       // disable the Continue btn first
@@ -1496,7 +1496,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             // checkPrevDivForConfirmButton("dataset");
           } else if (result.isDismissed) {
             currentDatasetLicense.innerText = currentLicenseText;
-            currentAddEditDatasetPermission.innerText = currentPermissionsText;
+            window.currentAddEditDatasetPermission.innerText = currentPermissionsText;
           }
         });
 
@@ -1534,7 +1534,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         for (const item of datasetList) {
           let { name, id } = item;
           if (name === bfDataset) {
-            window.window.defaultBfDatasetId = id;
+            window.defaultBfDatasetId = id;
           }
         }
 
@@ -1547,7 +1547,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         ipcRenderer.send(
           "track-event",
           "Dataset ID to Dataset Name Map",
-          window.window.defaultBfDatasetId,
+          window.defaultBfDatasetId,
           window.defaultBfDataset
         );
 
@@ -1576,7 +1576,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $("body").removeClass("waiting");
       $(".svg-change-current-account.dataset").css("display", "block");
       $(".ui.active.green.inline.loader.small").css("display", "none");
-      ipcRenderer.send("track-event", "Success", "Selecting dataset", window.window.defaultBfDatasetId, 1);
+      ipcRenderer.send("track-event", "Success", "Selecting dataset", window.defaultBfDatasetId, 1);
     }, 10);
   } else if (dropdown === "organization") {
     // TODO: Change these classes to organization classes

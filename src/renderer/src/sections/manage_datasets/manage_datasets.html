@@ -689,7 +689,7 @@
                 <div
                   class="option-card radio-button getting-started-1st-question"
                   data-next="add_edit_user_permissions_div"
-                  onclick="transitionFreeFormMode(this, 'add_edit_permissions_choice_div', 'add_edit_permissions_parent-tab', '', 'individual-question manage-dataset')"
+                  onclick="window.transitionFreeFormMode(this, 'add_edit_permissions_choice_div', 'add_edit_permissions_parent-tab', '', 'individual-question manage-dataset')"
                 >
                   <div class="card-head">
                     <div class="folder-checkbox">
@@ -724,7 +724,7 @@
                 <div
                   class="option-card radio-button getting-started-1st-question"
                   data-next="add_edit_team_permissions_div"
-                  onclick="transitionFreeFormMode(this, 'add_edit_permissions_choice_div', 'add_edit_permissions_parent-tab', '', 'individual-question manage-dataset')"
+                  onclick="window.transitionFreeFormMode(this, 'add_edit_permissions_choice_div', 'add_edit_permissions_parent-tab', '', 'individual-question manage-dataset')"
                 >
                   <div class="card-head">
                     <div class="folder-checkbox">
@@ -2066,7 +2066,7 @@
               >
                 <button
                   id="button_upload_local_folder_confirm"
-                  onclick="transitionFreeFormMode(this, 'upload_local_dataset_div', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
+                  onclick="window.transitionFreeFormMode(this, 'upload_local_dataset_div', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
                   data-next="upload_local_dataset_final_question_div"
                   style="
                     cursor: pointer;
@@ -2103,7 +2103,7 @@
               <button
                 id="button-submit-dataset"
                 class="btn_animated md"
-                onclick="transitionFreeFormMode(this, 'upload_local_dataset_final_question_div', 'upload_local_dataset_parent-tab', '', 'individual-question manage-dataset')"
+                onclick="window.transitionFreeFormMode(this, 'upload_local_dataset_final_question_div', 'upload_local_dataset_parent-tab', '', 'individual-question manage-dataset')"
                 data-next="upload_local_dataset_progress_div"
                 style="
                   margin: 10px auto;

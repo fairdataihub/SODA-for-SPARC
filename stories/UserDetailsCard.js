@@ -41,7 +41,7 @@ const UserDetailsCard = ({
     >
       <button
         id="${buttonId}"
-        onclick="transitionFreeFormMode(this, '${currentTab}', '${currentParentTab}', '${action}', '${section}')"
+        onclick="window.transitionFreeFormMode(this, '${currentTab}', '${currentParentTab}', '${action}', '${section}')"
         data-next="${dataNext}"
         class="confirm-button"
         style="

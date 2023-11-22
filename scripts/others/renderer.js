@@ -1485,7 +1485,7 @@ const manifestFileCheck = document.getElementById("generate-manifest-curate");
 let bfAccountOptions;
 let window.defaultBfDataset;
 let window.defaultBfDataset = "Select dataset";
-let window.window.defaultBfDatasetId = undefined;
+let window.defaultBfDatasetId = undefined;
 
 
 // Organize dataset //
@@ -1541,8 +1541,8 @@ const bfListLicense = document.querySelector("#bf-license-list");
 const bfAddLicenseBtn = document.getElementById("button-add-license");
 
 // Pennsieve dataset permission //
-const currentDatasetPermission = document.querySelector("#para-dataset-permission-current");
-const currentAddEditDatasetPermission = document.querySelector(
+const window.currentDatasetPermission = document.querySelector("#para-dataset-permission-current");
+const window.currentAddEditDatasetPermission = document.querySelector(
   "#para-add-edit-dataset-permission-current"
 );
 const bfListUsersPI = document.querySelector("#bf_list_users_pi");
@@ -1578,7 +1578,7 @@ const redColor = "#ff1a1a";
 const sparcFolderNames = ["code", "derivative", "docs", "primary", "protocol", "source"];
 const smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">';
 const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">';
-const delayAnimation = 250;
+const window.delayAnimation = 250;
 
 //////////////////////////////////
 // Operations on JavaScript end only
@@ -3678,7 +3678,7 @@ const window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       kombuchaEnums.Status.FAIL,
       {
         value: 1,
-        dataset_id: window.window.defaultBfDatasetId,
+        dataset_id: window.defaultBfDatasetId,
       }
     );
 
@@ -3715,7 +3715,7 @@ const window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
     kombuchaEnums.Status.SUCCESS,
     {
       value: 1,
-      dataset_id: window.window.defaultBfDatasetId,
+      dataset_id: window.defaultBfDatasetId,
     }
   );
 
@@ -7218,7 +7218,7 @@ document.getElementById("button-generate-comeback").addEventListener("click", fu
     ) {
       sodaJSONObj["starting-point"]["type"] = "local";
     }
-  }, delayAnimation);
+  }, window.delayAnimation);
 });
 
 // function to hide the sidebar and disable the sidebar expand button
@@ -8598,7 +8598,7 @@ function logMetadataForAnalytics(
     actionName = actionName + " - " + destination;
     // log only the action with the destination added
     if (destination === Destinations.PENNSIEVE) {
-      ipcRenderer.send("track-event", `${category}`, actionName, window.window.defaultBfDatasetId);
+      ipcRenderer.send("track-event", `${category}`, actionName, window.defaultBfDatasetId);
     } else {
       ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
     }
@@ -8632,7 +8632,7 @@ const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, si
     {
       value: size,
       destination: destination,
-      origin: uploadBFBoolean ? window.window.defaultBfDatasetId : "Local",
+      origin: uploadBFBoolean ? window.defaultBfDatasetId : "Local",
       dataset_name: window.defaultBfDataset,
     }
   );
@@ -8669,7 +8669,7 @@ const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, si
     "track-event",
     "Success",
     currentMetadataLoggingPrefix + ` - Generate - ${destination} - Size`,
-    uploadBFBoolean ? window.window.defaultBfDatasetId : "Local",
+    uploadBFBoolean ? window.defaultBfDatasetId : "Local",
     size
   );
 };
@@ -8698,7 +8698,7 @@ const MetadataAnalyticsPrefix = {
   SUBMISSION: "Prepare Metadata - submission",
 };
 
-const ManageDatasetsAnalyticsPrefix = {
+const window.ManageDatasetsAnalyticsPrefix = {
   MANAGE_DATASETS_CREATE_DATASET: "Manage Datasets - Create a new dataset",
   MANAGE_DATASETS_RENAME_DATASET: "Manage Datasets - Rename an existing dataset",
   MANAGE_DATASETS_MAKE_PI_OWNER: "Manage Datasets - Make PI owner of dataset",
@@ -8805,7 +8805,7 @@ const logCurationForAnalytics = (
     // determine logging format
     if (location === Destinations.PENNSIEVE) {
       // use the datasetid as a label and do not add an aggregation value
-      ipcRenderer.send("track-event", `${category}`, actionName, window.window.defaultBfDatasetId);
+      ipcRenderer.send("track-event", `${category}`, actionName, window.defaultBfDatasetId);
     } else {
       // log the location as a label and add an aggregation value
       ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
@@ -8861,7 +8861,7 @@ const window.logGeneralOperationsForAnalytics = (category, analyticsPrefix, gran
     for (let idx = 0; idx < actions.length; idx++) {
       // track the action
       actionName = analyticsPrefix + " - " + actions[idx];
-      ipcRenderer.send("track-event", `${category}`, actionName, window.window.defaultBfDatasetId);
+      ipcRenderer.send("track-event", `${category}`, actionName, window.defaultBfDatasetId);
     }
   }
 };

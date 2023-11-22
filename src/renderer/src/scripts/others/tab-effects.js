@@ -1766,7 +1766,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
   if (currentDiv === "Question-getting-started-BF-dataset") {
     let selectedDataset = $("#current-bf-dataset").text();
     $("#nextBtn").prop("disabled", true);
-    window.window.sodaJSONObj = {
+    window.sodaJSONObj = {
       "bf-account-selected": {
         "account-name": {},
       },
@@ -1783,8 +1783,8 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     };
 
     // Set the default Pennsieve account and dataset
-    window.window.sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfAccount;
-    window.window.sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedDataset;
+    window.sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfAccount;
+    window.sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedDataset;
 
     $("#para-continue-bf-dataset-getting-started").text("");
     $("body").addClass("waiting");
@@ -1908,14 +1908,14 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
         },
       }).then((response) => {
         if (response.isConfirmed) {
-          window.window.sodaJSONObj = sodaObject;
-          if (JSON.stringify(window.window.sodaJSONObj["dataset-structure"]) !== "{}") {
-            window.datasetStructureJSONObj = window.window.sodaJSONObj["dataset-structure"];
+          window.sodaJSONObj = sodaObject;
+          if (JSON.stringify(window.sodaJSONObj["dataset-structure"]) !== "{}") {
+            window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
           } else {
             window.datasetStructureJSONObj = { folders: {}, files: {} };
           }
           populate_existing_folders(window.datasetStructureJSONObj);
-          populate_existing_metadata(window.window.sodaJSONObj);
+          populate_existing_metadata(window.sodaJSONObj);
           $("#nextBtn").prop("disabled", false);
           $("#para-continue-bf-dataset-getting-started").text("Please continue below.");
           showHideDropdownButtons("dataset", "show");
@@ -1933,9 +1933,9 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
         }
       });
     } else {
-      window.window.sodaJSONObj = sodaObject;
-      if (JSON.stringify(window.window.sodaJSONObj["dataset-structure"]) !== "{}") {
-        window.datasetStructureJSONObj = window.window.sodaJSONObj["dataset-structure"];
+      window.sodaJSONObj = sodaObject;
+      if (JSON.stringify(window.sodaJSONObj["dataset-structure"]) !== "{}") {
+        window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
       } else {
         window.datasetStructureJSONObj = { folders: {}, files: {} };
       }
@@ -2034,7 +2034,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     $("#existing-bf").is(":checked")
   ) {
     $("#nextBtn").prop("disabled", true);
-    if (window.window.sodaJSONObj["dataset-structure"] != {}) {
+    if (window.sodaJSONObj["dataset-structure"] != {}) {
       $("#nextBtn").prop("disabled", false);
     }
   }
@@ -2044,7 +2044,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     $("#existing-local").is(":checked") &&
     currentDiv == "Question-getting-started-1"
   ) {
-    window.window.sodaJSONObj = {
+    window.sodaJSONObj = {
       "bf-account-selected": {},
       "bf-dataset-selected": {},
       "dataset-structure": {},
@@ -2063,7 +2063,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
   }
 };
 
-const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, category) => {
+window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, category) => {
   let continueProgressRC = true;
   let continueProgressDD = true;
 
@@ -3051,13 +3051,13 @@ const populateOrganizeDatasetUI = (currentLocation, datasetFolder) => {
 // Step 3: Dataset structure
 
 window.updateJSONStructureDSstructure = () => {
-  window.window.sodaJSONObj["dataset-structure"] = window.datasetStructureJSONObj;
+  window.sodaJSONObj["dataset-structure"] = window.datasetStructureJSONObj;
   // check if dataset-structure key is empty (no high-level folders are included)
   if (
-    JSON.stringify(window.window.sodaJSONObj["dataset-structure"]) === "{}" ||
-    JSON.stringify(window.window.sodaJSONObj["dataset-structure"]["folders"]) === "{}"
+    JSON.stringify(window.sodaJSONObj["dataset-structure"]) === "{}" ||
+    JSON.stringify(window.sodaJSONObj["dataset-structure"]["folders"]) === "{}"
   ) {
-    delete window.window.sodaJSONObj["dataset-structure"];
+    delete window.sodaJSONObj["dataset-structure"];
   }
 };
 

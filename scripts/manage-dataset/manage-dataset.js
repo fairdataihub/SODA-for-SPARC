@@ -201,18 +201,18 @@ $("#button-create-bf-new-dataset").click(async () => {
       $("#button-create-bf-new-dataset").hide();
 
       window.defaultBfDataset = bfNewDatasetName;
-      window.window.defaultBfDatasetId = res;
+      window.defaultBfDatasetId = res;
       // log a map of datasetId to dataset name to analytics
       // this will be used to help us track private datasets which are not trackable using a datasetId alone
       ipcRenderer.send(
         "track-event",
         "Dataset ID to Dataset Name Map",
-        window.window.defaultBfDatasetId,
+        window.defaultBfDatasetId,
         window.defaultBfDataset
       );
       window.refreshDatasetList();
-      currentDatasetPermission.innerHTML = "";
-      currentAddEditDatasetPermission.innerHTML = "";
+      window.currentDatasetPermission.innerHTML = "";
+      window.currentAddEditDatasetPermission.innerHTML = "";
       $("#button-create-bf-new-dataset").prop("disabled", false);
 
       window.addNewDatasetToList(bfNewDatasetName);
@@ -224,14 +224,14 @@ $("#button-create-bf-new-dataset").click(async () => {
         kombuchaEnums.Status.SUCCESS,
         {
           value: 1,
-          dataset_id: window.window.defaultBfDatasetId,
+          dataset_id: window.defaultBfDatasetId,
         }
       );
 
       ipcRenderer.send(
         "track-event",
         "Success",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
+        window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
         bfNewDatasetName
       );
 
@@ -277,11 +277,11 @@ $("#button-create-bf-new-dataset").click(async () => {
       ipcRenderer.send(
         "track-event",
         "Error",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
+        window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
         bfNewDatasetName
       );
     }
-  }, delayAnimation);
+  }, window.delayAnimation);
 });
 
 /// add new datasets to dataset List without calling Python to retrieve new list from Pennsieve
@@ -355,8 +355,8 @@ $("#button-rename-dataset").on("click", async () => {
         ipcRenderer.send(
           "track-event",
           "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
-          `${window.window.defaultBfDatasetId}: ` + currentDatasetName + " to " + renamedDatasetName
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
+          `${window.defaultBfDatasetId}: ` + currentDatasetName + " to " + renamedDatasetName
         );
 
         ipcRenderer.send(
@@ -367,7 +367,7 @@ $("#button-rename-dataset").on("click", async () => {
           kombuchaEnums.Status.FAIL,
           {
             value: 1,
-            dataset_id: window.window.defaultBfDatasetId,
+            dataset_id: window.defaultBfDatasetId,
           }
         );
 
@@ -399,22 +399,22 @@ $("#button-rename-dataset").on("click", async () => {
         kombuchaEnums.Status.SUCCESS,
         {
           value: 1,
-          dataset_id: window.window.defaultBfDatasetId,
+          dataset_id: window.defaultBfDatasetId,
         }
       );
 
       ipcRenderer.send(
         "track-event",
         "Success",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
-        `${window.window.defaultBfDatasetId}: ` + currentDatasetName + " to " + renamedDatasetName
+        window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_RENAME_DATASET,
+        `${window.defaultBfDatasetId}: ` + currentDatasetName + " to " + renamedDatasetName
       );
 
       // in case the user does not select a dataset after changing the name add the new datasetID to name mapping
       ipcRenderer.send(
         "track-event",
         "Dataset ID to Dataset Name Map",
-        window.window.defaultBfDatasetId,
+        window.defaultBfDatasetId,
         renamedDatasetName
       );
 
@@ -428,7 +428,7 @@ $("#button-rename-dataset").on("click", async () => {
         clientError(error);
       }
     }
-  }, delayAnimation);
+  }, window.delayAnimation);
 });
 
 // Make PI owner //
@@ -500,8 +500,8 @@ $("#button-add-permission-pi").click(async () => {
         ipcRenderer.send(
           "track-event",
           "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
-          window.window.defaultBfDatasetId
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
+          window.defaultBfDatasetId
         );
 
         ipcRenderer.send(
@@ -512,7 +512,7 @@ $("#button-add-permission-pi").click(async () => {
           kombuchaEnums.Status.SUCCESS,
           {
             value: selectedUser,
-            dataset_id: window.window.defaultBfDatasetId,
+            dataset_id: window.defaultBfDatasetId,
           }
         );
 
@@ -540,15 +540,15 @@ $("#button-add-permission-pi").click(async () => {
           kombuchaEnums.Status.FAILURE,
           {
             value: selectedUser,
-            dataset_id: window.window.defaultBfDatasetId,
+            dataset_id: window.defaultBfDatasetId,
           }
         );
 
         ipcRenderer.send(
           "track-event",
           "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
-          window.window.defaultBfDatasetId
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
+          window.defaultBfDatasetId
         );
 
         Swal.fire({
@@ -582,13 +582,13 @@ const showCurrentPermission = async () => {
   }
 
   if (selectedBfDataset === "Select dataset") {
-    currentDatasetPermission.innerHTML = "None";
-    currentAddEditDatasetPermission.innerHTML = "None";
+    window.currentDatasetPermission.innerHTML = "None";
+    window.currentAddEditDatasetPermission.innerHTML = "None";
     return;
   }
 
-  currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
-  currentAddEditDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
+  window.currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
+  window.currentAddEditDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   log.info(`Requesting current permissions for ${selectedBfDataset}.`);
 
   try {
@@ -607,8 +607,8 @@ const showCurrentPermission = async () => {
       }
     }
 
-    currentDatasetPermission.innerHTML = datasetOwner;
-    currentAddEditDatasetPermission.innerHTML = permissionList;
+    window.currentDatasetPermission.innerHTML = datasetOwner;
+    window.currentAddEditDatasetPermission.innerHTML = permissionList;
   } catch (error) {
     clientError(error);
   }
@@ -652,7 +652,7 @@ const addPermissionUser = async (
 
     window.logGeneralOperationsForAnalytics(
       "Error",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
       window.AnalyticsGranularity.ALL_LEVELS,
       ["Add User Permissions"]
     );
@@ -665,7 +665,7 @@ const addPermissionUser = async (
       kombuchaEnums.Status.FAIL,
       {
         value: 1,
-        dataset_id: window.window.defaultBfDatasetId,
+        dataset_id: window.defaultBfDatasetId,
         dataset_name: window.defaultBfDataset,
       }
     );
@@ -692,7 +692,7 @@ const addPermissionUser = async (
     kombuchaEnums.Status.FAIL,
     {
       value: 1,
-      dataset_id: window.window.defaultBfDatasetId,
+      dataset_id: window.defaultBfDatasetId,
       dataset_name: window.defaultBfDataset,
     }
   );
@@ -701,7 +701,7 @@ const addPermissionUser = async (
 
   window.logGeneralOperationsForAnalytics(
     "Success",
-    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+    window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
     window.AnalyticsGranularity.ALL_LEVELS,
     ["Add User Permissions"]
   );
@@ -762,7 +762,7 @@ $("#button-add-permission-user").click(() => {
     let selectedRole = $("#bf_list_roles_user").val();
 
     addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole);
-  }, delayAnimation);
+  }, window.delayAnimation);
 });
 
 // Add permission for team
@@ -807,7 +807,7 @@ $("#button-add-permission-team").click(async () => {
       log.info("Added permission for the team");
       window.logGeneralOperationsForAnalytics(
         "Success",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+        window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
         window.AnalyticsGranularity.ALL_LEVELS,
         ["Add Team Permissions"]
       );
@@ -820,7 +820,7 @@ $("#button-add-permission-team").click(async () => {
         kombuchaEnums.Status.SUCCESS,
         {
           value: 1,
-          dataset_id: window.window.defaultBfDatasetId,
+          dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
         }
       );
@@ -855,19 +855,19 @@ $("#button-add-permission-team").click(async () => {
         kombuchaEnums.Status.FAIL,
         {
           value: 1,
-          dataset_id: window.window.defaultBfDatasetId,
+          dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
         }
       );
 
       window.logGeneralOperationsForAnalytics(
         "Error",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+        window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
         window.AnalyticsGranularity.ALL_LEVELS,
         ["Add Team Permissions"]
       );
     }
-  }, delayAnimation);
+  }, window.delayAnimation);
 });
 
 // Character count for subtitle //
@@ -947,15 +947,15 @@ $("#button-add-subtitle").click(async () => {
         kombuchaEnums.Status.SUCCESS,
         {
           value: 1,
-          dataset_id: window.window.defaultBfDatasetId,
+          dataset_id: window.defaultBfDatasetId,
         }
       );
 
       ipcRenderer.send(
         "track-event",
         "Success",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
-        window.window.defaultBfDatasetId
+        window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+        window.defaultBfDatasetId
       );
 
       // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
@@ -978,8 +978,8 @@ $("#button-add-subtitle").click(async () => {
       ipcRenderer.send(
         "track-event",
         "Error",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
-        window.window.defaultBfDatasetId
+        window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+        window.defaultBfDatasetId
       );
 
       ipcRenderer.send(
@@ -990,11 +990,11 @@ $("#button-add-subtitle").click(async () => {
         kombuchaEnums.Status.FAIL,
         {
           value: 1,
-          dataset_id: window.window.defaultBfDatasetId,
+          dataset_id: window.defaultBfDatasetId,
         }
       );
     }
-  }, delayAnimation);
+  }, window.delayAnimation);
 });
 
 const showCurrentSubtitle = async () => {
@@ -1019,7 +1019,7 @@ const showCurrentSubtitle = async () => {
     let subtitle = await api.getDatasetSubtitle(selectedBfAccount, selectedBfDataset);
     window.logGeneralOperationsForAnalytics(
       "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
       window.AnalyticsGranularity.ACTION,
       ["Get Subtitle"]
     );
@@ -1035,7 +1035,7 @@ const showCurrentSubtitle = async () => {
     clientError(error);
     window.logGeneralOperationsForAnalytics(
       "Error",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
       window.AnalyticsGranularity.ALL_LEVELS,
       ["Get Subtitle"]
     );
@@ -1084,7 +1084,7 @@ const showCurrentDescription = async () => {
     clientError(error);
     window.logGeneralOperationsForAnalytics(
       "Error",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
       window.AnalyticsGranularity.ALL_LEVELS,
       ["Get Readme"]
     );
@@ -1093,7 +1093,7 @@ const showCurrentDescription = async () => {
 
   window.logGeneralOperationsForAnalytics(
     "Success",
-    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+    window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
     window.AnalyticsGranularity.ACTION,
     ["Get Readme"]
   );
@@ -1109,7 +1109,7 @@ const showCurrentDescription = async () => {
 
     window.logGeneralOperationsForAnalytics(
       "Error",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
       window.AnalyticsGranularity.ALL_LEVELS,
       ["Parse Readme"]
     );
@@ -1118,7 +1118,7 @@ const showCurrentDescription = async () => {
 
   window.logGeneralOperationsForAnalytics(
     "Success",
-    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+    window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
     window.AnalyticsGranularity.ACTION,
     ["Parse Readme"]
   );
@@ -1244,7 +1244,7 @@ $("#button-add-description").click(() => {
       // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
       showPrePublishingStatus();
     }
-  }, delayAnimation);
+  }, window.delayAnimation);
 });
 
 // closes the warning message that appears when a user has invalid text
@@ -1288,7 +1288,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
 
     window.logGeneralOperationsForAnalytics(
       "Error",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
       window.AnalyticsGranularity.ALL_LEVELS,
       ["Get Readme"]
     );
@@ -1336,8 +1336,8 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     ipcRenderer.send(
       "track-event",
       "Error",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
-      window.window.defaultBfDatasetId
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+      window.defaultBfDatasetId
     );
 
     ipcRenderer.send(
@@ -1348,7 +1348,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
       kombuchaEnums.Status.FAIL,
       {
         value: 1,
-        dataset_id: window.window.defaultBfDatasetId,
+        dataset_id: window.defaultBfDatasetId,
       }
     );
 
@@ -1358,8 +1358,8 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   ipcRenderer.send(
     "track-event",
     "Success",
-    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
-    window.window.defaultBfDatasetId
+    window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
+    window.defaultBfDatasetId
   );
 
   ipcRenderer.send(
@@ -1370,7 +1370,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     kombuchaEnums.Status.SUCCESS,
     {
       value: 1,
-      dataset_id: window.window.defaultBfDatasetId,
+      dataset_id: window.defaultBfDatasetId,
     }
   );
 
@@ -1608,8 +1608,8 @@ const showDatasetDescription = async () => {
     ipcRenderer.send(
       "track-event",
       "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE + " - Get Subtitle",
-      window.window.defaultBfDatasetId
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE + " - Get Subtitle",
+      window.defaultBfDatasetId
     );
     $("#ds-description").html(subtitle);
 
@@ -1624,8 +1624,8 @@ const showDatasetDescription = async () => {
     ipcRenderer.send(
       "track-event",
       "Error",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE + " - Get Subtitle",
-      window.window.defaultBfDatasetId
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE + " - Get Subtitle",
+      window.defaultBfDatasetId
     );
   }
 
@@ -1685,7 +1685,7 @@ $("#edit_banner_image_button").click(async () => {
 
           window.logGeneralOperationsForAnalytics(
             "Error",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+            window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
             window.AnalyticsGranularity.ALL_LEVELS,
             ["Importing Banner Image"]
           );
@@ -1705,7 +1705,7 @@ $("#edit_banner_image_button").click(async () => {
 
         window.logGeneralOperationsForAnalytics(
           "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
           window.AnalyticsGranularity.ALL_LEVELS,
           ["Importing Banner Image"]
         );
@@ -1725,7 +1725,7 @@ $("#edit_banner_image_button").click(async () => {
 
       window.logGeneralOperationsForAnalytics(
         "Error",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+        window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
         window.AnalyticsGranularity.ALL_LEVELS,
         ["Importing Banner Image"]
       );
@@ -1735,7 +1735,7 @@ $("#edit_banner_image_button").click(async () => {
 
     window.logGeneralOperationsForAnalytics(
       "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
       window.AnalyticsGranularity.ACTION,
       ["Importing Banner Image"]
     );
@@ -1936,15 +1936,15 @@ const uploadBannerImage = async () => {
         ipcRenderer.send(
           "track-event",
           "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-          window.window.defaultBfDatasetId
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+          window.defaultBfDatasetId
         );
 
         // track the size for all dataset banner uploads
         ipcRenderer.send(
           "track-event",
           "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER + " - Size",
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER + " - Size",
           "Size",
           image_file_size
         );
@@ -1957,7 +1957,7 @@ const uploadBannerImage = async () => {
           kombuchaEnums.Status.SUCCESS,
           {
             value: image_file_size,
-            dataset_id: window.window.defaultBfDatasetId,
+            dataset_id: window.defaultBfDatasetId,
           }
         );
 
@@ -1965,8 +1965,8 @@ const uploadBannerImage = async () => {
         ipcRenderer.send(
           "track-event",
           "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER + " - Size",
-          window.window.defaultBfDatasetId,
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER + " - Size",
+          window.defaultBfDatasetId,
           image_file_size
         );
         //add success toast here
@@ -1988,8 +1988,8 @@ const uploadBannerImage = async () => {
         ipcRenderer.send(
           "track-event",
           "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-          window.window.defaultBfDatasetId
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+          window.defaultBfDatasetId
         );
 
         ipcRenderer.send(
@@ -2000,7 +2000,7 @@ const uploadBannerImage = async () => {
           kombuchaEnums.Status.FAIL,
           {
             value: 1,
-            dataset_id: window.window.defaultBfDatasetId,
+            dataset_id: window.defaultBfDatasetId,
           }
         );
       }
@@ -2036,15 +2036,15 @@ const uploadBannerImage = async () => {
         ipcRenderer.send(
           "track-event",
           "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-          window.window.defaultBfDatasetId
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+          window.defaultBfDatasetId
         );
 
         // track the size for all dataset banner uploads
         ipcRenderer.send(
           "track-event",
           "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER + " - Size",
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER + " - Size",
           "Size",
           image_file_size
         );
@@ -2053,8 +2053,8 @@ const uploadBannerImage = async () => {
         ipcRenderer.send(
           "track-event",
           "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER + " - Size",
-          window.window.defaultBfDatasetId,
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER + " - Size",
+          window.defaultBfDatasetId,
           image_file_size
         );
 
@@ -2066,7 +2066,7 @@ const uploadBannerImage = async () => {
           kombuchaEnums.Status.SUCCESS,
           {
             value: image_file_size,
-            dataset_id: window.window.defaultBfDatasetId,
+            dataset_id: window.defaultBfDatasetId,
           }
         );
       } catch (error) {
@@ -2075,8 +2075,8 @@ const uploadBannerImage = async () => {
         ipcRenderer.send(
           "track-event",
           "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-          window.window.defaultBfDatasetId
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+          window.defaultBfDatasetId
         );
 
         ipcRenderer.send(
@@ -2087,7 +2087,7 @@ const uploadBannerImage = async () => {
           kombuchaEnums.Status.FAIL,
           {
             value: 1,
-            dataset_id: window.window.defaultBfDatasetId,
+            dataset_id: window.defaultBfDatasetId,
           }
         );
       }
@@ -2215,7 +2215,7 @@ const showCurrentBannerImage = async () => {
     let res = await api.getDatasetBannerImageURL(selectedBfAccount, selectedBfDataset);
     window.logGeneralOperationsForAnalytics(
       "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
       window.AnalyticsGranularity.ACTION,
       ["Get Banner Image"]
     );
@@ -2249,7 +2249,7 @@ const showCurrentBannerImage = async () => {
 
     window.logGeneralOperationsForAnalytics(
       "Error",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
       window.AnalyticsGranularity.ALL_LEVELS,
       ["Get Banner Image"]
     );
@@ -2309,8 +2309,8 @@ $("#button-add-tags").click(async () => {
     ipcRenderer.send(
       "track-event",
       "Error",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
-      window.window.defaultBfDatasetId
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
+      window.defaultBfDatasetId
     );
 
     ipcRenderer.send(
@@ -2321,7 +2321,7 @@ $("#button-add-tags").click(async () => {
       kombuchaEnums.Status.FAIL,
       {
         value: 1,
-        dataset_id: window.window.defaultBfDatasetId,
+        dataset_id: window.defaultBfDatasetId,
       }
     );
 
@@ -2340,8 +2340,8 @@ $("#button-add-tags").click(async () => {
   ipcRenderer.send(
     "track-event",
     "Success",
-    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
-    window.window.defaultBfDatasetId
+    window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
+    window.defaultBfDatasetId
   );
 
   ipcRenderer.send(
@@ -2352,7 +2352,7 @@ $("#button-add-tags").click(async () => {
     kombuchaEnums.Status.SUCCESS,
     {
       value: 1,
-      dataset_id: window.window.defaultBfDatasetId,
+      dataset_id: window.defaultBfDatasetId,
     }
   );
 
@@ -2411,7 +2411,7 @@ const showCurrentTags = async () => {
 
     window.logGeneralOperationsForAnalytics(
       "Error",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
       window.AnalyticsGranularity.ALL_LEVELS,
       ["Get Tags"]
     );
@@ -2489,8 +2489,8 @@ $("#button-add-license").click(async () => {
       ipcRenderer.send(
         "track-event",
         "Success",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
-        window.window.defaultBfDatasetId
+        window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
+        window.defaultBfDatasetId
       );
 
       ipcRenderer.send(
@@ -2501,7 +2501,7 @@ $("#button-add-license").click(async () => {
         kombuchaEnums.Status.SUCCESS,
         {
           value: 1,
-          dataset_id: window.window.defaultBfDatasetId,
+          dataset_id: window.defaultBfDatasetId,
         }
       );
 
@@ -2523,8 +2523,8 @@ $("#button-add-license").click(async () => {
       ipcRenderer.send(
         "track-event",
         "Error",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
-        window.window.defaultBfDatasetId
+        window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
+        window.defaultBfDatasetId
       );
 
       ipcRenderer.send(
@@ -2535,11 +2535,11 @@ $("#button-add-license").click(async () => {
         kombuchaEnums.Status.FAIL,
         {
           value: 1,
-          dataset_id: window.window.defaultBfDatasetId,
+          dataset_id: window.defaultBfDatasetId,
         }
       );
     }
-  }, delayAnimation);
+  }, window.delayAnimation);
 });
 
 const showCurrentLicense = async () => {
@@ -2596,7 +2596,7 @@ const showCurrentLicense = async () => {
     clientError(error);
     window.logGeneralOperationsForAnalytics(
       "Error",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
       window.AnalyticsGranularity.ALL_LEVELS,
       ["Get License"]
     );
@@ -2819,7 +2819,7 @@ $("#button-submit-dataset").click(async () => {
         let emessage = userErrorMessage(error);
         const kombuchaEventData = {
           value: emessage,
-          dataset_id: window.window.defaultBfDatasetId,
+          dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
         };
 
@@ -2835,8 +2835,8 @@ $("#button-submit-dataset").click(async () => {
         ipcRenderer.send(
           "track-event",
           "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
-          window.window.defaultBfDatasetId
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
+          window.defaultBfDatasetId
         );
 
         // Enable curation buttons
@@ -2908,7 +2908,7 @@ $("#button-submit-dataset").click(async () => {
         if (statusMessage.includes("Success: COMPLETED")) {
           const kombuchaEventData = {
             value: statusMessage,
-            dataset_id: window.window.defaultBfDatasetId,
+            dataset_id: window.defaultBfDatasetId,
             dataset_name: window.defaultBfDataset,
           };
 
@@ -2933,7 +2933,7 @@ $("#button-submit-dataset").click(async () => {
         let eventValue = statusMessage.replace(/<br>/g, "");
         const kombuchaEventData = {
           value: eventValue,
-          dataset_id: window.window.defaultBfDatasetId,
+          dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
         };
 
@@ -2949,8 +2949,8 @@ $("#button-submit-dataset").click(async () => {
         ipcRenderer.send(
           "track-event",
           "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
-          window.window.defaultBfDatasetId
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
+          window.defaultBfDatasetId
         );
       }
     }
@@ -3172,7 +3172,7 @@ $("#button-submit-dataset").click(async () => {
         clientError(error);
         const kombuchaEventData = {
           value: datasetUploadSession.id,
-          dataset_id: window.window.defaultBfDatasetId,
+          dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
         };
 
@@ -3188,7 +3188,7 @@ $("#button-submit-dataset").click(async () => {
         ipcRenderer.send(
           "track-event",
           "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
             ` - Number of Folders`,
           `${datasetUploadSession.id}`
         );
@@ -3208,7 +3208,7 @@ $("#button-submit-dataset").click(async () => {
         kombuchaEnums.Status.SUCCESS,
         {
           value: num_of_folders,
-          dataset_id: window.window.defaultBfDatasetId,
+          dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
           upload_session: datasetUploadSession.id,
         }
@@ -3277,7 +3277,7 @@ $("#button-submit-dataset").click(async () => {
         kombuchaEnums.Status.FAIL,
         {
           value: totalFileSize,
-          dataset_id: window.window.defaultBfDatasetId,
+          dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
         }
       );
@@ -3307,7 +3307,7 @@ $("#button-submit-dataset").click(async () => {
         kombuchaEnums.Status.FAIL,
         {
           value: num_of_folders,
-          dataset_id: window.window.defaultBfDatasetId,
+          dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
         }
       );
@@ -3322,7 +3322,7 @@ $("#button-submit-dataset").click(async () => {
         kombuchaEnums.Status.FAIL,
         {
           value: num_of_files,
-          dataset_id: window.window.defaultBfDatasetId,
+          dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
         }
       );
@@ -3386,8 +3386,8 @@ $("#bf_list_dataset_status").on("change", async () => {
     ipcRenderer.send(
       "track-event",
       "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
-      window.window.defaultBfDatasetId
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
+      window.defaultBfDatasetId
     );
 
     ipcRenderer.send(
@@ -3398,7 +3398,7 @@ $("#bf_list_dataset_status").on("change", async () => {
       kombuchaEnums.Status.SUCCESS,
       {
         value: selectedStatusOption,
-        dataset_id: window.window.defaultBfDatasetId,
+        dataset_id: window.defaultBfDatasetId,
       }
     );
 
@@ -3417,8 +3417,8 @@ $("#bf_list_dataset_status").on("change", async () => {
     ipcRenderer.send(
       "track-event",
       "Error",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
-      window.window.defaultBfDatasetId
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
+      window.defaultBfDatasetId
     );
 
     ipcRenderer.send(
@@ -3429,7 +3429,7 @@ $("#bf_list_dataset_status").on("change", async () => {
       kombuchaEnums.Status.FAIL,
       {
         value: selectedStatusOption,
-        dataset_id: window.window.defaultBfDatasetId,
+        dataset_id: window.defaultBfDatasetId,
       }
     );
 
@@ -3486,8 +3486,8 @@ const showCurrentDatasetStatus = async (callback) => {
     ipcRenderer.send(
       "track-event",
       "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS + ` - Get dataset Status`,
-      window.window.defaultBfDatasetId
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS + ` - Get dataset Status`,
+      window.defaultBfDatasetId
     );
 
     removeOptions(bfListDatasetStatus);
@@ -3533,7 +3533,7 @@ const showCurrentDatasetStatus = async (callback) => {
 
     window.logGeneralOperationsForAnalytics(
       "Error",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
+      window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
       window.AnalyticsGranularity.ALL_LEVELS,
       ["Get Dataset Status"]
     );

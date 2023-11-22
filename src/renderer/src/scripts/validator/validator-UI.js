@@ -84,7 +84,7 @@ document.querySelector("#validate_dataset-1-local").addEventListener("click", as
   window.clearValidationResults();
 
   // transition to the next question - uses transitionToValidateQuestionTwo
-  transitionFreeFormMode(
+  window.transitionFreeFormMode(
     document.querySelector("#validate_dataset-1-local"),
     "validate_dataset-question-1",
     "validate_dataset-tab",
@@ -114,7 +114,7 @@ document
     window.clearValidationResults();
 
     // move to next question
-    transitionFreeFormMode(
+    window.transitionFreeFormMode(
       this,
       "validate_dataset-question-1",
       "validate_dataset-tab",
@@ -192,7 +192,7 @@ document
   .querySelector("#validator-confirm-local-dataset-btn")
   .addEventListener("click", async function () {
     // transition to question 4
-    transitionFreeFormMode(
+    window.transitionFreeFormMode(
       this,
       "validate_dataset-question-2",
       "validate_dataset-tab",
@@ -224,7 +224,7 @@ document
     this.style.visibility = "hidden";
 
     // transition to the next question
-    transitionFreeFormMode(
+    window.transitionFreeFormMode(
       this,
       "validate_dataset-question-2",
       "validate_dataset-tab",

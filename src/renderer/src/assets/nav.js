@@ -178,8 +178,8 @@ const handleSectionTrigger = async (event) => {
     if (sectionRenderFileExplorer != "file-explorer") {
       window.sodaJSONObj = {};
       window.datasetStructureJSONObj = {};
-      window.window.subjectsTableData = [];
-      window.window.samplesTableData = [];
+      window.subjectsTableData = [];
+      window.samplesTableData = [];
     }
 
     //Transition file explorer elements to guided mode

@@ -1369,7 +1369,7 @@ const initiate_generate_manifest_bf = async () => {
     kombuchaEnums.Status.SUCCESS,
     {
       value: high_level_folder_num,
-      dataset_id: window.window.defaultBfDatasetId,
+      dataset_id: window.defaultBfDatasetId,
       origin: origin,
       destination: destination,
     }
@@ -2244,7 +2244,7 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
     $("#bf_dataset_create_manifest").text("None");
   }
 
-  transitionFreeFormMode(
+  window.transitionFreeFormMode(
     document.querySelector("#div-confirm-manifest-local-folder-dataset .btn_animated"),
     "Question-prepare-manifest-2",
     "create_manifest-tab",

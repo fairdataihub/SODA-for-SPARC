@@ -1293,10 +1293,10 @@ window.currentDatasetLicense = document.querySelector("#para-dataset-license-cur
 // const bfAddLicenseBtn = document.getElementById("button-add-license");
 
 // // Pennsieve dataset permission //
-// const currentDatasetPermission = document.querySelector("#para-dataset-permission-current");
-// const currentAddEditDatasetPermission = document.querySelector(
-//   "#para-add-edit-dataset-permission-current"
-// );
+window.currentDatasetPermission = document.querySelector("#para-dataset-permission-current");
+window.currentAddEditDatasetPermission = document.querySelector(
+  "#para-add-edit-dataset-permission-current"
+);
 const bfListUsersPI = document.querySelector("#bf_list_users_pi");
 
 // const bfAddPermissionCurationTeamBtn = document.getElementById(
@@ -1330,7 +1330,7 @@ const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-te
 // const sparcFolderNames = ["code", "derivative", "docs", "primary", "protocol", "source"];
 // const smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">';
 // const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">';
-// const delayAnimation = 250;
+window.delayAnimation = 250;
 
 // //////////////////////////////////
 // // Operations on JavaScript end only
@@ -3823,7 +3823,7 @@ window.refreshOrganizationList = () => {
 /// populate the dropdowns with refreshed dataset list
 const populateDatasetDropdowns = (mylist) => {
   window.clearDatasetDropdowns();
-  for (myitem in mylist) {
+  for (const myitem in mylist) {
     let myitemselect = mylist[myitem];
     let option = document.createElement("option");
     let option2 = document.createElement("option");
@@ -6984,7 +6984,7 @@ const manageDesc = (ev) => {
 //     ) {
 //       sodaJSONObj["starting-point"]["type"] = "local";
 //     }
-//   }, delayAnimation);
+//   }, window.delayAnimation);
 // });
 
 // // function to hide the sidebar and disable the sidebar expand button
@@ -8464,7 +8464,7 @@ const MetadataAnalyticsPrefix = {
   SUBMISSION: "Prepare Metadata - submission",
 };
 
-const ManageDatasetsAnalyticsPrefix = {
+window.ManageDatasetsAnalyticsPrefix = {
   MANAGE_DATASETS_CREATE_DATASET: "Manage Datasets - Create a new dataset",
   MANAGE_DATASETS_RENAME_DATASET: "Manage Datasets - Rename an existing dataset",
   MANAGE_DATASETS_MAKE_PI_OWNER: "Manage Datasets - Make PI owner of dataset",
