@@ -310,8 +310,8 @@ window.addNewDatasetToList = (newDataset) => {
 // Rename dataset on pennsieve
 $("#button-rename-dataset").on("click", async () => {
   setTimeout(async function () {
-    var selectedbfaccount = window.defaultBfDataset;
-    var currentDatasetName = window.defaultBfAccount;
+    var selectedbfaccount = window.defaultBfAccount;
+    var currentDatasetName = window.defaultBfDataset;
     var renamedDatasetName = $("#bf-rename-dataset-name").val();
 
     Swal.fire({
@@ -440,7 +440,7 @@ $("#button-rename-dataset").on("click", async () => {
 
       try {
         window.datasetList = [];
-        window.datasetList = await api.getDatasetsForAccount(window.defaultBfDataset);
+        window.datasetList = await api.getDatasetsForAccount(window.defaultBfAccount);
         window.refreshDatasetList();
       } catch (error) {
         clientError(error);
@@ -491,7 +491,7 @@ $("#button-add-permission-pi").click(async () => {
         },
       });
 
-      let selectedBfAccount = window.defaultBfDataset;
+      let selectedBfAccount = window.defaultBfAccount;
       let selectedBfDataset = window.defaultBfDataset;
       let selectedUser = $("#bf_list_users_pi").val();
       let selectedRole = "owner";
@@ -591,7 +591,7 @@ const changeDatasetRolePI = (selectedDataset) => {
 };
 
 const showCurrentPermission = async () => {
-  let selectedBfAccount = window.defaultBfDataset;
+  let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 
   if (selectedBfDataset === null) {
@@ -773,7 +773,7 @@ $("#button-add-permission-user").click(() => {
       },
     });
 
-    let selectedBfAccount = window.defaultBfDataset;
+    let selectedBfAccount = window.defaultBfAccount;
     let selectedBfDataset = window.defaultBfDataset;
     let selectedUser = $("#bf_list_users").val();
     let selectedRole = $("#bf_list_roles_user").val();
@@ -812,7 +812,7 @@ $("#button-add-permission-team").click(async () => {
         },
         {
           params: {
-            selected_account: window.defaultBfDataset,
+            selected_account: window.defaultBfAccount,
             selected_dataset: window.defaultBfDataset,
             scope: "team",
             name: selectedTeam,
@@ -918,7 +918,7 @@ $("#button-add-subtitle").click(async () => {
       },
     });
 
-    let selectedBfAccount = window.defaultBfDataset;
+    let selectedBfAccount = window.defaultBfAccount;
     let selectedBfDataset = window.defaultBfDataset;
     let inputSubtitle = $("#bf-dataset-subtitle").val().trim();
 
@@ -1015,7 +1015,7 @@ $("#button-add-subtitle").click(async () => {
 });
 
 const showCurrentSubtitle = async () => {
-  let selectedBfAccount = window.defaultBfDataset;
+  let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 
   if (selectedBfDataset === null) {
@@ -1077,7 +1077,7 @@ dsAccordion.open( 0);
 
 // fires whenever a user selects a dataset, from any card
 const showCurrentDescription = async () => {
-  let selectedBfAccount = window.defaultBfDataset;
+  let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset" || selectedBfDataset === null) {
@@ -1195,7 +1195,7 @@ const showCurrentDescription = async () => {
 
 $("#button-add-description").click(() => {
   setTimeout(async () => {
-    let selectedBfAccount = window.defaultBfDataset;
+    let selectedBfAccount = window.defaultBfAccount;
     let selectedBfDataset = window.defaultBfDataset;
 
     // get the text from the three boxes and store them in their own variables
@@ -1291,7 +1291,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   // get the dataset readme
   let readme;
   try {
-    readme = await api.getDatasetReadme(window.defaultBfDataset, selectedBfDataset);
+    readme = await api.getDatasetReadme(window.defaultBfAccount, selectedBfDataset);
   } catch (err) {
     clientError(err);
     Swal.fire({
@@ -1333,7 +1333,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     await client.put(
       `/manage_datasets/datasets/${selectedBfDataset}/readme`,
       { updated_readme: completeReadme },
-      { params: { selected_account: window.defaultBfDataset } }
+      { params: { selected_account: window.defaultBfAccount } }
     );
   } catch (error) {
     clientError(error);
@@ -1600,7 +1600,7 @@ const changeDatasetUnderDD = () => {
 
 ///// grab dataset name and auto-load current description
 const showDatasetDescription = async () => {
-  let selectedBfAccount = window.defaultBfDataset;
+  let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
@@ -1925,7 +1925,7 @@ const uploadBannerImage = async () => {
     let image_file_size = fs.statSync(imagePath)["size"];
 
     if (image_file_size < 5 * 1024 * 1024) {
-      let selectedBfAccount = window.defaultBfDataset;
+      let selectedBfAccount = window.defaultBfAccount;
       let selectedBfDataset = window.defaultBfDataset;
 
       try {
@@ -2031,7 +2031,7 @@ const uploadBannerImage = async () => {
           },
           {
             params: {
-              selected_account: window.defaultBfDataset,
+              selected_account: window.defaultBfAccount,
               selected_dataset: window.defaultBfDataset,
             },
           }
@@ -2197,7 +2197,7 @@ $("#save-banner-image").click((event) => {
 });
 
 const showCurrentBannerImage = async () => {
-  let selectedBfAccount = window.defaultBfDataset;
+  let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 
   if (selectedBfDataset === null) {
@@ -2305,7 +2305,7 @@ $("#button-add-tags").click(async () => {
       { tags },
       {
         params: {
-          selected_account: window.defaultBfDataset,
+          selected_account: window.defaultBfAccount,
         },
       }
     );
@@ -2385,7 +2385,7 @@ $("#button-add-tags").click(async () => {
 //    1. when a user clicks on the pencil icon to view their list of datasets in any of the manage-dataset sections
 //    2. after the user selects a dataset from the very same dropdown list
 const showCurrentTags = async () => {
-  var selectedBfAccount = window.defaultBfDataset;
+  var selectedBfAccount = window.defaultBfAccount;
   var selectedBfDataset = window.defaultBfDataset;
 
   if (selectedBfDataset === null) {
@@ -2472,7 +2472,7 @@ $("#button-add-license").click(async () => {
       },
     });
 
-    let selectedBfAccount = window.defaultBfDataset;
+    let selectedBfAccount = window.defaultBfAccount;
     let selectedBfDataset = window.defaultBfDataset;
     let selectedLicense = "Creative Commons Attribution";
 
@@ -2558,7 +2558,7 @@ $("#button-add-license").click(async () => {
 });
 
 const showCurrentLicense = async () => {
-  let selectedBfAccount = window.defaultBfDataset;
+  let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 
   if (selectedBfDataset === null) {
@@ -3018,7 +3018,7 @@ $("#button-submit-dataset").click(async () => {
   };
 
   // Check if dataset is locked before starting upload
-  const isLocked = await api.isDatasetLocked(window.defaultBfDataset, window.defaultBfDataset);
+  const isLocked = await api.isDatasetLocked(window.defaultBfAccount, window.defaultBfDataset);
   if (isLocked) {
     $("#upload_local_dataset_progress_div").removeClass("show");
     await Swal.fire({
@@ -3123,7 +3123,7 @@ $("#button-submit-dataset").click(async () => {
   var err = false;
   var completionStatus = "Solving";
   var success_upload = true;
-  var selectedbfaccount = window.defaultBfDataset;
+  var selectedbfaccount = window.defaultBfAccount;
   var selectedbfdataset = window.defaultBfDataset;
 
   window.log.info("Files selected for upload:");
@@ -3384,7 +3384,7 @@ $("#bf_list_dataset_status").on("change", async () => {
 
   selectOptionColor(bfListDatasetStatus);
 
-  let selectedBfAccount = window.defaultBfDataset;
+  let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
   let selectedStatusOption = bfListDatasetStatus.options[bfListDatasetStatus.selectedIndex].text;
 
@@ -3469,7 +3469,7 @@ $("#bf_list_dataset_status").on("change", async () => {
 });
 
 const showCurrentDatasetStatus = async (callback) => {
-  let selectedBfAccount = window.defaultBfDataset;
+  let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 
   if (selectedBfDataset === null) {
