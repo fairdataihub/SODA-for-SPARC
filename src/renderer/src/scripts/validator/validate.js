@@ -699,7 +699,7 @@ const validationErrorsOccurred = (errors) =>
 */
 
 // Presentation logic for transitioning from question one to question two
-const transitionToValidateQuestionTwo = async () => {
+window.transitionToValidateQuestionTwo = async () => {
   // hide both local and pennsieve sections
   let pennsieveSection = document.querySelector("#pennsieve-question-2-container");
 
@@ -749,7 +749,7 @@ const transitionToValidateQuestionTwo = async () => {
 };
 
 // Presentation logic for transitioning from question 2 to question 3
-const transitionToValidateQuestionThree = async () => {
+window.transitionToValidateQuestionThree = async () => {
   let userWantsToReset = await userWantsToResetValidation();
 
   if (userWantsToReset === false) return userWantsToReset;

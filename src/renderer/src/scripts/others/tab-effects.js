@@ -2124,7 +2124,7 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
 
       // check if the user has selected start from existing pennsieve
       // if so then hide the workspace selection field
-      const submissionFieldsAreValid = validateSubmissionFileInputs();
+      const submissionFieldsAreValid = window.validateSubmissionFileInputs();
       if (!submissionFieldsAreValid) {
         return;
       }
@@ -2152,7 +2152,7 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
           $("#dd-organization-field").show();
         }
       }
-      continueProgressGenerateDD = await generateDatasetDescription();
+      continueProgressGenerateDD = await window.generateDatasetDescription();
       break;
     case "Generate-changes":
       const checkedRadioButtonChangesFirstQuestion = $(
@@ -2177,7 +2177,7 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
           $("#changes-organization-field").show();
         }
       }
-      let changesFilesHelper = generateRCFilesHelper("changes");
+      let changesFilesHelper = window.generateRCFilesHelper("changes");
       if (changesFilesHelper === "empty") {
         return;
       }
@@ -2205,7 +2205,7 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
           $("#readme-organization-field").show();
         }
       }
-      let readMeFilesHelper = generateRCFilesHelper("readme");
+      let readMeFilesHelper = window.generateRCFilesHelper("readme");
       if (readMeFilesHelper === "empty") {
         return;
       }
@@ -2214,10 +2214,10 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
       continueProgressGenerateManifest = await switchMetadataManifestQuestion();
       break;
     case "validate_dataset-question-1":
-      continueProgressValidateDataset = await transitionToValidateQuestionTwo();
+      continueProgressValidateDataset = await window.transitionToValidateQuestionTwo();
       break;
     case "validate_dataset-question-2":
-      continueProgressValidateDataset = await transitionToValidateQuestionThree();
+      continueProgressValidateDataset = await window.transitionToValidateQuestionThree();
       break;
     case "Question-prepare-subjects-3":
       const checkedRadioButtonSubjectsFirstQuestion = $(

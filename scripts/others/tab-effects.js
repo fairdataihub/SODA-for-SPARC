@@ -2117,7 +2117,7 @@ const window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, 
 
       // check if the user has selected start from existing pennsieve
       // if so then hide the workspace selection field
-      const submissionFieldsAreValid = validateSubmissionFileInputs();
+      const submissionFieldsAreValid = window.validateSubmissionFileInputs();
       if (!submissionFieldsAreValid) {
         return;
       }
@@ -2145,7 +2145,7 @@ const window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, 
           $("#dd-organization-field").show();
         }
       }
-      continueProgressGenerateDD = await generateDatasetDescription();
+      continueProgressGenerateDD = await window.generateDatasetDescription();
       break;
     case "Generate-changes":
       const checkedRadioButtonChangesFirstQuestion = $(
@@ -2170,7 +2170,7 @@ const window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, 
           $("#changes-organization-field").show();
         }
       }
-      let changesFilesHelper = generateRCFilesHelper("changes");
+      let changesFilesHelper = window.generateRCFilesHelper("changes");
       if (changesFilesHelper === "empty") {
         return;
       }
@@ -2198,7 +2198,7 @@ const window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, 
           $("#readme-organization-field").show();
         }
       }
-      let readMeFilesHelper = generateRCFilesHelper("readme");
+      let readMeFilesHelper = window.generateRCFilesHelper("readme");
       if (readMeFilesHelper === "empty") {
         return;
       }

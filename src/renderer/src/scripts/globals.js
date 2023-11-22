@@ -1336,7 +1336,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $(".svg-change-current-account.dataset").css("display", "block");
           }
         });
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-event",
           "Error",
           "Selecting dataset",
@@ -1401,7 +1401,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#create_new_bf_dataset_btn").click();
           }
         });
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-event",
           "Error",
           "Selecting dataset",
@@ -1450,7 +1450,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#bf-organization-select-div").hide();
 
             bfDataset = $("#curatebfdatasetlist").val();
-            let sweet_al = document.getElementsByClassName("swal2-content")[0];
+            let sweet_al = document.getElementsByClassName("swal2-html-container")[0];
             let sweet_alrt = document.getElementsByClassName("swal2-actions")[0];
             sweet_alrt.style.marginTop = "1rem";
 
@@ -1618,7 +1618,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
         // log a map of datasetId to dataset name to analytics
         // this will be used to help us track private datasets which are not trackable using a datasetId alone
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-event",
           "Dataset ID to Dataset Name Map",
           window.defaultBfDatasetId,
@@ -1650,7 +1650,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $("body").removeClass("waiting");
       $(".svg-change-current-account.dataset").css("display", "block");
       $(".ui.active.green.inline.loader.small").css("display", "none");
-      ipcRenderer.send("track-event", "Success", "Selecting dataset", window.defaultBfDatasetId, 1);
+      window.electron.ipcRenderer.send("track-event", "Success", "Selecting dataset", window.defaultBfDatasetId, 1);
     }, 10);
   } else if (dropdown === "organization") {
     // TODO: Change these classes to organization classes
@@ -1726,7 +1726,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         return;
       }
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-event",
         "Error",
         "Selecting dataset",

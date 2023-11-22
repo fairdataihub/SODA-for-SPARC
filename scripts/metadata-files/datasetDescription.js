@@ -326,7 +326,7 @@ const showExistingDDFile = () => {
 
 /////////////// Generate ds description file ///////////////////
 ////////////////////////////////////////////////////////////////
-const generateDatasetDescription = async () => {
+const window.generateDatasetDescription = async () => {
   var funding = $("#ds-description-award-input").val().trim();
   var allFieldsSatisfied = detectEmptyRequiredFields(funding)[0];
   var errorMessage = detectEmptyRequiredFields(funding)[1];

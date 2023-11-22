@@ -25,7 +25,7 @@ document.querySelectorAll(".readme-change-current-ds").forEach((element) => {
 });
 
 // function to raise a warning for empty fields before generating changes or readme
-const generateRCFilesHelper = (type) => {
+const window.generateRCFilesHelper = (type) => {
   let textValue = $(`#textarea-create-${type}`).val().trim();
   if (textValue === "") {
     Swal.fire({
@@ -48,7 +48,7 @@ const generateRCFilesHelper = (type) => {
 
 // generate changes or readme either locally (uploadBFBoolean=false) or onto Pennsieve (uploadBFBoolean=true)
 const generateRCFiles = async (uploadBFBoolean, fileType) => {
-  let result = generateRCFilesHelper(fileType);
+  let result = window.generateRCFilesHelper(fileType);
   let bfDataset = document.getElementById(`bf_dataset_load_${fileType}`).innerText.trim();
   let upperCaseLetters = fileType.toUpperCase() + ".txt";
 
@@ -339,7 +339,7 @@ $(document).ready(function () {
 
 // write Readme or Changes files (save locally)
 async function saveRCFile(type) {
-  var result = generateRCFilesHelper(type);
+  var result = window.generateRCFilesHelper(type);
   if (result === "empty") {
     return;
   }

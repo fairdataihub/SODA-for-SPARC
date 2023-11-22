@@ -455,7 +455,7 @@ const onboardingSubmission = async () => {
   }, 1500);
 };
 
-function validateSubmissionFileInputs() {
+window.validateSubmissionFileInputs = () => {
   // Retrieve the value from the funding consortium dropdown and return false if it is empty
   const fundingConsortiumFromDropdown = $("#ffm-select-sparc-funding-consortium").val();
   if (fundingConsortiumFromDropdown === "") {
