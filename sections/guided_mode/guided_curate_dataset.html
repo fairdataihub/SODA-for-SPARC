@@ -1155,7 +1155,6 @@
       >
         <div class="guided--capsule-container">
           <div class="guided--capsule" id="guided-dataset-structure-intro-capsule"></div>
-          <div class="guided--capsule" id="guided-pre-organized-dataset-import-capsule"></div>
           <div class="guided--capsule" id="guided-subjects-specification-capsule"></div>
           <div class="guided--capsule" id="guided-subjects-addition-capsule"></div>
           <div class="guided--capsule" id="guided-subjects-pooling-capsule"></div>
@@ -1193,51 +1192,7 @@
             </h2>
           </div>
         </div>
-        <div
-          id="guided-pre-organized-dataset-import-tab"
-          class="guided--page"
-          data-page-name="Pre-organized dataset import"
-        >
-          <h1 class="text-sub-step-title">Pre-organized dataset importation</h1>
-          <div class="guided--section">
-            <label class="guided--form-label centered">
-              Is your dataset already organized according to the SDS-specified folder structure?
-            </label>
-            <div class="info-dropdown" style="align-self: center">
-              <p class="info-dropdown-text" data-dropdown-type="info">
-                What is the SDS-specified folder structure?
-              </p>
-              <i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="info-container">
-              <p class="help-text">
-                The SDS-specified folder structure is the folder structure that is required for
-                SPARC datasets submitted to...
-              </p>
-            </div>
 
-            <div class="guided--radio-button-container" style="margin-bottom: 7px">
-              <button
-                class="ui positive basic button guided--radio-button"
-                data-next-element="guided-section-import-sds-dataset"
-                data-button-config-value="sds-compliant-dataset-imported"
-                data-button-config-value-state="yes"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                data-next-element="guided-section-no-sds-dataset-imported"
-                data-button-config-value="sds-compliant-dataset-imported"
-                data-button-config-value-state="no"
-              >
-                No
-              </button>
-            </div>
-          </div>
-          <div class="guided--section" id="guided-section-import-sds-dataset">Import dataset</div>
-          <div class="guided--section" id="guided-section-no-sds-dataset-imported">No problemo</div>
-        </div>
         <div
           id="guided-subjects-specification-tab"
           class="guided--page"
@@ -1245,10 +1200,6 @@
         >
           <h1 class="text-sub-step-title">Dataset structure</h1>
           <div class="guided--section">
-            <p class="help-text">
-              Tell us about the structure of your dataset. This will help determine the best flow
-              for getting your data into SODA.
-            </p>
             <div class="guided--section" id="guided-section-subject-pooling-yes-no">
               <label class="guided--form-label centered">
                 Are the subjects in your study organized into pools?
@@ -1365,6 +1316,7 @@
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
                   class="ui primary basic button guided--radio-button"
+                  id="guided-button-import-subject-structure-from-spreadsheet"
                   data-next-element="guided-section-add-subjects-via-spreadsheet"
                   data-button-config-value="subject-addition-method"
                   data-button-config-value-state="spreadsheet"
@@ -1373,6 +1325,7 @@
                 </button>
                 <button
                   class="ui primary basic button guided--radio-button"
+                  id="guided-button-add-subject-structure-manually"
                   data-next-element="guided-section-add-subjects-manual"
                   data-button-config-value="subject-addition-method"
                   data-button-config-value-state="manual"
@@ -1391,46 +1344,91 @@
 
             <div class="guided--section" id="guided-section-add-subjects-via-spreadsheet">
               <div class="guided--section" id="section-spreadsheet-import">
-                <div class="sub-section" id="import-instructions-subjects">
+                <p class="help-text text-left">
+                  Refer to the image below for an example of how to structure your
+                  <span class="sub-pool-sample-structure-description-text"></span> spreadsheet. Then
+                  follow the instructions below to fill out and import the spreadsheet into SODA.
+                </p>
+                <div class="sub-section mb-3" id="import-instructions-subjects">
                   Subjects instructions
                 </div>
-                <div class="sub-section" id="import-instructions-subjects-pools">
+                <div class="sub-section mb-3" id="import-instructions-subjects-pools">
                   Subjects pools instructions
                 </div>
-                <div class="sub-section" id="import-instructions-subjects-samples">
-                  Subjects samples instructions
+                <div class="sub-section mb-3" id="import-instructions-subjects-samples">
+                  <img
+                    class="mb-3"
+                    style="width: 90%"
+                    src="assets/img/subjects-samples-spreadseet-example.png"
+                  />
+                  <p class="help-text text-left w-100">
+                    <b>Subject ID column: </b>For each subject in your dataset, enter the subject's
+                    name prefaced with 'sub-'.
+                  </p>
+                  <p class="help-text text-left">
+                    <b>Sample ID column: </b>For each sample taken from a subject in your dataset,
+                    enter the sample's name prefaced with 'sam-'. All sample names must be unique.
+                  </p>
+                  <p class="help-text text-left">
+                    <b>Note: </b> If the subjects in your dataset contain multiple samples, the
+                    subject ID can be duplicated in the 'Subject ID' column with each sample taken
+                    from the subject listed in the 'Sample ID' column.
+                  </p>
                 </div>
-                <div class="sub-section" id="import-instructions-subjects-pools-samples">
+                <div class="sub-section mb-3" id="import-instructions-subjects-pools-samples">
                   Subjects pools samples instructions
                 </div>
-                <p class="help-text">
-                  <b>1. </b>To import your subjects and samples through a spreadsheet, click the
-                  button below to save a blank subject/sample spreadsheet template to your computer.
-                  (This will likely have a seperate docs page explaining how to fill it out.......)
+                <h2 class="text-sub-step-title">
+                  <span class="sub-pool-sample-structure-description-text"></span> spreadsheet
+                  creation
+                </h2>
+                <p class="help-text step-before-spreadsheet-path-declared">
+                  <b>Step 1. </b>To import your subjects and samples through a spreadsheet, click
+                  the button below to save a blank
+                  <span class="sub-pool-sample-structure-description-text"></span> spreadsheet
+                  template to your computer.
                 </p>
                 <button
-                  class="ui positive button soda-green-background"
-                  id="guided-button-create-dataset-structure-spreadsheet"
-                  style="width: 300px !important"
+                  class="ui positive button soda-green-background step-before-spreadsheet-path-declared"
+                  id="guided-button-choose-dataset-structure-spreadsheet-path"
+                  style="width: 350px !important"
                 >
-                  Create spreadsheet to fill out
+                  Select a location to save the spreadsheet
                 </button>
-                <p class="help-text">
-                  <b>2. </b>Once you have filled out the spreadsheet, import it below and SODA will
-                  add the provided subjects and samples to your dataset.
+
+                <p class="help-text step-after-spreadsheet-path-declared mb-2">
+                  To open/edit the spreadsheet generated in the previous step, click the button
+                  below.
                 </p>
                 <button
-                  class="ui positive button soda-green-background"
-                  id="guided-button-import-dataset-structure-from-spreadsheet"
-                  style="width: 300px !important"
+                  class="ui positive button soda-green-background step-after-spreadsheet-path-declared"
+                  id="guided-button-open-dataset-structure-spreadsheet"
+                  style="width: 450px !important"
                 >
-                  Import values from spreadsheet
+                  Open the
+                  <span class="sub-pool-sample-structure-description-text"></span> spreadsheet
+                </button>
+                <p class="help-text step-after-spreadsheet-path-declared mt-5 mb-2">
+                  <b>Step 2. </b>Once you have filled out the spreadsheet, click the button below to
+                  import it into SODA.
+                </p>
+                <button
+                  class="ui positive button soda-green-background step-after-spreadsheet-path-declared"
+                  id="guided-button-import-dataset-structure-from-spreadsheet"
+                  style="width: 450px !important"
+                >
+                  Import <span class="sub-pool-sample-structure-description-text"></span> from
+                  spreadsheet
                 </button>
               </div>
               <div class="guided--section" id="section-spreadsheet-import-disabled">
+                <p class="help-text">
+                  <b
+                    >Spreadsheet importation is disabled once subjects have been added to your
+                    dataset.</b
+                  >
+                </p>
                 <h2 class="guided--text-user-directions">
-                  Spreadsheet importation is disabled once subjects have been added to your dataset.
-                  <br />
                   Click "<span class="next-button-span"></span>" below to edit the
                   <span class="sub-pool-sample-structure-description-text"></span> that have been
                   added to your dataset.
