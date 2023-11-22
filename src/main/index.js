@@ -19,6 +19,7 @@ import "./main-process/native-ui/dialogs/open-file"
 log.initialize({ preload: true });
 
 
+let nodeStorage = new JSONStorage(app.getPath("userData"))
 
 // TODO: Move to ipcMain handler so renderer processes can talk to the nodestorage
 

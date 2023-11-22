@@ -1,5 +1,5 @@
 import { ipcMain, app } from "electron";
-import JSONStorage from 'node-localstorage'
+import {JSONStorage} from 'node-localstorage'
 
 
 let nodeStorage = new JSONStorage(app.getPath("userData"));
