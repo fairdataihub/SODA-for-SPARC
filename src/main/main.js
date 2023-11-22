@@ -34,7 +34,6 @@ autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 global.trackKombuchaEvent = trackKombuchaEvent;
 const nodeStorage = new JSONStorage(app.getPath("userData"));
-// nodeStorage.setItem("announcements", true);
 
 /*************************************************************
  * Python Process

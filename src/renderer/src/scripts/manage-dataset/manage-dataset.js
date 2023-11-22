@@ -534,8 +534,7 @@ $("#button-add-permission-pi").click(async () => {
           }
         );
 
-        let nodeStorage = new JSONStorage(app.getPath("userData"));
-        nodeStorage.setItem("previously_selected_PI", selectedUser);
+        window.electron.ipcRenderer.invoke("set-nodestorage-item", "previously_selected_PI", selectedUser);
 
         showCurrentPermission();
         changeDatasetRolePI(selectedBfDataset);

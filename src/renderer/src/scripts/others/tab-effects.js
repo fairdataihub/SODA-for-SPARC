@@ -2308,8 +2308,7 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
 
   // empty para elements (TODO: will convert these para elements to a swal2 alert so we don't have to clear them out)
   if (ev.getAttribute("data-next") === "div_make_pi_owner_permissions") {
-    let nodeStorage = new JSONStorage(app.getPath("userData"));
-    let previous_choice = nodeStorage.getItem("previously_selected_PI");
+    let previous_choice = window.electron.ipcRenderer.invoke("get-nodestorage-item", "previously_selected_PI");
     if ($(`#bf_list_users_pi option[value='${previous_choice}']`).length > 0) {
       $("#bf_list_users_pi").val(previous_choice);
       $("#bf_list_users_pi").selectpicker("refresh");

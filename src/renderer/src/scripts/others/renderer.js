@@ -74,7 +74,6 @@ fixPath();
 // const { app } = remote;
 // const Clipboard = electron.clipboard;
 
-// let nodeStorage = new JSONStorage(app.getPath("userData")); NOTE: Done in main now. Need to expose to main world via contextBridge.
 
 var nextBtnDisabledVariable = true;
 

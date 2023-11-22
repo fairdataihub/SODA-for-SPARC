@@ -11,6 +11,7 @@ import { JSONStorage } from "node-localstorage";
 import log from 'electron-log/main';
 import  "./manifest-workbook"
 import "./banner-image"
+import './node-storage'
 
 import "./main-process/native-ui/dialogs/open-file"
 
@@ -20,7 +21,6 @@ log.initialize({ preload: true });
 
 
 // TODO: Move to ipcMain handler so renderer processes can talk to the nodestorage
-let nodeStorage = new JSONStorage(app.getPath("userData"));
 
 
 // import "./appUtils"

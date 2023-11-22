@@ -1,11 +1,9 @@
 const electron = require("electron");
 const uuid = require("uuid").v4;
-const { JSONStorage } = require("node-localstorage");
 const fs = require("fs");
 const axios = require("axios");
 
 const { app } = electron;
-const nodeStorage = new JSONStorage(app.getPath("userData"));
 const configFolderPath = require("path").join(app.getPath("home"), ".soda-config"); // more config files will be placed here
 let dnt = false;
 
@@ -21,7 +19,7 @@ const kombuchaServer = axios.create({
 // Retrieve the userid value, and if it's not there, assign it a new uuid.
 let userId;
 try {
-  userId = nodeStorage.getItem("userId");
+  userId = window.electron.ipcRenderer.invoke("get-nodestorage-item", "userId");
 } catch (e) {
   userId = null;
 }
