@@ -1271,9 +1271,9 @@ window.menuHighLevelFolders = document.querySelector(".menu.high-level-folder");
 // let datasetStructCopy = {};
 // const bfUploadRefreshDatasetBtn = document.getElementById("button-upload-refresh-dataset-list");
 
-// const pathSubmitDataset = document.querySelector("#selected-local-dataset-submit");
+window.pathSubmitDataset = document.querySelector("#selected-local-dataset-submit");
 // const progressUploadBf = document.getElementById("div-progress-submit");
-// const progressBarUploadBf = document.getElementById("progress-bar-upload-bf");
+window.progressBarUploadBf = document.getElementById("progress-bar-upload-bf");
 window.datasetPermissionDiv = document.getElementById("div-permission-list-2");
 
 // const bfDatasetSubtitleCharCount = document.querySelector("#para-char-count-metadata");
@@ -7193,30 +7193,30 @@ const manageDesc = (ev) => {
 //   }
 // };
 
-// function dismissStatus(id) {
-//   document.getElementById(id).style = "display: none;";
-//   //document.getElementById("dismiss-status-bar").style = "display: none;";
-// }
+window.dismissStatus(id) {
+  document.getElementById(id).style = "display: none;";
+  //document.getElementById("dismiss-status-bar").style = "display: none;";
+}
 
 let file_counter = 0;
 let folder_counter = 0;
-// var uploadComplete = new Notyf({
-//   position: { x: "right", y: "bottom" },
-//   dismissible: true,
-//   ripple: false,
-//   types: [
-//     {
-//       type: "success",
-//       background: "#13716D",
-//       icon: {
-//         className: "fas fa-check-circle",
-//         tagName: "i",
-//         color: "white",
-//       },
-//       duration: 4000,
-//     },
-//   ],
-// });
+window.uploadComplete = new Notyf({
+  position: { x: "right", y: "bottom" },
+  dismissible: true,
+  ripple: false,
+  types: [
+    {
+      type: "success",
+      background: "#13716D",
+      icon: {
+        className: "fas fa-check-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 4000,
+    },
+  ],
+});
 
 // // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
 // const initiate_generate = async () => {
@@ -7737,7 +7737,7 @@ let folder_counter = 0;
 //         uploadLocally.className = "content-button is-selected";
 //         uploadLocally.style = "background-color: #fff";
 
-//         uploadComplete.open({
+//         window.uploadComplete.open({
 //           type: "success",
 //           message: "Dataset created successfully",
 //         });
@@ -7850,8 +7850,8 @@ let folder_counter = 0;
 //       popup: "animate__animated animate__zoomOut animate__faster",
 //     },
 //   }).then(async (result) => {
-//     //dismissStatus("status-bar-curate-progress");
-//     uploadComplete.open({
+//     //window.dismissStatus("status-bar-curate-progress");
+//     window.uploadComplete.open({
 //       type: "success",
 //       message: "Upload to Pennsieve completed",
 //     });

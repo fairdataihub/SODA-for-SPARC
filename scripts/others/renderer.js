@@ -1520,9 +1520,9 @@ let sodaCopy = {};
 let datasetStructCopy = {};
 const bfUploadRefreshDatasetBtn = document.getElementById("button-upload-refresh-dataset-list");
 
-const pathSubmitDataset = document.querySelector("#selected-local-dataset-submit");
+const window.pathSubmitDataset = document.querySelector("#selected-local-dataset-submit");
 const progressUploadBf = document.getElementById("div-progress-submit");
-const progressBarUploadBf = document.getElementById("progress-bar-upload-bf");
+const window.progressBarUploadBf = document.getElementById("progress-bar-upload-bf");
 const datasetPermissionDiv = document.getElementById("div-permission-list-2");
 const bfDatasetSubtitle = document.querySelector("#bf-dataset-subtitle");
 const bfDatasetSubtitleCharCount = document.querySelector("#para-char-count-metadata");
@@ -7428,14 +7428,14 @@ const delete_imported_manifest = () => {
   }
 };
 
-function dismissStatus(id) {
+function window.dismissStatus(id) {
   document.getElementById(id).style = "display: none;";
   //document.getElementById("dismiss-status-bar").style = "display: none;";
 }
 
 let file_counter = 0;
 let folder_counter = 0;
-var uploadComplete = new Notyf({
+var window.uploadComplete = new Notyf({
   position: { x: "right", y: "bottom" },
   dismissible: true,
   ripple: false,
@@ -7972,7 +7972,7 @@ const initiate_generate = async () => {
         uploadLocally.className = "content-button is-selected";
         uploadLocally.style = "background-color: #fff";
 
-        uploadComplete.open({
+        window.uploadComplete.open({
           type: "success",
           message: "Dataset created successfully",
         });
@@ -8085,8 +8085,8 @@ const show_curation_shortcut = async () => {
       popup: "animate__animated animate__zoomOut animate__faster",
     },
   }).then(async (result) => {
-    //dismissStatus("status-bar-curate-progress");
-    uploadComplete.open({
+    //window.dismissStatus("status-bar-curate-progress");
+    window.uploadComplete.open({
       type: "success",
       message: "Upload to Pennsieve completed",
     });

@@ -7,6 +7,12 @@ import {licenseLottie} from '../../assets/lotties/license-lottie'
 import kombuchaEnums from "../analytics/analytics-enums"
 import { updateDatasetList } from "../globals"
 import api from '../others/api/api'
+import datasetUploadSession from "../analytics/upload-session-tracker";
+import {
+  createEventData,
+  logSelectedUpdateExistingDatasetOptions,
+} from "../analytics/curation-analytics"
+
 
 // event listeners for opening dataset or account selection dropdown
 import Accordion from 'accordion-js';
@@ -2754,7 +2760,7 @@ $("#button-submit-dataset").click(async () => {
 
         $("#div-progress-submit").css("display", "block");
         if (completionStatus == "Done") {
-          progressBarUploadBf.value = 100;
+          window.progressBarUploadBf.value = 100;
           cloneMeter.value = 100;
 
           $("#para-please-wait-manage-dataset").html("");
@@ -2790,7 +2796,7 @@ $("#button-submit-dataset").click(async () => {
         } else {
           let value = (totalUploadedFileSize / totalFileSize) * 100;
 
-          progressBarUploadBf.value = value;
+          window.progressBarUploadBf.value = value;
           cloneMeter.value = value;
           let totalSizePrint = "";
 
@@ -2911,11 +2917,11 @@ $("#button-submit-dataset").click(async () => {
             "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
 
           // Announce success to User
-          uploadComplete.open({
+          window.uploadComplete.open({
             type: "success",
             message: "Upload to Pennsieve completed",
           });
-          dismissStatus(progressClone.id);
+          window.dismissStatus(progressClone.id);
           progressClone.remove();
           sparc_logo.style.display = "inline";
         }
@@ -3089,7 +3095,7 @@ $("#button-submit-dataset").click(async () => {
   organzieDatasetButtonDiv.className = "disabled-animated-div";
 
   // reset the progress bar and progress text
-  progressBarUploadBf.value = 0;
+  window.progressBarUploadBf.value = 0;
   cloneMeter.value = 0;
 
   $("#para-please-wait-manage-dataset").html("Please wait...");
@@ -3127,7 +3133,7 @@ $("#button-submit-dataset").click(async () => {
   var selectedbfdataset = window.defaultBfDataset;
 
   window.log.info("Files selected for upload:");
-  logFilesForUpload(pathSubmitDataset.placeholder);
+  logFilesForUpload(window.pathSubmitDataset.placeholder);
 
   // start the upload session
   datasetUploadSession.startSession();
@@ -3148,7 +3154,7 @@ $("#button-submit-dataset").click(async () => {
   client
     .put(
       `/manage_datasets/datasets`,
-      { filepath: pathSubmitDataset.placeholder },
+      { filepath: window.pathSubmitDataset.placeholder },
       {
         params: {
           selected_account: selectedbfaccount,
@@ -3181,7 +3187,7 @@ $("#button-submit-dataset").click(async () => {
       try {
         getFilesFoldersResponse = await client.get(
           `/manage_datasets/get_number_of_files_and_folders_locally`,
-          { params: { filepath: pathSubmitDataset.placeholder } }
+          { params: { filepath: window.pathSubmitDataset.placeholder } }
         );
       } catch (error) {
         clientError(error);
@@ -3277,7 +3283,7 @@ $("#button-submit-dataset").click(async () => {
       });
 
       //progressClone.remove();
-      progressBarUploadBf.value = 0;
+      window.progressBarUploadBf.value = 0;
       cloneMeter.value = 0;
 
       err = true;
@@ -3301,7 +3307,7 @@ $("#button-submit-dataset").click(async () => {
       try {
         getFilesFoldersResponse = await client.get(
           `/manage_datasets/get_number_of_files_and_folders_locally`,
-          { params: { filepath: pathSubmitDataset.placeholder } }
+          { params: { filepath: window.pathSubmitDataset.placeholder } }
         );
       } catch (error) {
         clientError(error);
