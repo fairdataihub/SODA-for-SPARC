@@ -10241,14 +10241,14 @@ const renderSubjectSampleAdditionTable = (subject) => {
       <thead>
         <tr>
           <th class="text-center" colspan="2" style="position: relative">   
-            Enter a unique sample ID for each sample taken from subject ${subject.subjectName}
+            Samples taken from ${subject.subjectName}
             <button
               type="button"
               class="btn btn-primary btn-sm button-subject-add-samples"
               style="position: absolute; top: 10px; right: 20px;"
               data-samples-subject-name="${subject.subjectName}"
             >
-              Add sample
+              Add samples
             </button>
           </th>
         </tr>
@@ -11638,9 +11638,13 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
       });
     }
   };
-
+  `${entityNameSingular} addition`;
   const additionConfirmed = await Swal.fire({
-    title: `${entityNameSingular} addition`,
+    title: `${
+      entityName.startsWith("sub-")
+        ? `Add samples taken from ${entityName}`
+        : `${entityNameSingular} addition`
+    }`,
     html: `
       <p class="help-text">
         Enter a unique ${entityNameSingular} ID and press enter or the
