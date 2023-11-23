@@ -2629,7 +2629,7 @@ const handleSelectedSubmitDirectory = async (filepath) => {
   if (filepath != null && filepath.length > 0) {
     $("#selected-local-dataset-submit").attr("placeholder", `${filepath[0]}`);
 
-    valid_dataset = verify_sparc_folder(filepath[0], "pennsieve");
+    let valid_dataset = window.verify_sparc_folder(filepath[0], "pennsieve");
 
     if (valid_dataset == true) {
       $("#button_upload_local_folder_confirm").click();
@@ -2684,10 +2684,10 @@ $("#selected-local-dataset-submit").click(async () => {
 });
 
 const walk = (directory, filepaths = []) => {
-  const files = fs.readdirSync(directory);
+  const files = window.fs.readdirSync(directory);
   for (let filename of files) {
-    const filepath = path.join(directory, filename);
-    if (fs.statSync(filepath).isDirectory()) {
+    const filepath = window.path.join(directory, filename);
+    if (window.fs.isDirectorySync(filepath)) {
       walk(filepath, filepaths);
     } else {
       filepaths.push(filepath);
@@ -2764,8 +2764,8 @@ $("#button-submit-dataset").click(async () => {
           cloneMeter.value = 100;
 
           $("#para-please-wait-manage-dataset").html("");
-          $("#para-progress-bar-status").html(statusMessage + smileyCan);
-          cloneStatus.innerHTML = statusMessage + smileyCan;
+          $("#para-progress-bar-status").html(statusMessage + window.smileyCan);
+          cloneStatus.innerHTML = statusMessage + window.smileyCan;
 
           // log the last batch of files uploaded if the difference between the last batch and the total files uploaded is not 0
           let finalFilesCount = totalFilesUploaded - filesOnPreviousLogPage;
@@ -2872,7 +2872,7 @@ $("#button-submit-dataset").click(async () => {
           "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
 
         $("#para-progress-bar-error-status").html(
-          "<span style='color: red;'>" + emessage + sadCan + "</span>"
+          "<span style='color: red;'>" + emessage + window.sadCan + "</span>"
         );
         Swal.fire({
           icon: "error",

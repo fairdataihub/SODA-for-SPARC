@@ -1327,8 +1327,8 @@ const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-te
 // const blackColor = "#000";
 // const redColor = "#ff1a1a";
 // const sparcFolderNames = ["code", "derivative", "docs", "primary", "protocol", "source"];
-// const smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">';
-// const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">';
+window.smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">';
+window.sadCan = '<img class="message-icon" src="assets/img/can-sad.png">';
 window.delayAnimation = 250;
 
 // //////////////////////////////////
@@ -6659,7 +6659,7 @@ const manageDesc = (ev) => {
 //         sodaJSONObj["starting-point"]["type"] === "local" &&
 //         sodaJSONObj["starting-point"]["local-path"] == ""
 //       ) {
-//         valid_dataset = verify_sparc_folder(
+//         valid_dataset = window.verify_sparc_folder(
 //           document.getElementById("input-destination-getting-started-locally").placeholder,
 //           "local"
 //         );
@@ -6846,7 +6846,7 @@ const manageDesc = (ev) => {
 //       $("#guided-input-destination-getting-started-locally").val(filepath[0]);
 //       $(".guidedDatasetPath").text(filepath[0]);
 
-//       valid_dataset = verify_sparc_folder(filepath[0]);
+//       valid_dataset = window.verify_sparc_folder(filepath[0]);
 //       if (valid_dataset == true) {
 //         var action = "";
 //         irregularFolderArray = [];
@@ -7690,8 +7690,8 @@ window.uploadComplete = new Notyf({
 //         clearInterval(timerProgress);
 //         generateProgressBar.value = 100;
 //         statusMeter.value = 100;
-//         progressStatus.innerHTML = main_curate_status + smileyCan;
-//         statusText.innerHTML = main_curate_status + smileyCan;
+//         progressStatus.innerHTML = main_curate_status + window.smileyCan;
+//         statusText.innerHTML = main_curate_status + window.smileyCan;
 //         successful = true;
 //       }
 //     } else {

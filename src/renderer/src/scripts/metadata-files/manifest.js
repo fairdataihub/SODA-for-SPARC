@@ -1771,7 +1771,7 @@ const validateSPARCdataset = () => {
   // skip because previewing the manifest files for the user based off a Pennsieve dataset stored in json that has already been verified
 
   localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder");
-  valid_dataset = verify_sparc_folder(localDatasetFolderPath, "local");
+  valid_dataset = window.verify_sparc_folder(localDatasetFolderPath, "local");
   if (valid_dataset == true) {
     let action = "";
     irregularFolderArray = [];

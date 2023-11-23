@@ -857,7 +857,7 @@ function showSubTab(section, tab, input) {
 const highLevelFoldersDisableOptions = () => {
   var highLevelFolderOptions = window.datasetStructureJSONObj["folders"];
   if (highLevelFolderOptions) {
-    for (var folder of highLevelFolders) {
+    for (var folder of window.highLevelFolders) {
       if (Object.keys(highLevelFolderOptions).includes(folder)) {
         var optionCard = $("#" + folder + "-check").parents()[2];
         $(optionCard).addClass("disabled");
@@ -1251,7 +1251,7 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
     full_current_path = window.path.join(root_folder_path, file);
     stats = fs.statSync(full_current_path);
     if (stats.isDirectory()) {
-      if (highLevelFolders.includes(file) && !/(^|\/)\.[^\/\.]/g.test(file)) {
+      if (window.highLevelFolders.includes(file) && !/(^|\/)\.[^\/\.]/g.test(file)) {
         sodaJSONObj["dataset-structure"]["folders"][file] = {
           folders: {},
           files: {},
@@ -1329,7 +1329,7 @@ const create_json_object_include_manifest = (action, sodaJSONObj, root_folder_pa
     full_current_path = window.path.join(root_folder_path, file);
     stats = window.fs.statSync(full_current_path);
     if (stats.isDirectory()) {
-      if (highLevelFolders.includes(file) && !/(^|\/)\.[^\/\.]/g.test(file)) {
+      if (window.highLevelFolders.includes(file) && !/(^|\/)\.[^\/\.]/g.test(file)) {
         sodaJSONObj["dataset-structure"]["folders"][file] = {
           folders: {},
           files: {},
@@ -1714,9 +1714,9 @@ const recursive_structure_create_include_manifest = (
 // Function to verify if a local folder is a SPARC folder
 // If no high level folders or any possible metadata files
 // are found the folder is marked as invalid
-const verify_sparc_folder = (root_folder_path, type) => {
-  high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"];
-  possible_metadata_files = [
+window.verify_sparc_folder = (root_folder_path, type) => {
+  let high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"];
+  let possible_metadata_files = [
     "submission",
     "dataset_description",
     "subjects",
@@ -1724,13 +1724,13 @@ const verify_sparc_folder = (root_folder_path, type) => {
     "README",
     "CHANGES",
   ];
-  valid_dataset = false;
-  let entries = fs.readdirSync(root_folder_path);
+  let valid_dataset = false;
+  let entries = window.fs.readdirSync(root_folder_path);
   for (let i = 0; i < entries.length; i++) {
     let item = entries[i];
     if (type === "local") {
       if (
-        highLevelFolders.includes(item) ||
+        window.highLevelFolders.includes(item) ||
         possible_metadata_files.includes(window.path.parse(item).name)
       ) {
         valid_dataset = true;
@@ -1740,7 +1740,7 @@ const verify_sparc_folder = (root_folder_path, type) => {
       }
     } else {
       if (
-        highLevelFolders.includes(item) ||
+        window.highLevelFolders.includes(item) ||
         possible_metadata_files.includes(window.path.parse(item).name) ||
         item.substring(0, 1) != "."
       ) {

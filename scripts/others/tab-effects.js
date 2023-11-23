@@ -1707,7 +1707,7 @@ const recursive_structure_create_include_manifest = (
 // Function to verify if a local folder is a SPARC folder
 // If no high level folders or any possible metadata files
 // are found the folder is marked as invalid
-const verify_sparc_folder = (root_folder_path, type) => {
+const window.verify_sparc_folder = (root_folder_path, type) => {
   high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"];
   possible_metadata_files = [
     "submission",
