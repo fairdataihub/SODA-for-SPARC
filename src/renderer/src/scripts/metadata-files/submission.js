@@ -1213,7 +1213,7 @@ const loadSubmissionFileToUI = (data, type) => {
 };
 
 // function to check for existing submission file on Penn
-const checkBFImportSubmission = async () => {
+window.checkBFImportSubmission = async () => {
   Swal.fire({
     title: "Importing the submission.xlsx file",
     html: "Please wait...",
