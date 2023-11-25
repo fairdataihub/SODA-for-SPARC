@@ -3656,7 +3656,7 @@ const saveOrganizeProgressPrompt = () => {
         if (result.value !== null && result.value !== "") {
           sodaJSONObj["save-progress"] = result.value.trim();
           saveSODAJSONProgress(result.value.trim());
-          addOption(progressFileDropdown, result.value.trim(), result.value.trim() + ".json");
+          window.addOption(progressFileDropdown, result.value.trim(), result.value.trim() + ".json");
         }
       }
     });

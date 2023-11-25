@@ -111,7 +111,7 @@ const populateProtocolLink = (ev) => {
       $($(ev).parents()[0]).append(divElement);
       // populate dropdown with protocolResearcherList
       removeOptions(document.getElementById("select-misc-links"));
-      addOption(document.getElementById("select-misc-links"), "Select protocol title", "Select");
+      window.addOption(document.getElementById("select-misc-links"), "Select protocol title", "Select");
       for (var key of Object.keys(protocolResearcherList)) {
         $("#select-misc-links").append(
           '<option value="' + protocolResearcherList[key] + '">' + key + "</option>"
@@ -148,11 +148,11 @@ const checkContributorNameDuplicates = (table, currentRow) => {
 // clone Last names of contributors to subsequent selects so we don't have to keep calling Airtable API
 const cloneConNamesSelect = (selectLast) => {
   removeOptions(document.getElementById(selectLast));
-  addOption(document.getElementById(selectLast), "Select an option", "Select");
+  window.addOption(document.getElementById(selectLast), "Select an option", "Select");
   for (var i = 0; i < window.currentContributorsLastNames.length; i++) {
     var opt = window.currentContributorsLastNames[i];
     if (document.getElementById(selectLast)) {
-      addOption(document.getElementById(selectLast), opt, opt);
+      window.addOption(document.getElementById(selectLast), opt, opt);
     }
   }
 };
@@ -766,9 +766,9 @@ const addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) =
 
 const populateSelectSPARCAward = (object, id) => {
   removeOptions(document.getElementById(id));
-  addOption(document.getElementById(id), "Select an award", "Select");
+  window.addOption(document.getElementById(id), "Select an award", "Select");
   for (let award of Object.keys(object)) {
-    addOption(document.getElementById(id), object[award], award);
+    window.addOption(document.getElementById(id), object[award], award);
   }
 };
 

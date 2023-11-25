@@ -1504,7 +1504,7 @@ window.createDragSort(window.datasetTagsTagify);
 //////////////// //////////////// //////////////// //////////////// ///////////
 
 ////////////////////////Import Milestone Info//////////////////////////////////
-const descriptionDateInput = document.getElementById("submission-completion-date");
+window.descriptionDateInput = document.getElementById("submission-completion-date");
 
 const milestoneInput1 = document.getElementById("selected-milestone-1");
 window.milestoneTagify1 = new Tagify(milestoneInput1, {

@@ -362,7 +362,7 @@
             <input
               class="form-control"
               style="width: 450px !important"
-              onclick="showExistingSubmissionFile()"
+              onclick="window.showExistingSubmissionFile()"
               id="existing-submission-file-destination"
               type="text"
               readonly
@@ -374,7 +374,7 @@
             id="div-confirm-existing-submission-import"
           >
             <button
-              onclick="importExistingSubmissionFile()"
+              onclick="window.importExistingSubmissionFile()"
               style="
                 cursor: pointer;
                 border-radius: 4px;
@@ -856,7 +856,7 @@
       <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
     </button>
     <button
-      onclick="resetSubmission()"
+      onclick="window.resetSubmission()"
       class="start-over"
       style="margin: 0; position: absolute; left: 48%; transform: translateX(-55%)"
     >

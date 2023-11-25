@@ -998,7 +998,7 @@ $("#cancel-reupload-DDD").click(function () {
 });
 
 // import existing Changes/README file
-const showExistingSubmissionFile = (type) => {
+const window.showExistingSubmissionFile = (type) => {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !== "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
@@ -1033,7 +1033,7 @@ const window.openFileBrowserDestination = (metadataType) => {
   ipcRenderer.send(`open-destination-generate-${metadataType}-locally`);
 };
 
-const importExistingSubmissionFile = (type) => {
+const window.importExistingSubmissionFile = (type) => {
   let filePath = $(`#existing-submission-file-destination`).prop("placeholder");
   if (filePath === "Browse here") {
     Swal.fire("No file chosen", `Please select a path to your submission.xlsx file`, "error");
@@ -1156,7 +1156,7 @@ const loadSubmissionFileToUI = (data, type) => {
 
   // 4. populate Completion date (only if milestones were imported, otherwise leave as default value)
   if (data["Milestone completion date"] !== "" && milestonesImported) {
-    addOption(
+    window.addOption(
       descriptionDateInput,
       data["Milestone completion date"],
       data["Milestone completion date"]

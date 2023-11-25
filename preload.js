@@ -80,7 +80,7 @@ const updateDatasetList = (bfaccount) => {
   $("#div-filter-datasets-progress-2").css("display", "none");
 
   removeOptions(curateDatasetDropdown);
-  addOption(curateDatasetDropdown, "Search here...", "Select dataset");
+  window.addOption(curateDatasetDropdown, "Search here...", "Select dataset");
 
   initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
@@ -152,7 +152,7 @@ const updateOrganizationList = async (bfaccount) => {
   $("#div-filter-datasets-progress-2").css("display", "none");
 
   removeOptions(curateOrganizationDropdown);
-  addOption(curateOrganizationDropdown, "Search here...", "Select organization");
+  window.addOption(curateOrganizationDropdown, "Search here...", "Select organization");
 
   initializeBootstrapSelect("#curatebforganizationlist", "disabled");
 
@@ -206,7 +206,7 @@ const confirm_click_function = () => {
 };
 
 // RESET UI LOGIC SECTION ---------------------------------------------------------------------
-function resetSubmission(askToReset = true) {
+function window.resetSubmission(askToReset = true) {
   if (!askToReset) {
     // 1. remove Prev and Show from all individual-question except for the first one
     // 2. empty all input, textarea, select, para-elements
@@ -793,7 +793,7 @@ window.resetFFMUI = (ev) => {
   }
 
   if (resetSubmissionTab) {
-    resetSubmission(false);
+    window.resetSubmission(false);
   }
 
   if (resetDDTab) {

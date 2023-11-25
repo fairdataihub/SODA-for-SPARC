@@ -8,6 +8,7 @@ import client from '../client'
 import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
+import api from "../others/api/api"
 
 
 
@@ -1013,7 +1014,7 @@ $("#cancel-reupload-DDD").click(function () {
 });
 
 // import existing Changes/README file
-const showExistingSubmissionFile = (type) => {
+window.showExistingSubmissionFile = (type) => {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !== "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
@@ -1048,7 +1049,7 @@ window.openFileBrowserDestination = (metadataType) => {
   window.electron.ipcRenderer.send(`open-destination-generate-${metadataType}-locally`);
 };
 
-const importExistingSubmissionFile = (type) => {
+window.importExistingSubmissionFile = (type) => {
   let filePath = $(`#existing-submission-file-destination`).prop("placeholder");
   if (filePath === "Browse here") {
     Swal.fire("No file chosen", `Please select a path to your submission.xlsx file`, "error");
@@ -1171,8 +1172,8 @@ const loadSubmissionFileToUI = (data, type) => {
 
   // 4. populate Completion date (only if milestones were imported, otherwise leave as default value)
   if (data["Milestone completion date"] !== "" && milestonesImported) {
-    addOption(
-      descriptionDateInput,
+    window.addOption(
+      window.descriptionDateInput,
       data["Milestone completion date"],
       data["Milestone completion date"]
     );

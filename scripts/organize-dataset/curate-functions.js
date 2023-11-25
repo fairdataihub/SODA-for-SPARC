@@ -751,12 +751,12 @@ const recursive_remove_missing_file = (item_path, dataset_folder) => {
 const importOrganizeProgressPrompt = () => {
   document.getElementById("para-progress-file-status").innerHTML = "";
   removeOptions(progressFileDropdown);
-  addOption(progressFileDropdown, "Select", "Select");
+  window.addOption(progressFileDropdown, "Select", "Select");
   if (fs.existsSync(progressFilePath)) {
     var fileNames = fs.readdirSync(progressFilePath);
     if (fileNames.length > 0) {
       fileNames.forEach((item, i) => {
-        addOption(progressFileDropdown, path.parse(item).name, item);
+        window.addOption(progressFileDropdown, path.parse(item).name, item);
       });
     } else {
       document.getElementById("para-progress-file-status").innerHTML =

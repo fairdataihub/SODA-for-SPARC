@@ -279,7 +279,7 @@ const confirm_click_function = () => {
 }
 
 // RESET UI LOGIC SECTION ---------------------------------------------------------------------
-function resetSubmission(askToReset = true) {
+window.resetSubmission = (askToReset = true) => {
   if (!askToReset) {
     // 1. remove Prev and Show from all individual-question except for the first one
     // 2. empty all input, textarea, select, para-elements
@@ -866,7 +866,7 @@ window.resetFFMUI = (ev) => {
   }
 
   if (resetSubmissionTab) {
-    resetSubmission(false)
+    window.resetSubmission(false)
   }
 
   if (resetDDTab) {

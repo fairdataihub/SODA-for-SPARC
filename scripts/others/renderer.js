@@ -1763,7 +1763,7 @@ createDragSort(window.datasetTagsTagify);
 //////////////// //////////////// //////////////// //////////////// ///////////
 
 ////////////////////////Import Milestone Info//////////////////////////////////
-const descriptionDateInput = document.getElementById("submission-completion-date");
+window.descriptionDateInput = document.getElementById("submission-completion-date");
 
 const milestoneInput1 = document.getElementById("selected-milestone-1");
 var window.milestoneTagify1 = new Tagify(milestoneInput1, {
@@ -2310,7 +2310,7 @@ async function loadSubjectsFileToDataframe(filePath) {
 
         window.logMetadataForAnalytics(
           "Error",
-          window.MetadataAnalyticsPrefix.SUBJECTS,
+          MetadataAnalyticsPrefix.SUBJECTS,
           window.AnalyticsGranularity.ALL_LEVELS,
           "Existing",
           Destinations.LOCAL
@@ -2319,7 +2319,7 @@ async function loadSubjectsFileToDataframe(filePath) {
       }
       window.logMetadataForAnalytics(
         "Success",
-        window.MetadataAnalyticsPrefix.SUBJECTS,
+        MetadataAnalyticsPrefix.SUBJECTS,
         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         "Existing",
         Destinations.LOCAL
@@ -2328,7 +2328,7 @@ async function loadSubjectsFileToDataframe(filePath) {
     } else {
       window.logMetadataForAnalytics(
         "Error",
-        window.MetadataAnalyticsPrefix.SUBJECTS,
+        MetadataAnalyticsPrefix.SUBJECTS,
         window.AnalyticsGranularity.ALL_LEVELS,
         "Existing",
         Destinations.LOCAL
@@ -2353,7 +2353,7 @@ async function loadSubjectsFileToDataframe(filePath) {
 
     window.logMetadataForAnalytics(
       "Error",
-      window.MetadataAnalyticsPrefix.SUBJECTS,
+      MetadataAnalyticsPrefix.SUBJECTS,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
@@ -2393,7 +2393,7 @@ async function loadSamplesFileToDataframe(filePath) {
 
         window.logMetadataForAnalytics(
           "Error",
-          window.MetadataAnalyticsPrefix.SAMPLES,
+          MetadataAnalyticsPrefix.SAMPLES,
           window.AnalyticsGranularity.ALL_LEVELS,
           "Existing",
           Destinations.LOCAL
@@ -2403,7 +2403,7 @@ async function loadSamplesFileToDataframe(filePath) {
       }
       window.logMetadataForAnalytics(
         "Success",
-        window.MetadataAnalyticsPrefix.SAMPLES,
+        MetadataAnalyticsPrefix.SAMPLES,
         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         "Existing",
         Destinations.LOCAL
@@ -2413,7 +2413,7 @@ async function loadSamplesFileToDataframe(filePath) {
     } else {
       window.logMetadataForAnalytics(
         "Error",
-        window.MetadataAnalyticsPrefix.SAMPLES,
+        MetadataAnalyticsPrefix.SAMPLES,
         window.AnalyticsGranularity.ALL_LEVELS,
         "Existing",
         Destinations.LOCAL
@@ -2439,7 +2439,7 @@ async function loadSamplesFileToDataframe(filePath) {
 
     window.logMetadataForAnalytics(
       "Error",
-      window.MetadataAnalyticsPrefix.SAMPLES,
+      MetadataAnalyticsPrefix.SAMPLES,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
@@ -8638,13 +8638,13 @@ const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, si
   );
 
   let fileNameToPrefixMapping = {
-    dataset_description: window.MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-    submission: window.MetadataAnalyticsPrefix.SUBMISSION,
-    subjects: window.MetadataAnalyticsPrefix.SUBJECTS,
-    samples: window.MetadataAnalyticsPrefix.SAMPLES,
-    readme: window.MetadataAnalyticsPrefix.README,
-    changes: window.MetadataAnalyticsPrefix.CHANGES,
-    manifest: window.MetadataAnalyticsPrefix.MANIFEST,
+    dataset_description: MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+    submission: MetadataAnalyticsPrefix.SUBMISSION,
+    subjects: MetadataAnalyticsPrefix.SUBJECTS,
+    samples: MetadataAnalyticsPrefix.SAMPLES,
+    readme: MetadataAnalyticsPrefix.README,
+    changes: MetadataAnalyticsPrefix.CHANGES,
+    manifest: MetadataAnalyticsPrefix.MANIFEST,
   };
 
   // remove the extension from the metadata file's name
@@ -8688,7 +8688,7 @@ const getFileSizeInBytes = (path) => {
   });
 };
 
-const window.MetadataAnalyticsPrefix = {
+const MetadataAnalyticsPrefix = {
   DATASET_DESCRIPTION: "Prepare Metadata - dataset_description",
   MANIFEST: "Prepare Metadata - manifest",
   SUBJECTS: "Prepare Metadata - subjects",
