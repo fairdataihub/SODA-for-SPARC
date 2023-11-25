@@ -1739,7 +1739,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
     if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
       const award = document.getElementById("guided-submission-sparc-award-manual").value;
-      const milestones = getTagsFromTagifyElement(window.guidedSubmissionTagsTagifyManual);
+      const milestones = window.getTagsFromTagifyElement(window.guidedSubmissionTagsTagifyManual);
       const completionDate = document.getElementById(
         "guided-submission-completion-date-manual"
       ).value;
@@ -5382,7 +5382,7 @@ window.openPage = async (targetPageID) => {
         sectionSubmissionMetadataInputs.classList.remove("hidden");
 
         // Show the instructions for non-SPARC funded submissions
-        showElementsWithClass("guided-non-sparc-funding-consortium-instructions");
+        window.showElementsWithClass("guided-non-sparc-funding-consortium-instructions");
       } else {
         topLevelDDDInstructionsText.classList.remove("hidden");
 
@@ -5413,7 +5413,7 @@ window.openPage = async (targetPageID) => {
         }
 
         // Hide the instructions for non-SPARC funded submissions
-        hideElementsWithClass("guided-non-sparc-funding-consortium-instructions");
+        window.hideElementsWithClass("guided-non-sparc-funding-consortium-instructions");
       }
     }
 
@@ -11331,7 +11331,7 @@ $("#guided-button-no-source-data").on("click", () => {
   }
 });
 
-const getTagsFromTagifyElement = (tagifyElement) => {
+ window.getTagsFromTagifyElement = (tagifyElement) => {
   return Array.from(tagifyElement.getTagElms()).map((tag) => {
     return tag.textContent;
   });
@@ -15216,7 +15216,7 @@ const saveSubPageChanges = async (openSubPageID) => {
     if (openSubPageID === "guided-submission-metadata-page") {
       const award = $("#guided-submission-sparc-award").val();
       const date = $("#guided-submission-completion-date").val();
-      const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagify);
+      const milestones = window.getTagsFromTagifyElement(guidedSubmissionTagsTagify);
 
       if (award === "") {
         errorArray.push({
@@ -15541,7 +15541,7 @@ const guidedSaveDescriptionDatasetInformation = () => {
   const subtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];
   let studyType = window.sodaJSONObj["dataset-type"] || "";
   //get the keywords from the keywords textarea
-  const keywordArray = getTagsFromTagifyElement(guidedDatasetKeywordsTagify);
+  const keywordArray = window.getTagsFromTagifyElement(guidedDatasetKeywordsTagify);
   if (keywordArray.length < 3) {
     throw "Please enter at least 3 keywords";
   }
@@ -15569,9 +15569,9 @@ const guidedSaveDescriptionDatasetInformation = () => {
 };
 
 const guidedSaveDescriptionStudyInformation = () => {
-  const studyOrganSystemTags = getTagsFromTagifyElement(guidedStudyOrganSystemsTagify);
-  const studyApproachTags = getTagsFromTagifyElement(guidedStudyApproachTagify);
-  const studyTechniqueTags = getTagsFromTagifyElement(guidedStudyTechniquesTagify);
+  const studyOrganSystemTags = window.getTagsFromTagifyElement(guidedStudyOrganSystemsTagify);
+  const studyApproachTags = window.getTagsFromTagifyElement(guidedStudyApproachTagify);
+  const studyTechniqueTags = window.getTagsFromTagifyElement(guidedStudyTechniquesTagify);
 
   const studyPurposeInput = document.getElementById("guided-ds-study-purpose");
   const studyDataCollectionInput = document.getElementById("guided-ds-study-data-collection");
@@ -15634,7 +15634,7 @@ const guidedSaveDescriptionContributorInformation = () => {
   const acknowledgements = acknowledgementsInput.value.trim();
 
   // Get tags from other funding tagify
-  const otherFunding = getTagsFromTagifyElement(guidedOtherFundingsourcesTagify);
+  const otherFunding = window.getTagsFromTagifyElement(guidedOtherFundingsourcesTagify);
 
   window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributor-information"] = {
     funding: otherFunding,

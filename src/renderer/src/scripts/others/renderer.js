@@ -83,7 +83,7 @@ window.datasetStructureJSONObj = {
   type: "",
 };
 
-let introStatus = {
+window.introStatus= {
   organizeStep3: true,
   submission: false,
   subjects: false,
@@ -1155,9 +1155,9 @@ window.electron.ipcRenderer.on("app_version", (event, arg) => {
 });
 
 // // Check for update and show the pop up box
-// ipcRenderer.on("update_available", () => {
-//   ipcRenderer.removeAllListeners("update_available");
-//   ipcRenderer.send(
+// window.electron.ipcRenderer.on("update_available", () => {
+//   window.electron.ipcRenderer.removeAllListeners("update_available");
+//   window.electron.ipcRenderer.send(
 //     "track-event",
 //     "App Update",
 //     "Update Requested",
@@ -1170,9 +1170,9 @@ window.electron.ipcRenderer.on("app_version", (event, arg) => {
 // });
 
 // // When the update is downloaded, show the restart notification
-// ipcRenderer.on("update_downloaded", async () => {
-//   ipcRenderer.removeAllListeners("update_downloaded");
-//   ipcRenderer.send(
+// window.electron.ipcRenderer.on("update_downloaded", async () => {
+//   window.electron.ipcRenderer.removeAllListeners("update_downloaded");
+//   window.electron.ipcRenderer.send(
 //     "track-event",
 //     "App Update",
 //     "Update Downloaded",
@@ -1206,13 +1206,13 @@ window.electron.ipcRenderer.on("app_version", (event, arg) => {
 //     message: "Closing SODA now...",
 //   });
 
-//   ipcRenderer.send(
+//   window.electron.ipcRenderer.send(
 //     "track-event",
 //     "App Update",
 //     "App Restarted",
 //     `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
 //   );
-//   ipcRenderer.send("restart_app");
+//   window.electron.ipcRenderer.send("restart_app");
 // };
 
 // //////////////////////////////////
@@ -1339,13 +1339,13 @@ window.delayAnimation = 250;
 // let open = false;
 // const openSidebar = (buttonElement) => {
 //   if (!open) {
-//     ipcRenderer.send("resize-window", "up");
+//     window.electron.ipcRenderer.send("resize-window", "up");
 //     $("#main-nav").css("width", "250px");
 //     $("#SODA-logo").css("display", "block");
 //     $(buttonSidebarIcon).css("display", "none");
 //     open = true;
 //   } else {
-//     ipcRenderer.send("resize-window", "down");
+//     window.electron.ipcRenderer.send("resize-window", "down");
 //     $("#main-nav").css("width", "70px");
 //     $("#SODA-logo").css("display", "block");
 //     $(buttonSidebarIcon).css("display", "none");
@@ -1518,14 +1518,14 @@ window.milestoneTagify1 = new Tagify(milestoneInput1, {
   },
 });
 
-const hideElementsWithClass = (className) => {
+window.hideElementsWithClass = (className) => {
   const elements = document.querySelectorAll(`.${className}`);
   elements.forEach((element) => {
     element.classList.add("hidden");
   });
 };
 
-const showElementsWithClass = (className) => {
+ window.showElementsWithClass = (className) => {
   const elements = document.querySelectorAll(`.${className}`);
   elements.forEach((element) => {
     element.classList.remove("hidden");
@@ -1548,14 +1548,14 @@ window.milestoneTagify1.on("change", (e) => {
 
     // If there are milestone tags other than N/A, then show the completion date form component
     if (filteredMilestones.length > 0) {
-      showElementsWithClass("completion-date-form-component");
+      window.showElementsWithClass("completion-date-form-component");
     } else {
       // If there are no milestone tags other than N/A, then hide the completion date form component
-      hideElementsWithClass("completion-date-form-component");
+      window.hideElementsWithClass("completion-date-form-component");
       $("#submission-completion-date").val("");
     }
   } else {
-    hideElementsWithClass("completion-date-form-component");
+    window.hideElementsWithClass("completion-date-form-component");
     $("#submission-completion-date").val("");
   }
 });
@@ -1563,7 +1563,7 @@ window.milestoneTagify1.on("change", (e) => {
 window.createDragSort(window.milestoneTagify1);
 
 // // generate subjects file
-// ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
+// window.electron.ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
 //   if (dirpath.length > 0) {
 //     var destinationPath = window.path.join(dirpath[0], filename);
 //     if (fs.existsSync(destinationPath)) {
@@ -1720,7 +1720,7 @@ window.createDragSort(window.milestoneTagify1);
 //     });
 
 //     // log the success to Pennsieve
-//     ipcRenderer.send(
+//     window.electron.ipcRenderer.send(
 //       "track-kombucha",
 //       kombuchaEnums.Category.PREPARE_METADATA,
 //       kombuchaEnums.Action.GENERATE_METADATA,
@@ -1733,7 +1733,7 @@ window.createDragSort(window.milestoneTagify1);
 //     );
 
 //     const size = res;
-//     ipcRenderer.send(
+//     window.electron.ipcRenderer.send(
 //       "track-kombucha",
 //       kombuchaEnums.Category.PREPARE_METADATA,
 //       kombuchaEnums.Action.GENERATE_METADATA,
@@ -1757,7 +1757,7 @@ window.createDragSort(window.milestoneTagify1);
 //     });
 
 //     // log the error to analytics
-//     ipcRenderer.send(
+//     window.electron.ipcRenderer.send(
 //       "track-kombucha",
 //       kombuchaEnums.Category.PREPARE_METADATA,
 //       kombuchaEnums.Action.GENERATE_METADATA,
@@ -1772,7 +1772,7 @@ window.createDragSort(window.milestoneTagify1);
 // };
 
 // // generate samples file
-// ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
+// window.electron.ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
 //   if (dirpath.length > 0) {
 //     var destinationPath = window.path.join(dirpath[0], filename);
 //     if (fs.existsSync(destinationPath)) {
@@ -1924,7 +1924,7 @@ window.createDragSort(window.milestoneTagify1);
 //       backdrop: "rgba(0,0,0, 0.4)",
 //     });
 
-//     ipcRenderer.send(
+//     window.electron.ipcRenderer.send(
 //       "track-kombucha",
 //       kombuchaEnums.Category.PREPARE_METADATA,
 //       kombuchaEnums.Action.GENERATE_METADATA,
@@ -1938,7 +1938,7 @@ window.createDragSort(window.milestoneTagify1);
 
 //     // log the size of the metadata file that was generated at varying levels of granularity
 //     const { size } = samplesFileResponse.data;
-//     ipcRenderer.send(
+//     window.electron.ipcRenderer.send(
 //       "track-kombucha",
 //       kombuchaEnums.Category.PREPARE_METADATA,
 //       kombuchaEnums.Action.GENERATE_METADATA,
@@ -1960,7 +1960,7 @@ window.createDragSort(window.milestoneTagify1);
 //       icon: "error",
 //     });
 
-//     ipcRenderer.send(
+//     window.electron.ipcRenderer.send(
 //       "track-kombucha",
 //       kombuchaEnums.Category.PREPARE_METADATA,
 //       kombuchaEnums.Action.GENERATE_METADATA,
@@ -1975,12 +1975,12 @@ window.createDragSort(window.milestoneTagify1);
 // };
 
 // // import Primary folder
-// ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
+// window.electron.ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
 //   if (primaryFolderPath.length > 0) {
 //     importPrimaryFolderSubjects(primaryFolderPath[0]);
 //   }
 // });
-// ipcRenderer.on("selected-local-primary-folder-samples", (event, primaryFolderPath) => {
+// window.electron.ipcRenderer.on("selected-local-primary-folder-samples", (event, primaryFolderPath) => {
 //   if (primaryFolderPath.length > 0) {
 //     importPrimaryFolderSamples(primaryFolderPath[0]);
 //   }
@@ -2049,27 +2049,27 @@ window.createDragSort(window.milestoneTagify1);
 //           backdrop: "rgba(0,0,0, 0.4)",
 //         });
 
-//         logMetadataForAnalytics(
+//         window.logMetadataForAnalytics(
 //           "Error",
-//           MetadataAnalyticsPrefix.SUBJECTS,
+//           window.MetadataAnalyticsPrefix.SUBJECTS,
 //           window.AnalyticsGranularity.ALL_LEVELS,
 //           "Existing",
 //           Destinations.LOCAL
 //         );
 //         return;
 //       }
-//       logMetadataForAnalytics(
+//       window.logMetadataForAnalytics(
 //         "Success",
-//         MetadataAnalyticsPrefix.SUBJECTS,
+//         window.MetadataAnalyticsPrefix.SUBJECTS,
 //         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
 //         "Existing",
 //         Destinations.LOCAL
 //       );
 //       loadDataFrametoUI("local");
 //     } else {
-//       logMetadataForAnalytics(
+//       window.logMetadataForAnalytics(
 //         "Error",
-//         MetadataAnalyticsPrefix.SUBJECTS,
+//         window.MetadataAnalyticsPrefix.SUBJECTS,
 //         window.AnalyticsGranularity.ALL_LEVELS,
 //         "Existing",
 //         Destinations.LOCAL
@@ -2092,9 +2092,9 @@ window.createDragSort(window.milestoneTagify1);
 //       backdrop: "rgba(0,0,0, 0.4)",
 //     });
 
-//     logMetadataForAnalytics(
+//     window.logMetadataForAnalytics(
 //       "Error",
-//       MetadataAnalyticsPrefix.SUBJECTS,
+//       window.MetadataAnalyticsPrefix.SUBJECTS,
 //       window.AnalyticsGranularity.ALL_LEVELS,
 //       "Existing",
 //       Destinations.LOCAL
@@ -2132,9 +2132,9 @@ window.createDragSort(window.milestoneTagify1);
 //           backdrop: "rgba(0,0,0, 0.4)",
 //         });
 
-//         logMetadataForAnalytics(
+//         window.logMetadataForAnalytics(
 //           "Error",
-//           MetadataAnalyticsPrefix.SAMPLES,
+//           window.MetadataAnalyticsPrefix.SAMPLES,
 //           window.AnalyticsGranularity.ALL_LEVELS,
 //           "Existing",
 //           Destinations.LOCAL
@@ -2142,9 +2142,9 @@ window.createDragSort(window.milestoneTagify1);
 
 //         return;
 //       }
-//       logMetadataForAnalytics(
+//       window.logMetadataForAnalytics(
 //         "Success",
-//         MetadataAnalyticsPrefix.SAMPLES,
+//         window.MetadataAnalyticsPrefix.SAMPLES,
 //         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
 //         "Existing",
 //         Destinations.LOCAL
@@ -2152,9 +2152,9 @@ window.createDragSort(window.milestoneTagify1);
 
 //       loadDataFrametoUISamples("local");
 //     } else {
-//       logMetadataForAnalytics(
+//       window.logMetadataForAnalytics(
 //         "Error",
-//         MetadataAnalyticsPrefix.SAMPLES,
+//         window.MetadataAnalyticsPrefix.SAMPLES,
 //         window.AnalyticsGranularity.ALL_LEVELS,
 //         "Existing",
 //         Destinations.LOCAL
@@ -2178,9 +2178,9 @@ window.createDragSort(window.milestoneTagify1);
 //       backdrop: "rgba(0,0,0, 0.4)",
 //     });
 
-//     logMetadataForAnalytics(
+//     window.logMetadataForAnalytics(
 //       "Error",
-//       MetadataAnalyticsPrefix.SAMPLES,
+//       window.MetadataAnalyticsPrefix.SAMPLES,
 //       window.AnalyticsGranularity.ALL_LEVELS,
 //       "Existing",
 //       Destinations.LOCAL
@@ -3355,14 +3355,14 @@ window.submitReviewDatasetCheck = async (res, curationMode) => {
   }
 };
 
-// ipcRenderer.on("warning-publish-dataset-selection", (event, index) => {
+// window.electron.ipcRenderer.on("warning-publish-dataset-selection", (event, index) => {
 //   if (index === 0) {
 //     window.submitReviewDataset();
 //   }
 //   $("#submit_prepublishing_review-spinner").hide();
 // });
 
-// ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
+// window.electron.ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
 //   if (index === 0) {
 //     window.submitReviewDataset();
 //   }
@@ -4522,7 +4522,7 @@ window.hideMenu = (category, menu1, menu2, menu3) => {
 //     }).then((result) => {
 //       if (result.isConfirmed) {
 //         newDSName = result.value.trim();
-//         ipcRenderer.send("open-file-dialog-newdataset");
+//         window.electron.ipcRenderer.send("open-file-dialog-newdataset");
 //       }
 //     });
 //   } else {
@@ -4531,7 +4531,7 @@ window.hideMenu = (category, menu1, menu2, menu3) => {
 //   }
 // };
 
-// ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
+// window.electron.ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
 //   if (filepath.length > 0) {
 //     if (filepath != null) {
 //       document.getElementById("para-organize-datasets-loading").style.display = "block";
@@ -4594,7 +4594,7 @@ window.hideMenu = (category, menu1, menu2, menu3) => {
 
 // //////////// FILE BROWSERS to import existing files and folders /////////////////////
 // organizeDSaddFiles.addEventListener("click", function () {
-//   ipcRenderer.send("open-files-organize-datasets-dialog");
+//   window.electron.ipcRenderer.send("open-files-organize-datasets-dialog");
 // });
 
 window.electron.ipcRenderer.on("selected-files-organize-datasets", async (event, importedFiles) => {
@@ -5262,7 +5262,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 // };
 
 // // SAVE FILE ORG
-// ipcRenderer.on("save-file-organization-dialog", (event) => {
+// window.electron.ipcRenderer.on("save-file-organization-dialog", (event) => {
 //   const options = {
 //     title: "Save File Organization",
 //     filters: [{ name: "JSON", extensions: ["json"] }],
@@ -6592,11 +6592,11 @@ const manageDesc = (ev) => {
 //       "Browse here";
 //     $("#para-continue-location-dataset-getting-started").text("");
 //     document.getElementById("nextBtn").disabled = true;
-//     ipcRenderer.send("open-file-dialog-local-destination-curate");
+//     window.electron.ipcRenderer.send("open-file-dialog-local-destination-curate");
 //   });
 
 // // Local dataset selected response
-// ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepath) => {
+// window.electron.ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepath) => {
 //   let numb = document.getElementById("local_dataset_number");
 //   let progressBar_rightSide = document.getElementById("left-side_less_than_50");
 //   let progressBar_leftSide = document.getElementById("right-side_greater_than_50");
@@ -6632,7 +6632,7 @@ const manageDesc = (ev) => {
 //         $("#para-continue-location-dataset-getting-started").text("Please continue below.");
 //         $("#nextBtn").prop("disabled", false);
 //         // log the success to analytics
-//         logMetadataForAnalytics(
+//         window.logMetadataForAnalytics(
 //           "Success",
 //           window.PrepareDatasetsAnalyticsPrefix.CURATE,
 //           window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
@@ -6821,7 +6821,7 @@ const manageDesc = (ev) => {
 //           });
 
 //           // log the failure to select an appropriate folder to analytics
-//           logMetadataForAnalytics(
+//           window.logMetadataForAnalytics(
 //             "Error",
 //             window.PrepareDatasetsAnalyticsPrefix.CURATE,
 //             window.AnalyticsGranularity.ALL_LEVELS,
@@ -6837,7 +6837,7 @@ const manageDesc = (ev) => {
 //   }
 // });
 
-// ipcRenderer.on("guided-selected-local-destination-datasetCurate", (event, filepath) => {
+// window.electron.ipcRenderer.on("guided-selected-local-destination-datasetCurate", (event, filepath) => {
 //   if (filepath.length > 0) {
 //     if (filepath != null) {
 //       sodaJSONObj["starting-point"]["local-path"] = "";
@@ -6943,10 +6943,10 @@ const manageDesc = (ev) => {
 //     $("#Question-generate-dataset-locally-destination").nextAll().removeClass("test2");
 //     $("#Question-generate-dataset-locally-destination").nextAll().removeClass("prev");
 //     document.getElementById("nextBtn").disabled = true;
-//     ipcRenderer.send("open-file-dialog-local-destination-curate-generate");
+//     window.electron.ipcRenderer.send("open-file-dialog-local-destination-curate-generate");
 //   });
 
-// ipcRenderer.on("selected-local-destination-datasetCurate-generate", (event, filepath) => {
+// window.electron.ipcRenderer.on("selected-local-destination-datasetCurate-generate", (event, filepath) => {
 //   if (filepath.length > 0) {
 //     if (filepath != null) {
 //       $("#div-confirm-destination-locally").css("display", "flex");
@@ -7361,7 +7361,7 @@ window.uploadComplete = new Notyf({
 //       log.info("Completed curate function");
 
 //       // log high level confirmation that a dataset was generated - helps answer how many times were datasets generated in FFMs organize dataset functionality
-//       ipcRenderer.send(
+//       window.electron.ipcRenderer.send(
 //         "track-kombucha",
 //         kombuchaEnums.Category.PREPARE_DATASETS,
 //         kombuchaEnums.Action.GENERATE_DATASET,
@@ -7387,7 +7387,7 @@ window.uploadComplete = new Notyf({
 
 //       // log the file and file size values to analytics
 //       if (fileValueToLog > 0) {
-//         ipcRenderer.send(
+//         window.electron.ipcRenderer.send(
 //           "track-kombucha",
 //           kombuchaEnums.Category.PREPARE_DATASETS,
 //           kombuchaEnums.Action.GENERATE_DATASET,
@@ -7398,7 +7398,7 @@ window.uploadComplete = new Notyf({
 //       }
 
 //       if (fileSizeValueToLog > 0) {
-//         ipcRenderer.send(
+//         window.electron.ipcRenderer.send(
 //           "track-kombucha",
 //           kombuchaEnums.Category.PREPARE_DATASETS,
 //           kombuchaEnums.Action.GENERATE_DATASET,
@@ -7434,7 +7434,7 @@ window.uploadComplete = new Notyf({
 //       let emessage = userErrorMessage(error);
 
 //       // log high level confirmation that a dataset was generation run failed
-//       ipcRenderer.send(
+//       window.electron.ipcRenderer.send(
 //         "track-kombucha",
 //         kombuchaEnums.Category.PREPARE_DATASETS,
 //         kombuchaEnums.Action.GENERATE_DATASET,
@@ -7450,7 +7450,7 @@ window.uploadComplete = new Notyf({
 //         let differenceInBytes = uploadedBytes - bytesOnPreviousLogPage;
 
 //         if (finalFilesCount > 0) {
-//           ipcRenderer.send(
+//           window.electron.ipcRenderer.send(
 //             "track-kombucha",
 //             kombuchaEnums.Category.PREPARE_DATASETS,
 //             kombuchaEnums.Action.GENERATE_DATASET,
@@ -7461,7 +7461,7 @@ window.uploadComplete = new Notyf({
 //         }
 
 //         if (differenceInBytes > 0) {
-//           ipcRenderer.send(
+//           window.electron.ipcRenderer.send(
 //             "track-kombucha",
 //             kombuchaEnums.Category.PREPARE_DATASETS,
 //             kombuchaEnums.Action.GENERATE_DATASET,
@@ -7476,7 +7476,7 @@ window.uploadComplete = new Notyf({
 //       logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
 //       // log the amount of files, and the total size, that we failed to upload
-//       ipcRenderer.send(
+//       window.electron.ipcRenderer.send(
 //         "track-kombucha",
 //         kombuchaEnums.Category.PREPARE_DATASETS,
 //         kombuchaEnums.Action.GENERATE_DATASET,
@@ -7485,7 +7485,7 @@ window.uploadComplete = new Notyf({
 //         createEventData(uploadedFiles, dataset_destination, datasetLocation, dataset_name)
 //       );
 
-//       ipcRenderer.send(
+//       window.electron.ipcRenderer.send(
 //         "track-kombucha",
 //         kombuchaEnums.Category.PREPARE_DATASETS,
 //         kombuchaEnums.Action.GENERATE_DATASET,
@@ -7764,7 +7764,7 @@ window.uploadComplete = new Notyf({
 //       generated_dataset_id !== null &&
 //       generated_dataset_id !== undefined
 //     ) {
-//       ipcRenderer.send(
+//       window.electron.ipcRenderer.send(
 //         "track-event",
 //         "Dataset ID to Dataset Name Map",
 //         generated_dataset_id,
@@ -7791,7 +7791,7 @@ window.uploadComplete = new Notyf({
 //     // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
 //     if (files >= filesOnPreviousLogPage + 500) {
 //       filesOnPreviousLogPage += 500;
-//       ipcRenderer.send(
+//       window.electron.ipcRenderer.send(
 //         "track-kombucha",
 //         kombuchaEnums.Category.PREPARE_DATASETS,
 //         kombuchaEnums.Action.GENERATE_DATASET,
@@ -7800,7 +7800,7 @@ window.uploadComplete = new Notyf({
 //         createEventData(500, dataset_destination, datasetLocation, dataset_name)
 //       );
 
-//       ipcRenderer.send(
+//       window.electron.ipcRenderer.send(
 //         "track-event",
 //         "Success",
 //         window.PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
@@ -7810,7 +7810,7 @@ window.uploadComplete = new Notyf({
 
 //       let differenceInBytes = bytes - bytesOnPreviousLogPage;
 //       bytesOnPreviousLogPage = bytes;
-//       ipcRenderer.send(
+//       window.electron.ipcRenderer.send(
 //         "track-event",
 //         "Success",
 //         window.PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
@@ -7819,7 +7819,7 @@ window.uploadComplete = new Notyf({
 //       );
 
 //       if (differenceInBytes > 0) {
-//         ipcRenderer.send(
+//         window.electron.ipcRenderer.send(
 //           "track-kombucha",
 //           kombuchaEnums.Category.PREPARE_DATASETS,
 //           kombuchaEnums.Action.GENERATE_DATASET,
@@ -8073,7 +8073,7 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 });
 
 // $("#button-generate-manifest-locally").click(() => {
-//   ipcRenderer.send("open-folder-dialog-save-manifest-local");
+//   window.electron.ipcRenderer.send("open-folder-dialog-save-manifest-local");
 // });
 
 // const recursive_remove_deleted_files = (dataset_folder) => {
@@ -8095,7 +8095,7 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 //   }
 // };
 
-// ipcRenderer.on("selected-manifest-folder", async (event, result) => {
+// window.electron.ipcRenderer.on("selected-manifest-folder", async (event, result) => {
 //   if (!result["canceled"]) {
 //     $("body").addClass("waiting");
 //     let manifest_destination = result["filePaths"][0];
@@ -8313,147 +8313,147 @@ window.showBFAddAccountSweetalert = async (ev) => {
 // //  action: string - Optional. Indicates the step in the metadata preparation process the Success or Failure occurs
 // //  destination: string - Optional. The destination where the action is occurring; defined below in an enum
 
-// // TEST comment for build spawn
+// TEST comment for build spawn
 
-// function logMetadataForAnalytics(
-//   category,
-//   analyticsActionPrefix,
-//   granularity,
-//   action,
-//   destination
-// ) {
-//   // the name of the action being logged
-//   let actionName = analyticsActionPrefix;
+window.logMetadataForAnalytics = (
+  category,
+  analyticsActionPrefix,
+  granularity,
+  action,
+  destination
+) => {
+  // the name of the action being logged
+  let actionName = analyticsActionPrefix;
 
-//   // check if only logging the prefix or all levels of granularity
-//   if (
-//     granularity === window.AnalyticsGranularity.PREFIX ||
-//     granularity === window.AnalyticsGranularity.ALL_LEVELS
-//   ) {
-//     // log the prefix, category of the event
-//     ipcRenderer.send("track-event", `${category}`, actionName);
-//   }
+  // check if only logging the prefix or all levels of granularity
+  if (
+    granularity === window.AnalyticsGranularity.PREFIX ||
+    granularity === window.AnalyticsGranularity.ALL_LEVELS
+  ) {
+    // log the prefix, category of the event
+    window.electron.ipcRenderer.send("track-event", `${category}`, actionName);
+  }
 
-//   // check if the user provided an action to be part of the action name
-//   if (action !== "") {
-//     // update the action name with the given action
-//     actionName = actionName + " - " + action;
-//   } else {
-//     // add not set so when looking at analytics we can easily identify sections logged without providing an action
-//     // so we can fix the log call by including an appropriate action
-//     actionName = actionName + " - " + "(not set)";
-//   }
+  // check if the user provided an action to be part of the action name
+  if (action !== "") {
+    // update the action name with the given action
+    actionName = actionName + " - " + action;
+  } else {
+    // add not set so when looking at analytics we can easily identify sections logged without providing an action
+    // so we can fix the log call by including an appropriate action
+    actionName = actionName + " - " + "(not set)";
+  }
 
-//   // check if the user wants to log the action without the destination
-//   if (
-//     granularity === window.AnalyticsGranularity.ACTION ||
-//     granularity === window.AnalyticsGranularity.ALL_LEVELS ||
-//     granularity === window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
-//   ) {
-//     // track every time the user wanted to generate a metadata file or everytime the user wanted to use a pre-existing metadata file
-//     ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
-//   }
+  // check if the user wants to log the action without the destination
+  if (
+    granularity === window.AnalyticsGranularity.ACTION ||
+    granularity === window.AnalyticsGranularity.ALL_LEVELS ||
+    granularity === window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+  ) {
+    // track every time the user wanted to generate a metadata file or everytime the user wanted to use a pre-existing metadata file
+    window.electron.ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
+  }
 
-//   if (
-//     granularity === window.AnalyticsGranularity.ACTION_WITH_DESTINATION ||
-//     granularity === window.AnalyticsGranularity.ALL_LEVELS ||
-//     granularity === window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
-//   ) {
-//     // add the destination to the action
-//     actionName = actionName + " - " + destination;
-//     // log only the action with the destination added
-//     if (destination === Destinations.PENNSIEVE) {
-//       ipcRenderer.send("track-event", `${category}`, actionName, window.defaultBfDatasetId);
-//     } else {
-//       ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
-//     }
-//   }
-// }
+  if (
+    granularity === window.AnalyticsGranularity.ACTION_WITH_DESTINATION ||
+    granularity === window.AnalyticsGranularity.ALL_LEVELS ||
+    granularity === window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
+  ) {
+    // add the destination to the action
+    actionName = actionName + " - " + destination;
+    // log only the action with the destination added
+    if (destination === Destinations.PENNSIEVE) {
+      window.electron.ipcRenderer.send("track-event", `${category}`, actionName, window.defaultBfDatasetId);
+    } else {
+      window.electron.ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
+    }
+  }
+}
 
-// // Log the size of a metadata file that was created locally or uploaded to Pennsieve
-// // Inputs:
-// //    uploadBFBoolean: boolean - True when the metadata file was created on Pennsieve; false when the Metadata file was created locally
-// //    metadataFileName: string - the name of the metadata file that was created along with its extension
-// const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, size) => {
-//   // get the destination of the metadata file
-//   let destination = uploadBFBoolean ? "Pennsieve" : "Local";
+// Log the size of a metadata file that was created locally or uploaded to Pennsieve
+// Inputs:
+//    uploadBFBoolean: boolean - True when the metadata file was created on Pennsieve; false when the Metadata file was created locally
+//    metadataFileName: string - the name of the metadata file that was created along with its extension
+const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, size) => {
+  // get the destination of the metadata file
+  let destination = uploadBFBoolean ? "Pennsieve" : "Local";
 
-//   ipcRenderer.send(
-//     "track-event",
-//     "Success",
-//     "Prepare Metadata - Generate",
-//     "Size of Total Metadata Files Generated",
-//     size
-//   );
+  window.electron.ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Prepare Metadata - Generate",
+    "Size of Total Metadata Files Generated",
+    size
+  );
 
-//   // TODO: Dorian -> verify information is correct on the analytics side
-//   // TODO: Aaron -> change to Ps and add dataset id field
-//   ipcRenderer.send(
-//     "track-kombucha",
-//     kombuchaEnums.Category.PREPARE_METADATA,
-//     kombuchaEnums.Action.GENERATE,
-//     kombuchaEnums.Label.SIZE,
-//     kombuchaEnums.Status.SUCCESS,
-//     {
-//       value: size,
-//       destination: destination,
-//       origin: uploadBFBoolean ? window.defaultBfDatasetId : "Local",
-//       dataset_name: window.defaultBfDataset,
-//     }
-//   );
+  // TODO: Dorian -> verify information is correct on the analytics side
+  // TODO: Aaron -> change to Ps and add dataset id field
+  window.electron.ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.PREPARE_METADATA,
+    kombuchaEnums.Action.GENERATE,
+    kombuchaEnums.Label.SIZE,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: size,
+      destination: destination,
+      origin: uploadBFBoolean ? window.defaultBfDatasetId : "Local",
+      dataset_name: window.defaultBfDataset,
+    }
+  );
 
-//   let fileNameToPrefixMapping = {
-//     dataset_description: MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-//     submission: MetadataAnalyticsPrefix.SUBMISSION,
-//     subjects: MetadataAnalyticsPrefix.SUBJECTS,
-//     samples: MetadataAnalyticsPrefix.SAMPLES,
-//     readme: MetadataAnalyticsPrefix.README,
-//     changes: MetadataAnalyticsPrefix.CHANGES,
-//     manifest: MetadataAnalyticsPrefix.MANIFEST,
-//   };
+  let fileNameToPrefixMapping = {
+    dataset_description: window.MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+    submission: window.MetadataAnalyticsPrefix.SUBMISSION,
+    subjects: window.MetadataAnalyticsPrefix.SUBJECTS,
+    samples: window.MetadataAnalyticsPrefix.SAMPLES,
+    readme: window.MetadataAnalyticsPrefix.README,
+    changes: window.MetadataAnalyticsPrefix.CHANGES,
+    manifest: window.MetadataAnalyticsPrefix.MANIFEST,
+  };
 
-//   // remove the extension from the metadata file's name
-//   let metadataFileWithoutExtension = metadataFileName.slice(0, metadataFileName.indexOf("."));
+  // remove the extension from the metadata file's name
+  let metadataFileWithoutExtension = metadataFileName.slice(0, metadataFileName.indexOf("."));
 
-//   // get the appropriate prefix for logging the given metadata file's size
-//   let currentMetadataLoggingPrefix =
-//     fileNameToPrefixMapping[`${metadataFileWithoutExtension.toLowerCase()}`];
+  // get the appropriate prefix for logging the given metadata file's size
+  let currentMetadataLoggingPrefix =
+    fileNameToPrefixMapping[`${metadataFileWithoutExtension.toLowerCase()}`];
 
-//   // log the size to analytics using the Action as a root logging level
-//   // that aggregates the size of all metadata files of a particular type created through SODA
-//   ipcRenderer.send(
-//     "track-event",
-//     "Success",
-//     currentMetadataLoggingPrefix + " - Generate - Size",
-//     "Size",
-//     size
-//   );
+  // log the size to analytics using the Action as a root logging level
+  // that aggregates the size of all metadata files of a particular type created through SODA
+  window.electron.ipcRenderer.send(
+    "track-event",
+    "Success",
+    currentMetadataLoggingPrefix + " - Generate - Size",
+    "Size",
+    size
+  );
 
-//   // log the size of the metadata file along with its location; label is the selected dataset's ID or a note informing us the dataset is stored locally
-//   ipcRenderer.send(
-//     "track-event",
-//     "Success",
-//     currentMetadataLoggingPrefix + ` - Generate - ${destination} - Size`,
-//     uploadBFBoolean ? window.defaultBfDatasetId : "Local",
-//     size
-//   );
-// };
+  // log the size of the metadata file along with its location; label is the selected dataset's ID or a note informing us the dataset is stored locally
+  window.electron.ipcRenderer.send(
+    "track-event",
+    "Success",
+    currentMetadataLoggingPrefix + ` - Generate - ${destination} - Size`,
+    uploadBFBoolean ? window.defaultBfDatasetId : "Local",
+    size
+  );
+};
 
-// // get the size of a file in bytes given a path to a file
-// const getFileSizeInBytes = (path) => {
-//   return new Promise((resolve, reject) => {
-//     fs.stat(path, (err, stats) => {
-//       if (err) {
-//         console.error(err);
-//         reject(err);
-//       } else {
-//         resolve(stats.size);
-//       }
-//     });
-//   });
-// };
+// get the size of a file in bytes given a path to a file
+const getFileSizeInBytes = (path) => {
+  return new Promise((resolve, reject) => {
+    fs.stat(path, (err, stats) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        resolve(stats.size);
+      }
+    });
+  });
+};
 
-const MetadataAnalyticsPrefix = {
+window.MetadataAnalyticsPrefix = {
   DATASET_DESCRIPTION: "Prepare Metadata - dataset_description",
   MANIFEST: "Prepare Metadata - manifest",
   SUBJECTS: "Prepare Metadata - subjects",
@@ -8900,9 +8900,9 @@ window.logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularit
 
 //       let log_destination_input = document.getElementById("selected-log-destination");
 //       log_destination_input.addEventListener("click", function () {
-//         ipcRenderer.send("open-file-dialog-log-destination");
+//         window.electron.ipcRenderer.send("open-file-dialog-log-destination");
 //       });
-//       ipcRenderer.on("selected-log-folder", (event, result) => {
+//       window.electron.ipcRenderer.on("selected-log-folder", (event, result) => {
 //         file_path = result["filePaths"][0];
 //         if (file_path != undefined) {
 //           log_destination_input.value = file_path;
@@ -9065,5 +9065,5 @@ tippy("#datasetPathDisplay", {
 });
 
 // const createSpreadSheetWindow = async (spreadsheet) => {
-//   ipcRenderer.send("spreadsheet", spreadsheet);
+//   window.electron.ipcRenderer.send("spreadsheet", spreadsheet);
 // };

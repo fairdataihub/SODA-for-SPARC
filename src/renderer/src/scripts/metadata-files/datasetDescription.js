@@ -1,3 +1,6 @@
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
+
+
 // opendropdown event listeners
 document.querySelectorAll(".dd-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
@@ -1556,9 +1559,9 @@ const checkBFImportDD = async () => {
     loadDDFileToUI(res, "bf");
 
     // log the import action success to analytics
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Success",
-      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      window.MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
       window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       "Existing",
       Destinations.PENNSIEVE
@@ -1573,9 +1576,9 @@ const checkBFImportDD = async () => {
       text: error.response.data.message,
     });
 
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      window.MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.PENNSIEVE
@@ -1596,9 +1599,9 @@ const loadDDfileDataframe = async (filePath) => {
 
     loadDDFileToUI(ddFileData, "local");
     // log the import action success to analytics
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Success",
-      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      window.MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
       window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       "Existing",
       Destinations.LOCAL
@@ -1615,9 +1618,9 @@ const loadDDfileDataframe = async (filePath) => {
     });
 
     // log the import action failure to analytics
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+      window.MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL

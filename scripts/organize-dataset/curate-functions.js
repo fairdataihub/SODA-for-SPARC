@@ -369,7 +369,7 @@ const progressFileParse = (ev) => {
         "<span style='color:red'>" + error + "</span>";
 
       // log the error to analytics at varying levels of granularity
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Error",
         PrepareDatasetsAnalyticsPrefix.CURATE,
         window.AnalyticsGranularity.ALL_LEVELS,
@@ -615,7 +615,7 @@ const loadProgressFile = (ev) => {
           "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
 
         // log the success at the action and action with destination granularity levels
-        logMetadataForAnalytics(
+        window.logMetadataForAnalytics(
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE,
           window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
@@ -689,7 +689,7 @@ const verify_missing_files = (mode) => {
           "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
 
         // log the success at the action and action with destination granularith levels
-        logMetadataForAnalytics(
+        window.logMetadataForAnalytics(
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE,
           window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,

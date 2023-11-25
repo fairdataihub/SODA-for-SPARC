@@ -1,5 +1,7 @@
 import https from "https";
 import Swal from "sweetalert2";
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
+
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100))
@@ -2262,9 +2264,9 @@ $(document).ready(function () {
       if (filepath != null) {
         document.getElementById("existing-samples-file-destination").placeholder = filepath[0];
         // log the successful import to analytics
-        logMetadataForAnalytics(
+        window.logMetadataForAnalytics(
           "Success",
-          MetadataAnalyticsPrefix.SAMPLES,
+          window.MetadataAnalyticsPrefix.SAMPLES,
           window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           "Existing",
           Destinations.LOCAL
@@ -2445,9 +2447,9 @@ const importExistingSubjectsFile = () => {
     Swal.fire("No file chosen", "Please select a path to your subjects.xlsx file,", "error");
 
     // log the error to analytics
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.SUBJECTS,
+      window.MetadataAnalyticsPrefix.SUBJECTS,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
@@ -2463,9 +2465,9 @@ const importExistingSubjectsFile = () => {
       });
 
       // log the error to analytics
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.SUBJECTS,
+        window.MetadataAnalyticsPrefix.SUBJECTS,
         window.AnalyticsGranularity.ALL_LEVELS,
         "Existing",
         Destinations.LOCAL
@@ -2494,9 +2496,9 @@ const importExistingSamplesFile = () => {
     Swal.fire("No file chosen", "Please select a path to your samples.xlsx file.", "error");
 
     // log the error to analytics
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.SAMPLES,
+      window.MetadataAnalyticsPrefix.SAMPLES,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
@@ -2512,9 +2514,9 @@ const importExistingSamplesFile = () => {
       });
 
       // log the error to analytics
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.SAMPLES,
+        window.MetadataAnalyticsPrefix.SAMPLES,
         window.AnalyticsGranularity.ALL_LEVELS,
         "Existing",
         Destinations.LOCAL
@@ -2572,9 +2574,9 @@ const checkBFImportSubjects = async () => {
     let res = import_metadata_file.data.subject_file_rows;
 
     // log the success to analytics
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Success",
-      MetadataAnalyticsPrefix.SUBJECTS,
+      window.MetadataAnalyticsPrefix.SUBJECTS,
       window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       "Existing",
       Destinations.PENNSIEVE
@@ -2592,9 +2594,9 @@ const checkBFImportSubjects = async () => {
     });
 
     // log the error to analytics
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.SUBJECTS,
+      window.MetadataAnalyticsPrefix.SUBJECTS,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.PENNSIEVE
@@ -2638,9 +2640,9 @@ const checkBFImportSamples = async () => {
     let res = importMetadataResponse.data.sample_file_rows;
 
     // log the success to analytics
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Success",
-      MetadataAnalyticsPrefix.SAMPLES,
+      window.MetadataAnalyticsPrefix.SAMPLES,
       window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       "Existing",
       Destinations.PENNSIEVE
@@ -2658,9 +2660,9 @@ const checkBFImportSamples = async () => {
     });
 
     // log the error to analytics
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.SAMPLES,
+      window.MetadataAnalyticsPrefix.SAMPLES,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.PENNSIEVE

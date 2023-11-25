@@ -1,5 +1,7 @@
 import client from '../client'
 import excelToJson from 'convert-excel-to-json';
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
+
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100))
@@ -845,17 +847,17 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
           icon: "warning",
           showConfirmButton: "OK",
         });
-        logMetadataForAnalytics(
+        window.logMetadataForAnalytics(
           "Error",
-          MetadataAnalyticsPrefix.MANIFEST,
+          window.MetadataAnalyticsPrefix.MANIFEST,
           window.AnalyticsGranularity.ALL_LEVELS,
           "Generate",
           Destinations.LOCAL
         );
 
-        logMetadataForAnalytics(
+        window.logMetadataForAnalytics(
           "Error",
-          MetadataAnalyticsPrefix.MANIFEST,
+          window.MetadataAnalyticsPrefix.MANIFEST,
           window.AnalyticsGranularity.ACTION,
           "Generate - Check Storage Space",
           Destinations.LOCAL
@@ -865,9 +867,9 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
           generateAfterEdits();
           return;
         }
-        logMetadataForAnalytics(
+        window.logMetadataForAnalytics(
           "Success",
-          MetadataAnalyticsPrefix.MANIFEST,
+          window.MetadataAnalyticsPrefix.MANIFEST,
           window.AnalyticsGranularity.ACTION,
           "Generate - Check Storage Space",
           Destinations.LOCAL
@@ -904,9 +906,9 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
           }).then((result) => {});
 
           // log the error to analytics
-          logMetadataForAnalytics(
+          window.logMetadataForAnalytics(
             "Error",
-            MetadataAnalyticsPrefix.MANIFEST,
+            window.MetadataAnalyticsPrefix.MANIFEST,
             window.AnalyticsGranularity.ALL_LEVELS,
             "Generate",
             Destinations.LOCAL
@@ -932,9 +934,9 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
             },
           }).then((result) => {});
           // log the error to analytics
-          logMetadataForAnalytics(
+          window.logMetadataForAnalytics(
             "Error",
-            MetadataAnalyticsPrefix.MANIFEST,
+            window.MetadataAnalyticsPrefix.MANIFEST,
             window.AnalyticsGranularity.ALL_LEVELS,
             "Generate",
             Destinations.LOCAL
@@ -960,9 +962,9 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
             },
           }).then((result) => {});
           // log the error to analytics
-          logMetadataForAnalytics(
+          window.logMetadataForAnalytics(
             "Error",
-            MetadataAnalyticsPrefix.MANIFEST,
+            window.MetadataAnalyticsPrefix.MANIFEST,
             window.AnalyticsGranularity.ALL_LEVELS,
             "Generate",
             Destinations.LOCAL
@@ -1123,9 +1125,9 @@ const initiate_generate_manifest_local = async (manifestEditBoolean, originalDat
       });
       //////////// Tracking analytics /////////////
       // log the manifest file creation to analytics
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Success",
-        MetadataAnalyticsPrefix.MANIFEST,
+        window.MetadataAnalyticsPrefix.MANIFEST,
         window.AnalyticsGranularity.ALL_LEVELS,
         "Generate",
         Destinations.LOCAL
@@ -1217,9 +1219,9 @@ const initiate_generate_manifest_bf = async () => {
     }
 
     // log the error to analytics
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.MANIFEST,
+      window.MetadataAnalyticsPrefix.MANIFEST,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Generate",
       Destinations.PENNSIEVE
@@ -1258,9 +1260,9 @@ const initiate_generate_manifest_bf = async () => {
       : kombuchaEnums.Origin.LOCAL;
 
   // log the manifest file creation to analytics
-  logMetadataForAnalytics(
+  window.logMetadataForAnalytics(
     "Success",
-    MetadataAnalyticsPrefix.MANIFEST,
+    window.MetadataAnalyticsPrefix.MANIFEST,
     window.AnalyticsGranularity.ALL_LEVELS,
     "Generate",
     Destinations.PENNSIEVE
@@ -1270,7 +1272,7 @@ const initiate_generate_manifest_bf = async () => {
   window.electron.ipcRenderer.send(
     "track-event",
     "Success",
-    MetadataAnalyticsPrefix.MANIFEST + " - Generate - Number of Files ",
+    window.MetadataAnalyticsPrefix.MANIFEST + " - Generate - Number of Files ",
     "Number of Files",
     high_level_folder_num
   );
@@ -1560,9 +1562,9 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
     $("#bf_dataset_create_manifest").text("None");
     window.defaultBfDataset = "Select dataset";
     // log the Generate action without the destination
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.MANIFEST,
+      window.MetadataAnalyticsPrefix.MANIFEST,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Generate",
       Destinations.PENNSIEVE
@@ -1612,9 +1614,9 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
       $("#Question-prepare-manifest-3").removeClass("prev");
       $("#bf_dataset_create_manifest").text("None");
       window.defaultBfDataset = "Select dataset";
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.MANIFEST,
+        window.MetadataAnalyticsPrefix.MANIFEST,
         window.AnalyticsGranularity.ALL_LEVELS,
         "Generate",
         Destinations.PENNSIEVE
@@ -1654,9 +1656,9 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
       $("#Question-prepare-manifest-3").removeClass("prev");
       $("#bf_dataset_create_manifest").text("None");
       window.defaultBfDataset = "Select dataset";
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.MANIFEST,
+        window.MetadataAnalyticsPrefix.MANIFEST,
         window.AnalyticsGranularity.ALL_LEVELS,
         "Generate",
         Destinations.PENNSIEVE
@@ -1688,9 +1690,9 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
 
       window.defaultBfDataset = "Select dataset";
       // log the error to analytics
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.MANIFEST,
+        window.MetadataAnalyticsPrefix.MANIFEST,
         window.AnalyticsGranularity.ALL_LEVELS,
         "Generate",
         Destinations.PENNSIEVE
@@ -2129,9 +2131,9 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
 
         //////////// Tracking analytics /////////////
         // log the manifest file creation to analytics
-        logMetadataForAnalytics(
+        window.logMetadataForAnalytics(
           "Success",
-          MetadataAnalyticsPrefix.MANIFEST,
+          window.MetadataAnalyticsPrefix.MANIFEST,
           window.AnalyticsGranularity.ALL_LEVELS,
           "Generate",
           Destinations.LOCAL

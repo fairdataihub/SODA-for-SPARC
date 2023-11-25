@@ -1,6 +1,15 @@
 /*
 This file contains all of the functions related to the submission.xlsx file
 */
+import Swal from "sweetalert2";
+import checkDiskSpace from "check-disk-space";
+import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
+import client from '../client'
+import kombuchaEnums from "../analytics/analytics-enums";
+import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
+
+
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100))
@@ -379,9 +388,9 @@ const getCheckedMilestones = () => {
 };
 
 const openDDDimport = async (curationMode) => {
-  let filepath = await ipcRenderer.invoke("open-file-dialog-data-deliverables");
+  let filepath = await window.electron.ipcRenderer.invoke("open-file-dialog-data-deliverables");
   if (filepath.length > 0) {
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Success",
       "Prepare Metadata - submission - import-DDD",
@@ -482,7 +491,7 @@ window.validateSubmissionFileInputs = () => {
   }
 
   // If milestones were added, check for a completion date
-  const milestones = getTagsFromTagifyElement(window.milestoneTagify1);
+  const milestones = window.getTagsFromTagifyElement(window.milestoneTagify1);
   if (milestones.length > 0) {
     const selectedCompletionDate = $("#submission-completion-date").val();
     if (selectedCompletionDate === "") {
@@ -541,7 +550,7 @@ $("#ffm-select-sparc-funding-consortium").on("change", function (e) {
       label.classList.add("required");
     });
 
-    hideElementsWithClass("non-sparc-funding-consortium-instructions"); // Hide non-SPARC instructions
+    window.hideElementsWithClass("non-sparc-funding-consortium-instructions"); // Hide non-SPARC instructions
   } else {
     generateSubmissionButton.classList.remove("hidden"); // Show the button
   }
@@ -598,7 +607,7 @@ $(document).ready(function () {
     if (dirpath.length > 0) {
       document.getElementById("input-destination-generate-submission-locally").placeholder =
         dirpath[0];
-      var destinationPath = path.join(dirpath[0], "submission.xlsx");
+      var destinationPath = window.path.join(dirpath[0], "submission.xlsx");
       submissionDestinationPath = destinationPath;
       $("#div-confirm-destination-submission-locally").css("display", "flex");
       $($("#div-confirm-destination-submission-locally").children()[0]).css("display", "flex");
@@ -639,45 +648,46 @@ $(document).ready(function () {
 const checkStorage = (id) => {
   let location = id;
   let threeMB = 3145728;
-  checkDiskSpace(location).then((diskSpace) => {
-    freeMem = diskSpace.free;
-    if (freeMem < threeMB) {
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "OK",
-        heightAuto: false,
-        icon: "warning",
-        showCancelButton: false,
-        title: "Not enough space",
-        text: "Please free up at least 3MB",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
+  // TODO: Externalize CheckDiskSpace
+  // checkDiskSpace(location).then((diskSpace) => {
+  //   freeMem = diskSpace.free;
+  //   if (freeMem < threeMB) {
+  //     Swal.fire({
+  //       backdrop: "rgba(0,0,0, 0.4)",
+  //       confirmButtonText: "OK",
+  //       heightAuto: false,
+  //       icon: "warning",
+  //       showCancelButton: false,
+  //       title: "Not enough space",
+  //       text: "Please free up at least 3MB",
+  //       showClass: {
+  //         popup: "animate__animated animate__zoomIn animate__faster",
+  //       },
+  //       hideClass: {
+  //         popup: "animate__animated animate__zoomOut animate__faster",
+  //       },
+  //     });
 
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Prepare Metadata - Generate - Check Storage Space",
-        "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
-        1
-      );
+  //     window.electron.ipcRenderer.send(
+  //       "track-event",
+  //       "Error",
+  //       "Prepare Metadata - Generate - Check Storage Space",
+  //       "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
+  //       1
+  //     );
 
-      // stop execution to avoid logging a success case for the storage space check
-      return;
-    }
+  //     // stop execution to avoid logging a success case for the storage space check
+  //     return;
+  //   }
 
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Prepare Metadata - Generate - Check Storage Space",
-      "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
-      1
-    );
-  });
+  //   window.electron.ipcRenderer.send(
+  //     "track-event",
+  //     "Success",
+  //     "Prepare Metadata - Generate - Check Storage Space",
+  //     "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
+  //     1
+  //   );
+  // });
 };
 
 const localSubmissionBtn = document.getElementById("btn-confirm-local-submission-destination");
@@ -752,7 +762,7 @@ localReadmeBtn.addEventListener(
   false
 );
 
-const generateSubmissionHelper = async (uploadBFBoolean) => {
+window.generateSubmissionHelper = async (uploadBFBoolean) => {
   let datasetName = $("#bf_dataset_load_submission").text().trim();
   if (uploadBFBoolean) {
     // Run pre-flight checks before uploading the submission file to Pennsieve
@@ -834,7 +844,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
 
   const fundingConsortiumFromDropdown = $("#ffm-select-sparc-funding-consortium").val();
   const awardNumber = $("#submission-sparc-award").val();
-  const milestones = getTagsFromTagifyElement(window.milestoneTagify1);
+  const milestones = window.getTagsFromTagifyElement(window.milestoneTagify1);
   const completionDate = $("#submission-completion-date").val();
 
   const submissionMetadataArray = [];
@@ -859,6 +869,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
     }
   }
 
+  let res; 
   try {
     res = await client.post(
       `/prepare_metadata/submission_file`,
@@ -869,7 +880,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
       },
       {
         params: {
-          selected_account: window.defaultBfDataset,
+          selected_account: window.defaultBfAccount,
           selected_dataset: datasetName,
         },
       }
@@ -884,7 +895,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
       title: "Failed to generate the submission file",
     });
 
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_METADATA,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -912,15 +923,15 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
     allowOutsideClick: true,
   });
 
-  logMetadataForAnalytics(
+  window.logMetadataForAnalytics(
     "Success",
-    MetadataAnalyticsPrefix.SUBMISSION,
+    window.MetadataAnalyticsPrefix.SUBMISSION,
     window.AnalyticsGranularity.ALL_LEVELS,
     "Generate",
     uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
   );
 
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-kombucha",
     kombuchaEnums.Category.PREPARE_METADATA,
     kombuchaEnums.Action.GENERATE_METADATA,
@@ -933,7 +944,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
   const { size } = res.data;
 
   // log the size of the metadata file that was generated at varying levels of granularity
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-kombucha",
     kombuchaEnums.Category.PREPARE_METADATA,
     kombuchaEnums.Action.GENERATE_METADATA,
@@ -991,7 +1002,7 @@ $("#submission-completion-date").change(function () {
 
 $("#input-milestone-select-reupload").click(function () {
   document.getElementById("para-milestone-document-info-long-reupload").style.display = "none";
-  ipcRenderer.send("open-file-dialog-milestone-doc-reupload");
+  window.electron.ipcRenderer.send("open-file-dialog-milestone-doc-reupload");
 });
 
 $("#cancel-reupload-DDD").click(function () {
@@ -1021,7 +1032,7 @@ const showExistingSubmissionFile = (type) => {
       reverseButtons: window.reverseSwalButtons,
     }).then((boolean) => {
       if (boolean.isConfirmed) {
-        ipcRenderer.send(`open-file-dialog-existing-submission`);
+        window.electron.ipcRenderer.send(`open-file-dialog-existing-submission`);
         document.getElementById(`existing-submission-file-destination`).placeholder = "Browse here";
         $(`#div-confirm-existing-submission-import`).hide();
         $($(`#div-confirm-existing-submission-import button`)[0]).hide();
@@ -1029,12 +1040,12 @@ const showExistingSubmissionFile = (type) => {
       }
     });
   } else {
-    ipcRenderer.send(`open-file-dialog-existing-submission`);
+    window.electron.ipcRenderer.send(`open-file-dialog-existing-submission`);
   }
 };
 
-const openFileBrowserDestination = (metadataType) => {
-  ipcRenderer.send(`open-destination-generate-${metadataType}-locally`);
+window.openFileBrowserDestination = (metadataType) => {
+  window.electron.ipcRenderer.send(`open-destination-generate-${metadataType}-locally`);
 };
 
 const importExistingSubmissionFile = (type) => {
@@ -1042,15 +1053,15 @@ const importExistingSubmissionFile = (type) => {
   if (filePath === "Browse here") {
     Swal.fire("No file chosen", `Please select a path to your submission.xlsx file`, "error");
 
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.SUBMISSION,
+      window.MetadataAnalyticsPrefix.SUBMISSION,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
     );
   } else {
-    if (path.parse(filePath).base !== "submission.xlsx") {
+    if (window.path.parse(filePath).base !== "submission.xlsx") {
       Swal.fire({
         title: "Incorrect file name",
         text: `Your file must be named submission.xlsx to be imported to SODA.`,
@@ -1059,9 +1070,9 @@ const importExistingSubmissionFile = (type) => {
         icon: "error",
       });
 
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.SUBMISSION,
+        window.MetadataAnalyticsPrefix.SUBMISSION,
         window.AnalyticsGranularity.ALL_LEVELS,
         "Existing",
         Destinations.LOCAL
@@ -1086,7 +1097,7 @@ const importExistingSubmissionFile = (type) => {
 
 // function to load existing submission files
 const loadExistingSubmissionFile = async (filepath) => {
-  log.info(`Loading existing submission file: ${filepath}`);
+  window.log.info(`Loading existing submission file: ${filepath}`);
   try {
     let load_submission_file = await client.get(`/prepare_metadata/submission_file`, {
       params: {
@@ -1106,9 +1117,9 @@ const loadExistingSubmissionFile = async (filepath) => {
       backdrop: "rgba(0,0,0, 0.4)",
       icon: "error",
     });
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.SUBMISSION,
+      window.MetadataAnalyticsPrefix.SUBMISSION,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
@@ -1181,9 +1192,9 @@ const loadSubmissionFileToUI = (data, type) => {
     },
   });
 
-  logMetadataForAnalytics(
+  window.logMetadataForAnalytics(
     "Success",
-    MetadataAnalyticsPrefix.SUBMISSION,
+    window.MetadataAnalyticsPrefix.SUBMISSION,
     window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
     "Existing",
     type === "local" ? Destinations.LOCAL : Destinations.PENNSIEVE
@@ -1217,12 +1228,12 @@ const checkBFImportSubmission = async () => {
     },
   }).then((result) => {});
   const bfDataset = $("#bf_dataset_load_submission").text().trim();
-  log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
+  window.log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
   try {
     let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
       params: {
         file_type: "submission.xlsx",
-        selected_account: window.defaultBfDataset,
+        selected_account: window.defaultBfAccount,
         selected_dataset: bfDataset,
       },
     });
@@ -1238,9 +1249,9 @@ const checkBFImportSubmission = async () => {
       icon: "warning",
       html: error.response.data.message,
     });
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.SUBMISSION,
+      window.MetadataAnalyticsPrefix.SUBMISSION,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.PENNSIEVE

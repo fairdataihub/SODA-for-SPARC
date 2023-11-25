@@ -233,9 +233,9 @@ $(document).ready(function () {
       if (filepath !== null) {
         document.getElementById("existing-changes-file-destination").placeholder = filepath[0];
 
-        logMetadataForAnalytics(
+        window.logMetadataForAnalytics(
           "Success",
-          MetadataAnalyticsPrefix.CHANGES,
+          window.MetadataAnalyticsPrefix.CHANGES,
           window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           "Existing",
           Destinations.PENNSIEVE
@@ -264,9 +264,9 @@ $(document).ready(function () {
       if (filepath !== null) {
         document.getElementById("existing-readme-file-destination").placeholder = filepath[0];
 
-        logMetadataForAnalytics(
+        window.logMetadataForAnalytics(
           "Success",
-          MetadataAnalyticsPrefix.README,
+          window.MetadataAnalyticsPrefix.README,
           window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
           "Existing",
           Destinations.LOCAL
@@ -381,9 +381,9 @@ async function saveRCFile(type) {
         },
       });
 
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Error",
-        type === "changes" ? MetadataAnalyticsPrefix.CHANGES : MetadataAnalyticsPrefix.README,
+        type === "changes" ? window.MetadataAnalyticsPrefix.CHANGES : window.MetadataAnalyticsPrefix.README,
         window.AnalyticsGranularity.ALL_LEVELS,
         "Generate",
         Destinations.LOCAL
@@ -568,9 +568,9 @@ const getRC = async (type) => {
     });
     let res = import_rc_file.data.text;
 
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Success",
-      shortName === "changes" ? MetadataAnalyticsPrefix.CHANGES : MetadataAnalyticsPrefix.README,
+      shortName === "changes" ? window.MetadataAnalyticsPrefix.CHANGES : window.MetadataAnalyticsPrefix.README,
       window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
       "Existing",
       Destinations.PENNSIEVE
@@ -608,9 +608,9 @@ const getRC = async (type) => {
       backdrop: "rgba(0,0,0, 0.4)",
     });
 
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      shortName === "changes" ? MetadataAnalyticsPrefix.CHANGES : MetadataAnalyticsPrefix.README,
+      shortName === "changes" ? window.MetadataAnalyticsPrefix.CHANGES : window.MetadataAnalyticsPrefix.README,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.PENNSIEVE
@@ -633,9 +633,9 @@ function importExistingRCFile(type) {
       "error"
     );
 
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      type === "changes" ? MetadataAnalyticsPrefix.CHANGES : MetadataAnalyticsPrefix.README,
+      type === "changes" ? window.MetadataAnalyticsPrefix.CHANGES : window.MetadataAnalyticsPrefix.README,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
@@ -650,9 +650,9 @@ function importExistingRCFile(type) {
         icon: "error",
       });
 
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Error",
-        type === "changes" ? MetadataAnalyticsPrefix.CHANGES : MetadataAnalyticsPrefix.README,
+        type === "changes" ? window.MetadataAnalyticsPrefix.CHANGES : window.MetadataAnalyticsPrefix.README,
         window.AnalyticsGranularity.ALL_LEVELS,
         "Existing",
         Destinations.LOCAL
@@ -715,9 +715,9 @@ const loadExistingRCFile = (filepath, type) => {
         },
       });
 
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Success",
-        type === "changes" ? MetadataAnalyticsPrefix.CHANGES : MetadataAnalyticsPrefix.README,
+        type === "changes" ? window.MetadataAnalyticsPrefix.CHANGES : window.MetadataAnalyticsPrefix.README,
         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         "Existing",
         Destinations.LOCAL

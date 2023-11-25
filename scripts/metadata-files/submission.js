@@ -478,7 +478,7 @@ function window.validateSubmissionFileInputs() {
   }
 
   // If milestones were added, check for a completion date
-  const milestones = getTagsFromTagifyElement(window.milestoneTagify1);
+  const milestones = window.getTagsFromTagifyElement(window.milestoneTagify1);
   if (milestones.length > 0) {
     const selectedCompletionDate = $("#submission-completion-date").val();
     if (selectedCompletionDate === "") {
@@ -537,7 +537,7 @@ $("#ffm-select-sparc-funding-consortium").on("change", function (e) {
       label.classList.add("required");
     });
 
-    hideElementsWithClass("non-sparc-funding-consortium-instructions"); // Hide non-SPARC instructions
+    window.hideElementsWithClass("non-sparc-funding-consortium-instructions"); // Hide non-SPARC instructions
   } else {
     generateSubmissionButton.classList.remove("hidden"); // Show the button
   }
@@ -748,7 +748,7 @@ localReadmeBtn.addEventListener(
   false
 );
 
-const generateSubmissionHelper = async (uploadBFBoolean) => {
+const window.generateSubmissionHelper = async (uploadBFBoolean) => {
   let datasetName = $("#bf_dataset_load_submission").text().trim();
   if (uploadBFBoolean) {
     // Run pre-flight checks before uploading the submission file to Pennsieve
@@ -830,7 +830,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
 
   const fundingConsortiumFromDropdown = $("#ffm-select-sparc-funding-consortium").val();
   const awardNumber = $("#submission-sparc-award").val();
-  const milestones = getTagsFromTagifyElement(window.milestoneTagify1);
+  const milestones = window.getTagsFromTagifyElement(window.milestoneTagify1);
   const completionDate = $("#submission-completion-date").val();
 
   const submissionMetadataArray = [];
@@ -908,9 +908,9 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
     allowOutsideClick: true,
   });
 
-  logMetadataForAnalytics(
+  window.logMetadataForAnalytics(
     "Success",
-    MetadataAnalyticsPrefix.SUBMISSION,
+    window.MetadataAnalyticsPrefix.SUBMISSION,
     window.AnalyticsGranularity.ALL_LEVELS,
     "Generate",
     uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
@@ -1029,7 +1029,7 @@ const showExistingSubmissionFile = (type) => {
   }
 };
 
-const openFileBrowserDestination = (metadataType) => {
+const window.openFileBrowserDestination = (metadataType) => {
   ipcRenderer.send(`open-destination-generate-${metadataType}-locally`);
 };
 
@@ -1038,9 +1038,9 @@ const importExistingSubmissionFile = (type) => {
   if (filePath === "Browse here") {
     Swal.fire("No file chosen", `Please select a path to your submission.xlsx file`, "error");
 
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.SUBMISSION,
+      window.MetadataAnalyticsPrefix.SUBMISSION,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
@@ -1055,9 +1055,9 @@ const importExistingSubmissionFile = (type) => {
         icon: "error",
       });
 
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.SUBMISSION,
+        window.MetadataAnalyticsPrefix.SUBMISSION,
         window.AnalyticsGranularity.ALL_LEVELS,
         "Existing",
         Destinations.LOCAL
@@ -1102,9 +1102,9 @@ const loadExistingSubmissionFile = async (filepath) => {
       backdrop: "rgba(0,0,0, 0.4)",
       icon: "error",
     });
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.SUBMISSION,
+      window.MetadataAnalyticsPrefix.SUBMISSION,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
@@ -1177,9 +1177,9 @@ const loadSubmissionFileToUI = (data, type) => {
     },
   });
 
-  logMetadataForAnalytics(
+  window.logMetadataForAnalytics(
     "Success",
-    MetadataAnalyticsPrefix.SUBMISSION,
+    window.MetadataAnalyticsPrefix.SUBMISSION,
     window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
     "Existing",
     type === "local" ? Destinations.LOCAL : Destinations.PENNSIEVE
@@ -1234,9 +1234,9 @@ const checkBFImportSubmission = async () => {
       icon: "warning",
       html: error.response.data.message,
     });
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.SUBMISSION,
+      window.MetadataAnalyticsPrefix.SUBMISSION,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.PENNSIEVE

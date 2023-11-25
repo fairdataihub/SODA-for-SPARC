@@ -79,7 +79,7 @@ let datasetStructureJSONObj = {
   type: "",
 };
 
-let introStatus = {
+let window.introStatus= {
   organizeStep3: true,
   submission: false,
   subjects: false,
@@ -1777,14 +1777,14 @@ var window.milestoneTagify1 = new Tagify(milestoneInput1, {
   },
 });
 
-const hideElementsWithClass = (className) => {
+const window.hideElementsWithClass = (className) => {
   const elements = document.querySelectorAll(`.${className}`);
   elements.forEach((element) => {
     element.classList.add("hidden");
   });
 };
 
-const showElementsWithClass = (className) => {
+const window.showElementsWithClass = (className) => {
   const elements = document.querySelectorAll(`.${className}`);
   elements.forEach((element) => {
     element.classList.remove("hidden");
@@ -1807,14 +1807,14 @@ window.milestoneTagify1.on("change", (e) => {
 
     // If there are milestone tags other than N/A, then show the completion date form component
     if (filteredMilestones.length > 0) {
-      showElementsWithClass("completion-date-form-component");
+      window.showElementsWithClass("completion-date-form-component");
     } else {
       // If there are no milestone tags other than N/A, then hide the completion date form component
-      hideElementsWithClass("completion-date-form-component");
+      window.hideElementsWithClass("completion-date-form-component");
       $("#submission-completion-date").val("");
     }
   } else {
-    hideElementsWithClass("completion-date-form-component");
+    window.hideElementsWithClass("completion-date-form-component");
     $("#submission-completion-date").val("");
   }
 });
@@ -2308,27 +2308,27 @@ async function loadSubjectsFileToDataframe(filePath) {
           backdrop: "rgba(0,0,0, 0.4)",
         });
 
-        logMetadataForAnalytics(
+        window.logMetadataForAnalytics(
           "Error",
-          MetadataAnalyticsPrefix.SUBJECTS,
+          window.MetadataAnalyticsPrefix.SUBJECTS,
           window.AnalyticsGranularity.ALL_LEVELS,
           "Existing",
           Destinations.LOCAL
         );
         return;
       }
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Success",
-        MetadataAnalyticsPrefix.SUBJECTS,
+        window.MetadataAnalyticsPrefix.SUBJECTS,
         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         "Existing",
         Destinations.LOCAL
       );
       loadDataFrametoUI("local");
     } else {
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.SUBJECTS,
+        window.MetadataAnalyticsPrefix.SUBJECTS,
         window.AnalyticsGranularity.ALL_LEVELS,
         "Existing",
         Destinations.LOCAL
@@ -2351,9 +2351,9 @@ async function loadSubjectsFileToDataframe(filePath) {
       backdrop: "rgba(0,0,0, 0.4)",
     });
 
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.SUBJECTS,
+      window.MetadataAnalyticsPrefix.SUBJECTS,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
@@ -2391,9 +2391,9 @@ async function loadSamplesFileToDataframe(filePath) {
           backdrop: "rgba(0,0,0, 0.4)",
         });
 
-        logMetadataForAnalytics(
+        window.logMetadataForAnalytics(
           "Error",
-          MetadataAnalyticsPrefix.SAMPLES,
+          window.MetadataAnalyticsPrefix.SAMPLES,
           window.AnalyticsGranularity.ALL_LEVELS,
           "Existing",
           Destinations.LOCAL
@@ -2401,9 +2401,9 @@ async function loadSamplesFileToDataframe(filePath) {
 
         return;
       }
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Success",
-        MetadataAnalyticsPrefix.SAMPLES,
+        window.MetadataAnalyticsPrefix.SAMPLES,
         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
         "Existing",
         Destinations.LOCAL
@@ -2411,9 +2411,9 @@ async function loadSamplesFileToDataframe(filePath) {
 
       loadDataFrametoUISamples("local");
     } else {
-      logMetadataForAnalytics(
+      window.logMetadataForAnalytics(
         "Error",
-        MetadataAnalyticsPrefix.SAMPLES,
+        window.MetadataAnalyticsPrefix.SAMPLES,
         window.AnalyticsGranularity.ALL_LEVELS,
         "Existing",
         Destinations.LOCAL
@@ -2437,9 +2437,9 @@ async function loadSamplesFileToDataframe(filePath) {
       backdrop: "rgba(0,0,0, 0.4)",
     });
 
-    logMetadataForAnalytics(
+    window.logMetadataForAnalytics(
       "Error",
-      MetadataAnalyticsPrefix.SAMPLES,
+      window.MetadataAnalyticsPrefix.SAMPLES,
       window.AnalyticsGranularity.ALL_LEVELS,
       "Existing",
       Destinations.LOCAL
@@ -6867,7 +6867,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
         $("#para-continue-location-dataset-getting-started").text("Please continue below.");
         $("#nextBtn").prop("disabled", false);
         // log the success to analytics
-        logMetadataForAnalytics(
+        window.logMetadataForAnalytics(
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE,
           window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
@@ -7056,7 +7056,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
           });
 
           // log the failure to select an appropriate folder to analytics
-          logMetadataForAnalytics(
+          window.logMetadataForAnalytics(
             "Error",
             PrepareDatasetsAnalyticsPrefix.CURATE,
             window.AnalyticsGranularity.ALL_LEVELS,
@@ -8550,7 +8550,7 @@ Analytics Logging Section
 
 // TEST comment for build spawn
 
-function logMetadataForAnalytics(
+function window.logMetadataForAnalytics(
   category,
   analyticsActionPrefix,
   granularity,
@@ -8638,13 +8638,13 @@ const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, si
   );
 
   let fileNameToPrefixMapping = {
-    dataset_description: MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-    submission: MetadataAnalyticsPrefix.SUBMISSION,
-    subjects: MetadataAnalyticsPrefix.SUBJECTS,
-    samples: MetadataAnalyticsPrefix.SAMPLES,
-    readme: MetadataAnalyticsPrefix.README,
-    changes: MetadataAnalyticsPrefix.CHANGES,
-    manifest: MetadataAnalyticsPrefix.MANIFEST,
+    dataset_description: window.MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
+    submission: window.MetadataAnalyticsPrefix.SUBMISSION,
+    subjects: window.MetadataAnalyticsPrefix.SUBJECTS,
+    samples: window.MetadataAnalyticsPrefix.SAMPLES,
+    readme: window.MetadataAnalyticsPrefix.README,
+    changes: window.MetadataAnalyticsPrefix.CHANGES,
+    manifest: window.MetadataAnalyticsPrefix.MANIFEST,
   };
 
   // remove the extension from the metadata file's name
@@ -8688,7 +8688,7 @@ const getFileSizeInBytes = (path) => {
   });
 };
 
-const MetadataAnalyticsPrefix = {
+const window.MetadataAnalyticsPrefix = {
   DATASET_DESCRIPTION: "Prepare Metadata - dataset_description",
   MANIFEST: "Prepare Metadata - manifest",
   SUBJECTS: "Prepare Metadata - subjects",
