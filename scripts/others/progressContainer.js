@@ -192,6 +192,6 @@ const window.getProgressContainerElements = (progressContainer) => {
   };
 };
 
-const hideProgressContainer = (progressContainer) => {
+const window.hideProgressContainer = (progressContainer) => {
   progressContainer.style.display = "none";
 };

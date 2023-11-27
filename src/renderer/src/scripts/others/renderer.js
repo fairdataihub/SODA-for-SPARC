@@ -8374,7 +8374,7 @@ window.logMetadataForAnalytics = (
 // Inputs:
 //    uploadBFBoolean: boolean - True when the metadata file was created on Pennsieve; false when the Metadata file was created locally
 //    metadataFileName: string - the name of the metadata file that was created along with its extension
-const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, size) => {
+window.logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, size) => {
   // get the destination of the metadata file
   let destination = uploadBFBoolean ? "Pennsieve" : "Local";
 

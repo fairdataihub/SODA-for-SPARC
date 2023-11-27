@@ -1169,22 +1169,23 @@ const initiate_generate_manifest_bf = async () => {
   generatingBoolean = true;
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
+  let destination = ""
 
   if ("bf-dataset-selected" in window.sodaJSONObj) {
-    dataset_name = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    dataset_destination = "Pennsieve";
+    let dataset_name = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    let dataset_destination = "Pennsieve";
   } else if (
     "generate-dataset" in window.sodaJSONObj &&
     "destination" in window.sodaJSONObj["generate-dataset"]
   ) {
-    let destination = window.sodaJSONObj["generate-dataset"]["destination"];
+    destination = window.sodaJSONObj["generate-dataset"]["destination"];
     if (destination == "local") {
-      dataset_name = window.sodaJSONObj["generate-dataset"]["dataset-name"];
-      dataset_destination = "Local";
+      let dataset_name = window.sodaJSONObj["generate-dataset"]["dataset-name"];
+      let dataset_destination = "Local";
     }
     if (destination == "bf") {
-      dataset_name = window.sodaJSONObj["generate-dataset"]["dataset-name"];
-      dataset_destination = "Pennsieve";
+      let dataset_name = window.sodaJSONObj["generate-dataset"]["dataset-name"];
+      let dataset_destination = "Pennsieve";
     }
   }
 
@@ -1319,7 +1320,7 @@ const initiate_generate_manifest_bf = async () => {
     }
   );
 
-  logMetadataSizeForAnalytics(!!(destination === "Pennsieve"), "manifest.xlsx", res[1]);
+  window.logMetadataSizeForAnalytics(!!(destination === "Pennsieve"), "manifest.xlsx", res[1]);
 
   window.sodaJSONObj = {
     "starting-point": { type: "" },
@@ -1619,7 +1620,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
 
     continueProgressEmptyFolder = true;
     if (!continueProgressEmptyFolder) {
-      hideProgressContainer(progressContainer);
+      window.hideProgressContainer(progressContainer);
       spanManifest.style.display = "none";
       Swal.fire({
         title: "Failed to generate the manifest files.",
@@ -1672,7 +1673,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
         },
       }).then((result) => {});
 
-      hideProgressContainer(progressContainer);
+      window.hideProgressContainer(progressContainer);
       spanManifest.style.display = "none";
 
       $("#Question-prepare-manifest-4").removeClass("show");
@@ -1709,7 +1710,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
       $("#Question-prepare-manifest-3").removeClass("prev");
       $("#bf_dataset_create_manifest").text("None");
 
-      hideProgressContainer(progressContainer);
+      window.hideProgressContainer(progressContainer);
       spanManifest.style.display = "none";
 
       window.defaultBfDataset = "Select dataset";
@@ -2402,7 +2403,7 @@ const generateAfterEdits = async () => {
   };
   window.sodaJSONObj["starting-point"]["local-path"] = dir;
   window.sodaJSONObj["starting-point"]["type"] = "local";
-  create_json_object_include_manifest("", window.sodaJSONObj, dir);
+  window.create_json_object_include_manifest("", window.sodaJSONObj, dir);
   window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
   window.populate_existing_folders(window.datasetStructureJSONObj);
   window.populate_existing_metadata(window.sodaJSONObj);

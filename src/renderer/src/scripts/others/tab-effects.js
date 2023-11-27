@@ -1303,8 +1303,8 @@ window.create_json_object = async (action, sodaJSONObj, root_folder_path) => {
 };
 
 // Create the dataset structure for window.sodaJSONObj (similar to window.create_json_object but includes manifest files in json structure)
-const create_json_object_include_manifest = (action, sodaJSONObj, root_folder_path) => {
-  high_level_metadata_sparc = [
+window.create_json_object_include_manifest = (action, sodaJSONObj, root_folder_path) => {
+  let high_level_metadata_sparc = [
     "submission.xlsx",
     "submission.csv",
     "submission.json",
@@ -1326,10 +1326,10 @@ const create_json_object_include_manifest = (action, sodaJSONObj, root_folder_pa
   sodaJSONObj["dataset-structure"] = { folders: {} };
   let stats = "";
   // Get high level folders and metadata files first
-  fs.readdirSync(root_folder_path).forEach((file) => {
-    full_current_path = window.path.join(root_folder_path, file);
+  window.fs.readdirSync(root_folder_path).forEach((file) => {
+    let full_current_path = window.path.join(root_folder_path, file);
     stats = window.fs.statSync(full_current_path);
-    if (stats.isDirectory()) {
+    if (stats.isDirectory) {
       if (window.highLevelFolders.includes(file) && !/(^|\/)\.[^\/\.]/g.test(file)) {
         sodaJSONObj["dataset-structure"]["folders"][file] = {
           folders: {},
@@ -1340,7 +1340,7 @@ const create_json_object_include_manifest = (action, sodaJSONObj, root_folder_pa
         };
       }
     }
-    if (stats.isFile()) {
+    if (stats.isFile) {
       if (high_level_metadata_sparc.includes(file) && !/(^|\/)\.[^\/\.]/g.test(file)) {
         //ignore hidden files
         sodaJSONObj["metadata-files"][file] = {
@@ -1353,7 +1353,7 @@ const create_json_object_include_manifest = (action, sodaJSONObj, root_folder_pa
   });
   // go through each individual high level folder and create the structure
   // If a manifest file exists, read information from the manifest file into a json object
-  for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
+  for (const folder in sodaJSONObj["dataset-structure"]["folders"]) {
     sodaJSONObj["starting-point"][folder] = {};
     sodaJSONObj["starting-point"][folder]["path"] = "";
     // temp_file_path_xlsx = window.path.join(root_folder_path, folder, "manifest.xlsx");
@@ -1579,7 +1579,7 @@ const recursive_structure_create_include_manifest = (
   high_level_folder,
   root_folder_path
 ) => {
-  current_folder_path = dataset_folder["path"];
+  let current_folder_path = dataset_folder["path"];
   let manifest_object = {
     filename: "",
     timestamp: "",
@@ -1588,7 +1588,7 @@ const recursive_structure_create_include_manifest = (
     "additional-metadata": "",
   };
   window.fs.readdirSync(current_folder_path).forEach((file) => {
-    current_file_path = window.path.join(current_folder_path, file);
+    let current_file_path = window.path.join(current_folder_path, file);
     let stats = window.fs.statSync(current_file_path);
     if (
       stats.isFile &&
@@ -2694,7 +2694,7 @@ window.populate_existing_metadata = (datasetStructureJSONObj) => {
     return;
   }
   for (var key of Object.keys(metadataobject)) {
-    let file_name = require("path").parse(key).name;
+    let file_name = window.path.parse(key).name;
     switch (file_name) {
       case "submission":
         $(".metadata-button[data-next='submissionUpload']").addClass("done");
