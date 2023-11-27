@@ -11595,6 +11595,15 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
       throw new Error(`${entityNameSingular} name has already been added`);
     }
 
+    const entityNameIsValid = evaluateStringAgainstSdsRequirements(
+      entityName,
+      "string-adheres-to-identifier-conventions"
+    );
+
+    if (!entityNameIsValid) {
+      throw new Error(`${entityNameSingular} names may not contain spaces or special characters`);
+    }
+
     // Hide any validation messages that may exist in the sweet alert
     Swal.resetValidationMessage();
 
