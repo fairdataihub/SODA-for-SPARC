@@ -2061,7 +2061,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
               Swal.showLoading();
             },
           }).then((result) => {});
-          generateSamplesFileHelper(uploadBFBoolean);
+          window.generateSamplesFileHelper(uploadBFBoolean);
         }
       });
     } else {
@@ -2077,12 +2077,12 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
           Swal.showLoading();
         },
       }).then((result) => {});
-      generateSamplesFileHelper(uploadBFBoolean);
+      window.generateSamplesFileHelper(uploadBFBoolean);
     }
   }
 });
 
-const generateSamplesFileHelper = async (uploadBFBoolean) => {
+const window.generateSamplesFileHelper = async (uploadBFBoolean) => {
   let bfDataset = $("#bf_dataset_load_samples").text().trim();
   if (uploadBFBoolean) {
     // Run pre-flight checks before uploading the samples file to Pennsieve
@@ -2164,7 +2164,7 @@ const generateSamplesFileHelper = async (uploadBFBoolean) => {
     let samplesFileResponse = await client.post(
       "prepare_metadata/samples_file",
       {
-        filepath: samplesDestinationPath,
+        filepath: window.samplesDestinationPath,
         selected_account: window.defaultBfDataset,
         selected_dataset: $("#bf_dataset_load_samples").text().trim(),
         samples_str: window.samplesTableData,

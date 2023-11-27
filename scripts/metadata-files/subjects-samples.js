@@ -47,7 +47,7 @@ const window.showForm = (type, editBoolean) => {
   $("#sidebarCollapse").prop("disabled", "true");
 };
 
-const showFormSamples = (type, editBoolean) => {
+window.showFormSamples = (type, editBoolean) => {
   if (type !== "edit") {
     clearAllSubjectFormFields(samplesFormDiv);
   }
@@ -1285,7 +1285,7 @@ const populateFormsSamples = (subjectID, sampleID, type, curationMode) => {
 
 const loadSampleInformation = (ev, subjectID, sampleID) => {
   // 1. load fields for form
-  showFormSamples("display", true);
+  window.showFormSamples("display", true);
   $("#btn-edit-sample").css("display", "inline-block");
   $("#btn-add-sample").css("display", "none");
   clearAllSubjectFormFields(samplesFormDiv);
@@ -1695,7 +1695,7 @@ const updateOrderContributorTable = (table, json) => {
 const showPrimaryBrowseFolder = () => {
   ipcRenderer.send("open-file-dialog-local-primary-folder");
 };
-const showPrimaryBrowseFolderSamples = () => {
+const window.showPrimaryBrowseFolderSamples = () => {
   ipcRenderer.send("open-file-dialog-local-primary-folder-samples");
 };
 
@@ -2199,7 +2199,7 @@ const addExistingCustomHeaderSamples = (customName) => {
 };
 
 var window.subjectsDestinationPath = "";
-var samplesDestinationPath = "";
+var window.samplesDestinationPath = "";
 
 $(document).ready(function () {
   // loadExistingProtocolInfo();
@@ -2320,7 +2320,7 @@ $(document).ready(function () {
       document.getElementById("input-destination-generate-samples-locally").placeholder =
         dirpath[0];
       var destinationPath = path.join(dirpath[0], "samples.xlsx");
-      samplesDestinationPath = destinationPath;
+      window.samplesDestinationPath = destinationPath;
       $("#div-confirm-destination-samples-locally").css("display", "flex");
     }
   });
@@ -2399,7 +2399,7 @@ const showExistingSubjectsFile = () => {
   }
 };
 
-const showExistingSamplesFile = () => {
+const window.showExistingSamplesFile = () => {
   if ($("#existing-samples-file-destination").prop("placeholder") !== "Browse here") {
     Swal.fire({
       title: "Are you sure you want to import a different samples file?",
@@ -2476,7 +2476,7 @@ const importExistingSubjectsFile = () => {
   }
 };
 
-const importExistingSamplesFile = () => {
+const window.importExistingSamplesFile = () => {
   var filePath = $("#existing-samples-file-destination").prop("placeholder");
   if (filePath === "Browse here") {
     Swal.fire("No file chosen", "Please select a path to your samples.xlsx file.", "error");
@@ -2590,7 +2590,7 @@ const checkBFImportSubjects = async () => {
   }
 };
 
-const checkBFImportSamples = async () => {
+const window.checkBFImportSamples = async () => {
   Swal.fire({
     title: "Importing the samples.xlsx file",
     html: "Please wait...",

@@ -525,7 +525,7 @@ function window.resetSubjects(askToReset = true) {
   });
 }
 
-function resetSamples(askToReset = true) {
+function window.resetSamples(askToReset = true) {
   if (!askToReset) {
     // 1. remove Prev and Show from all individual-question except for the first one
     // 2. empty all input, textarea, select, para-elements
@@ -805,7 +805,7 @@ window.resetFFMUI = (ev) => {
   }
 
   if (resetSamplesTab) {
-    resetSamples(false);
+    window.resetSamples(false);
   }
 
   if (resetManifestTab) {

@@ -61,7 +61,7 @@ window.showForm = (type, editBoolean) => {
   $("#sidebarCollapse").prop("disabled", "true");
 };
 
-const showFormSamples = (type, editBoolean) => {
+window.showFormSamples = (type, editBoolean) => {
   if (type !== "edit") {
     window.clearAllSubjectFormFields(samplesFormDiv);
   }
@@ -422,6 +422,7 @@ const addNewIDToTable = (newID, secondaryID, type) => {
       keyword +
       "_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
   } else if (type === "samples") {
+    console.log("In samples ttypes")
     var row = (table.insertRow(rowIndex).outerHTML =
       "<tr id='row-current-" +
       keyword +
@@ -1304,7 +1305,7 @@ window.populateFormsSamples = (subjectID, sampleID, type, curationMode) => {
 
 const loadSampleInformation = (ev, subjectID, sampleID) => {
   // 1. load fields for form
-  showFormSamples("display", true);
+  window.showFormSamples("display", true);
   $("#btn-edit-sample").css("display", "inline-block");
   $("#btn-add-sample").css("display", "none");
   window.clearAllSubjectFormFields(samplesFormDiv);
@@ -1461,7 +1462,7 @@ window.delete_current_subject_id = (ev) => {
   });
 };
 
-const delete_current_sample_id = (ev) => {
+window.delete_current_sample_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this sample?",
     showCancelButton: true,
@@ -1575,7 +1576,7 @@ window.copy_current_subject_id = async (ev) => {
   }
 };
 
-const copy_current_sample_id = async (ev) => {
+window.copy_current_sample_id = async (ev) => {
   const { value: newSubSam } = await Swal.fire({
     title: "Enter an ID for the new subject and sample: ",
     html:
@@ -2218,7 +2219,7 @@ const addExistingCustomHeaderSamples = (customName) => {
 };
 
 window.subjectsDestinationPath = "";
-var samplesDestinationPath = "";
+window.samplesDestinationPath = "";
 
 $(document).ready(function () {
   // loadExistingProtocolInfo();
@@ -2339,7 +2340,7 @@ $(document).ready(function () {
       document.getElementById("input-destination-generate-samples-locally").placeholder =
         dirpath[0];
       var destinationPath = window.path.join(dirpath[0], "samples.xlsx");
-      samplesDestinationPath = destinationPath;
+      window.samplesDestinationPath = destinationPath;
       $("#div-confirm-destination-samples-locally").css("display", "flex");
     }
   });
@@ -2418,7 +2419,7 @@ window.showExistingSubjectsFile = () => {
   }
 };
 
-const showExistingSamplesFile = () => {
+window.showExistingSamplesFile = () => {
   if ($("#existing-samples-file-destination").prop("placeholder") !== "Browse here") {
     Swal.fire({
       title: "Are you sure you want to import a different samples file?",
@@ -2495,7 +2496,7 @@ window.importExistingSubjectsFile = () => {
   }
 };
 
-const importExistingSamplesFile = () => {
+window.importExistingSamplesFile = () => {
   var filePath = $("#existing-samples-file-destination").prop("placeholder");
   if (filePath === "Browse here") {
     Swal.fire("No file chosen", "Please select a path to your samples.xlsx file.", "error");
@@ -2609,7 +2610,7 @@ window.checkBFImportSubjects = async () => {
   }
 };
 
-const checkBFImportSamples = async () => {
+window.checkBFImportSamples = async () => {
   Swal.fire({
     title: "Importing the samples.xlsx file",
     html: "Please wait...",

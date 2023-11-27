@@ -224,7 +224,7 @@
             <input
               class="form-control"
               style="width: 450px !important"
-              onclick="showExistingSamplesFile()"
+              onclick="window.showExistingSamplesFile()"
               id="existing-samples-file-destination"
               type="text"
               readonly
@@ -236,7 +236,7 @@
             id="div-confirm-existing-samples-import"
           >
             <button
-              onclick="importExistingSamplesFile()"
+              onclick="window.importExistingSamplesFile()"
               style="
                 cursor: pointer;
                 border-radius: 8px;
@@ -394,7 +394,7 @@
               id="div-check-bf-import-samples"
             >
               <button
-                onclick="checkBFImportSamples()"
+                onclick="window.checkBFImportSamples()"
                 class="prepare-metadata-confirm-dataset-button"
               >
                 Confirm
@@ -471,7 +471,7 @@
             style="display: flex; flex-direction: row; justify-content: center; margin: 10px auto"
           >
             <button
-              onclick="showFormSamples('display', false)"
+              onclick="window.showFormSamples('display', false)"
               id="button-add-a-sample"
               style="
                 cursor: pointer;
@@ -535,7 +535,7 @@
           >
             <a
               href="#"
-              onclick="showPrimaryBrowseFolderSamples()"
+              onclick="window.showPrimaryBrowseFolderSamples()"
               id="primary-folder-destination-input-samples"
             >
               I want to import subject and sample ID(s) from my primary folder
@@ -665,7 +665,7 @@
         >
           <button
             id="btn-confirm-local-samples-destination"
-            onclick="generateSamplesFileHelper(false)"
+            onclick="window.generateSamplesFileHelper(false)"
             type="button"
             class="btn_animated popover-tooltip"
             data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
@@ -808,7 +808,7 @@
               id="div-check-bf-generate-samples"
             >
               <button
-                onclick="generateSamplesFileHelper(true)"
+                onclick="window.generateSamplesFileHelper(true)"
                 type="button"
                 class="btn_animated popover-tooltip"
                 data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
@@ -837,7 +837,7 @@
     <button type="button" class="transition-btn prev" data-section="main_tabs">
       <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
     </button>
-    <button onclick="resetSamples()" class="start-over">
+    <button onclick="window.resetSamples()" class="start-over">
       <i class="fas fa-sync-alt" style="margin-right: 10px; font-size: inherit"></i>
       Start over
     </button>
