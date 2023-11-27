@@ -1,5 +1,35 @@
 import { ipcMain, app } from "electron";
 import excel4node from "excel4node";
+import excelToJson from "convert-excel-to-json";
+import mv from "mv"
+
+ipcMain.handle("mv", (event, source, destination) => {
+  mv(source, destination, function (err) {
+    if (err) {
+      console.log(err);
+      return err
+    } else {
+      return "success"
+    }
+  });
+
+})
+
+ipcMain.handle("excelToJsonSheet1", (event, folderPath) => {
+  let sheet = excelToJson({
+    sourceFile: folderPath,
+  })["Sheet1"];
+
+  return sheet
+})
+
+ipcMain.handle("excelToJsonSheet1Options", (event, options) => {
+  let sheet = excelToJson(
+    options
+  )["Sheet1"];
+
+  return sheet
+})
 
 
 

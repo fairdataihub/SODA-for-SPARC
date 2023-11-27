@@ -4,6 +4,7 @@ import Accordion from 'accordion-js';
 import 'accordion-js/dist/accordion.min.css';
 import { showHideDropdownButtons } from '../globals';
 import introJs from "intro.js";
+import Swal from "sweetalert2";
 
 
 while (!window.htmlPagesAdded) {
@@ -1225,9 +1226,9 @@ const transitionSubQuestions = async (ev, currentDiv, parentDiv, button, categor
 };
 
 // Create the dataset structure for window.sodaJSONObj
-const create_json_object = (action, sodaJSONObj, root_folder_path) => {
-  high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"];
-  high_level_metadata_sparc = [
+window.create_json_object = async (action, sodaJSONObj, root_folder_path) => {
+  let high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"];
+  let high_level_metadata_sparc = [
     "submission.xlsx",
     "submission.csv",
     "submission.json",
@@ -1249,10 +1250,10 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
   sodaJSONObj["dataset-structure"] = { folders: {} };
   let stats = "";
   // Get high level folders and metadata files first
-  fs.readdirSync(root_folder_path).forEach((file) => {
-    full_current_path = window.path.join(root_folder_path, file);
-    stats = fs.statSync(full_current_path);
-    if (stats.isDirectory()) {
+  window.fs.readdirSync(root_folder_path).forEach((file) => {
+    let full_current_path = window.path.join(root_folder_path, file);
+    stats = window.fs.statSync(full_current_path);
+    if (stats.isDirectory) {
       if (window.highLevelFolders.includes(file) && !/(^|\/)\.[^\/\.]/g.test(file)) {
         sodaJSONObj["dataset-structure"]["folders"][file] = {
           folders: {},
@@ -1263,7 +1264,7 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
         };
       }
     }
-    if (stats.isFile()) {
+    if (stats.isFile) {
       if (high_level_metadata_sparc.includes(file) && !/(^|\/)\.[^\/\.]/g.test(file)) {
         //ignore hidden files
         sodaJSONObj["metadata-files"][file] = {
@@ -1277,16 +1278,14 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
 
   // go through each individual high level folder and create the structure
   // If a manifest file exists, read information from the manifest file into a json object
-  for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
+  for (const folder in sodaJSONObj["dataset-structure"]["folders"]) {
     sodaJSONObj["starting-point"][folder] = {};
     sodaJSONObj["starting-point"][folder]["path"] = "";
-    temp_file_path_xlsx = window.path.join(root_folder_path, folder, "manifest.xlsx");
-    temp_file_path_csv = window.path.join(root_folder_path, folder, "manifest.csv");
+    let temp_file_path_xlsx = window.path.join(root_folder_path, folder, "manifest.xlsx");
+    let temp_file_path_csv = window.path.join(root_folder_path, folder, "manifest.csv");
     if (window.fs.existsSync(temp_file_path_xlsx)) {
       sodaJSONObj["starting-point"][folder]["path"] = temp_file_path_xlsx;
-      sodaJSONObj["starting-point"][folder]["manifest"] = excelToJson({
-        sourceFile: sodaJSONObj["starting-point"][folder]["path"],
-      })["Sheet1"];
+      sodaJSONObj["starting-point"][folder]["manifest"] = await window.electron.ipcRenderer.invoke("excelToJsonSheet1", sodaJSONObj["starting-point"][folder]["path"])
     } else if (window.fs.existsSync(temp_file_path_csv)) {
       sodaJSONObj["starting-point"][folder]["path"] = temp_file_path_csv;
       sodaJSONObj["starting-point"][folder]["manifest"] = csvToJson
@@ -1303,7 +1302,7 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
   }
 };
 
-// Create the dataset structure for window.sodaJSONObj (similar to create_json_object but includes manifest files in json structure)
+// Create the dataset structure for window.sodaJSONObj (similar to window.create_json_object but includes manifest files in json structure)
 const create_json_object_include_manifest = (action, sodaJSONObj, root_folder_path) => {
   high_level_metadata_sparc = [
     "submission.xlsx",
@@ -1382,8 +1381,8 @@ const create_json_object_include_manifest = (action, sodaJSONObj, root_folder_pa
 // replace any duplicate file names
 // Modify for consistency with Pennsieve naming when the update their system
 const check_file_name_for_pennsieve_duplicate = (dataset_folder, filepath) => {
-  file_name = window.path.parse(filepath).base;
-  file_extension = window.path.parse(filepath).ext;
+  let file_name = window.path.parse(filepath).base;
+  let file_extension = window.path.parse(filepath).ext;
   var duplicateFileArray = [];
 
   for (var item in dataset_folder) {
@@ -1412,8 +1411,9 @@ const recursive_structure_create = (
   high_level_folder,
   root_folder_path
 ) => {
-  current_folder_path = dataset_folder["path"];
-  fs.readdirSync(current_folder_path).forEach((file) => {
+  let current_folder_path = dataset_folder["path"];
+  console.log("current_folder_path", current_folder_path);
+  window.fs.readdirSync(current_folder_path).forEach((file) => {
     let manifest_object = {
       filename: "",
       timestamp: "",
@@ -1421,26 +1421,27 @@ const recursive_structure_create = (
       "file-type": "",
       "additional-metadata": "",
     };
-    current_file_path = window.path.join(current_folder_path, file);
-    let stats = fs.statSync(current_file_path);
+    let current_file_path = window.path.join(current_folder_path, file);
+    let stats = window.fs.statSync(current_file_path);
     if (
-      stats.isFile() &&
+      stats.isFile &&
       window.path.parse(current_file_path).name != "manifest" &&
       !/(^|\/)\.[^\/\.]/g.test(file) && //not a hidden file
       high_level_folder != dataset_folder
     ) {
       if (window.sodaJSONObj["starting-point"][high_level_folder]["path"] !== "") {
-        extension = window.path.extname(window.sodaJSONObj["starting-point"][high_level_folder]["path"]);
+        let extension = window.path.extname(window.sodaJSONObj["starting-point"][high_level_folder]["path"]);
         if (extension == ".xlsx") {
-          temp_current_file_path = current_file_path.replace(/\\/g, "/");
+          let temp_current_file_path = current_file_path.replace(/\\/g, "/");
           root_folder_path = root_folder_path.replace(/\\/g, "/");
 
-          relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
+          let relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
           let manifestContent = window.sodaJSONObj["starting-point"][high_level_folder]["manifest"];
+          console.log(manifestContent)
           let manifestHeaders = Object.values(manifestContent[0]);
           let manifestData = Object.values(manifestContent[1]);
 
-          for (item in window.sodaJSONObj["starting-point"][high_level_folder]["manifest"]) {
+          for (const item in window.sodaJSONObj["starting-point"][high_level_folder]["manifest"]) {
             if (
               window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["A"] ==
               relative_path
@@ -1477,8 +1478,8 @@ const recursive_structure_create = (
             }
           }
         } else if (extension == ".csv") {
-          temp_current_file_path = current_file_path.replace("\\", "/");
-          relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
+          let temp_current_file_path = current_file_path.replace("\\", "/");
+          let relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
           for (item in window.sodaJSONObj["starting-point"][high_level_folder]["manifest"]) {
             if (
               window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["filename"] ==
@@ -1520,7 +1521,7 @@ const recursive_structure_create = (
       if ("extra_columns" in manifest_object) {
         dataset_folder["files"][file]["extra_columns"] = manifest_object["extra_columns"];
       }
-      projected_file_name = check_file_name_for_pennsieve_duplicate(
+      let projected_file_name = check_file_name_for_pennsieve_duplicate(
         dataset_folder["files"],
         current_file_path
       );
@@ -1531,14 +1532,14 @@ const recursive_structure_create = (
       }
     }
 
-    if (stats.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(file)) {
-      if (irregularFolderArray.includes(current_file_path)) {
+    if (stats.isDirectory && !/(^|\/)\.[^\/\.]/g.test(file)) {
+      if (window.irregularFolderArray.includes(current_file_path)) {
         var renamedFolderName = "";
         if (action !== "ignore" && action !== "") {
           if (action === "remove") {
-            renamedFolderName = removeIrregularFolders(file);
+            renamedFolderName = window.removeIrregularFolders(file);
           } else if (action === "replace") {
-            renamedFolderName = replaceIrregularFolders(file);
+            renamedFolderName = window.replaceIrregularFolders(file);
           }
           dataset_folder["folders"][renamedFolderName] = {
             folders: {},
@@ -1560,7 +1561,7 @@ const recursive_structure_create = (
       }
     }
   });
-  for (folder in dataset_folder["folders"]) {
+  for (const folder in dataset_folder["folders"]) {
     recursive_structure_create(
       action,
       dataset_folder["folders"][folder],
@@ -1586,20 +1587,20 @@ const recursive_structure_create_include_manifest = (
     "file-type": "",
     "additional-metadata": "",
   };
-  fs.readdirSync(current_folder_path).forEach((file) => {
+  window.fs.readdirSync(current_folder_path).forEach((file) => {
     current_file_path = window.path.join(current_folder_path, file);
-    let stats = fs.statSync(current_file_path);
+    let stats = window.fs.statSync(current_file_path);
     if (
-      stats.isFile() &&
+      stats.isFile &&
       !/(^|\/)\.[^\/\.]/g.test(file) && //not a hidden file
       high_level_folder != dataset_folder
     ) {
       if (window.sodaJSONObj["starting-point"][high_level_folder]["path"] !== "") {
-        extension = window.path.extname(window.sodaJSONObj["starting-point"][high_level_folder]["path"]);
+        let extension = window.path.extname(window.sodaJSONObj["starting-point"][high_level_folder]["path"]);
         if (extension == ".xlsx") {
-          temp_current_file_path = current_file_path.replace("\\", "/");
-          relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
-          for (item in window.sodaJSONObj["starting-point"][high_level_folder]["manifest"]) {
+          let temp_current_file_path = current_file_path.replace("\\", "/");
+          let relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
+          for (const item in window.sodaJSONObj["starting-point"][high_level_folder]["manifest"]) {
             if (
               window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["A"] ==
               relative_path
@@ -1623,8 +1624,8 @@ const recursive_structure_create_include_manifest = (
             }
           }
         } else if (extension == ".csv") {
-          temp_current_file_path = current_file_path.replace("\\", "/");
-          relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
+          let temp_current_file_path = current_file_path.replace("\\", "/");
+          let relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
           for (item in window.sodaJSONObj["starting-point"][high_level_folder]["manifest"]) {
             if (
               window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["filename"] ==
@@ -1663,7 +1664,7 @@ const recursive_structure_create_include_manifest = (
         description: manifest_object["description"],
         "additional-metadata": manifest_object["additional-metadata"],
       };
-      projected_file_name = check_file_name_for_pennsieve_duplicate(
+      let projected_file_name = check_file_name_for_pennsieve_duplicate(
         dataset_folder["files"],
         current_file_path
       );
@@ -1673,14 +1674,14 @@ const recursive_structure_create_include_manifest = (
         delete dataset_folder["files"][file];
       }
     }
-    if (stats.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(file)) {
-      if (irregularFolderArray.includes(current_file_path)) {
+    if (stats.isDirectory && !/(^|\/)\.[^\/\.]/g.test(file)) {
+      if (window.irregularFolderArray.includes(current_file_path)) {
         var renamedFolderName = "";
         if (action !== "ignore" && action !== "") {
           if (action === "remove") {
-            renamedFolderName = removeIrregularFolders(file);
+            renamedFolderName = window.removeIrregularFolders(file);
           } else if (action === "replace") {
-            renamedFolderName = replaceIrregularFolders(file);
+            renamedFolderName = window.replaceIrregularFolders(file);
           }
           dataset_folder["folders"][renamedFolderName] = {
             folders: {},
@@ -1702,7 +1703,7 @@ const recursive_structure_create_include_manifest = (
       }
     }
   });
-  for (folder in dataset_folder["folders"]) {
+  for (const folder in dataset_folder["folders"]) {
     recursive_structure_create_include_manifest(
       action,
       dataset_folder["folders"][folder],
@@ -1916,8 +1917,8 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
           } else {
             window.datasetStructureJSONObj = { folders: {}, files: {} };
           }
-          populate_existing_folders(window.datasetStructureJSONObj);
-          populate_existing_metadata(window.sodaJSONObj);
+          window.populate_existing_folders(window.datasetStructureJSONObj);
+          window.populate_existing_metadata(window.sodaJSONObj);
           $("#nextBtn").prop("disabled", false);
           $("#para-continue-bf-dataset-getting-started").text("Please continue below.");
           showHideDropdownButtons("dataset", "show");
@@ -1942,8 +1943,8 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
         window.datasetStructureJSONObj = { folders: {}, files: {} };
       }
 
-      populate_existing_folders(window.datasetStructureJSONObj);
-      populate_existing_metadata(window.sodaJSONObj);
+      window.populate_existing_folders(window.datasetStructureJSONObj);
+      window.populate_existing_metadata(window.sodaJSONObj);
       $("#nextBtn").prop("disabled", false);
       $("#para-continue-bf-dataset-getting-started").text("Please continue below.");
       showHideDropdownButtons("dataset", "show");
@@ -2663,7 +2664,7 @@ const reset_ui = () => {
   document.querySelector("#organize--table-validation-errors").style.visibility = "hidden";
 };
 
-const populate_existing_folders = (dataset_folders) => {
+window.populate_existing_folders = (dataset_folders) => {
   // currently handled by old function
   if ("files" in dataset_folders) {
     for (let file in dataset_folders["files"]) {
@@ -2680,14 +2681,14 @@ const populate_existing_folders = (dataset_folders) => {
       } else {
         dataset_folders["folders"][folder]["action"] = ["existing"];
       }
-      populate_existing_folders(dataset_folders["folders"][folder]);
+      window.populate_existing_folders(dataset_folders["folders"][folder]);
     }
   }
   return;
 };
 
 // This function populates the UI with the existing metadata files
-const populate_existing_metadata = (datasetStructureJSONObj) => {
+window.populate_existing_metadata = (datasetStructureJSONObj) => {
   let metadataobject = datasetStructureJSONObj?.["metadata-files"];
   if (metadataobject == null || metadataobject == undefined) {
     return;

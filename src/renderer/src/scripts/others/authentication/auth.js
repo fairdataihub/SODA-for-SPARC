@@ -5,7 +5,7 @@ import * as ini from "ini"
 
 
 const hasConnectedAccountWithPennsieve = () => {
-  log.info("Checking if the user has a connected account with Pennsieve...");
+  window.log.info("Checking if the user has a connected account with Pennsieve...");
   console.log("Checking if account connected with PS")
 
   // get the path to home directory

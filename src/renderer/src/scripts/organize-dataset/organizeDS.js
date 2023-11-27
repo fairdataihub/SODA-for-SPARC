@@ -1548,7 +1548,7 @@ const warningCharacterCheck = (filename) => {
   return regex.test(filename) === true;
 };
 
-const getPathSlashCount = () => {
+window.getPathSlashCount = () => {
   return organizeDSglobalPath.value.trim().split("/").length - 1;
 };
 
@@ -1596,7 +1596,7 @@ const addFilesfunction = async (
   // loop through the files that are trying to be imported
   for (let i = 0; i < fileArray.length; i++) {
     let filePath = fileArray[i];
-    let slashCount = getPathSlashCount();
+    let slashCount = window.getPathSlashCount();
     let fileBase = window.path.parse(filePath).base; //file name with extension
     let fileName = window.path.parse(filePath).name; //file name without extension
 

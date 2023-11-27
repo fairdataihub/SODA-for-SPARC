@@ -61,7 +61,7 @@ import {
   bfAccountOptions,
 } from '../globals'
 import checkForAnnouncements from './announcements'
-import { swalFileListSingleAction, swalFileListTripleAction, swalFileListDoubleAction } from "../utils/swal-utils"
+import { swalFileListSingleAction, swalFileListTripleAction, swalFileListDoubleAction, swalShowError } from "../utils/swal-utils"
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -1377,7 +1377,7 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
 // ///// Global variables for this section
 
 // /////// Save and load award and milestone info
-// let metadataPath = window.path.join(window.homeDirectory, "SODA", "METADATA");
+let metadataPath = window.path.join(window.homeDirectory, "SODA", "METADATA");
 // let awardFileName = "awards.json";
 // let affiliationFileName = "affiliations.json";
 // let milestoneFileName = "milestones.json";
@@ -4248,13 +4248,13 @@ window.sodaJSONObj = {};
 //     let addedElement = window.path.join(folderPath, itemWithinFolder);
 
 //     if (statsObj.isDirectory() && !/(^|\/)\[^\/\.]/g.test(itemWithinFolder)) {
-//       if (irregularFolderArray.includes(addedElement)) {
+//       if (window.irregularFolderArray.includes(addedElement)) {
 //         let renamedFolderName = "";
 //         if (action !== "ignore" && action !== "") {
 //           if (action === "remove") {
-//             renamedFolderName = removeIrregularFolders(itemWithinFolder);
+//             renamedFolderName = window.removeIrregularFolders(itemWithinFolder);
 //           } else if (action === "replace") {
-//             renamedFolderName = replaceIrregularFolders(itemWithinFolder);
+//             renamedFolderName = window.replaceIrregularFolders(itemWithinFolder);
 //           }
 //           jsonObject["folders"][renamedFolderName] = {
 //             type: "local",
@@ -5076,28 +5076,28 @@ const mergeLocalAndRemoteDatasetStructure = async (
   }
 };
 
-// const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath) => {
-//   const duplicateFolderNames = [];
-//   const duplicateFileNames = [];
+const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath) => {
+  const duplicateFolderNames = [];
+  const duplicateFileNames = [];
 
-//   const checkForDuplicateNames = async (importedFolders, itemsAtPath) => {
-//     const currentFoldersAtPath = Object.keys(itemsAtPath.folders);
-//     const currentFilesAtPath = Object.keys(itemsAtPath.files);
-//     fg;
-//     for (const folder of importedFolders) {
-//       folderName = window.path.basename(folder);
-//       if (currentFoldersAtPath.includes(folderName)) {
-//         duplicateFolderNames.push(folderName);
-//       }
-//       const folderContents = await fs.readdir(folder);
-//     }
-//     for (const fileName of importedFiles) {
-//       if (currentFilesAtPath.includes(fileName)) {
-//         duplicateFileNames.push(fileName);
-//       }
-//     }
-//   };
-// };
+  const checkForDuplicateNames = async (importedFolders, itemsAtPath) => {
+    const currentFoldersAtPath = Object.keys(itemsAtPath.folders);
+    const currentFilesAtPath = Object.keys(itemsAtPath.files);
+    fg;
+    for (const folder of importedFolders) {
+      folderName = window.path.basename(folder);
+      if (currentFoldersAtPath.includes(folderName)) {
+        duplicateFolderNames.push(folderName);
+      }
+      const folderContents = await fs.readdir(folder);
+    }
+    for (const fileName of importedFiles) {
+      if (currentFilesAtPath.includes(fileName)) {
+        duplicateFileNames.push(fileName);
+      }
+    }
+  };
+};
 
 const addDataArrayToDatasetStructureAtPath = async (importedData) => {
   // If no data was imported ()
@@ -5148,118 +5148,118 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
   }
 };
 
-// const allowDrop = (ev) => {
-//   ev.preventDefault();
-// };
-// // This function is called when the user drops files into the file explorer
-// const drop = async (ev) => {
-//   ev.preventDefault();
+window.allowDrop = (ev) => {
+  ev.preventDefault();
+};
+// This function is called when the user drops files into the file explorer
+window.drop = async (ev) => {
+  ev.preventDefault();
 
-//   // If the user is trying to drag/drop files at the root level of the dataset, show an error
-//   const slashCount = getPathSlashCount();
-//   if (slashCount === 1) {
-//     await swalShowError(
-//       "You cannot import files at the root level of your dataset",
-//       `To import data, please navigate to a SPARC folder and try again.
-//       <br /><br />
-//       If you are trying to add SPARC metadata file(s), you can do so in the next Step.`
-//     );
-//     return;
-//   }
-//   const itemsDroppedInFileExplorer = ev.dataTransfer.files;
-//   // Convert the FileList object to an array of paths
-//   const droppedItemsArray = Array.from(itemsDroppedInFileExplorer).map((item) => item.path);
+  // If the user is trying to drag/drop files at the root level of the dataset, show an error
+  const slashCount = window.getPathSlashCount();
+  if (slashCount === 1) {
+    await swalShowError(
+      "You cannot import files at the root level of your dataset",
+      `To import data, please navigate to a SPARC folder and try again.
+      <br /><br />
+      If you are trying to add SPARC metadata file(s), you can do so in the next Step.`
+    );
+    return;
+  }
+  const itemsDroppedInFileExplorer = ev.dataTransfer.files;
+  // Convert the FileList object to an array of paths
+  const droppedItemsArray = Array.from(itemsDroppedInFileExplorer).map((item) => item.path);
 
-//   if (droppedItemsArray.length === 0) {
-//     window.notyf.open({
-//       duration: "4000",
-//       type: "error",
-//       message: "No folders/files were able to be imported",
-//     });
-//     return;
-//   }
+  if (droppedItemsArray.length === 0) {
+    window.notyf.open({
+      duration: "4000",
+      type: "error",
+      message: "No folders/files were able to be imported",
+    });
+    return;
+  }
 
-//   let accessibleItems = [];
-//   let inaccessibleItems = [];
-//   for (const path of droppedItemsArray) {
-//     try {
-//       fs.statSync(path);
-//       accessibleItems.push(path);
-//     } catch (error) {
-//       inaccessibleItems.push(path);
-//     }
-//   }
+  let accessibleItems = [];
+  let inaccessibleItems = [];
+  for (const path of droppedItemsArray) {
+    try {
+      fs.statSync(path);
+      accessibleItems.push(path);
+    } catch (error) {
+      inaccessibleItems.push(path);
+    }
+  }
 
-//   if (inaccessibleItems.length > 0) {
-//     if (accessibleItems.length === 0) {
-//       await swalFileListSingleAction(
-//         inaccessibleItems,
-//         "SODA was unable import your dropped files/folders",
-//         "The files listed below will not be imported into SODA. If this issue persists, please try importing the folders/files via the import button.",
-//         false
-//       );
-//       return;
-//     } else {
-//       const importAccessibleItemsOnly = await swalFileListDoubleAction(
-//         accessibleItems,
-//         "<p>SODA was unable to import some of your dropped files/folders</p>",
-//         "A list of the folders/files that SODA was not able to import is shown below:",
-//         "Yes, continue with the import",
-//         "No, cancel the import",
-//         "Would you like to continue the import without these folders/files?"
-//       );
+  if (inaccessibleItems.length > 0) {
+    if (accessibleItems.length === 0) {
+      await swalFileListSingleAction(
+        inaccessibleItems,
+        "SODA was unable import your dropped files/folders",
+        "The files listed below will not be imported into SODA. If this issue persists, please try importing the folders/files via the import button.",
+        false
+      );
+      return;
+    } else {
+      const importAccessibleItemsOnly = await swalFileListDoubleAction(
+        accessibleItems,
+        "<p>SODA was unable to import some of your dropped files/folders</p>",
+        "A list of the folders/files that SODA was not able to import is shown below:",
+        "Yes, continue with the import",
+        "No, cancel the import",
+        "Would you like to continue the import without these folders/files?"
+      );
 
-//       if (!importAccessibleItemsOnly) {
-//         return;
-//       }
-//     }
-//   }
+      if (!importAccessibleItemsOnly) {
+        return;
+      }
+    }
+  }
 
-//   // Add the items to the dataset structure (This handles problematic files/folders, duplicate files etc)
-//   await addDataArrayToDatasetStructureAtPath(accessibleItems);
-// };
+  // Add the items to the dataset structure (This handles problematic files/folders, duplicate files etc)
+  await addDataArrayToDatasetStructureAtPath(accessibleItems);
+};
 
-// var irregularFolderArray = [];
-// const detectIrregularFolders = (folderName, pathEle) => {
-//   if (checkIrregularNameBoolean(folderName)) {
-//     irregularFolderArray.push(pathEle);
-//   }
-//   if (fs.lstatSync(pathEle).isDirectory()) {
-//     fs.readdirSync(pathEle).forEach(function (folder) {
-//       var stat = fs.statSync(window.path.join(pathEle, folder));
-//       if (stat && stat.isDirectory()) {
-//         detectIrregularFolders(folder, window.path.join(pathEle, folder));
-//       }
-//       return irregularFolderArray;
-//     });
-//   }
-// };
+window.irregularFolderArray = [];
+window.detectIrregularFolders = (folderName, pathEle) => {
+  if (checkIrregularNameBoolean(folderName)) {
+    window.irregularFolderArray.push(pathEle);
+  }
+  if (window.fs.lstatSyncIsDirectory(pathEle)) {
+    window.fs.readdirSync(pathEle).forEach(function (folder) {
+      var existsAndDirectory = window.fs.statSyncAndDirectory(window.path.join(pathEle, folder));
+      if (existsAndDirectory) {
+        window.detectIrregularFolders(folder, window.path.join(pathEle, folder));
+      }
+      return window.irregularFolderArray;
+    });
+  }
+};
 
-// const checkIrregularNameBoolean = (folderName) => {
-//   //window.nonAllowedCharacters modified to only allow a-z A-z 0-9 and hyphen "-"
-//   const nonAllowedFolderCharacters = /[^a-zA-Z0-9-]/;
-//   return nonAllowedFolderCharacters.test(folderName);
-// };
+const checkIrregularNameBoolean = (folderName) => {
+  //window.nonAllowedCharacters modified to only allow a-z A-z 0-9 and hyphen "-"
+  const nonAllowedFolderCharacters = /[^a-zA-Z0-9-]/;
+  return nonAllowedFolderCharacters.test(folderName);
+};
 
-// /* The following functions aim at ignore folders with irregular characters, or replace the characters with (-),
-//   or remove the characters from the names.
-//   All return an object in the form {"type": empty for now, will be confirmed once users click an option at the popup,
-//   "paths": array of all the paths with special characters detected}
-// */
+/* The following functions aim at ignore folders with irregular characters, or replace the characters with (-),
+  or remove the characters from the names.
+  All return an object in the form {"type": empty for now, will be confirmed once users click an option at the popup,
+  "paths": array of all the paths with special characters detected}
+*/
 
-// const replaceIrregularFolders = (pathElement) => {
-//   const reg = /[^a-zA-Z0-9-]/g;
-//   const str = window.path.basename(pathElement);
-//   const newFolderName = str.replace(reg, "-");
-//   return newFolderName;
-// };
+window.replaceIrregularFolders = (pathElement) => {
+  const reg = /[^a-zA-Z0-9-]/g;
+  const str = window.path.basename(pathElement);
+  const newFolderName = str.replace(reg, "-");
+  return newFolderName;
+};
 
-// const removeIrregularFolders = (pathElement) => {
-//   const reg = /[^a-zA-Z0-9-]/g;
-//   const str = window.path.basename(pathElement);
-//   const newFolderName = str.replace(reg, "");
-//   return newFolderName;
-// };
+window.removeIrregularFolders = (pathElement) => {
+  const reg = /[^a-zA-Z0-9-]/g;
+  const str = window.path.basename(pathElement);
+  const newFolderName = str.replace(reg, "");
+  return newFolderName;
+};
 
 // // SAVE FILE ORG
 // window.electron.ipcRenderer.on("save-file-organization-dialog", (event) => {
@@ -6627,8 +6627,8 @@ const manageDesc = (ev) => {
 //         numb.innerText = "100%";
 //         clearInterval(local_progress);
 //         progressBar_rightSide.classList.remove("notransition");
-//         populate_existing_folders(window.datasetStructureJSONObj);
-//         populate_existing_metadata(sodaJSONObj);
+//         window.populate_existing_folders(window.datasetStructureJSONObj);
+//         window.populate_existing_metadata(sodaJSONObj);
 //         $("#para-continue-location-dataset-getting-started").text("Please continue below.");
 //         $("#nextBtn").prop("disabled", false);
 //         // log the success to analytics
@@ -6665,19 +6665,19 @@ const manageDesc = (ev) => {
 //         );
 //         if (valid_dataset == true) {
 //           // Reset variables
-//           irregularFolderArray = [];
+//           window.irregularFolderArray = [];
 //           let replaced = {};
 
-//           detectIrregularFolders(window.path.basename(filepath[0]), filepath[0]);
+//           window.detectIrregularFolders(window.path.basename(filepath[0]), filepath[0]);
 
 //           var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${window.nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-//           if (irregularFolderArray.length > 0) {
+//           if (window.irregularFolderArray.length > 0) {
 //             Swal.fire({
 //               title:
 //                 "The following folders contain non-allowed characters in their names. How should we handle them?",
 //               html:
 //                 "<div style='max-height:300px; overflow-y:auto'>" +
-//                 irregularFolderArray.join("</br>") +
+//                 window.irregularFolderArray.join("</br>") +
 //                 "</div>",
 //               heightAuto: false,
 //               backdrop: "rgba(0,0,0, 0.4)",
@@ -6694,18 +6694,18 @@ const manageDesc = (ev) => {
 //               /* Read more about isConfirmed, isDenied below */
 //               if (result.isConfirmed) {
 //                 action = "replace";
-//                 if (irregularFolderArray.length > 0) {
-//                   for (let i = 0; i < irregularFolderArray.length; i++) {
-//                     renamedFolderName = replaceIrregularFolders(irregularFolderArray[i]);
-//                     replaced[window.path.basename(irregularFolderArray[i])] = renamedFolderName;
+//                 if (window.irregularFolderArray.length > 0) {
+//                   for (let i = 0; i < window.irregularFolderArray.length; i++) {
+//                     renamedFolderName = window.replaceIrregularFolders(window.irregularFolderArray[i]);
+//                     replaced[window.path.basename(window.irregularFolderArray[i])] = renamedFolderName;
 //                   }
 //                 }
 //               } else if (result.isDenied) {
 //                 action = "remove";
-//                 if (irregularFolderArray.length > 0) {
-//                   for (let i = 0; i < irregularFolderArray.length; i++) {
-//                     renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
-//                     replaced[irregularFolderArray[i]] = renamedFolderName;
+//                 if (window.irregularFolderArray.length > 0) {
+//                   for (let i = 0; i < window.irregularFolderArray.length; i++) {
+//                     renamedFolderName = window.removeIrregularFolders(window.irregularFolderArray[i]);
+//                     replaced[window.irregularFolderArray[i]] = renamedFolderName;
 //                   }
 //                 }
 //               } else {
@@ -6739,7 +6739,7 @@ const manageDesc = (ev) => {
 //                   {
 //                     sodajsonobject: sodaJSONObj,
 //                     root_folder_path: root_folder_path,
-//                     irregular_folders: irregularFolderArray,
+//                     irregular_folders: window.irregularFolderArray,
 //                     replaced: replaced,
 //                   },
 //                   { timeout: 0 }
@@ -6776,7 +6776,7 @@ const manageDesc = (ev) => {
 //                 {
 //                   sodajsonobject: sodaJSONObj,
 //                   root_folder_path: root_folder_path,
-//                   irregular_folders: irregularFolderArray,
+//                   irregular_folders: window.irregularFolderArray,
 //                   replaced: replaced,
 //                 },
 //                 { timeout: 0 }
@@ -6849,16 +6849,16 @@ const manageDesc = (ev) => {
 //       valid_dataset = window.verify_sparc_folder(filepath[0]);
 //       if (valid_dataset == true) {
 //         var action = "";
-//         irregularFolderArray = [];
-//         detectIrregularFolders(window.path.basename(filepath[0]), filepath[0]);
+//         window.irregularFolderArray = [];
+//         window.detectIrregularFolders(window.path.basename(filepath[0]), filepath[0]);
 //         var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${window.nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-//         if (irregularFolderArray.length > 0) {
+//         if (window.irregularFolderArray.length > 0) {
 //           Swal.fire({
 //             title:
 //               "The following folders contain non-allowed characters in their names. How should we handle them?",
 //             html:
 //               "<div style='max-height:300px; overflow-y:auto'>" +
-//               irregularFolderArray.join("</br>") +
+//               window.irregularFolderArray.join("</br>") +
 //               "</div>",
 //             heightAuto: false,
 //             backdrop: "rgba(0,0,0, 0.4)",
@@ -6887,20 +6887,20 @@ const manageDesc = (ev) => {
 
 //             let root_folder_path = $("#guided-input-destination-getting-started-locally").val();
 
-//             create_json_object(action, sodaJSONObj, root_folder_path);
+//             window.create_json_object(action, sodaJSONObj, root_folder_path);
 //             window.datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-//             populate_existing_folders(window.datasetStructureJSONObj);
-//             populate_existing_metadata(sodaJSONObj);
+//             window.populate_existing_folders(window.datasetStructureJSONObj);
+//             window.populate_existing_metadata(sodaJSONObj);
 //             enableProgressButton();
 //           });
 //         } else {
 //           action = "";
 //           let root_folder_path = $("#guided-input-destination-getting-started-locally").val();
 //           sodaJSONObj["starting-point"]["local-path"] = filepath[0];
-//           create_json_object(action, sodaJSONObj, root_folder_path);
+//           window.create_json_object(action, sodaJSONObj, root_folder_path);
 //           window.datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-//           populate_existing_folders(window.datasetStructureJSONObj);
-//           populate_existing_metadata(sodaJSONObj);
+//           window.populate_existing_folders(window.datasetStructureJSONObj);
+//           window.populate_existing_metadata(sodaJSONObj);
 //         }
 //       } else {
 //         Swal.fire({
@@ -7996,7 +7996,7 @@ function importPennsieveMetadataFiles(ev, metadataFile, extensionList, paraEle) 
       delete window.sodaJSONObj["metadata-files"][deleted_file_name];
     }
   });
-  populate_existing_metadata(window.sodaJSONObj);
+  window.populate_existing_metadata(window.sodaJSONObj);
 }
 
 window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {

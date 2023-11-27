@@ -480,7 +480,7 @@ $(document).ready(function () {
         let updatedManifestData;
 
         if (existingManifestData) {
-          updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
+          updatedManifestData = window.diffCheckManifestFiles(newManifestData, existingManifestData);
         } else {
           updatedManifestData = newManifestData;
         }
@@ -812,7 +812,7 @@ var localDatasetFolderPath = "";
 var window.finalManifestGenerationPath = "";
 let pennsievePreview = false;
 
-const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
+const window.generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   let continueProgressValidateDataset = true;
   let titleTerm = "folder";
   let localGenerationDifferentDestination = false;
@@ -964,10 +964,10 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
         if (manifestEditBoolean) {
           localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder");
         }
-        create_json_object(action, sodaJSONObj, localDatasetFolderPath);
+        window.create_json_object(action, sodaJSONObj, localDatasetFolderPath);
         datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-        populate_existing_folders(datasetStructureJSONObj);
-        populate_existing_metadata(sodaJSONObj);
+        window.populate_existing_folders(datasetStructureJSONObj);
+        window.populate_existing_metadata(sodaJSONObj);
         sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
         sodaJSONObj["bf-account-selected"] = {};
         sodaJSONObj["bf-dataset-selected"] = {};
@@ -1184,7 +1184,7 @@ const initiate_generate_manifest_local = async (manifestEditBoolean, originalDat
     );
 
     if (moveFinishedBool) {
-      resetManifest(false);
+      window.resetManifest(false);
       // reset sodaJSONObj
       sodaJSONObj = {
         "starting-point": { type: "" },
@@ -1399,7 +1399,7 @@ const initiate_generate_manifest_bf = async () => {
     },
   });
   generatingBoolean = false;
-  resetManifest(false);
+  window.resetManifest(false);
 };
 
 /// creating manifest files locally by generating them to a local SODA folder, then move them to original dataset folder
@@ -1671,8 +1671,8 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
     };
     sodaJSONObj["starting-point"] = { type: "bf" };
 
-    populate_existing_folders(datasetStructureJSONObj);
-    populate_existing_metadata(sodaJSONObj);
+    window.populate_existing_folders(datasetStructureJSONObj);
+    window.populate_existing_metadata(sodaJSONObj);
 
     let continueProgressEmptyFolder = await checkEmptySubFolders(sodaJSONObj["dataset-structure"]);
 
@@ -1859,16 +1859,16 @@ const validateSPARCdataset = () => {
   valid_dataset = window.verify_sparc_folder(localDatasetFolderPath, "local");
   if (valid_dataset == true) {
     let action = "";
-    irregularFolderArray = [];
-    detectIrregularFolders(path.basename(localDatasetFolderPath), localDatasetFolderPath);
+    window.irregularFolderArray = [];
+    window.detectIrregularFolders(path.basename(localDatasetFolderPath), localDatasetFolderPath);
     var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-    if (irregularFolderArray.length > 0) {
+    if (window.irregularFolderArray.length > 0) {
       Swal.fire({
         title:
           "The following folders contain non-allowed characters in their names. Please correct them before continuing.",
         html:
           "<div style='max-height:300px; overflow-y:auto'>" +
-          irregularFolderArray.join("</br>") +
+          window.irregularFolderArray.join("</br>") +
           "</div>",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -1987,7 +1987,7 @@ const checkEmptySubFolders = (datasetStructure) => {
 // helper function 1: First, generate manifest file folder locally
 // Parameter: dataset structure object
 // Return: manifest file folder path
-const generateManifestFolderLocallyForEdit = async (ev) => {
+const window.generateManifestFolderLocallyForEdit = async (ev) => {
   //Function called by Confirm button in Prepare Metadata -> Manifest
   let type = "local";
   if ($('input[name="generate-manifest-1"]:checked').prop("id") === "generate-manifest-from-Penn") {
@@ -2044,10 +2044,10 @@ const generateManifestFolderLocallyForEdit = async (ev) => {
 
     sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
     sodaJSONObj["starting-point"]["type"] = "local";
-    create_json_object("", sodaJSONObj, localDatasetFolderPath);
+    window.create_json_object("", sodaJSONObj, localDatasetFolderPath);
     datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-    populate_existing_folders(datasetStructureJSONObj);
-    populate_existing_metadata(sodaJSONObj);
+    window.populate_existing_folders(datasetStructureJSONObj);
+    window.populate_existing_metadata(sodaJSONObj);
     sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
     sodaJSONObj["bf-account-selected"] = {};
     sodaJSONObj["bf-dataset-selected"] = {};
@@ -2185,7 +2185,7 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
       );
 
       if (moveFinishedBool) {
-        resetManifest(false);
+        window.resetManifest(false);
         // reset sodaJSONObj
         sodaJSONObj = {
           "starting-point": { type: "" },
@@ -2262,7 +2262,7 @@ const loadDSTreePreviewManifest = (datasetStructure) => {
   // upon clicking on a node, if node == manifest, feed the actual path of that manifest file -> UI library xspreadsheet
   // -> popup opens up with loaded info from such manifest.xlsx file.
   // -> upon save+close -> save the new file to the old path (make changes to the file)
-  addManifestFilesForTreeView();
+  window.addManifestFilesForTreeView();
   showTreeViewPreviewManifestEdits(
     false,
     true,
@@ -2458,8 +2458,8 @@ const generateAfterEdits = async () => {
   sodaJSONObj["starting-point"]["type"] = "local";
   create_json_object_include_manifest("", sodaJSONObj, dir);
   datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-  populate_existing_folders(datasetStructureJSONObj);
-  populate_existing_metadata(sodaJSONObj);
+  window.populate_existing_folders(datasetStructureJSONObj);
+  window.populate_existing_metadata(sodaJSONObj);
   sodaJSONObj["bf-account-selected"] = { "account-name": window.defaultBfDataset };
   sodaJSONObj["bf-dataset-selected"] = { "dataset-name": window.defaultBfDataset };
   sodaJSONObj["generate-dataset"] = {

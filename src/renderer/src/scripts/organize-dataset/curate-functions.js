@@ -1624,7 +1624,7 @@ const showTreeViewPreview = (
 ) => {
   if (manifestFileBoolean) {
     if (manifestFileCheck.checked) {
-      addManifestFilesForTreeView();
+      window.addManifestFilesForTreeView();
     } else {
       revertManifestForTreeView();
     }
@@ -1646,7 +1646,7 @@ const showTreeViewPreview = (
 };
 
 // if checked
-const addManifestFilesForTreeView = () => {
+window.addManifestFilesForTreeView = () => {
   for (var key in datasetStructureJSONObj["folders"]) {
     if (highLevelFolders.includes(key)) {
       var fileKey = datasetStructureJSONObj["folders"][key]["files"];
@@ -1836,7 +1836,7 @@ const ffmCreateManifest = async (sodaJson) => {
   await new Promise((r) => setTimeout(r, 0));
   //create a copy of the sodajson object
   sodaCopy = sodaJson;
-  datasetStructCopy = sodaCopy["dataset-structure"];
+  let datasetStructCopy = sodaCopy["dataset-structure"];
   if ("auto-generated" in sodaCopy["manifest-files"]) {
     delete sodaCopy["manifest-files"]["auto-generated"];
   }
@@ -1866,7 +1866,7 @@ const ffmCreateManifest = async (sodaJson) => {
 
     // let json_structure = JSON.parse(formattedResponse);
     sodaCopy = response;
-    datasetStructCopy = sodaCopy["dataset-structure"];
+    let datasetStructCopy = sodaCopy["dataset-structure"];
   } catch (e) {
     clientError(e);
   }
@@ -1933,7 +1933,7 @@ const ffmCreateManifest = async (sodaJson) => {
     let updatedManifestData;
 
     if (existingManifestData) {
-      updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
+      updatedManifestData = window.diffCheckManifestFiles(newManifestData, existingManifestData);
     } else {
       updatedManifestData = newManifestData;
     }

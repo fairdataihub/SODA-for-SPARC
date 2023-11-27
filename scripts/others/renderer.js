@@ -4514,13 +4514,13 @@ const populateJSONObjFolder = (action, jsonObject, folderPath) => {
     let addedElement = path.join(folderPath, itemWithinFolder);
 
     if (statsObj.isDirectory() && !/(^|\/)\[^\/\.]/g.test(itemWithinFolder)) {
-      if (irregularFolderArray.includes(addedElement)) {
+      if (window.irregularFolderArray.includes(addedElement)) {
         let renamedFolderName = "";
         if (action !== "ignore" && action !== "") {
           if (action === "remove") {
-            renamedFolderName = removeIrregularFolders(itemWithinFolder);
+            renamedFolderName = window.removeIrregularFolders(itemWithinFolder);
           } else if (action === "replace") {
-            renamedFolderName = replaceIrregularFolders(itemWithinFolder);
+            renamedFolderName = window.replaceIrregularFolders(itemWithinFolder);
           }
           jsonObject["folders"][renamedFolderName] = {
             type: "local",
@@ -5409,7 +5409,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
   }
 };
 
-const allowDrop = (ev) => {
+const window.allowDrop = (ev) => {
   ev.preventDefault();
 };
 // This function is called when the user drops files into the file explorer
@@ -5417,7 +5417,7 @@ const drop = async (ev) => {
   ev.preventDefault();
 
   // If the user is trying to drag/drop files at the root level of the dataset, show an error
-  const slashCount = getPathSlashCount();
+  const slashCount = window.getPathSlashCount();
   if (slashCount === 1) {
     await swalShowError(
       "You cannot import files at the root level of your dataset",
@@ -5480,18 +5480,18 @@ const drop = async (ev) => {
   await addDataArrayToDatasetStructureAtPath(accessibleItems);
 };
 
-var irregularFolderArray = [];
-const detectIrregularFolders = (folderName, pathEle) => {
+var window.irregularFolderArray = [];
+const window.detectIrregularFolders = (folderName, pathEle) => {
   if (checkIrregularNameBoolean(folderName)) {
-    irregularFolderArray.push(pathEle);
+    window.irregularFolderArray.push(pathEle);
   }
   if (fs.lstatSync(pathEle).isDirectory()) {
     fs.readdirSync(pathEle).forEach(function (folder) {
       var stat = fs.statSync(path.join(pathEle, folder));
       if (stat && stat.isDirectory()) {
-        detectIrregularFolders(folder, path.join(pathEle, folder));
+        window.detectIrregularFolders(folder, path.join(pathEle, folder));
       }
-      return irregularFolderArray;
+      return window.irregularFolderArray;
     });
   }
 };
@@ -5508,14 +5508,14 @@ const checkIrregularNameBoolean = (folderName) => {
   "paths": array of all the paths with special characters detected}
 */
 
-const replaceIrregularFolders = (pathElement) => {
+const window.replaceIrregularFolders = (pathElement) => {
   const reg = /[^a-zA-Z0-9-]/g;
   const str = path.basename(pathElement);
   const newFolderName = str.replace(reg, "-");
   return newFolderName;
 };
 
-const removeIrregularFolders = (pathElement) => {
+const window.removeIrregularFolders = (pathElement) => {
   const reg = /[^a-zA-Z0-9-]/g;
   const str = path.basename(pathElement);
   const newFolderName = str.replace(reg, "");
@@ -6862,8 +6862,8 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
         numb.innerText = "100%";
         clearInterval(local_progress);
         progressBar_rightSide.classList.remove("notransition");
-        populate_existing_folders(datasetStructureJSONObj);
-        populate_existing_metadata(sodaJSONObj);
+        window.populate_existing_folders(datasetStructureJSONObj);
+        window.populate_existing_metadata(sodaJSONObj);
         $("#para-continue-location-dataset-getting-started").text("Please continue below.");
         $("#nextBtn").prop("disabled", false);
         // log the success to analytics
@@ -6900,19 +6900,19 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
         );
         if (valid_dataset == true) {
           // Reset variables
-          irregularFolderArray = [];
+          window.irregularFolderArray = [];
           let replaced = {};
 
-          detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
+          window.detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
 
           var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-          if (irregularFolderArray.length > 0) {
+          if (window.irregularFolderArray.length > 0) {
             Swal.fire({
               title:
                 "The following folders contain non-allowed characters in their names. How should we handle them?",
               html:
                 "<div style='max-height:300px; overflow-y:auto'>" +
-                irregularFolderArray.join("</br>") +
+                window.irregularFolderArray.join("</br>") +
                 "</div>",
               heightAuto: false,
               backdrop: "rgba(0,0,0, 0.4)",
@@ -6929,18 +6929,18 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
               /* Read more about isConfirmed, isDenied below */
               if (result.isConfirmed) {
                 action = "replace";
-                if (irregularFolderArray.length > 0) {
-                  for (let i = 0; i < irregularFolderArray.length; i++) {
-                    renamedFolderName = replaceIrregularFolders(irregularFolderArray[i]);
-                    replaced[path.basename(irregularFolderArray[i])] = renamedFolderName;
+                if (window.irregularFolderArray.length > 0) {
+                  for (let i = 0; i < window.irregularFolderArray.length; i++) {
+                    renamedFolderName = window.replaceIrregularFolders(window.irregularFolderArray[i]);
+                    replaced[path.basename(window.irregularFolderArray[i])] = renamedFolderName;
                   }
                 }
               } else if (result.isDenied) {
                 action = "remove";
-                if (irregularFolderArray.length > 0) {
-                  for (let i = 0; i < irregularFolderArray.length; i++) {
-                    renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
-                    replaced[irregularFolderArray[i]] = renamedFolderName;
+                if (window.irregularFolderArray.length > 0) {
+                  for (let i = 0; i < window.irregularFolderArray.length; i++) {
+                    renamedFolderName = window.removeIrregularFolders(window.irregularFolderArray[i]);
+                    replaced[window.irregularFolderArray[i]] = renamedFolderName;
                   }
                 }
               } else {
@@ -6974,7 +6974,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
                   {
                     sodajsonobject: sodaJSONObj,
                     root_folder_path: root_folder_path,
-                    irregular_folders: irregularFolderArray,
+                    irregular_folders: window.irregularFolderArray,
                     replaced: replaced,
                   },
                   { timeout: 0 }
@@ -7011,7 +7011,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
                 {
                   sodajsonobject: sodaJSONObj,
                   root_folder_path: root_folder_path,
-                  irregular_folders: irregularFolderArray,
+                  irregular_folders: window.irregularFolderArray,
                   replaced: replaced,
                 },
                 { timeout: 0 }
@@ -7084,16 +7084,16 @@ ipcRenderer.on("guided-selected-local-destination-datasetCurate", (event, filepa
       valid_dataset = window.verify_sparc_folder(filepath[0]);
       if (valid_dataset == true) {
         var action = "";
-        irregularFolderArray = [];
-        detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
+        window.irregularFolderArray = [];
+        window.detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
         var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-        if (irregularFolderArray.length > 0) {
+        if (window.irregularFolderArray.length > 0) {
           Swal.fire({
             title:
               "The following folders contain non-allowed characters in their names. How should we handle them?",
             html:
               "<div style='max-height:300px; overflow-y:auto'>" +
-              irregularFolderArray.join("</br>") +
+              window.irregularFolderArray.join("</br>") +
               "</div>",
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
@@ -7122,20 +7122,20 @@ ipcRenderer.on("guided-selected-local-destination-datasetCurate", (event, filepa
 
             let root_folder_path = $("#guided-input-destination-getting-started-locally").val();
 
-            create_json_object(action, sodaJSONObj, root_folder_path);
+            window.create_json_object(action, sodaJSONObj, root_folder_path);
             datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-            populate_existing_folders(datasetStructureJSONObj);
-            populate_existing_metadata(sodaJSONObj);
+            window.populate_existing_folders(datasetStructureJSONObj);
+            window.populate_existing_metadata(sodaJSONObj);
             enableProgressButton();
           });
         } else {
           action = "";
           let root_folder_path = $("#guided-input-destination-getting-started-locally").val();
           sodaJSONObj["starting-point"]["local-path"] = filepath[0];
-          create_json_object(action, sodaJSONObj, root_folder_path);
+          window.create_json_object(action, sodaJSONObj, root_folder_path);
           datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-          populate_existing_folders(datasetStructureJSONObj);
-          populate_existing_metadata(sodaJSONObj);
+          window.populate_existing_folders(datasetStructureJSONObj);
+          window.populate_existing_metadata(sodaJSONObj);
         }
       } else {
         Swal.fire({
@@ -8231,7 +8231,7 @@ function importPennsieveMetadataFiles(ev, metadataFile, extensionList, paraEle) 
       delete sodaJSONObj["metadata-files"][deleted_file_name];
     }
   });
-  populate_existing_metadata(sodaJSONObj);
+  window.populate_existing_metadata(sodaJSONObj);
 }
 
 ipcRenderer.on("selected-metadataCurate", (event, mypath) => {

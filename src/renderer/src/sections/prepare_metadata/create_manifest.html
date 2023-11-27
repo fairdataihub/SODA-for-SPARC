@@ -164,7 +164,7 @@
             <input
               class="form-control"
               style="width: 450px !important"
-              onclick="showLocalDatasetManifest()"
+              onclick="window.showLocalDatasetManifest()"
               id="input-manifest-local-folder-dataset"
               type="text"
               readonly
@@ -177,7 +177,7 @@
           style="display: none; flex-direction: row; justify-content: center; margin: 10px auto"
         >
           <button
-            onclick="generateManifestFolderLocallyForEdit(this)"
+            onclick="window.generateManifestFolderLocallyForEdit(this)"
             class="btn_animated"
             style="
               border: none !important;
@@ -330,7 +330,7 @@
               class="btn-confirm-ds-selection"
             >
               <button
-                onclick="generateManifestFolderLocallyForEdit(this)"
+                onclick="window.generateManifestFolderLocallyForEdit(this)"
                 id="btn-pull-ds-manifest"
                 class="btn_animated"
                 style="
@@ -530,14 +530,14 @@
                   width: 220px;
                 "
                 class="transition-btn"
-                onclick="generateManifestPreview(this)"
+                onclick="window.generateManifestPreview(this)"
                 id="generate-local-preview-manifest"
               >
                 Preview Manifest Files Locally
               </button>
 
               <button
-                onclick="generateManifestPrecheck(true, this)"
+                onclick="window.generateManifestPrecheck(true, this)"
                 class="btn_question"
                 id="generate_step_5-manifest"
                 style="
@@ -609,7 +609,7 @@
 
             <div style="display: flex; justify-content: center; margin-top: 25px">
               <button
-                onclick="generateManifestPrecheck(true, this)"
+                onclick="window.generateManifestPrecheck(true, this)"
                 class="btn_question"
                 style="
                   cursor: pointer;
@@ -641,7 +641,7 @@
       <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
     </button>
     <button
-      onclick="resetManifest(true)"
+      onclick="window.resetManifest(true)"
       class="start-over"
       style="margin: 0; position: absolute; left: 48%; transform: translateX(-55%)"
     >

@@ -1216,7 +1216,7 @@ const transitionSubQuestions = async (ev, currentDiv, parentDiv, button, categor
 };
 
 // Create the dataset structure for sodaJSONObj
-const create_json_object = (action, sodaJSONObj, root_folder_path) => {
+const window.create_json_object = (action, sodaJSONObj, root_folder_path) => {
   high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"];
   high_level_metadata_sparc = [
     "submission.xlsx",
@@ -1294,7 +1294,7 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
   }
 };
 
-// Create the dataset structure for sodaJSONObj (similar to create_json_object but includes manifest files in json structure)
+// Create the dataset structure for sodaJSONObj (similar to window.create_json_object but includes manifest files in json structure)
 const create_json_object_include_manifest = (action, sodaJSONObj, root_folder_path) => {
   high_level_metadata_sparc = [
     "submission.xlsx",
@@ -1523,13 +1523,13 @@ const recursive_structure_create = (
     }
 
     if (stats.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(file)) {
-      if (irregularFolderArray.includes(current_file_path)) {
+      if (window.irregularFolderArray.includes(current_file_path)) {
         var renamedFolderName = "";
         if (action !== "ignore" && action !== "") {
           if (action === "remove") {
-            renamedFolderName = removeIrregularFolders(file);
+            renamedFolderName = window.removeIrregularFolders(file);
           } else if (action === "replace") {
-            renamedFolderName = replaceIrregularFolders(file);
+            renamedFolderName = window.replaceIrregularFolders(file);
           }
           dataset_folder["folders"][renamedFolderName] = {
             folders: {},
@@ -1665,13 +1665,13 @@ const recursive_structure_create_include_manifest = (
       }
     }
     if (stats.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(file)) {
-      if (irregularFolderArray.includes(current_file_path)) {
+      if (window.irregularFolderArray.includes(current_file_path)) {
         var renamedFolderName = "";
         if (action !== "ignore" && action !== "") {
           if (action === "remove") {
-            renamedFolderName = removeIrregularFolders(file);
+            renamedFolderName = window.removeIrregularFolders(file);
           } else if (action === "replace") {
-            renamedFolderName = replaceIrregularFolders(file);
+            renamedFolderName = window.replaceIrregularFolders(file);
           }
           dataset_folder["folders"][renamedFolderName] = {
             folders: {},
@@ -1907,8 +1907,8 @@ const window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, bu
           } else {
             datasetStructureJSONObj = { folders: {}, files: {} };
           }
-          populate_existing_folders(datasetStructureJSONObj);
-          populate_existing_metadata(sodaJSONObj);
+          window.populate_existing_folders(datasetStructureJSONObj);
+          window.populate_existing_metadata(sodaJSONObj);
           $("#nextBtn").prop("disabled", false);
           $("#para-continue-bf-dataset-getting-started").text("Please continue below.");
           showHideDropdownButtons("dataset", "show");
@@ -1933,8 +1933,8 @@ const window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, bu
         datasetStructureJSONObj = { folders: {}, files: {} };
       }
 
-      populate_existing_folders(datasetStructureJSONObj);
-      populate_existing_metadata(sodaJSONObj);
+      window.populate_existing_folders(datasetStructureJSONObj);
+      window.populate_existing_metadata(sodaJSONObj);
       $("#nextBtn").prop("disabled", false);
       $("#para-continue-bf-dataset-getting-started").text("Please continue below.");
       showHideDropdownButtons("dataset", "show");
@@ -2655,7 +2655,7 @@ const reset_ui = () => {
   document.querySelector("#organize--table-validation-errors").style.visibility = "hidden";
 };
 
-const populate_existing_folders = (dataset_folders) => {
+const window.populate_existing_folders = (dataset_folders) => {
   // currently handled by old function
   if ("files" in dataset_folders) {
     for (let file in dataset_folders["files"]) {
@@ -2672,14 +2672,14 @@ const populate_existing_folders = (dataset_folders) => {
       } else {
         dataset_folders["folders"][folder]["action"] = ["existing"];
       }
-      populate_existing_folders(dataset_folders["folders"][folder]);
+      window.populate_existing_folders(dataset_folders["folders"][folder]);
     }
   }
   return;
 };
 
 // This function populates the UI with the existing metadata files
-const populate_existing_metadata = (datasetStructureJSONObj) => {
+const window.populate_existing_metadata = (datasetStructureJSONObj) => {
   let metadataobject = datasetStructureJSONObj?.["metadata-files"];
   if (metadataobject == null || metadataobject == undefined) {
     return;

@@ -63,6 +63,7 @@
     "jspreadsheet": "^10.3.3",
     "jstree": "^3.3.16",
     "lottie-web": "^5.12.2",
+    "mv": "^2.1.1",
     "node-localstorage": "^3.0.5",
     "notyf": "^3.10.0",
     "select2": "^4.1.0-rc.0",

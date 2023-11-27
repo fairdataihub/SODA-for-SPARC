@@ -1,6 +1,6 @@
 import Swal from "sweetalert2";
 
-const swalShowError = async (title, errorText) => {
+export const swalShowError = async (title, errorText) => {
   await Swal.fire({
     title: title,
     html: errorText,

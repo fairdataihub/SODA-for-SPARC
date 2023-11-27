@@ -1614,7 +1614,7 @@ const showTreeViewPreview = (
 ) => {
   if (manifestFileBoolean) {
     if (manifestFileCheck.checked) {
-      addManifestFilesForTreeView();
+      window.addManifestFilesForTreeView();
     } else {
       revertManifestForTreeView();
     }
@@ -1636,7 +1636,7 @@ const showTreeViewPreview = (
 };
 
 // if checked
-const addManifestFilesForTreeView = () => {
+const window.addManifestFilesForTreeView = () => {
   for (var key in datasetStructureJSONObj["folders"]) {
     if (highLevelFolders.includes(key)) {
       var fileKey = datasetStructureJSONObj["folders"][key]["files"];
@@ -1923,7 +1923,7 @@ const ffmCreateManifest = async (sodaJson) => {
     let updatedManifestData;
 
     if (existingManifestData) {
-      updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
+      updatedManifestData = window.diffCheckManifestFiles(newManifestData, existingManifestData);
     } else {
       updatedManifestData = newManifestData;
     }

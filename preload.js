@@ -633,7 +633,7 @@ function window.resetSamples(askToReset = true) {
   });
 }
 
-function resetManifest(askToReset = true) {
+function window.resetManifest(askToReset = true) {
   if (askToReset) {
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
@@ -809,7 +809,7 @@ window.resetFFMUI = (ev) => {
   }
 
   if (resetManifestTab) {
-    resetManifest(false);
+    window.resetManifest(false);
   }
 
   // reset the prepare datasets sections

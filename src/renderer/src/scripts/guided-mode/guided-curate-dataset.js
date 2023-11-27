@@ -3291,7 +3291,7 @@ const extractFileNamesFromManifestData = (manifestData) => {
   return allFileNamesinDsStructure.sort();
 };
 
-const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
+window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
   const prevManifestFileNames = extractFileNamesFromManifestData(existingManifestData);
   const newManifestFileNames = extractFileNamesFromManifestData(newManifestData);
 
@@ -5286,7 +5286,7 @@ window.openPage = async (targetPageID) => {
       let updatedManifestData;
 
       if (existingManifestData) {
-        updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
+        updatedManifestData = window.diffCheckManifestFiles(newManifestData, existingManifestData);
       } else {
         updatedManifestData = newManifestData;
       }

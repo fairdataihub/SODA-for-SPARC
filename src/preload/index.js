@@ -76,8 +76,15 @@ if (process.contextIsolated) {
       stat: async (filepath) => {
         return await fs.stat(filepath)
       },
+      statSyncAndDirectory: (filepath) => {
+        let fsStatsObj = fs.statSync(filepath);
+        return fsStatsObj && fsStatsObj.isDirectory();
+      },
       readdir: async (dirpath) => {
         return await fs.readdir(dirpath)
+      },
+      readdircallback: (dirpath, callback) => {
+        return fs.readdir(dirpath, callback)
       },
       isDirectory: async (filepath) => {
         const fsStatsObj = await fs.stat(filepath);
@@ -86,6 +93,10 @@ if (process.contextIsolated) {
       isDirectorySync: (filepath) => {
         const fsStatsObj = fs.statSync(filepath);
         return fsStatsObj.isDirectory();
+      },
+      statSync: (filepath) => {
+        const fsStatsObj = fs.statSync(filepath);
+        return {isDirectory: fsStatsObj.isDirectory(), isFile: fsStatsObj.isFile()}
       },
       isFile: async (filepath) => {
         const fsStatsObj = await fs.stat(filepath);
@@ -103,6 +114,13 @@ if (process.contextIsolated) {
       },
       rename: (filepath, newName, errcallback) => {
         return fs.rename(filepath, newName, errcallback)
+      },
+      lstatSyncIsDirectory: (filepath) => {
+        let fsStatsObj = fs.lstatSync(filepath);
+        return fsStatsObj.isDirectory();
+      },
+      rmdirSync: (dirpath) => {
+        return fs.rmdirSync(dirpath)
       }
     })
     contextBridge.exposeInMainWorld('process', {

@@ -1,6 +1,13 @@
 import client from '../client'
 import excelToJson from 'convert-excel-to-json';
 import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
+import https from "https";
+import Swal from "sweetalert2";
+import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
+import kombuchaEnums from "../analytics/analytics-enums";
+import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
+import api from '../others/api/api'
+
 
 
 while (!window.htmlPagesAdded) {
@@ -28,11 +35,11 @@ const guidedJsTreePreviewManifest = document.getElementById(
   "guided-div-dataset-tree-preview-manifest"
 );
 
-const showLocalDatasetManifest = () => {
+window.showLocalDatasetManifest = () => {
   window.electron.ipcRenderer.send("open-file-dialog-local-dataset-manifest-purpose");
 };
 
-const selectManifestGenerationLocation = () => {
+window.selectManifestGenerationLocation = () => {
   window.electron.ipcRenderer.send("open-file-dialog-local-dataset-manifest-generate-purpose");
 };
 
@@ -61,7 +68,7 @@ const openFolder = (generationLocation) => {
   }
 };
 
-$(document).ready(function () {
+$(document).ready(async function () {
   let localDataSetImport = false;
   let fileOpenedOnce = {};
   window.electron.ipcRenderer.on("selected-local-dataset-manifest-purpose", (event, folderPath) => {
@@ -296,16 +303,16 @@ $(document).ready(function () {
       var localFolderPath = window.path.join(homeDirectory, "SODA", "manifest_files", parentFolderName);
       var selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
       if (window.fs.existsSync(selectedManifestFilePath)) {
-        jsonManifest = excelToJson({
+        jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
           sourceFile: selectedManifestFilePath,
           columnToKey: {
             "*": "{{columnHeader}}",
           },
-        })["Sheet1"];
+        })
       }
 
       window.sodaCopy = window.sodaJSONObj;
-      datasetStructCopy = window.sodaCopy["dataset-structure"];
+      let datasetStructCopy = window.sodaCopy["dataset-structure"];
 
       //Save content of manifest file to a variable to add to soda json at the end
       let originalManifestFilesValue = window.sodaCopy["manifest-files"];
@@ -323,7 +330,7 @@ $(document).ready(function () {
         let response = cleanJson.data.soda_json_structure;
 
         window.sodaCopy = response;
-        datasetStructCopy = window.sodaCopy["dataset-structure"];
+        let datasetStructCopy = window.sodaCopy["dataset-structure"];
       } catch (e) {
         clientError(e);
         userErrorMessage(e);
@@ -373,12 +380,12 @@ $(document).ready(function () {
             }
             if (!window.fs.existsSync(selectedManifestFilePath)) {
             } else {
-              jsonManifest = excelToJson({
+              jsonManifest =  await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
                 sourceFile: selectedManifestFilePath,
                 columnToKey: {
                   "*": "{{columnHeader}}",
                 },
-              })["Sheet1"];
+              })
             }
             // If file doesn't exist then that means it didn't get imported properly
             let sortedJSON = window.processManifestInfo(manifestHeader, manifestFileData);
@@ -418,7 +425,7 @@ $(document).ready(function () {
                 window.sodaCopy["manifest-files"][highLevelFolderName] =
                   newManifestData[highLevelFolderName];
               } else {
-                let jsonManifest = excelToJson({
+                let jsonManifest =  await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options",{
                   sourceFile: manifestPath,
                   sheets: [{ name: "Sheet1" }],
                   header: {
@@ -487,7 +494,7 @@ $(document).ready(function () {
         let updatedManifestData;
 
         if (existingManifestData) {
-          updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
+          updatedManifestData = window.diffCheckManifestFiles(newManifestData, existingManifestData);
         } else {
           updatedManifestData = newManifestData;
         }
@@ -522,7 +529,7 @@ $(document).ready(function () {
         } else {
           //spreadsheet reply contained results
           window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
-          saveManifestFiles = true;
+          let saveManifestFiles = true;
           if (saveManifestFiles) {
             //if additional metadata or description gets added for a file then add to json as well
             window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
@@ -543,12 +550,14 @@ $(document).ready(function () {
               window.fs.closeSync(window.fs.openSync(selectedManifestFilePath, "w"));
             }
 
-            jsonManifest = excelToJson({
+            console.log("Creating the stuff here")
+            console.log(selectedManifestFilePath)
+            jsonManifest =  await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options",{
               sourceFile: selectedManifestFilePath,
               columnToKey: {
                 "*": "{{columnHeader}}",
               },
-            })["Sheet1"];
+            })
 
             let sortedJSON = window.processManifestInfo(savedHeaders, savedData);
             jsonManifest = JSON.stringify(sortedJSON);
@@ -639,7 +648,7 @@ $(document).ready(function () {
     }
   });
 
-  $(guidedJsTreePreviewManifest).on("select_node.jstree", function (evt, data) {
+  $(guidedJsTreePreviewManifest).on("select_node.jstree", async function (evt, data) {
     if (data.node.text === "manifest.xlsx") {
       // Show loading popup
       Swal.fire({
@@ -662,13 +671,14 @@ $(document).ready(function () {
         window.sodaJSONObj["digital-metadata"]["name"],
         parentFolderName
       );
+      console.log("Failing here?")
       var selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
-      jsonManifest = excelToJson({
+      jsonManifest =  await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options",{
         sourceFile: selectedManifestFilePath,
         columnToKey: {
           "*": "{{columnHeader}}",
         },
-      })["Sheet1"];
+      })
     }
   });
 });
@@ -728,7 +738,7 @@ var localDatasetFolderPath = "";
 window.finalManifestGenerationPath = "";
 let pennsievePreview = false;
 
-const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
+window.generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   let continueProgressValidateDataset = true;
   let titleTerm = "folder";
   let localGenerationDifferentDestination = false;
@@ -738,6 +748,7 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   ).placeholder;
   pennsievePreview = false;
   const type = determineStandaloneManifestGeneratorOrigin();
+  console.log("Type is: ", type)
 
   window.exitCurate();
   window.sodaJSONObj["starting-point"] = {};
@@ -748,6 +759,7 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   if (type === "bf") {
     titleTerm = "on Pennsieve";
   } else if (type != "bf" && !pennsievePreview) {
+    console.log("Validating?")
     continueProgressValidateDataset = validateSPARCdataset();
 
     if (!continueProgressValidateDataset) {
@@ -760,10 +772,13 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
     localGenerationDifferentDestination = true;
   }
 
+  console.log("Local generation different destination: ", localGenerationDifferentDestination)
+  console.log("Local dataset path: ", localDatasetPath)
+
   await window.wait(500);
   if (!localGenerationDifferentDestination) {
     // Check if dataset is locked before generating manifest
-    const isLocked = await api.isDatasetLocked(window.defaultBfDataset, window.defaultBfDataset);
+    const isLocked = await api.isDatasetLocked(window.defaultBfAccount, window.defaultBfDataset);
 
     if (isLocked) {
       await Swal.fire({
@@ -833,36 +848,36 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
     window.sodaJSONObj["starting-point"]["local-path"] = window.finalManifestGenerationPath;
 
     //checking size of local folder path
-    checkDiskSpace(window.finalManifestGenerationPath).then(async (diskSpace) => {
-      let freeMem = diskSpace.free;
+    // checkDiskSpace(window.finalManifestGenerationPath).then(async (diskSpace) => {
+      // let freeMem = diskSpace.free;
       //if free memory is less than 3MB
-      if (freeMem < 3145728) {
-        Swal.fire({
-          title: "Not enough space in local storage",
-          html: "Please select another storage device or free up 3MB",
-          allowEscapeKey: true,
-          allowOutsideClick: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          icon: "warning",
-          showConfirmButton: "OK",
-        });
-        window.logMetadataForAnalytics(
-          "Error",
-          window.MetadataAnalyticsPrefix.MANIFEST,
-          window.AnalyticsGranularity.ALL_LEVELS,
-          "Generate",
-          Destinations.LOCAL
-        );
+      // if (freeMem < 3145728) {
+      //   Swal.fire({
+      //     title: "Not enough space in local storage",
+      //     html: "Please select another storage device or free up 3MB",
+      //     allowEscapeKey: true,
+      //     allowOutsideClick: false,
+      //     heightAuto: false,
+      //     backdrop: "rgba(0,0,0, 0.4)",
+      //     icon: "warning",
+      //     showConfirmButton: "OK",
+      //   });
+      //   window.logMetadataForAnalytics(
+      //     "Error",
+      //     window.MetadataAnalyticsPrefix.MANIFEST,
+      //     window.AnalyticsGranularity.ALL_LEVELS,
+      //     "Generate",
+      //     Destinations.LOCAL
+      //   );
 
-        window.logMetadataForAnalytics(
-          "Error",
-          window.MetadataAnalyticsPrefix.MANIFEST,
-          window.AnalyticsGranularity.ACTION,
-          "Generate - Check Storage Space",
-          Destinations.LOCAL
-        );
-      } else {
+      //   window.logMetadataForAnalytics(
+      //     "Error",
+      //     window.MetadataAnalyticsPrefix.MANIFEST,
+      //     window.AnalyticsGranularity.ACTION,
+      //     "Generate - Check Storage Space",
+      //     Destinations.LOCAL
+      //   );
+      // } else {
         if (pennsievePreview) {
           generateAfterEdits();
           return;
@@ -880,10 +895,12 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
         if (manifestEditBoolean) {
           localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder");
         }
-        create_json_object(action, window.sodaJSONObj, localDatasetFolderPath);
+        await window.create_json_object(action, window.sodaJSONObj, localDatasetFolderPath);
+        console.log("FInished create json object")
         window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-        populate_existing_folders(window.datasetStructureJSONObj);
-        populate_existing_metadata(window.sodaJSONObj);
+        window.populate_existing_folders(window.datasetStructureJSONObj);
+        window.populate_existing_metadata(window.sodaJSONObj);
+        console.log("FInished populate methods")
         window.sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
         window.sodaJSONObj["bf-account-selected"] = {};
         window.sodaJSONObj["bf-dataset-selected"] = {};
@@ -892,6 +909,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
         let continueProgressEmptyFolder = await checkEmptySubFolders(
           window.sodaJSONObj["dataset-structure"]
         );
+        console.log("FInished check empty sub folders")
         if (continueProgressEmptyFolder === false) {
           Swal.fire({
             title: "Failed to generate the manifest files.",
@@ -921,6 +939,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
         let continueProgressNoSPARCFolders = await checkNoSparcFolders(
           window.sodaJSONObj["dataset-structure"]
         );
+        console.log("FInished check no sparc folders")
         if (continueProgressNoSPARCFolders === true) {
           Swal.fire({
             title: "Failed to generate the manifest files.",
@@ -949,6 +968,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
         let continueProgressInvalidFolders = await checkInvalidHighLevelFolders(
           window.sodaJSONObj["dataset-structure"]
         );
+        console.log("FInished check invalid high level folders")
         if (continueProgressInvalidFolders === true) {
           Swal.fire({
             title: "Failed to generate the manifest files.",
@@ -972,18 +992,20 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
           $("#div-confirm-manifest-local-folder-dataset").hide();
           return;
         }
-        generateManifestHelper();
-        initiate_generate_manifest_local(manifestEditBoolean, localDatasetFolderPath);
-      }
-    });
+        await generateManifestHelper();
+        console.log("FInished generate manifest helper")
+        await initiate_generate_manifest_local(manifestEditBoolean, localDatasetFolderPath);
+        console.log("FInished initiate generate manifest local")
+      // }
+    // });
   } else {
     // Case 2: bf dataset
     if (manifestEditBoolean) {
       generateAfterEdits();
     } else {
-      window.sodaJSONObj["bf-account-selected"] = { "account-name": window.defaultBfDataset };
+      window.sodaJSONObj["bf-account-selected"] = { "account-name": window.defaultBfAccount };
       window.sodaJSONObj["bf-dataset-selected"] = { "dataset-name": window.defaultBfDataset };
-      extractBFDatasetForManifestFile(false, window.defaultBfDataset, window.defaultBfDataset, ev);
+      extractBFDatasetForManifestFile(false, window.defaultBfAccount, window.defaultBfDataset, ev);
     }
   }
 };
@@ -1025,7 +1047,7 @@ const generateManifestHelper = async () => {
   }
 };
 
-const generateManifestPreview = async (ev) => {
+window.generateManifestPreview = async (ev) => {
   // open a file dialog so the user can select their dataset folder
   window.electron.ipcRenderer.send("open-folder-dialog-save-manifest-local");
 };
@@ -1077,16 +1099,21 @@ const updateJSONStructureManifestGenerate = () => {
 
 const initiate_generate_manifest_local = async (manifestEditBoolean, originalDataset) => {
   if (manifestEditBoolean === false) {
+    console.log("Creating manifest file locally yes")
     createManifestLocally("local", false, originalDataset);
   } else {
+    console.log("Editing not creating? ")
     // SODA Manifest Files folder
     let dir = window.path.join(homeDirectory, "SODA", "manifest_files");
     // Move manifest files to the local dataset
     let moveFinishedBool;
     let generationLocation;
     if (window.finalManifestGenerationPath == originalDataset) {
+      console.log("Generating over the existing dataset and will move ")
       moveFinishedBool = await moveManifestFiles(dir, originalDataset);
+      console.log("After movefunction")
     } else {
+      console.log("Move manifest preview flow")
       [moveFinishedBool, generationLocation] = await moveManifestFilesPreview(
         dir,
         window.finalManifestGenerationPath
@@ -1100,7 +1127,8 @@ const initiate_generate_manifest_local = async (manifestEditBoolean, originalDat
     );
 
     if (moveFinishedBool) {
-      resetManifest(false);
+      console.log("Move finished")
+      window.resetManifest(false);
       // reset window.sodaJSONObj
       window.sodaJSONObj = {
         "starting-point": { type: "" },
@@ -1188,7 +1216,7 @@ const initiate_generate_manifest_bf = async () => {
 
     try {
       window.datasetList = [];
-      window.datasetList = await api.getDatasetsForAccount(window.defaultBfDataset);
+      window.datasetList = await api.getDatasetsForAccount(window.defaultBfAccount);
     } catch (error) {
       clientError(error);
     }
@@ -1315,26 +1343,22 @@ const initiate_generate_manifest_bf = async () => {
     },
   });
   generatingBoolean = false;
-  resetManifest(false);
+  window.resetManifest(false);
 };
 
 /// creating manifest files locally by generating them to a local SODA folder, then move them to original dataset folder
 const moveManifestFiles = (sourceFolder, destinationFolder) => {
   return new Promise((resolve) => {
-    window.fs.readdir(sourceFolder, (err, folders) => {
+    window.fs.readdircallback(sourceFolder, (err, folders) => {
       if (err) {
         console.log(err);
         resolve(false);
       } else {
-        folders.forEach(function (folder) {
+        folders.forEach( async function (folder) {
           let sourceManifest = window.path.join(sourceFolder, folder, "manifest.xlsx");
           let destinationManifest = window.path.join(destinationFolder, folder, "manifest.xlsx");
-          const mv = require("mv");
-          mv(sourceManifest, destinationManifest, function (err) {
-            if (err) {
-              throw err;
-            }
-          });
+          // TODO: Catch error and reject rather than resolve
+          await window.electron.ipcRenderer.invoke("mv", sourceManifest, destinationManifest)
         });
         resolve(true);
       }
@@ -1588,8 +1612,8 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
     };
     window.sodaJSONObj["starting-point"] = { type: "bf" };
 
-    populate_existing_folders(window.datasetStructureJSONObj);
-    populate_existing_metadata(window.sodaJSONObj);
+    window.populate_existing_folders(window.datasetStructureJSONObj);
+    window.populate_existing_metadata(window.sodaJSONObj);
 
     let continueProgressEmptyFolder = await checkEmptySubFolders(window.sodaJSONObj["dataset-structure"]);
 
@@ -1772,20 +1796,20 @@ const validateSPARCdataset = () => {
 
   // skip because previewing the manifest files for the user based off a Pennsieve dataset stored in json that has already been verified
 
-  localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder");
-  valid_dataset = window.verify_sparc_folder(localDatasetFolderPath, "local");
+  let localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder");
+  let valid_dataset = window.verify_sparc_folder(localDatasetFolderPath, "local");
   if (valid_dataset == true) {
     let action = "";
-    irregularFolderArray = [];
-    detectIrregularFolders(window.path.basename(localDatasetFolderPath), localDatasetFolderPath);
+    window.irregularFolderArray = [];
+    window.detectIrregularFolders(window.path.basename(localDatasetFolderPath), localDatasetFolderPath);
     var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-    if (irregularFolderArray.length > 0) {
+    if (window.irregularFolderArray.length > 0) {
       Swal.fire({
         title:
           "The following folders contain non-allowed characters in their names. Please correct them before continuing.",
         html:
           "<div style='max-height:300px; overflow-y:auto'>" +
-          irregularFolderArray.join("</br>") +
+          window.irregularFolderArray.join("</br>") +
           "</div>",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -1904,7 +1928,7 @@ const checkEmptySubFolders = (datasetStructure) => {
 // helper function 1: First, generate manifest file folder locally
 // Parameter: dataset structure object
 // Return: manifest file folder path
-const generateManifestFolderLocallyForEdit = async (ev) => {
+window.generateManifestFolderLocallyForEdit = async (ev) => {
   //Function called by Confirm button in Prepare Metadata -> Manifest
   let type = "local";
   if ($('input[name="generate-manifest-1"]:checked').prop("id") === "generate-manifest-from-Penn") {
@@ -1961,10 +1985,10 @@ const generateManifestFolderLocallyForEdit = async (ev) => {
 
     window.sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
     window.sodaJSONObj["starting-point"]["type"] = "local";
-    create_json_object("", window.sodaJSONObj, localDatasetFolderPath);
+    await window.create_json_object("", window.sodaJSONObj, localDatasetFolderPath);
     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-    populate_existing_folders(window.datasetStructureJSONObj);
-    populate_existing_metadata(window.sodaJSONObj);
+    window.populate_existing_folders(window.datasetStructureJSONObj);
+    window.populate_existing_metadata(window.sodaJSONObj);
     window.sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
     window.sodaJSONObj["bf-account-selected"] = {};
     window.sodaJSONObj["bf-dataset-selected"] = {};
@@ -1993,9 +2017,9 @@ const generateManifestFolderLocallyForEdit = async (ev) => {
     createManifestLocally("local", true, "");
   } else {
     // Case 2: bf dataset
-    window.sodaJSONObj["bf-account-selected"] = { "account-name": window.defaultBfDataset };
+    window.sodaJSONObj["bf-account-selected"] = { "account-name": window.defaultBfAccount };
     window.sodaJSONObj["bf-dataset-selected"] = { "dataset-name": window.defaultBfDataset };
-    extractBFDatasetForManifestFile(true, window.defaultBfDataset, window.defaultBfDataset, ev);
+    extractBFDatasetForManifestFile(true, window.defaultBfAccount, window.defaultBfDataset, ev);
   }
 };
 
@@ -2011,6 +2035,7 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
 
   // create the manifest files based off the user's edits to the manifest files
   try {
+    console.log("IN the server at curate_datasets/manifest_files")
     let generate_local_manifest = await client.post(
       `/curate_datasets/manifest_files`,
       {
@@ -2019,6 +2044,9 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
       },
       { timeout: 0 }
     );
+
+    console.log("After the server at curate_datasets/manifest_files")
+
 
     let res = generate_local_manifest.data.success_message_or_manifest_destination;
 
@@ -2102,7 +2130,7 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
       );
 
       if (moveFinishedBool) {
-        resetManifest(false);
+        window.resetManifest(false);
         // reset window.sodaJSONObj
         window.sodaJSONObj = {
           "starting-point": { type: "" },
@@ -2179,7 +2207,7 @@ const loadDSTreePreviewManifest = (datasetStructure) => {
   // upon clicking on a node, if node == manifest, feed the actual path of that manifest file -> UI library xspreadsheet
   // -> popup opens up with loaded info from such manifest.xlsx file.
   // -> upon save+close -> save the new file to the old path (make changes to the file)
-  addManifestFilesForTreeView();
+  window.addManifestFilesForTreeView();
   showTreeViewPreviewManifestEdits(
     false,
     true,
@@ -2262,7 +2290,7 @@ const createChildNodeManifest = (
         newFormatNode.state.disabled = disabled;
         var new_node = createChildNodeManifest(value, key, "folder", "", true, selected, disabled);
 
-        firstNode = false;
+        let firstNode = false;
       }
       newFormatNode["children"].push(new_node);
       newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
@@ -2376,8 +2404,8 @@ const generateAfterEdits = async () => {
   window.sodaJSONObj["starting-point"]["type"] = "local";
   create_json_object_include_manifest("", window.sodaJSONObj, dir);
   window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-  populate_existing_folders(window.datasetStructureJSONObj);
-  populate_existing_metadata(window.sodaJSONObj);
+  window.populate_existing_folders(window.datasetStructureJSONObj);
+  window.populate_existing_metadata(window.sodaJSONObj);
   window.sodaJSONObj["bf-account-selected"] = { "account-name": window.defaultBfAccount };
   window.sodaJSONObj["bf-dataset-selected"] = { "dataset-name": window.defaultBfDataset };
   window.sodaJSONObj["generate-dataset"] = {
