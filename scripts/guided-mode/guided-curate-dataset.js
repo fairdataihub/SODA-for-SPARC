@@ -1272,6 +1272,23 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
+      // throw an error if the user chose to import the subject structure via spreadsheet but
+      // has successfully imported the structure
+      if (userChoseToImportStructureViaSpreadsheet) {
+        const subjects = getExistingSubjectNames();
+        if (subjects.length === 0) {
+          errorArray.push({
+            type: "swal",
+            message: `
+              You indicated that you would like to import your subject structure from a spreadsheet, however,
+              you have not added any subjects.
+              <br/><br/>
+              Please fill out and import the spreadsheet or select the option to add your subject structure manually.
+            `,
+          });
+          throw errorArray;
+        }
+      }
     }
 
     if (pageBeingLeftID === "guided-primary-data-organization-tab") {
@@ -7646,6 +7663,12 @@ const patchPreviousGuidedModeVersions = async () => {
   if (!sodaJSONObj["curation-mode"]) {
     sodaJSONObj["cuartion-mode"] = "guided";
   }
+
+  // If old progress saves do not have the "subject-addition-method" key, set it to "manual"
+  // since they do not need to import from a spreadsheet
+  if (!sodaJSONObj["button-config"]["subject-addition-method"]) {
+    sodaJSONObj["button-config"]["subject-addition-method"] = "manual";
+  }
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
 };
@@ -11210,6 +11233,14 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
   const validSampleNames = [];
   const subjectsWithMismatchedPools = [];
   const pooledSubjects = new Map();
+
+  if (sheetData.length === 0) {
+    await swalShowError(
+      "Empty dataset structure",
+      "Please add data to the spreadsheet and try again"
+    );
+    return false;
+  }
   // 1. Loop through the spreadsheet rows and find subs, pools, and sams that do not have valid names
   for (const row of sheetData) {
     const subjectName = lowercaseFirstLetter(row["Subject ID"]);
@@ -11350,25 +11381,21 @@ document
     const worksheet = spreadsheet.Sheets[spreadsheet.SheetNames[0]];
     const sheetData = xlsx.utils.sheet_to_json(worksheet, { defval: "" });
 
+    // Validate the spreadsheet structure and return if it is invalid (Error swals are shown in the function)
     const spreadsheetIsValid = await validateDatasetStructureSpreadsheet(sheetData);
+    if (!spreadsheetIsValid) {
+      return;
+    }
 
     // Get the count of existing subjects, pools, and samples to compare after the import is done
     const preImportSubjectCount = getExistingSubjectNames().length;
     const preImportPoolCount = getExistingPoolNames().length;
     const preImportSampleCount = getExistingSampleNames().length;
 
-    if (!spreadsheetIsValid) {
-      await swalShowError(
-        "Invalid dataset structure spreadsheet",
-        "Please fix the errors in the spreadsheet and try again"
-      );
-      return;
-    }
-
     for (const row of sheetData) {
-      const subjectName = row["Subject ID"];
-      const subjectsPool = row["Pool ID"];
-      const sampleName = row["Sample ID"];
+      const subjectName = lowercaseFirstLetter(row["Subject ID"]);
+      const subjectsPool = lowercaseFirstLetter(row["Pool ID"]);
+      const sampleName = lowercaseFirstLetter(row["Sample ID"]);
 
       // Check to see if the subject already exists
       const subjectAlreadyExists = getExistingSubjectNames().includes(subjectName);
@@ -11400,29 +11427,24 @@ document
     const poolsAdded = postImportPoolCount - preImportPoolCount;
     const samplesAdded = postImportSampleCount - preImportSampleCount;
 
+    let successfulImportString = "";
     if (subjectsAdded > 0) {
-      notyf.open({
-        duration: "3000",
-        type: "success",
-        message: `${subjectsAdded} subjects added`,
-      });
+      successfulImportString += `<p><strong>${subjectsAdded}</strong> subjects added</p>`;
     }
-
     if (poolsAdded > 0) {
-      notyf.open({
-        duration: "3000",
-        type: "success",
-        message: `${poolsAdded} pools added`,
-      });
+      successfulImportString += `<p><strong>${poolsAdded}</strong> pools added</p>`;
+    }
+    if (samplesAdded > 0) {
+      successfulImportString += `<p><strong>${samplesAdded}</strong> samples added</p>`;
     }
 
-    if (samplesAdded > 0) {
-      notyf.open({
-        duration: "3000",
-        type: "success",
-        message: `${samplesAdded} samples added`,
-      });
-    }
+    await swalShowInfo(
+      "Dataset structure successfully imported",
+      `${successfulImportString}
+      <br />
+      You will now be taken to the next step where you can review/edit the imported data.`
+    );
+    $("#guided-next-button").click();
   });
 
 const guidedExtractEntityNamesFromFolders = async (entityType) => {
