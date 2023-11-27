@@ -458,7 +458,7 @@ async function window.window.saveRCFile(type) {
 }
 
 // show filebrowser for existing local Changes/README file
-function showExistingRCFile(type) {
+function window.showExistingRCFile(type) {
   if (
     $(`#existing-${type}-file-destination`).prop("placeholder") !== "Browse here" &&
     $(`#Question-prepare-${type}-2`).hasClass("show")
@@ -619,7 +619,7 @@ const window.getRC = async (type) => {
 };
 
 // helper function to import a local readme/changes file
-function importExistingRCFile(type) {
+function window.importExistingRCFile(type) {
   var filePath = $(`#existing-${type}-file-destination`).prop("placeholder");
   if (type === "changes") {
     var upperCaseLetter = "CHANGES";
