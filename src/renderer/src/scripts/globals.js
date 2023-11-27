@@ -375,7 +375,7 @@ function resetSubmissionFields() {
   `
 }
 
-function resetDD(askToReset = true) {
+window.resetDD = (askToReset = true) => {
   if (!askToReset) {
     // 1. remove Prev and Show from all individual-question except for the first one
     // 2. empty all input, textarea, select, para-elements
@@ -870,7 +870,7 @@ window.resetFFMUI = (ev) => {
   }
 
   if (resetDDTab) {
-    resetDD(false)
+    window.resetDD(false)
   }
 
   if (resetSubjectsTab) {

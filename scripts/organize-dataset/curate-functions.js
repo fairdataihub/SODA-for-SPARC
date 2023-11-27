@@ -750,7 +750,7 @@ const recursive_remove_missing_file = (item_path, dataset_folder) => {
 // function to load Progress dropdown
 const importOrganizeProgressPrompt = () => {
   document.getElementById("para-progress-file-status").innerHTML = "";
-  removeOptions(progressFileDropdown);
+  window.removeOptions(progressFileDropdown);
   window.addOption(progressFileDropdown, "Select", "Select");
   if (fs.existsSync(progressFilePath)) {
     var fileNames = fs.readdirSync(progressFilePath);

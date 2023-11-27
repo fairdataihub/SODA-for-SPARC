@@ -388,7 +388,7 @@
               style="display: none; flex-direction: row; justify-content: center; margin: 10px auto"
               id="div-check-bf-import-readme"
             >
-              <button onclick="getRC('README.txt')" class="prepare-metadata-confirm-dataset-button">
+              <button onclick="window.getRC('README.txt')" class="prepare-metadata-confirm-dataset-button">
                 Confirm
               </button>
               <button
@@ -630,7 +630,7 @@
               border: none !important;
               overflow: visible !important;
             "
-            onclick="saveRCFile('readme')"
+            onclick="window.window.saveRCFile('readme')"
           >
             Generate
           </button>
@@ -758,7 +758,7 @@
               id="div-check-bf-generate-readme"
             >
               <button
-                onclick="generateRCFiles(true, 'readme')"
+                onclick="window.generateRCFiles(true, 'readme')"
                 type="button"
                 class="btn_animated popover-tooltip"
                 data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
@@ -785,7 +785,7 @@
       <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
     </button>
     <button
-      onclick="resetRCFile('readme')"
+      onclick="window.resetRCFile('readme')"
       class="start-over"
       style="margin: 0; position: absolute; left: 48%; transform: translateX(-55%)"
     >

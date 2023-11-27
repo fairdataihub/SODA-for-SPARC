@@ -47,7 +47,7 @@ const window.generateRCFilesHelper = (type) => {
 };
 
 // generate changes or readme either locally (uploadBFBoolean=false) or onto Pennsieve (uploadBFBoolean=true)
-const generateRCFiles = async (uploadBFBoolean, fileType) => {
+const window.generateRCFiles = async (uploadBFBoolean, fileType) => {
   let result = window.generateRCFilesHelper(fileType);
   let bfDataset = document.getElementById(`bf_dataset_load_${fileType}`).innerText.trim();
   let upperCaseLetters = fileType.toUpperCase() + ".txt";
@@ -338,7 +338,7 @@ $(document).ready(function () {
 });
 
 // write Readme or Changes files (save locally)
-async function saveRCFile(type) {
+async function window.window.saveRCFile(type) {
   var result = window.generateRCFilesHelper(type);
   if (result === "empty") {
     return;
@@ -430,7 +430,7 @@ async function saveRCFile(type) {
           });
 
           // log the size of the metadata file that was generated at varying levels of granularity
-          let size = await getFileSizeInBytes(destinationPath);
+          let size = await window.getFileSizeInBytes(destinationPath);
 
           ipcRenderer.send(
             "track-kombucha",
@@ -490,7 +490,7 @@ function showExistingRCFile(type) {
 }
 
 // start over for Readme and Changes
-function resetRCFile(type) {
+function window.resetRCFile(type) {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over!",
@@ -534,7 +534,7 @@ function resetRCFile(type) {
 }
 
 // import a Pennsieve Readme or Changes file
-const getRC = async (type) => {
+const window.getRC = async (type) => {
   // loading popup
   Swal.fire({
     title: `Loading an existing ${type} file`,

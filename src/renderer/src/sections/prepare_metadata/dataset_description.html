@@ -310,7 +310,7 @@
               style="display: none; flex-direction: row; justify-content: center; margin: 10px auto"
               id="div-check-bf-import-dd"
             >
-              <button onclick="checkBFImportDD()" class="prepare-metadata-confirm-dataset-button">
+              <button onclick="window.checkBFImportDD()" class="prepare-metadata-confirm-dataset-button">
                 Confirm
               </button>
               <button
@@ -350,7 +350,7 @@
             <input
               class="form-control"
               style="width: 450px !important"
-              onclick="showExistingDDFile()"
+              onclick="window.showExistingDDFile()"
               id="existing-dd-file-destination"
               type="text"
               readonly
@@ -362,7 +362,7 @@
             id="div-confirm-existing-dd-import"
           >
             <button
-              onclick="importExistingDDFile()"
+              onclick="window.importExistingDDFile()"
               style="
                 cursor: pointer;
                 border-radius: 8px;
@@ -1380,7 +1380,7 @@
         >
           <button
             id="btn-confirm-local-dd-destination"
-            onclick="generateDDFile(false)"
+            onclick="window.generateDDFile(false)"
             type="button"
             class="btn_animated popover-tooltip"
             data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
@@ -1520,7 +1520,7 @@
               id="div-check-bf-generate-dd"
             >
               <button
-                onclick="generateDDFile(true, '', '')"
+                onclick="window.generateDDFile(true, '', '')"
                 type="button"
                 class="btn_animated popover-tooltip"
                 data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
@@ -1551,7 +1551,7 @@
       <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
     </button>
     <button
-      onclick="resetDD()"
+      onclick="window.resetDD()"
       class="start-over"
       style="margin: 0; position: absolute; left: 48%; transform: translateX(-55%)"
     >

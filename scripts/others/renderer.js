@@ -1651,7 +1651,7 @@ if (process.platform === "linux") {
   }
 }
 
-const createDragSort = (tagify) => {
+const window.createDragSort = (tagify) => {
   const onDragEnd = () => {
     tagify.updateValueByDOMTags();
   };
@@ -1676,7 +1676,7 @@ const guidedSubmissionTagsTagifyManual = new Tagify(guidedSubmissionTagsInputMan
     closeOnSelect: true,
   },
 });
-createDragSort(guidedSubmissionTagsTagifyManual);
+window.createDragSort(guidedSubmissionTagsTagifyManual);
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords"),
@@ -1684,13 +1684,13 @@ var keywordInput = document.getElementById("ds-keywords"),
     duplicates: false,
   });
 
-createDragSort(window.keywordTagify);
+window.createDragSort(window.keywordTagify);
 
 var otherFundingInput = document.getElementById("ds-other-funding"),
   window.otherFundingTagify = new Tagify(otherFundingInput, {
     duplicates: false,
   });
-createDragSort(window.otherFundingTagify);
+window.createDragSort(window.otherFundingTagify);
 
 var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
   window.collectionDatasetTags = new Tagify(collectionDatasetInput, {
@@ -1707,7 +1707,7 @@ var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
       rightKey: true,
     },
   });
-createDragSort(window.collectionDatasetTags);
+window.createDragSort(window.collectionDatasetTags);
 
 var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
   window.studyOrganSystemsTagify = new Tagify(studyOrganSystemsInput, {
@@ -1739,25 +1739,25 @@ var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
       closeOnSelect: true,
     },
   });
-createDragSort(window.studyOrganSystemsTagify);
+window.createDragSort(window.studyOrganSystemsTagify);
 
 var studyTechniquesInput = document.getElementById("ds-study-technique"),
   window.studyTechniquesTagify = new Tagify(studyTechniquesInput, {
     duplicates: false,
   });
-createDragSort(window.studyTechniquesTagify);
+window.createDragSort(window.studyTechniquesTagify);
 
 var studyApproachesInput = document.getElementById("ds-study-approach"),
   window.studyApproachesTagify = new Tagify(studyApproachesInput, {
     duplicates: false,
   });
-createDragSort(window.studyApproachesTagify);
+window.createDragSort(window.studyApproachesTagify);
 
 // tagify the input inside of the "Add/edit tags" manage dataset section
 var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   // initialize Tagify on the above input node reference
   window.datasetTagsTagify = new Tagify(datasetTagsInput);
-createDragSort(window.datasetTagsTagify);
+window.createDragSort(window.datasetTagsTagify);
 
 /////////////////// Provide Grant Information section /////////////////////////
 //////////////// //////////////// //////////////// //////////////// ///////////
@@ -1819,7 +1819,7 @@ window.milestoneTagify1.on("change", (e) => {
   }
 });
 
-createDragSort(window.milestoneTagify1);
+window.createDragSort(window.milestoneTagify1);
 
 // generate subjects file
 ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
@@ -2775,10 +2775,10 @@ function getParentDatasets() {
 
 function changeAwardInputDsDescription() {
   if (dsContributorArrayLast1) {
-    removeOptions(dsContributorArrayLast1);
+    window.removeOptions(dsContributorArrayLast1);
   }
   if (dsContributorArrayFirst1) {
-    removeOptions(dsContributorArrayFirst1);
+    window.removeOptions(dsContributorArrayFirst1);
     addOption(dsContributorArrayFirst1, "Select an option", "Select an option");
   }
 
@@ -2801,7 +2801,7 @@ function changeAwardInputDsDescription() {
     $($($("#table-current-contributors").find("tr")[1].cells[1]).find("select")[0]).prop("id")
   );
   if (selectID) {
-    removeOptions(selectID);
+    window.removeOptions(selectID);
     $($($("#table-current-contributors").find("tr")[1].cells[1]).find("select")[0]).prop(
       "disabled",
       true
@@ -2810,10 +2810,10 @@ function changeAwardInputDsDescription() {
 }
 
 // on change event when users choose a contributor's last name
-const onchangeLastNames = () => {
+const window.onchangeLastNames = () => {
   $("#dd-contributor-first-name").attr("disabled", true);
   var conLastname = $("#dd-contributor-last-name").val();
-  removeOptions(document.getElementById("dd-contributor-first-name"));
+  window.removeOptions(document.getElementById("dd-contributor-first-name"));
   if (conLastname in window.globalContributorNameObject) {
     addOption(
       document.getElementById("dd-contributor-first-name"),
@@ -2830,7 +2830,7 @@ const onchangeLastNames = () => {
 //// De-populate dataset dropdowns to clear options
 const clearDatasetDropdowns = () => {
   for (let list of [curateDatasetDropdown]) {
-    removeOptions(list);
+    window.removeOptions(list);
     addOption(list, "Search here...", "Select dataset");
     list.options[0].disabled = true;
   }
@@ -2838,7 +2838,7 @@ const clearDatasetDropdowns = () => {
 
 const clearOrganizationDropdowns = () => {
   for (let list of [curateOrganizationDropdown]) {
-    removeOptions(list);
+    window.removeOptions(list);
     addOption(list, "Search here...", "Select organization");
     list.options[0].disabled = true;
   }
@@ -3121,7 +3121,7 @@ $("#additional-link-table-dd").mousedown(function (e) {
 
 const emptyDSInfoEntries = () => {
   var fieldSatisfied = true;
-  var inforObj = grabDSInfoEntries();
+  var inforObj = window.grabDSInfoEntries();
   var emptyFieldArray = [];
   /// check for number of keywords
   for (var element in inforObj) {
@@ -3160,7 +3160,7 @@ const emptyInfoEntries = (element) => {
 };
 
 /// detect empty required fields and raise a warning
-const detectEmptyRequiredFields = (funding) => {
+const window.detectEmptyRequiredFields = (funding) => {
   /// dataset info
   var dsContent = emptyDSInfoEntries();
   var dsSatisfied = dsContent[0];
@@ -3173,7 +3173,7 @@ const detectEmptyRequiredFields = (funding) => {
   var conEmptyField = [];
   var conSatisfied = true;
   var fundingSatisfied = emptyInfoEntries(funding);
-  var contactPersonExists = checkAtLeastOneContactPerson();
+  var contactPersonExists = window.checkAtLeastOneContactPerson();
   var contributorNumber = document.getElementById("contributor-table-dd").rows.length;
   if (!fundingSatisfied) {
     conEmptyField.push("SPARC Award");
@@ -3247,7 +3247,7 @@ async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
 
 //// De-populate dataset dropdowns to clear options for CURATE
 function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
-  removeOptions(datasetDropdown);
+  window.removeOptions(datasetDropdown);
 
   /// making the first option: "Select" disabled
   addOption(datasetDropdown, "Select dataset", "Select dataset");
@@ -3944,7 +3944,7 @@ const withdrawReviewDataset = async (curationMode) => {
 
 // General //
 
-const removeOptions = (selectbox) => {
+const window.removeOptions = (selectbox) => {
   for (let i = selectbox.options.length - 1; i >= 0; i--) {
     selectbox.remove(i);
   }
@@ -3955,12 +3955,12 @@ const removeOptions = (selectbox) => {
 const refreshBfUsersList = () => {
   let accountSelected = window.defaultBfDataset;
 
-  removeOptions(bfListUsers);
+  window.removeOptions(bfListUsers);
   let optionUser = document.createElement("option");
   optionUser.textContent = "Select user";
   bfListUsers.appendChild(optionUser);
 
-  removeOptions(bfListUsersPI);
+  window.removeOptions(bfListUsersPI);
   let optionUserPI = document.createElement("option");
   optionUserPI.textContent = "Select PI";
   bfListUsersPI.appendChild(optionUserPI);
@@ -3970,7 +3970,7 @@ const refreshBfUsersList = () => {
       .get(`manage_datasets/ps_get_users?selected_account=${accountSelected}`)
       .then((res) => {
         let users = res.data["users"];
-        // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
+        // The window.removeOptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
         $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
 
@@ -4006,7 +4006,7 @@ const getSortedTeamStrings = (pennsieveTeamsJsonResponse) => {
 };
 
 const refreshBfTeamsList = async (teamList) => {
-  removeOptions(teamList);
+  window.removeOptions(teamList);
 
   let accountSelected = window.defaultBfDataset;
   let optionTeam = document.createElement("option");
@@ -4021,7 +4021,7 @@ const refreshBfTeamsList = async (teamList) => {
       );
       const teamsThatCanBeGrantedPermissions = getSortedTeamStrings(teamsReq.data.teams);
 
-      // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
+      // The window.removeOptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
       $("#bf_list_teams").selectpicker("refresh");
       $("#bf_list_teams").find("option:not(:first)").remove();
       $("#guided_bf_list_users_and_teams").selectpicker("refresh");
@@ -8675,7 +8675,7 @@ const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, si
 };
 
 // get the size of a file in bytes given a path to a file
-const getFileSizeInBytes = (path) => {
+const window.getFileSizeInBytes = (path) => {
   return new Promise((resolve, reject) => {
     fs.stat(path, (err, stats) => {
       if (err) {

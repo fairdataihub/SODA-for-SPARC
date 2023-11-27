@@ -18,6 +18,8 @@ import './scripts/disseminate/prePublishingReview'
 import './scripts/others/pennsieveDatasetImporter'
 import './scripts/others/progressContainer'
 import './scripts/validator/validate'
+import './scripts/metadata-files/datasetDescription'
+import './scripts/metadata-files/readme-changes'
 
 // Application Lotties
 import './assets/lotties/activate-lotties'

@@ -100,6 +100,9 @@ if (process.contextIsolated) {
         const fileStats = fs.statSync(filepath);
         // return the size of the file 
         return fileStats.size;
+      },
+      rename: (filepath, newName, errcallback) => {
+        return fs.rename(filepath, newName, errcallback)
       }
     })
     contextBridge.exposeInMainWorld('process', {
@@ -128,6 +131,9 @@ if (process.contextIsolated) {
       },
       parse: (filepath) => {
         return path.parse(filepath)
+      },
+      dirname: (filepath) => {
+        return path.dirname(filepath)
       }
     })
     contextBridge.exposeInMainWorld('log', {

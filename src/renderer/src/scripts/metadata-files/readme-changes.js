@@ -1,5 +1,15 @@
 import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
+import api from "../others/api/api"
+import Swal from "sweetalert2";
+import client from '../client'
+import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
+import kombuchaEnums from "../analytics/analytics-enums";
+import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 
+
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
 
 // event listeners for changes open dropdown prompts
 document.querySelectorAll(".changes-change-current-account").forEach((element) => {
@@ -50,7 +60,7 @@ window.generateRCFilesHelper = (type) => {
 };
 
 // generate changes or readme either locally (uploadBFBoolean=false) or onto Pennsieve (uploadBFBoolean=true)
-const generateRCFiles = async (uploadBFBoolean, fileType) => {
+window.generateRCFiles = async (uploadBFBoolean, fileType) => {
   let result = window.generateRCFilesHelper(fileType);
   let bfDataset = document.getElementById(`bf_dataset_load_${fileType}`).innerText.trim();
   let upperCaseLetters = fileType.toUpperCase() + ".txt";
@@ -67,7 +77,7 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked(window.defaultBfDataset, bfDataset);
+    const isLocked = await api.isDatasetLocked(window.defaultBfAccount, bfDataset);
     if (isLocked) {
       await Swal.fire({
         icon: "info",
@@ -130,7 +140,7 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
         {
           params: {
             file_type: upperCaseLetters,
-            selected_account: window.defaultBfDataset,
+            selected_account: window.defaultBfAccount,
             selected_dataset: bfDataset,
           },
         }
@@ -145,7 +155,7 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
         backdrop: "rgba(0,0,0, 0.4)",
       });
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_METADATA,
         kombuchaEnums.Action.GENERATE_METADATA,
@@ -156,7 +166,7 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
         createEventDataPrepareMetadata("Pennsieve", 1)
       );
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_METADATA,
         kombuchaEnums.Action.GENERATE_METADATA,
@@ -178,7 +188,7 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
         backdrop: "rgba(0,0,0, 0.4)",
       });
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_METADATA,
         kombuchaEnums.Action.GENERATE_METADATA,
@@ -190,7 +200,7 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
       );
     }
   } else {
-    ipcRenderer.send(`open-destination-generate-${fileType}-locally`);
+    window.electron.ipcRenderer.send(`open-destination-generate-${fileType}-locally`);
   }
 };
 
@@ -198,10 +208,10 @@ var changesDestinationPath = "";
 var readmeDestinationPath = "";
 
 $(document).ready(function () {
-  ipcRenderer.on("selected-destination-generate-changes-locally", (event, dirpath, filename) => {
+  window.electron.ipcRenderer.on("selected-destination-generate-changes-locally", (event, dirpath, filename) => {
     filename = "CHANGES.txt";
     if (dirpath.length > 0) {
-      var destinationPath = path.join(dirpath[0], filename);
+      var destinationPath = window.path.join(dirpath[0], filename);
       changesDestinationPath = destinationPath;
       $("#div-confirm-destination-changes-locally").css("display", "flex");
       $($("#div-confirm-destination-changes-locally").children()[0]).css("display", "flex");
@@ -214,11 +224,11 @@ $(document).ready(function () {
         "Browse here";
     }
   });
-  ipcRenderer.on("selected-destination-generate-readme-locally", (event, dirpath, filename) => {
+  window.electron.ipcRenderer.on("selected-destination-generate-readme-locally", (event, dirpath, filename) => {
     filename = "README.txt";
     let data = $("#textarea-create-readme").val().trim();
     if (dirpath.length > 0) {
-      var destinationPath = path.join(dirpath[0], filename);
+      var destinationPath = window.path.join(dirpath[0], filename);
       readmeDestinationPath = destinationPath;
       $("#div-confirm-destination-readme-locally").css("display", "flex");
       $($("#div-confirm-destination-readme-locally").children()[0]).css("display", "flex");
@@ -231,7 +241,7 @@ $(document).ready(function () {
     }
   });
 
-  ipcRenderer.on("selected-existing-changes", (event, filepath) => {
+  window.electron.ipcRenderer.on("selected-existing-changes", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath !== null) {
         document.getElementById("existing-changes-file-destination").placeholder = filepath[0];
@@ -262,7 +272,7 @@ $(document).ready(function () {
     }
   });
 
-  ipcRenderer.on("selected-existing-readme", (event, filepath) => {
+  window.electron.ipcRenderer.on("selected-existing-readme", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath !== null) {
         document.getElementById("existing-readme-file-destination").placeholder = filepath[0];
@@ -341,7 +351,7 @@ $(document).ready(function () {
 });
 
 // write Readme or Changes files (save locally)
-async function saveRCFile(type) {
+window.saveRCFile = async (type) =>  {
   var result = window.generateRCFilesHelper(type);
   if (result === "empty") {
     return;
@@ -368,7 +378,7 @@ async function saveRCFile(type) {
   } else {
     destinationPath = readmeDestinationPath;
   }
-  fs.writeFile(destinationPath, data, (err) => {
+  window.fs.writeFile(destinationPath, data, (err) => {
     if (err) {
       console.log(err);
       log.error(err);
@@ -393,11 +403,11 @@ async function saveRCFile(type) {
       );
     } else {
       if (type === "changes") {
-        var newName = path.join(path.dirname(destinationPath), "CHANGES.txt");
+        var newName = window.path.join(window.path.dirname(destinationPath), "CHANGES.txt");
       } else {
-        var newName = path.join(path.dirname(destinationPath), "README.txt");
+        var newName = window.path.join(window.path.dirname(destinationPath), "README.txt");
       }
-      fs.rename(destinationPath, newName, async (err) => {
+      window.fs.rename(destinationPath, newName, async (err) => {
         if (err) {
           console.log(err);
           log.error(err);
@@ -412,7 +422,7 @@ async function saveRCFile(type) {
             },
           });
 
-          ipcRenderer.send(
+          window.electron.ipcRenderer.send(
             "track-kombucha",
             kombuchaEnums.Category.PREPARE_METADATA,
             kombuchaEnums.Action.GENERATE_METADATA,
@@ -433,9 +443,9 @@ async function saveRCFile(type) {
           });
 
           // log the size of the metadata file that was generated at varying levels of granularity
-          let size = await getFileSizeInBytes(destinationPath);
+          let size = await window.getFileSizeInBytes(destinationPath);
 
-          ipcRenderer.send(
+          window.electron.ipcRenderer.send(
             "track-kombucha",
             kombuchaEnums.Category.PREPARE_METADATA,
             kombuchaEnums.Action.GENERATE_METADATA,
@@ -444,7 +454,7 @@ async function saveRCFile(type) {
             createEventDataPrepareMetadata("Local", 1)
           );
 
-          ipcRenderer.send(
+          window.electron.ipcRenderer.send(
             "track-kombucha",
             kombuchaEnums.Category.PREPARE_METADATA,
             kombuchaEnums.Action.GENERATE_METADATA,
@@ -480,7 +490,7 @@ function showExistingRCFile(type) {
       reverseButtons: window.reverseSwalButtons,
     }).then((boolean) => {
       if (boolean.isConfirmed) {
-        ipcRenderer.send(`open-file-dialog-existing-${type}`);
+        window.electron.ipcRenderer.send(`open-file-dialog-existing-${type}`);
         document.getElementById(`existing-${type}-file-destination`).placeholder = "Browse here";
         $(`#div-confirm-existing-${type}-import`).hide();
         $($(`#div-confirm-existing-${type}-import button`)[0]).hide();
@@ -488,12 +498,12 @@ function showExistingRCFile(type) {
       }
     });
   } else {
-    ipcRenderer.send(`open-file-dialog-existing-${type}`);
+    window.electron.ipcRenderer.send(`open-file-dialog-existing-${type}`);
   }
 }
 
 // start over for Readme and Changes
-function resetRCFile(type) {
+window.resetRCFile = async (type) => {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over!",
@@ -537,7 +547,7 @@ function resetRCFile(type) {
 }
 
 // import a Pennsieve Readme or Changes file
-const getRC = async (type) => {
+window.getRC = async (type) => {
   // loading popup
   Swal.fire({
     title: `Loading an existing ${type} file`,
@@ -564,8 +574,8 @@ const getRC = async (type) => {
   try {
     let import_rc_file = await client.get(`/prepare_metadata/readme_changes_file`, {
       params: {
-        file_type: path.parse(type).name,
-        selected_account: window.defaultBfDataset,
+        file_type: window.path.parse(type).name,
+        selected_account: window.defaultBfAccount,
         selected_dataset: datasetName,
       },
     });
@@ -644,7 +654,7 @@ function importExistingRCFile(type) {
       Destinations.LOCAL
     );
   } else {
-    if (path.parse(filePath).base !== `${upperCaseLetter}.txt`) {
+    if (window.path.parse(filePath).base !== `${upperCaseLetter}.txt`) {
       Swal.fire({
         title: "Incorrect file name",
         text: `Your file must be named '${upperCaseLetter}.txt' to be imported to SODA.`,
@@ -681,7 +691,7 @@ function importExistingRCFile(type) {
 // main function to load existing README/CHANGES files
 const loadExistingRCFile = (filepath, type) => {
   // read file
-  fs.readFile(filepath, "utf8", function (err, data) {
+  window.fs.readFile(filepath, "utf8", function (err, data) {
     if (err) {
       let emessage = userErrorMessage(error);
       console.log(err);
@@ -694,7 +704,7 @@ const loadExistingRCFile = (filepath, type) => {
         icon: "error",
       });
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-event",
         "Error",
         `Prepare Metadata - ${type} - Existing - Local`,
@@ -702,7 +712,7 @@ const loadExistingRCFile = (filepath, type) => {
         1
       );
 
-      ipcRenderer.send("track-event", "Error", `Prepare Metadata - ${type}`);
+      window.electron.ipcRenderer.send("track-event", "Error", `Prepare Metadata - ${type}`);
     } else {
       // populate textarea
       $(`#textarea-create-${type}`).val(data);

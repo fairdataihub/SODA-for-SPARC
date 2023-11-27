@@ -155,7 +155,7 @@ const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) 
   if (dataset === "Select dataset") {
     $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
-    removeOptions(bfListDatasetStatus);
+    window.removeOptions(bfListDatasetStatus);
     bfListDatasetStatus.style.color = "black";
   } else {
     try {
@@ -176,7 +176,7 @@ const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) 
         window.defaultBfDatasetId
       );
       var myitemselect = [];
-      removeOptions(bfListDatasetStatus);
+      window.removeOptions(bfListDatasetStatus);
       for (const item in res["status_options"]) {
         var option = document.createElement("option");
         option.textContent = res["status_options"][item]["displayName"];

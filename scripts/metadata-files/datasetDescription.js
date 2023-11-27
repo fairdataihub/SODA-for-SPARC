@@ -107,7 +107,7 @@ const populateProtocolLink = (ev) => {
         '<select id="select-misc-links" class="form-container-input-bf" style="font-size:13px; line-height:2;margin-top: 20px" onchange="autoPopulateProtocolLink(this, \'\', \'dd\')"></select>';
       $($(ev).parents()[0]).append(divElement);
       // populate dropdown with protocolResearcherList
-      removeOptions(document.getElementById("select-misc-links"));
+      window.removeOptions(document.getElementById("select-misc-links"));
       window.addOption(document.getElementById("select-misc-links"), "Select protocol title", "Select");
       for (var key of Object.keys(protocolResearcherList)) {
         $("#select-misc-links").append(
@@ -144,7 +144,7 @@ const checkContributorNameDuplicates = (table, currentRow) => {
 
 // clone Last names of contributors to subsequent selects so we don't have to keep calling Airtable API
 const cloneConNamesSelect = (selectLast) => {
-  removeOptions(document.getElementById(selectLast));
+  window.removeOptions(document.getElementById(selectLast));
   window.addOption(document.getElementById(selectLast), "Select an option", "Select");
   for (var i = 0; i < window.currentContributorsLastNames.length; i++) {
     var opt = window.currentContributorsLastNames[i];
@@ -188,7 +188,7 @@ const createConsRoleTagify = (inputField) => {
       closeOnSelect: true,
     },
   });
-  createDragSort(tagify);
+  window.createDragSort(tagify);
 };
 
 const createConsAffliationTagify = (inputField) => {
@@ -202,7 +202,7 @@ const createConsAffliationTagify = (inputField) => {
     },
     duplicates: false,
   });
-  createDragSort(tagify);
+  window.createDragSort(tagify);
 };
 
 const convertDropdownToTextBox = (dropdown) => {
@@ -241,7 +241,7 @@ const resetDDUI = (table) => {
     newRowIndex +
     "'><td class='grab'><select id='ds-description-contributor-list-last-" +
     newRowIndex +
-    "' onchange='onchangeLastNames(" +
+    "' onchange='window.onchangeLastNames(" +
     newRowIndex +
     ")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select disabled id='ds-description-contributor-list-first-" +
     newRowIndex +
@@ -293,7 +293,7 @@ const checkEmptyConRowInfo = (table, row) => {
   return empty;
 };
 
-const showExistingDDFile = () => {
+const window.showExistingDDFile = () => {
   if (
     $("#existing-dd-file-destination").prop("placeholder") !== "Browse here" &&
     $("#Question-prepare-dd-2").hasClass("show")
@@ -328,8 +328,8 @@ const showExistingDDFile = () => {
 ////////////////////////////////////////////////////////////////
 const window.generateDatasetDescription = async () => {
   var funding = $("#ds-description-award-input").val().trim();
-  var allFieldsSatisfied = detectEmptyRequiredFields(funding)[0];
-  var errorMessage = detectEmptyRequiredFields(funding)[1];
+  var allFieldsSatisfied = window.detectEmptyRequiredFields(funding)[0];
+  var errorMessage = window.detectEmptyRequiredFields(funding)[1];
 
   /// raise a warning if empty required fields are found
   if (allFieldsSatisfied === false) {
@@ -371,7 +371,7 @@ const window.generateDatasetDescription = async () => {
   }
 };
 
-const generateDDFile = async (uploadBFBoolean) => {
+const window.generateDDFile = async (uploadBFBoolean) => {
   let bfaccountname = window.defaultBfDataset;
   let bf_dataset = document.getElementById("bf_dataset_load_dd").innerText.trim();
   if (uploadBFBoolean) {
@@ -454,7 +454,7 @@ const generateDDFile = async (uploadBFBoolean) => {
       Swal.showLoading();
     },
   }).then((result) => {});
-  var datasetInfoValueObj = grabDSInfoEntries();
+  var datasetInfoValueObj = window.grabDSInfoEntries();
   var studyInfoValueObject = grabStudyInfoEntries();
   //// grab entries from contributor info section and pass values to conSectionArray
   var contributorObj = grabConInfoEntries();
@@ -762,7 +762,7 @@ const addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) =
 };
 
 const populateSelectSPARCAward = (object, id) => {
-  removeOptions(document.getElementById(id));
+  window.removeOptions(document.getElementById(id));
   window.addOption(document.getElementById(id), "Select an award", "Select");
   for (let award of Object.keys(object)) {
     window.addOption(document.getElementById(id), object[award], award);
@@ -840,7 +840,7 @@ const addContributortoTableDD = (name, contributorObject) => {
     <td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>`);
 };
 
-var contributorElement = `<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" " style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div></div> `;
+var contributorElement = `<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="window.onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" " style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div></div> `;
 
 var contributorElementRaw =
   '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div></div>';
@@ -922,7 +922,7 @@ const showContributorSweetalert = (key) => {
         enforceWhitelist: true,
         duplicates: false,
       });
-      createDragSort(currentContributortagify);
+      window.createDragSort(currentContributortagify);
 
       currentAffliationtagify = new Tagify(document.getElementById("input-con-affiliation"), {
         dropdown: {
@@ -935,7 +935,7 @@ const showContributorSweetalert = (key) => {
         delimiters: null,
         duplicates: false,
       });
-      createDragSort(currentAffliationtagify);
+      window.createDragSort(currentAffliationtagify);
 
       // load contributor names onto Select
       if (Object.keys(window.globalContributorNameObject).length !== 0) {
@@ -1122,7 +1122,7 @@ const edit_current_con_id = (ev) => {
         enforceWhitelist: true,
         duplicates: false,
       });
-      createDragSort(currentContributortagify);
+      window.createDragSort(currentContributortagify);
 
       currentAffliationtagify = new Tagify(document.getElementById("input-con-affiliation"), {
         dropdown: {
@@ -1135,7 +1135,7 @@ const edit_current_con_id = (ev) => {
         whitelist: affiliationSuggestions,
         duplicates: false,
       });
-      createDragSort(currentAffliationtagify);
+      window.createDragSort(currentAffliationtagify);
 
       for (var contributor of window.contributorArray) {
         if (contributor.conName === name) {
@@ -1318,7 +1318,7 @@ const checkContactPersonStatus = (type, ev) => {
   }
 };
 
-const checkAtLeastOneContactPerson = () => {
+const window.checkAtLeastOneContactPerson = () => {
   let contactPersonExists = false;
   let allConTable = document.getElementById("contributor-table-dd");
   let rowcount = allConTable.rows.length;
@@ -1365,7 +1365,7 @@ const checkDuplicateLink = (link, table) => {
 ///// Functions to grab each piece of info to generate the dd file
 
 // dataset and participant info
-const grabDSInfoEntries = () => {
+const window.grabDSInfoEntries = () => {
   let name = document.getElementById("ds-name").value;
   let description = document.getElementById("ds-description").value;
   let type = $("#ds-type").val();

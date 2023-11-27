@@ -3465,7 +3465,7 @@ const showCurrentDatasetStatus = async (callback) => {
     $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
 
-    removeOptions(bfListDatasetStatus);
+    window.removeOptions(bfListDatasetStatus);
     removeRadioOptions("dataset_status_ul");
 
     bfListDatasetStatus.style.color = "black";
@@ -3490,7 +3490,7 @@ const showCurrentDatasetStatus = async (callback) => {
       window.defaultBfDatasetId
     );
 
-    removeOptions(bfListDatasetStatus);
+    window.removeOptions(bfListDatasetStatus);
     removeRadioOptions("dataset_status_ul");
 
     for (let item in res["status_options"]) {

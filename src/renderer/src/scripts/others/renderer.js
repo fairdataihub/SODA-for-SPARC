@@ -2496,71 +2496,71 @@ const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) =
 
 
 
-// //////////////// Dataset description file ///////////////////////
-// //////////////// //////////////// //////////////// ////////////////
+//////////////// Dataset description file ///////////////////////
+//////////////// //////////////// //////////////// ////////////////
 
-// //// get datasets and append that to option list for parent datasets
-// function getParentDatasets() {
-//   var parentDatasets = [];
-//   for (var i = 0; i < window.datasetList.length; i++) {
-//     parentDatasets.push(window.datasetList[i].name);
-//   }
-//   return parentDatasets;
-// }
+//// get datasets and append that to option list for parent datasets
+function getParentDatasets() {
+  var parentDatasets = [];
+  for (var i = 0; i < window.datasetList.length; i++) {
+    parentDatasets.push(window.datasetList[i].name);
+  }
+  return parentDatasets;
+}
 
-// function changeAwardInputDsDescription() {
-//   if (dsContributorArrayLast1) {
-//     window.removeOptions(dsContributorArrayLast1);
-//   }
-//   if (dsContributorArrayFirst1) {
-//     window.removeOptions(dsContributorArrayFirst1);
-//     window.addOption(dsContributorArrayFirst1, "Select an option", "Select an option");
-//   }
+window.changeAwardInputDsDescription = () => {
+  if (dsContributorArrayLast1) {
+    window.removeOptions(dsContributorArrayLast1);
+  }
+  if (dsContributorArrayFirst1) {
+    window.removeOptions(dsContributorArrayFirst1);
+    window.addOption(dsContributorArrayFirst1, "Select an option", "Select an option");
+  }
 
-//   window.currentContributorsLastNames = [];
-//   currentContributorsFirstNames = [];
-//   window.globalContributorNameObject = {};
+  window.currentContributorsLastNames = [];
+  currentContributorsFirstNames = [];
+  window.globalContributorNameObject = {};
 
-//   /// delete old table
-//   $("#table-current-contributors").find("tr").slice(1, -1).remove();
-//   for (
-//     var i = 0;
-//     i < document.getElementById("table-current-contributors").rows[1].cells.length;
-//     i++
-//   ) {
-//     $($($("#table-current-contributors").find("tr")[1].cells[i]).find("input")[0]).val("");
-//     $($($("#table-current-contributors").find("tr")[1].cells[i]).find("textarea")[0]).val("");
-//   }
+  /// delete old table
+  $("#table-current-contributors").find("tr").slice(1, -1).remove();
+  for (
+    var i = 0;
+    i < document.getElementById("table-current-contributors").rows[1].cells.length;
+    i++
+  ) {
+    $($($("#table-current-contributors").find("tr")[1].cells[i]).find("input")[0]).val("");
+    $($($("#table-current-contributors").find("tr")[1].cells[i]).find("textarea")[0]).val("");
+  }
 
-//   var selectID = document.getElementById(
-//     $($($("#table-current-contributors").find("tr")[1].cells[1]).find("select")[0]).prop("id")
-//   );
-//   if (selectID) {
-//     window.removeOptions(selectID);
-//     $($($("#table-current-contributors").find("tr")[1].cells[1]).find("select")[0]).prop(
-//       "disabled",
-//       true
-//     );
-//   }
-// }
+  var selectID = document.getElementById(
+    $($($("#table-current-contributors").find("tr")[1].cells[1]).find("select")[0]).prop("id")
+  );
+  if (selectID) {
+    window.removeOptions(selectID);
+    $($($("#table-current-contributors").find("tr")[1].cells[1]).find("select")[0]).prop(
+      "disabled",
+      true
+    );
+  }
+}
 
-// // on change event when users choose a contributor's last name
-// const onchangeLastNames = () => {
-//   $("#dd-contributor-first-name").attr("disabled", true);
-//   var conLastname = $("#dd-contributor-last-name").val();
-//   window.removeOptions(document.getElementById("dd-contributor-first-name"));
-//   if (conLastname in window.globalContributorNameObject) {
-//     window.addOption(
-//       document.getElementById("dd-contributor-first-name"),
-//       window.globalContributorNameObject[conLastname],
-//       window.globalContributorNameObject[conLastname]
-//     );
-//     $("#dd-contributor-first-name")
-//       .val(window.globalContributorNameObject[conLastname])
-//       .trigger("onchange");
-//   }
-//   $("#dd-contributor-first-name").attr("disabled", false);
-// };
+// on change event when users choose a contributor's last name
+window.onchangeLastNames = () => {
+  $("#dd-contributor-first-name").attr("disabled", true);
+  var conLastname = $("#dd-contributor-last-name").val();
+  window.removeOptions(document.getElementById("dd-contributor-first-name"));
+  if (conLastname in window.globalContributorNameObject) {
+    window.addOption(
+      document.getElementById("dd-contributor-first-name"),
+      window.globalContributorNameObject[conLastname],
+      window.globalContributorNameObject[conLastname]
+    );
+    $("#dd-contributor-first-name")
+      .val(window.globalContributorNameObject[conLastname])
+      .trigger("onchange");
+  }
+  $("#dd-contributor-first-name").attr("disabled", false);
+};
 
 //// De-populate dataset dropdowns to clear options
 window.clearDatasetDropdowns = () => {
@@ -2854,92 +2854,92 @@ const clearOrganizationDropdowns = () => {
 //   $(document).mousemove(move).mouseup(up);
 // });
 
-// const emptyDSInfoEntries = () => {
-//   var fieldSatisfied = true;
-//   var inforObj = grabDSInfoEntries();
-//   var emptyFieldArray = [];
-//   /// check for number of keywords
-//   for (var element in inforObj) {
-//     if (element === "keywords") {
-//       if (inforObj[element].length < 3) {
-//         emptyFieldArray.push("at least 3 keywords");
-//         fieldSatisfied = false;
-//       }
-//     } else {
-//       if (inforObj[element]) {
-//         if (inforObj[element].length === 0 || inforObj[element] === "Select dataset") {
-//           fieldSatisfied = false;
-//           emptyFieldArray.push(element);
-//         }
-//       }
-//     }
-//   }
-//   return [fieldSatisfied, emptyFieldArray];
-// };
+const emptyDSInfoEntries = () => {
+  var fieldSatisfied = true;
+  var inforObj = window.grabDSInfoEntries();
+  var emptyFieldArray = [];
+  /// check for number of keywords
+  for (var element in inforObj) {
+    if (element === "keywords") {
+      if (inforObj[element].length < 3) {
+        emptyFieldArray.push("at least 3 keywords");
+        fieldSatisfied = false;
+      }
+    } else {
+      if (inforObj[element]) {
+        if (inforObj[element].length === 0 || inforObj[element] === "Select dataset") {
+          fieldSatisfied = false;
+          emptyFieldArray.push(element);
+        }
+      }
+    }
+  }
+  return [fieldSatisfied, emptyFieldArray];
+};
 
-// const emptyLinkInfo = () => {
-//   var tableCurrentLinks = document.getElementById("protocol-link-table-dd");
-//   var fieldSatisfied = false;
-//   if (tableCurrentLinks.rows.length > 1) {
-//     fieldSatisfied = true;
-//   }
-//   return fieldSatisfied;
-// };
+const emptyLinkInfo = () => {
+  var tableCurrentLinks = document.getElementById("protocol-link-table-dd");
+  var fieldSatisfied = false;
+  if (tableCurrentLinks.rows.length > 1) {
+    fieldSatisfied = true;
+  }
+  return fieldSatisfied;
+};
 
-// const emptyInfoEntries = (element) => {
-//   var fieldSatisfied = true;
-//   if (element === "") {
-//     fieldSatisfied = false;
-//   }
-//   return fieldSatisfied;
-// };
+const emptyInfoEntries = (element) => {
+  var fieldSatisfied = true;
+  if (element === "") {
+    fieldSatisfied = false;
+  }
+  return fieldSatisfied;
+};
 
-// /// detect empty required fields and raise a warning
-// const detectEmptyRequiredFields = (funding) => {
-//   /// dataset info
-//   var dsContent = emptyDSInfoEntries();
-//   var dsSatisfied = dsContent[0];
-//   var dsEmptyField = dsContent[1];
+/// detect empty required fields and raise a warning
+window.detectEmptyRequiredFields = (funding) => {
+  /// dataset info
+  var dsContent = emptyDSInfoEntries();
+  var dsSatisfied = dsContent[0];
+  var dsEmptyField = dsContent[1];
 
-//   /// protocol info check
-//   var protocolSatisfied = emptyLinkInfo();
+  /// protocol info check
+  var protocolSatisfied = emptyLinkInfo();
 
-//   /// contributor info
-//   var conEmptyField = [];
-//   var conSatisfied = true;
-//   var fundingSatisfied = emptyInfoEntries(funding);
-//   var contactPersonExists = checkAtLeastOneContactPerson();
-//   var contributorNumber = document.getElementById("contributor-table-dd").rows.length;
-//   if (!fundingSatisfied) {
-//     conEmptyField.push("SPARC Award");
-//   }
-//   if (!contactPersonExists) {
-//     conEmptyField.push("One Corresponding Author");
-//   }
-//   if (contributorNumber <= 1) {
-//     conEmptyField.push("At least one contributor");
-//   }
-//   if (conEmptyField.length !== 0) {
-//     conSatisfied = false;
-//   }
+  /// contributor info
+  var conEmptyField = [];
+  var conSatisfied = true;
+  var fundingSatisfied = emptyInfoEntries(funding);
+  var contactPersonExists = window.checkAtLeastOneContactPerson();
+  var contributorNumber = document.getElementById("contributor-table-dd").rows.length;
+  if (!fundingSatisfied) {
+    conEmptyField.push("SPARC Award");
+  }
+  if (!contactPersonExists) {
+    conEmptyField.push("One Corresponding Author");
+  }
+  if (contributorNumber <= 1) {
+    conEmptyField.push("At least one contributor");
+  }
+  if (conEmptyField.length !== 0) {
+    conSatisfied = false;
+  }
 
-//   /// detect empty required fields and raise a warning
-//   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
-//   var emptyMessageArray = [
-//     "- Missing required fields under Dataset Info section: " + dsEmptyField.join(", "),
-//     "- Missing required fields under Contributor Info section: " + conEmptyField.join(", "),
-//     "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
-//   ];
-//   var allFieldsSatisfied = true;
-//   errorMessage = [];
-//   for (var i = 0; i < emptyArray.length; i++) {
-//     if (!emptyArray[i]) {
-//       errorMessage.push(emptyMessageArray[i]);
-//       allFieldsSatisfied = false;
-//     }
-//   }
-//   return [allFieldsSatisfied, errorMessage];
-// };
+  /// detect empty required fields and raise a warning
+  var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied];
+  var emptyMessageArray = [
+    "- Missing required fields under Dataset Info section: " + dsEmptyField.join(", "),
+    "- Missing required fields under Contributor Info section: " + conEmptyField.join(", "),
+    "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url",
+  ];
+  var allFieldsSatisfied = true;
+  let errorMessage = [];
+  for (var i = 0; i < emptyArray.length; i++) {
+    if (!emptyArray[i]) {
+      errorMessage.push(emptyMessageArray[i]);
+      allFieldsSatisfied = false;
+    }
+  }
+  return [allFieldsSatisfied, errorMessage];
+};
 
 // //////////////////////////End of Ds description section ///////////////////////////////////
 // //////////////// //////////////// //////////////// //////////////// ////////////////////////
@@ -8440,16 +8440,13 @@ const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, si
 };
 
 // get the size of a file in bytes given a path to a file
-const getFileSizeInBytes = (path) => {
+window.getFileSizeInBytes = (path) => {
   return new Promise((resolve, reject) => {
-    fs.stat(path, (err, stats) => {
-      if (err) {
-        console.error(err);
-        reject(err);
-      } else {
-        resolve(stats.size);
-      }
-    });
+    try{
+    resolve(window.fs.fileSizeSync(path))
+    } catch(e) {
+      reject(e)
+    }
   });
 };
 

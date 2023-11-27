@@ -8816,7 +8816,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       affiliationTagify = new Tagify(contributorAffiliationInput, {
         duplicate: false,
       });
-      createDragSort(affiliationTagify);
+      window.createDragSort(affiliationTagify);
       affiliationTagify.addTags(contributorAffiliationsArray);
 
       const contributorRolesInput = document.getElementById("guided-contributor-roles-input");
@@ -8851,7 +8851,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
           position: "auto",
         },
       });
-      createDragSort(contributorRolesTagify);
+      window.createDragSort(contributorRolesTagify);
       contributorRolesTagify.addTags(contributorRolesArray);
 
       document.getElementById("guided-contributor-first-name").value = contributorFirstName;
@@ -9089,7 +9089,7 @@ const window.openGuidedAddContributorSwal = async () => {
       affiliationTagify = new Tagify(contributorAffiliationInput, {
         duplicate: false,
       });
-      createDragSort(affiliationTagify);
+      window.createDragSort(affiliationTagify);
 
       const contributorRolesInput = document.getElementById("guided-contributor-roles-input");
       contributorRolesTagify = new Tagify(contributorRolesInput, {
@@ -9123,7 +9123,7 @@ const window.openGuidedAddContributorSwal = async () => {
           position: "auto",
         },
       });
-      createDragSort(contributorRolesTagify);
+      window.createDragSort(contributorRolesTagify);
 
       $("#guided-stored-contributors-select").selectpicker({
         style: "SODA-select-picker",
@@ -9470,7 +9470,7 @@ const addContributorField = () => {
     duplicate: false,
   });
 
-  createDragSort(affiliationTagify);
+  window.createDragSort(affiliationTagify);
 
   const newContributorRoleElement = newlyAddedContributorField.querySelector(
     ".guided-contributor-role-input"
@@ -9508,7 +9508,7 @@ const addContributorField = () => {
   });
   //scroll to the new element
 
-  createDragSort(tagify);
+  window.createDragSort(tagify);
   window.smoothScrollToElement(newlyAddedContributorField);
 };
 const getGuidedProtocolLinks = () => {
@@ -15293,7 +15293,7 @@ const guidedOtherFundingSourcesInput = document.getElementById("guided-ds-other-
 guidedOtherFundingsourcesTagify = new Tagify(guidedOtherFundingSourcesInput, {
   duplicates: false,
 });
-createDragSort(guidedOtherFundingsourcesTagify);
+window.createDragSort(guidedOtherFundingsourcesTagify);
 const guidedStudyOrganSystemsInput = document.getElementById("guided-ds-study-organ-system");
 guidedStudyOrganSystemsTagify = new Tagify(guidedStudyOrganSystemsInput, {
   whitelist: [
@@ -15324,7 +15324,7 @@ guidedStudyOrganSystemsTagify = new Tagify(guidedStudyOrganSystemsInput, {
     closeOnSelect: true,
   },
 });
-createDragSort(guidedStudyOrganSystemsTagify);
+window.createDragSort(guidedStudyOrganSystemsTagify);
 
 const guidedDatasetKeyWordsInput = document.getElementById("guided-ds-dataset-keywords");
 guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeyWordsInput, {
@@ -15332,19 +15332,19 @@ guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeyWordsInput, {
   maxTags: 5,
 });
 
-createDragSort(guidedDatasetKeywordsTagify);
+window.createDragSort(guidedDatasetKeywordsTagify);
 
 const guidedStudyApproachInput = document.getElementById("guided-ds-study-approach");
 guidedStudyApproachTagify = new Tagify(guidedStudyApproachInput, {
   duplicates: false,
 });
-createDragSort(guidedStudyApproachTagify);
+window.createDragSort(guidedStudyApproachTagify);
 
 const guidedStudyTechniquesInput = document.getElementById("guided-ds-study-technique");
 guidedStudyTechniquesTagify = new Tagify(guidedStudyTechniquesInput, {
   duplicates: false,
 });
-createDragSort(guidedStudyTechniquesTagify);
+window.createDragSort(guidedStudyTechniquesTagify);
 
 /// back button Curate
 $("#guided-button-back").on("click", function () {

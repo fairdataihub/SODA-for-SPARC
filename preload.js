@@ -79,7 +79,7 @@ const updateDatasetList = (bfaccount) => {
 
   $("#div-filter-datasets-progress-2").css("display", "none");
 
-  removeOptions(curateDatasetDropdown);
+  window.removeOptions(curateDatasetDropdown);
   window.addOption(curateDatasetDropdown, "Search here...", "Select dataset");
 
   initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
@@ -115,7 +115,7 @@ const updateDatasetList = (bfaccount) => {
       return a.toLowerCase().localeCompare(b.toLowerCase());
     });
 
-    // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
+    // The window.removeOptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
     $("#curatebfdatasetlist").find("option:not(:first)").remove();
 
     for (myitem in filteredDatasets) {
@@ -151,7 +151,7 @@ const updateOrganizationList = async (bfaccount) => {
 
   $("#div-filter-datasets-progress-2").css("display", "none");
 
-  removeOptions(curateOrganizationDropdown);
+  window.removeOptions(curateOrganizationDropdown);
   window.addOption(curateOrganizationDropdown, "Search here...", "Select organization");
 
   initializeBootstrapSelect("#curatebforganizationlist", "disabled");
@@ -302,7 +302,7 @@ function resetSubmissionFields() {
   `;
 }
 
-function resetDD(askToReset = true) {
+function window.resetDD(askToReset = true) {
   if (!askToReset) {
     // 1. remove Prev and Show from all individual-question except for the first one
     // 2. empty all input, textarea, select, para-elements
@@ -797,7 +797,7 @@ window.resetFFMUI = (ev) => {
   }
 
   if (resetDDTab) {
-    resetDD(false);
+    window.resetDD(false);
   }
 
   if (resetSubjectsTab) {

@@ -89,8 +89,8 @@ const promptImportPrevInfoSamples = (arr1, arr2) => {
     },
     onOpen: function () {
       $(".swal2-confirm").attr("id", "btn-confirm-previous-import");
-      removeOptions(document.getElementById("previous-subject"));
-      removeOptions(document.getElementById("previous-sample"));
+      window.removeOptions(document.getElementById("previous-subject"));
+      window.removeOptions(document.getElementById("previous-sample"));
       $("#previous-subject").append(`<option value="Select">Select a subject</option>`);
       $("#previous-sample").append(`<option value="Select">Select a sample</option>`);
       for (var ele of arr1) {
@@ -171,7 +171,7 @@ const promptImportPrevInfoSubject = (arr1) => {
     confirmButtonText: "Confirm",
     reverseButtons: window.reverseSwalButtons,
     onOpen: function () {
-      removeOptions(document.getElementById("previous-subject-single"));
+      window.removeOptions(document.getElementById("previous-subject-single"));
       $("#previous-subject-single").append(`<option value="Select">Select a subject</option>`);
       for (var ele of arr1) {
         $("#previous-subject-single").append(`<option value="${ele}">${ele}</option>`);
