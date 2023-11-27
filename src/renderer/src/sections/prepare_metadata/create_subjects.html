@@ -222,7 +222,7 @@
             <input
               class="form-control"
               style="width: 450px !important"
-              onclick="showExistingSubjectsFile()"
+              onclick="window.showExistingSubjectsFile()"
               id="existing-subjects-file-destination"
               type="text"
               readonly
@@ -234,7 +234,7 @@
             id="div-confirm-existing-subjects-import"
           >
             <button
-              onclick="importExistingSubjectsFile()"
+              onclick="window.importExistingSubjectsFile()"
               style="
                 cursor: pointer;
                 border-radius: 8px;
@@ -392,7 +392,7 @@
               id="div-check-bf-import-subjects"
             >
               <button
-                onclick="checkBFImportSubjects()"
+                onclick="window.checkBFImportSubjects()"
                 class="prepare-metadata-confirm-dataset-button"
               >
                 Confirm
@@ -473,7 +473,7 @@
             "
           >
             <button
-              onclick="showForm('display', false)"
+              onclick="window.showForm('display', false)"
               id="button-add-a-subject"
               style="
                 cursor: pointer;
@@ -535,7 +535,7 @@
             style="margin: 0 auto; text-decoration: underline"
             id="div-import-primary-folder-subjects"
           >
-            <a href="#" onclick="showPrimaryBrowseFolder()" id="primary-folder-destination-input">
+            <a href="#" onclick="window.showPrimaryBrowseFolder()" id="primary-folder-destination-input">
               I want to import subject ID(s) from my primary folder
             </a>
           </div>
@@ -663,7 +663,7 @@
         >
           <button
             id="btn-confirm-local-subjects-destination"
-            onclick="generateSubjectsFileHelper(false)"
+            onclick="window.generateSubjectsFileHelper(false)"
             type="button"
             class="btn_animated popover-tooltip"
             data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
@@ -803,7 +803,7 @@
               id="div-check-bf-generate-subjects"
             >
               <button
-                onclick="generateSubjectsFileHelper(true)"
+                onclick="window.generateSubjectsFileHelper(true)"
                 type="button"
                 class="btn_animated popover-tooltip"
                 data-tippy-content="Click to generate the metadata file at your desired location with all the data you filled in above."
@@ -837,7 +837,7 @@
     <button type="button" class="transition-btn prev" data-section="main_tabs">
       <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
     </button>
-    <button onclick="resetSubjects()" class="start-over">
+    <button onclick="window.resetSubjects()" class="start-over">
       <i class="fas fa-sync-alt" style="margin-right: 10px; font-size: inherit"></i>
       Start over
     </button>
@@ -883,7 +883,7 @@
             name="subject id"
             class="subjects-form-entry"
             placeholder="Type here..."
-            onkeyup="validateSubSamID(this)"
+            onkeyup="window.validateSubSamID(this)"
           />
         </div>
       </div>
@@ -1852,7 +1852,7 @@
     >
       <button
         class="start-over"
-        onclick="warningBeforeHideForm('subjects')"
+        onclick="window.warningBeforeHideForm('subjects')"
         style="width: 120px; background: #fff; color: red; border: 1px solid red; display: block"
       >
         <i class="fas fa-times" style="margin-right: 7px"></i>

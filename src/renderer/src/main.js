@@ -58,6 +58,8 @@ import "@tarekraafat/autocomplete.js/dist/css/autoComplete.01.css";
 import "@tarekraafat/autocomplete.js/dist/css/autoComplete.02.css";
 import "cropperjs/src/css/cropper.css";
 import "select2/dist/css/select2.min.css"
+import "intro.js/minified/introjs.min.css"
+
 
 
 

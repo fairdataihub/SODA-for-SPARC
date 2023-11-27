@@ -35,7 +35,7 @@ var headersArrSubjects = [];
 var headersArrSamples = [];
 let guidedSamplesTableData = [];
 
-const showForm = (type, editBoolean) => {
+const window.showForm = (type, editBoolean) => {
   if (type !== "edit") {
     clearAllSubjectFormFields(subjectsFormDiv);
   }
@@ -306,7 +306,7 @@ const window.addSample = (curationMode) => {
   }
 };
 
-const warningBeforeHideForm = (type) => {
+const window.warningBeforeHideForm = (type) => {
   Swal.fire({
     title: "Are you sure you want to cancel?",
     text: "This will reset your progress with the current subject_id.",
@@ -345,7 +345,7 @@ const hideForm = (type) => {
   $("#btn-add-" + type + "").css("display", "inline-block");
 };
 
-const validateSubSamID = (ev) => {
+const window.validateSubSamID = (ev) => {
   var id = $(ev).prop("id");
   var value = $("#" + id).val();
   //Validate TextBox value against the Regex.
@@ -388,7 +388,7 @@ const addNewIDToTable = (newID, secondaryID, type) => {
   var indexNumber = rowIndex;
   var currentRow = table.rows[table.rows.length - 1];
   // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  var newRowIndex = checkForUniqueRowID("row-current-" + keyword, rowIndex);
+  var newRowIndex = window.checkForUniqueRowID("row-current-" + keyword, rowIndex);
   if (type === "subjects") {
     var row = (table.insertRow(rowIndex).outerHTML =
       "<tr id='row-current-" +
@@ -400,11 +400,11 @@ const addNewIDToTable = (newID, secondaryID, type) => {
       indexNumber +
       "</td><td>" +
       newID +
-      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_" +
+      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_" +
       keyword +
-      "_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='copy_current_" +
+      "_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='window.copy_current_" +
       keyword +
-      "_id(this)'><i class='fas fa-copy' style='color: orange'></i></button><button class='ui button' onclick='delete_current_" +
+      "_id(this)'><i class='fas fa-copy' style='color: orange'></i></button><button class='ui button' onclick='window.delete_current_" +
       keyword +
       "_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
   } else if (type === "samples") {
@@ -420,11 +420,11 @@ const addNewIDToTable = (newID, secondaryID, type) => {
       secondaryID +
       "</td><td>" +
       newID +
-      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_" +
+      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_" +
       keyword +
-      "_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='copy_current_" +
+      "_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='window.copy_current_" +
       keyword +
-      "_id(this)'><i class='fas fa-copy' style='color: orange'></i></button><button class='ui button' onclick='delete_current_" +
+      "_id(this)'><i class='fas fa-copy' style='color: orange'></i></button><button class='ui button' onclick='window.delete_current_" +
       keyword +
       "_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
   }
@@ -1057,7 +1057,7 @@ const edit_current_additional_link_id = async (ev) => {
 
 const loadSubjectInformation = (ev, subjectID) => {
   // 1. load fields for form
-  showForm("display", true);
+  window.showForm("display", true);
   $("#btn-edit-subject").css("display", "inline-block");
   $("#btn-add-subject").css("display", "none");
   clearAllSubjectFormFields(subjectsFormDiv);
@@ -2198,7 +2198,7 @@ const addExistingCustomHeaderSamples = (customName) => {
   headersArrSamples.push(customName);
 };
 
-var subjectsDestinationPath = "";
+var window.subjectsDestinationPath = "";
 var samplesDestinationPath = "";
 
 $(document).ready(function () {
@@ -2309,7 +2309,7 @@ $(document).ready(function () {
       document.getElementById("input-destination-generate-subjects-locally").placeholder =
         dirpath[0];
       var destinationPath = path.join(dirpath[0], "subjects.xlsx");
-      subjectsDestinationPath = destinationPath;
+      window.subjectsDestinationPath = destinationPath;
       $("#div-confirm-destination-subjects-locally").css("display", "flex");
     }
   });
@@ -2547,7 +2547,7 @@ const checkBFImportSubjects = async () => {
   }
   let bfDataset = document.getElementById("bf_dataset_load_subjects").innerText.trim();
 
-  log.info(`Getting subjects.xlsx for dataset ${bfDataset} from Pennsieve.`);
+  window.log.info(`Getting subjects.xlsx for dataset ${bfDataset} from Pennsieve.`);
   try {
     let import_metadata_file = await client.get(`/prepare_metadata/import_metadata_file`, {
       params: {
@@ -2568,7 +2568,7 @@ const checkBFImportSubjects = async () => {
       Destinations.PENNSIEVE
     );
     window.subjectsTableData = res;
-    loadDataFrametoUI("bf");
+    window.loadDataFrametoUI("bf");
   } catch (error) {
     clientError(error);
     Swal.fire({
@@ -2612,7 +2612,7 @@ const checkBFImportSamples = async () => {
 
   let bfDataset = document.getElementById("bf_dataset_load_samples").innerText;
 
-  log.info(`Getting samples.xlsx for dataset ${bfDataset} from Pennsieve.`);
+  window.log.info(`Getting samples.xlsx for dataset ${bfDataset} from Pennsieve.`);
   try {
     let importMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
       params: {
@@ -2656,7 +2656,7 @@ const checkBFImportSamples = async () => {
   }
 };
 
-const loadDataFrametoUI = (type) => {
+const window.loadDataFrametoUI = (type) => {
   var fieldSubjectEntries = [];
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     fieldSubjectEntries.push(field.name.toLowerCase());

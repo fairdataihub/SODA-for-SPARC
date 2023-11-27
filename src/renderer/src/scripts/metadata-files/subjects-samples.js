@@ -1,6 +1,11 @@
 import https from "https";
 import Swal from "sweetalert2";
 import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
+import introJs from "intro.js";
+import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
+import kombuchaEnums from "../analytics/analytics-enums";
+import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
+import client from '../client'
 
 
 while (!window.htmlPagesAdded) {
@@ -44,7 +49,7 @@ var headersArrSubjects = [];
 var headersArrSamples = [];
 let guidedSamplesTableData = [];
 
-const showForm = (type, editBoolean) => {
+window.showForm = (type, editBoolean) => {
   if (type !== "edit") {
     window.clearAllSubjectFormFields(subjectsFormDiv);
   }
@@ -315,7 +320,7 @@ window.addSample = (curationMode) => {
   }
 };
 
-const warningBeforeHideForm = (type) => {
+window.warningBeforeHideForm = (type) => {
   Swal.fire({
     title: "Are you sure you want to cancel?",
     text: "This will reset your progress with the current subject_id.",
@@ -354,7 +359,7 @@ const hideForm = (type) => {
   $("#btn-add-" + type + "").css("display", "inline-block");
 };
 
-const validateSubSamID = (ev) => {
+window.validateSubSamID = (ev) => {
   var id = $(ev).prop("id");
   var value = $("#" + id).val();
   //Validate TextBox value against the Regex.
@@ -397,7 +402,7 @@ const addNewIDToTable = (newID, secondaryID, type) => {
   var indexNumber = rowIndex;
   var currentRow = table.rows[table.rows.length - 1];
   // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  var newRowIndex = checkForUniqueRowID("row-current-" + keyword, rowIndex);
+  var newRowIndex = window.checkForUniqueRowID("row-current-" + keyword, rowIndex);
   if (type === "subjects") {
     var row = (table.insertRow(rowIndex).outerHTML =
       "<tr id='row-current-" +
@@ -409,11 +414,11 @@ const addNewIDToTable = (newID, secondaryID, type) => {
       indexNumber +
       "</td><td>" +
       newID +
-      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_" +
+      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_" +
       keyword +
-      "_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='copy_current_" +
+      "_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='window.copy_current_" +
       keyword +
-      "_id(this)'><i class='fas fa-copy' style='color: orange'></i></button><button class='ui button' onclick='delete_current_" +
+      "_id(this)'><i class='fas fa-copy' style='color: orange'></i></button><button class='ui button' onclick='window.delete_current_" +
       keyword +
       "_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
   } else if (type === "samples") {
@@ -429,11 +434,11 @@ const addNewIDToTable = (newID, secondaryID, type) => {
       secondaryID +
       "</td><td>" +
       newID +
-      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_" +
+      "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_" +
       keyword +
-      "_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='copy_current_" +
+      "_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='window.copy_current_" +
       keyword +
-      "_id(this)'><i class='fas fa-copy' style='color: orange'></i></button><button class='ui button' onclick='delete_current_" +
+      "_id(this)'><i class='fas fa-copy' style='color: orange'></i></button><button class='ui button' onclick='window.delete_current_" +
       keyword +
       "_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
   }
@@ -906,12 +911,12 @@ const addSampleIDtoJSON = (sampleID) => {
 };
 
 // associated with the edit icon (edit a subject)
-const edit_current_subject_id = (ev) => {
+window.edit_current_subject_id = (ev) => {
   var currentRow = $(ev).parents()[2];
   var subjectID = $(currentRow)[0].cells[1].innerText;
   loadSubjectInformation(ev, subjectID);
 };
-const edit_current_sample_id = (ev) => {
+window.edit_current_sample_id = (ev) => {
   var currentRow = $(ev).parents()[2];
   var subjectID = $(currentRow)[0].cells[1].innerText;
   var sampleID = $(currentRow)[0].cells[2].innerText;
@@ -1066,7 +1071,7 @@ const edit_current_additional_link_id = async (ev) => {
 
 const loadSubjectInformation = (ev, subjectID) => {
   // 1. load fields for form
-  showForm("display", true);
+  window.showForm("display", true);
   $("#btn-edit-subject").css("display", "inline-block");
   $("#btn-add-subject").css("display", "none");
   window.clearAllSubjectFormFields(subjectsFormDiv);
@@ -1426,7 +1431,7 @@ const editSample = (ev, sampleID) => {
   window.samplesFileData = [];
 };
 
-const delete_current_subject_id = (ev) => {
+window.delete_current_subject_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this subject?",
     showCancelButton: true,
@@ -1508,7 +1513,7 @@ const delete_current_protocol_id = (ev) => {
   });
 };
 
-const delete_current_additional_link_id = (ev) => {
+window.delete_current_additional_link_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this link?",
     showCancelButton: true,
@@ -1530,7 +1535,7 @@ const delete_current_additional_link_id = (ev) => {
   });
 };
 
-const copy_current_subject_id = async (ev) => {
+window.copy_current_subject_id = async (ev) => {
   const { value: newSubject } = await Swal.fire({
     title: "Enter an ID for the new subject:",
     input: "text",
@@ -1706,10 +1711,10 @@ const updateOrderContributorTable = (table, json) => {
   window.contributorArray = orderedTableData;
 };
 
-const showPrimaryBrowseFolder = () => {
+window.showPrimaryBrowseFolder = () => {
   window.electron.ipcRenderer.send("open-file-dialog-local-primary-folder");
 };
-const showPrimaryBrowseFolderSamples = () => {
+window.showPrimaryBrowseFolderSamples = () => {
   window.electron.ipcRenderer.send("open-file-dialog-local-primary-folder-samples");
 };
 
@@ -1730,7 +1735,7 @@ const importPrimaryFolderSubjects = (folderPath) => {
       icon: "error",
     });
   } else {
-    if (path.parse(folderPath).base !== "primary") {
+    if (window.path.parse(folderPath).base !== "primary") {
       Swal.fire({
         title: "Incorrect folder name",
         text: "Your folder must be named 'primary' to be imported to SODA.",
@@ -1739,12 +1744,12 @@ const importPrimaryFolderSubjects = (folderPath) => {
         icon: "error",
       });
     } else {
-      var folders = fs.readdirSync(folderPath);
+      var folders = window.fs.readdirSync(folderPath);
       var j = 1;
       window.subjectsTableData[0] = headersArrSubjects;
       for (var folder of folders) {
         window.subjectsFileData = [];
-        var stats = fs.statSync(path.join(folderPath, folder));
+        var stats = window.fs.statSync(window.path.join(folderPath, folder));
         if (stats.isDirectory()) {
           window.subjectsFileData[0] = folder;
           for (var i = 1; i < 27; i++) {
@@ -1810,7 +1815,7 @@ const importPrimaryFolderSamples = (folderPath) => {
       icon: "error",
     });
   } else {
-    if (path.parse(folderPath).base !== "primary") {
+    if (window.path.parse(folderPath).base !== "primary") {
       Swal.fire({
         title: "Incorrect folder name",
         text: "Your folder must be named 'primary' to be imported to SODA.",
@@ -1819,15 +1824,15 @@ const importPrimaryFolderSamples = (folderPath) => {
         icon: "error",
       });
     } else {
-      var folders = fs.readdirSync(folderPath);
+      var folders = window.fs.readdirSync(folderPath);
       var j = 1;
       window.samplesTableData[0] = headersArrSamples;
       for (var folder of folders) {
-        var statsSubjectID = fs.statSync(path.join(folderPath, folder));
+        var statsSubjectID = window.fs.statSync(window.path.join(folderPath, folder));
         if (statsSubjectID.isDirectory()) {
-          var subjectFolder = fs.readdirSync(path.join(folderPath, folder));
+          var subjectFolder = window.fs.readdirSync(window.path.join(folderPath, folder));
           for (var subfolder of subjectFolder) {
-            var statsSampleID = fs.statSync(path.join(folderPath, folder, subfolder));
+            var statsSampleID = window.fs.statSync(window.path.join(folderPath, folder, subfolder));
             if (statsSampleID.isDirectory()) {
               window.samplesFileData = [];
               window.samplesFileData[0] = folder;
@@ -2212,7 +2217,7 @@ const addExistingCustomHeaderSamples = (customName) => {
   headersArrSamples.push(customName);
 };
 
-var subjectsDestinationPath = "";
+window.subjectsDestinationPath = "";
 var samplesDestinationPath = "";
 
 $(document).ready(function () {
@@ -2322,8 +2327,8 @@ $(document).ready(function () {
     if (dirpath.length > 0) {
       document.getElementById("input-destination-generate-subjects-locally").placeholder =
         dirpath[0];
-      var destinationPath = path.join(dirpath[0], "subjects.xlsx");
-      subjectsDestinationPath = destinationPath;
+      var destinationPath = window.path.join(dirpath[0], "subjects.xlsx");
+      window.subjectsDestinationPath = destinationPath;
       $("#div-confirm-destination-subjects-locally").css("display", "flex");
     }
   });
@@ -2333,7 +2338,7 @@ $(document).ready(function () {
     if (dirpath.length > 0) {
       document.getElementById("input-destination-generate-samples-locally").placeholder =
         dirpath[0];
-      var destinationPath = path.join(dirpath[0], "samples.xlsx");
+      var destinationPath = window.path.join(dirpath[0], "samples.xlsx");
       samplesDestinationPath = destinationPath;
       $("#div-confirm-destination-samples-locally").css("display", "flex");
     }
@@ -2385,7 +2390,7 @@ $(document).ready(function () {
   });
 });
 
-const showExistingSubjectsFile = () => {
+window.showExistingSubjectsFile = () => {
   if ($("#existing-subjects-file-destination").prop("placeholder") !== "Browse here") {
     Swal.fire({
       title: "Are you sure you want to import a different subjects file?",
@@ -2441,7 +2446,7 @@ const showExistingSamplesFile = () => {
   }
 };
 
-const importExistingSubjectsFile = () => {
+window.importExistingSubjectsFile = () => {
   var filePath = $("#existing-subjects-file-destination").prop("placeholder");
   if (filePath === "Browse here") {
     Swal.fire("No file chosen", "Please select a path to your subjects.xlsx file,", "error");
@@ -2455,7 +2460,7 @@ const importExistingSubjectsFile = () => {
       Destinations.LOCAL
     );
   } else {
-    if (path.parse(filePath).base !== "subjects.xlsx") {
+    if (window.path.parse(filePath).base !== "subjects.xlsx") {
       Swal.fire({
         title: "Incorrect file name",
         text: "Your file must be named 'subjects.xlsx' to be imported to SODA.",
@@ -2504,7 +2509,7 @@ const importExistingSamplesFile = () => {
       Destinations.LOCAL
     );
   } else {
-    if (path.parse(filePath).base !== "samples.xlsx") {
+    if (window.path.parse(filePath).base !== "samples.xlsx") {
       Swal.fire({
         title: "Incorrect file name",
         text: "Your file must be named 'samples.xlsx' to be imported to SODA.",
@@ -2540,7 +2545,7 @@ const importExistingSamplesFile = () => {
   }
 };
 
-const checkBFImportSubjects = async () => {
+window.checkBFImportSubjects = async () => {
   Swal.fire({
     title: "Importing the subjects.xlsx file",
     html: "Please wait...",
@@ -2582,7 +2587,7 @@ const checkBFImportSubjects = async () => {
       Destinations.PENNSIEVE
     );
     window.subjectsTableData = res;
-    loadDataFrametoUI("bf");
+    window.loadDataFrametoUI("bf");
   } catch (error) {
     clientError(error);
     Swal.fire({
@@ -2670,7 +2675,7 @@ const checkBFImportSamples = async () => {
   }
 };
 
-const loadDataFrametoUI = (type) => {
+window.loadDataFrametoUI = (type) => {
   var fieldSubjectEntries = [];
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     fieldSubjectEntries.push(field.name.toLowerCase());

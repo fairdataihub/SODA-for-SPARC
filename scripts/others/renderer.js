@@ -1852,7 +1852,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
               Swal.showLoading();
             },
           }).then((result) => {});
-          generateSubjectsFileHelper(false);
+          window.generateSubjectsFileHelper(false);
         }
       });
     } else {
@@ -1868,12 +1868,12 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
           Swal.showLoading();
         },
       }).then((result) => {});
-      generateSubjectsFileHelper(false);
+      window.generateSubjectsFileHelper(false);
     }
   }
 });
 
-const generateSubjectsFileHelper = async (uploadBFBoolean) => {
+const window.generateSubjectsFileHelper = async (uploadBFBoolean) => {
   let bfdataset = document.getElementById("bf_dataset_load_subjects").innerText.trim();
   if (uploadBFBoolean) {
     // Run pre-flight checks before uploading the subjects file to Pennsieve
@@ -1957,7 +1957,7 @@ const generateSubjectsFileHelper = async (uploadBFBoolean) => {
     let save_locally = await client.post(
       `/prepare_metadata/subjects_file`,
       {
-        filepath: subjectsDestinationPath,
+        filepath: window.subjectsDestinationPath,
         selected_account: window.defaultBfDataset,
         selected_dataset: bfdataset,
         subjects_header_row: window.subjectsTableData,
@@ -2324,7 +2324,7 @@ async function loadSubjectsFileToDataframe(filePath) {
         "Existing",
         Destinations.LOCAL
       );
-      loadDataFrametoUI("local");
+      window.loadDataFrametoUI("local");
     } else {
       window.logMetadataForAnalytics(
         "Error",

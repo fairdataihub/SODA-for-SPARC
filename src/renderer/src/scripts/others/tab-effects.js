@@ -3,6 +3,8 @@ import Accordion from 'accordion-js';
 // TODO: Follow up that this is the way to import it
 import 'accordion-js/dist/accordion.min.css';
 import { showHideDropdownButtons } from '../globals';
+import introJs from "intro.js";
+
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100))

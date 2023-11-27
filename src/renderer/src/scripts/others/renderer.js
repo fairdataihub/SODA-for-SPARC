@@ -366,7 +366,7 @@ const startupServerAndApiCheck = async () => {
   sodaIsConnected = true
 
   console.log("Connected to Python back-end successfully");
-  log.info("Connected to Python back-end successfully");
+  window.log.info("Connected to Python back-end successfully");
   window.electron.ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
   window.electron.ipcRenderer.send(
     "track-kombucha",
@@ -429,12 +429,12 @@ const initializeSODARenderer = async () => {
   // check that the server is live and the api versions match
   await startupServerAndApiCheck();
 
-  log.info("Server is live and API versions match");
+  window.log.info("Server is live and API versions match");
 
   // check integrity of all the core systems
   await window.run_pre_flight_checks();
 
-  log.info("Pre flight checks finished");
+  window.log.info("Pre flight checks finished");
 }
 
 initializeSODARenderer()
@@ -461,7 +461,7 @@ const startPennsieveAgent = async () => {
 };
 
 const getPennsieveAgentVersion = async () => {
-  log.info("Getting Pennsieve agent version");
+  window.log.info("Getting Pennsieve agent version");
 
   try {
     let agentVersion = await window.spawn.getPennsieveAgentVersion()
@@ -822,7 +822,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
       message: "SODA connected to Pennsieve successfully!",
     });
 
-    log.info("All pre flight checks passed");
+    window.log.info("All pre flight checks passed");
 
     // All pre flight checks passed, return true
     return true;
@@ -1024,7 +1024,7 @@ window.check_api_key = async () => {
   }
 
   let res = responseObject.data["accounts"];
-  log.info("Found a set of valid API keys");
+  window.log.info("Found a set of valid API keys");
   if (res[0] === "Select" && res.length === 1) {
     //no api key found
     window.notyf.dismiss(notification);
@@ -1060,7 +1060,7 @@ window.check_api_key = async () => {
 //       type: "error",
 //       message: "Pennsieve agent not found",
 //     });
-//     log.warn("Pennsieve agent not found");
+//     window.log.warn("Pennsieve agent not found");
 //     return [false, userErrorMessage(error)];
 //   }
 
@@ -1071,7 +1071,7 @@ window.check_api_key = async () => {
 //     type: "success",
 //     message: "Pennsieve agent found",
 //   });
-//   log.info("Pennsieve agent found");
+//   window.log.info("Pennsieve agent found");
 //   return [true, agent_version];
 // };
 
@@ -1562,659 +1562,659 @@ window.milestoneTagify1.on("change", (e) => {
 
 window.createDragSort(window.milestoneTagify1);
 
-// // generate subjects file
-// window.electron.ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
-//   if (dirpath.length > 0) {
-//     var destinationPath = window.path.join(dirpath[0], filename);
-//     if (fs.existsSync(destinationPath)) {
-//       var emessage =
-//         "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
-//       Swal.fire({
-//         icon: "warning",
-//         title: "Metadata file already exists",
-//         text: `${emessage}`,
-//         heightAuto: false,
-//         backdrop: "rgba(0,0,0, 0.4)",
-//         showConfirmButton: true,
-//         showCancelButton: true,
-//         cancelButtonText: "No",
-//         confirmButtonText: "Yes",
-//       }).then((result) => {
-//         if (result.isConfirmed) {
-//           Swal.fire({
-//             title: "Generating the subjects.xlsx file",
-//             html: "Please wait...",
-//             allowEscapeKey: false,
-//             allowOutsideClick: false,
-//             heightAuto: false,
-//             backdrop: "rgba(0,0,0, 0.4)",
-//             timerProgressBar: false,
-//             didOpen: () => {
-//               Swal.showLoading();
-//             },
-//           }).then((result) => {});
-//           generateSubjectsFileHelper(false);
-//         }
-//       });
-//     } else {
-//       Swal.fire({
-//         title: "Generating the subjects.xlsx file",
-//         html: "Please wait...",
-//         allowEscapeKey: false,
-//         allowOutsideClick: false,
-//         heightAuto: false,
-//         backdrop: "rgba(0,0,0, 0.4)",
-//         timerProgressBar: false,
-//         didOpen: () => {
-//           Swal.showLoading();
-//         },
-//       }).then((result) => {});
-//       generateSubjectsFileHelper(false);
-//     }
-//   }
-// });
+// generate subjects file
+window.electron.ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
+  if (dirpath.length > 0) {
+    var destinationPath = window.path.join(dirpath[0], filename);
+    if (fs.existsSync(destinationPath)) {
+      var emessage =
+        "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
+      Swal.fire({
+        icon: "warning",
+        title: "Metadata file already exists",
+        text: `${emessage}`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showConfirmButton: true,
+        showCancelButton: true,
+        cancelButtonText: "No",
+        confirmButtonText: "Yes",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "Generating the subjects.xlsx file",
+            html: "Please wait...",
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            timerProgressBar: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          }).then((result) => {});
+          window.generateSubjectsFileHelper(false);
+        }
+      });
+    } else {
+      Swal.fire({
+        title: "Generating the subjects.xlsx file",
+        html: "Please wait...",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {});
+      window.generateSubjectsFileHelper(false);
+    }
+  }
+});
 
-// const generateSubjectsFileHelper = async (uploadBFBoolean) => {
-//   let bfdataset = document.getElementById("bf_dataset_load_subjects").innerText.trim();
-//   if (uploadBFBoolean) {
-//     // Run pre-flight checks before uploading the subjects file to Pennsieve
-//     let supplementary_checks = await window.run_pre_flight_checks(false);
-//     if (!supplementary_checks) {
-//       return;
-//     }
+window.generateSubjectsFileHelper = async (uploadBFBoolean) => {
+  let bfdataset = document.getElementById("bf_dataset_load_subjects").innerText.trim();
+  if (uploadBFBoolean) {
+    // Run pre-flight checks before uploading the subjects file to Pennsieve
+    let supplementary_checks = await window.run_pre_flight_checks(false);
+    if (!supplementary_checks) {
+      return;
+    }
 
-//     // Check if dataset is locked after running pre-flight checks
-//     const isLocked = await api.isDatasetLocked(window.defaultBfDataset, bfdataset);
+    // Check if dataset is locked after running pre-flight checks
+    const isLocked = await api.isDatasetLocked(window.defaultBfAccount, bfdataset);
 
-//     if (isLocked) {
-//       await Swal.fire({
-//         icon: "info",
-//         title: `${bfdataset} is locked from editing`,
-//         html: `
-//               This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
-//               <br />
-//               <br />
-//               If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
-//             `,
-//         width: 600,
-//         heightAuto: false,
-//         backdrop: "rgba(0,0,0, 0.4)",
-//         confirmButtonText: "Ok",
-//         focusConfirm: true,
-//         allowOutsideClick: false,
-//       });
+    if (isLocked) {
+      await Swal.fire({
+        icon: "info",
+        title: `${bfdataset} is locked from editing`,
+        html: `
+              This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+              <br />
+              <br />
+              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+            `,
+        width: 600,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
 
-//       return;
-//     }
+      return;
+    }
 
-//     let { value: continueProgress } = await Swal.fire({
-//       title:
-//         "Any existing subjects.xlsx file in the high-level folder of the selected dataset will be replaced.",
-//       text: "Are you sure you want to continue?",
-//       allowEscapeKey: false,
-//       allowOutsideClick: false,
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       showConfirmButton: true,
-//       showCancelButton: true,
-//       cancelButtonText: "Cancel",
-//       confirmButtonText: "Yes",
-//     });
-//     if (!continueProgress) {
-//       return;
-//     }
-//   } else {
-//     let { value: continueProgress } = await Swal.fire({
-//       title: "Any existing subjects.xlsx file in the specified location will be replaced.",
-//       text: "Are you sure you want to continue?",
-//       allowEscapeKey: false,
-//       allowOutsideClick: false,
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       showConfirmButton: true,
-//       showCancelButton: true,
-//       cancelButtonText: "Cancel",
-//       confirmButtonText: "Yes",
-//     });
-//     if (!continueProgress) {
-//       return;
-//     }
-//   }
-//   Swal.fire({
-//     title: "Generating the subjects.xlsx file",
-//     html: "Please wait...",
-//     allowEscapeKey: false,
-//     allowOutsideClick: false,
-//     heightAuto: false,
-//     backdrop: "rgba(0,0,0, 0.4)",
-//     timerProgressBar: false,
-//     didOpen: () => {
-//       Swal.showLoading();
-//     },
-//   }).then((result) => {});
+    let { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing subjects.xlsx file in the high-level folder of the selected dataset will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  } else {
+    let { value: continueProgress } = await Swal.fire({
+      title: "Any existing subjects.xlsx file in the specified location will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  }
+  Swal.fire({
+    title: "Generating the subjects.xlsx file",
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
 
-//   try {
-//     log.info(`Generating a subjects file.`);
-//     let save_locally = await client.post(
-//       `/prepare_metadata/subjects_file`,
-//       {
-//         filepath: subjectsDestinationPath,
-//         selected_account: window.defaultBfDataset,
-//         selected_dataset: bfdataset,
-//         subjects_header_row: window.subjectsTableData,
-//       },
-//       {
-//         params: {
-//           upload_boolean: uploadBFBoolean,
-//         },
-//       }
-//     );
+  try {
+    window.log.info(`Generating a subjects file.`);
+    let save_locally = await client.post(
+      `/prepare_metadata/subjects_file`,
+      {
+        filepath: window.subjectsDestinationPath,
+        selected_account: window.defaultBfAccount,
+        selected_dataset: bfdataset,
+        subjects_header_row: window.subjectsTableData,
+      },
+      {
+        params: {
+          upload_boolean: uploadBFBoolean,
+        },
+      }
+    );
 
-//     let res = save_locally.data;
+    let res = save_locally.data;
 
-//     Swal.fire({
-//       title: "The subjects.xlsx file has been successfully generated at the specified location.",
-//       icon: "success",
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//     });
+    Swal.fire({
+      title: "The subjects.xlsx file has been successfully generated at the specified location.",
+      icon: "success",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
 
-//     // log the success to Pennsieve
-//     window.electron.ipcRenderer.send(
-//       "track-kombucha",
-//       kombuchaEnums.Category.PREPARE_METADATA,
-//       kombuchaEnums.Action.GENERATE_METADATA,
-//       kombuchaEnums.Label.SUBJECTS_XLSX,
-//       kombuchaEnums.Status.SUCCESS,
-//       createEventDataPrepareMetadata(
-//         uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
-//         1
-//       )
-//     );
+    // log the success to Pennsieve
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SUBJECTS_XLSX,
+      kombuchaEnums.Status.SUCCESS,
+      createEventDataPrepareMetadata(
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
+        1
+      )
+    );
 
-//     const size = res;
-//     window.electron.ipcRenderer.send(
-//       "track-kombucha",
-//       kombuchaEnums.Category.PREPARE_METADATA,
-//       kombuchaEnums.Action.GENERATE_METADATA,
-//       kombuchaEnums.Label.SUBJECTS_XLSX_SIZE,
-//       kombuchaEnums.Status.SUCCESS,
-//       createEventDataPrepareMetadata(
-//         uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
-//         size
-//       )
-//     );
-//   } catch (error) {
-//     clientError(error);
-//     let emessage = userErrorMessage(error);
+    const size = res;
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SUBJECTS_XLSX_SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      createEventDataPrepareMetadata(
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
+        size
+      )
+    );
+  } catch (error) {
+    clientError(error);
+    let emessage = userErrorMessage(error);
 
-//     Swal.fire({
-//       title: "Failed to generate the subjects.xlsx file.",
-//       html: emessage,
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       icon: "error",
-//     });
+    Swal.fire({
+      title: "Failed to generate the subjects.xlsx file.",
+      html: emessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+    });
 
-//     // log the error to analytics
-//     window.electron.ipcRenderer.send(
-//       "track-kombucha",
-//       kombuchaEnums.Category.PREPARE_METADATA,
-//       kombuchaEnums.Action.GENERATE_METADATA,
-//       kombuchaEnums.Label.SUBJECTS_XLSX,
-//       kombuchaEnums.Status.FAIL,
-//       createEventDataPrepareMetadata(
-//         uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
-//         1
-//       )
-//     );
-//   }
-// };
+    // log the error to analytics
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SUBJECTS_XLSX,
+      kombuchaEnums.Status.FAIL,
+      createEventDataPrepareMetadata(
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
+        1
+      )
+    );
+  }
+};
 
-// // generate samples file
-// window.electron.ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
-//   if (dirpath.length > 0) {
-//     var destinationPath = window.path.join(dirpath[0], filename);
-//     if (fs.existsSync(destinationPath)) {
-//       var emessage =
-//         "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
-//       Swal.fire({
-//         icon: "warning",
-//         title: "Metadata file already exists",
-//         text: `${emessage}`,
-//         heightAuto: false,
-//         backdrop: "rgba(0,0,0, 0.4)",
-//         showConfirmButton: true,
-//         showCancelButton: true,
-//         cancelButtonText: "No",
-//         confirmButtonText: "Yes",
-//       }).then((result) => {
-//         if (result.isConfirmed) {
-//           Swal.fire({
-//             title: "Generating the samples.xlsx file",
-//             html: "Please wait...",
-//             heightAuto: false,
-//             backdrop: "rgba(0,0,0, 0.4)",
-//             allowEscapeKey: false,
-//             allowOutsideClick: false,
-//             timerProgressBar: false,
-//             didOpen: () => {
-//               Swal.showLoading();
-//             },
-//           }).then((result) => {});
-//           generateSamplesFileHelper(uploadBFBoolean);
-//         }
-//       });
-//     } else {
-//       Swal.fire({
-//         title: "Generating the samples.xlsx file",
-//         html: "Please wait...",
-//         heightAuto: false,
-//         backdrop: "rgba(0,0,0, 0.4)",
-//         allowEscapeKey: false,
-//         allowOutsideClick: false,
-//         timerProgressBar: false,
-//         didOpen: () => {
-//           Swal.showLoading();
-//         },
-//       }).then((result) => {});
-//       generateSamplesFileHelper(uploadBFBoolean);
-//     }
-//   }
-// });
+// generate samples file
+window.electron.ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
+  if (dirpath.length > 0) {
+    var destinationPath = window.path.join(dirpath[0], filename);
+    if (fs.existsSync(destinationPath)) {
+      var emessage =
+        "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
+      Swal.fire({
+        icon: "warning",
+        title: "Metadata file already exists",
+        text: `${emessage}`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showConfirmButton: true,
+        showCancelButton: true,
+        cancelButtonText: "No",
+        confirmButtonText: "Yes",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "Generating the samples.xlsx file",
+            html: "Please wait...",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            allowEscapeKey: false,
+            allowOutsideClick: false,
+            timerProgressBar: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          }).then((result) => {});
+          generateSamplesFileHelper(uploadBFBoolean);
+        }
+      });
+    } else {
+      Swal.fire({
+        title: "Generating the samples.xlsx file",
+        html: "Please wait...",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {});
+      generateSamplesFileHelper(uploadBFBoolean);
+    }
+  }
+});
 
-// const generateSamplesFileHelper = async (uploadBFBoolean) => {
-//   let bfDataset = $("#bf_dataset_load_samples").text().trim();
-//   if (uploadBFBoolean) {
-//     // Run pre-flight checks before uploading the samples file to Pennsieve
-//     const supplementary_checks = await window.run_pre_flight_checks(false);
-//     if (!supplementary_checks) {
-//       return;
-//     }
+const generateSamplesFileHelper = async (uploadBFBoolean) => {
+  let bfDataset = $("#bf_dataset_load_samples").text().trim();
+  if (uploadBFBoolean) {
+    // Run pre-flight checks before uploading the samples file to Pennsieve
+    const supplementary_checks = await window.run_pre_flight_checks(false);
+    if (!supplementary_checks) {
+      return;
+    }
 
-//     // Check if dataset is locked after running pre-flight checks
-//     const isLocked = await api.isDatasetLocked(window.defaultBfDataset, bfDataset);
-//     if (isLocked) {
-//       await Swal.fire({
-//         icon: "info",
-//         title: `${bfDataset} is locked from editing`,
-//         html: `
-//               This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
-//               <br />
-//               <br />
-//               If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
-//             `,
-//         width: 600,
-//         heightAuto: false,
-//         backdrop: "rgba(0,0,0, 0.4)",
-//         confirmButtonText: "Ok",
-//         focusConfirm: true,
-//         allowOutsideClick: false,
-//       });
+    // Check if dataset is locked after running pre-flight checks
+    const isLocked = await api.isDatasetLocked(window.defaultBfAccount, bfDataset);
+    if (isLocked) {
+      await Swal.fire({
+        icon: "info",
+        title: `${bfDataset} is locked from editing`,
+        html: `
+              This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+              <br />
+              <br />
+              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+            `,
+        width: 600,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
 
-//       return;
-//     }
+      return;
+    }
 
-//     let { value: continueProgress } = await Swal.fire({
-//       title:
-//         "Any existing samples.xlsx file in the high-level folder of the selected dataset will be replaced.",
-//       text: "Are you sure you want to continue?",
-//       allowEscapeKey: false,
-//       allowOutsideClick: false,
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       showConfirmButton: true,
-//       showCancelButton: true,
-//       cancelButtonText: "Cancel",
-//       confirmButtonText: "Yes",
-//     });
-//     if (!continueProgress) {
-//       return;
-//     }
-//   } else {
-//     let { value: continueProgress } = await Swal.fire({
-//       title: "Any existing samples.xlsx file in the specified location will be replaced.",
-//       text: "Are you sure you want to continue?",
-//       allowEscapeKey: false,
-//       allowOutsideClick: false,
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       showConfirmButton: true,
-//       showCancelButton: true,
-//       cancelButtonText: "Cancel",
-//       confirmButtonText: "Yes",
-//     });
-//     if (!continueProgress) {
-//       return;
-//     }
-//   }
-//   Swal.fire({
-//     title: "Generating the samples.xlsx file",
-//     html: "Please wait...",
-//     allowEscapeKey: false,
-//     allowOutsideClick: false,
-//     heightAuto: false,
-//     backdrop: "rgba(0,0,0, 0.4)",
-//     timerProgressBar: false,
-//     didOpen: () => {
-//       Swal.showLoading();
-//     },
-//   }).then((result) => {});
+    let { value: continueProgress } = await Swal.fire({
+      title:
+        "Any existing samples.xlsx file in the high-level folder of the selected dataset will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  } else {
+    let { value: continueProgress } = await Swal.fire({
+      title: "Any existing samples.xlsx file in the specified location will be replaced.",
+      text: "Are you sure you want to continue?",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: true,
+      showCancelButton: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Yes",
+    });
+    if (!continueProgress) {
+      return;
+    }
+  }
+  Swal.fire({
+    title: "Generating the samples.xlsx file",
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  }).then((result) => {});
 
-//   try {
-//     let samplesFileResponse = await client.post(
-//       "prepare_metadata/samples_file",
-//       {
-//         filepath: samplesDestinationPath,
-//         selected_account: window.defaultBfDataset,
-//         selected_dataset: $("#bf_dataset_load_samples").text().trim(),
-//         samples_str: window.samplesTableData,
-//       },
-//       {
-//         params: {
-//           upload_boolean: uploadBFBoolean,
-//         },
-//       }
-//     );
+  try {
+    let samplesFileResponse = await client.post(
+      "prepare_metadata/samples_file",
+      {
+        filepath: samplesDestinationPath,
+        selected_account: window.defaultBfAccount,
+        selected_dataset: $("#bf_dataset_load_samples").text().trim(),
+        samples_str: window.samplesTableData,
+      },
+      {
+        params: {
+          upload_boolean: uploadBFBoolean,
+        },
+      }
+    );
 
-//     Swal.fire({
-//       title: "The samples.xlsx file has been successfully generated at the specified location.",
-//       icon: "success",
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//     });
+    Swal.fire({
+      title: "The samples.xlsx file has been successfully generated at the specified location.",
+      icon: "success",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
 
-//     window.electron.ipcRenderer.send(
-//       "track-kombucha",
-//       kombuchaEnums.Category.PREPARE_METADATA,
-//       kombuchaEnums.Action.GENERATE_METADATA,
-//       kombuchaEnums.Label.SAMPLES_XLSX,
-//       kombuchaEnums.Status.SUCCESS,
-//       createEventDataPrepareMetadata(
-//         uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
-//         1
-//       )
-//     );
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SAMPLES_XLSX,
+      kombuchaEnums.Status.SUCCESS,
+      createEventDataPrepareMetadata(
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
+        1
+      )
+    );
 
-//     // log the size of the metadata file that was generated at varying levels of granularity
-//     const { size } = samplesFileResponse.data;
-//     window.electron.ipcRenderer.send(
-//       "track-kombucha",
-//       kombuchaEnums.Category.PREPARE_METADATA,
-//       kombuchaEnums.Action.GENERATE_METADATA,
-//       kombuchaEnums.Label.SAMPLES_XLSX_SIZE,
-//       kombuchaEnums.Status.SUCCESS,
-//       createEventDataPrepareMetadata(
-//         uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
-//         size
-//       )
-//     );
-//   } catch (error) {
-//     clientError(error);
-//     var emessage = userErrorMessage(error);
-//     Swal.fire({
-//       title: "Failed to generate the samples.xlsx file.",
-//       html: emessage,
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       icon: "error",
-//     });
+    // log the size of the metadata file that was generated at varying levels of granularity
+    const { size } = samplesFileResponse.data;
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SAMPLES_XLSX_SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      createEventDataPrepareMetadata(
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
+        size
+      )
+    );
+  } catch (error) {
+    clientError(error);
+    var emessage = userErrorMessage(error);
+    Swal.fire({
+      title: "Failed to generate the samples.xlsx file.",
+      html: emessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+    });
 
-//     window.electron.ipcRenderer.send(
-//       "track-kombucha",
-//       kombuchaEnums.Category.PREPARE_METADATA,
-//       kombuchaEnums.Action.GENERATE_METADATA,
-//       kombuchaEnums.Label.SAMPLES_XLSX,
-//       kombuchaEnums.Status.FAIL,
-//       createEventDataPrepareMetadata(
-//         uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
-//         1
-//       )
-//     );
-//   }
-// };
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SAMPLES_XLSX,
+      kombuchaEnums.Status.FAIL,
+      createEventDataPrepareMetadata(
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
+        1
+      )
+    );
+  }
+};
 
-// // import Primary folder
-// window.electron.ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
-//   if (primaryFolderPath.length > 0) {
-//     importPrimaryFolderSubjects(primaryFolderPath[0]);
-//   }
-// });
-// window.electron.ipcRenderer.on("selected-local-primary-folder-samples", (event, primaryFolderPath) => {
-//   if (primaryFolderPath.length > 0) {
-//     importPrimaryFolderSamples(primaryFolderPath[0]);
-//   }
-// });
+// import Primary folder
+window.electron.ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
+  if (primaryFolderPath.length > 0) {
+    importPrimaryFolderSubjects(primaryFolderPath[0]);
+  }
+});
+window.electron.ipcRenderer.on("selected-local-primary-folder-samples", (event, primaryFolderPath) => {
+  if (primaryFolderPath.length > 0) {
+    importPrimaryFolderSamples(primaryFolderPath[0]);
+  }
+});
 
-// function transformImportedExcelFile(type, result) {
-//   for (var column of result.slice(1)) {
-//     var indices = getAllIndexes(column, "");
-//     // check if the first 2 columns are empty
-//     if (indices.length > 18 && type === "samples" && (indices.includes(0) || indices.includes(1))) {
-//       return false;
-//     }
-//     if (indices.length > 17 && type === "subjects" && indices.includes(0)) {
-//       return false;
-//     }
-//     var indices = getAllIndexes(column, "nan");
-//     for (var ind of indices) {
-//       column[ind] = "";
-//     }
-//     if (type === "samples") {
-//       if (!specimenType.includes(column[5])) {
-//         column[5] = "";
-//       }
-//     }
-//     return result;
-//   }
-// }
+function transformImportedExcelFile(type, result) {
+  for (var column of result.slice(1)) {
+    var indices = getAllIndexes(column, "");
+    // check if the first 2 columns are empty
+    if (indices.length > 18 && type === "samples" && (indices.includes(0) || indices.includes(1))) {
+      return false;
+    }
+    if (indices.length > 17 && type === "subjects" && indices.includes(0)) {
+      return false;
+    }
+    var indices = getAllIndexes(column, "nan");
+    for (var ind of indices) {
+      column[ind] = "";
+    }
+    if (type === "samples") {
+      if (!specimenType.includes(column[5])) {
+        column[5] = "";
+      }
+    }
+    return result;
+  }
+}
 
-// function getAllIndexes(arr, val) {
-//   var indexes = [],
-//     i = -1;
-//   while ((i = arr.indexOf(val, i + 1)) != -1) {
-//     indexes.push(i);
-//   }
-//   return indexes;
-// }
+function getAllIndexes(arr, val) {
+  var indexes = [],
+    i = -1;
+  while ((i = arr.indexOf(val, i + 1)) != -1) {
+    indexes.push(i);
+  }
+  return indexes;
+}
 
-// // import existing subjects.xlsx info (calling python to load info to a dataframe)
-// async function loadSubjectsFileToDataframe(filePath) {
-//   var fieldSubjectEntries = [];
-//   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
-//     fieldSubjectEntries.push(field.name.toLowerCase());
-//   }
+// import existing subjects.xlsx info (calling python to load info to a dataframe)
+window.loadSubjectsFileToDataframe = async (filePath) => {
+  var fieldSubjectEntries = [];
+  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+    fieldSubjectEntries.push(field.name.toLowerCase());
+  }
 
-//   try {
-//     let import_subjects_file = await client.get(`/prepare_metadata/subjects_file`, {
-//       params: {
-//         type: "subjects",
-//         filepath: filePath,
-//         ui_fields: JSON.stringify(fieldSubjectEntries),
-//       },
-//     });
+  try {
+    let import_subjects_file = await client.get(`/prepare_metadata/subjects_file`, {
+      params: {
+        type: "subjects",
+        filepath: filePath,
+        ui_fields: JSON.stringify(fieldSubjectEntries),
+      },
+    });
 
-//     let res = import_subjects_file.data.subject_file_rows;
-//     // res is a dataframe, now we load it into our window.subjectsTableData in order to populate the UI
-//     if (res.length > 1) {
-//       result = transformImportedExcelFile("subjects", res);
-//       if (result !== false) {
-//         window.subjectsTableData = result;
-//       } else {
-//         Swal.fire({
-//           title: "Couldn't load existing subjects.xlsx file",
-//           text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
-//           icon: "error",
-//           heightAuto: false,
-//           backdrop: "rgba(0,0,0, 0.4)",
-//         });
+    let res = import_subjects_file.data.subject_file_rows;
+    // res is a dataframe, now we load it into our window.subjectsTableData in order to populate the UI
+    if (res.length > 1) {
+      let result = transformImportedExcelFile("subjects", res);
+      if (result !== false) {
+        window.subjectsTableData = result;
+      } else {
+        Swal.fire({
+          title: "Couldn't load existing subjects.xlsx file",
+          text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
+          icon: "error",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
 
-//         window.logMetadataForAnalytics(
-//           "Error",
-//           window.MetadataAnalyticsPrefix.SUBJECTS,
-//           window.AnalyticsGranularity.ALL_LEVELS,
-//           "Existing",
-//           Destinations.LOCAL
-//         );
-//         return;
-//       }
-//       window.logMetadataForAnalytics(
-//         "Success",
-//         window.MetadataAnalyticsPrefix.SUBJECTS,
-//         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-//         "Existing",
-//         Destinations.LOCAL
-//       );
-//       loadDataFrametoUI("local");
-//     } else {
-//       window.logMetadataForAnalytics(
-//         "Error",
-//         window.MetadataAnalyticsPrefix.SUBJECTS,
-//         window.AnalyticsGranularity.ALL_LEVELS,
-//         "Existing",
-//         Destinations.LOCAL
-//       );
-//       Swal.fire({
-//         title: "Couldn't load existing subjects.xlsx file",
-//         text: "Please make sure there is at least one subject in the subjects.xlsx file.",
-//         icon: "error",
-//         heightAuto: false,
-//         backdrop: "rgba(0,0,0, 0.4)",
-//       });
-//     }
-//   } catch (error) {
-//     clientError(error);
-//     Swal.fire({
-//       title: "Couldn't load existing subjects.xlsx file",
-//       html: userErrorMessage(error),
-//       icon: "error",
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//     });
+        window.logMetadataForAnalytics(
+          "Error",
+          window.MetadataAnalyticsPrefix.SUBJECTS,
+          window.AnalyticsGranularity.ALL_LEVELS,
+          "Existing",
+          Destinations.LOCAL
+        );
+        return;
+      }
+      window.logMetadataForAnalytics(
+        "Success",
+        window.MetadataAnalyticsPrefix.SUBJECTS,
+        window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        "Existing",
+        Destinations.LOCAL
+      );
+      window.loadDataFrametoUI("local");
+    } else {
+      window.logMetadataForAnalytics(
+        "Error",
+        window.MetadataAnalyticsPrefix.SUBJECTS,
+        window.AnalyticsGranularity.ALL_LEVELS,
+        "Existing",
+        Destinations.LOCAL
+      );
+      Swal.fire({
+        title: "Couldn't load existing subjects.xlsx file",
+        text: "Please make sure there is at least one subject in the subjects.xlsx file.",
+        icon: "error",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+    }
+  } catch (error) {
+    clientError(error);
+    Swal.fire({
+      title: "Couldn't load existing subjects.xlsx file",
+      html: userErrorMessage(error),
+      icon: "error",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
 
-//     window.logMetadataForAnalytics(
-//       "Error",
-//       window.MetadataAnalyticsPrefix.SUBJECTS,
-//       window.AnalyticsGranularity.ALL_LEVELS,
-//       "Existing",
-//       Destinations.LOCAL
-//     );
-//   }
-// }
+    window.logMetadataForAnalytics(
+      "Error",
+      window.MetadataAnalyticsPrefix.SUBJECTS,
+      window.AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.LOCAL
+    );
+  }
+}
 
-// // import existing subjects.xlsx info (calling python to load info to a dataframe)
-// async function loadSamplesFileToDataframe(filePath) {
-//   var fieldSampleEntries = [];
-//   for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
-//     fieldSampleEntries.push(field.name.toLowerCase());
-//   }
-//   try {
-//     let importSamplesResponse = await client.get(`/prepare_metadata/samples_file`, {
-//       params: {
-//         type: "samples.xlsx",
-//         filepath: filePath,
-//         ui_fields: JSON.stringify(fieldSampleEntries),
-//       },
-//     });
+// import existing subjects.xlsx info (calling python to load info to a dataframe)
+async function loadSamplesFileToDataframe(filePath) {
+  var fieldSampleEntries = [];
+  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
+    fieldSampleEntries.push(field.name.toLowerCase());
+  }
+  try {
+    let importSamplesResponse = await client.get(`/prepare_metadata/samples_file`, {
+      params: {
+        type: "samples.xlsx",
+        filepath: filePath,
+        ui_fields: JSON.stringify(fieldSampleEntries),
+      },
+    });
 
-//     let res = importSamplesResponse.data.sample_file_rows;
-//     // res is a dataframe, now we load it into our window.samplesTableData in order to populate the UI
-//     if (res.length > 1) {
-//       result = transformImportedExcelFile("samples", res);
-//       if (result !== false) {
-//         window.samplesTableData = result;
-//       } else {
-//         Swal.fire({
-//           title: "Couldn't load existing samples.xlsx file",
-//           text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
-//           icon: "error",
-//           heightAuto: false,
-//           backdrop: "rgba(0,0,0, 0.4)",
-//         });
+    let res = importSamplesResponse.data.sample_file_rows;
+    // res is a dataframe, now we load it into our window.samplesTableData in order to populate the UI
+    if (res.length > 1) {
+      result = transformImportedExcelFile("samples", res);
+      if (result !== false) {
+        window.samplesTableData = result;
+      } else {
+        Swal.fire({
+          title: "Couldn't load existing samples.xlsx file",
+          text: "Please make sure the imported file follows the latest SPARC Dataset Structure 2.0.0 and try again.",
+          icon: "error",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
 
-//         window.logMetadataForAnalytics(
-//           "Error",
-//           window.MetadataAnalyticsPrefix.SAMPLES,
-//           window.AnalyticsGranularity.ALL_LEVELS,
-//           "Existing",
-//           Destinations.LOCAL
-//         );
+        window.logMetadataForAnalytics(
+          "Error",
+          window.MetadataAnalyticsPrefix.SAMPLES,
+          window.AnalyticsGranularity.ALL_LEVELS,
+          "Existing",
+          Destinations.LOCAL
+        );
 
-//         return;
-//       }
-//       window.logMetadataForAnalytics(
-//         "Success",
-//         window.MetadataAnalyticsPrefix.SAMPLES,
-//         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-//         "Existing",
-//         Destinations.LOCAL
-//       );
+        return;
+      }
+      window.logMetadataForAnalytics(
+        "Success",
+        window.MetadataAnalyticsPrefix.SAMPLES,
+        window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        "Existing",
+        Destinations.LOCAL
+      );
 
-//       loadDataFrametoUISamples("local");
-//     } else {
-//       window.logMetadataForAnalytics(
-//         "Error",
-//         window.MetadataAnalyticsPrefix.SAMPLES,
-//         window.AnalyticsGranularity.ALL_LEVELS,
-//         "Existing",
-//         Destinations.LOCAL
-//       );
-//       Swal.fire({
-//         title: "Couldn't load existing samples.xlsx file",
-//         text: "Please make sure there is at least one sample in the samples.xlsx file.",
-//         icon: "error",
-//         heightAuto: false,
-//         backdrop: "rgba(0,0,0, 0.4)",
-//       });
-//     }
-//   } catch (error) {
-//     clientError(error);
+      loadDataFrametoUISamples("local");
+    } else {
+      window.logMetadataForAnalytics(
+        "Error",
+        window.MetadataAnalyticsPrefix.SAMPLES,
+        window.AnalyticsGranularity.ALL_LEVELS,
+        "Existing",
+        Destinations.LOCAL
+      );
+      Swal.fire({
+        title: "Couldn't load existing samples.xlsx file",
+        text: "Please make sure there is at least one sample in the samples.xlsx file.",
+        icon: "error",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+    }
+  } catch (error) {
+    clientError(error);
 
-//     Swal.fire({
-//       title: "Couldn't load existing samples.xlsx file",
-//       html: userErrorMessage(error),
-//       icon: "error",
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//     });
+    Swal.fire({
+      title: "Couldn't load existing samples.xlsx file",
+      html: userErrorMessage(error),
+      icon: "error",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
 
-//     window.logMetadataForAnalytics(
-//       "Error",
-//       window.MetadataAnalyticsPrefix.SAMPLES,
-//       window.AnalyticsGranularity.ALL_LEVELS,
-//       "Existing",
-//       Destinations.LOCAL
-//     );
-//   }
-// }
+    window.logMetadataForAnalytics(
+      "Error",
+      window.MetadataAnalyticsPrefix.SAMPLES,
+      window.AnalyticsGranularity.ALL_LEVELS,
+      "Existing",
+      Destinations.LOCAL
+    );
+  }
+}
 
-// // load and parse json file
-// function parseJson(path) {
-//   if (!fs.existsSync(path)) {
-//     return {};
-//   }
-//   try {
-//     var content = fs.readFileSync(path);
-//     contentJson = JSON.parse(content);
-//     return contentJson;
-//   } catch (error) {
-//     log.error(error);
-//     console.log(error);
-//     return {};
-//   }
-// }
+// load and parse json file
+function parseJson(path) {
+  if (!fs.existsSync(path)) {
+    return {};
+  }
+  try {
+    var content = fs.readFileSync(path);
+    contentJson = JSON.parse(content);
+    return contentJson;
+  } catch (error) {
+    window.log.error(error);
+    console.log(error);
+    return {};
+  }
+}
 
-// // function to make directory if metadata path does not exist
-// function createMetadataDir() {
-//   try {
-//     fs.mkdirSync(metadataPath, { recursive: true });
-//   } catch (error) {
-//     log.error(error);
-//     console.log(error);
-//   }
-// }
+// function to make directory if metadata path does not exist
+function createMetadataDir() {
+  try {
+    window.fs.mkdirSync(metadataPath, { recursive: true });
+  } catch (error) {
+    window.log.error(error);
+    console.log(error);
+  }
+}
 
-// createMetadataDir();
+createMetadataDir();
 
 const specimenType = [
   "whole organism",
@@ -3518,7 +3518,7 @@ window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
 //   // then check if it can be withdrawn, then withdraw it
 //   // catch any uncaught errors at this level (aka greacefully catch any exceptions to alert the user we cannot withdraw their dataset)
 //   let status = await window.showPublishingStatus(withdrawDatasetCheck, curationMode).catch((error) => {
-//     log.error(error);
+//     window.log.error(error);
 //     console.error(error);
 //     Swal.fire({
 //       title: "Could not withdraw dataset from publication!",
@@ -3768,7 +3768,7 @@ const refreshBfTeamsList = async (teamList) => {
       }
       confirm_click_account_function();
     } catch (error) {
-      log.error(error);
+      window.log.error(error);
       console.error(error);
       confirm_click_account_function();
     }
@@ -3916,7 +3916,7 @@ window.loadDefaultAccount = async () => {
 };
 
 // const showPrePublishingPageElements = () => {
-//   let selectedBfAccount = window.defaultBfDataset;
+//   let selectedBfAccount = window.defaultBfAccount;
 //   let selectedBfDataset = window.defaultBfDataset;
 
 //   if (selectedBfDataset === "Select dataset") {
@@ -4538,7 +4538,7 @@ window.hideMenu = (category, menu1, menu2, menu3) => {
 //       document.getElementById("para-organize-datasets-loading").innerHTML =
 //         "<span>Please wait...</span>";
 
-//       log.info("Generating a new dataset organize datasets at ${filepath}");
+//       window.log.info("Generating a new dataset organize datasets at ${filepath}");
 
 //       try {
 //         await client.post(
@@ -5267,7 +5267,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
 //     title: "Save File Organization",
 //     filters: [{ name: "JSON", extensions: ["json"] }],
 //   };
-//   dialog.showSaveDialog(null, options, (filename) => {
+//   diawindow.log.showSaveDialog(null, options, (filename) => {
 //     event.sender.send("selected-saveorganizationfile", filename);
 //   });
 // });
@@ -7027,7 +7027,7 @@ const manageDesc = (ev) => {
 
 //   let { data } = emptyFilesFoldersResponse;
 
-//   log.info("Continue with curate");
+//   window.log.info("Continue with curate");
 //   let errorMessage = "";
 //   error_files = data["empty_files"];
 //   //bring duplicate outside
@@ -7358,7 +7358,7 @@ window.uploadComplete = new Notyf({
 //       uploadedFiles = data["main_curation_uploaded_files"];
 
 //       $("#sidebarCollapse").prop("disabled", false);
-//       log.info("Completed curate function");
+//       window.log.info("Completed curate function");
 
 //       // log high level confirmation that a dataset was generated - helps answer how many times were datasets generated in FFMs organize dataset functionality
 //       window.electron.ipcRenderer.send(
@@ -7417,7 +7417,7 @@ window.uploadComplete = new Notyf({
 //       try {
 //         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
 //           params: {
-//             selected_account: window.defaultBfDataset,
+//             selected_account: window.defaultBfAccount,
 //           },
 //         });
 //         window.datasetList = [];
@@ -7555,7 +7555,7 @@ window.uploadComplete = new Notyf({
 //       try {
 //         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
 //           params: {
-//             selected_account: window.defaultBfDataset,
+//             selected_account: window.defaultBfAccount,
 //           },
 //         });
 //         window.datasetList = [];
@@ -7581,7 +7581,7 @@ window.uploadComplete = new Notyf({
 //       document.getElementById(
 //         "para-new-curate-progress-bar-error-status"
 //       ).innerHTML = `<span style='color: red;'>${emessage}</span>`;
-//       log.error(error);
+//       window.log.error(error);
 
 //       //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
 //       organizeDataset_option_buttons.style.display = "flex";
@@ -7720,7 +7720,7 @@ window.uploadComplete = new Notyf({
 
 //     if (main_curate_status === "Done") {
 //       $("#sidebarCollapse").prop("disabled", false);
-//       log.info("Done curate track");
+//       window.log.info("Done curate track");
 //       statusBarClone.remove();
 //       sparc_container.style.display = "inline";
 //       if (successful === true) {
@@ -8788,13 +8788,13 @@ window.logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularit
 //     timeout: 0,
 //   });
 
-//   log.info("validating dataset");
-//   log.info(window.bfDatasetSubtitle.value);
+//   window.log.info("validating dataset");
+//   window.log.info(window.bfDatasetSubtitle.value);
 
 //   $("#dataset_validator_status").text("Please wait while we retrieve the dataset...");
 //   $("#dataset_validator_spinner").show();
 
-//   let selectedBfAccount = window.defaultBfDataset;
+//   let selectedBfAccount = window.defaultBfAccount;
 //   let selectedBfDataset = window.defaultBfDataset;
 
 //   temp_object = {
@@ -8817,7 +8817,7 @@ window.logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularit
 //       method: "get",
 //     });
 //   } catch (err) {
-//     log.error(error);
+//     window.log.error(error);
 //     console.error(error);
 //     $("#dataset_validator_spinner").hide();
 //     $("#dataset_validator_status").html(`<span style='color: red;'> ${error}</span>`);
@@ -8835,7 +8835,7 @@ window.logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularit
 //       method: "get",
 //     });
 //   } catch (error) {
-//     log.error(error);
+//     window.log.error(error);
 //     console.error(error);
 //     $("#dataset_validator_spinner").hide();
 //     $("#dataset_validator_status").html(`<span style='color: red;'> ${error}</span>`);
@@ -8856,7 +8856,7 @@ window.logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularit
 //       },
 //       {
 //         params: {
-//           selected_account: window.defaultBfDataset,
+//           selected_account: window.defaultBfAccount,
 //           selected_dataset: window.defaultBfDataset,
 //         },
 //       }

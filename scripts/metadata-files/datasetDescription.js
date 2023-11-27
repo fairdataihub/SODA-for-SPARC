@@ -88,12 +88,12 @@ $(document).ready(function () {
   when users add a row and then delete it, the ID for such row is deleted (row-name-2),
   but the row count for the table (used for naming row ID) is changed and that messes up the naming and ID retrieval process
 */
-const checkForUniqueRowID = (rowID, no) => {
+const window.checkForUniqueRowID = (rowID, no) => {
   if ($("#" + rowID + no.toString()).length == 0) {
     return no;
   } else {
     no = no + 1;
-    return checkForUniqueRowID(rowID, no);
+    return window.checkForUniqueRowID(rowID, no);
   }
 };
 
@@ -712,7 +712,7 @@ const addProtocolLinktoTableDD = (protocolLink, protocolType, protocolRelation, 
   var rowIndex = rowcount;
   var currentRow = protocolTable.rows[protocolTable.rows.length];
   // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  var newRowIndex = checkForUniqueRowID("row-current-protocol", rowIndex);
+  var newRowIndex = window.checkForUniqueRowID("row-current-protocol", rowIndex);
   var indexNumber = rowIndex;
   var row = (protocolTable.insertRow(rowIndex).outerHTML =
     "<tr id='row-current-protocol" +
@@ -741,7 +741,7 @@ const addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) =
   let rowIndex = rowcount;
   let currentRow = linkTable.rows[linkTable.rows.length];
   // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  let newRowIndex = checkForUniqueRowID("row-current-additional-link", rowIndex);
+  let newRowIndex = window.checkForUniqueRowID("row-current-additional-link", rowIndex);
   let indexNumber = rowIndex;
   let row = (linkTable.insertRow(rowIndex).outerHTML =
     "<tr id='row-current-other" +
@@ -815,7 +815,7 @@ const addContributortoTableDD = (name, contributorObject) => {
   /// append row to table from the bottom
   let currentRow = conTable.rows[conTable.rows.length - 1];
   // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  let newRowIndex = checkForUniqueRowID("row-current-con", rowIndex);
+  let newRowIndex = window.checkForUniqueRowID("row-current-con", rowIndex);
   let indexNumber = rowIndex;
   let conName = name;
   // var conContactPerson = contactStatus;
@@ -1429,7 +1429,7 @@ const addNewRow = (table) => {
       $(".doi-add-row-button").css("display", "none");
       $("#select-misc-links").remove();
       // check for unique row id in case users delete old rows and append new rows (same IDs!)
-      var newRowIndex = checkForUniqueRowID("row-current-link", rowIndex);
+      var newRowIndex = window.checkForUniqueRowID("row-current-link", rowIndex);
       var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
         "<tr id='row-current-link" +
         newRowIndex +
@@ -1464,7 +1464,7 @@ const addNewRow = (table) => {
     $("#table-current-contributors .contributor-helper-buttons").css("display", "inline-flex");
     $("#table-current-contributors .contributor-add-row-button").css("display", "none");
     // check for unique row id in case users delete old rows and append new rows (same IDs!)
-    var newRowIndex = checkForUniqueRowID("row-current-name", rowIndex);
+    var newRowIndex = window.checkForUniqueRowID("row-current-name", rowIndex);
     var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
       "<tr id='row-current-name" +
       newRowIndex +

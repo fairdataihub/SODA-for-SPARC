@@ -480,7 +480,7 @@ function resetDDFields() {
   $('#div-confirm-destination-dd-locally').css('display', 'none')
 }
 
-function resetSubjects(askToReset = true) {
+window.resetSubjects = (askToReset = true) => {
   if (!askToReset) {
     // 1. remove Prev and Show from all individual-question except for the first one
     // 2. empty all input, textarea, select, para-elements
@@ -874,7 +874,7 @@ window.resetFFMUI = (ev) => {
   }
 
   if (resetSubjectsTab) {
-    resetSubjects(false)
+    window.resetSubjects(false)
   }
 
   if (resetSamplesTab) {
