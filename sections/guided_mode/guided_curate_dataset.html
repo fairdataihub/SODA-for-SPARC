@@ -1210,17 +1210,14 @@
               </div>
               <div class="info-container">
                 <p class="help-text">
-                  <b>Subjects</b> are experimental units that are being studied. A subject can be a
-                  living human, animal, or a biological specimen.
+                  <b>Pools</b> are used to seperate subjects into groups that share common
+                  charactersitics with each other to make it easier to organize and analyze data
+                  collected from subjects.
                 </p>
                 <p class="help-text">
-                  <b>Samples</b> are a portion of a subject's tissue, fluid, or other biological
-                  materal that data is collected from.
-                </p>
-                <p class="help-text">
-                  <b>For example:</b> If a study is being done on liver tissue, a subject could be a
-                  human donor, and a sample could be a piece of liver tissue that was collected for
-                  analysis.
+                  <b>Note:</b> If all data collected from subjects in your study were collected at
+                  the same time using the same methods, you do not need to group your subjects into
+                  pools.
                 </p>
               </div>
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
@@ -1262,17 +1259,8 @@
               </div>
               <div class="info-container">
                 <p class="help-text">
-                  <b>Subjects</b> are experimental units that are being studied. A subject can be a
-                  living human, animal, or a biological specimen.
-                </p>
-                <p class="help-text">
                   <b>Samples</b> are a portion of a subject's tissue, fluid, or other biological
                   materal that data is collected from.
-                </p>
-                <p class="help-text">
-                  <b>For example:</b> If a study is being done on liver tissue, a subject could be a
-                  human donor, and a sample could be a piece of liver tissue that was collected for
-                  analysis.
                 </p>
               </div>
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
@@ -1310,8 +1298,9 @@
                 The SDS requires a unique ID for all
                 <span class="sub-pool-sample-structure-description-text"></span> in your dataset.
                 You can provide these IDs in the SODA UI or import them through a spreadsheet (more
-                convenient if you have a large amount of subjects/samples). What would you like to
-                do?
+                convenient if you have a large amount of
+                <span class="sub-pool-sample-structure-description-text"></span>). What would you
+                like to do?
               </label>
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
@@ -1367,8 +1356,8 @@
                   </p>
                   <p class="help-text text-left">
                     <b>Sample ID column: </b> Type each sample's name here, starting with 'sam-'.
-                    Make sure each sample has a unique name. All sample names must be different.
-                    Avoid using special characters or spaces.
+                    Make sure each sample has a unique name. All sample names must be unique. Avoid
+                    using special characters or spaces.
                   </p>
                   <p class="help-text text-left">
                     <b>Note: </b> If a subject has more than one sample, repeat the subject's name
@@ -1383,7 +1372,7 @@
                   creation
                 </h2>
                 <p class="help-text step-before-spreadsheet-path-declared">
-                  <b>Step 1. </b>To import your subjects and samples through a spreadsheet, click
+                  <b>Step 1: </b>To import your subjects and samples through a spreadsheet, click
                   the button below to save a blank
                   <span class="sub-pool-sample-structure-description-text"></span> spreadsheet
                   template to your computer.
@@ -1445,10 +1434,8 @@
           <h1 class="text-sub-step-title">Subjects specification</h1>
           <div class="guided--section">
             <p class="help-text">
-              The SPARC guidelines require all datasets to be organized according to a strict folder
-              structure. Over the next steps, you will be asked to specify folders and files to be
-              included in your dataset so SODA can automatically organize them according to the
-              SPARC folder structure when generating your dataset in the last step of this process.
+              Create a unique ID for each of the subjects that data was collected from in the table
+              below.
             </p>
           </div>
           <div class="guided--section">
@@ -1474,10 +1461,8 @@
           <h1 class="text-sub-step-title">Pools specification</h1>
           <div class="guided--section">
             <p class="help-text">
-              The SPARC guidelines require all datasets to be organized according to a strict folder
-              structure. Over the next steps, you will be asked to specify folders and files to be
-              included in your dataset so SODA can automatically organize them according to the
-              SPARC folder structure when generating your dataset in the last step of this process.
+              Your dataset's subjects can optionally be organized into subject pools, which are
+              groups of subjects that share common characteristics.
             </p>
           </div>
           <div class="guided--section">
@@ -1506,10 +1491,8 @@
           <h1 class="text-sub-step-title">Samples specification</h1>
           <div class="guided--section">
             <p class="help-text">
-              The SPARC guidelines require all datasets to be organized according to a strict folder
-              structure. Over the next steps, you will be asked to specify folders and files to be
-              included in your dataset so SODA can automatically organize them according to the
-              SPARC folder structure when generating your dataset in the last step of this process.
+              If any measurements were taken from samples collected from subjects (e.g. tissue
+              samples), you can specify the samples in the interface below.
             </p>
           </div>
           <div class="guided--section" id="guided-section-samples-tables"></div>
