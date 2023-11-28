@@ -85,7 +85,7 @@ const showParentTab = async (tabNow, nextOrPrev) => {
     }
   } else if (tabNow == 1) {
     checkHighLevelFoldersInput();
-    highLevelFoldersDisableOptions();
+    window.highLevelFoldersDisableOptions();
   } else {
     if (tabNow === 3) {
       if (Object.keys(window.datasetStructureJSONObj["folders"]).includes("code")) {
@@ -213,7 +213,7 @@ const fill_info_details = () => {
     add_card_detail("Selected workspace", workspace);
 
     new_dataset_name = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    if (manifestFileCheck.checked) {
+    if (window.manifestFileCheck.checked) {
       add_card_detail("Manifest files", "Requested from SODA", 1, "pulse-manifest-checkbox", true);
     } else {
       add_card_detail("Manifest files", "Not requested", 1, "pulse-manifest-checkbox", true);
@@ -233,7 +233,7 @@ const fill_info_details = () => {
         true
       );
       new_dataset_name = require("path").basename(window.sodaJSONObj["starting-point"]["local-path"]);
-      if (manifestFileCheck.checked) {
+      if (window.manifestFileCheck.checked) {
         add_card_detail(
           "Manifest files",
           "Requested from SODA",
@@ -263,7 +263,7 @@ const fill_info_details = () => {
         true
       );
       new_dataset_name = $("#inputNewNameDataset").val().trim();
-      if (manifestFileCheck.checked) {
+      if (window.manifestFileCheck.checked) {
         add_card_detail(
           "Manifest files",
           "Requested from SODA",
@@ -372,7 +372,7 @@ const fill_info_details = () => {
         );
         new_dataset_name = $("#inputNewNameDataset").val().trim();
       }
-      if (manifestFileCheck.checked) {
+      if (window.manifestFileCheck.checked) {
         add_card_detail(
           "Manifest files",
           "Requested from SODA",
@@ -398,7 +398,7 @@ const traverse_back = (amount, element = "", pulse_animation = false) => {
     $("nextBtn").prop("disabled", true);
   }
   for (i = 0; i < amount; i++) {
-    nextPrev(-1);
+    window.nextPrev(-1);
   }
 
   // wait 550 milliseconds to allow for the scroll tab animation to finish
@@ -498,7 +498,7 @@ const checkHighLevelFoldersInput = () => {
  * Also performs events or actions (such as update window.sodaJSONObj) based off the state of the Organize Datasets section
  * currently being displayed after pressing the Continue button/back button.
  */
-const nextPrev = (pageIndex) => {
+window.nextPrev = (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
   let parentTabs = document.getElementsByClassName("parent-tabs");
 
@@ -577,7 +577,7 @@ const nextPrev = (pageIndex) => {
         window.currentTab = window.currentTab + pageIndex;
         // For step 1,2,3, check for High level folders input to disable Continue button
         if (window.currentTab === 1 || window.currentTab === 2 || window.currentTab === 3) {
-          highLevelFoldersDisableOptions();
+          window.highLevelFoldersDisableOptions();
         }
         // Display the correct tab:
         showParentTab(window.currentTab, pageIndex);
@@ -750,7 +750,7 @@ const nextPrev = (pageIndex) => {
     window.currentTab = window.currentTab + pageIndex;
     // For step 1,2,3, check for High level folders input to disable Continue button
     if (window.currentTab === 1 || window.currentTab === 2 || window.currentTab === 3) {
-      highLevelFoldersDisableOptions();
+      window.highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
     showParentTab(window.currentTab, pageIndex);
@@ -774,7 +774,7 @@ const nextPrev = (pageIndex) => {
     window.currentTab = window.currentTab + pageIndex;
     // For step 1,2,3, check for High level folders input to disable Continue button
     if (window.currentTab === 1 || window.currentTab === 2 || window.currentTab === 3) {
-      highLevelFoldersDisableOptions();
+      window.highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
     showParentTab(window.currentTab, pageIndex);
@@ -857,7 +857,7 @@ function showSubTab(section, tab, input) {
 
 // function to check if certain high level folders already chosen and have files/sub-folders
 // then disable the option (users cannot un-choose)
-const highLevelFoldersDisableOptions = () => {
+window.highLevelFoldersDisableOptions = () => {
   var highLevelFolderOptions = window.datasetStructureJSONObj["folders"];
   if (highLevelFolderOptions) {
     for (var folder of window.highLevelFolders) {
@@ -947,7 +947,7 @@ const raiseWarningGettingStarted = (ev) => {
   });
 };
 
-const handleValidateCardSelection = async (ev) => {
+window.handleValidateCardSelection = async (ev) => {
   $(ev).children().find(".folder-input-check").prop("checked", true);
   $(ev).addClass("checked");
 
@@ -971,7 +971,7 @@ const handleValidateCardSelection = async (ev) => {
 };
 
 var divList = [];
-const transitionSubQuestions = async (ev, currentDiv, parentDiv, button, category) => {
+window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, category) => {
   if (currentDiv === "Question-getting-started-1") {
     // log the start of a new curation process from scratch
     // window.logCurationForAnalytics(
@@ -1757,7 +1757,7 @@ window.verify_sparc_folder = (root_folder_path, type) => {
   return valid_dataset;
 };
 
-// function similar to transitionSubQuestions, but for buttons
+// function similar to window.transitionSubQuestions, but for buttons
 window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, category) => {
   /*
     ev: the button being clicked
@@ -3023,7 +3023,7 @@ const populateOrganizeDatasetUI = (currentLocation, datasetFolder) => {
         files: {},
         action: ["existing"],
       };
-      populateJSONObjFolder(jsonObject["folders"][element], addedElement);
+      window.populateJSONObjFolder(jsonObject["folders"][element], addedElement);
     } else if (statsObj.isFile()) {
       currentLocation["files"][element] = {
         path: addedElement,
@@ -3131,7 +3131,7 @@ const updateJSONStructureMetadataFiles = () => {
 // Step 5: Manifest file
 // update JSON object with manifest file information
 const updateJSONStructureManifest = () => {
-  if (manifestFileCheck.checked) {
+  if (window.manifestFileCheck.checked) {
     if ("manifest-files" in window.sodaJSONObj) {
       // cj this might need to be changed
       window.sodaJSONObj["manifest-files"]["destination"] = "generate-dataset";
@@ -3635,7 +3635,7 @@ const saveSODAJSONProgress = (progressFileName) => {
 };
 
 // function to save Progress
-const saveOrganizeProgressPrompt = () => {
+window.saveOrganizeProgressPrompt = () => {
   // check if "save-progress" key is in JSON object
   // if yes, keep saving to that file
   if ("save-progress" in window.sodaJSONObj) {
@@ -3665,7 +3665,7 @@ const saveOrganizeProgressPrompt = () => {
         if (result.value !== null && result.value !== "") {
           window.sodaJSONObj["save-progress"] = result.value.trim();
           saveSODAJSONProgress(result.value.trim());
-          window.addOption(progressFileDropdown, result.value.trim(), result.value.trim() + ".json");
+          window.addOption(window.progressFileDropdown, result.value.trim(), result.value.trim() + ".json");
         }
       }
     });

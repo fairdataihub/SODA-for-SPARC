@@ -1591,7 +1591,7 @@ const addFilesfunction = async (
   let tripleExtension = [];
 
   // Check for files that the server can not access
-  // const inaccessible_files = await CheckFileListForServerAccess(fileArray);
+  // const inaccessible_files = await window.CheckFileListForServerAccess(fileArray);
 
   // loop through the files that are trying to be imported
   for (let i = 0; i < fileArray.length; i++) {

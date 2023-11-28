@@ -46,7 +46,7 @@ const window.resetFundingConsortiumDropdown = () => {
   $("#ffm-select-sparc-funding-consortium").val("").change();
 };
 
-const openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneRes) => {
+window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneRes) => {
   //add a custom milestone row for when the user wants to add a custom milestone
   //not included in the dataset deliverables document
   milestoneRes["N/A"] = [
@@ -234,7 +234,7 @@ const importSubmissionMetadataFromDataDeliverablesDocument = async (
   const importedSparcAward = res["sparc_award"];
   const milestoneObj = res["milestone_data"];
 
-  await openSubmissionMultiStepSwal(curationMode, importedSparcAward, milestoneObj);
+  await window.openSubmissionMultiStepSwal(curationMode, importedSparcAward, milestoneObj);
 };
 
 document.querySelectorAll(".button-import-data-deliverables-document").forEach(async (button) => {

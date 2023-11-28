@@ -411,7 +411,7 @@
               name="manifest"
               type="checkbox"
               class="with-style-manifest"
-              onclick="updateManifestLabelColor(this)"
+              onclick="window.updateManifestLabelColor(this)"
             />
             <span class="slider round"></span>
           </label>
@@ -900,7 +900,7 @@
 
   <script type="text/javascript">
     //Manifest file label color change if checked
-    function updateManifestLabelColor(el) {
+    function window.updateManifestLabelColor(el) {
       document.getElementById('label-manifest').style.color = el.checked ? 'inherit' : '#303030'
       document.getElementById('label-manifest').style.fontWeight = el.checked ? 'bold' : 'normal'
       document.getElementById('label-manifest').style.fontSize = el.checked ? '1.1em' : '1em'

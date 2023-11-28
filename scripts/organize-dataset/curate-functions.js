@@ -47,7 +47,7 @@ $(".metadata-button").click(function () {
   document.getElementById("prevBtn").style.display = "none";
 });
 
-const confirmMetadataFilePath = (ev) => {
+const window.confirmMetadataFilePath = (ev) => {
   $($(ev).parents()[1]).removeClass("show");
   $(".div-organize-generate-dataset.metadata").removeClass("hide");
   document.getElementById("nextBtn").style.display = "inline";
@@ -140,7 +140,7 @@ const metadataFileExtensionObject = {
   bannerImage: [".png", ".PNG", ".jpeg", ".JPEG", ".tiff"],
 };
 
-const dropHandler = async (
+const window.dropHandler = async (
   ev,
   paraElement,
   metadataFile,
@@ -185,7 +185,7 @@ const dropHandler = async (
           const importedSparcAward = res["sparc_award"];
           const milestoneObj = res["milestone_data"];
 
-          await openSubmissionMultiStepSwal(curationMode, importedSparcAward, milestoneObj);
+          await window.openSubmissionMultiStepSwal(curationMode, importedSparcAward, milestoneObj);
         } catch (error) {
           clientError(error);
           Swal.fire({
@@ -350,7 +350,7 @@ const btnConfirmLocalDatasetGeneration = document.getElementById("btn-confirm-lo
 btnConfirmLocalDatasetGeneration.addEventListener("click", checkAvailableSpace, false);
 
 ////////////////// IMPORT EXISTING PROGRESS FILES ////////////////////////////////
-const progressFileDropdown = document.getElementById("progress-files-dropdown");
+const window.progressFileDropdown = document.getElementById("progress-files-dropdown");
 
 /////////////////////////////// Helpers function for Import progress function /////////////////////////////
 // function to load SODA with progress file
@@ -386,9 +386,9 @@ const progressFileParse = (ev) => {
 
 const importManifest = (object) => {
   if ("manifest-files" in object) {
-    manifestFileCheck.checked = true;
+    window.manifestFileCheck.checked = true;
   } else {
-    manifestFileCheck.checked = false;
+    window.manifestFileCheck.checked = false;
   }
 };
 
@@ -429,7 +429,7 @@ const importDatasetStructure = (object) => {
   if ("dataset-structure" in object) {
     datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
     recursive_check_for_missing_files(datasetStructureJSONObj);
-    highLevelFoldersDisableOptions();
+    window.highLevelFoldersDisableOptions();
   } else {
     datasetStructureJSONObj = { folders: {}, files: {}, type: "" };
   }
@@ -577,7 +577,7 @@ const populateMetadataProgress = (populateBoolean, metadataFileName, localPath) 
 //////////////////////// Main Import progress function
 let missing_dataset_files = [];
 let missing_metadata_files = [];
-const loadProgressFile = (ev) => {
+const window.loadProgressFile = (ev) => {
   missing_dataset_files = [];
   missing_metadata_files = [];
 
@@ -750,13 +750,13 @@ const recursive_remove_missing_file = (item_path, dataset_folder) => {
 // function to load Progress dropdown
 const importOrganizeProgressPrompt = () => {
   document.getElementById("para-progress-file-status").innerHTML = "";
-  window.removeOptions(progressFileDropdown);
-  window.addOption(progressFileDropdown, "Select", "Select");
+  window.removeOptions(window.progressFileDropdown);
+  window.addOption(window.progressFileDropdown, "Select", "Select");
   if (fs.existsSync(progressFilePath)) {
     var fileNames = fs.readdirSync(progressFilePath);
     if (fileNames.length > 0) {
       fileNames.forEach((item, i) => {
-        window.addOption(progressFileDropdown, path.parse(item).name, item);
+        window.addOption(window.progressFileDropdown, path.parse(item).name, item);
       });
     } else {
       document.getElementById("para-progress-file-status").innerHTML =
@@ -1450,7 +1450,7 @@ const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
   delete myPath[category][item];
 };
 
-const updateManifestLabelColor = (el) => {
+const window.updateManifestLabelColor = (el) => {
   document.getElementById("label-manifest").style.color = el.checked
     ? "var(--color-light-green)"
     : "#303030";
@@ -1613,7 +1613,7 @@ const showTreeViewPreview = (
   datasetStructure
 ) => {
   if (manifestFileBoolean) {
-    if (manifestFileCheck.checked) {
+    if (window.manifestFileCheck.checked) {
       window.addManifestFilesForTreeView();
     } else {
       revertManifestForTreeView();

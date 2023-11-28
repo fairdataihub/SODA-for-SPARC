@@ -310,7 +310,7 @@
                         class="option-card radio-button getting-started-1st-question"
                         id="div-getting-started-prepare-new"
                         data-next="Question-getting-started-final"
-                        onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')"
+                        onclick="window.transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')"
                       >
                         <div class="card-head">
                           <div class="folder-checkbox">
@@ -353,7 +353,7 @@
                         class="option-card radio-button getting-started-1st-question"
                         id="div-getting-started-previous-progress"
                         data-next="Question-getting-started-previously-initiated-SODA"
-                        onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')"
+                        onclick="window.transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')"
                       >
                         <div class="card-head">
                           <div class="folder-checkbox">
@@ -380,7 +380,7 @@
                         class="option-card radio-button getting-started-1st-question"
                         id="div-getting-started-existing-local"
                         data-next="Question-getting-started-locally-destination"
-                        onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')"
+                        onclick="window.transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')"
                       >
                         <div class="card-head">
                           <div class="folder-checkbox">
@@ -419,7 +419,7 @@
                       <div
                         class="option-card radio-button getting-started-1st-question"
                         data-next="Question-getting-started-BF-account"
-                        onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')"
+                        onclick="window.transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')"
                       >
                         <div class="card-head">
                           <div class="folder-checkbox">
@@ -552,7 +552,7 @@
                   <div class="field" style="margin: 15px auto; width: 450px">
                     <select
                       id="progress-files-dropdown"
-                      onchange="loadProgressFile(this)"
+                      onchange="window.loadProgressFile(this)"
                       name="progress file"
                       class="ui selection dropdown"
                       style="
@@ -679,7 +679,7 @@
                     <button
                       id="btn-bf-account-getting-started"
                       class="btn_animated"
-                      onclick="transitionSubQuestions(this, 'Question-getting-started-BF-account', 'getting-started-tab', 'delete', 'individual-question getting-started')"
+                      onclick="window.transitionSubQuestions(this, 'Question-getting-started-BF-account', 'getting-started-tab', 'delete', 'individual-question getting-started')"
                       data-next="Question-getting-started-BF-dataset"
                       style="
                         margin: 0 10px;
@@ -1811,7 +1811,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-submission-file-path', 'submission', 'free-form');"
+                  ondrop="window.dropHandler(event, 'para-submission-file-path', 'submission', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -1903,7 +1903,7 @@
                     on Pennsieve
                   </p>
                   <button
-                    onclick="importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
+                    onclick="window.importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
                     class="div-file-import-button"
                   >
                     Use file
@@ -1922,7 +1922,7 @@
               >
                 <button
                   class="button-individual-metadata confirm transition-btn"
-                  onclick="confirmMetadataFilePath(this)"
+                  onclick="window.confirmMetadataFilePath(this)"
                   style="
                     margin: 30px auto;
                     margin-bottom: 10px;
@@ -1981,7 +1981,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-ds-description-file-path', 'dataset_description', 'free-form');"
+                  ondrop="window.dropHandler(event, 'para-ds-description-file-path', 'dataset_description', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -2057,7 +2057,7 @@
                     on Pennsieve
                   </p>
                   <button
-                    onclick="importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
+                    onclick="window.importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
                     class="div-file-import-button"
                   >
                     Use file
@@ -2076,7 +2076,7 @@
               >
                 <button
                   class="button-individual-metadata confirm transition-btn"
-                  onclick="confirmMetadataFilePath(this)"
+                  onclick="window.confirmMetadataFilePath(this)"
                   style="
                     margin: 30px auto;
                     margin-bottom: 10px;
@@ -2133,7 +2133,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-subjects-file-path', 'subjects', 'free-form');"
+                  ondrop="window.dropHandler(event, 'para-subjects-file-path', 'subjects', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -2209,7 +2209,7 @@
                     on Pennsieve
                   </p>
                   <button
-                    onclick="importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
+                    onclick="window.importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
                     class="div-file-import-button"
                   >
                     Use file
@@ -2228,7 +2228,7 @@
               >
                 <button
                   class="button-individual-metadata confirm transition-btn"
-                  onclick="confirmMetadataFilePath(this)"
+                  onclick="window.confirmMetadataFilePath(this)"
                   style="
                     margin: 30px auto;
                     margin-bottom: 10px;
@@ -2285,7 +2285,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event,'para-samples-file-path', 'samples', 'free-form');"
+                  ondrop="window.dropHandler(event,'para-samples-file-path', 'samples', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -2361,7 +2361,7 @@
                     on Pennsieve
                   </p>
                   <button
-                    onclick="importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
+                    onclick="window.importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
                     class="div-file-import-button"
                   >
                     Use file
@@ -2380,7 +2380,7 @@
               >
                 <button
                   class="button-individual-metadata confirm transition-btn"
-                  onclick="confirmMetadataFilePath(this)"
+                  onclick="window.confirmMetadataFilePath(this)"
                   style="
                     margin: 30px auto;
                     margin-bottom: 10px;
@@ -2437,7 +2437,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-changes-file-path', 'CHANGES', 'free-form');"
+                  ondrop="window.dropHandler(event, 'para-changes-file-path', 'CHANGES', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -2513,7 +2513,7 @@
                     on Pennsieve
                   </p>
                   <button
-                    onclick="importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
+                    onclick="window.importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
                     class="div-file-import-button"
                   >
                     Use file
@@ -2532,7 +2532,7 @@
               >
                 <button
                   class="button-individual-metadata confirm transition-btn"
-                  onclick="confirmMetadataFilePath(this)"
+                  onclick="window.confirmMetadataFilePath(this)"
                   style="
                     margin: 30px auto;
                     margin-bottom: 10px;
@@ -2590,7 +2590,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-readme-file-path', 'README', 'free-form');"
+                  ondrop="window.dropHandler(event, 'para-readme-file-path', 'README', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -2666,7 +2666,7 @@
                     on Pennsieve
                   </p>
                   <button
-                    onclick="importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
+                    onclick="window.importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
                     class="div-file-import-button"
                   >
                     Use file
@@ -2685,7 +2685,7 @@
               >
                 <button
                   class="button-individual-metadata confirm transition-btn"
-                  onclick="confirmMetadataFilePath(this)"
+                  onclick="window.confirmMetadataFilePath(this)"
                   style="
                     margin: 30px auto;
                     margin-bottom: 10px;
@@ -2743,7 +2743,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-codeDescription-file-path', 'code_description', 'free-form');"
+                  ondrop="window.dropHandler(event, 'para-codeDescription-file-path', 'code_description', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -2834,7 +2834,7 @@
                     on Pennsieve
                   </p>
                   <button
-                    onclick="importPennsieveMetadataFiles(this, 'codeDescription', ['.xlsx'], 'para-codeDescription-file-path')"
+                    onclick="window.importPennsieveMetadataFiles(this, 'codeDescription', ['.xlsx'], 'para-codeDescription-file-path')"
                     class="div-file-import-button"
                   >
                     Use file
@@ -2853,7 +2853,7 @@
               >
                 <button
                   class="button-individual-metadata confirm transition-btn"
-                  onclick="confirmMetadataFilePath(this)"
+                  onclick="window.confirmMetadataFilePath(this)"
                   style="
                     margin: 30px auto;
                     margin-bottom: 10px;
@@ -2911,7 +2911,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-codeParamMetadata-file-path', 'code_parameters', 'free-form');"
+                  ondrop="window.dropHandler(event, 'para-codeParamMetadata-file-path', 'code_parameters', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -3002,7 +3002,7 @@
                     on Pennsieve
                   </p>
                   <button
-                    onclick="importPennsieveMetadataFiles(this, 'inputsMetadata', ['.xlsx'], 'para-codeParamMetadata-file-path')"
+                    onclick="window.importPennsieveMetadataFiles(this, 'inputsMetadata', ['.xlsx'], 'para-codeParamMetadata-file-path')"
                     class="div-file-import-button"
                   >
                     Use file
@@ -3021,7 +3021,7 @@
               >
                 <button
                   class="button-individual-metadata confirm transition-btn"
-                  onclick="confirmMetadataFilePath(this)"
+                  onclick="window.confirmMetadataFilePath(this)"
                   style="
                     margin: 30px auto;
                     margin-bottom: 10px;
@@ -3078,7 +3078,7 @@
                 <div
                   class="div-file-import"
                   droppable="true"
-                  ondrop="dropHandler(event, 'para-outputsMetadata-file-path', 'outputs_metadata', 'free-form');"
+                  ondrop="window.dropHandler(event, 'para-outputsMetadata-file-path', 'outputs_metadata', 'free-form');"
                   ondragover="return false"
                 >
                   <p style="font-weight: bold">Import existing file</p>
@@ -3169,7 +3169,7 @@
                     on Pennsieve
                   </p>
                   <button
-                    onclick="importPennsieveMetadataFiles(this, 'outputsMetadata', ['.xlsx'], 'para-outputsMetadata-file-path')"
+                    onclick="window.importPennsieveMetadataFiles(this, 'outputsMetadata', ['.xlsx'], 'para-outputsMetadata-file-path')"
                     class="div-file-import-button"
                   >
                     Use file
@@ -3188,7 +3188,7 @@
               >
                 <button
                   class="button-individual-metadata confirm transition-btn"
-                  onclick="confirmMetadataFilePath(this)"
+                  onclick="window.confirmMetadataFilePath(this)"
                   style="
                     margin: 30px auto;
                     margin-bottom: 10px;
@@ -3287,7 +3287,7 @@
                       name="manifest"
                       type="checkbox"
                       class="with-style-manifest"
-                      onclick="updateManifestLabelColor(this)"
+                      onclick="window.updateManifestLabelColor(this)"
                     />
                     <span
                       class="slider round manifest"
@@ -3388,7 +3388,7 @@
                       <div
                         class="option-card radio-button"
                         data-next="Question-generate-dataset-generate-div-old"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'individual-question generate-dataset')"
+                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'individual-question generate-dataset')"
                       >
                         <div class="card-head">
                           <div class="folder-checkbox">
@@ -3415,7 +3415,7 @@
                       <div
                         class="option-card radio-button"
                         data-next="Question-generate-dataset-locally-destination"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')"
+                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')"
                       >
                         <div class="card-head">
                           <div class="folder-checkbox">
@@ -3440,7 +3440,7 @@
                       <div
                         class="option-card radio-button"
                         data-next="Question-generate-dataset-BF-account"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')"
+                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')"
                       >
                         <div class="card-head">
                           <div class="folder-checkbox">
@@ -3694,7 +3694,7 @@
                             <div
                               class="option-card radio-button"
                               data-next="Question-generate-dataset-choose-ds-name"
-                              onclick="transitionSubQuestions(this, 'Question-generate-dataset-options', 'generate-dataset-tab', '', 'generate-dataset')"
+                              onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-options', 'generate-dataset-tab', '', 'generate-dataset')"
                             >
                               <div class="card-head">
                                 <div class="folder-checkbox">
@@ -3738,7 +3738,7 @@
                             <div
                               class="option-card radio-button"
                               data-next="Question-generate-dataset-BF-dataset"
-                              onclick="transitionSubQuestions(this, 'Question-generate-dataset-options', 'generate-dataset-tab', '', 'generate-dataset')"
+                              onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-options', 'generate-dataset-tab', '', 'generate-dataset')"
                             >
                               <div class="card-head">
                                 <div class="folder-checkbox">
@@ -4167,7 +4167,7 @@
                       <div
                         class="option-card radio-button"
                         data-next="Question-generate-dataset-existing-files-options"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')"
+                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')"
                       >
                         <div class="card-head">
                           <div class="folder-checkbox">
@@ -4192,7 +4192,7 @@
                       <div
                         class="option-card radio-button"
                         data-next="Question-generate-dataset-existing-files-options"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')"
+                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')"
                       >
                         <div class="card-head">
                           <div class="folder-checkbox">
@@ -4219,7 +4219,7 @@
                       <div
                         class="option-card radio-button"
                         data-next="Question-generate-dataset-existing-files-options"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')"
+                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')"
                       >
                         <div class="card-head">
                           <div class="folder-checkbox">
@@ -4255,7 +4255,7 @@
                       <div
                         class="option-card radio-button"
                         data-next="Question-generate-dataset-existing-files-options"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')"
+                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')"
                       >
                         <div class="card-head">
                           <div class="folder-checkbox">
@@ -4340,7 +4340,7 @@
                       <div
                         class="option-card radio-button"
                         data-next="Question-generate-dataset-generate-div-old"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')"
+                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')"
                       >
                         <div class="card-head">
                           <div class="folder-checkbox">
@@ -4368,7 +4368,7 @@
                       <div
                         class="option-card radio-button"
                         data-next="Question-generate-dataset-generate-div-old"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')"
+                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')"
                       >
                         <div class="card-head">
                           <div class="folder-checkbox">
@@ -4395,7 +4395,7 @@
                       <div
                         class="option-card radio-button"
                         data-next="Question-generate-dataset-generate-div-old"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')"
+                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')"
                       >
                         <div class="card-head">
                           <div class="folder-checkbox">
@@ -4488,7 +4488,7 @@
                   <button
                     id="btn-confirm-local-destination"
                     class="btn_animated"
-                    onclick="transitionSubQuestions(this, 'Question-generate-dataset-locally-destination', 'generate-dataset-tab', 'delete', 'generate-dataset');"
+                    onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-locally-destination', 'generate-dataset-tab', 'delete', 'generate-dataset');"
                     data-next="Question-generate-dataset-choose-ds-name"
                     style="
                       margin: 0 10px;
@@ -4563,7 +4563,7 @@
             <div
               class="option-card radio-button"
               style="max-width: 180px; height: 220px !important; width: 180px !important"
-              onclick="handleValidateCardSelection(this)"
+              onclick="window.handleValidateCardSelection(this)"
             >
               <div class="card-head">
                 <div class="folder-checkbox">
@@ -4604,7 +4604,7 @@
             <div
               class="option-card radio-button"
               style="max-width: 180px; height: 220px !important; width: 180px !important"
-              onclick="handleValidateCardSelection(this)"
+              onclick="window.handleValidateCardSelection(this)"
             >
               <div class="card-head">
                 <div class="folder-checkbox">
@@ -5086,7 +5086,7 @@
         <div style="display: flex; flex-direction: row">
           <button
             type="button"
-            onclick="nextPrev(-1)"
+            onclick="window.nextPrev(-1)"
             id="prevBtn"
             class="transition-btn back"
           >
@@ -5123,7 +5123,7 @@
           </button>
           <button
             style="float: right; width: 135px"
-            onclick="nextPrev(1)"
+            onclick="window.nextPrev(1)"
             id="nextBtn"
             type="button"
             class="transition-btn"

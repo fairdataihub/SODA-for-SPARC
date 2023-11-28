@@ -1481,7 +1481,7 @@ const menuFile = document.querySelector(".menu.file");
 const menuHighLevelFolders = document.querySelector(".menu.high-level-folder");
 const organizeNextStepBtn = document.getElementById("button-organize-confirm-create");
 const organizePrevStepBtn = document.getElementById("button-organize-prev");
-const manifestFileCheck = document.getElementById("generate-manifest-curate");
+const window.manifestFileCheck = document.getElementById("generate-manifest-curate");
 let bfAccountOptions;
 let window.defaultBfDataset;
 let window.defaultBfDataset = "Select dataset";
@@ -4506,7 +4506,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 // ///////////////////////////////////////////////////////////////////////////
 // recursively populate json object
 // When importing folders to the file expolorer this function will import the content within the folder
-const populateJSONObjFolder = (action, jsonObject, folderPath) => {
+const window.populateJSONObjFolder = (action, jsonObject, folderPath) => {
   let folderContent = fs.readdirSync(folderPath);
   folderContent.forEach((itemWithinFolder) => {
     //prevented here
@@ -4540,7 +4540,7 @@ const populateJSONObjFolder = (action, jsonObject, folderPath) => {
           action: ["new"],
         };
       }
-      populateJSONObjFolder(action, jsonObject["folders"][itemWithinFolder], addedElement);
+      window.populateJSONObjFolder(action, jsonObject["folders"][itemWithinFolder], addedElement);
     } else if (
       statsObj.isFile() &&
       !/(!\/[^\/]+)/g.test(itemWithinFolder) &&
@@ -6871,7 +6871,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
           "Success",
           PrepareDatasetsAnalyticsPrefix.CURATE,
           window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          Actions.EXISTING,
+          window.Actions.EXISTING,
           Destinations.LOCAL
         );
         setTimeout(() => {
@@ -7060,7 +7060,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
             "Error",
             PrepareDatasetsAnalyticsPrefix.CURATE,
             window.AnalyticsGranularity.ALL_LEVELS,
-            Actions.EXISTING,
+            window.Actions.EXISTING,
             Destinations.LOCAL
           );
         }
@@ -8205,7 +8205,7 @@ function window.importMetadataFiles(ev, metadataFile, extensionList, paraEle, cu
   ipcRenderer.send("open-file-dialog-metadata-curate");
 }
 
-function importPennsieveMetadataFiles(ev, metadataFile, extensionList, paraEle) {
+function window.importPennsieveMetadataFiles(ev, metadataFile, extensionList, paraEle) {
   extensionList.forEach((file_type) => {
     file_name = metadataFile + file_type;
     if (
@@ -8737,7 +8737,7 @@ const Destinations = {
   NEW: "New",
 };
 
-const Actions = {
+window.Actions = {
   GENERATE: "Generate",
   EXISTING: "Existing",
   NEW: "New",
