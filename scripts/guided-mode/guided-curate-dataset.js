@@ -1220,6 +1220,17 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
+    if (pageBeingLeftID === "guided-samples-addition-tab") {
+      const samples = getExistingSampleNames();
+      if (samples.length === 0) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please add at least one sample to a subject",
+        });
+        throw errorArray;
+      }
+    }
+
     if (pageBeingLeftID === "guided-subjects-dataset-structure-specification-tab") {
       const userSelectedDatasetHasPools = document
         .getElementById("guided-button-subjects-are-pooled")
