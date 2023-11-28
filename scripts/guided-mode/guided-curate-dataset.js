@@ -1236,8 +1236,16 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
       if (userSelectedDatasetHasPools) {
         guidedUnSkipPage("guided-subjects-pooling-tab");
+        //Unskip the pool data organization pages
+        guidedUnSkipPage(`guided-primary-pools-organization-page`);
+        guidedUnSkipPage(`guided-source-pools-organization-page`);
+        guidedUnSkipPage(`guided-derivative-pools-organization-page`);
       } else {
         guidedSkipPage("guided-subjects-pooling-tab");
+        //Skip the pool data organization pages
+        guidedSkipPage(`guided-primary-pools-organization-page`);
+        guidedSkipPage(`guided-source-pools-organization-page`);
+        guidedSkipPage(`guided-derivative-pools-organization-page`);
       }
 
       const userSelectedSubjectsHaveSamples = document
@@ -1256,8 +1264,20 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       if (userSelectedSubjectsHaveSamples) {
         guidedUnSkipPage("guided-samples-addition-tab");
+        //Unskip the sample data organization pages
+        guidedUnSkipPage(`guided-primary-samples-organization-page`);
+        guidedUnSkipPage(`guided-source-samples-organization-page`);
+        guidedUnSkipPage(`guided-derivative-samples-organization-page`);
+        //Unskip the samples metadata page
+        guidedUnSkipPage(`guided-create-samples-metadata-tab`);
       } else {
         guidedSkipPage("guided-samples-addition-tab");
+        //Skip the sample data organization pages
+        guidedSkipPage(`guided-primary-samples-organization-page`);
+        guidedSkipPage(`guided-source-samples-organization-page`);
+        guidedSkipPage(`guided-derivative-samples-organization-page`);
+        //Skip the samples metadata page
+        guidedSkipPage(`guided-create-samples-metadata-tab`);
       }
 
       const userChoseToImportStructureViaSpreadsheet = document
