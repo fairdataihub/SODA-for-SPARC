@@ -1211,7 +1211,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           ).length === 0
         ) {
           errorArray.push({
-            type: "error",
+            type: "notyf",
             message:
               "Empty data pools are not allowed. Please add at least one subject to each pool or delete the empty pool.",
           });
