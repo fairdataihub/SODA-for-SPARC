@@ -10584,8 +10584,7 @@ const specifySubject = (event, subjectNameInput) => {
           generateAlertMessage(subjectNameInput);
           return;
         }
-        //remove the add subject help text
-        document.getElementById("guided-add-subject-instructions").classList.add("hidden");
+
         removeAlertMessageIfExists(subjectNameInput);
         if (subjectNameInput.attr("data-prev-name")) {
           const subjectToRename = subjectNameInput.attr("data-prev-name");
@@ -11391,7 +11390,7 @@ document
     const preImportSubjectCount = getExistingSubjectNames().length;
     const preImportPoolCount = getExistingPoolNames().length;
     const preImportSampleCount = getExistingSampleNames().length;
-
+    /*
     for (const row of sheetData) {
       const subjectName = lowercaseFirstLetter(row["Subject ID"]);
       const subjectsPool = lowercaseFirstLetter(row["Pool ID"]);
@@ -11416,7 +11415,7 @@ document
           sodaJSONObj.addSampleToSubject(sampleName, subjectsPool, subjectName);
         }
       }
-    }
+    }*/
 
     // Get the count of existing subjects, pools, and samples to compare after the import is done
     const postImportSubjectCount = getExistingSubjectNames().length;
@@ -11444,7 +11443,7 @@ document
       <br />
       You will now be taken to the next step where you can review/edit the imported data.`
     );
-    $("#guided-next-button").click();
+    //$("#guided-next-button").click();
   });
 
 const guidedExtractEntityNamesFromFolders = async (entityType) => {
@@ -11573,6 +11572,8 @@ const convertArrayToCommaSeparatedString = (array) => {
     return `${array.join(", ")}, and ${lastElement}`;
   }
 };
+
+const guidedOpenEntityEditSwal = async (entityName) => {};
 
 const guidedOpenEntityAdditionSwal = async (entityName) => {
   // Get a list of the existing entities so we can check for duplicates
@@ -11792,8 +11793,6 @@ const addSubjectSpecificationTableRow = () => {
     scrollToBottomOfGuidedBody();
     //CREATE EVENT LISTENER FOR ON FOCUS
     confirmOnBlur("guided--subject-input");
-
-    document.getElementById("guided-add-subject-instructions").classList.remove("hidden");
   }
 };
 const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
@@ -11939,9 +11938,6 @@ const deleteSubject = async (subjectDeleteButton) => {
 
   //Rerender the subjects table
   renderSubjectsTable();
-
-  //remove the add subject help text
-  document.getElementById("guided-add-subject-instructions").classList.add("hidden");
 };
 
 const deletePool = (poolDeleteButton) => {
@@ -13086,6 +13082,28 @@ const arraysHaveSameElements = (arr1, arr2) => {
   return true;
 };
 
+const showCorrectSpreadsheetInstructionSection = (datasetEntities) => {
+  if (arraysHaveSameElements(datasetEntities, ["subjects"])) {
+    // show the subjects only spreadsheet instructions
+    document.getElementById("import-instructions-subjects").classList.remove("hidden");
+  }
+  if (arraysHaveSameElements(datasetEntities, ["subjects", "pools"])) {
+    // show the subjects and pools spreadsheet instructions
+    document.getElementById("import-instructions-subjects-pools").classList.remove("hidden");
+  }
+  if (arraysHaveSameElements(datasetEntities, ["subjects", "samples"])) {
+    // show the subjects and samples spreadsheet instructions
+
+    document.getElementById("import-instructions-subjects-samples").classList.remove("hidden");
+  }
+  if (arraysHaveSameElements(datasetEntities, ["subjects", "pools", "samples"])) {
+    // show the subjects, pools, and samples spreadsheet instructions
+    document
+      .getElementById("import-instructions-subjects-pools-samples")
+      .classList.remove("hidden");
+  }
+};
+
 const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
   console.log("controlledSectionID: ", controlledSectionID);
   const controlledElementContainer = document.getElementById(controlledSectionID);
@@ -13242,33 +13260,26 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
       datasetEntities.push("samples");
     }
 
-    const showCorrectSpreadsheetInstructionSection = (datasetEntities) => {
-      console.log("datasetEntities: ", datasetEntities);
-      if (arraysHaveSameElements(datasetEntities, ["subjects"])) {
-        console.log("subjects only array detected");
-        document.getElementById("import-instructions-subjects").classList.remove("hidden");
-        // show the subjects only spreadsheet instructions
-      }
-      if (arraysHaveSameElements(datasetEntities, ["subjects", "pools"])) {
-        // show the subjects and pools spreadsheet instructions
-        document.getElementById("import-instructions-subjects-pools").classList.remove("hidden");
-      }
-      if (arraysHaveSameElements(datasetEntities, ["subjects", "samples"])) {
-        document.getElementById("import-instructions-subjects-samples").classList.remove("hidden");
-
-        // show the subjects and samples spreadsheet instructions
-      }
-      if (arraysHaveSameElements(datasetEntities, ["subjects", "pools", "samples"])) {
-        // show the subjects, pools, and samples spreadsheet instructions
-        document
-          .getElementById("import-instructions-subjects-pools-samples")
-          .classList.remove("hidden");
-      }
-    };
-
     showCorrectSpreadsheetInstructionSection(datasetEntities);
 
     const textFormattedEntities = convertArrayToCommaSeparatedString(datasetEntities);
+
+    // If a spreadsheet has already been generated, notify the user that they will need to
+    // re-fill out the spreadsheet since the headers will be different.
+    if (sodaJSONObj["dataset-structure-spreadsheet-path"]) {
+      if (
+        sodaJSONObj["dataset-structure-entities"] &&
+        sodaJSONObj["dataset-structure-entities"] != textFormattedEntities
+      ) {
+        // Delete the spreadsheet path since it will need to be re-generated
+        delete sodaJSONObj["dataset-structure-spreadsheet-path"];
+        // Reset the UI to show that the dataset structure spreadsheet has not been generated
+        setUiBasedOnSavedDatasetStructurePath(false);
+      }
+    }
+    // Store the dataset entities in the sodaJSONObj to track if a new spreadsheet needs to be generated
+    // when the user changes the dataset structure
+    sodaJSONObj["dataset-structure-entities"] = textFormattedEntities;
 
     const spansToInsertTextInto = document.querySelectorAll(
       ".sub-pool-sample-structure-description-text"
