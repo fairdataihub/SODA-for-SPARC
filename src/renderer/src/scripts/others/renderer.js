@@ -6609,8 +6609,8 @@ window.electron.ipcRenderer.on("selected-local-destination-datasetCurate", async
       let monitorProgressResponse = await client.get(`/organize_datasets/datasets/import/progress`);
 
       let { data } = monitorProgressResponse;
-      percentage_amount = data["progress_percentage"].toFixed(2);
-      finished = data["create_soda_json_completed"];
+      let percentage_amount = data["progress_percentage"].toFixed(2);
+      let finished = data["create_soda_json_completed"];
 
       numb.innerText = percentage_amount + "%";
       if (percentage_amount <= 50) {
@@ -6628,7 +6628,7 @@ window.electron.ipcRenderer.on("selected-local-destination-datasetCurate", async
         clearInterval(local_progress);
         progressBar_rightSide.classList.remove("notransition");
         window.populate_existing_folders(window.datasetStructureJSONObj);
-        window.populate_existing_metadata(sodaJSONObj);
+        window.populate_existing_metadata(window.sodaJSONObj);
         $("#para-continue-location-dataset-getting-started").text("Please continue below.");
         $("#nextBtn").prop("disabled", false);
         // log the success to analytics
@@ -6652,14 +6652,14 @@ window.electron.ipcRenderer.on("selected-local-destination-datasetCurate", async
   // Function begins here
   if (filepath.length > 0) {
     if (filepath != null) {
-      sodaJSONObj["starting-point"]["local-path"] = "";
+      window.sodaJSONObj["starting-point"]["local-path"] = "";
       document.getElementById("input-destination-getting-started-locally").placeholder =
         filepath[0];
       if (
-        sodaJSONObj["starting-point"]["type"] === "local" &&
-        sodaJSONObj["starting-point"]["local-path"] == ""
+        window.sodaJSONObj["starting-point"]["type"] === "local" &&
+        window.sodaJSONObj["starting-point"]["local-path"] == ""
       ) {
-        valid_dataset = window.verify_sparc_folder(
+        let valid_dataset = window.verify_sparc_folder(
           document.getElementById("input-destination-getting-started-locally").placeholder,
           "local"
         );
@@ -6711,7 +6711,7 @@ window.electron.ipcRenderer.on("selected-local-destination-datasetCurate", async
               } else {
                 document.getElementById("input-destination-getting-started-locally").placeholder =
                   "Browse here";
-                sodaJSONObj["starting-point"]["local-path"] = "";
+                window.sodaJSONObj["starting-point"]["local-path"] = "";
                 $("#para-continue-location-dataset-getting-started").text("");
                 return;
               }
@@ -6725,7 +6725,7 @@ window.electron.ipcRenderer.on("selected-local-destination-datasetCurate", async
               document.getElementById("loading_local_dataset").style.display = "block";
 
               // Show file path to user in the input box
-              sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+              window.sodaJSONObj["starting-point"]["local-path"] = filepath[0];
               let root_folder_path = $("#input-destination-getting-started-locally").attr(
                 "placeholder"
               );
@@ -6737,7 +6737,7 @@ window.electron.ipcRenderer.on("selected-local-destination-datasetCurate", async
                 let importLocalDatasetResponse = await client.post(
                   `/organize_datasets/datasets/import`,
                   {
-                    sodajsonobject: sodaJSONObj,
+                    sodajsonobject: window.sodaJSONObj,
                     root_folder_path: root_folder_path,
                     irregular_folders: window.irregularFolderArray,
                     replaced: replaced,
@@ -6745,8 +6745,8 @@ window.electron.ipcRenderer.on("selected-local-destination-datasetCurate", async
                   { timeout: 0 }
                 );
                 let { data } = importLocalDatasetResponse;
-                sodaJSONObj = data;
-                window.datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+                window.sodaJSONObj = data;
+                window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
               } catch (error) {
                 clientError(error);
                 clearInterval(local_progress);
@@ -6762,7 +6762,7 @@ window.electron.ipcRenderer.on("selected-local-destination-datasetCurate", async
             document.getElementById("loading_local_dataset").style.display = "block";
 
             // Show file path to user in the input box
-            sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+            window.sodaJSONObj["starting-point"]["local-path"] = filepath[0];
             let root_folder_path = $("#input-destination-getting-started-locally").attr(
               "placeholder"
             );
@@ -6774,7 +6774,7 @@ window.electron.ipcRenderer.on("selected-local-destination-datasetCurate", async
               let importLocalDatasetResponse = await client.post(
                 `/organize_datasets/datasets/import`,
                 {
-                  sodajsonobject: sodaJSONObj,
+                  sodajsonobject: window.sodaJSONObj,
                   root_folder_path: root_folder_path,
                   irregular_folders: window.irregularFolderArray,
                   replaced: replaced,
@@ -6782,8 +6782,8 @@ window.electron.ipcRenderer.on("selected-local-destination-datasetCurate", async
                 { timeout: 0 }
               );
               let { data } = importLocalDatasetResponse;
-              sodaJSONObj = data;
-              window.datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+              window.sodaJSONObj = data;
+              window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
             } catch (error) {
               clientError(error);
               clearInterval(local_progress);
@@ -6815,7 +6815,7 @@ window.electron.ipcRenderer.on("selected-local-destination-datasetCurate", async
             } else {
               document.getElementById("input-destination-getting-started-locally").placeholder =
                 "Browse here";
-              sodaJSONObj["starting-point"]["local-path"] = "";
+              window.sodaJSONObj["starting-point"]["local-path"] = "";
               $("#para-continue-location-dataset-getting-started").text("");
             }
           });
@@ -6837,114 +6837,114 @@ window.electron.ipcRenderer.on("selected-local-destination-datasetCurate", async
   }
 });
 
-// window.electron.ipcRenderer.on("guided-selected-local-destination-datasetCurate", (event, filepath) => {
-//   if (filepath.length > 0) {
-//     if (filepath != null) {
-//       sodaJSONObj["starting-point"]["local-path"] = "";
-//       sodaJSONObj["starting-point"]["type"] = "local";
+window.electron.ipcRenderer.on("guided-selected-local-destination-datasetCurate", (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null) {
+      window.sodaJSONObj["starting-point"]["local-path"] = "";
+      window.sodaJSONObj["starting-point"]["type"] = "local";
 
-//       $("#guided-input-destination-getting-started-locally").val(filepath[0]);
-//       $(".guidedDatasetPath").text(filepath[0]);
+      $("#guided-input-destination-getting-started-locally").val(filepath[0]);
+      $(".guidedDatasetPath").text(filepath[0]);
 
-//       valid_dataset = window.verify_sparc_folder(filepath[0]);
-//       if (valid_dataset == true) {
-//         var action = "";
-//         window.irregularFolderArray = [];
-//         window.detectIrregularFolders(window.path.basename(filepath[0]), filepath[0]);
-//         var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${window.nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-//         if (window.irregularFolderArray.length > 0) {
-//           Swal.fire({
-//             title:
-//               "The following folders contain non-allowed characters in their names. How should we handle them?",
-//             html:
-//               "<div style='max-height:300px; overflow-y:auto'>" +
-//               window.irregularFolderArray.join("</br>") +
-//               "</div>",
-//             heightAuto: false,
-//             backdrop: "rgba(0,0,0, 0.4)",
-//             showDenyButton: true,
-//             showCancelButton: true,
-//             confirmButtonText: "Replace characters with (-)",
-//             denyButtonText: "Remove characters",
-//             cancelButtonText: "Cancel",
-//             didOpen: () => {
-//               $(".swal-popover").popover();
-//             },
-//             footer: footer,
-//           }).then((result) => {
-//             /* Read more about isConfirmed, isDenied below */
-//             if (result.isConfirmed) {
-//               action = "replace";
-//             } else if (result.isDenied) {
-//               action = "remove";
-//             } else {
-//               $("#guided-input-destination-getting-started-locally").val("Browse here");
-//               sodaJSONObj["starting-point"]["local-path"] = "";
-//               $("#para-continue-location-dataset-getting-started").text("");
-//               return;
-//             }
-//             sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+      let valid_dataset = window.verify_sparc_folder(filepath[0]);
+      if (valid_dataset == true) {
+        var action = "";
+        window.irregularFolderArray = [];
+        window.detectIrregularFolders(window.path.basename(filepath[0]), filepath[0]);
+        var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${window.nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+        if (window.irregularFolderArray.length > 0) {
+          Swal.fire({
+            title:
+              "The following folders contain non-allowed characters in their names. How should we handle them?",
+            html:
+              "<div style='max-height:300px; overflow-y:auto'>" +
+              window.irregularFolderArray.join("</br>") +
+              "</div>",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Replace characters with (-)",
+            denyButtonText: "Remove characters",
+            cancelButtonText: "Cancel",
+            didOpen: () => {
+              $(".swal-popover").popover();
+            },
+            footer: footer,
+          }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+              action = "replace";
+            } else if (result.isDenied) {
+              action = "remove";
+            } else {
+              $("#guided-input-destination-getting-started-locally").val("Browse here");
+              window.sodaJSONObj["starting-point"]["local-path"] = "";
+              $("#para-continue-location-dataset-getting-started").text("");
+              return;
+            }
+            window.sodaJSONObj["starting-point"]["local-path"] = filepath[0];
 
-//             let root_folder_path = $("#guided-input-destination-getting-started-locally").val();
+            let root_folder_path = $("#guided-input-destination-getting-started-locally").val();
 
-//             window.create_json_object(action, sodaJSONObj, root_folder_path);
-//             window.datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-//             window.populate_existing_folders(window.datasetStructureJSONObj);
-//             window.populate_existing_metadata(sodaJSONObj);
-//             enableProgressButton();
-//           });
-//         } else {
-//           action = "";
-//           let root_folder_path = $("#guided-input-destination-getting-started-locally").val();
-//           sodaJSONObj["starting-point"]["local-path"] = filepath[0];
-//           window.create_json_object(action, sodaJSONObj, root_folder_path);
-//           window.datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-//           window.populate_existing_folders(window.datasetStructureJSONObj);
-//           window.populate_existing_metadata(sodaJSONObj);
-//         }
-//       } else {
-//         Swal.fire({
-//           icon: "warning",
-//           html: `This folder does not seems to include any SPARC folders. Please select a folder that has a valid SPARC dataset structure.
-//               <br/>
-//               If you are trying to create a new dataset folder, select the 'Prepare a new dataset' option.`,
-//           heightAuto: false,
-//           backdrop: "rgba(0,0,0, 0.4)",
-//           showConfirmButton: false,
-//           showCancelButton: true,
-//           focusCancel: true,
-//           cancelButtonText: "Okay",
-//           reverseButtons: window.reverseSwalButtons,
-//           showClass: {
-//             popup: "animate__animated animate__zoomIn animate__faster",
-//           },
-//           hideClass: {
-//             popup: "animate__animated animate__zoomOut animate__faster",
-//           },
-//         }).then((result) => {
-//           if (result.isConfirmed) {
-//           } else {
-//             $("#guided-input-destination-getting-started-locally").val("Browse here");
-//             $(".guidedDatasetPath").text("");
-//             sodaJSONObj["starting-point"]["local-path"] = "";
-//           }
-//         });
-//       }
-//     }
-//   } else {
-//   }
-// });
+            window.create_json_object(action, sodaJSONObj, root_folder_path);
+            window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
+            window.populate_existing_folders(window.datasetStructureJSONObj);
+            window.populate_existing_metadata(window.sodaJSONObj);
+            enableProgressButton();
+          });
+        } else {
+          action = "";
+          let root_folder_path = $("#guided-input-destination-getting-started-locally").val();
+          sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+          window.create_json_object(action, window.sodaJSONObj, root_folder_path);
+          window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
+          window.populate_existing_folders(window.datasetStructureJSONObj);
+          window.populate_existing_metadata(window.sodaJSONObj);
+        }
+      } else {
+        Swal.fire({
+          icon: "warning",
+          html: `This folder does not seems to include any SPARC folders. Please select a folder that has a valid SPARC dataset structure.
+              <br/>
+              If you are trying to create a new dataset folder, select the 'Prepare a new dataset' option.`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showConfirmButton: false,
+          showCancelButton: true,
+          focusCancel: true,
+          cancelButtonText: "Okay",
+          reverseButtons: window.reverseSwalButtons,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+          } else {
+            $("#guided-input-destination-getting-started-locally").val("Browse here");
+            $(".guidedDatasetPath").text("");
+            window.sodaJSONObj["starting-point"]["local-path"] = "";
+          }
+        });
+      }
+    }
+  } else {
+  }
+});
 
-// //// Select to choose a local dataset (generate dataset)
-// document
-//   .getElementById("input-destination-generate-dataset-locally")
-//   .addEventListener("click", function () {
-//     $("#Question-generate-dataset-locally-destination").nextAll().removeClass("show");
-//     $("#Question-generate-dataset-locally-destination").nextAll().removeClass("test2");
-//     $("#Question-generate-dataset-locally-destination").nextAll().removeClass("prev");
-//     document.getElementById("nextBtn").disabled = true;
-//     window.electron.ipcRenderer.send("open-file-dialog-local-destination-curate-generate");
-//   });
+//// Select to choose a local dataset (generate dataset)
+document
+  .getElementById("input-destination-generate-dataset-locally")
+  .addEventListener("click", function () {
+    $("#Question-generate-dataset-locally-destination").nextAll().removeClass("show");
+    $("#Question-generate-dataset-locally-destination").nextAll().removeClass("test2");
+    $("#Question-generate-dataset-locally-destination").nextAll().removeClass("prev");
+    document.getElementById("nextBtn").disabled = true;
+    window.electron.ipcRenderer.send("open-file-dialog-local-destination-curate-generate");
+  });
 
 // window.electron.ipcRenderer.on("selected-local-destination-datasetCurate-generate", (event, filepath) => {
 //   if (filepath.length > 0) {
