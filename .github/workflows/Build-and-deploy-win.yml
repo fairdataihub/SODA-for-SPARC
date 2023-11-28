@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - guided-mode-subject-rework-simplified
 
 jobs:
   deploy-on-windows:
