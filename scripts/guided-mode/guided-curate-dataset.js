@@ -11309,6 +11309,8 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
     }
   }
 
+  let spreadsheetIsValid = true;
+
   if (invalidSubjectNames.length > 0) {
     await swalFileListSingleAction(
       invalidSubjectNames,
@@ -11316,7 +11318,7 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
       "Subject names must start with 'sub-' and may not contain spaces or special characters",
       "Please fix the invalid subject names in the spreadsheet and try again"
     );
-    return false;
+    spreadsheetIsValid = false;
   }
 
   if (invalidPoolNames.length > 0) {
@@ -11326,7 +11328,7 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
       "Pool names must start with 'pool-' and may not contain spaces or special characters",
       "Please fix the invalid pool names in the spreadsheet and try again"
     );
-    return false;
+    spreadsheetIsValid = false;
   }
 
   if (invalidSampleNames.length > 0) {
@@ -11336,7 +11338,7 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
       "Sample names must start with 'sam-' and may not contain spaces or special characters",
       "Please fix the invalid sample names in the spreadsheet and try again"
     );
-    return false;
+    spreadsheetIsValid = false;
   }
 
   if (duplicateSampleNames.length > 0) {
@@ -11346,7 +11348,7 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
       "Sample names must be unique",
       "Please fix the duplicate sample names in the spreadsheet and try again"
     );
-    return false;
+    spreadsheetIsValid = false;
   }
 
   if (subjectsWithMismatchedPools.length > 0) {
@@ -11356,10 +11358,10 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
       "Subjects can only be in one pool",
       "Please fix the subjects with mismatched pools in the spreadsheet and try again"
     );
-    return false;
+    spreadsheetIsValid = false;
   }
 
-  return true;
+  return spreadsheetIsValid;
 };
 
 // CLICK HANDLER THAT EXTRACTS THE DATASET STRUCTURE FROM A SPREADSHEET
@@ -11390,7 +11392,7 @@ document
     const preImportSubjectCount = getExistingSubjectNames().length;
     const preImportPoolCount = getExistingPoolNames().length;
     const preImportSampleCount = getExistingSampleNames().length;
-    /*
+
     for (const row of sheetData) {
       const subjectName = lowercaseFirstLetter(row["Subject ID"]);
       const subjectsPool = lowercaseFirstLetter(row["Pool ID"]);
@@ -11415,7 +11417,7 @@ document
           sodaJSONObj.addSampleToSubject(sampleName, subjectsPool, subjectName);
         }
       }
-    }*/
+    }
 
     // Get the count of existing subjects, pools, and samples to compare after the import is done
     const postImportSubjectCount = getExistingSubjectNames().length;
@@ -11680,9 +11682,8 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
     html: `
       <p class="help-text">
         Enter a unique ${entityNameSingular} ID and press enter or the
-       'Add ${entityNameSingular}' button for each ${entityNameSingular}.
-       <br />
-       Once you are done, click the 'Add ${entityNameSingular}(s)' button to add the ${entityNameSingular}(s) to the dataset.
+        'Add ${entityNameSingular}' button for each ${entityNameSingular} in your dataset.
+        <br />
       </p>
       <div class="space-between w-100 align-flex-center">
         <p class="help-text m-0 mr-1">sub-</p>
@@ -11697,9 +11698,9 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
       </div>
       <div id="entities-list" class="swal-file-list my-3"></div>
     `,
-    width: 800,
+    width: 850,
     heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
+    backdrop: "rgba(0,0,0,0.4)",
     showConfirmButton: true,
     showCancelButton: true,
     showCloseButton: false,
@@ -11731,6 +11732,13 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
           Swal.showValidationMessage(error);
         }
       });
+    },
+    preConfirm: () => {
+      if (newEntities.length === 0) {
+        Swal.showValidationMessage(
+          `Please add at least one ${entityNameSingular} or click Cancel ${entityNameSingular} addition`
+        );
+      }
     },
   });
 
