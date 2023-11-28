@@ -1132,18 +1132,20 @@ const savePageChanges = async (pageBeingLeftID) => {
       const datasetHasCode = sodaJSONObj["dataset-contains-code"];
 
       if (datasetHasSubjects) {
-        guidedUnSkipPage("guided-subjects-specification-tab");
-        guidedUnSkipPage("guided-subjects-pooling-tab");
-        guidedUnSkipPage("guided-samples-specification-tab");
+        guidedUnSkipPage("guided-subjects-dataset-structure-specification-tab");
+        guidedUnSkipPage("guided-subjects-addition-tab");
+
         guidedUnSkipPage("guided-primary-data-organization-tab");
         guidedUnSkipPage("guided-source-data-organization-tab");
         guidedUnSkipPage("guided-derivative-data-organization-tab");
         guidedUnSkipPage("guided-create-subjects-metadata-tab");
-        guidedUnSkipPage("guided-create-subjects-metadata-tab");
+        guidedUnSkipPage("guided-create-samples-metadata-tab");
       } else {
-        guidedSkipPage("guided-subjects-specification-tab");
+        guidedSkipPage("guided-subjects-dataset-structure-specification-tab");
+        guidedSkipPage("guided-subjects-addition-tab");
         guidedSkipPage("guided-subjects-pooling-tab");
-        guidedSkipPage("guided-samples-specification-tab");
+        guidedSkipPage("guided-samples-addition-tab");
+
         guidedSkipPage("guided-primary-data-organization-tab");
         guidedSkipPage("guided-source-data-organization-tab");
         guidedSkipPage("guided-derivative-data-organization-tab");
@@ -1196,7 +1198,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       //have any pools
       if (Object.keys(pools).length === 0) {
         errorArray.push({
-          type: "error",
+          type: "notyf",
           message:
             "Please add at least one pool or indicate that your dataset does not contain pools.",
         });
@@ -1219,7 +1221,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
-    if (pageBeingLeftID === "guided-subjects-specification-tab") {
+    if (pageBeingLeftID === "guided-subjects-dataset-structure-specification-tab") {
       const userSelectedDatasetHasPools = document
         .getElementById("guided-button-subjects-are-pooled")
         .classList.contains("selected");
@@ -5023,7 +5025,7 @@ const openPage = async (targetPageID) => {
       importProgressCircle.classList.add("hidden");
     }
 
-    if (targetPageID === "guided-subjects-specification-tab") {
+    if (targetPageID === "guided-subjects-dataset-structure-specification-tab") {
       const subjectPoolingQuerySection = document.getElementById(
         "guided-section-subject-pooling-yes-no"
       );
@@ -15779,7 +15781,7 @@ const saveSubPageChanges = async (openSubPageID) => {
           errorArray.push({
             type: "error",
             message:
-              "Please add at least one pool or indicate that your dataset does not contain pools.",
+              "Please add at least one pool or go back and indicate that your dataset does not contain pools.",
           });
           throw errorArray;
         }
