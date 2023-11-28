@@ -8813,7 +8813,7 @@ const logCurationForAnalytics = (
   }
 };
 
-const getMetadataFileNameFromStatus = (metadataFileStatus) => {
+const window.getMetadataFileNameFromStatus = (metadataFileStatus) => {
   // get the UI text that displays the file path
   let filePath = metadataFileStatus.text();
 
@@ -8825,7 +8825,7 @@ const getMetadataFileNameFromStatus = (metadataFileStatus) => {
   return fileName;
 };
 
-const determineLocationFromStatus = (metadataFileStatus) => {
+const window.determineLocationFromStatus = (metadataFileStatus) => {
   let filePath = metadataFileStatus.text();
 
   // determine if the user imported from Pennsieve or Locally

@@ -76,8 +76,8 @@ const window.confirmMetadataFilePath = (ev) => {
       [
         "Step 4",
         "Import",
-        `${getMetadataFileNameFromStatus(metadataFileStatus)}`,
-        determineLocationFromStatus(metadataFileStatus)
+        `${window.getMetadataFileNameFromStatus(metadataFileStatus)}`,
+        window.determineLocationFromStatus(metadataFileStatus)
           ? Destinations.PENNSIEVE
           : Destinations.LOCAL,
       ],
@@ -94,8 +94,8 @@ const window.confirmMetadataFilePath = (ev) => {
       [
         "Step 4",
         "Import",
-        `${getMetadataFileNameFromStatus(metadataFileStatus)}`,
-        determineLocationFromStatus(metadataFileStatus)
+        `${window.getMetadataFileNameFromStatus(metadataFileStatus)}`,
+        window.determineLocationFromStatus(metadataFileStatus)
           ? Destinations.PENNSIEVE
           : Destinations.LOCAL,
       ],

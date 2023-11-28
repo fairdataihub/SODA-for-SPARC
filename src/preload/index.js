@@ -121,6 +121,12 @@ if (process.contextIsolated) {
       },
       rmdirSync: (dirpath) => {
         return fs.rmdirSync(dirpath)
+      },
+      openSync: (filepath, flag) => {
+        return fs.openSync(filepath, flag)
+      },
+      closeSync: (fileDescriptor) => {
+        return fs.closeSync(fileDescriptor)
       }
     })
     contextBridge.exposeInMainWorld('process', {

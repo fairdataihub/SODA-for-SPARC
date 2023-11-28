@@ -1267,7 +1267,7 @@ const manifestStatus = document.querySelector("#generate-manifest");
 
 // Manage datasets //
 
-let sodaCopy = {};
+window.sodaCopy = {};
 let datasetStructCopy = {};
 const bfUploadRefreshDatasetBtn = document.getElementById("button-upload-refresh-dataset-list");
 
@@ -8570,26 +8570,26 @@ window.logCurationForAnalytics = (
   }
 };
 
-// const getMetadataFileNameFromStatus = (metadataFileStatus) => {
-//   // get the UI text that displays the file path
-//   let filePath = metadataFileStatus.text();
+window.getMetadataFileNameFromStatus = (metadataFileStatus) => {
+  // get the UI text that displays the file path
+  let filePath = metadataFileStatus.text();
 
-//   let fileName = window.path.basename(filePath);
+  let fileName = window.path.basename(filePath);
 
-//   // remove the extension
-//   fileName = fileName.slice(0, fileName.indexOf("."));
+  // remove the extension
+  fileName = fileName.slice(0, fileName.indexOf("."));
 
-//   return fileName;
-// };
+  return fileName;
+};
 
-// const determineLocationFromStatus = (metadataFileStatus) => {
-//   let filePath = metadataFileStatus.text();
+window.determineLocationFromStatus = (metadataFileStatus) => {
+  let filePath = metadataFileStatus.text();
 
-//   // determine if the user imported from Pennsieve or Locally
-//   let pennsieveFile = filePath.toUpperCase().includes("Pennsieve".toUpperCase());
+  // determine if the user imported from Pennsieve or Locally
+  let pennsieveFile = filePath.toUpperCase().includes("Pennsieve".toUpperCase());
 
-//   return pennsieveFile;
-// };
+  return pennsieveFile;
+};
 
 window.logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularity, actions) => {
   // if no actions to log return

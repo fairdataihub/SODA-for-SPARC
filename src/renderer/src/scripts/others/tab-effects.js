@@ -232,7 +232,7 @@ const fill_info_details = () => {
         "Question-generate-dataset",
         true
       );
-      new_dataset_name = require("path").basename(window.sodaJSONObj["starting-point"]["local-path"]);
+      new_dataset_name = window.path.basename(window.sodaJSONObj["starting-point"]["local-path"]);
       if (window.manifestFileCheck.checked) {
         add_card_detail(
           "Manifest files",
@@ -3186,8 +3186,8 @@ const updateJSONStructureGenerate = (progress = false, sodaJSONObject) => {
   }
 
   if (sodaJSONObject["starting-point"]["type"] == "local") {
-    var localDestination = require("path").dirname(sodaJSONObject["starting-point"]["local-path"]);
-    var newDatasetName = require("path").basename(sodaJSONObject["starting-point"]["local-path"]);
+    var localDestination = window.path.dirname(sodaJSONObject["starting-point"]["local-path"]);
+    var newDatasetName = window.path.basename(sodaJSONObject["starting-point"]["local-path"]);
     // if (progress == false) {
     //   delete window.sodaJSONObj["starting-point"]["local-path"];
     // }
