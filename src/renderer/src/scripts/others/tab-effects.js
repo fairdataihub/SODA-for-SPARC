@@ -5,7 +5,7 @@ import 'accordion-js/dist/accordion.min.css';
 import { showHideDropdownButtons } from '../globals';
 import introJs from "intro.js";
 import Swal from "sweetalert2";
-
+import api from '../others/api/api'
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100))
