@@ -5056,6 +5056,11 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-subjects-dataset-structure-specification-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-subjects-dataset-structure-specification-tab")) {
+        // If the user is starting from Pennsieve, pre-select the manual sub/sam/pool option
+        sodaJSONObj["button-config"]["subject-addition-method"] = "manual";
+      }
+
       const subjectPoolingQuerySection = document.getElementById(
         "guided-section-subject-pooling-yes-no"
       );
@@ -7699,7 +7704,9 @@ const patchPreviousGuidedModeVersions = async () => {
   // If old progress saves do not have the "subject-addition-method" key, set it to "manual"
   // since they do not need to import from a spreadsheet
   if (!sodaJSONObj["button-config"]["subject-addition-method"]) {
-    sodaJSONObj["button-config"]["subject-addition-method"] = "manual";
+    if (getExistingSubjectNames().length > 0) {
+      sodaJSONObj["button-config"]["subject-addition-method"] = "manual";
+    }
   }
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
@@ -11429,17 +11436,20 @@ document
       const subjectName = lowercaseFirstLetter(row["Subject ID"]);
       const subjectsPool = lowercaseFirstLetter(row["Pool ID"]);
       const sampleName = lowercaseFirstLetter(row["Sample ID"]);
+      console.log("SUBJECT NAME", subjectName);
+      console.log("SUBJECTS POOL", subjectsPool);
+      console.log("SAMPLE NAME", sampleName);
 
       // Check to see if the subject already exists
       const subjectAlreadyExists = getExistingSubjectNames().includes(subjectName);
       if (!subjectAlreadyExists) {
         sodaJSONObj.addSubject(subjectName);
         if (subjectsPool) {
-          const poolAlreadyExists = getExistingPoolNames().includes(poolName);
+          const poolAlreadyExists = getExistingPoolNames().includes(subjectsPool);
           if (!poolAlreadyExists) {
-            sodaJSONObj.addPool(poolName);
+            sodaJSONObj.addPool(subjectsPool);
           }
-          sodaJSONObj.moveSubjectIntoPool(subjectName, poolName);
+          sodaJSONObj.moveSubjectIntoPool(subjectName, subjectsPool);
         }
       }
 
@@ -11607,7 +11617,7 @@ const convertArrayToCommaSeparatedString = (array) => {
   }
 };
 
-const guidedOpenEntityEditSwal = async (entityName) => {};
+const guideOpenSubjectEditSwal = async (sujectName) => {};
 
 const guidedOpenEntityAdditionSwal = async (entityName) => {
   // Get a list of the existing entities so we can check for duplicates
