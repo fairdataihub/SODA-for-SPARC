@@ -7701,13 +7701,6 @@ const patchPreviousGuidedModeVersions = async () => {
     sodaJSONObj["cuartion-mode"] = "guided";
   }
 
-  // If old progress saves do not have the "subject-addition-method" key, set it to "manual"
-  // since they do not need to import from a spreadsheet
-  if (!sodaJSONObj["button-config"]["subject-addition-method"]) {
-    if (getExistingSubjectNames().length > 0) {
-      sodaJSONObj["button-config"]["subject-addition-method"] = "manual";
-    }
-  }
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
 };
@@ -13337,6 +13330,15 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
     spansToInsertTextInto.forEach((span) => {
       span.innerHTML = textFormattedEntities;
     });
+
+    // If the user has already added subjects but has not chosen to enter them manually
+    // (case for updating a dataset from Pennsieve or old progress files),
+    // Select the option for them
+    if (!sodaJSONObj["button-config"]["subject-addition-method"]) {
+      if (getExistingSubjectNames().length > 0) {
+        document.getElementById("guided-button-add-subject-structure-manually").click();
+      }
+    }
   }
 };
 
