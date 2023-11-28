@@ -11725,8 +11725,8 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
     showConfirmButton: true,
     showCancelButton: true,
     showCloseButton: false,
-    confirmButtonText: `Add ${entityNameSingular}(s)`,
-    cancelButtonText: `Cancel ${entityNameSingular} addition`,
+    confirmButtonText: `Confirm`,
+    cancelButtonText: `Cancel`,
     didOpen: () => {
       // Render the initial subjects in the Swal
       renderEntitiesInSwal();
