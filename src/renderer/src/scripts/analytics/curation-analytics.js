@@ -4,6 +4,8 @@
 
 */
 
+import kombuchaEnums  from "../analytics/analytics-enums";
+
 const logSelectedUpdateExistingDatasetOptions = (origin) => {
   Array.from(document.querySelectorAll(".generate-preview")).forEach((card) => {
     let header = card.querySelector("h5");
