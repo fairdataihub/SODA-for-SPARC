@@ -183,7 +183,7 @@ const showParentTab = async (tabNow, nextOrPrev) => {
 
     let dataset_name = fill_info_details();
     datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
-    showTreeViewPreview(false, false, false, dataset_name, jstreePreview, datasetStructureJSONObj);
+    showTreeViewPreview(false, false, false, dataset_name, window.jstreePreview, datasetStructureJSONObj);
     $("#Question-preview-dataset-details").show();
     $("#Question-preview-dataset-details").children().show();
     $("#Question-generate-dataset-generate-div").show();
@@ -3167,7 +3167,7 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
 
 // Step 6: Generate dataset
 // update JSON object after users finish Generate dataset step
-const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
+const window.updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
   let starting_point = sodaJSONObj["starting-point"]["type"];
   if (sodaJSONObj["starting-point"]["type"] == "bf") {
     sodaJSONObj["generate-dataset"] = {
@@ -3580,7 +3580,7 @@ const updateJSONObjectProgress = () => {
   updateJSONStructureMetadataFiles();
   updateJSONStructureManifest();
   window.updateJSONStructureDSstructure();
-  updateJSONStructureGenerate(true, sodaJSONObj);
+  window.updateJSONStructureGenerate(true, sodaJSONObj);
 };
 
 const saveSODAJSONProgress = (progressFileName) => {

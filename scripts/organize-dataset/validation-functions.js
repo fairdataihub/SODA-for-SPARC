@@ -400,6 +400,6 @@ const displayValidationReportErrors = (validationReport, tableBody, validationEr
  */
 const formatForDatasetGeneration = (sodaJSONObj) => {
   // update the copy of the json structure to get its state post generation initialization
-  updateJSONStructureGenerate(false, sodaJSONObj);
+  window.updateJSONStructureGenerate(false, sodaJSONObj);
   setSodaJSONStartingPoint(sodaJSONObj);
 };

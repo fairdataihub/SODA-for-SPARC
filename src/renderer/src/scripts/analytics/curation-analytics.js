@@ -19,7 +19,7 @@ const logSelectedUpdateExistingDatasetOptions = (origin) => {
       }
 
       // log the folder instructions to analytics
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_DATASETS,
         action,
@@ -42,7 +42,7 @@ const logSelectedUpdateExistingDatasetOptions = (origin) => {
         action = kombuchaEnums.Action.DUPLICATE_ITEMS;
       }
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-kombucha",
         "Success",
         kombuchaEnums.Category.PREPARE_DATASETS,

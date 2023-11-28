@@ -1,7 +1,7 @@
 const checkDiskSpace = require("check-disk-space").default;
 
 var metadataFile = "";
-var jstreePreview = document.getElementById("div-dataset-tree-preview");
+var window.jstreePreview = document.getElementById("div-dataset-tree-preview");
 const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 
 // Event listeners for opening the dropdown prompt
@@ -1519,7 +1519,7 @@ $(jstreeInstance).on("close_node.jstree", function (event, data) {
 });
 
 $(document).ready(function () {
-  $(jstreePreview).jstree({
+  $(window.jstreePreview).jstree({
     core: {
       check_callback: true,
       data: {},
@@ -1596,11 +1596,11 @@ $(document).ready(function () {
   });
 });
 
-$(jstreePreview).on("open_node.jstree", function (event, data) {
+$(window.jstreePreview).on("open_node.jstree", function (event, data) {
   data.instance.set_type(data.node, "folder open");
 });
 
-$(jstreePreview).on("close_node.jstree", function (event, data) {
+$(window.jstreePreview).on("close_node.jstree", function (event, data) {
   data.instance.set_type(data.node, "folder closed");
 });
 

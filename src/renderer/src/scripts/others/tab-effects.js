@@ -193,7 +193,7 @@ const showParentTab = async (tabNow, nextOrPrev) => {
 
     let dataset_name = fill_info_details();
     window.datasetStructureJSONObj["files"] = window.sodaJSONObj["metadata-files"];
-    showTreeViewPreview(false, false, false, dataset_name, jstreePreview, window.datasetStructureJSONObj);
+    window.showTreeViewPreview(false, false, false, dataset_name, window.jstreePreview, window.datasetStructureJSONObj);
     $("#Question-preview-dataset-details").show();
     $("#Question-preview-dataset-details").children().show();
     $("#Question-generate-dataset-generate-div").show();
@@ -437,7 +437,7 @@ const add_card_detail = (
 ) => {
   let link_item = "<i class='far fa-edit jump-back' onclick='traverse_back(";
   link_item += parent_tab.toString();
-  temp = ', "' + element_id + '", ' + pulse + ")";
+  let temp = ', "' + element_id + '", ' + pulse + ")";
   link_item += temp;
   link_item += "'></i>";
 
@@ -3176,7 +3176,7 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
 
 // Step 6: Generate dataset
 // update JSON object after users finish Generate dataset step
-const updateJSONStructureGenerate = (progress = false, sodaJSONObject) => {
+window.updateJSONStructureGenerate = (progress = false, sodaJSONObject) => {
   let starting_point = sodaJSONObject["starting-point"]["type"];
   if (sodaJSONObject["starting-point"]["type"] == "bf") {
     sodaJSONObject["generate-dataset"] = {
@@ -3589,7 +3589,7 @@ const updateJSONObjectProgress = () => {
   updateJSONStructureMetadataFiles();
   updateJSONStructureManifest();
   window.updateJSONStructureDSstructure();
-  updateJSONStructureGenerate(true, window.sodaJSONObj);
+  window.updateJSONStructureGenerate(true, window.sodaJSONObj);
 };
 
 const saveSODAJSONProgress = (progressFileName) => {

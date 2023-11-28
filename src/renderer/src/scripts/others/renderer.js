@@ -6535,51 +6535,51 @@ window.addDetailsForFile = (ev) => {
   }
 };
 
-// $("#inputNewNameDataset").on("click", () => {
-//   $("#nextBtn").prop("disabled", true);
-//   $("#inputNewNameDataset").keyup();
-// });
+$("#inputNewNameDataset").on("click", () => {
+  $("#nextBtn").prop("disabled", true);
+  $("#inputNewNameDataset").keyup();
+});
 
-// $("#inputNewNameDataset").keyup(function () {
-//   let step6 = document.getElementById("generate-dataset-tab");
-//   if (step6.classList.contains("tab-active")) {
-//     $("#nextBtn").prop("disabled", true);
-//   }
+$("#inputNewNameDataset").keyup(function () {
+  let step6 = document.getElementById("generate-dataset-tab");
+  if (step6.classList.contains("tab-active")) {
+    $("#nextBtn").prop("disabled", true);
+  }
 
-//   var newName = $("#inputNewNameDataset").val().trim();
+  var newName = $("#inputNewNameDataset").val().trim();
 
-//   $("#Question-generate-dataset-generate-div").removeClass("show");
-//   $("#Question-generate-dataset-generate-div").removeClass("test2");
-//   $("#Question-generate-dataset-generate-div").removeClass("prev");
-//   $("#Question-generate-dataset-generate-div").hide();
-//   $("#Question-generate-dataset-generate-div").children().hide();
-//   $("#para-continue-name-dataset-generate").hide();
-//   $("#para-continue-name-dataset-generate").text("");
+  $("#Question-generate-dataset-generate-div").removeClass("show");
+  $("#Question-generate-dataset-generate-div").removeClass("test2");
+  $("#Question-generate-dataset-generate-div").removeClass("prev");
+  $("#Question-generate-dataset-generate-div").hide();
+  $("#Question-generate-dataset-generate-div").children().hide();
+  $("#para-continue-name-dataset-generate").hide();
+  $("#para-continue-name-dataset-generate").text("");
 
-//   if (newName !== "") {
-//     if (window.check_forbidden_characters_ps(newName)) {
-//       document.getElementById("div-confirm-inputNewNameDataset").style.display = "none";
-//       $("#btn-confirm-new-dataset-name").hide();
-//       document.getElementById("para-new-name-dataset-message").innerHTML =
-//         "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.";
-//       // $("#nextBtn").prop("disabled", true)
-//       $("#Question-generate-dataset-generate-div-old").removeClass("show");
-//       $("#div-confirm-inputNewNameDataset").css("display", "none");
-//       $("#btn-confirm-new-dataset-name").hide();
-//     } else {
-//       $("#div-confirm-inputNewNameDataset").css("display", "flex");
-//       $("#btn-confirm-new-dataset-name").show();
-//       $("#Question-generate-dataset-generate-div").show();
-//       $("#Question-generate-dataset-generate-div").children().show();
+  if (newName !== "") {
+    if (window.check_forbidden_characters_ps(newName)) {
+      document.getElementById("div-confirm-inputNewNameDataset").style.display = "none";
+      $("#btn-confirm-new-dataset-name").hide();
+      document.getElementById("para-new-name-dataset-message").innerHTML =
+        "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.";
+      // $("#nextBtn").prop("disabled", true)
+      $("#Question-generate-dataset-generate-div-old").removeClass("show");
+      $("#div-confirm-inputNewNameDataset").css("display", "none");
+      $("#btn-confirm-new-dataset-name").hide();
+    } else {
+      $("#div-confirm-inputNewNameDataset").css("display", "flex");
+      $("#btn-confirm-new-dataset-name").show();
+      $("#Question-generate-dataset-generate-div").show();
+      $("#Question-generate-dataset-generate-div").children().show();
 
-//       $("#Question-generate-dataset-generate-div-old").addClass("show");
-//       document.getElementById("para-new-name-dataset-message").innerHTML = "";
-//     }
-//   } else {
-//     $("#div-confirm-inputNewNameDataset").css("display", "none");
-//     $("#btn-confirm-new-dataset-name").hide();
-//   }
-// });
+      $("#Question-generate-dataset-generate-div-old").addClass("show");
+      document.getElementById("para-new-name-dataset-message").innerHTML = "";
+    }
+  } else {
+    $("#div-confirm-inputNewNameDataset").css("display", "none");
+    $("#btn-confirm-new-dataset-name").hide();
+  }
+});
 
 //// Select to choose a local dataset (getting started)
 document
@@ -6946,47 +6946,47 @@ document
     window.electron.ipcRenderer.send("open-file-dialog-local-destination-curate-generate");
   });
 
-// window.electron.ipcRenderer.on("selected-local-destination-datasetCurate-generate", (event, filepath) => {
-//   if (filepath.length > 0) {
-//     if (filepath != null) {
-//       $("#div-confirm-destination-locally").css("display", "flex");
-//       $("#div-confirm-destination-locally button").show();
-//       document.getElementById("input-destination-generate-dataset-locally").placeholder =
-//         filepath[0];
-//       document.getElementById("input-destination-generate-dataset-locally").value = filepath[0];
-//       document.getElementById("nextBtn").disabled = true;
-//     } else {
-//       $("#div-confirm-destination-locally").css("display", "none");
-//       $("#div-confirm-destination-locally button").hide();
-//       document.getElementById("input-destination-generate-dataset-locally").placeholder =
-//         "Browse here";
-//     }
-//   } else {
-//     $("#div-confirm-destination-locally").css("display", "none");
-//     $("#div-confirm-destination-locally button").hide();
-//     document.getElementById("input-destination-generate-dataset-locally").placeholder =
-//       "Browse here";
-//   }
-// });
+window.electron.ipcRenderer.on("selected-local-destination-datasetCurate-generate", (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null) {
+      $("#div-confirm-destination-locally").css("display", "flex");
+      $("#div-confirm-destination-locally button").show();
+      document.getElementById("input-destination-generate-dataset-locally").placeholder =
+        filepath[0];
+      document.getElementById("input-destination-generate-dataset-locally").value = filepath[0];
+      document.getElementById("nextBtn").disabled = true;
+    } else {
+      $("#div-confirm-destination-locally").css("display", "none");
+      $("#div-confirm-destination-locally button").hide();
+      document.getElementById("input-destination-generate-dataset-locally").placeholder =
+        "Browse here";
+    }
+  } else {
+    $("#div-confirm-destination-locally").css("display", "none");
+    $("#div-confirm-destination-locally button").hide();
+    document.getElementById("input-destination-generate-dataset-locally").placeholder =
+      "Browse here";
+  }
+});
 
-// document.getElementById("button-generate-comeback").addEventListener("click", function () {
-//   setTimeout(function () {
-//     document.getElementById("generate-dataset-progress-tab").style.display = "none";
-//     document.getElementById("div-vertical-progress-bar").style.display = "flex";
-//     document.getElementById("prevBtn").style.display = "inline";
-//     document.getElementById("nextBtn").style.display = "inline";
-//     document.getElementById("start-over-btn").style.display = "inline-block";
-//     showParentTab(window.currentTab, 1);
-//     if (
-//       sodaJSONObj["starting-point"]["type"] == "new" &&
-//       "local-path" in sodaJSONObj["starting-point"]
-//     ) {
-//       sodaJSONObj["starting-point"]["type"] = "local";
-//     }
-//   }, window.delayAnimation);
-// });
+document.getElementById("button-generate-comeback").addEventListener("click", function () {
+  setTimeout(function () {
+    document.getElementById("generate-dataset-progress-tab").style.display = "none";
+    document.getElementById("div-vertical-progress-bar").style.display = "flex";
+    document.getElementById("prevBtn").style.display = "inline";
+    document.getElementById("nextBtn").style.display = "inline";
+    document.getElementById("start-over-btn").style.display = "inline-block";
+    showParentTab(window.currentTab, 1);
+    if (
+      sodaJSONObj["starting-point"]["type"] == "new" &&
+      "local-path" in sodaJSONObj["starting-point"]
+    ) {
+      sodaJSONObj["starting-point"]["type"] = "local";
+    }
+  }, window.delayAnimation);
+});
 
-// // function to hide the sidebar and disable the sidebar expand button
+// function to hide the sidebar and disable the sidebar expand button
 // function forceActionSidebar(action) {
 //   if (action === "show") {
 //     $("#sidebarCollapse").removeClass("active");
@@ -7000,198 +7000,198 @@ document
 
 // /// MAIN CURATE NEW ///
 
-// const progressBarNewCurate = document.getElementById("progress-bar-new-curate");
-// const divGenerateProgressBar = document.getElementById("div-new-curate-meter-progress");
-// const generateProgressBar = document.getElementById("progress-bar-new-curate");
-// var progressStatus = document.getElementById("para-new-curate-progress-bar-status");
+const progressBarNewCurate = document.getElementById("progress-bar-new-curate");
+const divGenerateProgressBar = document.getElementById("div-new-curate-meter-progress");
+const generateProgressBar = document.getElementById("progress-bar-new-curate");
+var progressStatus = document.getElementById("para-new-curate-progress-bar-status");
 
-// const checkEmptyFilesAndFolders = async (sodaJSONObj) => {
-//   let emptyFilesFoldersResponse;
-//   try {
-//     emptyFilesFoldersResponse = await client.post(
-//       `/curate_datasets/empty_files_and_folders`,
-//       {
-//         soda_json_structure: sodaJSONObj,
-//       },
-//       { timeout: 0 }
-//     );
-//   } catch (error) {
-//     clientError(error);
-//     let emessage = userErrorMessage(error);
-//     document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-//       "<span style='color: red;'> Error: " + emessage + "</span>";
-//     document.getElementById("para-please-wait-new-curate").innerHTML = "";
-//     $("#sidebarCollapse").prop("disabled", false);
-//     return;
-//   }
+const checkEmptyFilesAndFolders = async (sodaJSONObj) => {
+  let emptyFilesFoldersResponse;
+  try {
+    emptyFilesFoldersResponse = await client.post(
+      `/curate_datasets/empty_files_and_folders`,
+      {
+        soda_json_structure: sodaJSONObj,
+      },
+      { timeout: 0 }
+    );
+  } catch (error) {
+    clientError(error);
+    let emessage = userErrorMessage(error);
+    document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
+      "<span style='color: red;'> Error: " + emessage + "</span>";
+    document.getElementById("para-please-wait-new-curate").innerHTML = "";
+    $("#sidebarCollapse").prop("disabled", false);
+    return;
+  }
 
-//   let { data } = emptyFilesFoldersResponse;
+  let { data } = emptyFilesFoldersResponse;
 
-//   window.log.info("Continue with curate");
-//   let errorMessage = "";
-//   error_files = data["empty_files"];
-//   //bring duplicate outside
-//   error_folders = data["empty_folders"];
+  window.log.info("Continue with curate");
+  let errorMessage = "";
+  let error_files = data["empty_files"];
+  //bring duplicate outside
+  let error_folders = data["empty_folders"];
 
-//   if (error_files.length > 0) {
-//     var error_message_files = backend_to_frontend_warning_message(error_files);
-//     errorMessage += error_message_files;
-//   }
+  if (error_files.length > 0) {
+    var error_message_files = backend_to_frontend_warning_message(error_files);
+    errorMessage += error_message_files;
+  }
 
-//   if (error_folders.length > 0) {
-//     var error_message_folders = backend_to_frontend_warning_message(error_folders);
-//     errorMessage += error_message_folders;
-//   }
+  if (error_folders.length > 0) {
+    var error_message_folders = backend_to_frontend_warning_message(error_folders);
+    errorMessage += error_message_folders;
+  }
 
-//   return errorMessage;
-// };
+  return errorMessage;
+};
 
-// const setSodaJSONStartingPoint = (sodaJSONObj) => {
-//   if (sodaJSONObj["starting-point"]["type"] === "local") {
-//     sodaJSONObj["starting-point"]["type"] = "new";
-//   }
-// };
+const setSodaJSONStartingPoint = (sodaJSONObj) => {
+  if (sodaJSONObj["starting-point"]["type"] === "local") {
+    sodaJSONObj["starting-point"]["type"] = "new";
+  }
+};
 
-// const setDatasetNameAndDestination = (sodaJSONObj) => {
-//   let dataset_name = "";
-//   let dataset_destination = "";
+const setDatasetNameAndDestination = (sodaJSONObj) => {
+  let dataset_name = "";
+  let dataset_destination = "";
 
-//   if ("bf-dataset-selected" in sodaJSONObj) {
-//     dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-//     dataset_destination = "Pennsieve";
-//   } else if ("generate-dataset" in sodaJSONObj) {
-//     if ("destination" in sodaJSONObj["generate-dataset"]) {
-//       let destination = sodaJSONObj["generate-dataset"]["destination"];
-//       if (destination == "local") {
-//         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-//         dataset_destination = "Local";
-//       }
-//       if (destination == "bf") {
-//         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-//         dataset_destination = "Pennsieve";
-//       }
-//     }
-//   }
+  if ("bf-dataset-selected" in sodaJSONObj) {
+    dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    dataset_destination = "Pennsieve";
+  } else if ("generate-dataset" in sodaJSONObj) {
+    if ("destination" in sodaJSONObj["generate-dataset"]) {
+      let destination = sodaJSONObj["generate-dataset"]["destination"];
+      if (destination == "local") {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+        dataset_destination = "Local";
+      }
+      if (destination == "bf") {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+        dataset_destination = "Pennsieve";
+      }
+    }
+  }
 
-//   return [dataset_name, dataset_destination];
-// };
+  return [dataset_name, dataset_destination];
+};
 
-// const deleteTreeviewFiles = (sodaJSONObj) => {
-//   // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
-//   if ("files" in sodaJSONObj["dataset-structure"]) {
-//     sodaJSONObj["dataset-structure"]["files"] = {};
-//   }
-//   // delete manifest files added for treeview
-//   for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
-//     if (
-//       "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
-//       sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
-//         "forTreeview"
-//       ]
-//     ) {
-//       delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
-//     }
-//   }
-// };
+const deleteTreeviewFiles = (sodaJSONObj) => {
+  // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
+  if ("files" in sodaJSONObj["dataset-structure"]) {
+    sodaJSONObj["dataset-structure"]["files"] = {};
+  }
+  // delete manifest files added for treeview
+  for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+    if (
+      "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+      sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
+        "forTreeview"
+      ]
+    ) {
+      delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
+    }
+  }
+};
 
-// document.getElementById("button-generate").addEventListener("click", async function () {
-//   $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
-//   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
-//   document.getElementById("para-please-wait-new-curate").innerHTML = "";
-//   document.getElementById("prevBtn").style.display = "none";
-//   document.getElementById("start-over-btn").style.display = "none";
-//   document.getElementById("div-vertical-progress-bar").style.display = "none";
-//   document.getElementById("div-generate-comeback").style.display = "none";
-//   document.getElementById("generate-dataset-progress-tab").style.display = "flex";
-//   $("#sidebarCollapse").prop("disabled", false);
+document.getElementById("button-generate").addEventListener("click", async function () {
+  $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
+  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
+  document.getElementById("para-please-wait-new-curate").innerHTML = "";
+  document.getElementById("prevBtn").style.display = "none";
+  document.getElementById("start-over-btn").style.display = "none";
+  document.getElementById("div-vertical-progress-bar").style.display = "none";
+  document.getElementById("div-generate-comeback").style.display = "none";
+  document.getElementById("generate-dataset-progress-tab").style.display = "flex";
+  $("#sidebarCollapse").prop("disabled", false);
 
-//   // updateJSON structure after Generate dataset tab
-//   updateJSONStructureGenerate(false, sodaJSONObj);
+  // updateJSON structure after Generate dataset tab
+  window.updateJSONStructureGenerate(false, sodaJSONObj);
 
-//   setSodaJSONStartingPoint(sodaJSONObj);
+  setSodaJSONStartingPoint(sodaJSONObj);
 
-//   let [dataset_name, dataset_destination] = setDatasetNameAndDestination(sodaJSONObj);
+  let [dataset_name, dataset_destination] = setDatasetNameAndDestination(sodaJSONObj);
 
-//   generateProgressBar.value = 0;
+  generateProgressBar.value = 0;
 
-//   progressStatus.innerHTML = "Please wait while we verify a few things...";
+  progressStatus.innerHTML = "Please wait while we verify a few things...";
 
-//   statusText = "Please wait while we verify a few things...";
-//   if (dataset_destination == "Pennsieve") {
-//     let supplementary_checks = await window.run_pre_flight_checks(false);
-//     if (!supplementary_checks) {
-//       $("#sidebarCollapse").prop("disabled", false);
+  let statusText = "Please wait while we verify a few things...";
+  if (dataset_destination == "Pennsieve") {
+    let supplementary_checks = await window.run_pre_flight_checks(false);
+    if (!supplementary_checks) {
+      $("#sidebarCollapse").prop("disabled", false);
 
-//       // return to the prior page
-//       $($($(this).parent()[0]).parents()[0]).addClass("tab-active");
-//       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
-//       document.getElementById("para-please-wait-new-curate").innerHTML = "";
-//       document.getElementById("prevBtn").style.display = "inline";
-//       document.getElementById("start-over-btn").style.display = "inline-block";
-//       document.getElementById("div-vertical-progress-bar").style.display = "flex";
-//       document.getElementById("div-generate-comeback").style.display = "flex";
-//       document.getElementById("generate-dataset-progress-tab").style.display = "none";
-//       return;
-//     }
-//   }
+      // return to the prior page
+      $($($(this).parent()[0]).parents()[0]).addClass("tab-active");
+      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
+      document.getElementById("para-please-wait-new-curate").innerHTML = "";
+      document.getElementById("prevBtn").style.display = "inline";
+      document.getElementById("start-over-btn").style.display = "inline-block";
+      document.getElementById("div-vertical-progress-bar").style.display = "flex";
+      document.getElementById("div-generate-comeback").style.display = "flex";
+      document.getElementById("generate-dataset-progress-tab").style.display = "none";
+      return;
+    }
+  }
 
-//   // from here you can modify
-//   document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
-//   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
-//   progressStatus.innerHTML = "";
-//   document.getElementById("div-new-curate-progress").style.display = "none";
+  // from here you can modify
+  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
+  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
+  progressStatus.innerHTML = "";
+  document.getElementById("div-new-curate-progress").style.display = "none";
 
-//   progressBarNewCurate.value = 0;
+  progressBarNewCurate.value = 0;
 
-//   deleteTreeviewFiles(sodaJSONObj);
+  deleteTreeviewFiles(sodaJSONObj);
 
-//   document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
-//   let errorMessage = await checkEmptyFilesAndFolders(sodaJSONObj);
+  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
+  let errorMessage = await checkEmptyFilesAndFolders(sodaJSONObj);
 
-//   if (errorMessage) {
-//     errorMessage += "Would you like to continue?";
-//     errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
-//     Swal.fire({
-//       icon: "warning",
-//       html: errorMessage,
-//       showCancelButton: true,
-//       cancelButtonText: "No, I want to review my files",
-//       focusCancel: true,
-//       confirmButtonText: "Yes, Continue",
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       reverseButtons: window.reverseSwalButtons,
-//       heightAuto: false,
-//       showClass: {
-//         popup: "animate__animated animate__zoomIn animate__faster",
-//       },
-//       hideClass: {
-//         popup: "animate__animated animate__zoomOut animate__faster",
-//       },
-//       didOpen: () => {
-//         document.getElementById("swal2-content").style.maxHeight = "19rem";
-//         document.getElementById("swal2-content").style.overflowY = "auto";
-//       },
-//     }).then((result) => {
-//       if (result.isConfirmed) {
-//         initiate_generate();
-//       } else {
-//         $("#sidebarCollapse").prop("disabled", false);
-//         document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
-//         document.getElementById("div-generate-comeback").style.display = "flex";
-//       }
-//     });
-//   } else {
-//     initiate_generate();
-//   }
-// });
+  if (errorMessage) {
+    errorMessage += "Would you like to continue?";
+    errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
+    Swal.fire({
+      icon: "warning",
+      html: errorMessage,
+      showCancelButton: true,
+      cancelButtonText: "No, I want to review my files",
+      focusCancel: true,
+      confirmButtonText: "Yes, Continue",
+      backdrop: "rgba(0,0,0, 0.4)",
+      reverseButtons: window.reverseSwalButtons,
+      heightAuto: false,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+      didOpen: () => {
+        document.getElementById("swal2-content").style.maxHeight = "19rem";
+        document.getElementById("swal2-content").style.overflowY = "auto";
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        initiate_generate();
+      } else {
+        $("#sidebarCollapse").prop("disabled", false);
+        document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
+        document.getElementById("div-generate-comeback").style.display = "flex";
+      }
+    });
+  } else {
+    initiate_generate();
+  }
+});
 
-// const delete_imported_manifest = () => {
-//   for (let highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
-//     if ("manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]) {
-//       delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
-//     }
-//   }
-// };
+const delete_imported_manifest = () => {
+  for (let highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+    if ("manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]) {
+      delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
+    }
+  }
+};
 
 window.dismissStatus = (id) =>  {
   document.getElementById(id).style = "display: none;";
@@ -7218,684 +7218,684 @@ window.uploadComplete = new Notyf({
   ],
 });
 
-// // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
-// const initiate_generate = async () => {
-//   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
-//   document.getElementById("guided_mode_view").style.pointerEvents = "none";
-
-//   // Initiate curation by calling Python function
-//   let manifest_files_requested = false;
-//   var main_curate_status = "Solving";
-//   var main_total_generate_dataset_size;
-
-//   // get the amount of files
-//   document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ...";
-
-//   progressStatus.innerHTML = "Preparing files ...";
-
-//   document.getElementById("para-please-wait-new-curate").innerHTML = "";
-//   document.getElementById("div-new-curate-progress").style.display = "block";
-//   document.getElementById("div-generate-comeback").style.display = "none";
-
-//   // Create the progress bar clone for the navigation bar
-//   let organizeDataset = document.getElementById("organize_dataset_btn");
-//   let curateAndShareNavButton = document.getElementById("guided_mode_view");
-//   let documentationNavButton = document.getElementById("documentation-view");
-//   let contactNavButton = document.getElementById("contact-us-view");
-//   let uploadLocally = document.getElementById("upload_local_dataset_btn");
-//   let guidedModeHomePageButton = document.getElementById("button-homepage-guided-mode");
-//   let organizeDataset_option_buttons = document.getElementById("div-generate-comeback");
-//   let statusBarContainer = document.getElementById("div-new-curate-progress");
-//   var statusBarClone = statusBarContainer.cloneNode(true);
-//   let navContainer = document.getElementById("nav-items");
-//   let statusText = statusBarClone.children[2];
-//   let statusMeter = statusBarClone.getElementsByClassName("progresstrack")[0];
-//   let returnButton = document.createElement("button");
-
-//   statusBarClone.id = "status-bar-curate-progress";
-//   statusText.setAttribute("id", "nav-curate-progress-bar-status");
-//   statusMeter.setAttribute("id", "nav-progress-bar-new-curate");
-//   statusMeter.className = "nav-status-bar";
-//   statusBarClone.appendChild(returnButton);
-
-//   // Disable the Organize Dataset and Upload Locally buttons
-//   uploadLocally.disabled = true;
-//   organizeDataset.disabled = true;
-//   guidedModeHomePageButton.disabled = true;
-
-//   // Add disabled appearance to the buttons
-//   guidedModeHomePageButton.className = "button-prompt-container curate-disabled-button";
-//   organizeDataset.className = "disabled-content-button";
-//   uploadLocally.className = "disabled-content-button";
-//   organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
-//   uploadLocally.style = "background-color: #f6f6f6; border: #fff;";
-
-//   returnButton.type = "button";
-//   returnButton.id = "returnButton";
-//   returnButton.innerHTML = "Return to progress";
-
-//   // Event handler for navigation menu's progress bar clone
-//   returnButton.onclick = function () {
-//     organizeDataset.disabled = false;
-//     contactNavButton.classList.remove("is-selected");
-//     documentationNavButton.classList.remove("is-selected");
-//     curateAndShareNavButton.classList.add("is-selected");
-//     organizeDataset.className = "content-button is-selected";
-//     organizeDataset.style = "background-color: #fff";
-//     organizeDataset.click();
-//     let button = document.getElementById("button-generate");
-//     $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-//     document.getElementById("prevBtn").style.display = "none";
-//     document.getElementById("start-over-btn").style.display = "none";
-//     document.getElementById("div-vertical-progress-bar").style.display = "none";
-//     document.getElementById("div-generate-comeback").style.display = "none";
-//     document.getElementById("generate-dataset-progress-tab").style.display = "flex";
-//     organizeDataset.disabled = true;
-//     organizeDataset.className = "disabled-content-button";
-//     organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
-//   };
-
-//   let sparc_container = document.getElementById("sparc-logo-container");
-//   sparc_container.style.display = "none";
-//   navContainer.appendChild(statusBarClone);
-//   let navbar = document.getElementById("main-nav");
-//   if (navbar.classList.contains("active")) {
-//     document.getElementById("sidebarCollapse").click();
-//   }
-
-//   if ($("#generate-manifest-curate")[0].checked) {
-//     sodaJSONObj["manifest-files"]["auto-generated"] = true;
-//   }
-
-//   if ("manifest-files" in sodaJSONObj) {
-//     if (
-//       "auto-generated" in sodaJSONObj["manifest-files"] &&
-//       sodaJSONObj["manifest-files"]["auto-generated"] === true
-//     ) {
-//       delete_imported_manifest();
-//     } else if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
-//       manifest_files_requested = true;
-//       delete_imported_manifest();
-//     }
-//   }
-
-//   let dataset_destination = "";
-//   let dataset_name = "";
-
-//   // track the amount of files that have been uploaded/generated
-//   let uploadedFiles = 0;
-//   let uploadedBytes = 0;
-//   let increaseInFileSize = 0;
-//   let generated_dataset_id = undefined;
-//   let loggedDatasetNameToIdMapping = false;
-
-//   // determine where the dataset will be generated/uploaded
-//   let nameDestinationPair = determineDatasetDestination();
-//   let datasetLocation = determineDatasetLocation();
-//   dataset_name = nameDestinationPair[0];
-//   dataset_destination = nameDestinationPair[1];
-
-//   if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
-//     // create a dataset upload session
-//     datasetUploadSession.startSession();
-//   }
-
-//   let start = performance.now();
-//   client
-//     .post(
-//       `/curate_datasets/curation`,
-//       {
-//         soda_json_structure: sodaJSONObj,
-//       },
-//       { timeout: 0 }
-//     )
-//     .then(async (response) => {
-//       let end = performance.now();
-//       let time = (end - start) / 1000;
-//       let { data } = response;
-
-//       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
-//       uploadedFiles = data["main_curation_uploaded_files"];
-
-//       $("#sidebarCollapse").prop("disabled", false);
-//       window.log.info("Completed curate function");
-
-//       // log high level confirmation that a dataset was generated - helps answer how many times were datasets generated in FFMs organize dataset functionality
-//       window.electron.ipcRenderer.send(
-//         "track-kombucha",
-//         kombuchaEnums.Category.PREPARE_DATASETS,
-//         kombuchaEnums.Action.GENERATE_DATASET,
-//         kombuchaEnums.Label.TOTAL_UPLOADS,
-//         kombuchaEnums.Status.SUCCESS,
-//         createEventData(1, dataset_destination, datasetLocation, dataset_name)
-//       );
-
-//       // get the correct value for files and file size for analytics
-//       let fileValueToLog = 0;
-//       let fileSizeValueToLog = 0;
-//       if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
-//         // log the difference again to Google Analytics
-//         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
-//         let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
-//         fileValueToLog = finalFilesCount;
-//         fileSizeValueToLog = differenceInBytes;
-//       } else {
-//         // when generating locally we doo not log in increments so we log the total number of files and the total size generated in one go
-//         fileValueToLog = uploadedFiles;
-//         fileSizeValueToLog = main_total_generate_dataset_size;
-//       }
-
-//       // log the file and file size values to analytics
-//       if (fileValueToLog > 0) {
-//         window.electron.ipcRenderer.send(
-//           "track-kombucha",
-//           kombuchaEnums.Category.PREPARE_DATASETS,
-//           kombuchaEnums.Action.GENERATE_DATASET,
-//           kombuchaEnums.Label.FILES,
-//           kombuchaEnums.Status.SUCCESS,
-//           createEventData(fileValueToLog, dataset_destination, datasetLocation, dataset_name)
-//         );
-//       }
-
-//       if (fileSizeValueToLog > 0) {
-//         window.electron.ipcRenderer.send(
-//           "track-kombucha",
-//           kombuchaEnums.Category.PREPARE_DATASETS,
-//           kombuchaEnums.Action.GENERATE_DATASET,
-//           kombuchaEnums.Label.SIZE,
-//           kombuchaEnums.Status.SUCCESS,
-//           createEventData(fileSizeValueToLog, dataset_destination, datasetLocation, dataset_name)
-//         );
-//       }
-
-//       // log folder and file options selected ( can be merge, skip, replace, duplicate)
-//       logSelectedUpdateExistingDatasetOptions(datasetLocation);
-
-//       //Allow guided_mode_view to be clicked again
-//       document.getElementById("guided_mode_view").style.pointerEvents = "";
-
-//       try {
-//         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-//           params: {
-//             selected_account: window.defaultBfAccount,
-//           },
-//         });
-//         window.datasetList = [];
-//         window.datasetList = responseObject.data.datasets;
-//       } catch (error) {
-//         clientError(error);
-//       }
-//     })
-//     .catch(async (error) => {
-//       //Allow guided_mode_view to be clicked again
-//       document.getElementById("guided_mode_view").style.pointerEvents = "";
-
-//       clientError(error);
-//       let emessage = userErrorMessage(error);
-
-//       // log high level confirmation that a dataset was generation run failed
-//       window.electron.ipcRenderer.send(
-//         "track-kombucha",
-//         kombuchaEnums.Category.PREPARE_DATASETS,
-//         kombuchaEnums.Action.GENERATE_DATASET,
-//         kombuchaEnums.Label.TOTAL_UPLOADS,
-//         kombuchaEnums.Status.FAIL,
-//         createEventData(1, dataset_destination, datasetLocation, dataset_name)
-//       );
-
-//       // log the file and file size values to analytics for the amount that we managed to upload before we failed
-//       if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
-//         // log the difference again to Google Analytics
-//         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
-//         let differenceInBytes = uploadedBytes - bytesOnPreviousLogPage;
-
-//         if (finalFilesCount > 0) {
-//           window.electron.ipcRenderer.send(
-//             "track-kombucha",
-//             kombuchaEnums.Category.PREPARE_DATASETS,
-//             kombuchaEnums.Action.GENERATE_DATASET,
-//             kombuchaEnums.Label.FILES,
-//             kombuchaEnums.Status.SUCCESS,
-//             createEventData(finalFilesCount, dataset_destination, datasetLocation, dataset_name)
-//           );
-//         }
-
-//         if (differenceInBytes > 0) {
-//           window.electron.ipcRenderer.send(
-//             "track-kombucha",
-//             kombuchaEnums.Category.PREPARE_DATASETS,
-//             kombuchaEnums.Action.GENERATE_DATASET,
-//             kombuchaEnums.Label.SIZE,
-//             kombuchaEnums.Status.SUCCESS,
-//             createEventData(differenceInBytes, dataset_destination, datasetLocation, dataset_name)
-//           );
-//         }
-//       }
-
-//       // log folder and file options selected ( can be merge, skip, replace, duplicate)
-//       logSelectedUpdateExistingDatasetOptions(datasetLocation);
-
-//       // log the amount of files, and the total size, that we failed to upload
-//       window.electron.ipcRenderer.send(
-//         "track-kombucha",
-//         kombuchaEnums.Category.PREPARE_DATASETS,
-//         kombuchaEnums.Action.GENERATE_DATASET,
-//         kombuchaEnums.Label.FILES,
-//         kombuchaEnums.Status.FAIL,
-//         createEventData(uploadedFiles, dataset_destination, datasetLocation, dataset_name)
-//       );
-
-//       window.electron.ipcRenderer.send(
-//         "track-kombucha",
-//         kombuchaEnums.Category.PREPARE_DATASETS,
-//         kombuchaEnums.Action.GENERATE_DATASET,
-//         kombuchaEnums.Label.SIZE,
-//         kombuchaEnums.Status.FAIL,
-//         createEventData(
-//           main_total_generate_dataset_size,
-//           dataset_destination,
-//           datasetLocation,
-//           dataset_name
-//         )
-//       );
-
-//       //Enable the buttons
-//       organizeDataset_option_buttons.style.display = "flex";
-//       organizeDataset.disabled = false;
-//       guidedModeHomePageButton.disabled = false;
-//       uploadLocally.disabled = false;
-//       $("#sidebarCollapse").prop("disabled", false);
-
-//       //Add the original classes back to the buttons
-//       guidedModeHomePageButton.className = "button-prompt-container";
-//       organizeDataset.className = "content-button is-selected";
-//       organizeDataset.style = "background-color: #fff";
-//       uploadLocally.className = "content-button is-selected";
-//       uploadLocally.style = "background-color: #fff";
-
-//       document.getElementById(
-//         "para-new-curate-progress-bar-error-status"
-//       ).innerHTML = `<span style='color: red;'>${emessage}</span>`;
-
-//       Swal.fire({
-//         icon: "error",
-//         title: "An Error Occurred While Uploading Your Dataset",
-//         html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
-//         heightAuto: false,
-//         backdrop: "rgba(0,0,0, 0.4)",
-//         showClass: {
-//           popup: "animate__animated animate__zoomIn animate__faster",
-//         },
-//         hideClass: {
-//           popup: "animate__animated animate__zoomOut animate__faster",
-//         },
-//         didOpen: () => {
-//           document.getElementById("swal2-content").style.maxHeight = "19rem";
-//           document.getElementById("swal2-content").style.overflowY = "auto";
-//         },
-//       }).then((result) => {
-//         statusBarClone.remove();
-//         sparc_container.style.display = "inline";
-//         if (result.isConfirmed) {
-//           organizeDataset.click();
-//           let button = document.getElementById("button-generate");
-//           $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-//           document.getElementById("prevBtn").style.display = "none";
-//           document.getElementById("start-over-btn").style.display = "none";
-//           document.getElementById("div-vertical-progress-bar").style.display = "none";
-//           document.getElementById("div-generate-comeback").style.display = "flex";
-//           document.getElementById("generate-dataset-progress-tab").style.display = "flex";
-//         }
-//       });
-//       progressStatus.innerHTML = "";
-//       statusText.innerHTML = "";
-//       document.getElementById("div-new-curate-progress").style.display = "none";
-//       generateProgressBar.value = 0;
-
-//       try {
-//         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-//           params: {
-//             selected_account: window.defaultBfAccount,
-//           },
-//         });
-//         window.datasetList = [];
-//         window.datasetList = responseObject.data.datasets;
-//       } catch (error) {
-//         clientError(error);
-//         emessage = userErrorMessage(error);
-//       }
-//     });
-
-//   // Progress tracking function for main curate
-//   var timerProgress = setInterval(mainProgressFunction, 1000);
-//   var successful = false;
-
-//   async function mainProgressFunction() {
-//     let mainCurationProgressResponse;
-//     try {
-//       mainCurationProgressResponse = await client.get(`/curate_datasets/curation/progress`);
-//     } catch (error) {
-//       clientError(error);
-//       let emessage = userErrorMessage(error);
-
-//       document.getElementById(
-//         "para-new-curate-progress-bar-error-status"
-//       ).innerHTML = `<span style='color: red;'>${emessage}</span>`;
-//       window.log.error(error);
-
-//       //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
-//       organizeDataset_option_buttons.style.display = "flex";
-//       organizeDataset.disabled = false;
-//       guidedModeHomePageButton.disabled = false;
-//       uploadLocally.disabled = false;
-
-//       //Add the original classes back to the buttons
-//       guidedModeHomePageButton.className = "button-prompt-container";
-//       organizeDataset.className = "content-button is-selected";
-//       organizeDataset.style = "background-color: #fff";
-//       uploadLocally.className = "content-button is-selected";
-//       uploadLocally.style = "background-color: #fff";
-
-//       Swal.fire({
-//         icon: "error",
-//         title: "An Error Occurred While Uploading Your Dataset",
-//         html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
-//         heightAuto: false,
-//         backdrop: "rgba(0,0,0, 0.4)",
-//         showClass: {
-//           popup: "animate__animated animate__zoomIn animate__faster",
-//         },
-//         hideClass: {
-//           popup: "animate__animated animate__zoomOut animate__faster",
-//         },
-//         didOpen: () => {
-//           document.getElementById("swal2-content").style.maxHeight = "19rem";
-//           document.getElementById("swal2-content").style.overflowY = "auto";
-//         },
-//       }).then((result) => {
-//         //statusBarClone.remove();
-//         if (result.isConfirmed) {
-//           organizeDataset.click();
-//           let button = document.getElementById("button-generate");
-//           $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-//           document.getElementById("prevBtn").style.display = "none";
-//           document.getElementById("start-over-btn").style.display = "none";
-//           document.getElementById("div-vertical-progress-bar").style.display = "none";
-//           document.getElementById("div-generate-comeback").style.display = "none";
-//           document.getElementById("generate-dataset-progress-tab").style.display = "flex";
-//         }
-//       });
-
-//       //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
-//       organizeDataset_option_buttons.style.display = "flex";
-//       organizeDataset.disabled = false;
-//       uploadLocally.disabled = false;
-//       guidedModeHomePageButton.disabled = false;
-
-//       //Add the original classes back to the buttons
-//       guidedModeHomePageButton.className = "button-prompt-container";
-//       organizeDataset.className = "content-button is-selected";
-//       organizeDataset.style = "background-color: #fff";
-//       uploadLocally.className = "content-button is-selected";
-//       uploadLocally.style = "background-color: #fff";
-
-//       console.error(error);
-//       //Clear the interval to stop the generation of new sweet alerts after intitial error
-//       clearInterval(timerProgress);
-//       return;
-//     }
-
-//     let { data } = mainCurationProgressResponse;
-
-//     main_curate_status = data["main_curate_status"];
-//     var start_generate = data["start_generate"];
-//     var main_curate_progress_message = data["main_curate_progress_message"];
-//     main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
-//     var main_generated_dataset_size = data["main_generated_dataset_size"];
-//     var elapsed_time_formatted = data["elapsed_time_formatted"];
-//     let total_files_uploaded = data["total_files_uploaded"];
-
-//     // used for logging in the error case ( inside /curation's catch block )
-//     uploadedFiles = total_files_uploaded;
-//     uploadedBytes = main_generated_dataset_size;
-
-//     if (start_generate === 1) {
-//       var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
-//       generateProgressBar.value = value;
-//       statusMeter.value = value;
-//       if (main_total_generate_dataset_size < window.displaySIze) {
-//         var totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
-//       } else if (main_total_generate_dataset_size < window.displaySIze * window.displaySIze) {
-//         var totalSizePrint = (main_total_generate_dataset_size / window.displaySIze).toFixed(2) + " KB";
-//       } else if (main_total_generate_dataset_size < window.displaySIze * window.displaySIze * window.displaySIze) {
-//         var totalSizePrint =
-//           (main_total_generate_dataset_size / window.displaySIze / window.displaySIze).toFixed(2) + " MB";
-//       } else {
-//         var totalSizePrint =
-//           (main_total_generate_dataset_size / window.displaySIze / window.displaySIze / window.displaySIze).toFixed(2) +
-//           " GB";
-//       }
-
-//       progressStatus.innerHTML = `${main_curate_progress_message}<br>
-//       Elapsed time: ${elapsed_time_formatted}
-//       <br>Progress: ${value.toFixed(2)}% (total size: ${totalSizePrint})<br>
-//       Total files uploaded: ${total_files_uploaded}<br>`;
-
-//       statusText.innerHTML = `Progress: ${value.toFixed(2)}%
-//       <br>Elapsed time: ${elapsed_time_formatted}<br>`;
-
-//       divGenerateProgressBar.style.display = "block";
-
-//       if (main_curate_progress_message.includes("Success: COMPLETED!")) {
-//         clearInterval(timerProgress);
-//         generateProgressBar.value = 100;
-//         statusMeter.value = 100;
-//         progressStatus.innerHTML = main_curate_status + window.smileyCan;
-//         statusText.innerHTML = main_curate_status + window.smileyCan;
-//         successful = true;
-//       }
-//     } else {
-//       statusText.innerHTML = `${main_curate_progress_message}<br>Elapsed time: ${elapsed_time_formatted}`;
-//       progressStatus.innerHTML = `${main_curate_progress_message}<br>Elapsed time: ${elapsed_time_formatted}`;
-//     }
-
-//     if (main_curate_progress_message.includes("Preparing files to be renamed...")) {
-//       statusMeter.value = 0;
-//       generateProgressBar.value = 0;
-//       progressStatus.innerHTML = `Preparing files to be renamed...<br>Elapsed time: ${elapsed_time_formatted}`;
-//       statusText.innerHTML = `Preparing files to be renamed... <br>Elapsed time: ${elapsed_time_formatted}`;
-//     }
-
-//     if (main_curate_progress_message.includes("Renaming files...")) {
-//       statusMeter.value = value;
-//       generateProgressBar.value = value;
-//       progressStatus.innerHTML = `Renaming files...<br>
-//       Elapsed time: ${elapsed_time_formatted}<br>
-//       Progress: ${value.toFixed(2)}% 
-//       (${main_generated_dataset_size} of ${main_total_generate_dataset_size})`;
-
-//       statusText.innerHTML = `Renaming files...<br>Elapsed time: ${elapsed_time_formatted}<br>
-//       Progress: ${value.toFixed(2)}%`;
-//     }
-
-//     if (main_curate_status === "Done") {
-//       $("#sidebarCollapse").prop("disabled", false);
-//       window.log.info("Done curate track");
-//       statusBarClone.remove();
-//       sparc_container.style.display = "inline";
-//       if (successful === true) {
-//         //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
-//         organizeDataset.disabled = false;
-//         guidedModeHomePageButton.disabled = false;
-//         uploadLocally.disabled = false;
-
-//         // Add the original classes back to the buttons
-//         organizeDataset_option_buttons.style.display = "flex";
-//         guidedModeHomePageButton.className = "button-prompt-container";
-//         organizeDataset.className = "content-button is-selected";
-//         organizeDataset.style = "background-color: #fff";
-//         uploadLocally.className = "content-button is-selected";
-//         uploadLocally.style = "background-color: #fff";
-
-//         window.uploadComplete.open({
-//           type: "success",
-//           message: "Dataset created successfully",
-//         });
-//       } else {
-//         //enable buttons anyways (organize datasets, upload locally, curate existing dataset, curate new dataset)
-//         organizeDataset_option_buttons.style.display = "flex";
-//         organizeDataset.disabled = false;
-//         guidedModeHomePageButton.disabled = false;
-//         uploadLocally.disabled = false;
-
-//         // Add the original classes back to the buttons
-//         guidedModeHomePageButton.className = "button-prompt-container";
-//         organizeDataset.className = "content-button is-selected";
-//         organizeDataset.style = "background-color: #fff";
-//         uploadLocally.className = "content-button is-selected";
-//         uploadLocally.style = "background-color: #fff";
-//       }
-//     }
-
-//     // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
-//     let generated_dataset_id = data["generated_dataset_id"];
-//     if (
-//       !loggedDatasetNameToIdMapping &&
-//       generated_dataset_id !== null &&
-//       generated_dataset_id !== undefined
-//     ) {
-//       window.electron.ipcRenderer.send(
-//         "track-event",
-//         "Dataset ID to Dataset Name Map",
-//         generated_dataset_id,
-//         dataset_name
-//       );
-
-//       // don't log this again for the current upload session
-//       loggedDatasetNameToIdMapping = true;
-//     }
-
-//     // if doing a pennsieve upload log as we go ( as well as at the end in failure or success case )
-//     if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
-//       logProgressToAnalytics(total_files_uploaded, main_generated_dataset_size);
-//     }
-//   }
-
-//   let bytesOnPreviousLogPage = 0;
-//   let filesOnPreviousLogPage = 0;
-//   const logProgressToAnalytics = (files, bytes) => {
-//     let nameDestinationPair = determineDatasetDestination();
-//     let datasetLocation = determineDatasetLocation();
-//     let dataset_name = nameDestinationPair[0];
-//     let dataset_destination = nameDestinationPair[1];
-//     // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
-//     if (files >= filesOnPreviousLogPage + 500) {
-//       filesOnPreviousLogPage += 500;
-//       window.electron.ipcRenderer.send(
-//         "track-kombucha",
-//         kombuchaEnums.Category.PREPARE_DATASETS,
-//         kombuchaEnums.Action.GENERATE_DATASET,
-//         kombuchaEnums.Label.FILES,
-//         kombuchaEnums.Status.SUCCESS,
-//         createEventData(500, dataset_destination, datasetLocation, dataset_name)
-//       );
-
-//       window.electron.ipcRenderer.send(
-//         "track-event",
-//         "Success",
-//         window.PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
-//         `${datasetUploadSession.id}`,
-//         500
-//       );
-
-//       let differenceInBytes = bytes - bytesOnPreviousLogPage;
-//       bytesOnPreviousLogPage = bytes;
-//       window.electron.ipcRenderer.send(
-//         "track-event",
-//         "Success",
-//         window.PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
-//         `${datasetUploadSession.id}`,
-//         differenceInBytes
-//       );
-
-//       if (differenceInBytes > 0) {
-//         window.electron.ipcRenderer.send(
-//           "track-kombucha",
-//           kombuchaEnums.Category.PREPARE_DATASETS,
-//           kombuchaEnums.Action.GENERATE_DATASET,
-//           kombuchaEnums.Label.SIZE,
-//           kombuchaEnums.Status.SUCCESS,
-//           createEventData(differenceInBytes, dataset_destination, datasetLocation, dataset_name)
-//         );
-//       }
-//     }
-//   };
-// }; // end initiate_generate
-
-// const show_curation_shortcut = async () => {
-//   Swal.fire({
-//     backdrop: "rgba(0,0,0, 0.4)",
-//     cancelButtonText: "No. I'll do it later",
-//     confirmButtonText: "Yes, I want to share it",
-//     heightAuto: false,
-//     icon: "success",
-//     allowOutsideClick: false,
-//     reverseButtons: window.reverseSwalButtons,
-//     showCancelButton: true,
-//     text: "Now that your dataset is uploaded, do you want to share it with the Curation Team?",
-//     showClass: {
-//       popup: "animate__animated animate__zoomIn animate__faster",
-//     },
-//     hideClass: {
-//       popup: "animate__animated animate__zoomOut animate__faster",
-//     },
-//   }).then(async (result) => {
-//     //window.dismissStatus("status-bar-curate-progress");
-//     window.uploadComplete.open({
-//       type: "success",
-//       message: "Upload to Pennsieve completed",
-//     });
-//     let statusBarContainer = document.getElementById("status-bar-curate-progress");
-//     //statusBarContainer.remove();
-
-//     if (result.isConfirmed) {
-//       let datasetName = "";
-//       if (!sodaJSONObj["generate-dataset"].hasOwnProperty("dataset-name")) {
-//         datasetName = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-//       } else {
-//         datasetName = sodaJSONObj["generate-dataset"]["dataset-name"];
-//       }
-//       $(".bf-dataset-span").html(datasetName);
-//       $("#current-bf-dataset").text(datasetName);
-//       $("#current-bf-dataset-generate").text(datasetName);
-//       $(".bf-dataset-span").html(datasetName);
-//       confirm_click_function();
-
-//       window.defaultBfDataset = datasetName;
-//       // document.getElementById("ds-description").innerHTML = "";
-//       window.refreshDatasetList();
-//       $("#dataset-loaded-message").hide();
-
-//       // showHideDropdownButtons("dataset", "show");
-//       confirm_click_function();
-//       $("#guided_mode_view").click();
-//       $(".swal2-confirm").click();
-//       $(".vertical-progress-bar-step").removeClass("is-current");
-//       $(".vertical-progress-bar-step").removeClass("done");
-//       $(".getting-started").removeClass("prev");
-//       $(".getting-started").removeClass("show");
-//       $(".getting-started").removeClass("test2");
-//       $("#Question-getting-started-1").addClass("show");
-//       $("#generate-dataset-progress-tab").css("display", "none");
-
-//       window.currentTab = 0;
-//       await wipeOutCurateProgress();
-//       $("#guided-button-start-modify-component").click();
-//       $("#disseminate_dataset_tab").click();
-//       $("#submit_prepublishing_review_btn").click();
-//     }
-//   });
-// };
+// Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
+const initiate_generate = async () => {
+  // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
+  document.getElementById("guided_mode_view").style.pointerEvents = "none";
+
+  // Initiate curation by calling Python function
+  let manifest_files_requested = false;
+  var main_curate_status = "Solving";
+  var main_total_generate_dataset_size;
+
+  // get the amount of files
+  document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ...";
+
+  progressStatus.innerHTML = "Preparing files ...";
+
+  document.getElementById("para-please-wait-new-curate").innerHTML = "";
+  document.getElementById("div-new-curate-progress").style.display = "block";
+  document.getElementById("div-generate-comeback").style.display = "none";
+
+  // Create the progress bar clone for the navigation bar
+  let organizeDataset = document.getElementById("organize_dataset_btn");
+  let curateAndShareNavButton = document.getElementById("guided_mode_view");
+  let documentationNavButton = document.getElementById("documentation-view");
+  let contactNavButton = document.getElementById("contact-us-view");
+  let uploadLocally = document.getElementById("upload_local_dataset_btn");
+  let guidedModeHomePageButton = document.getElementById("button-homepage-guided-mode");
+  let organizeDataset_option_buttons = document.getElementById("div-generate-comeback");
+  let statusBarContainer = document.getElementById("div-new-curate-progress");
+  var statusBarClone = statusBarContainer.cloneNode(true);
+  let navContainer = document.getElementById("nav-items");
+  let statusText = statusBarClone.children[2];
+  let statusMeter = statusBarClone.getElementsByClassName("progresstrack")[0];
+  let returnButton = document.createElement("button");
+
+  statusBarClone.id = "status-bar-curate-progress";
+  statusText.setAttribute("id", "nav-curate-progress-bar-status");
+  statusMeter.setAttribute("id", "nav-progress-bar-new-curate");
+  statusMeter.className = "nav-status-bar";
+  statusBarClone.appendChild(returnButton);
+
+  // Disable the Organize Dataset and Upload Locally buttons
+  uploadLocally.disabled = true;
+  organizeDataset.disabled = true;
+  guidedModeHomePageButton.disabled = true;
+
+  // Add disabled appearance to the buttons
+  guidedModeHomePageButton.className = "button-prompt-container curate-disabled-button";
+  organizeDataset.className = "disabled-content-button";
+  uploadLocally.className = "disabled-content-button";
+  organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
+  uploadLocally.style = "background-color: #f6f6f6; border: #fff;";
+
+  returnButton.type = "button";
+  returnButton.id = "returnButton";
+  returnButton.innerHTML = "Return to progress";
+
+  // Event handler for navigation menu's progress bar clone
+  returnButton.onclick = function () {
+    organizeDataset.disabled = false;
+    contactNavButton.classList.remove("is-selected");
+    documentationNavButton.classList.remove("is-selected");
+    curateAndShareNavButton.classList.add("is-selected");
+    organizeDataset.className = "content-button is-selected";
+    organizeDataset.style = "background-color: #fff";
+    organizeDataset.click();
+    let button = document.getElementById("button-generate");
+    $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
+    document.getElementById("prevBtn").style.display = "none";
+    document.getElementById("start-over-btn").style.display = "none";
+    document.getElementById("div-vertical-progress-bar").style.display = "none";
+    document.getElementById("div-generate-comeback").style.display = "none";
+    document.getElementById("generate-dataset-progress-tab").style.display = "flex";
+    organizeDataset.disabled = true;
+    organizeDataset.className = "disabled-content-button";
+    organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
+  };
+
+  let sparc_container = document.getElementById("sparc-logo-container");
+  sparc_container.style.display = "none";
+  navContainer.appendChild(statusBarClone);
+  let navbar = document.getElementById("main-nav");
+  if (navbar.classList.contains("active")) {
+    document.getElementById("sidebarCollapse").click();
+  }
+
+  if ($("#generate-manifest-curate")[0].checked) {
+    window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
+  }
+
+  if ("manifest-files" in window.sodaJSONObj) {
+    if (
+      "auto-generated" in window.sodaJSONObj["manifest-files"] &&
+      window.sodaJSONObj["manifest-files"]["auto-generated"] === true
+    ) {
+      delete_imported_manifest();
+    } else if (window.sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
+      manifest_files_requested = true;
+      delete_imported_manifest();
+    }
+  }
+
+  let dataset_destination = "";
+  let dataset_name = "";
+
+  // track the amount of files that have been uploaded/generated
+  let uploadedFiles = 0;
+  let uploadedBytes = 0;
+  let increaseInFileSize = 0;
+  let generated_dataset_id = undefined;
+  let loggedDatasetNameToIdMapping = false;
+
+  // determine where the dataset will be generated/uploaded
+  let nameDestinationPair = determineDatasetDestination();
+  let datasetLocation = determineDatasetLocation();
+  dataset_name = nameDestinationPair[0];
+  dataset_destination = nameDestinationPair[1];
+
+  if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
+    // create a dataset upload session
+    datasetUploadSession.startSession();
+  }
+
+  let start = performance.now();
+  client
+    .post(
+      `/curate_datasets/curation`,
+      {
+        soda_json_structure: window.sodaJSONObj,
+      },
+      { timeout: 0 }
+    )
+    .then(async (response) => {
+      let end = performance.now();
+      let time = (end - start) / 1000;
+      let { data } = response;
+
+      main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
+      uploadedFiles = data["main_curation_uploaded_files"];
+
+      $("#sidebarCollapse").prop("disabled", false);
+      window.log.info("Completed curate function");
+
+      // log high level confirmation that a dataset was generated - helps answer how many times were datasets generated in FFMs organize dataset functionality
+      window.electron.ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.TOTAL_UPLOADS,
+        kombuchaEnums.Status.SUCCESS,
+        createEventData(1, dataset_destination, datasetLocation, dataset_name)
+      );
+
+      // get the correct value for files and file size for analytics
+      let fileValueToLog = 0;
+      let fileSizeValueToLog = 0;
+      if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
+        // log the difference again to Google Analytics
+        let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+        fileValueToLog = finalFilesCount;
+        fileSizeValueToLog = differenceInBytes;
+      } else {
+        // when generating locally we doo not log in increments so we log the total number of files and the total size generated in one go
+        fileValueToLog = uploadedFiles;
+        fileSizeValueToLog = main_total_generate_dataset_size;
+      }
+
+      // log the file and file size values to analytics
+      if (fileValueToLog > 0) {
+        window.electron.ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.PREPARE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.SUCCESS,
+          createEventData(fileValueToLog, dataset_destination, datasetLocation, dataset_name)
+        );
+      }
+
+      if (fileSizeValueToLog > 0) {
+        window.electron.ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.PREPARE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.SIZE,
+          kombuchaEnums.Status.SUCCESS,
+          createEventData(fileSizeValueToLog, dataset_destination, datasetLocation, dataset_name)
+        );
+      }
+
+      // log folder and file options selected ( can be merge, skip, replace, duplicate)
+      logSelectedUpdateExistingDatasetOptions(datasetLocation);
+
+      //Allow guided_mode_view to be clicked again
+      document.getElementById("guided_mode_view").style.pointerEvents = "";
+
+      try {
+        let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+          params: {
+            selected_account: window.defaultBfAccount,
+          },
+        });
+        window.datasetList = [];
+        window.datasetList = responseObject.data.datasets;
+      } catch (error) {
+        clientError(error);
+      }
+    })
+    .catch(async (error) => {
+      //Allow guided_mode_view to be clicked again
+      document.getElementById("guided_mode_view").style.pointerEvents = "";
+
+      clientError(error);
+      let emessage = userErrorMessage(error);
+
+      // log high level confirmation that a dataset was generation run failed
+      window.electron.ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.TOTAL_UPLOADS,
+        kombuchaEnums.Status.FAIL,
+        createEventData(1, dataset_destination, datasetLocation, dataset_name)
+      );
+
+      // log the file and file size values to analytics for the amount that we managed to upload before we failed
+      if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
+        // log the difference again to Google Analytics
+        let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        let differenceInBytes = uploadedBytes - bytesOnPreviousLogPage;
+
+        if (finalFilesCount > 0) {
+          window.electron.ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.PREPARE_DATASETS,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.FILES,
+            kombuchaEnums.Status.SUCCESS,
+            createEventData(finalFilesCount, dataset_destination, datasetLocation, dataset_name)
+          );
+        }
+
+        if (differenceInBytes > 0) {
+          window.electron.ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.PREPARE_DATASETS,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.SIZE,
+            kombuchaEnums.Status.SUCCESS,
+            createEventData(differenceInBytes, dataset_destination, datasetLocation, dataset_name)
+          );
+        }
+      }
+
+      // log folder and file options selected ( can be merge, skip, replace, duplicate)
+      logSelectedUpdateExistingDatasetOptions(datasetLocation);
+
+      // log the amount of files, and the total size, that we failed to upload
+      window.electron.ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FILES,
+        kombuchaEnums.Status.FAIL,
+        createEventData(uploadedFiles, dataset_destination, datasetLocation, dataset_name)
+      );
+
+      window.electron.ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.SIZE,
+        kombuchaEnums.Status.FAIL,
+        createEventData(
+          main_total_generate_dataset_size,
+          dataset_destination,
+          datasetLocation,
+          dataset_name
+        )
+      );
+
+      //Enable the buttons
+      organizeDataset_option_buttons.style.display = "flex";
+      organizeDataset.disabled = false;
+      guidedModeHomePageButton.disabled = false;
+      uploadLocally.disabled = false;
+      $("#sidebarCollapse").prop("disabled", false);
+
+      //Add the original classes back to the buttons
+      guidedModeHomePageButton.className = "button-prompt-container";
+      organizeDataset.className = "content-button is-selected";
+      organizeDataset.style = "background-color: #fff";
+      uploadLocally.className = "content-button is-selected";
+      uploadLocally.style = "background-color: #fff";
+
+      document.getElementById(
+        "para-new-curate-progress-bar-error-status"
+      ).innerHTML = `<span style='color: red;'>${emessage}</span>`;
+
+      Swal.fire({
+        icon: "error",
+        title: "An Error Occurred While Uploading Your Dataset",
+        html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+        didOpen: () => {
+          document.getElementById("swal2-content").style.maxHeight = "19rem";
+          document.getElementById("swal2-content").style.overflowY = "auto";
+        },
+      }).then((result) => {
+        statusBarClone.remove();
+        sparc_container.style.display = "inline";
+        if (result.isConfirmed) {
+          organizeDataset.click();
+          let button = document.getElementById("button-generate");
+          $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
+          document.getElementById("prevBtn").style.display = "none";
+          document.getElementById("start-over-btn").style.display = "none";
+          document.getElementById("div-vertical-progress-bar").style.display = "none";
+          document.getElementById("div-generate-comeback").style.display = "flex";
+          document.getElementById("generate-dataset-progress-tab").style.display = "flex";
+        }
+      });
+      progressStatus.innerHTML = "";
+      statusText.innerHTML = "";
+      document.getElementById("div-new-curate-progress").style.display = "none";
+      generateProgressBar.value = 0;
+
+      try {
+        let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+          params: {
+            selected_account: window.defaultBfAccount,
+          },
+        });
+        window.datasetList = [];
+        window.datasetList = responseObject.data.datasets;
+      } catch (error) {
+        clientError(error);
+        emessage = userErrorMessage(error);
+      }
+    });
+
+  // Progress tracking function for main curate
+  var timerProgress = setInterval(mainProgressFunction, 1000);
+  var successful = false;
+
+  async function mainProgressFunction() {
+    let mainCurationProgressResponse;
+    try {
+      mainCurationProgressResponse = await client.get(`/curate_datasets/curation/progress`);
+    } catch (error) {
+      clientError(error);
+      let emessage = userErrorMessage(error);
+
+      document.getElementById(
+        "para-new-curate-progress-bar-error-status"
+      ).innerHTML = `<span style='color: red;'>${emessage}</span>`;
+      window.log.error(error);
+
+      //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
+      organizeDataset_option_buttons.style.display = "flex";
+      organizeDataset.disabled = false;
+      guidedModeHomePageButton.disabled = false;
+      uploadLocally.disabled = false;
+
+      //Add the original classes back to the buttons
+      guidedModeHomePageButton.className = "button-prompt-container";
+      organizeDataset.className = "content-button is-selected";
+      organizeDataset.style = "background-color: #fff";
+      uploadLocally.className = "content-button is-selected";
+      uploadLocally.style = "background-color: #fff";
+
+      Swal.fire({
+        icon: "error",
+        title: "An Error Occurred While Uploading Your Dataset",
+        html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+        didOpen: () => {
+          document.getElementById("swal2-content").style.maxHeight = "19rem";
+          document.getElementById("swal2-content").style.overflowY = "auto";
+        },
+      }).then((result) => {
+        //statusBarClone.remove();
+        if (result.isConfirmed) {
+          organizeDataset.click();
+          let button = document.getElementById("button-generate");
+          $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
+          document.getElementById("prevBtn").style.display = "none";
+          document.getElementById("start-over-btn").style.display = "none";
+          document.getElementById("div-vertical-progress-bar").style.display = "none";
+          document.getElementById("div-generate-comeback").style.display = "none";
+          document.getElementById("generate-dataset-progress-tab").style.display = "flex";
+        }
+      });
+
+      //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
+      organizeDataset_option_buttons.style.display = "flex";
+      organizeDataset.disabled = false;
+      uploadLocally.disabled = false;
+      guidedModeHomePageButton.disabled = false;
+
+      //Add the original classes back to the buttons
+      guidedModeHomePageButton.className = "button-prompt-container";
+      organizeDataset.className = "content-button is-selected";
+      organizeDataset.style = "background-color: #fff";
+      uploadLocally.className = "content-button is-selected";
+      uploadLocally.style = "background-color: #fff";
+
+      console.error(error);
+      //Clear the interval to stop the generation of new sweet alerts after intitial error
+      clearInterval(timerProgress);
+      return;
+    }
+
+    let { data } = mainCurationProgressResponse;
+
+    main_curate_status = data["main_curate_status"];
+    var start_generate = data["start_generate"];
+    var main_curate_progress_message = data["main_curate_progress_message"];
+    main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
+    var main_generated_dataset_size = data["main_generated_dataset_size"];
+    var elapsed_time_formatted = data["elapsed_time_formatted"];
+    let total_files_uploaded = data["total_files_uploaded"];
+
+    // used for logging in the error case ( inside /curation's catch block )
+    uploadedFiles = total_files_uploaded;
+    uploadedBytes = main_generated_dataset_size;
+
+    if (start_generate === 1) {
+      var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
+      generateProgressBar.value = value;
+      statusMeter.value = value;
+      if (main_total_generate_dataset_size < window.displaySIze) {
+        var totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
+      } else if (main_total_generate_dataset_size < window.displaySIze * window.displaySIze) {
+        var totalSizePrint = (main_total_generate_dataset_size / window.displaySIze).toFixed(2) + " KB";
+      } else if (main_total_generate_dataset_size < window.displaySIze * window.displaySIze * window.displaySIze) {
+        var totalSizePrint =
+          (main_total_generate_dataset_size / window.displaySIze / window.displaySIze).toFixed(2) + " MB";
+      } else {
+        var totalSizePrint =
+          (main_total_generate_dataset_size / window.displaySIze / window.displaySIze / window.displaySIze).toFixed(2) +
+          " GB";
+      }
+
+      progressStatus.innerHTML = `${main_curate_progress_message}<br>
+      Elapsed time: ${elapsed_time_formatted}
+      <br>Progress: ${value.toFixed(2)}% (total size: ${totalSizePrint})<br>
+      Total files uploaded: ${total_files_uploaded}<br>`;
+
+      statusText.innerHTML = `Progress: ${value.toFixed(2)}%
+      <br>Elapsed time: ${elapsed_time_formatted}<br>`;
+
+      divGenerateProgressBar.style.display = "block";
+
+      if (main_curate_progress_message.includes("Success: COMPLETED!")) {
+        clearInterval(timerProgress);
+        generateProgressBar.value = 100;
+        statusMeter.value = 100;
+        progressStatus.innerHTML = main_curate_status + window.smileyCan;
+        statusText.innerHTML = main_curate_status + window.smileyCan;
+        successful = true;
+      }
+    } else {
+      statusText.innerHTML = `${main_curate_progress_message}<br>Elapsed time: ${elapsed_time_formatted}`;
+      progressStatus.innerHTML = `${main_curate_progress_message}<br>Elapsed time: ${elapsed_time_formatted}`;
+    }
+
+    if (main_curate_progress_message.includes("Preparing files to be renamed...")) {
+      statusMeter.value = 0;
+      generateProgressBar.value = 0;
+      progressStatus.innerHTML = `Preparing files to be renamed...<br>Elapsed time: ${elapsed_time_formatted}`;
+      statusText.innerHTML = `Preparing files to be renamed... <br>Elapsed time: ${elapsed_time_formatted}`;
+    }
+
+    if (main_curate_progress_message.includes("Renaming files...")) {
+      statusMeter.value = value;
+      generateProgressBar.value = value;
+      progressStatus.innerHTML = `Renaming files...<br>
+      Elapsed time: ${elapsed_time_formatted}<br>
+      Progress: ${value.toFixed(2)}% 
+      (${main_generated_dataset_size} of ${main_total_generate_dataset_size})`;
+
+      statusText.innerHTML = `Renaming files...<br>Elapsed time: ${elapsed_time_formatted}<br>
+      Progress: ${value.toFixed(2)}%`;
+    }
+
+    if (main_curate_status === "Done") {
+      $("#sidebarCollapse").prop("disabled", false);
+      window.log.info("Done curate track");
+      statusBarClone.remove();
+      sparc_container.style.display = "inline";
+      if (successful === true) {
+        //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
+        organizeDataset.disabled = false;
+        guidedModeHomePageButton.disabled = false;
+        uploadLocally.disabled = false;
+
+        // Add the original classes back to the buttons
+        organizeDataset_option_buttons.style.display = "flex";
+        guidedModeHomePageButton.className = "button-prompt-container";
+        organizeDataset.className = "content-button is-selected";
+        organizeDataset.style = "background-color: #fff";
+        uploadLocally.className = "content-button is-selected";
+        uploadLocally.style = "background-color: #fff";
+
+        window.uploadComplete.open({
+          type: "success",
+          message: "Dataset created successfully",
+        });
+      } else {
+        //enable buttons anyways (organize datasets, upload locally, curate existing dataset, curate new dataset)
+        organizeDataset_option_buttons.style.display = "flex";
+        organizeDataset.disabled = false;
+        guidedModeHomePageButton.disabled = false;
+        uploadLocally.disabled = false;
+
+        // Add the original classes back to the buttons
+        guidedModeHomePageButton.className = "button-prompt-container";
+        organizeDataset.className = "content-button is-selected";
+        organizeDataset.style = "background-color: #fff";
+        uploadLocally.className = "content-button is-selected";
+        uploadLocally.style = "background-color: #fff";
+      }
+    }
+
+    // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
+    let generated_dataset_id = data["generated_dataset_id"];
+    if (
+      !loggedDatasetNameToIdMapping &&
+      generated_dataset_id !== null &&
+      generated_dataset_id !== undefined
+    ) {
+      window.electron.ipcRenderer.send(
+        "track-event",
+        "Dataset ID to Dataset Name Map",
+        generated_dataset_id,
+        dataset_name
+      );
+
+      // don't log this again for the current upload session
+      loggedDatasetNameToIdMapping = true;
+    }
+
+    // if doing a pennsieve upload log as we go ( as well as at the end in failure or success case )
+    if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
+      logProgressToAnalytics(total_files_uploaded, main_generated_dataset_size);
+    }
+  }
+
+  let bytesOnPreviousLogPage = 0;
+  let filesOnPreviousLogPage = 0;
+  const logProgressToAnalytics = (files, bytes) => {
+    let nameDestinationPair = determineDatasetDestination();
+    let datasetLocation = determineDatasetLocation();
+    let dataset_name = nameDestinationPair[0];
+    let dataset_destination = nameDestinationPair[1];
+    // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
+    if (files >= filesOnPreviousLogPage + 500) {
+      filesOnPreviousLogPage += 500;
+      window.electron.ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FILES,
+        kombuchaEnums.Status.SUCCESS,
+        createEventData(500, dataset_destination, datasetLocation, dataset_name)
+      );
+
+      window.electron.ipcRenderer.send(
+        "track-event",
+        "Success",
+        window.PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
+        `${datasetUploadSession.id}`,
+        500
+      );
+
+      let differenceInBytes = bytes - bytesOnPreviousLogPage;
+      bytesOnPreviousLogPage = bytes;
+      window.electron.ipcRenderer.send(
+        "track-event",
+        "Success",
+        window.PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
+        `${datasetUploadSession.id}`,
+        differenceInBytes
+      );
+
+      if (differenceInBytes > 0) {
+        window.electron.ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.PREPARE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.SIZE,
+          kombuchaEnums.Status.SUCCESS,
+          createEventData(differenceInBytes, dataset_destination, datasetLocation, dataset_name)
+        );
+      }
+    }
+  };
+}; // end initiate_generate
+
+const show_curation_shortcut = async () => {
+  Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    cancelButtonText: "No. I'll do it later",
+    confirmButtonText: "Yes, I want to share it",
+    heightAuto: false,
+    icon: "success",
+    allowOutsideClick: false,
+    reverseButtons: window.reverseSwalButtons,
+    showCancelButton: true,
+    text: "Now that your dataset is uploaded, do you want to share it with the Curation Team?",
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  }).then(async (result) => {
+    //window.dismissStatus("status-bar-curate-progress");
+    window.uploadComplete.open({
+      type: "success",
+      message: "Upload to Pennsieve completed",
+    });
+    let statusBarContainer = document.getElementById("status-bar-curate-progress");
+    //statusBarContainer.remove();
+
+    if (result.isConfirmed) {
+      let datasetName = "";
+      if (!sodaJSONObj["generate-dataset"].hasOwnProperty("dataset-name")) {
+        datasetName = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+      } else {
+        datasetName = sodaJSONObj["generate-dataset"]["dataset-name"];
+      }
+      $(".bf-dataset-span").html(datasetName);
+      $("#current-bf-dataset").text(datasetName);
+      $("#current-bf-dataset-generate").text(datasetName);
+      $(".bf-dataset-span").html(datasetName);
+      confirm_click_function();
+
+      window.defaultBfDataset = datasetName;
+      // document.getElementById("ds-description").innerHTML = "";
+      window.refreshDatasetList();
+      $("#dataset-loaded-message").hide();
+
+      // showHideDropdownButtons("dataset", "show");
+      confirm_click_function();
+      $("#guided_mode_view").click();
+      $(".swal2-confirm").click();
+      $(".vertical-progress-bar-step").removeClass("is-current");
+      $(".vertical-progress-bar-step").removeClass("done");
+      $(".getting-started").removeClass("prev");
+      $(".getting-started").removeClass("show");
+      $(".getting-started").removeClass("test2");
+      $("#Question-getting-started-1").addClass("show");
+      $("#generate-dataset-progress-tab").css("display", "none");
+
+      window.currentTab = 0;
+      await wipeOutCurateProgress();
+      $("#guided-button-start-modify-component").click();
+      $("#disseminate_dataset_tab").click();
+      $("#submit_prepublishing_review_btn").click();
+    }
+  });
+};
 
 const get_num_files_and_folders = (dataset_folders) => {
   if ("files" in dataset_folders) {
@@ -7912,49 +7912,49 @@ const get_num_files_and_folders = (dataset_folders) => {
   return;
 };
 
-// const determineDatasetDestination = () => {
-//   if (sodaJSONObj["generate-dataset"]) {
-//     if (sodaJSONObj["generate-dataset"]["destination"]) {
-//       let destination = sodaJSONObj["generate-dataset"]["destination"];
-//       if (destination === "bf" || destination === "Pennsieve") {
-//         // updating an existing dataset on Pennsieve
-//         if (sodaJSONObj["bf-dataset-selected"]) {
-//           return [sodaJSONObj["bf-dataset-selected"]["dataset-name"], "Pennsieve"];
-//         } else {
-//           return [
-//             // get dataset name,
-//             document.querySelector("#inputNewNameDataset").value,
-//             "Pennsieve",
-//           ];
-//         }
-//       } else {
-//         // replacing files in an existing local dataset
-//         if (sodaJSONObj["generate-dataset"]["dataset-name"]) {
-//           return [sodaJSONObj["generate-dataset"]["dataset-name"], "Local"];
-//         } else {
-//           // creating a new dataset from an existing local dataset
-//           return [document.querySelector("#inputNewNameDataset").value, "Local"];
-//         }
-//       }
-//     }
-//   } else {
-//     return [document.querySelector("#inputNewNameDataset").value, "Local"];
-//   }
-// };
+const determineDatasetDestination = () => {
+  if (window.sodaJSONObj["generate-dataset"]) {
+    if (window.sodaJSONObj["generate-dataset"]["destination"]) {
+      let destination = window.sodaJSONObj["generate-dataset"]["destination"];
+      if (destination === "bf" || destination === "Pennsieve") {
+        // updating an existing dataset on Pennsieve
+        if (window.sodaJSONObj["bf-dataset-selected"]) {
+          return [window.sodaJSONObj["bf-dataset-selected"]["dataset-name"], "Pennsieve"];
+        } else {
+          return [
+            // get dataset name,
+            document.querySelector("#inputNewNameDataset").value,
+            "Pennsieve",
+          ];
+        }
+      } else {
+        // replacing files in an existing local dataset
+        if (window.sodaJSONObj["generate-dataset"]["dataset-name"]) {
+          return [window.sodaJSONObj["generate-dataset"]["dataset-name"], "Local"];
+        } else {
+          // creating a new dataset from an existing local dataset
+          return [document.querySelector("#inputNewNameDataset").value, "Local"];
+        }
+      }
+    }
+  } else {
+    return [document.querySelector("#inputNewNameDataset").value, "Local"];
+  }
+};
 
-// function backend_to_frontend_warning_message(error_array) {
-//   if (error_array.length > 1) {
-//     var warning_message = error_array[0] + "<ul>";
-//   } else {
-//     var warning_message = "<ul>";
-//   }
-//   for (var i = 1; i < error_array.length; i++) {
-//     item = error_array[i];
-//     warning_message += "<li>" + item + "</li>";
-//   }
-//   var final_message = warning_message + "</ul>";
-//   return final_message;
-// }
+function backend_to_frontend_warning_message(error_array) {
+  if (error_array.length > 1) {
+    var warning_message = error_array[0] + "<ul>";
+  } else {
+    var warning_message = "<ul>";
+  }
+  for (var i = 1; i < error_array.length; i++) {
+    item = error_array[i];
+    warning_message += "<li>" + item + "</li>";
+  }
+  var final_message = warning_message + "</ul>";
+  return final_message;
+}
 
 var metadataIndividualFile = "";
 var metadataAllowedExtensions = [];

@@ -39,7 +39,7 @@ const { kombuchaEnums } = require("./scripts/others/analytics/analytics-enums");
 
 const {
   createEventData,
-  logSelectedUpdateExistingDatasetOptions,
+  window.logSelectedUpdateExistingDatasetOptions,
 } = require("./scripts/others/analytics/curation-analytics");
 const {
   createEventDataPrepareMetadata,
@@ -7341,7 +7341,7 @@ document.getElementById("button-generate").addEventListener("click", async funct
   $("#sidebarCollapse").prop("disabled", false);
 
   // updateJSON structure after Generate dataset tab
-  updateJSONStructureGenerate(false, sodaJSONObj);
+  window.updateJSONStructureGenerate(false, sodaJSONObj);
 
   setSodaJSONStartingPoint(sodaJSONObj);
 
@@ -7644,7 +7644,7 @@ const initiate_generate = async () => {
       }
 
       // log folder and file options selected ( can be merge, skip, replace, duplicate)
-      logSelectedUpdateExistingDatasetOptions(datasetLocation);
+      window.logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
@@ -7708,7 +7708,7 @@ const initiate_generate = async () => {
       }
 
       // log folder and file options selected ( can be merge, skip, replace, duplicate)
-      logSelectedUpdateExistingDatasetOptions(datasetLocation);
+      window.logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
       // log the amount of files, and the total size, that we failed to upload
       ipcRenderer.send(

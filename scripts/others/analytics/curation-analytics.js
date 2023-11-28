@@ -4,7 +4,7 @@
 
 */
 
-const logSelectedUpdateExistingDatasetOptions = (origin) => {
+const window.logSelectedUpdateExistingDatasetOptions = (origin) => {
   Array.from(document.querySelectorAll(".generate-preview")).forEach((card) => {
     let header = card.querySelector("h5");
     if (header.textContent.includes("folders")) {
@@ -83,5 +83,5 @@ const createEventData = (value, destination, origin, dataset_name) => {
 
 module.exports = {
   createEventData,
-  logSelectedUpdateExistingDatasetOptions,
+  window.logSelectedUpdateExistingDatasetOptions,
 };
