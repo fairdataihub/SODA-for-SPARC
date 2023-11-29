@@ -6,6 +6,7 @@ import DragSort from '@yaireo/dragsort'
 import api from './others/api/api'
 import {clientError, userErrorMessage} from './others/http-error-handler/error-handler'
 import client from './client'
+import {swalShowError} from './utils/swal-utils'
 // import { window.clearValidationResults } from './validator/validate'
 // // Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
 // //          needed by the renderer process in order to run.
@@ -1351,7 +1352,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           try {
             responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
               params: {
-                selected_account: window.defaultBfDataset,
+                selected_account: window.defaultBfAccount,
               },
             });
           } catch (error) {
