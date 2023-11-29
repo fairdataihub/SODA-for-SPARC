@@ -6910,6 +6910,103 @@ const openPage = async (targetPageID) => {
 
   guidedSetNavLoadingState(false);
 };
+const guidedOpenEntityEditSwal = async (entityName) => {
+  let preExistingEntities;
+  let entityNameSingular;
+  let entityPrefix;
+
+  if (entityName.startsWith("sub-")) {
+    preExistingEntities = getExistingSubjectNames();
+    entityNameSingular = "subject";
+    entityPrefix = "sub-";
+  }
+  if (entityName.startsWith("pool-")) {
+    preExistingEntities = getExistingPoolNames();
+    entityNameSingular = "pool";
+    entityPrefix = "pool-";
+  }
+  if (entityName.startsWith("sam-")) {
+    preExistingEntities = getExistingSampleNames();
+    entityNameSingular = "sample";
+    entityPrefix = "sam-";
+  }
+
+  let newEntityName;
+
+  const entityEditConfirmed = await Swal.fire({
+    title: `Editing ${entityNameSingular} ${entityName}`,
+    html: `
+      <p class="help-text text-center">
+        Enter a new ${entityNameSingular} name in the input below.
+        <br />
+      </p>
+      <div class="space-between w-100 align-flex-center">
+        <p class="help-text m-0 mr-1">${entityPrefix}</p>
+        <input value="${entityName.replace(
+          entityPrefix,
+          ""
+        )}" id='input-new-entity-name' class='guided--input' type='text' placeholder='Enter new subject name and press edit'/>
+      </div>
+    `,
+    width: 800,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0,0.4)",
+    showConfirmButton: true,
+    showCancelButton: true,
+    showCloseButton: false,
+    confirmButtonText: `Edit`,
+    cancelButtonText: `Cancel`,
+    didOpen: () => {
+      // Add event listener to the input to enable the confirm button when the input is changed
+      document.getElementById("input-new-entity-name").addEventListener("keyup", () => {
+        Swal.resetValidationMessage();
+        Swal.enableButtons();
+      });
+    },
+    preConfirm: () => {
+      let newEntityInputValue = document.getElementById("input-new-entity-name").value;
+      if (newEntityInputValue.length === 0) {
+        Swal.showValidationMessage(`Please enter a new ${entityNameSingular} name`);
+        return;
+      }
+
+      newEntityName = `${entityPrefix}${newEntityInputValue}`;
+      if (newEntityName === entityName) {
+        console.log("No changes made");
+        Swal.close();
+      }
+      const entityNameIsValid = evaluateStringAgainstSdsRequirements(
+        newEntityName,
+        "string-adheres-to-identifier-conventions"
+      );
+      if (!entityNameIsValid) {
+        Swal.showValidationMessage(
+          `${entityNameSingular} names can not contain spaces or special characters`
+        );
+        return;
+      }
+      if (preExistingEntities.includes(newEntityName)) {
+        Swal.showValidationMessage(`A ${entityNameSingular} with that name already exists`);
+        return;
+      }
+    },
+  });
+
+  if (entityEditConfirmed.isConfirmed) {
+    if (entityName.startsWith("sub-")) {
+      sodaJSONObj.renameSubject(entityName, newEntityName);
+      renderSubjectsTable();
+    }
+    if (entityName.startsWith("pool-")) {
+      sodaJSONObj.renamePool(entityName, newEntityName);
+      renderPoolsTable();
+    }
+    if (entityName.startsWith("sam-")) {
+      sodaJSONObj.renameSample(entityName, newEntityName);
+      renderSamplesTable();
+    }
+  }
+};
 
 const renderSubjectsTable = () => {
   const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
@@ -6935,6 +7032,14 @@ const renderSubjectsTable = () => {
     })
     .join("\n");
   document.getElementById("subject-specification-table-body").innerHTML = subjectElementRows;
+
+  // Add event listeners to the subject edit buttons
+  document.querySelectorAll(".guided-subject-edit-button").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const subjectName = button.dataset.subjectName;
+      await guidedOpenEntityEditSwal(subjectName);
+    });
+  });
 };
 
 const renderPoolsTable = () => {
@@ -6945,6 +7050,14 @@ const renderPoolsTable = () => {
     })
     .join("\n");
   document.getElementById("pools-specification-table-body").innerHTML = poolElementRows;
+
+  // Add event listeners to the pool edit buttons
+  document.querySelectorAll(".guided-pool-edit-button").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const poolName = button.dataset.poolName;
+      await guidedOpenEntityEditSwal(poolName);
+    });
+  });
 
   for (const poolName of Object.keys(pools)) {
     const newPoolSubjectsSelectElement = document.querySelector(
@@ -6999,6 +7112,14 @@ const renderSamplesTable = () => {
       console.log("clicked");
       const subjectName = button.dataset.samplesSubjectName;
       await guidedOpenEntityAdditionSwal(subjectName);
+    });
+  });
+
+  // Add event listeners to the sample edit buttons
+  document.querySelectorAll(".guided-sample-edit-button").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const sampleName = button.dataset.sampleName;
+      await guidedOpenEntityEditSwal(sampleName);
     });
   });
 };
@@ -10893,9 +11014,9 @@ const generateSubjectRowElement = (subjectName) => {
           <div class="space-between w-100">
             <span class="subject-id">${subjectName}</span>
             <i
-              class="far fa-edit"
+              class="far fa-edit guided-subject-edit-button"
               style="cursor: pointer; margin-top: .2rem"
-              onclick="openSubjectRenameInput($(this))"
+              data-subject-name="${subjectName}"
             >
             </i>
           </div>
@@ -10953,9 +11074,9 @@ const generatePoolRowElement = (poolName) => {
           <div class="space-between" style="width: 250px">
             <span class="pool-id">${poolName}</span>
             <i
-              class="far fa-edit"
+              class="far fa-edit guided-pool-edit-button"
+              data-pool-name="${poolName}"
               style="cursor: pointer"
-              onclick="openPoolRenameInput($(this))"
             >
             </i>
           </div>
@@ -10987,7 +11108,7 @@ const generateSampleRowElement = (sampleName) => {
       <div class="space-between w-100" style="align-items: center">
     <div class="space-between w-100">
       <span class="sample-id">${sampleName}</span>
-      <i class="far fa-edit jump-back" style="cursor: pointer;" onclick="openSampleRenameInput($(this))">
+      <i class="far fa-edit jump-back guided-sample-edit-button" data-sample-name="${sampleName}" style="cursor: pointer;" >
       </i>
     </div>
   </div>
@@ -11610,8 +11731,6 @@ const convertArrayToCommaSeparatedString = (array) => {
   }
 };
 
-const guideOpenSubjectEditSwal = async (sujectName) => {};
-
 const guidedOpenEntityAdditionSwal = async (entityName) => {
   // Get a list of the existing entities so we can check for duplicates
   // const subjects = getExistingSubjectNames();
@@ -11721,7 +11840,7 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
         <br />
       </p>
       <div class="space-between w-100 align-flex-center">
-        <p class="help-text m-0 mr-1">sub-</p>
+        <p class="help-text m-0 mr-1">${entityPrefix}</p>
         <input id='input-entity-addition' class='guided--input' type='text' name='guided-subject-id' placeholder='Enter ${entityNameSingular} ID and press enter'/>
         <button
           class="ui positive button soda-green-background ml-1"
@@ -11770,9 +11889,7 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
     },
     preConfirm: () => {
       if (newEntities.length === 0) {
-        Swal.showValidationMessage(
-          `Please add at least one ${entityNameSingular} or click Cancel ${entityNameSingular} addition`
-        );
+        Swal.showValidationMessage(`Please add at least one ${entityNameSingular} or click Cancel`);
       }
     },
   });
