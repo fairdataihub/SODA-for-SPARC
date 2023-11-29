@@ -11601,7 +11601,7 @@ document
       <br />
       You will now be taken to the next step where you can review/edit the imported data.`
     );
-    //$("#guided-next-button").click();
+    $("#guided-next-button").click();
   });
 
 const guidedExtractEntityNamesFromFolders = async (entityType) => {
