@@ -6945,7 +6945,7 @@ const guidedOpenEntityEditSwal = async (entityName) => {
         <input value="${entityName.replace(
           entityPrefix,
           ""
-        )}" id='input-new-entity-name' class='guided--input' type='text' placeholder='Enter new subject name and press edit'/>
+        )}" id='input-new-entity-name' class='guided--input' type='text' placeholder='Enter new ${entityNameSingular} name and press edit'/>
       </div>
     `,
     width: 800,
