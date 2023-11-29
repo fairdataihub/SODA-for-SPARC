@@ -6937,7 +6937,7 @@ const guidedOpenEntityEditSwal = async (entityName) => {
     title: `Editing ${entityNameSingular} ${entityName}`,
     html: `
       <p class="help-text text-center">
-        Enter a new ${entityNameSingular} name in the input below.
+        Enter the new name for the ${entityNameSingular} below and press edit.
         <br />
       </p>
       <div class="space-between w-100 align-flex-center">
