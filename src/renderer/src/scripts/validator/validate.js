@@ -1,7 +1,12 @@
 // Purpose: The front end logic for the Validate Dataset section
+import { v4 as uuid } from "uuid";
+import Swal from "sweetalert2";
 import { handleAxiosValidationErrors } from "./axios-validator-utility"
 import { translatePipelineError } from "./parse-pipeline-errors";
-
+import client from '../client'
+import {clientError, userErrorMessage} from "../others/http-error-handler/error-handler"
+import kombuchaEnums from "../analytics/analytics-enums"
+import api from '../others/api/api'
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100))
@@ -90,6 +95,9 @@ const pollForValidationResults = async (clientUUID) => {
 };
 
 const validateLocalDataset = async () => {
+
+  let file_counter = 0 
+  let folder_counter = 0
   // grab the local dataset path from the input's placeholder attribute
   let datasetPath = document.querySelector("#validate-local-dataset-path").value;
 
@@ -199,9 +207,9 @@ const validateLocalDataset = async () => {
     clientError(error);
     file_counter = 0;
     folder_counter = 0;
-    get_num_files_and_folders(localSodaJsonObject["dataset-structure"]);
+    window.get_num_files_and_folders(localSodaJsonObject["dataset-structure"]);
     // log successful validation run to analytics
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       "Validation - Number of Files",
@@ -265,16 +273,16 @@ const validateLocalDataset = async () => {
 
   // write the full report to the ~/SODA/validation.txt file
   let fullReport = validationReportData.full_report;
-  let validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
-  fs.writeFileSync(validationReportPath, fullReport);
+  let validationReportPath = window.path.join(window.os.homedir(), "SODA", "validation.txt");
+  window.fs.writeFileSync(validationReportPath, fullReport);
 
-  let SODADirectory = path.join(os.homedir(), "SODA");
+  let SODADirectory = window.path.join(window.os.homedir(), "SODA");
 
   file_counter = 0;
   folder_counter = 0;
-  get_num_files_and_folders(localSodaJsonObject["dataset-structure"]);
+  window.get_num_files_and_folders(localSodaJsonObject["dataset-structure"]);
   // log successful validation run to analytics
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-event",
     "Success",
     "Validation - Number of Files",
@@ -346,6 +354,9 @@ const validateLocalDataset = async () => {
 const validatePennsieveDatasetStandAlone = async () => {
   // get the dataset name from the dataset selection card
   let datasetName = document.querySelector("#bf_dataset_load_validator").textContent;
+
+  let file_counter = 0
+  let folder_counter = 0
 
   Swal.fire({
     title: `Validating your dataset`,
@@ -453,11 +464,11 @@ const validatePennsieveDatasetStandAlone = async () => {
     clientError(error);
     file_counter = 0;
     folder_counter = 0;
-    get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
+    window.get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
     // hide the validation question
     $("#validate_dataset-question-4").removeClass("show");
     // log successful validation run to analytics
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       "Validation - Number of Files",
@@ -465,7 +476,7 @@ const validatePennsieveDatasetStandAlone = async () => {
       file_counter
     );
 
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_DATASETS,
       kombuchaEnums.Action.VALIDATE_DATASET,
@@ -532,16 +543,16 @@ const validatePennsieveDatasetStandAlone = async () => {
 
   // write the full report to the ~/SODA/validation.txt file
   let fullReport = validationReport.full_report;
-  let validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
-  fs.writeFileSync(validationReportPath, fullReport);
+  let validationReportPath = window.path.join(window.os.homedir(), "SODA", "validation.txt");
+  window.fs.writeFileSync(validationReportPath, fullReport);
 
-  let SODADirectory = path.join(os.homedir(), "SODA");
+  let SODADirectory = window.path.join(window.os.homedir(), "SODA");
 
   file_counter = 0;
   folder_counter = 0;
-  get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
+  window.get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
   // log successful validation run to analytics
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-event",
     "Success",
     "Validation - Number of Files",
@@ -549,7 +560,7 @@ const validatePennsieveDatasetStandAlone = async () => {
     file_counter
   );
 
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-kombucha",
     kombuchaEnums.Category.PREPARE_DATASETS,
     kombuchaEnums.Action.VALIDATE_DATASET,
@@ -866,10 +877,10 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
   }
 
   // open folder select dialog
-  ipcRenderer.send("open-folder-dialog-validate-local-dataset");
+  window.electron.ipcRenderer.send("open-folder-dialog-validate-local-dataset");
 
   // listen for user's folder path
-  ipcRenderer.on("selected-validate-local-dataset", async (evtSender, folderPaths) => {
+  window.electron.ipcRenderer.on("selected-validate-local-dataset", async (evtSender, folderPaths) => {
     // check if a folder was not selected
     if (!folderPaths.length) {
       return;
@@ -892,7 +903,7 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
     document.querySelector("#run_validator_btn").style.display = "flex";
 
     window.transitionFreeFormMode(
-      this,
+      document.querySelector("#validate_dataset-question-2"),
       "validate_dataset-question-2",
       "validate_dataset-tab",
       "",
@@ -949,7 +960,7 @@ document.querySelector("#run_validator_btn").addEventListener("click", async fun
       "",
       "individual-question validate_dataset"
     );
-    scrollToElement("#validation-errors-container");
+    window.smoothScrollToElement(document.querySelector("#validation-errors-container"));
   }
 });
 

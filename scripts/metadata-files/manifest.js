@@ -1268,7 +1268,7 @@ const initiate_generate_manifest_bf = async () => {
     clientError(error);
     file_counter = 0;
     folder_counter = 0;
-    get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
+    window.get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
     try {
       datasetList = [];

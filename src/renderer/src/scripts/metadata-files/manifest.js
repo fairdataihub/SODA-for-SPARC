@@ -695,7 +695,7 @@ window.unHideAndSmoothScrollToElement = (id) => {
 window.smoothScrollToElement = (idOrElement, block = "start", inline = "nearest") => {
   //check if idOrElement is an element
   if (typeof idOrElement === "string") {
-    elementToScrollTo = document.getElementById(idOrElement);
+    let elementToScrollTo = document.getElementById(idOrElement);
     elementToScrollTo.scrollIntoView({
       behavior: "smooth",
       block: block,
@@ -1213,7 +1213,7 @@ const initiate_generate_manifest_bf = async () => {
     clientError(error);
     file_counter = 0;
     folder_counter = 0;
-    get_num_files_and_folders(window.sodaJSONObj["dataset-structure"]);
+    window.get_num_files_and_folders(window.sodaJSONObj["dataset-structure"]);
 
     try {
       window.datasetList = [];

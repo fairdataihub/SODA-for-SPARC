@@ -230,8 +230,8 @@ const handleSectionTrigger = async (event) => {
   boolNextButtonDisabled = document.getElementById("nextBtn").disabled;
 
   if (sectionId === "validate_dataset-section") {
-    localDatasetButton = document.getElementById("validate_dataset-1-local");
-    pennsieveDatasetButton = document.getElementById("validate_dataset-1-pennsieve");
+    let localDatasetButton = document.getElementById("validate_dataset-1-local");
+    let pennsieveDatasetButton = document.getElementById("validate_dataset-1-pennsieve");
 
     if (
       !localDatasetButton.classList.contains("checked") &&

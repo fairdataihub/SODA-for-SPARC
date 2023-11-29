@@ -85,7 +85,7 @@ const validateOrganizedDataset = async () => {
 
   // get the number of files and folders in the dataset that have been added in the virutal organizer
   file_counter = 0;
-  get_num_files_and_folders(sodaJSONObjCopy["dataset-structure"]);
+  window.get_num_files_and_folders(sodaJSONObjCopy["dataset-structure"]);
 
   // check if the virutal files will be merged with a Pennsieve dataset
   if (
@@ -199,7 +199,7 @@ const validateOrganizedDataset = async () => {
 
     file_counter = 0;
     folder_counter = 0;
-    get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
+    window.get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
     // log successful validation run to analytics
     ipcRenderer.send(
       "track-event",
@@ -233,7 +233,7 @@ const validateOrganizedDataset = async () => {
 
   file_counter = 0;
   folder_counter = 0;
-  get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
+  window.get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
   // log successful validation run to analytics
   ipcRenderer.send(
     "track-event",

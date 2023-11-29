@@ -3425,7 +3425,7 @@ document
 
       // count the amount of files in the dataset
       file_counter = 0;
-      get_num_files_and_folders(sodaJSONObjCopy["saved-datset-structure-json-obj"]);
+      window.get_num_files_and_folders(sodaJSONObjCopy["saved-datset-structure-json-obj"]);
 
       if (file_counter >= 50000) {
         await Swal.fire({
@@ -3480,7 +3480,7 @@ document
 
         file_counter = 0;
         folder_counter = 0;
-        get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+        window.get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
         // log successful validation run to analytics
         const kombuchaEventData = {
           value: file_counter,
@@ -3573,7 +3573,7 @@ document
       if (validationReport.status === "Error") {
         file_counter = 0;
         folder_counter = 0;
-        get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+        window.get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
         // log successful validation run to analytics
         const kombuchaEventData = {
           value: file_counter,
@@ -3607,7 +3607,7 @@ document
 
       file_counter = 0;
       folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+      window.get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
 
       // log successful validation run to analytics
       if (file_counter > 0) {

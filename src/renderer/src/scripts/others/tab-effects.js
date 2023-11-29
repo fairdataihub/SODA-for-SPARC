@@ -2067,6 +2067,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
 };
 
 window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, category) => {
+  console.log(ev)
   let continueProgressRC = true;
   let continueProgressDD = true;
 
