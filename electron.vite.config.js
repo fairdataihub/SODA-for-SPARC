@@ -8,7 +8,10 @@ const commonjsPackages = ['image-data-uri']
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin()],
+    watch: {
+      ignored: ["node_modules/**"]
+    }
   },
   preload: {
     plugins: [externalizeDepsPlugin()]
@@ -25,6 +28,9 @@ export default defineConfig({
     })], 
     optimizeDeps: {
       exclude: ['bootbox', 'Jimp/es']
+    },
+    watch: {
+      ignored: ["node_modules/**"]
     }
   },
   pyflask: {
@@ -40,5 +46,6 @@ export default defineConfig({
         ]
       })
     ]
-  }
+  },
+
 })
