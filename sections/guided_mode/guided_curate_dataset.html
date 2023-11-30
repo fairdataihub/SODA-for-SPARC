@@ -1201,34 +1201,35 @@
         >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Subject spreadsheet importation</h1>
+            <p class="help-text">
+              The SDS requires a unique ID for each subject in your dataset. SODA provides a feature
+              that allows you to create a list of your subjects in an external spreadsheet, and then
+              import the list into SODA, saving you from manually typing out each subject in the
+              SODA UI.
+            </p>
           </div>
           <div class="guided--section">
             <label class="guided--form-label centered">
-              The SDS requires a unique ID for all
-              <span class="sub-pool-sample-structure-description-text"></span> in your dataset. You
-              can provide these IDs in the SODA UI or import them through a spreadsheet (more
-              convenient if you have a large amount of
-              <span class="sub-pool-sample-structure-description-text"></span>). What would you like
-              to do?
+              Would you like to import your subjects from a spreadsheet?
             </label>
             <div class="guided--radio-button-container" style="margin-bottom: 7px">
               <button
-                class="ui primary basic button guided--radio-button"
-                id="guided-button-add-subject-structure-manually"
-                data-next-element="guided-section-user-chose-to-add-subs-sams-pools-manually"
-                data-button-config-value="subject-addition-method"
-                data-button-config-value-state="manual"
-              >
-                Provide Subject IDs in the SODA UI
-              </button>
-              <button
-                class="ui primary basic button guided--radio-button"
+                class="ui positive basic button guided--radio-button"
                 id="guided-button-import-subject-structure-from-spreadsheet"
                 data-next-element="guided-section-user-chose-to-add-subs-sams-pools-via-spreadsheet"
                 data-button-config-value="subject-addition-method"
                 data-button-config-value-state="spreadsheet"
               >
-                Enter and import IDs in a spreadsheet
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-add-subject-structure-manually"
+                data-next-element="guided-section-user-chose-to-add-subs-sams-pools-manually"
+                data-button-config-value="subject-addition-method"
+                data-button-config-value-state="manual"
+              >
+                No
               </button>
             </div>
           </div>
