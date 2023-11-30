@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      - guided-mode-subject-rework-simplified
+      - gm-spreadsheet-flow-update
 
 jobs:
   deploy-on-mac:
