@@ -1157,7 +1157,7 @@
           <div class="guided--capsule" id="guided-dataset-structure-intro-capsule"></div>
           <div
             class="guided--capsule"
-            id="guided-subjects-dataset-structure-specification-capsule"
+            id="guided-subject-structure-spreadsheet-importation-capsule"
           ></div>
           <div class="guided--capsule" id="guided-subjects-addition-capsule"></div>
           <div class="guided--capsule" id="guided-subjects-pooling-capsule"></div>
@@ -1193,15 +1193,59 @@
             </h2>
           </div>
         </div>
-
+        <!---------------------------------------------------------->
         <div
-          id="guided-subjects-dataset-structure-specification-tab"
+          id="guided-subject-structure-spreadsheet-importation-tab"
           class="guided--page"
-          data-page-name="Dataset structure"
+          data-page-name="Subject spreadsheet importation"
         >
-          <h1 class="text-sub-step-title">Dataset structure</h1>
           <div class="guided--section">
-            <div class="guided--section" id="guided-section-subject-pooling-yes-no">
+            <h1 class="text-sub-step-title">Subject spreadsheet importation</h1>
+          </div>
+          <div class="guided--section">
+            <label class="guided--form-label centered">
+              The SDS requires a unique ID for all
+              <span class="sub-pool-sample-structure-description-text"></span> in your dataset. You
+              can provide these IDs in the SODA UI or import them through a spreadsheet (more
+              convenient if you have a large amount of
+              <span class="sub-pool-sample-structure-description-text"></span>). What would you like
+              to do?
+            </label>
+            <div class="guided--radio-button-container" style="margin-bottom: 7px">
+              <button
+                class="ui primary basic button guided--radio-button"
+                id="guided-button-add-subject-structure-manually"
+                data-next-element="guided-section-user-chose-to-add-subs-sams-pools-manually"
+                data-button-config-value="subject-addition-method"
+                data-button-config-value-state="manual"
+              >
+                Provide Subject IDs in the SODA UI
+              </button>
+              <button
+                class="ui primary basic button guided--radio-button"
+                id="guided-button-import-subject-structure-from-spreadsheet"
+                data-next-element="guided-section-user-chose-to-add-subs-sams-pools-via-spreadsheet"
+                data-button-config-value="subject-addition-method"
+                data-button-config-value-state="spreadsheet"
+              >
+                Enter and import IDs in a spreadsheet
+              </button>
+            </div>
+          </div>
+          <div
+            class="guided--section"
+            id="guided-section-user-chose-to-add-subs-sams-pools-manually"
+          >
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" below to begin adding your subject IDS
+              manually.
+            </h2>
+          </div>
+          <div
+            class="guided--section"
+            id="guided-section-user-chose-to-add-subs-sams-pools-via-spreadsheet"
+          >
+            <div class="guided--section" id="guided-section-spreadsheet-subject-pooling-query">
               <label class="guided--form-label centered">
                 Will you be organizing your subjects into pools?
               </label>
@@ -1224,33 +1268,30 @@
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
                   class="ui positive basic button guided--radio-button button-controls-sub-pools-sam-text"
-                  id="guided-button-subjects-are-pooled"
-                  data-next-element="guided-section-ask-if-subjects-have-samples"
+                  id="guided-button-spreadsheet-subjects-are-pooled"
+                  data-next-element="guided-section-spreadsheet-subjects-have-samples-query"
                   data-button-config-value="dataset-contains-pools"
                   data-button-config-value-state="yes"
-                  data-controls-section="section-spreadsheet-import"
+                  data-controls-section="guided-section-spreadsheet-import"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button button-controls-sub-pools-sam-text"
-                  id="guided-button-subjects-are-not-pooled"
-                  data-next-element="guided-section-ask-if-subjects-have-samples"
+                  id="guided-button-spreadsheet-subjects-are-not-pooled"
+                  data-next-element="guided-section-spreadsheet-subjects-have-samples-query"
                   data-button-config-value="dataset-contains-pools"
                   data-button-config-value-state="no"
-                  data-controls-section="section-spreadsheet-import"
+                  data-controls-section="guided-section-spreadsheet-import"
                 >
                   No
                 </button>
               </div>
-              <p class="help-text" id="subject-pooling-block-text">
-                <b
-                  >Subjects have already been added to pools. If you would like to remove subjects
-                  from pools, you can do so in the "Subject pooling" tab.</b
-                >
-              </p>
             </div>
-            <div class="guided--section" id="guided-section-ask-if-subjects-have-samples">
+            <div
+              class="guided--section"
+              id="guided-section-spreadsheet-subjects-have-samples-query"
+            >
               <label class="guided--form-label centered">
                 Did you collect data from samples in this study?
               </label>
@@ -1267,207 +1308,147 @@
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
                   class="ui positive basic button guided--radio-button button-controls-sub-pools-sam-text"
-                  id="guided-button-subjects-have-samples"
-                  data-next-element="guided-section-ask-subject-addition-method"
+                  id="guided-button-spreadsheet-subjects-have-samples"
+                  data-next-element="guided-section-spreadsheet-import"
                   data-button-config-value="dataset-contains-samples"
                   data-button-config-value-state="yes"
-                  data-controls-section="section-spreadsheet-import"
+                  data-controls-section="guided-section-spreadsheet-import"
                 >
                   Yes
                 </button>
                 <button
                   class="ui negative basic button guided--radio-button button-controls-sub-pools-sam-text"
-                  id="guided-button-subjects-do-not-have-samples"
-                  data-next-element="guided-section-ask-subject-addition-method"
+                  id="guided-button-spreadsheet-subjects-do-not-have-samples"
+                  data-next-element="guided-section-spreadsheet-import"
                   data-button-config-value="dataset-contains-samples"
                   data-button-config-value-state="no"
-                  data-controls-section="section-spreadsheet-import"
+                  data-controls-section="guided-section-spreadsheet-import"
                 >
                   No
                 </button>
               </div>
-              <p class="help-text" id="sample-deletion-block-text">
-                <b
-                  >Samples have already been added to your dataset's subjects. If you would like to
-                  remove them, you can do so in the "Samples addition" tab.</b
-                >
+            </div>
+            <div class="guided--section" id="guided-section-spreadsheet-import">
+              <p class="help-text text-left">
+                Refer to the image below for an example of how to structure your
+                <span class="sub-pool-sample-structure-description-text"></span> spreadsheet. Then
+                follow the instructions below to fill out and import the spreadsheet into SODA.
               </p>
-            </div>
-
-            <div class="guided--section" id="guided-section-ask-subject-addition-method">
-              <label class="guided--form-label centered">
-                The SDS requires a unique ID for all
-                <span class="sub-pool-sample-structure-description-text"></span> in your dataset.
-                You can provide these IDs in the SODA UI or import them through a spreadsheet (more
-                convenient if you have a large amount of
-                <span class="sub-pool-sample-structure-description-text"></span>). What would you
-                like to do?
-              </label>
-              <div class="guided--radio-button-container" style="margin-bottom: 7px">
-                <button
-                  class="ui primary basic button guided--radio-button"
-                  id="guided-button-add-subject-structure-manually"
-                  data-next-element="guided-section-add-subjects-manual"
-                  data-button-config-value="subject-addition-method"
-                  data-button-config-value-state="manual"
-                >
-                  Provide <span class="sub-pool-sample-structure-description-text"></span> in the
-                  SODA UI
-                </button>
-                <button
-                  class="ui primary basic button guided--radio-button"
-                  id="guided-button-import-subject-structure-from-spreadsheet"
-                  data-next-element="guided-section-add-subjects-via-spreadsheet"
-                  data-button-config-value="subject-addition-method"
-                  data-button-config-value-state="spreadsheet"
-                >
-                  Enter and import IDs in a spreadsheet
-                </button>
+              <div class="sub-section mb-3" id="import-instructions-subjects">
+                <img
+                  class="mb-3"
+                  style="width: 90%"
+                  src="assets/img/subjects-spreadseet-example.png"
+                />
+                <p class="help-text text-left w-100">
+                  <b>Subject ID column: </b> Type each subject's name here, starting with 'sub-'.
+                  Avoid using special characters or spaces.
+                </p>
               </div>
-            </div>
-
-            <div class="guided--section" id="guided-section-add-subjects-manual">
-              <h2 class="guided--text-user-directions">
-                Click "<span class="next-button-span"></span>" below to begin adding
-                <span class="sub-pool-sample-structure-description-text"></span> to your dataset
-              </h2>
-            </div>
-
-            <div class="guided--section" id="guided-section-add-subjects-via-spreadsheet">
-              <div class="guided--section" id="section-spreadsheet-import">
+              <div class="sub-section mb-3" id="import-instructions-subjects-pools">
+                <img
+                  class="mb-3"
+                  style="width: 90%"
+                  src="assets/img/subjects-pools-spreadseet-example.png"
+                />
+                <p class="help-text text-left w-100">
+                  <b>Subject ID column: </b> Type each subject's name here, starting with 'sub-'.
+                  Avoid using special characters or spaces.
+                </p>
                 <p class="help-text text-left">
-                  Refer to the image below for an example of how to structure your
-                  <span class="sub-pool-sample-structure-description-text"></span> spreadsheet. Then
-                  follow the instructions below to fill out and import the spreadsheet into SODA.
+                  <b>Pool ID column: </b> Type the name of the pool that subject belongs to here,
+                  starting with 'pool-'. Avoid using special characters or spaces.
                 </p>
-                <div class="sub-section mb-3" id="import-instructions-subjects">
-                  <img
-                    class="mb-3"
-                    style="width: 90%"
-                    src="assets/img/subjects-spreadseet-example.png"
-                  />
-                  <p class="help-text text-left w-100">
-                    <b>Subject ID column: </b> Type each subject's name here, starting with 'sub-'.
-                    Avoid using special characters or spaces.
-                  </p>
-                </div>
-                <div class="sub-section mb-3" id="import-instructions-subjects-pools">
-                  <img
-                    class="mb-3"
-                    style="width: 90%"
-                    src="assets/img/subjects-pools-spreadseet-example.png"
-                  />
-                  <p class="help-text text-left w-100">
-                    <b>Subject ID column: </b> Type each subject's name here, starting with 'sub-'.
-                    Avoid using special characters or spaces.
-                  </p>
-                  <p class="help-text text-left">
-                    <b>Pool ID column: </b> Type the name of the pool that subject belongs to here,
-                    starting with 'pool-'. Avoid using special characters or spaces.
-                  </p>
-                </div>
-                <div class="sub-section mb-3" id="import-instructions-subjects-samples">
-                  <img
-                    class="mb-3"
-                    style="width: 90%"
-                    src="assets/img/subjects-samples-spreadseet-example.png"
-                  />
-                  <p class="help-text text-left w-100">
-                    <b>Subject ID column: </b> Type each subject's name here, starting with 'sub-'.
-                    Avoid using special characters or spaces.
-                  </p>
-                  <p class="help-text text-left">
-                    <b>Sample ID column: </b> Type each sample's name here, starting with 'sam-'.
-                    All sample names must be unique. Avoid using special characters or spaces.
-                  </p>
-                  <p class="help-text text-left">
-                    <b>Note: </b> If a subject has more than one sample, repeat the subject's name
-                    in the 'Subject ID' column for each sample.
-                  </p>
-                </div>
-                <div class="sub-section mb-3" id="import-instructions-subjects-pools-samples">
-                  <img
-                    class="mb-3"
-                    style="width: 90%"
-                    src="assets/img/subjects-pools-samples-spreadseet-example.png"
-                  />
-                  <p class="help-text text-left w-100">
-                    <b>Subject ID column: </b> Type each subject's name here, starting with 'sub-'.
-                    Avoid using special characters or spaces.
-                  </p>
-                  <p class="help-text text-left">
-                    <b>Pool ID column: </b> Type the name of the pool that subject belongs to here,
-                    starting with 'pool-'. Avoid using special characters or spaces.
-                  </p>
-                  <p class="help-text text-left">
-                    <b>Sample ID column: </b> Type each sample's name here, starting with 'sam-'.
-                    All sample names must be unique. Avoid using special characters or spaces.
-                  </p>
-                  <p class="help-text text-left">
-                    <b>Note: </b> If a pooled subject has more than one sample, repeat the subject's
-                    name in the 'Subject ID' column, the subject's pool's name in the 'Pool ID'
-                    column, and the sample's name in the 'Sample ID' column for each sample.
-                  </p>
-                </div>
-                <h2 class="text-sub-step-title">
-                  <span class="sub-pool-sample-structure-description-text"></span> spreadsheet
-                  creation
-                </h2>
-                <p class="help-text step-before-spreadsheet-path-declared">
-                  <b>Step 1: </b>To import your subjects and samples through a spreadsheet, click
-                  the button below to save a blank
-                  <span class="sub-pool-sample-structure-description-text"></span> spreadsheet
-                  template to your computer.
+              </div>
+              <div class="sub-section mb-3" id="import-instructions-subjects-samples">
+                <img
+                  class="mb-3"
+                  style="width: 90%"
+                  src="assets/img/subjects-samples-spreadseet-example.png"
+                />
+                <p class="help-text text-left w-100">
+                  <b>Subject ID column: </b> Type each subject's name here, starting with 'sub-'.
+                  Avoid using special characters or spaces.
                 </p>
-                <button
-                  class="ui positive button soda-green-background step-before-spreadsheet-path-declared"
-                  id="guided-button-choose-dataset-structure-spreadsheet-path"
-                  style="width: 350px !important"
-                >
-                  Select a location to save the spreadsheet
-                </button>
+                <p class="help-text text-left">
+                  <b>Sample ID column: </b> Type each sample's name here, starting with 'sam-'. All
+                  sample names must be unique. Avoid using special characters or spaces.
+                </p>
+                <p class="help-text text-left">
+                  <b>Note: </b> If a subject has more than one sample, repeat the subject's name in
+                  the 'Subject ID' column for each sample.
+                </p>
+              </div>
+              <div class="sub-section mb-3" id="import-instructions-subjects-pools-samples">
+                <img
+                  class="mb-3"
+                  style="width: 90%"
+                  src="assets/img/subjects-pools-samples-spreadseet-example.png"
+                />
+                <p class="help-text text-left w-100">
+                  <b>Subject ID column: </b> Type each subject's name here, starting with 'sub-'.
+                  Avoid using special characters or spaces.
+                </p>
+                <p class="help-text text-left">
+                  <b>Pool ID column: </b> Type the name of the pool that subject belongs to here,
+                  starting with 'pool-'. Avoid using special characters or spaces.
+                </p>
+                <p class="help-text text-left">
+                  <b>Sample ID column: </b> Type each sample's name here, starting with 'sam-'. All
+                  sample names must be unique. Avoid using special characters or spaces.
+                </p>
+                <p class="help-text text-left">
+                  <b>Note: </b> If a pooled subject has more than one sample, repeat the subject's
+                  name in the 'Subject ID' column, the subject's pool's name in the 'Pool ID'
+                  column, and the sample's name in the 'Sample ID' column for each sample.
+                </p>
+              </div>
+              <h2 class="text-sub-step-title">
+                <span class="sub-pool-sample-structure-description-text"></span> spreadsheet
+                creation
+              </h2>
+              <p class="help-text step-before-spreadsheet-path-declared">
+                <b>Step 1: </b>To import your subjects and samples through a spreadsheet, click the
+                button below to save a blank
+                <span class="sub-pool-sample-structure-description-text"></span> spreadsheet
+                template to your computer.
+              </p>
+              <button
+                class="ui positive button soda-green-background step-before-spreadsheet-path-declared"
+                id="guided-button-choose-dataset-structure-spreadsheet-path"
+                style="width: 350px !important"
+              >
+                Select a location to save the spreadsheet
+              </button>
 
-                <p class="help-text step-after-spreadsheet-path-declared mb-2">
-                  To open/edit the spreadsheet generated in the previous step, click the button
-                  below.
-                </p>
-                <button
-                  class="ui positive button soda-green-background step-after-spreadsheet-path-declared"
-                  id="guided-button-open-dataset-structure-spreadsheet"
-                  style="width: 450px !important"
-                >
-                  Open the
-                  <span class="sub-pool-sample-structure-description-text"></span> spreadsheet
-                </button>
-                <p class="help-text step-after-spreadsheet-path-declared mt-5 mb-2">
-                  <b>Step 2. </b>Once you have filled out the spreadsheet, click the button below to
-                  import it into SODA.
-                </p>
-                <button
-                  class="ui positive button soda-green-background step-after-spreadsheet-path-declared"
-                  id="guided-button-import-dataset-structure-from-spreadsheet"
-                  style="width: 450px !important"
-                >
-                  Import <span class="sub-pool-sample-structure-description-text"></span> from
-                  spreadsheet
-                </button>
-              </div>
-              <div class="guided--section" id="section-spreadsheet-import-disabled">
-                <p class="help-text">
-                  <b
-                    >Spreadsheet importation is disabled once subjects have been added to your
-                    dataset.</b
-                  >
-                </p>
-                <h2 class="guided--text-user-directions">
-                  Click "<span class="next-button-span"></span>" below to edit the
-                  <span class="sub-pool-sample-structure-description-text"></span> that have been
-                  added to your dataset.
-                </h2>
-              </div>
+              <p class="help-text step-after-spreadsheet-path-declared mb-2">
+                To open/edit the spreadsheet generated in the previous step, click the button below.
+              </p>
+              <button
+                class="ui positive button soda-green-background step-after-spreadsheet-path-declared"
+                id="guided-button-open-dataset-structure-spreadsheet"
+                style="width: 450px !important"
+              >
+                Open the
+                <span class="sub-pool-sample-structure-description-text"></span> spreadsheet
+              </button>
+              <p class="help-text step-after-spreadsheet-path-declared mt-5 mb-2">
+                <b>Step 2. </b>Once you have filled out the spreadsheet, click the button below to
+                import it into SODA.
+              </p>
+              <button
+                class="ui positive button soda-green-background step-after-spreadsheet-path-declared"
+                id="guided-button-import-dataset-structure-from-spreadsheet"
+                style="width: 450px !important"
+              >
+                Import <span class="sub-pool-sample-structure-description-text"></span> from
+                spreadsheet
+              </button>
             </div>
           </div>
         </div>
+        <!---------------------------------------------------------->
+
         <div
           id="guided-subjects-addition-tab"
           class="guided--page"
@@ -1501,18 +1482,51 @@
         </div>
         <div id="guided-subjects-pooling-tab" class="guided--page" data-page-name="Subject pooling">
           <h1 class="text-sub-step-title">Pools specification</h1>
+
           <div class="guided--section">
-            <p class="help-text">
-              Your dataset's subjects can optionally be organized into subject pools, which are
-              groups of subjects that share common characteristics.
-            </p>
+            <label class="guided--form-label centered">
+              Will you be organizing your subjects into pools?
+            </label>
+            <div class="info-dropdown" style="align-self: center">
+              <p class="info-dropdown-text" data-dropdown-type="info">What are pools?</p>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="info-container">
+              <p class="help-text">
+                <b>Pools</b> are used to seperate subjects into groups that share common
+                charactersitics with each other to make it easier to organize and analyze data
+                collected from subjects.
+              </p>
+              <p class="help-text">
+                <b>Note:</b> If all data collected from subjects in your study were collected at the
+                same time using the same methods, you do not need to group your subjects into pools.
+              </p>
+            </div>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-pool-page-subjects-are-pooled"
+                data-next-element="guided-section-pools-table"
+                data-button-config-value="dataset-contains-pools"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-pool-page-subjects-are-not-pooled"
+                data-next-element="guided-section-no-pools"
+                data-button-config-value="dataset-contains-pools"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
           </div>
-          <div class="guided--section">
+          <div class="guided--section" id="guided-section-pools-table">
             <button class="ui positive button soda-green-background" id="guided-button-add-pools">
               Add pools
             </button>
-          </div>
-          <div class="guided--section">
             <table class="ui celled striped table" style="margin-bottom: 10px; width: 800px">
               <thead>
                 <tr>
@@ -1524,6 +1538,11 @@
               <tbody id="pools-specification-table-body"></tbody>
             </table>
           </div>
+          <div class="guided--section" id="guided-section-no-pools">
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" to continue.
+            </h2>
+          </div>
         </div>
         <div
           id="guided-samples-addition-tab"
@@ -1532,12 +1551,46 @@
         >
           <h1 class="text-sub-step-title">Samples specification</h1>
           <div class="guided--section">
-            <p class="help-text">
-              If any measurements were taken from samples collected from subjects (e.g. tissue
-              samples), you can specify the samples in the interface below.
-            </p>
+            <label class="guided--form-label centered">
+              Did you collect data from samples in this study?
+            </label>
+            <div class="info-dropdown" style="align-self: center">
+              <p class="info-dropdown-text" data-dropdown-type="info">What are samples?</p>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="info-container">
+              <p class="help-text">
+                <b>Samples</b> are a portion of a subject's tissue, fluid, or other biological
+                materal that data is collected from.
+              </p>
+            </div>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-samples-page-subjects-have-samples"
+                data-next-element="guided-section-samples-tables"
+                data-button-config-value="dataset-contains-samples"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-samples-page-subjects-do-not-have-samples"
+                data-next-element="guided-section-no-samples"
+                data-button-config-value="dataset-contains-samples"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
           </div>
           <div class="guided--section" id="guided-section-samples-tables"></div>
+          <div class="guided--section" id="guided-section-no-samples">
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" to continue.
+            </h2>
+          </div>
         </div>
 
         <div

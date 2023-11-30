@@ -1131,7 +1131,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       const datasetHasCode = sodaJSONObj["dataset-contains-code"];
 
       if (datasetHasSubjects) {
-        guidedUnSkipPage("guided-subjects-dataset-structure-specification-tab");
+        guidedUnSkipPage("guided-subject-structure-spreadsheet-importation-tab");
         guidedUnSkipPage("guided-subjects-addition-tab");
 
         guidedUnSkipPage("guided-primary-data-organization-tab");
@@ -1140,7 +1140,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedUnSkipPage("guided-create-subjects-metadata-tab");
         guidedUnSkipPage("guided-create-samples-metadata-tab");
       } else {
-        guidedSkipPage("guided-subjects-dataset-structure-specification-tab");
+        guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
         guidedSkipPage("guided-subjects-addition-tab");
         guidedSkipPage("guided-subjects-pooling-tab");
         guidedSkipPage("guided-samples-addition-tab");
@@ -1231,82 +1231,82 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
-    if (pageBeingLeftID === "guided-subjects-dataset-structure-specification-tab") {
-      const userSelectedDatasetHasPools = document
-        .getElementById("guided-button-subjects-are-pooled")
-        .classList.contains("selected");
-      const userSelectedDatasetDoesNotHavePools = document
-        .getElementById("guided-button-subjects-are-not-pooled")
-        .classList.contains("selected");
-      if (!userSelectedDatasetHasPools && !userSelectedDatasetDoesNotHavePools) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate whether or not the dataset contains pools",
-        });
-        throw errorArray;
-      }
-      if (userSelectedDatasetHasPools) {
-        guidedUnSkipPage("guided-subjects-pooling-tab");
-        //Unskip the pool data organization pages
-        guidedUnSkipPage(`guided-primary-pools-organization-page`);
-        guidedUnSkipPage(`guided-source-pools-organization-page`);
-        guidedUnSkipPage(`guided-derivative-pools-organization-page`);
-      } else {
-        guidedSkipPage("guided-subjects-pooling-tab");
-        //Skip the pool data organization pages
-        guidedSkipPage(`guided-primary-pools-organization-page`);
-        guidedSkipPage(`guided-source-pools-organization-page`);
-        guidedSkipPage(`guided-derivative-pools-organization-page`);
-      }
-
-      const userSelectedSubjectsHaveSamples = document
-        .getElementById("guided-button-subjects-have-samples")
-        .classList.contains("selected");
-      const userSelectedSubjectsDoNotHaveSamples = document
-        .getElementById("guided-button-subjects-do-not-have-samples")
-        .classList.contains("selected");
-      if (!userSelectedSubjectsHaveSamples && !userSelectedSubjectsDoNotHaveSamples) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate whether or not the dataset contains samples",
-        });
-        throw errorArray;
-      }
-
-      if (userSelectedSubjectsHaveSamples) {
-        guidedUnSkipPage("guided-samples-addition-tab");
-        //Unskip the sample data organization pages
-        guidedUnSkipPage(`guided-primary-samples-organization-page`);
-        guidedUnSkipPage(`guided-source-samples-organization-page`);
-        guidedUnSkipPage(`guided-derivative-samples-organization-page`);
-        //Unskip the samples metadata page
-        guidedUnSkipPage(`guided-create-samples-metadata-tab`);
-      } else {
-        guidedSkipPage("guided-samples-addition-tab");
-        //Skip the sample data organization pages
-        guidedSkipPage(`guided-primary-samples-organization-page`);
-        guidedSkipPage(`guided-source-samples-organization-page`);
-        guidedSkipPage(`guided-derivative-samples-organization-page`);
-        //Skip the samples metadata page
-        guidedSkipPage(`guided-create-samples-metadata-tab`);
-      }
-
-      const userChoseToImportStructureViaSpreadsheet = document
+    if (pageBeingLeftID === "guided-subject-structure-spreadsheet-importation-tab") {
+      const userChoseToImportSubsSamsPoolsViaSpreadsheet = document
         .getElementById("guided-button-import-subject-structure-from-spreadsheet")
         .classList.contains("selected");
-      const userChoseToAddSubjectStructureManually = document
+      const userChoseToEnterSubsSamsPoolsManually = document
         .getElementById("guided-button-add-subject-structure-manually")
         .classList.contains("selected");
-      if (!userChoseToImportStructureViaSpreadsheet && !userChoseToAddSubjectStructureManually) {
+
+      if (!userChoseToImportSubsSamsPoolsViaSpreadsheet && !userChoseToEnterSubsSamsPoolsManually) {
         errorArray.push({
           type: "notyf",
           message: "Please indicate how you would like to add your subject structure",
         });
         throw errorArray;
       }
-      // throw an error if the user chose to import the subject structure via spreadsheet but
-      // has successfully imported the structure
-      if (userChoseToImportStructureViaSpreadsheet) {
+
+      if (userChoseToImportSubsSamsPoolsViaSpreadsheet) {
+        const userSelectedDatasetHasPools = document
+          .getElementById("guided-button-spreadsheet-subjects-are-pooled")
+          .classList.contains("selected");
+        const userSelectedDatasetDoesNotHavePools = document
+          .getElementById("guided-button-spreadsheet-subjects-are-not-pooled")
+          .classList.contains("selected");
+        if (!userSelectedDatasetHasPools && !userSelectedDatasetDoesNotHavePools) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate whether or not the dataset contains pools",
+          });
+          throw errorArray;
+        }
+        if (userSelectedDatasetHasPools) {
+          guidedUnSkipPage("guided-subjects-pooling-tab");
+          //Unskip the pool data organization pages
+          guidedUnSkipPage(`guided-primary-pools-organization-page`);
+          guidedUnSkipPage(`guided-source-pools-organization-page`);
+          guidedUnSkipPage(`guided-derivative-pools-organization-page`);
+        } else {
+          guidedSkipPage("guided-subjects-pooling-tab");
+          //Skip the pool data organization pages
+          guidedSkipPage(`guided-primary-pools-organization-page`);
+          guidedSkipPage(`guided-source-pools-organization-page`);
+          guidedSkipPage(`guided-derivative-pools-organization-page`);
+        }
+
+        const userSelectedSubjectsHaveSamples = document
+          .getElementById("guided-button-spreadsheet-subjects-have-samples")
+          .classList.contains("selected");
+        const userSelectedSubjectsDoNotHaveSamples = document
+          .getElementById("guided-button-spreadsheet-subjects-do-not-have-samples")
+          .classList.contains("selected");
+        if (!userSelectedSubjectsHaveSamples && !userSelectedSubjectsDoNotHaveSamples) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate whether or not the dataset contains samples",
+          });
+          throw errorArray;
+        }
+
+        if (userSelectedSubjectsHaveSamples) {
+          guidedUnSkipPage("guided-samples-addition-tab");
+          //Unskip the sample data organization pages
+          guidedUnSkipPage(`guided-primary-samples-organization-page`);
+          guidedUnSkipPage(`guided-source-samples-organization-page`);
+          guidedUnSkipPage(`guided-derivative-samples-organization-page`);
+          //Unskip the samples metadata page
+          guidedUnSkipPage(`guided-create-samples-metadata-tab`);
+        } else {
+          guidedSkipPage("guided-samples-addition-tab");
+          //Skip the sample data organization pages
+          guidedSkipPage(`guided-primary-samples-organization-page`);
+          guidedSkipPage(`guided-source-samples-organization-page`);
+          guidedSkipPage(`guided-derivative-samples-organization-page`);
+          //Skip the samples metadata page
+          guidedSkipPage(`guided-create-samples-metadata-tab`);
+        }
+
         const subjects = getExistingSubjectNames();
         if (subjects.length === 0) {
           errorArray.push({
@@ -5055,54 +5055,7 @@ const openPage = async (targetPageID) => {
       importProgressCircle.classList.add("hidden");
     }
 
-    if (targetPageID === "guided-subjects-dataset-structure-specification-tab") {
-      if (pageNeedsUpdateFromPennsieve("guided-subjects-dataset-structure-specification-tab")) {
-        // If the user is starting from Pennsieve, pre-select the manual sub/sam/pool option
-        sodaJSONObj["button-config"]["subject-addition-method"] = "manual";
-      }
-
-      const subjectPoolingQuerySection = document.getElementById(
-        "guided-section-subject-pooling-yes-no"
-      );
-      const subjectPoolingBlockText = document.getElementById("subject-pooling-block-text");
-
-      const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-      if (subjectsInPools.length > 0) {
-        console.log("disabling subject pooling query");
-        subjectPoolingQuerySection.classList.add("section-disabled");
-        subjectPoolingBlockText.classList.remove("hidden");
-      } else {
-        console.log("enabling subject pooling query");
-        subjectPoolingQuerySection.classList.remove("section-disabled");
-        subjectPoolingBlockText.classList.add("hidden");
-      }
-
-      const sampleAdditionQuerySection = document.getElementById(
-        "guided-section-ask-if-subjects-have-samples"
-      );
-      const sampleAdditionBlockText = document.getElementById("sample-deletion-block-text");
-      const sampleNames = getExistingSampleNames();
-      if (sampleNames.length > 0) {
-        sampleAdditionQuerySection.classList.add("section-disabled");
-        sampleAdditionBlockText.classList.remove("hidden");
-      } else {
-        sampleAdditionQuerySection.classList.remove("section-disabled");
-        sampleAdditionBlockText.classList.add("hidden");
-      }
-
-      const allSubjects = [...subjectsInPools, ...subjectsOutsidePools];
-      const spreadsheetImportSection = document.getElementById("section-spreadsheet-import");
-      const spreadsheetImportSectionDisabled = document.getElementById(
-        "section-spreadsheet-import-disabled"
-      );
-      if (allSubjects.length === 0) {
-        spreadsheetImportSection.classList.remove("hidden");
-        spreadsheetImportSectionDisabled.classList.add("hidden");
-      } else {
-        spreadsheetImportSection.classList.add("hidden");
-        spreadsheetImportSectionDisabled.classList.remove("hidden");
-      }
-
+    if (targetPageID === "guided-subject-structure-spreadsheet-importation-tab") {
       const savedSpreadSheetPath = sodaJSONObj["dataset-structure-spreadsheet-path"];
       setUiBasedOnSavedDatasetStructurePath(savedSpreadSheetPath);
     }
@@ -11321,10 +11274,10 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
 
     // Set the column widths
     const datasetHasPools = document
-      .getElementById("guided-button-subjects-are-pooled")
+      .getElementById("guided-button-spreadsheet-subjects-are-pooled")
       .classList.contains("selected");
     const datasetHasSamples = document
-      .getElementById("guided-button-subjects-have-samples")
+      .getElementById("guided-button-spreadsheet-subjects-have-samples")
       .classList.contains("selected");
 
     const headers = ["Subject ID"];
@@ -13391,26 +13344,29 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
     }
   }
 
-  if (controlledSectionID === "section-spreadsheet-import") {
+  if (controlledSectionID === "guided-section-spreadsheet-import") {
+    console.log("Starting controlla: ");
     const datasetHasPools = document
-      .getElementById("guided-button-subjects-are-pooled")
+      .getElementById("guided-button-spreadsheet-subjects-are-pooled")
       .classList.contains("selected");
     const datasetDoesNotHavePools = document
-      .getElementById("guided-button-subjects-are-not-pooled")
+      .getElementById("guided-button-spreadsheet-subjects-are-not-pooled")
       .classList.contains("selected");
     if (!datasetHasPools && !datasetDoesNotHavePools) {
       return;
     }
+    console.log("Starting controlla1: ");
 
     const datasetHasSamples = document
-      .getElementById("guided-button-subjects-have-samples")
+      .getElementById("guided-button-spreadsheet-subjects-have-samples")
       .classList.contains("selected");
     const datasetDoesNotHaveSamples = document
-      .getElementById("guided-button-subjects-do-not-have-samples")
+      .getElementById("guided-button-spreadsheet-subjects-do-not-have-samples")
       .classList.contains("selected");
     if (!datasetHasSamples && !datasetDoesNotHaveSamples) {
       return;
     }
+    console.log("Starting controlla2: ");
 
     const datasetEntities = ["subjects"];
     if (datasetHasPools) {
