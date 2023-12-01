@@ -1,6 +1,6 @@
 {
   "name": "soda-for-sparc",
-  "version": "12.3.5-beta",
+  "version": "12.5.0-beta",
   "description": "An Electron application with React",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -22,7 +22,7 @@
     "python-onefile-build-win": "python -m PyInstaller --onefile --add-data ./src/pyflask/libcrypto-1_1-x64.dll;. --add-data ./src/pyflask/libssl-1_1-x64.dll;. --clean ./src/pyflask/app.py --distpath ./pyflaskdist",
     "python-onefile-build-unix": "python -m PyInstaller --onefile --clean ./src/pyflask/app.py --distpath ./pyflaskdist",
     "deploy-win": "npm run python-onefile-build-win && npm run build && electron-builder --win --config --publish always",
-    "deploy-linux": "npm run python-onefile-build-unix && npm run build && electron-builder --linux --config",
+    "deploy-linux": "npm run python-onefile-build-unix && npm run build && electron-builder --linux --config --publish always",
     "deploy-mac": "npm run python-onefile-build-unix && npm run build && electron-builder --mac --config --publish always"
   },
   "dependencies": {
