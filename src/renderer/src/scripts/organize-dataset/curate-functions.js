@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import checkDiskSpace from "check-disk-space";
+// import checkDiskSpace from "check-disk-space";
 import { updateDatasetList } from "../globals"
 import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
 import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'

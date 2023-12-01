@@ -3,7 +3,7 @@ This file contains all of the functions related to the submission.xlsx file
 */
 import Swal from "sweetalert2";
 import introJs from "intro.js";
-import checkDiskSpace from "check-disk-space";
+// import checkDiskSpace from "check-disk-space";
 import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
 import client from '../client'
 import kombuchaEnums from "../analytics/analytics-enums";

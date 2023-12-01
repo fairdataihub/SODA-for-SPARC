@@ -11,7 +11,7 @@ import * as  path from "path";
 import Editor from "@toast-ui/editor"
 // const remote = require("@electron/remote");
 import { Notyf } from "notyf"
-import Tagify from "@yaireo/tagify";
+import * as Tagify from "@yaireo/tagify";
 // const https = require("https");
 // const electron = require("electron");
 import jQuery from 'jquery'
@@ -25,12 +25,12 @@ import csvToJson from "convert-csv-to-json";
 import tippy from "tippy.js";
 import introJs from "intro.js";
 // import selectpicker  from "bootstrap-select";
-import diskCheck from "check-disk-space";
+// import diskCheck from "check-disk-space";
 import validator from "validator";
 import doiRegex from "doi-regex";
 import lottie from "lottie-web";
 import { dragDrop, successCheck } from '../../assets/lotties/lotties'
-import select2 from "select2"; // TODO: select2()
+import * as select2 from "select2"; // TODO: select2()
 select2()
 import autoComplete from "@tarekraafat/autocomplete.js/dist/autoComplete.min.js"
 import Cropper from 'cropperjs'

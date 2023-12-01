@@ -10,7 +10,7 @@ import lottie from "lottie-web"
 import {dragDrop, successCheck, errorMark} from '../../assets/lotties/lotties'
 import kombuchaEnums from '../analytics/analytics-enums'
 import Swal from "sweetalert2"
-import Tagify from "@yaireo/tagify";
+import * as Tagify from "@yaireo/tagify";
 import tippy from "tippy.js";
 import client from '../client'
 import jQuery from 'jquery'
