@@ -24,7 +24,6 @@ app.spec
 *.pyc
 src/.DS_Store
 .DS_Store
-electron-builder.yml
 website/.eslintcache
 website/images-bhavesh/~$suggestions.pptx
 website/package-lock.json

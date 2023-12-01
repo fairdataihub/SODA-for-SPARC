@@ -1,0 +1,60 @@
+appId: com.fairdataihub.sodaforsparc
+productName: SODA-for-SPARC
+directories:
+  buildResources: build
+files:
+  - '!**/.vscode/*'
+  - '!src/main/*'
+  - '!src/renderer/*'
+  - '!src/preload/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+asarUnpack:
+  - resources/**
+win:
+  executableName: react
+  extraResources:
+    - from: ./file_templates
+      to: ./file_templates 
+    - from: ./pyflaskdist/app.exe
+      to: ./pyflaskdist/app.exe
+  asar: true
+  target:
+    - nsis
+nsis:
+  artifactName: ${name}-${version}-setup.${ext}
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always
+mac:
+  entitlementsInherit: ./entitlements.mac.plist
+  notarize: true
+  extraResources:
+    - from: ./pyflaskdist/app
+    - from: ./file_templates
+      to: ./file_templates
+    - from: ./pennsieve-io-chain.pem
+      to: ./pennsieve-io-chain.pem
+dmg:
+  artifactName: ${name}-${version}.${ext}
+linux:
+  target:
+    - AppImage
+  extraResources:
+    - from: ./pyflaskdist/app
+    - from: ./file_templates
+      to: ./file_templates
+    - from: ./pennsieve-io-chain.pem
+      to: ./pennsieve-io-chain.pem
+  asar: true
+  maintainer: electronjs.org
+  category: Utility
+appImage:
+  artifactName: ${name}-${version}.${ext}
+npmRebuild: false
+publish:
+  - provider: github
+    protocol: https
+afterSign: ./notarize.js
+  
