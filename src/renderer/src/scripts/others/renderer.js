@@ -11,7 +11,7 @@ import * as  path from "path";
 import Editor from "@toast-ui/editor"
 // const remote = require("@electron/remote");
 import { Notyf } from "notyf"
-import Tagify from "@yaireo/tagify";
+import Tagify from "@yaireo/tagify/dist/tagify.esm";
 // const https = require("https");
 // const electron = require("electron");
 import jQuery from 'jquery'
