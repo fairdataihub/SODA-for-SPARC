@@ -390,6 +390,23 @@ const initialize = () => {
     // Set app user model id for windows
     electronApp.setAppUserModelId('com.electron')
 
+    const splashScreen = new BrowserWindow({
+      width: 220,
+      height: 190,
+      frame: false,
+      icon: __dirname + "/assets/menu-icon/soda_icon.png",
+      alwaysOnTop: true,
+      transparent: true,
+    })
+
+    // TODO: Add dev check for this path
+    splashScreen.loadURL(process.env['ELECTRON_RENDERER_URL'] +  "/splash/splash-screen.html")
+
+
+    splashScreen.once("ready-to-show", () => {
+      splashScreen.show();
+    })
+
     // Default open or close DevTools by F12 in development
     // and ignore CommandOrControl + R in production.
     // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
@@ -425,22 +442,7 @@ const initialize = () => {
     createPyProc()
 
     // show the splash screen
-    const splashScreen = new BrowserWindow({
-      width: 220,
-      height: 190,
-      frame: false,
-      icon: __dirname + "/assets/menu-icon/soda_icon.png",
-      alwaysOnTop: true,
-      transparent: true,
-    })
-    let pathToSplashScreenContents = "/splash/splash-screen.html"
-    console.log(pathToSplashScreenContents)
-    splashScreen.loadURL(pathToSplashScreenContents);
-    // mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
 
-    splashScreen.once("ready-to-show", () => {
-      splashScreen.show();
-    })
 
     app.on('activate', function () {
       // On macOS it's common to re-create a window in the app when the
