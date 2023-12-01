@@ -1203,10 +1203,16 @@
             <h1 class="text-sub-step-title">Subject spreadsheet importation</h1>
             <p class="help-text">
               The SDS requires a unique ID for each subject in your dataset. SODA provides a feature
-              that allows you to create a list of your subjects in an external spreadsheet, and then
-              import the list into SODA, saving you from manually typing out each subject in the
-              SODA UI.
+              that allows you to create a list of your subjects in an external spreadsheet and then
+              import the list into SODA, saving you from having to type out each subject in the SODA
+              UI.
             </p>
+            <div class="alert alert-primary" role="alert">
+              <p class="help-text">
+                <strong>Tip:</strong> Importing subjects from a spreadsheet is recommended if you
+                have a large amount of subjects and/or samples.
+              </p>
+            </div>
           </div>
           <div class="guided--section">
             <label class="guided--form-label centered">
@@ -1329,81 +1335,6 @@
               </div>
             </div>
             <div class="guided--section" id="guided-section-spreadsheet-import">
-              <div class="sub-section mb-3" id="import-instructions-subjects">
-                <div class="info-dropdown" style="align-self: center">
-                  <p class="info-dropdown-text" data-dropdown-type="info">How do I</p>
-                  <i class="fas fa-chevron-right"></i>
-                </div>
-                <div class="info-container">
-                  <img
-                    class="mb-3"
-                    style="width: 90%"
-                    src="assets/img/subjects-spreadseet-example.png"
-                  />
-                  <p class="help-text text-left w-100">
-                    <b>Subject ID column: </b> Type each subject's name here, starting with 'sub-'.
-                    Avoid using special characters or spaces.
-                  </p>
-                </div>
-              </div>
-              <div class="sub-section mb-3" id="import-instructions-subjects-pools">
-                <img
-                  class="mb-3"
-                  style="width: 90%"
-                  src="assets/img/subjects-pools-spreadseet-example.png"
-                />
-                <p class="help-text text-left w-100">
-                  <b>Subject ID column: </b> Type each subject's name here, starting with 'sub-'.
-                  Avoid using special characters or spaces.
-                </p>
-                <p class="help-text text-left">
-                  <b>Pool ID column: </b> Type the name of the pool that subject belongs to here,
-                  starting with 'pool-'. Avoid using special characters or spaces.
-                </p>
-              </div>
-              <div class="sub-section mb-3" id="import-instructions-subjects-samples">
-                <img
-                  class="mb-3"
-                  style="width: 90%"
-                  src="assets/img/subjects-samples-spreadseet-example.png"
-                />
-                <p class="help-text text-left w-100">
-                  <b>Subject ID column: </b> Type each subject's name here, starting with 'sub-'.
-                  Avoid using special characters or spaces.
-                </p>
-                <p class="help-text text-left">
-                  <b>Sample ID column: </b> Type each sample's name here, starting with 'sam-'. All
-                  sample names must be unique. Avoid using special characters or spaces.
-                </p>
-                <p class="help-text text-left">
-                  <b>Note: </b> If a subject has more than one sample, repeat the subject's name in
-                  the 'Subject ID' column for each sample.
-                </p>
-              </div>
-              <div class="sub-section mb-3" id="import-instructions-subjects-pools-samples">
-                <img
-                  class="mb-3"
-                  style="width: 90%"
-                  src="assets/img/subjects-pools-samples-spreadseet-example.png"
-                />
-                <p class="help-text text-left w-100">
-                  <b>Subject ID column: </b> Type each subject's name here, starting with 'sub-'.
-                  Avoid using special characters or spaces.
-                </p>
-                <p class="help-text text-left">
-                  <b>Pool ID column: </b> Type the name of the pool that subject belongs to here,
-                  starting with 'pool-'. Avoid using special characters or spaces.
-                </p>
-                <p class="help-text text-left">
-                  <b>Sample ID column: </b> Type each sample's name here, starting with 'sam-'. All
-                  sample names must be unique. Avoid using special characters or spaces.
-                </p>
-                <p class="help-text text-left">
-                  <b>Note: </b> If a pooled subject has more than one sample, repeat the subject's
-                  name in the 'Subject ID' column, the subject's pool's name in the 'Pool ID'
-                  column, and the sample's name in the 'Sample ID' column for each sample.
-                </p>
-              </div>
               <h2 class="text-sub-step-title">
                 <span class="sub-pool-sample-structure-description-text"></span> spreadsheet
                 creation
@@ -1433,9 +1364,131 @@
                 Open the
                 <span class="sub-pool-sample-structure-description-text"></span> spreadsheet
               </button>
-              <p class="help-text step-after-spreadsheet-path-declared mt-5 mb-2">
-                <b>Step 2. </b>Once you have filled out the spreadsheet, click the button below to
-                import it into SODA.
+              <p class="help-text text-left step-after-spreadsheet-path-declared mt-5 mb-2 w-100">
+                <b>Step 2. </b>Add your
+                <span class="sub-pool-sample-structure-description-text"></span> IDS to the
+                spreadsheet and save it.
+              </p>
+              <div class="guided--section step-after-spreadsheet-path-declared">
+                <div class="sub-section mb-3" id="import-instructions-subjects">
+                  <div class="info-dropdown" style="align-self: center">
+                    <p class="info-dropdown-text" data-dropdown-type="info">
+                      How do I fill out the
+                      <span class="sub-pool-sample-structure-description-text"></span> spreadsheet?
+                    </p>
+                    <i class="fas fa-chevron-right"></i>
+                  </div>
+                  <div class="info-container">
+                    <div class="flex-center">
+                      <img
+                        class="mb-3"
+                        style="width: 90%"
+                        src="assets/img/subjects-spreadseet-example.png"
+                      />
+                    </div>
+                    <p class="help-text text-left w-100">
+                      <b>Subject ID column: </b> Type each subject's name here, starting with
+                      'sub-'. Avoid using special characters or spaces.
+                    </p>
+                  </div>
+                </div>
+                <div class="sub-section mb-3" id="import-instructions-subjects-pools">
+                  <div class="info-dropdown" style="align-self: center">
+                    <p class="info-dropdown-text" data-dropdown-type="info">
+                      How do I fill out the
+                      <span class="sub-pool-sample-structure-description-text"></span> spreadsheet?
+                    </p>
+                    <i class="fas fa-chevron-right"></i>
+                  </div>
+                  <div class="info-container">
+                    <div class="flex-center">
+                      <img
+                        class="mb-3"
+                        style="width: 90%"
+                        src="assets/img/subjects-pools-spreadseet-example.png"
+                      />
+                    </div>
+                    <p class="help-text text-left w-100">
+                      <b>Subject ID column: </b> Type each subject's name here, starting with
+                      'sub-'. Avoid using special characters or spaces.
+                    </p>
+                    <p class="help-text text-left">
+                      <b>Pool ID column: </b> Type the name of the pool that subject belongs to
+                      here, starting with 'pool-'. Avoid using special characters or spaces.
+                    </p>
+                  </div>
+                </div>
+                <div class="sub-section mb-3" id="import-instructions-subjects-samples">
+                  <div class="info-dropdown" style="align-self: center">
+                    <p class="info-dropdown-text" data-dropdown-type="info">
+                      How do I fill out the
+                      <span class="sub-pool-sample-structure-description-text"></span> spreadsheet?
+                    </p>
+                    <i class="fas fa-chevron-right"></i>
+                  </div>
+                  <div class="info-container">
+                    <div class="flex-center">
+                      <img
+                        class="mb-3"
+                        style="width: 90%"
+                        src="assets/img/subjects-samples-spreadseet-example.png"
+                      />
+                    </div>
+                    <p class="help-text text-left w-100">
+                      <b>Subject ID column: </b> Type each subject's name here, starting with
+                      'sub-'. Avoid using special characters or spaces.
+                    </p>
+                    <p class="help-text text-left">
+                      <b>Sample ID column: </b> Type each sample's name here, starting with 'sam-'.
+                      All sample names must be unique. Avoid using special characters or spaces.
+                    </p>
+                    <p class="help-text text-left">
+                      <b>Note: </b> If a subject has more than one sample, repeat the subject's name
+                      in the 'Subject ID' column for each sample.
+                    </p>
+                  </div>
+                </div>
+                <div class="sub-section mb-3" id="import-instructions-subjects-pools-samples">
+                  <div class="info-dropdown" style="align-self: center">
+                    <p class="info-dropdown-text" data-dropdown-type="info">
+                      How do I fill out the
+                      <span class="sub-pool-sample-structure-description-text"></span> spreadsheet?
+                    </p>
+                    <i class="fas fa-chevron-right"></i>
+                  </div>
+                  <div class="info-container">
+                    <div class="flex-center">
+                      <img
+                        class="mb-3"
+                        style="width: 90%"
+                        src="assets/img/subjects-pools-samples-spreadseet-example.png"
+                      />
+                    </div>
+                    <p class="help-text text-left w-100">
+                      <b>Subject ID column: </b> Type each subject's name here, starting with
+                      'sub-'. Avoid using special characters or spaces.
+                    </p>
+                    <p class="help-text text-left">
+                      <b>Pool ID column: </b> Type the name of the pool that subject belongs to
+                      here, starting with 'pool-'. Avoid using special characters or spaces.
+                    </p>
+                    <p class="help-text text-left">
+                      <b>Sample ID column: </b> Type each sample's name here, starting with 'sam-'.
+                      All sample names must be unique. Avoid using special characters or spaces.
+                    </p>
+                    <p class="help-text text-left">
+                      <b>Note: </b> If a pooled subject has more than one sample, repeat the
+                      subject's name in the 'Subject ID' column, the subject's pool's name in the
+                      'Pool ID' column, and the sample's name in the 'Sample ID' column for each
+                      sample.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <p class="help-text text-left step-after-spreadsheet-path-declared mt-2 mb-2">
+                <b>Step 3. </b>Once you have filled out the
+                <span class="sub-pool-sample-structure-description-text"></span> spreadsheet, click
+                the button below to import it into SODA.
               </p>
               <button
                 class="ui positive button soda-green-background step-after-spreadsheet-path-declared"

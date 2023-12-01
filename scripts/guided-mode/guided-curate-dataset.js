@@ -1361,7 +1361,7 @@ const savePageChanges = async (pageBeingLeftID) => {
               You indicated that you would like to import your subject structure from a spreadsheet, however,
               you have not added any subjects.
               <br/><br/>
-              Please fill out and import the spreadsheet or select the option to add your subject structure manually.
+              Please fill out and import the spreadsheet or select that you would not like to add your subject structure via a spreadsheet.
             `,
           });
           throw errorArray;
@@ -7821,6 +7821,11 @@ const patchPreviousGuidedModeVersions = async () => {
     sodaJSONObj["cuartion-mode"] = "guided";
   }
 
+  // Skip the subject spreadsheet importatin page if subjects have already been imported
+  if (getExistingSubjectNames().length > 0) {
+    guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
+  }
+
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
 };
@@ -11387,7 +11392,7 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
 
   if (sheetData.length === 0) {
     await swalShowError(
-      "Empty dataset structure",
+      "Empty subject spreadsheet structure",
       "Please add data to the spreadsheet and try again"
     );
     return false;
@@ -11540,18 +11545,10 @@ document
       return;
     }
 
-    // Get the count of existing subjects, pools, and samples to compare after the import is done
-    const preImportSubjectCount = getExistingSubjectNames().length;
-    const preImportPoolCount = getExistingPoolNames().length;
-    const preImportSampleCount = getExistingSampleNames().length;
-
     for (const row of sheetData) {
       const subjectName = lowercaseFirstLetter(row["Subject ID"]);
       const subjectsPool = lowercaseFirstLetter(row["Pool ID"]);
       const sampleName = lowercaseFirstLetter(row["Sample ID"]);
-      console.log("SUBJECT NAME", subjectName);
-      console.log("SUBJECTS POOL", subjectsPool);
-      console.log("SAMPLE NAME", sampleName);
 
       // Check to see if the subject already exists
       const subjectAlreadyExists = getExistingSubjectNames().includes(subjectName);
@@ -11574,31 +11571,14 @@ document
       }
     }
 
-    // Get the count of existing subjects, pools, and samples to compare after the import is done
-    const postImportSubjectCount = getExistingSubjectNames().length;
-    const postImportPoolCount = getExistingPoolNames().length;
-    const postImportSampleCount = getExistingSampleNames().length;
-
-    const subjectsAdded = postImportSubjectCount - preImportSubjectCount;
-    const poolsAdded = postImportPoolCount - preImportPoolCount;
-    const samplesAdded = postImportSampleCount - preImportSampleCount;
-
-    let successfulImportString = "";
-    if (subjectsAdded > 0) {
-      successfulImportString += `<p><strong>${subjectsAdded}</strong> subjects added</p>`;
-    }
-    if (poolsAdded > 0) {
-      successfulImportString += `<p><strong>${poolsAdded}</strong> pools added</p>`;
-    }
-    if (samplesAdded > 0) {
-      successfulImportString += `<p><strong>${samplesAdded}</strong> samples added</p>`;
-    }
-
     await swalShowInfo(
-      "Dataset structure successfully imported",
-      `${successfulImportString}
-      <br />
-      You will now be taken to the next step where you can review/edit the imported data.`
+      "Subject structure successfully imported",
+      `
+        You will now be taken to the next step where you can review/edit the imported data.
+        <br />
+        <br />
+        <b>Note:</b> You will not be able to return to this step once you proceed.
+      `
     );
     $("#guided-next-button").click();
   });

@@ -771,6 +771,12 @@
   padding: 0px 3px;
 }
 
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .guided--container-footer-buttons.flex-start {
   justify-content: flex-start;
 }
