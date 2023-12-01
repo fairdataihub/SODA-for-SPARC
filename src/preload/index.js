@@ -4,7 +4,7 @@ import os from "os"
 import fs from "fs-extra"
 import path from "path"
 import process from "process"
-import logger from 'electron-log/renderer'
+import log from 'electron-log'
 import imageDataURI from "image-data-uri" // TODO: fix this
 import Jimp from "jimp";
 import excel4node from "excel4node";
@@ -12,6 +12,13 @@ import excel4node from "excel4node";
 import { spawn } from "node:child_process"
 
 import "v8-compile-cache";
+
+console.log(log)
+console.log(log.transports)
+console.log(log.transports.file)
+log.initialize()
+
+
 
 
 
@@ -162,24 +169,24 @@ if (process.contextIsolated) {
     })
     contextBridge.exposeInMainWorld('log', {
       info: (message) => {
-        return logger.info(message)
+        return log.info("[renderer] " + message)
       },
       error: (message) => {
-        return logger.error(message)
+        return log.error("[renderer] " +  message)
       },
       warn: (message) => {
-        return logger.warn(message)
+        return log.warn(message)
       },
       debug: (message) => {
-        return logger.debug(message)
+        return log.debug(message)
       },
       verbose: (message) => {
-        return logger.verbose(message)
+        return log.verbose(message)
       },
       setupRendererLogOptions: () => {
-        logger.info("SA")
-        logger.transports.console.level = false;
-        // logger.transports.file.maxSize = 1024 * 1024 * 10;
+        log.info("SA")
+        log.transports.console.level = false;
+        // log.transports.file.maxSize = 1024 * 1024 * 10;
       }
     })
     contextBridge.exposeInMainWorld('imageDataURI', {
@@ -212,11 +219,11 @@ if (process.contextIsolated) {
           });
 
           agentStopSpawn.stdout.on("data", (data) => {
-            logger.info(data.toString());
+            log.info(data.toString());
             resolve("Stopped the Agent")
           });
           agentStopSpawn.stderr.on("data", (data) => {
-            logger.info(data.toString());
+            log.info(data.toString());
             reject(new Error(data.toString()))
           });
         })
@@ -233,7 +240,7 @@ if (process.contextIsolated) {
           });
       
           agentStartSpawn.stderr.on("data", (data) => {
-            logger.error(data.toString());
+            log.error(data.toString());
             return resolve(false);
           });
         });
@@ -264,13 +271,13 @@ if (process.contextIsolated) {
           // "Running Agent NOT as daemon" or "Pennsieve Agent started"
           agentStartSpawn.stdout.on("data", (data) => {
             const agentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
-            logger.info(agentMessage);
-            // Add to message to the output logger which will be used to display the output to the user if the agent fails to start
+            log.info(agentMessage);
+            // Add to message to the output log which will be used to display the output to the user if the agent fails to start
             pennsieveAgentOutputLog.push(agentMessage);
       
             // Resolve the promise if the agent is already running
             if (agentMessage.includes("Pennsieve Agent is already running")) {
-              logger.info(`Pennsieve Agent is confirmed to be running: ${agentMessage}`);
+              log.info(`Pennsieve Agent is confirmed to be running: ${agentMessage}`);
               clearTimeout(versionCheckTimeout);
               resolve();
             }
@@ -290,7 +297,7 @@ if (process.contextIsolated) {
                 secondAgentStartSpawn.stdout.on("data", (data) => {
                   const secondAgentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
                   if (secondAgentMessage.includes("Pennsieve Agent is already running")) {
-                    logger.info(`Pennsieve Agent is confirmed to be running: ${secondAgentMessage}`);
+                    log.info(`Pennsieve Agent is confirmed to be running: ${secondAgentMessage}`);
                     clearTimeout(versionCheckTimeout);
                     resolve();
                   }
@@ -298,16 +305,16 @@ if (process.contextIsolated) {
               }, 5000);
             }
           });
-          // Capture standard error output and add it to the output logger
+          // Capture standard error output and add it to the output log
           agentStartSpawn.stderr.on("data", (data) => {
             const agentStdErr = `[Pennsieve Agent Error] ${data.toString()}`;
-            logger.info(agentStdErr);
+            log.info(agentStdErr);
             pennsieveAgentOutputLog.push(agentStdErr);
           });
-          // Capture error output and add it to the output logger
+          // Capture error output and add it to the output log
           agentStartSpawn.on("error", (error) => {
             const agentSpawnError = `[Pennsieve Agent Error] ${error.toString()}`;
-            logger.info(agentSpawnError);
+            log.info(agentSpawnError);
             pennsieveAgentOutputLog.push(agentSpawnError);
           });
         });
@@ -338,7 +345,7 @@ if (process.contextIsolated) {
           // Resolve the promise if the version is found
           agentVersionSpawn.stdout.on("data", (data) => {
             const agentVersionOutput = `[Pennsieve Agent Output] ${data.toString()}`;
-            logger.info(agentVersionOutput);
+            log.info(agentVersionOutput);
             pennsieveAgentOutputLog.push(agentVersionOutput);
       
             const versionResult = {};
@@ -357,21 +364,21 @@ if (process.contextIsolated) {
           // Capture standard error output and reject the promise
           agentVersionSpawn.stderr.on("data", (data) => {
             const agentStdErr = `[Pennsieve Agent Error] ${data.toString()}`;
-            logger.info(agentStdErr);
+            log.info(agentStdErr);
             pennsieveAgentOutputLog.push(agentStdErr);
           });
       
           // Capture error output and reject the promise
           agentVersionSpawn.on("error", (error) => {
             const agentVersionSpawnError = `[Pennsieve Agent Error] ${error.toString()}`;
-            logger.info(agentVersionSpawnError);
+            log.info(agentVersionSpawnError);
             pennsieveAgentOutputLog.push(agentVersionSpawnError);
           });
         });
       }
     })
   } catch (error) {
-    logger.error(error)
+    log.error(error)
   }
 } else {
   window.electron = electronAPI

@@ -39,6 +39,7 @@ log.transports.file.level = "debug";
 let nodeStorage = new JSONStorage(app.getPath("userData"))
 
 // TODO: Move to ipcMain handler so renderer processes can talk to the nodestorage
+var mainWindow = null;
 
 
 // import "./appUtils"
@@ -420,7 +421,6 @@ const initialize = () => {
       optimizer.watchWindowShortcuts(window)
     })
 
-    let mainWindow = null;
     createWindow()
 
     mainWindow.webContents.once("dom-ready", () => {

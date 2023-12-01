@@ -50,7 +50,7 @@
     "cropperjs": "^1.6.1",
     "doi-regex": "^0.1.13",
     "dragselect": "^3.0.4",
-    "electron-log": "^5.0.0-rc.1",
+    "electron-log": "^5.0.1",
     "electron-notarize": "^1.2.2",
     "electron-updater": "^6.1.7",
     "excel4node": "^1.8.2",

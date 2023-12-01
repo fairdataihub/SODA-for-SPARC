@@ -41,6 +41,9 @@ import DatePicker from "tui-date-picker"; /* CommonJS */
 import datasetUploadSession from "../analytics/upload-session-tracker";
 import kombuchaEnums from "../analytics/analytics-enums"
 import client from '../client'
+// import log from 'electron-log/renderer'
+
+// log.info("Woooow")
 
 import {
   createEventData,
