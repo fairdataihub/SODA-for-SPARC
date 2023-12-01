@@ -5,7 +5,7 @@ import client from '../client'
 import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 import api from "../others/api/api"
-import * as Tagify from "@yaireo/tagify";
+import Tagify from "@yaireo/tagify";
 
 
 
