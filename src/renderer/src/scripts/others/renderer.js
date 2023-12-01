@@ -64,8 +64,10 @@ import { swalFileListSingleAction, swalFileListTripleAction, swalFileListDoubleA
 // add jquery to the window object
 window.$ = jQuery;
 window.jQuery = jQuery;
-select2()
-fixPath();
+document.addEventListener("DOMContentLoaded", function () {
+  $('select').select2()
+})
+fixPath()
 
 // // const prevent_sleep_id = "";
 // // const electron_app = electron.app;
