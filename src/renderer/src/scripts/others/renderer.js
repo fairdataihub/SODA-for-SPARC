@@ -75,7 +75,7 @@ fixPath();
 // const Clipboard = electron.clipboard;
 
 
-console.log("Build queue change")
+console.log("Build queue changed")
 
 
 var nextBtnDisabledVariable = true;
