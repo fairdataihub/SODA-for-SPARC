@@ -31,7 +31,6 @@ import doiRegex from "doi-regex";
 import lottie from "lottie-web";
 import { dragDrop, successCheck } from '../../assets/lotties/lotties'
 import * as select2 from "select2"; // TODO: select2()
-select2()
 import autoComplete from "@tarekraafat/autocomplete.js/dist/autoComplete.min.js"
 import Cropper from 'cropperjs'
 import DragSort from "@yaireo/dragsort";
@@ -41,10 +40,6 @@ import DatePicker from "tui-date-picker"; /* CommonJS */
 import datasetUploadSession from "../analytics/upload-session-tracker";
 import kombuchaEnums from "../analytics/analytics-enums"
 import client from '../client'
-// import log from 'electron-log/renderer'
-
-// log.info("Woooow")
-
 import {
   createEventData,
   logSelectedUpdateExistingDatasetOptions,
@@ -69,7 +64,7 @@ import { swalFileListSingleAction, swalFileListTripleAction, swalFileListDoubleA
 // add jquery to the window object
 window.$ = jQuery;
 window.jQuery = jQuery;
-
+select2()
 fixPath();
 
 // // const prevent_sleep_id = "";
