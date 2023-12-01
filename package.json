@@ -7,7 +7,7 @@
   "homepage": "https://www.electronjs.org",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aaronm-2112/bundle-up.git"
+    "url": "https://github.com/fairdataihub/SODA-for-SPARC.git"
   },
   "scripts": {
     "format": "prettier --write .",
