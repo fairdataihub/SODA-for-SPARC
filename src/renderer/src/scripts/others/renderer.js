@@ -75,6 +75,9 @@ fixPath();
 // const Clipboard = electron.clipboard;
 
 
+console.log("Build queue change")
+
+
 var nextBtnDisabledVariable = true;
 
 window.datasetStructureJSONObj = {
