@@ -26,7 +26,7 @@ export default defineConfig({
     plugins: [react(), inject({
       $: 'jquery',
       jQuery: 'jquery'
-    }), commonjs()], 
+    })], 
     optimizeDeps: {
       exclude: ['bootbox', 'Jimp/es']
     },

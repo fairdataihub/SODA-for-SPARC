@@ -10,7 +10,8 @@ import lottie from "lottie-web"
 import {dragDrop, successCheck, errorMark} from '../../assets/lotties/lotties'
 import kombuchaEnums from '../analytics/analytics-enums'
 import Swal from "sweetalert2"
-import Tagify from "@yaireo/tagify";
+import Tagify from "@yaireo/tagify/dist/tagify.esm";
+// const Tagify = require("@yaireo/tagify/dist/tagify.esm");
 import tippy from "tippy.js";
 import client from '../client'
 import jQuery from 'jquery'
