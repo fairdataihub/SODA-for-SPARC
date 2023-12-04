@@ -182,6 +182,19 @@ ipcMain.on("restart_app", async () => {
   autoUpdater.quitAndInstall();
 });
 
+ipcMain.on("resize-window", (event, dir) => {
+  let x = mainWindow.getSize()[0];
+  let y = mainWindow.getSize()[1];
+  if (dir === "up") {
+    x += 1;
+    y += 1;
+  } else {
+    x -= 1;
+    y -= 1;
+  }
+  mainWindow.setSize(x, y);
+});
+
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.

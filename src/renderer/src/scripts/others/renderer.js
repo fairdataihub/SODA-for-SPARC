@@ -1338,27 +1338,27 @@ window.smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">';
 window.sadCan = '<img class="message-icon" src="assets/img/can-sad.png">';
 window.delayAnimation = 250;
 
-// //////////////////////////////////
-// // Operations on JavaScript end only
-// //////////////////////////////////
+//////////////////////////////////
+// Operations on JavaScript end only
+//////////////////////////////////
 
-// // Sidebar Navigation //
-// let open = false;
-// const openSidebar = (buttonElement) => {
-//   if (!open) {
-//     window.electron.ipcRenderer.send("resize-window", "up");
-//     $("#main-nav").css("width", "250px");
-//     $("#SODA-logo").css("display", "block");
-//     $(buttonSidebarIcon).css("display", "none");
-//     open = true;
-//   } else {
-//     window.electron.ipcRenderer.send("resize-window", "down");
-//     $("#main-nav").css("width", "70px");
-//     $("#SODA-logo").css("display", "block");
-//     $(buttonSidebarIcon).css("display", "none");
-//     open = false;
-//   }
-// };
+// Sidebar Navigation //
+let open = false;
+const openSidebar = (buttonElement) => {
+  if (!open) {
+    window.electron.ipcRenderer.send("resize-window", "up");
+    $("#main-nav").css("width", "250px");
+    $("#SODA-logo").css("display", "block");
+    $(buttonSidebarIcon).css("display", "none");
+    open = true;
+  } else {
+    window.electron.ipcRenderer.send("resize-window", "down");
+    $("#main-nav").css("width", "70px");
+    $("#SODA-logo").css("display", "block");
+    $(buttonSidebarIcon).css("display", "none");
+    open = false;
+  }
+};
 
 // Assign dragable area in the code to allow for dragging and selecting items//
 let drag_event_fired = false;
