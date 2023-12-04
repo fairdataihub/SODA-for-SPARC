@@ -1157,66 +1157,70 @@ window.electron.ipcRenderer.on("app_version", (event, arg) => {
   window.electron.ipcRenderer.removeAllListeners("app_version");
 });
 
-// // Check for update and show the pop up box
-// window.electron.ipcRenderer.on("update_available", () => {
-//   window.electron.ipcRenderer.removeAllListeners("update_available");
-//   window.electron.ipcRenderer.send(
-//     "track-event",
-//     "App Update",
-//     "Update Requested",
-//     `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
-//   );
-//   update_available_notification = window.notyf.open({
-//     type: "app_update",
-//     message: "A new update is available. Downloading now...",
-//   });
-// });
+// Check for update and show the pop up box
+window.electron.ipcRenderer.on("update_available", async () => {
+  let appVersion = await window.electron.ipcRenderer.invoke("app-version");
+  window.electron.ipcRenderer.removeAllListeners("update_available");
+  window.electron.ipcRenderer.send(
+    "track-event",
+    "App Update",
+    "Update Requested",
+    `User OS-${window.os.platform()}-${window.os.release()}- SODAv${appVersion}`
+  );
+  update_available_notification = window.notyf.open({
+    type: "app_update",
+    message: "A new update is available. Downloading now...",
+  });
+});
 
-// // When the update is downloaded, show the restart notification
-// window.electron.ipcRenderer.on("update_downloaded", async () => {
-//   window.electron.ipcRenderer.removeAllListeners("update_downloaded");
-//   window.electron.ipcRenderer.send(
-//     "track-event",
-//     "App Update",
-//     "Update Downloaded",
-//     `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
-//   );
-//   window.notyf.dismiss(update_available_notification);
-//   if (process.platform == "darwin") {
-//     update_downloaded_notification = window.notyf.open({
-//       type: "app_update_warning",
-//       message:
-//         "Update downloaded. It will be installed when you close and relaunch the app. Click here to close SODA now.",
-//     });
-//   } else {
-//     update_downloaded_notification = window.notyf.open({
-//       type: "app_update_warning",
-//       message:
-//         "Update downloaded. It will be installed on the restart of the app. Click here to restart SODA now.",
-//     });
-//   }
-//   update_downloaded_notification.on("click", async ({ target, event }) => {
-//     restartApp();
-//     //a sweet alert will pop up announcing user to manually update if SODA fails to restart
-//     checkForAnnouncements("update");
-//   });
-// });
+// When the update is downloaded, show the restart notification
+window.electron.ipcRenderer.on("update_downloaded", async () => {
+  let appVersion = await window.electron.ipcRenderer.invoke("app-version");
+  window.electron.ipcRenderer.removeAllListeners("update_downloaded");
+  window.electron.ipcRenderer.send(
+    "track-event",
+    "App Update",
+    "Update Downloaded",
+    `User OS-${window.os.platform()}-${window.os.release()}- SODAv${appVersion}`
+  );
+  window.notyf.dismiss(update_available_notification);
+  if (window.process.platform == "darwin") {
+    update_downloaded_notification = window.notyf.open({
+      type: "app_update_warning",
+      message:
+        "Update downloaded. It will be installed when you close and relaunch the app. Click here to close SODA now.",
+    });
+  } else {
+    update_downloaded_notification = window.notyf.open({
+      type: "app_update_warning",
+      message:
+        "Update downloaded. It will be installed on the restart of the app. Click here to restart SODA now.",
+    });
+  }
+  update_downloaded_notification.on("click", async ({ target, event }) => {
+    restartApp();
+    //a sweet alert will pop up announcing user to manually update if SODA fails to restart
+    checkForAnnouncements("update");
+  });
+});
 
-// // Restart the app for update. Does not restart on macos
-// const restartApp = async () => {
-//   window.notyf.open({
-//     type: "app_update_warning",
-//     message: "Closing SODA now...",
-//   });
+// Restart the app for update. Does not restart on macos
+const restartApp = async () => {
+  window.notyf.open({
+    type: "app_update_warning",
+    message: "Closing SODA now...",
+  });
 
-//   window.electron.ipcRenderer.send(
-//     "track-event",
-//     "App Update",
-//     "App Restarted",
-//     `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
-//   );
-//   window.electron.ipcRenderer.send("restart_app");
-// };
+  let appVersion = await window.electron.ipcRenderer.invoke("app-version");
+
+  window.electron.ipcRenderer.send(
+    "track-event",
+    "App Update",
+    "App Restarted",
+    `User OS-${window.os.platform()}-${window.os.release()}- SODAv${appVersion}`
+  );
+  window.electron.ipcRenderer.send("restart_app");
+};
 
 // //////////////////////////////////
 // // Get html elements from UI
