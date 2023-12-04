@@ -1,6 +1,6 @@
 {
   "name": "soda-for-sparc",
-  "version": "12.5.0-beta",
+  "version": "12.5.0",
   "description": "An Electron application with React",
   "main": "./out/main/index.js",
   "author": "example.com",
