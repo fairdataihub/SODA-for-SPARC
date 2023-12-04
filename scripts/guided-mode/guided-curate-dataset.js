@@ -870,7 +870,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Skip the page where they confirm their log in and workspace because we should already have it
         sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
         guidedSkipPage("guided-pennsieve-intro-tab");
-
       }
 
       //Skip this page becausae we should not come back to it
@@ -1366,8 +1365,6 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
       }
-
-     
     }
 
     if (pageBeingLeftID === "guided-primary-data-organization-tab") {
@@ -4267,7 +4264,6 @@ const guidedSkipPage = (pageId) => {
   if (page.classList.contains("guided--page")) {
     // replace -tab with -capsule  in pageId string
     const pagesCapsule = pageId.replace("-tab", "-capsule");
-    console.log(pagesCapsule);
     document.getElementById(pagesCapsule).classList.add("hidden");
   }
   if (page.classList.contains("sub-page")) {
@@ -4287,8 +4283,6 @@ const guidedUnSkipPage = (pageId) => {
   // If the page no longer exists, return
   if (!page) {
     return;
-  } else {
-    console.log(pageId);
   }
 
   page.dataset.skipPage = "false";
@@ -4296,10 +4290,9 @@ const guidedUnSkipPage = (pageId) => {
   //Show the parent page or sub page capsule
   if (page.classList.contains("guided--page")) {
     const pagesCapsuleID = pageId.replace("-tab", "-capsule");
-    console.log(pagesCapsuleID);
     const domElement = document.getElementById(pagesCapsuleID);
     if (!domElement) {
-      console.log(`Could not find element with id ${pagesCapsuleID}`);
+      console.error(`Could not find element with id ${pagesCapsuleID}`);
     }
     document.getElementById(pagesCapsuleID).classList.remove("hidden");
   }
@@ -5102,20 +5095,6 @@ const openPage = async (targetPageID) => {
       importProgressCircle.classList.add("hidden");
     }
 
-    if (targetPageID === "guided-dataset-structure-intro-capsule") {
-      if (getExistingSubjectNames().length === 0 &&
-       sodaJSONObj["starting-point"]["type"] != "bf" && 
-       sodaJSONObj["button-config"]["dataset-contains-subjects"] === "yes") {
-        guidedUnSkipPage("guided-subject-structure-spreadsheet-importation-tab")
-      } else {
-          guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab")
-        }
-    }
-
-    if (targetPageID === "guided-subject-structure-spreadsheet-importation-tab") {
-      const savedSpreadSheetPath = sodaJSONObj["dataset-structure-spreadsheet-path"];
-      setUiBasedOnSavedDatasetStructurePath(savedSpreadSheetPath);
-    }
     if (targetPageID === "guided-prepare-dataset-structure-tab") {
       // If the user has already added subjects, disallow them from selecting no (they have to go to the subject
       // page to delete subjects but this would be a very strange case anyways)
@@ -5289,8 +5268,26 @@ const openPage = async (targetPageID) => {
       $("#guided-select-sparc-funding-consortium").trigger("change");
     }
 
+    if (targetPageID === "guided-dataset-structure-intro-tab") {
+      if (
+        getExistingSubjectNames().length === 0 &&
+        sodaJSONObj["starting-point"]["type"] != "bf" &&
+        sodaJSONObj["button-config"]["dataset-contains-subjects"] === "yes"
+      ) {
+        guidedUnSkipPage("guided-subject-structure-spreadsheet-importation-tab");
+      } else {
+        guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
+      }
+    }
+
+    if (targetPageID === "guided-subject-structure-spreadsheet-importation-tab") {
+      const savedSpreadSheetPath = sodaJSONObj["dataset-structure-spreadsheet-path"];
+      setUiBasedOnSavedDatasetStructurePath(savedSpreadSheetPath);
+    }
+
     if (targetPageID === "guided-subjects-addition-tab") {
-      guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab")
+      // skip the spreadsheet importation page so the user can't go back to it
+      guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
       renderSubjectsTable();
     }
 
@@ -6983,7 +6980,6 @@ const guidedOpenEntityEditSwal = async (entityName) => {
 
       newEntityName = `${entityPrefix}${newEntityInputValue}`;
       if (newEntityName === entityName) {
-        console.log("No changes made");
         Swal.close();
       }
       const entityNameIsValid = evaluateStringAgainstSdsRequirements(
@@ -7028,10 +7024,8 @@ const renderSubjectsTable = () => {
   const subjectsTableContainer = document.getElementById("guided-section-subjects-table");
   if (subjects.length === 0) {
     subjectsTableContainer.classList.add("hidden");
-    console.log("Hiding container");
     return;
   } else {
-    console.log("Showing container");
     // If there are subjects, show the subjects table
     subjectsTableContainer.classList.remove("hidden");
   }
@@ -7120,7 +7114,6 @@ const renderSamplesTable = () => {
 
   document.querySelectorAll(".button-subject-add-samples").forEach((button) => {
     button.addEventListener("click", async () => {
-      console.log("clicked");
       const subjectName = button.dataset.samplesSubjectName;
       await guidedOpenEntityAdditionSwal(subjectName);
     });
@@ -8113,7 +8106,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       if (throwErrorIfPoolExists) {
         throw new Error("Pool names must be unique.");
       } else {
-        console.log(`${poolName} already exists}`);
         return;
       }
     }
@@ -8129,7 +8121,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       if (throwErrorIfSubjectExists) {
         throw new Error("Subject names must be unique.");
       } else {
-        console.log(`Subject ${subjectName} already exists`);
         return;
       }
     }
@@ -8152,8 +8143,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           throw new Error(
             `Sample names must be unique. \n${sampleName} already exists in ${sample.subjectName}`
           );
-        } else {
-          console.log(`${sampleName} already exists in ${sample.subjectName}`);
         }
       }
     }
@@ -10839,7 +10828,6 @@ const specifySample = (event, sampleNameInput) => {
         addSampleSpecificationTableRow(addSampleButton);
       }
     } catch (error) {
-      console.log(error);
       notyf.open({
         duration: "3000",
         type: "error",
@@ -11314,7 +11302,6 @@ document
   .getElementById("guided-button-choose-dataset-structure-spreadsheet-path")
   .addEventListener("click", () => {
     // Create a new spreadsheet based on the dataset structure
-    console.log("create dataset structure spreadsheet");
     ipcRenderer.send("open-create-dataset-structure-spreadsheet-path-selection-dialog");
   });
 ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (event, path) => {
@@ -11456,10 +11443,8 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
     }
 
     const sampleName = lowercaseFirstLetter(row["sample id"]);
-    console.log("SAMPLENAME", sampleName);
     if (sampleName) {
       if (!sampleName.startsWith("sam-")) {
-        console.log("invalid sample name", sampleName);
         invalidSampleNames.push(sampleName);
         continue;
       }
@@ -11610,7 +11595,6 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
   const invalidSubjectNames = [];
   for (const subjectName of subjectNameArray) {
     if (subjectName.length === 0) {
-      console.log("Skipping empty subject name");
       continue;
     }
 
@@ -11701,12 +11685,10 @@ ipcRenderer.on("selected-subject-names-from-dialog", async (event, folders) => {
 
 ipcRenderer.on("selected-sample-names-from-dialog", async (event, folders) => {
   const sampleNames = folders.map((folder) => path.basename(folder));
-  console.log(sampleNames);
 });
 
 const convertArrayToCommaSeparatedString = (array) => {
   // Convert the array to a comma separated string with an "and" before the last element if there are more than 2 elements
-  console.log("convertArray", array);
   if (array.length === 0) {
     return "";
   }
@@ -11910,8 +11892,6 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
       }
       renderSamplesTable();
     }
-  } else {
-    console.log("additionCancelled");
   }
 };
 
@@ -13257,7 +13237,6 @@ const showCorrectSpreadsheetInstructionSection = (datasetEntities) => {
 };
 
 const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
-  console.log("controlledSectionID: ", controlledSectionID);
   const controlledElementContainer = document.getElementById(controlledSectionID);
   // Hide the children of the controlled element
   // (There should be logic below that shows the correct child)
@@ -13384,7 +13363,6 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
   }
 
   if (controlledSectionID === "guided-section-spreadsheet-import") {
-    console.log("Starting controlla: ");
     const datasetHasPools = document
       .getElementById("guided-button-spreadsheet-subjects-are-pooled")
       .classList.contains("selected");
@@ -13394,7 +13372,6 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
     if (!datasetHasPools && !datasetDoesNotHavePools) {
       return;
     }
-    console.log("Starting controlla1: ");
 
     const datasetHasSamples = document
       .getElementById("guided-button-spreadsheet-subjects-have-samples")
@@ -13405,7 +13382,6 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
     if (!datasetHasSamples && !datasetDoesNotHaveSamples) {
       return;
     }
-    console.log("Starting controlla2: ");
 
     const datasetEntities = ["subjects"];
     if (datasetHasPools) {
@@ -15788,14 +15764,11 @@ $("#guided-save-banner-image").click(async (event) => {
 const getNextPageNotSkipped = (currentPageID) => {
   const parentContainer = document.getElementById(currentPageID).closest(".guided--parent-tab");
   const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
-  console.log("siblingPages", siblingPages)
 
   const currentPageIndex = siblingPages.indexOf(currentPageID);
   if (currentPageIndex != siblingPages.length - 1) {
-    console.log("here")
     return document.getElementById(siblingPages[currentPageIndex + 1]);
   } else {
-    console.log("there")
     const nextParentContainer = parentContainer.nextElementSibling;
     return getNonSkippedGuidedModePages(nextParentContainer)[0];
   }
@@ -15826,7 +15799,6 @@ $("#guided-next-button").on("click", async function () {
     //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
     //if more tabs in parent tab, go to next tab and update capsule
     let targetPage = getNextPageNotSkipped(CURRENT_PAGE.id);
-    console.log("targetPage**************************", targetPage);
     let targetPageID = targetPage.id;
 
     await openPage(targetPageID);
