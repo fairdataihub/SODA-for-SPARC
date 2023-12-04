@@ -11,6 +11,7 @@ import fp from "find-free-port"
 import { spawn, execFile, spawnSync } from "node:child_process"
 import { existsSync } from 'fs'
 import { JSONStorage } from "node-localstorage";
+import contextMenu from "electron-context-menu";
 import log from 'electron-log/main';
 import "./manifest-workbook"
 import "./banner-image"
@@ -664,6 +665,8 @@ const initialize = () => {
     app.quit();
   });
 }
+
+contextMenu()
 
 initialize()
 
