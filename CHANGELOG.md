@@ -5,6 +5,12 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.12.4.0 - 2023-12-04
+
+## Feature Additions:
+
+- Added a new feature to Guided Mode that allows you to import subjects, pools, and samples from an external spreadsheet.
+
 ## v.12.3.3 - 2023-10-24
 
 ## Bug fixes:
