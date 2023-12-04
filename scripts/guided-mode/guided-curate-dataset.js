@@ -870,8 +870,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Skip the page where they confirm their log in and workspace because we should already have it
         sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
         guidedSkipPage("guided-pennsieve-intro-tab");
-        // Skip the subject structure import page since the user is starting from Pennsieve
-        guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
+
       }
 
       //Skip this page becausae we should not come back to it
@@ -1133,7 +1132,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       const datasetHasCode = sodaJSONObj["dataset-contains-code"];
 
       if (datasetHasSubjects) {
-        guidedUnSkipPage("guided-subject-structure-spreadsheet-importation-tab");
         guidedUnSkipPage("guided-subjects-addition-tab");
         guidedUnSkipPage("guided-subjects-pooling-tab");
         guidedUnSkipPage("guided-samples-addition-tab");
@@ -1144,7 +1142,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedUnSkipPage("guided-create-subjects-metadata-tab");
         guidedUnSkipPage("guided-create-samples-metadata-tab");
       } else {
-        guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
         guidedSkipPage("guided-subjects-addition-tab");
         guidedSkipPage("guided-subjects-pooling-tab");
         guidedSkipPage("guided-samples-addition-tab");
@@ -1370,10 +1367,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }
 
-      if (userChoseToEnterSubsSamsPoolsManually) {
-        // Skip the page so the user can add subjects manually
-        guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
-      }
+     
     }
 
     if (pageBeingLeftID === "guided-primary-data-organization-tab") {
@@ -5108,6 +5102,16 @@ const openPage = async (targetPageID) => {
       importProgressCircle.classList.add("hidden");
     }
 
+    if (targetPageID === "guided-dataset-structure-intro-capsule") {
+      if (getExistingSubjectNames().length === 0 &&
+       sodaJSONObj["starting-point"]["type"] != "bf" && 
+       sodaJSONObj["button-config"]["dataset-contains-subjects"] === "yes") {
+        guidedUnSkipPage("guided-subject-structure-spreadsheet-importation-tab")
+      } else {
+          guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab")
+        }
+    }
+
     if (targetPageID === "guided-subject-structure-spreadsheet-importation-tab") {
       const savedSpreadSheetPath = sodaJSONObj["dataset-structure-spreadsheet-path"];
       setUiBasedOnSavedDatasetStructurePath(savedSpreadSheetPath);
@@ -5286,6 +5290,7 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-subjects-addition-tab") {
+      guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab")
       renderSubjectsTable();
     }
 
@@ -7826,11 +7831,6 @@ const patchPreviousGuidedModeVersions = async () => {
 
   if (!sodaJSONObj["curation-mode"]) {
     sodaJSONObj["cuartion-mode"] = "guided";
-  }
-
-  // Skip the subject spreadsheet importatin page if subjects have already been imported
-  if (getExistingSubjectNames().length > 0) {
-    guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
   }
 
   // If no other conditions are met, return the page the user was last on
@@ -11592,8 +11592,6 @@ document
         <b>Note:</b> You will not be able to return to this step once you proceed.
       `
     );
-    // Skip the spreadsheet importation page so the user can't go back to it
-    guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
     $("#guided-next-button").click();
   });
 
@@ -15790,11 +15788,14 @@ $("#guided-save-banner-image").click(async (event) => {
 const getNextPageNotSkipped = (currentPageID) => {
   const parentContainer = document.getElementById(currentPageID).closest(".guided--parent-tab");
   const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
+  console.log("siblingPages", siblingPages)
 
   const currentPageIndex = siblingPages.indexOf(currentPageID);
   if (currentPageIndex != siblingPages.length - 1) {
+    console.log("here")
     return document.getElementById(siblingPages[currentPageIndex + 1]);
   } else {
+    console.log("there")
     const nextParentContainer = parentContainer.nextElementSibling;
     return getNonSkippedGuidedModePages(nextParentContainer)[0];
   }
@@ -15825,6 +15826,7 @@ $("#guided-next-button").on("click", async function () {
     //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
     //if more tabs in parent tab, go to next tab and update capsule
     let targetPage = getNextPageNotSkipped(CURRENT_PAGE.id);
+    console.log("targetPage**************************", targetPage);
     let targetPageID = targetPage.id;
 
     await openPage(targetPageID);
