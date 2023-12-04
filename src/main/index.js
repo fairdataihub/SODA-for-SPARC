@@ -406,7 +406,7 @@ const initialize = () => {
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
       splashScreen.loadURL(process.env['ELECTRON_RENDERER_URL'] + "/splash/splash-screen.html")
     } else {
-      splashScreen.loadFile(join(__dirname, '../renderer/public/splash/splash-screen.html'))
+      splashScreen.loadFile(join(__dirname, '../renderer/splash/splash-screen.html'))
     }
 
 
