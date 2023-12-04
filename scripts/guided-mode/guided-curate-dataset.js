@@ -11851,6 +11851,7 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
     showConfirmButton: true,
     showCancelButton: true,
     showCloseButton: false,
+    allowOutsideClick: false,
     confirmButtonText: `Confirm`,
     cancelButtonText: `Cancel`,
     didOpen: () => {
