@@ -11338,13 +11338,13 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
       .getElementById("guided-button-spreadsheet-subjects-have-samples")
       .classList.contains("selected");
 
-    const headers = ["Subject ID"];
+    const headers = ["subject id"];
 
     if (datasetHasPools) {
-      headers.push("Pool ID");
+      headers.push("pool id");
     }
     if (datasetHasSamples) {
-      headers.push("Sample ID");
+      headers.push("sample id");
     }
 
     for (i = 0; i < headers.length; i++) {
@@ -11406,7 +11406,7 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
   }
   // 1. Loop through the spreadsheet rows and find subs, pools, and sams that do not have valid names
   for (const row of sheetData) {
-    const subjectName = lowercaseFirstLetter(row["Subject ID"]);
+    const subjectName = lowercaseFirstLetter(row["subject id"]);
     if (!subjectName) {
       continue;
     }
@@ -11423,7 +11423,7 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
       continue;
     }
 
-    const poolName = lowercaseFirstLetter(row["Pool ID"]);
+    const poolName = lowercaseFirstLetter(row["pool id"]);
 
     if (poolName) {
       if (!poolName.startsWith("pool-")) {
@@ -11450,7 +11450,7 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
       }
     }
 
-    const sampleName = lowercaseFirstLetter(row["Sample ID"]);
+    const sampleName = lowercaseFirstLetter(row["sample id"]);
     console.log("SAMPLENAME", sampleName);
     if (sampleName) {
       if (!sampleName.startsWith("sam-")) {
@@ -11553,9 +11553,9 @@ document
     }
 
     for (const row of sheetData) {
-      const subjectName = lowercaseFirstLetter(row["Subject ID"]);
-      const subjectsPool = lowercaseFirstLetter(row["Pool ID"]);
-      const sampleName = lowercaseFirstLetter(row["Sample ID"]);
+      const subjectName = lowercaseFirstLetter(row["subject id"]);
+      const subjectsPool = lowercaseFirstLetter(row["pool id"]);
+      const sampleName = lowercaseFirstLetter(row["sample id"]);
 
       // Check to see if the subject already exists
       const subjectAlreadyExists = getExistingSubjectNames().includes(subjectName);
