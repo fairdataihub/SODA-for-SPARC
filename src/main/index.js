@@ -467,6 +467,8 @@ const initialize = () => {
   sendUserAnalytics();
   makeSingleInstance();
 
+  log.info("Running initialize")
+
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
@@ -521,6 +523,7 @@ const initialize = () => {
 
         // start_pre_flight_checks();
         if (!buildIsBeta) {
+          log.info("Checking for updates in initialize");
           autoUpdater.checkForUpdatesAndNotify();
         }
         updatechecked = true;
@@ -582,11 +585,11 @@ const initialize = () => {
         shell.openExternal(url)
       })
 
-      mainWindow.webContents.once("dom-ready", () => {
-        if (updatechecked == false && !buildIsBeta) {
-          autoUpdater.checkForUpdatesAndNotify();
-        }
-      })
+      // mainWindow.webContents.once("dom-ready", () => {
+      //   if (updatechecked == false && !buildIsBeta) {
+      //     autoUpdater.checkForUpdatesAndNotify();
+      //   }
+      // })
 
       mainWindow.on("close", async (e) => {
         if (!user_restart_confirmed) {
