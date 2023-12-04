@@ -80,6 +80,53 @@ ipcMain.handle("exit-soda", () => {
 
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits
+ipcMain.on("orcid", (event, url) => {
+  const windowOptions = {
+    minWidth: 500,
+    minHeight: 300,
+    width: 900,
+    height: 800,
+    center: true,
+    show: true,
+    icon: __dirname + "/assets/menu-icon/soda_icon.png",
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+    },
+    // modal: true,
+    parent: mainWindow,
+    closable: true,
+  };
+  let pennsieveModal = new BrowserWindow(windowOptions);
+  // send to client so they can use this for the Pennsieve endpoint for integrating an ORCID
+  let accessCode;
+  pennsieveModal.on("close", function () {
+    // send event back to the renderer to re-run the prepublishing checks
+    // this will detect if the user added their ORCID iD
+    event.reply("orcid-reply", accessCode);
+    pennsieveModal = null;
+  });
+  pennsieveModal.loadURL(url);
+  pennsieveModal.once("ready-to-show", async () => {
+    pennsieveModal.show();
+  });
+  // track when the page navigates
+  pennsieveModal.webContents.on("did-navigate", () => {
+    // get the URL
+    url = pennsieveModal.webContents.getURL();
+    // check if the url includes the access code
+    if (url.includes("code=")) {
+      // get the access code from the url
+      let params = new URLSearchParams(url.slice(url.search(/\?/)));
+      accessCode = params.get("code");
+      // if so close the window
+      pennsieveModal.close();
+    }
+  });
+});
+
+// passing in the spreadsheet data to pass to a modal
+// that will have a jspreadsheet for user edits
 ipcMain.handle("spreadsheet", (event, spreadsheet) => {
   console.log("Spreadsheet invoked")
   const windowOptions = {
