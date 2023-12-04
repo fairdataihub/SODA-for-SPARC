@@ -128,6 +128,13 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
   });
 })
 
+ipcMain.on("restart_app", async () => {
+  user_restart_confirmed = true;
+  nodeStorage.setItem("announcements", true);
+  log.info("quitAndInstall");
+  autoUpdater.quitAndInstall();
+});
+
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
@@ -377,6 +384,21 @@ function makeSingleInstance() {
     });
   }
 }
+
+
+// Auto updater events -- MAIN Window may not be defined?
+autoUpdater.on("update-available", () => {
+  log.info("update_available");
+  mainWindow.webContents.send("update_available");
+});
+autoUpdater.on("update-downloaded", () => {
+  log.info("update_downloaded");
+  // set the launch announcements and auto update flags to true here to handle the case where a user closes the application once the update is downloaded
+  // via some means other than the notyf popup
+  nodeStorage.setItem("launch_announcements", true);
+  nodeStorage.setItem("auto_update_launch", true);
+  mainWindow.webContents.send("update_downloaded");
+});
 
 
 // setup main processes for the app ( starting spsash screen, starting the server, what to do on all windows closed, etc )
