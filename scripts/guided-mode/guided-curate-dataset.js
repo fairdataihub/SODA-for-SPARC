@@ -870,7 +870,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Skip the page where they confirm their log in and workspace because we should already have it
         sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
         guidedSkipPage("guided-pennsieve-intro-tab");
-      }
+        // Skip the subject structure import page since the user is starting from Pennsieve
+        guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");      }
 
       //Skip this page becausae we should not come back to it
       guidedSkipPage("guided-select-starting-point-tab");
@@ -1367,6 +1368,13 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
       }
+
+      if (userChoseToEnterSubsSamsPoolsManually) {
+        // Skip the page so the user can add subjects manually
+        guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
+      }
+
+      
     }
 
     if (pageBeingLeftID === "guided-primary-data-organization-tab") {
@@ -11580,6 +11588,8 @@ document
         <b>Note:</b> You will not be able to return to this step once you proceed.
       `
     );
+    // Skip the spreadsheet importation page so the user can't go back to it
+    guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
     $("#guided-next-button").click();
   });
 
