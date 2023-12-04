@@ -62,10 +62,27 @@ const guidedGetCurrentUserWorkSpace = () => {
   return workSpaceFromUI;
 };
 
+const lowercaseFirstLetter = (string) => {
+  if (!string) {
+    return string;
+  }
+  return string.charAt(0).toLowerCase() + string.slice(1);
+};
+
 const lottieAnimationManager = {
   animationData: {
     "guided-curation-preparation-intro-lottie": {
       animationData: questionList,
+      loop: true,
+      autoplay: true,
+    },
+    "guided-lottie-import-subjects-pools-samples-excel-file": {
+      animationData: dragDrop,
+      loop: true,
+      autoplay: true,
+    },
+    "guided-lottie-import-subjects-folder-structure": {
+      animationData: dragDrop,
       loop: true,
       autoplay: true,
     },
@@ -853,197 +870,12 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Skip the page where they confirm their log in and workspace because we should already have it
         sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
         guidedSkipPage("guided-pennsieve-intro-tab");
+        // Skip the subject structure import page since the user is starting from Pennsieve
+        guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
       }
 
       //Skip this page becausae we should not come back to it
       guidedSkipPage("guided-select-starting-point-tab");
-    }
-
-    if (pageBeingLeftID === "guided-prepare-dataset-structure-tab") {
-      const buttonDatasetContainsSubjects = document.getElementById(
-        "guided-button-dataset-contains-subjects"
-      );
-      const buttonDatasetDoesNotContainSubjects = document.getElementById(
-        "guided-button-dataset-does-not-contain-subjects"
-      );
-      if (
-        !buttonDatasetContainsSubjects.classList.contains("selected") &&
-        !buttonDatasetDoesNotContainSubjects.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate whether or not the dataset contains subjects",
-        });
-        throw errorArray;
-      }
-
-      const buttonContainsCode = document.getElementById("guided-button-dataset-contains-code");
-      const buttonDoesNotContainCode = document.getElementById(
-        "guided-button-dataset-does-not-contain-code"
-      );
-      if (
-        !buttonContainsCode.classList.contains("selected") &&
-        !buttonDoesNotContainCode.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate whether or not the dataset contains code",
-        });
-        throw errorArray;
-      }
-
-      if (sodaJSONObj["dataset-type"] === "selection-does-not-make-sense") {
-        errorArray.push({
-          type: "notyf",
-          message: "Selected subject and code answers do not lead to a viable curation path",
-        });
-        throw errorArray;
-      }
-
-      if (sodaJSONObj["dataset-type"] === "requires-manual-selection") {
-        const buttonDatasetTypeExperimental = document.getElementById(
-          "guided-button-dataset-type-experimental"
-        );
-        const buttonDatasetTypeComputational = document.getElementById(
-          "guided-button-dataset-type-computational"
-        );
-        if (
-          !buttonDatasetTypeExperimental.classList.contains("selected") &&
-          !buttonDatasetTypeComputational.classList.contains("selected")
-        ) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please indicate whether the dataset is experimental or computational",
-          });
-          throw errorArray;
-        }
-        if (buttonDatasetTypeExperimental.classList.contains("selected")) {
-          sodaJSONObj["dataset-type"] = "experimental";
-        }
-        if (buttonDatasetTypeComputational.classList.contains("selected")) {
-          sodaJSONObj["dataset-type"] = "computational";
-        }
-      }
-
-      // This shouldn't happen but just in case the dataset type is not computational or experimental, throw an error
-      // otherwise save the dataset type in a new key to be used if the user goes back to this page
-      if (
-        sodaJSONObj["dataset-type"] !== "experimental" &&
-        sodaJSONObj["dataset-type"] !== "computational"
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Selected subject and code answers do not lead to a viable curation path",
-        });
-        throw errorArray;
-      } else {
-        sodaJSONObj["saved-dataset-type"] = sodaJSONObj["dataset-type"];
-      }
-
-      const datasetHasSubjects = sodaJSONObj["dataset-contains-subjects"];
-      const datasetHasCode = sodaJSONObj["dataset-contains-code"];
-
-      if (datasetHasSubjects) {
-        guidedUnSkipPage("guided-subjects-folder-tab");
-        guidedUnSkipPage("guided-primary-data-organization-tab");
-        guidedUnSkipPage("guided-source-data-organization-tab");
-        guidedUnSkipPage("guided-derivative-data-organization-tab");
-        guidedUnSkipPage("guided-create-subjects-metadata-tab");
-        guidedUnSkipPage("guided-create-subjects-metadata-tab");
-      } else {
-        guidedSkipPage("guided-subjects-folder-tab");
-        guidedSkipPage("guided-primary-data-organization-tab");
-        guidedSkipPage("guided-source-data-organization-tab");
-        guidedSkipPage("guided-derivative-data-organization-tab");
-        guidedSkipPage("guided-create-subjects-metadata-tab");
-        guidedSkipPage("guided-create-samples-metadata-tab");
-
-        if (datasetHasCode) {
-          // If Protocol and Docs are empty, skip the Protocol and Docs tabs
-          // This is checked so if the user starts from Pennsieve and they have Protocol and Docs data, they can still modify it
-          // but the protocol and docs pages will be skipped if the user is started a new computational dataset without subjects
-          if (folderIsEmpty(datasetStructureJSONObj?.["folders"]?.["protocol"])) {
-            guidedSkipPage("guided-protocol-folder-tab");
-          } else {
-            guidedUnSkipPage("guided-protocol-folder-tab");
-          }
-
-          if (folderIsEmpty(datasetStructureJSONObj?.["folders"]?.["docs"])) {
-            guidedSkipPage("guided-docs-folder-tab");
-          } else {
-            guidedUnSkipPage("guided-docs-folder-tab");
-          }
-        }
-      }
-
-      // If the dataset does not contain code, skip the code pages
-      if (datasetHasCode) {
-        guidedUnSkipPage("guided-code-folder-tab");
-        guidedUnSkipPage("guided-add-code-metadata-tab");
-      } else {
-        guidedSkipPage("guided-code-folder-tab");
-        guidedSkipPage("guided-add-code-metadata-tab");
-      }
-    }
-
-    if (pageBeingLeftID === "guided-name-subtitle-tab") {
-      let datasetNameInput = document.getElementById("guided-dataset-name-input").value.trim();
-      let datasetSubtitleInput = document
-        .getElementById("guided-dataset-subtitle-input")
-        .value.trim();
-
-      //Throw error if no dataset name or subtitle were added
-      if (!datasetNameInput) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please enter a dataset name.",
-        });
-      }
-      if (check_forbidden_characters_ps(datasetNameInput)) {
-        errorArray.push({
-          type: "notyf",
-          message:
-            "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
-        });
-      }
-      if (!datasetSubtitleInput) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please enter a dataset subtitle.",
-        });
-      }
-      if (errorArray.length > 0) {
-        throw errorArray;
-      }
-      const currentDatasetName = sodaJSONObj["digital-metadata"]["name"];
-      if (currentDatasetName) {
-        // Update the progress file path name and banner image path if needed
-        if (datasetNameInput !== currentDatasetName) {
-          const currentProgressFileNames = getGuidedProgressFileNames();
-          if (currentProgressFileNames.includes(datasetNameInput)) {
-            errorArray.push({
-              type: "notyf",
-              message: `Unable to change dataset name to: ${datasetNameInput}. A dataset with that name already exists.`,
-            });
-            throw errorArray;
-          }
-          updateGuidedDatasetName(datasetNameInput);
-          sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
-        } else {
-          sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
-        }
-      } else {
-        const currentProgressFileNames = getGuidedProgressFileNames();
-        if (currentProgressFileNames.includes(datasetNameInput)) {
-          errorArray.push({
-            type: "notyf",
-            message: `A progress file already exists for the dataset: ${datasetNameInput}. Please enter a different dataset name.`,
-          });
-          throw errorArray;
-        }
-        sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
-        sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
-      }
     }
 
     if (pageBeingLeftID === "guided-ask-if-submission-is-sparc-funded-tab") {
@@ -1153,6 +985,394 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "";
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = [""];
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = "";
+      }
+    }
+
+    if (pageBeingLeftID === "guided-name-subtitle-tab") {
+      let datasetNameInput = document.getElementById("guided-dataset-name-input").value.trim();
+      let datasetSubtitleInput = document
+        .getElementById("guided-dataset-subtitle-input")
+        .value.trim();
+
+      //Throw error if no dataset name or subtitle were added
+      if (!datasetNameInput) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please enter a dataset name.",
+        });
+      }
+      if (check_forbidden_characters_ps(datasetNameInput)) {
+        errorArray.push({
+          type: "notyf",
+          message:
+            "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+        });
+      }
+      if (!datasetSubtitleInput) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please enter a dataset subtitle.",
+        });
+      }
+      if (errorArray.length > 0) {
+        throw errorArray;
+      }
+      const currentDatasetName = sodaJSONObj["digital-metadata"]["name"];
+      if (currentDatasetName) {
+        // Update the progress file path name and banner image path if needed
+        if (datasetNameInput !== currentDatasetName) {
+          const currentProgressFileNames = getGuidedProgressFileNames();
+          if (currentProgressFileNames.includes(datasetNameInput)) {
+            errorArray.push({
+              type: "notyf",
+              message: `Unable to change dataset name to: ${datasetNameInput}. A dataset with that name already exists.`,
+            });
+            throw errorArray;
+          }
+          updateGuidedDatasetName(datasetNameInput);
+          sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
+        } else {
+          sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
+        }
+      } else {
+        const currentProgressFileNames = getGuidedProgressFileNames();
+        if (currentProgressFileNames.includes(datasetNameInput)) {
+          errorArray.push({
+            type: "notyf",
+            message: `A progress file already exists for the dataset: ${datasetNameInput}. Please enter a different dataset name.`,
+          });
+          throw errorArray;
+        }
+        sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
+        sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
+      }
+    }
+
+    if (pageBeingLeftID === "guided-prepare-dataset-structure-tab") {
+      const buttonDatasetContainsSubjects = document.getElementById(
+        "guided-button-dataset-contains-subjects"
+      );
+      const buttonDatasetDoesNotContainSubjects = document.getElementById(
+        "guided-button-dataset-does-not-contain-subjects"
+      );
+      if (
+        !buttonDatasetContainsSubjects.classList.contains("selected") &&
+        !buttonDatasetDoesNotContainSubjects.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please indicate whether or not the dataset contains subjects",
+        });
+        throw errorArray;
+      }
+
+      const buttonContainsCode = document.getElementById("guided-button-dataset-contains-code");
+      const buttonDoesNotContainCode = document.getElementById(
+        "guided-button-dataset-does-not-contain-code"
+      );
+      if (
+        !buttonContainsCode.classList.contains("selected") &&
+        !buttonDoesNotContainCode.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please indicate whether or not the dataset contains code",
+        });
+        throw errorArray;
+      }
+
+      if (sodaJSONObj["dataset-type"] === "selection-does-not-make-sense") {
+        errorArray.push({
+          type: "notyf",
+          message: "Selected subject and code answers do not lead to a viable curation path",
+        });
+        throw errorArray;
+      }
+
+      if (sodaJSONObj["dataset-type"] === "requires-manual-selection") {
+        const buttonDatasetTypeExperimental = document.getElementById(
+          "guided-button-dataset-type-experimental"
+        );
+        const buttonDatasetTypeComputational = document.getElementById(
+          "guided-button-dataset-type-computational"
+        );
+        if (
+          !buttonDatasetTypeExperimental.classList.contains("selected") &&
+          !buttonDatasetTypeComputational.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate whether the dataset is experimental or computational",
+          });
+          throw errorArray;
+        }
+        if (buttonDatasetTypeExperimental.classList.contains("selected")) {
+          sodaJSONObj["dataset-type"] = "experimental";
+        }
+        if (buttonDatasetTypeComputational.classList.contains("selected")) {
+          sodaJSONObj["dataset-type"] = "computational";
+        }
+      }
+
+      // This shouldn't happen but just in case the dataset type is not computational or experimental, throw an error
+      // otherwise save the dataset type in a new key to be used if the user goes back to this page
+      if (
+        sodaJSONObj["dataset-type"] !== "experimental" &&
+        sodaJSONObj["dataset-type"] !== "computational"
+      ) {
+        errorArray.push({
+          type: "notyf",
+          message: "Selected subject and code answers do not lead to a viable curation path",
+        });
+        throw errorArray;
+      } else {
+        sodaJSONObj["saved-dataset-type"] = sodaJSONObj["dataset-type"];
+      }
+
+      const datasetHasSubjects = sodaJSONObj["dataset-contains-subjects"];
+      const datasetHasCode = sodaJSONObj["dataset-contains-code"];
+
+      if (datasetHasSubjects) {
+        guidedUnSkipPage("guided-subject-structure-spreadsheet-importation-tab");
+        guidedUnSkipPage("guided-subjects-addition-tab");
+        guidedUnSkipPage("guided-subjects-pooling-tab");
+        guidedUnSkipPage("guided-samples-addition-tab");
+
+        guidedUnSkipPage("guided-primary-data-organization-tab");
+        guidedUnSkipPage("guided-source-data-organization-tab");
+        guidedUnSkipPage("guided-derivative-data-organization-tab");
+        guidedUnSkipPage("guided-create-subjects-metadata-tab");
+        guidedUnSkipPage("guided-create-samples-metadata-tab");
+      } else {
+        guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
+        guidedSkipPage("guided-subjects-addition-tab");
+        guidedSkipPage("guided-subjects-pooling-tab");
+        guidedSkipPage("guided-samples-addition-tab");
+
+        guidedSkipPage("guided-primary-data-organization-tab");
+        guidedSkipPage("guided-source-data-organization-tab");
+        guidedSkipPage("guided-derivative-data-organization-tab");
+        guidedSkipPage("guided-create-subjects-metadata-tab");
+        guidedSkipPage("guided-create-samples-metadata-tab");
+
+        if (datasetHasCode) {
+          // If Protocol and Docs are empty, skip the Protocol and Docs tabs
+          // This is checked so if the user starts from Pennsieve and they have Protocol and Docs data, they can still modify it
+          // but the protocol and docs pages will be skipped if the user is started a new computational dataset without subjects
+          if (folderIsEmpty(datasetStructureJSONObj?.["folders"]?.["protocol"])) {
+            guidedSkipPage("guided-protocol-folder-tab");
+          } else {
+            guidedUnSkipPage("guided-protocol-folder-tab");
+          }
+
+          if (folderIsEmpty(datasetStructureJSONObj?.["folders"]?.["docs"])) {
+            guidedSkipPage("guided-docs-folder-tab");
+          } else {
+            guidedUnSkipPage("guided-docs-folder-tab");
+          }
+        }
+      }
+
+      // If the dataset does not contain code, skip the code pages
+      if (datasetHasCode) {
+        guidedUnSkipPage("guided-code-folder-tab");
+        guidedUnSkipPage("guided-add-code-metadata-tab");
+      } else {
+        guidedSkipPage("guided-code-folder-tab");
+        guidedSkipPage("guided-add-code-metadata-tab");
+      }
+    }
+
+    if (pageBeingLeftID === "guided-subjects-addition-tab") {
+      if (getExistingSubjectNames().length === 0) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please add at least one subject",
+        });
+        throw errorArray;
+      }
+    }
+
+    if (pageBeingLeftID === "guided-subjects-pooling-tab") {
+      const pools = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
+
+      const userSelectedDatasetHasPools = document
+        .getElementById("guided-button-pool-page-subjects-are-pooled")
+        .classList.contains("selected");
+      const userSelectedDatasetDoesNotHavePools = document
+        .getElementById("guided-button-pool-page-subjects-are-not-pooled")
+        .classList.contains("selected");
+
+      if (!userSelectedDatasetHasPools && !userSelectedDatasetDoesNotHavePools) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please indicate whether or not the dataset contains pools",
+        });
+        throw errorArray;
+      }
+
+      if (userSelectedDatasetHasPools) {
+        if (Object.keys(pools).length === 0) {
+          errorArray.push({
+            type: "notyf",
+            message:
+              "Please add at least one pool or indicate that your dataset does not contain pools.",
+          });
+          throw errorArray;
+        }
+        //delete empty pools
+        for (const pool of Object.keys(pools)) {
+          if (
+            Object.keys(
+              sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][pool]
+            ).length === 0
+          ) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Empty data pools are not allowed. Please add at least one subject to each pool or delete the empty pool.",
+            });
+            throw errorArray;
+          }
+        }
+        //Unskip the pool data pages
+        guidedUnSkipPage(`guided-primary-pools-organization-page`);
+        guidedUnSkipPage(`guided-source-pools-organization-page`);
+        guidedUnSkipPage(`guided-derivative-pools-organization-page`);
+      }
+      if (userSelectedDatasetDoesNotHavePools) {
+        if (Object.keys(pools).length > 0) {
+          document.getElementById("guided-button-pool-page-subjects-are-pooled").click();
+          errorArray.push({
+            type: "notyf",
+            message:
+              "Please indicate that your dataset contains pools or delete the pools you have added.",
+          });
+          throw errorArray;
+        }
+
+        //Skip the pool data organization pages
+        guidedSkipPage(`guided-primary-pools-organization-page`);
+        guidedSkipPage(`guided-source-pools-organization-page`);
+        guidedSkipPage(`guided-derivative-pools-organization-page`);
+      }
+    }
+
+    if (pageBeingLeftID === "guided-samples-addition-tab") {
+      const samples = getExistingSampleNames();
+      const userSelectedDatasetHasSamples = document
+        .getElementById("guided-button-samples-page-subjects-have-samples")
+        .classList.contains("selected");
+      const userSelectedDatasetDoesNotHaveSamples = document
+        .getElementById("guided-button-samples-page-subjects-do-not-have-samples")
+        .classList.contains("selected");
+
+      if (!userSelectedDatasetHasSamples && !userSelectedDatasetDoesNotHaveSamples) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please indicate whether or not the dataset contains samples",
+        });
+        throw errorArray;
+      }
+
+      if (userSelectedDatasetHasSamples) {
+        if (samples.length === 0) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add at least one sample to a subject",
+          });
+          throw errorArray;
+        }
+        //Unskip the sample data organization pages
+        guidedUnSkipPage(`guided-primary-samples-organization-page`);
+        guidedUnSkipPage(`guided-source-samples-organization-page`);
+        guidedUnSkipPage(`guided-derivative-samples-organization-page`);
+        //Unskip the samples metadata page
+        guidedUnSkipPage(`guided-create-samples-metadata-tab`);
+      }
+      if (userSelectedDatasetDoesNotHaveSamples) {
+        if (samples.length > 0) {
+          document.getElementById("guided-button-samples-page-subjects-have-samples").click();
+          errorArray.push({
+            type: "notyf",
+            message:
+              "Please indicate that your dataset contains samples or delete the samples you have added.",
+          });
+          throw errorArray;
+        }
+
+        //Skip the sample data organization pages
+        guidedSkipPage(`guided-primary-samples-organization-page`);
+        guidedSkipPage(`guided-source-samples-organization-page`);
+        guidedSkipPage(`guided-derivative-samples-organization-page`);
+        //Skip the samples metadata page
+        guidedSkipPage(`guided-create-samples-metadata-tab`);
+      }
+    }
+
+    if (pageBeingLeftID === "guided-subject-structure-spreadsheet-importation-tab") {
+      const userChoseToImportSubsSamsPoolsViaSpreadsheet = document
+        .getElementById("guided-button-import-subject-structure-from-spreadsheet")
+        .classList.contains("selected");
+      const userChoseToEnterSubsSamsPoolsManually = document
+        .getElementById("guided-button-add-subject-structure-manually")
+        .classList.contains("selected");
+
+      if (!userChoseToImportSubsSamsPoolsViaSpreadsheet && !userChoseToEnterSubsSamsPoolsManually) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please indicate how you would like to add your subject structure",
+        });
+        throw errorArray;
+      }
+
+      if (userChoseToImportSubsSamsPoolsViaSpreadsheet) {
+        const userSelectedDatasetHasPools = document
+          .getElementById("guided-button-spreadsheet-subjects-are-pooled")
+          .classList.contains("selected");
+        const userSelectedDatasetDoesNotHavePools = document
+          .getElementById("guided-button-spreadsheet-subjects-are-not-pooled")
+          .classList.contains("selected");
+        if (!userSelectedDatasetHasPools && !userSelectedDatasetDoesNotHavePools) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate whether or not the dataset contains pools",
+          });
+          throw errorArray;
+        }
+
+        const userSelectedSubjectsHaveSamples = document
+          .getElementById("guided-button-spreadsheet-subjects-have-samples")
+          .classList.contains("selected");
+        const userSelectedSubjectsDoNotHaveSamples = document
+          .getElementById("guided-button-spreadsheet-subjects-do-not-have-samples")
+          .classList.contains("selected");
+        if (!userSelectedSubjectsHaveSamples && !userSelectedSubjectsDoNotHaveSamples) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate whether or not the dataset contains samples",
+          });
+          throw errorArray;
+        }
+
+        const subjects = getExistingSubjectNames();
+        if (subjects.length === 0) {
+          errorArray.push({
+            type: "swal",
+            message: `
+              You indicated that you would like to import your subject structure from a spreadsheet, however,
+              you have not added any subjects.
+              <br/><br/>
+              Please fill out and import the spreadsheet or select that you would not like to add your subject structure via a spreadsheet.
+            `,
+          });
+          throw errorArray;
+        }
+      }
+
+      if (userChoseToEnterSubsSamsPoolsManually) {
+        // Skip the page so the user can add subjects manually
+        guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
       }
     }
 
@@ -4053,6 +4273,7 @@ const guidedSkipPage = (pageId) => {
   if (page.classList.contains("guided--page")) {
     // replace -tab with -capsule  in pageId string
     const pagesCapsule = pageId.replace("-tab", "-capsule");
+    console.log(pagesCapsule);
     document.getElementById(pagesCapsule).classList.add("hidden");
   }
   if (page.classList.contains("sub-page")) {
@@ -4072,15 +4293,21 @@ const guidedUnSkipPage = (pageId) => {
   // If the page no longer exists, return
   if (!page) {
     return;
+  } else {
+    console.log(pageId);
   }
 
   page.dataset.skipPage = "false";
 
   //Show the parent page or sub page capsule
   if (page.classList.contains("guided--page")) {
-    // replace -tab with -capsule  in pageId string
-    const pagesCapsule = pageId.replace("-tab", "-capsule");
-    document.getElementById(pagesCapsule).classList.remove("hidden");
+    const pagesCapsuleID = pageId.replace("-tab", "-capsule");
+    console.log(pagesCapsuleID);
+    const domElement = document.getElementById(pagesCapsuleID);
+    if (!domElement) {
+      console.log(`Could not find element with id ${pagesCapsuleID}`);
+    }
+    document.getElementById(pagesCapsuleID).classList.remove("hidden");
   }
   if (page.classList.contains("sub-page")) {
     const subPagesCapsule = `${pageId}-capsule`;
@@ -4549,6 +4776,9 @@ const resetGuidedRadioButtons = (parentPageID) => {
     const elementButtonControls = guidedRadioButton.getAttribute("data-next-element");
     if (elementButtonControls) {
       const elementToHide = document.getElementById(elementButtonControls);
+      if (!elementToHide) {
+        console.error(`Element with id ${elementButtonControls} does not exist`);
+      }
       elementToHide.classList.add("hidden");
     }
   }
@@ -4878,6 +5108,10 @@ const openPage = async (targetPageID) => {
       importProgressCircle.classList.add("hidden");
     }
 
+    if (targetPageID === "guided-subject-structure-spreadsheet-importation-tab") {
+      const savedSpreadSheetPath = sodaJSONObj["dataset-structure-spreadsheet-path"];
+      setUiBasedOnSavedDatasetStructurePath(savedSpreadSheetPath);
+    }
     if (targetPageID === "guided-prepare-dataset-structure-tab") {
       // If the user has already added subjects, disallow them from selecting no (they have to go to the subject
       // page to delete subjects but this would be a very strange case anyways)
@@ -5051,8 +5285,16 @@ const openPage = async (targetPageID) => {
       $("#guided-select-sparc-funding-consortium").trigger("change");
     }
 
-    if (targetPageID === "guided-subjects-folder-tab") {
-      openSubPageNavigation(targetPageID);
+    if (targetPageID === "guided-subjects-addition-tab") {
+      renderSubjectsTable();
+    }
+
+    if (targetPageID === "guided-subjects-pooling-tab") {
+      renderPoolsTable();
+    }
+
+    if (targetPageID === "guided-samples-addition-tab") {
+      renderSamplesTable();
     }
 
     if (targetPageID === "guided-primary-data-organization-tab") {
@@ -5802,7 +6044,7 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-samples-folder-tab") {
-      renderSamplesTables();
+      renderSamplesTable();
     }
 
     if (targetPageID === "guided-pennsieve-intro-tab") {
@@ -6674,17 +6916,184 @@ const openPage = async (targetPageID) => {
 
   guidedSetNavLoadingState(false);
 };
+const guidedOpenEntityEditSwal = async (entityName) => {
+  let preExistingEntities;
+  let entityNameSingular;
+  let entityPrefix;
+
+  if (entityName.startsWith("sub-")) {
+    preExistingEntities = getExistingSubjectNames();
+    entityNameSingular = "subject";
+    entityPrefix = "sub-";
+  }
+  if (entityName.startsWith("pool-")) {
+    preExistingEntities = getExistingPoolNames();
+    entityNameSingular = "pool";
+    entityPrefix = "pool-";
+  }
+  if (entityName.startsWith("sam-")) {
+    preExistingEntities = getExistingSampleNames();
+    entityNameSingular = "sample";
+    entityPrefix = "sam-";
+  }
+
+  let newEntityName;
+
+  const entityEditConfirmed = await Swal.fire({
+    title: `Editing ${entityNameSingular} ${entityName}`,
+    html: `
+      <p class="help-text text-center">
+        Enter the new name for the ${entityNameSingular} below and press edit.
+        <br />
+      </p>
+      <div class="space-between w-100 align-flex-center">
+        <p class="help-text m-0 mr-1">${entityPrefix}</p>
+        <input value="${entityName.replace(
+          entityPrefix,
+          ""
+        )}" id='input-new-entity-name' class='guided--input' type='text' placeholder='Enter new ${entityNameSingular} name and press edit'/>
+      </div>
+    `,
+    width: 800,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0,0.4)",
+    showConfirmButton: true,
+    showCancelButton: true,
+    showCloseButton: false,
+    confirmButtonText: `Edit`,
+    cancelButtonText: `Cancel`,
+    didOpen: () => {
+      // Add event listener to the input to enable the confirm button when the input is changed
+      document.getElementById("input-new-entity-name").addEventListener("keyup", () => {
+        Swal.resetValidationMessage();
+        Swal.enableButtons();
+      });
+    },
+    preConfirm: () => {
+      let newEntityInputValue = document.getElementById("input-new-entity-name").value;
+      if (newEntityInputValue.length === 0) {
+        Swal.showValidationMessage(`Please enter a new ${entityNameSingular} name`);
+        return;
+      }
+
+      newEntityName = `${entityPrefix}${newEntityInputValue}`;
+      if (newEntityName === entityName) {
+        console.log("No changes made");
+        Swal.close();
+      }
+      const entityNameIsValid = evaluateStringAgainstSdsRequirements(
+        newEntityName,
+        "string-adheres-to-identifier-conventions"
+      );
+      if (!entityNameIsValid) {
+        Swal.showValidationMessage(
+          `${entityNameSingular} names can not contain spaces or special characters`
+        );
+        return;
+      }
+      if (preExistingEntities.includes(newEntityName)) {
+        Swal.showValidationMessage(`A ${entityNameSingular} with that name already exists`);
+        return;
+      }
+    },
+  });
+
+  if (entityEditConfirmed.isConfirmed) {
+    if (entityName.startsWith("sub-")) {
+      sodaJSONObj.renameSubject(entityName, newEntityName);
+      renderSubjectsTable();
+    }
+    if (entityName.startsWith("pool-")) {
+      sodaJSONObj.renamePool(entityName, newEntityName);
+      renderPoolsTable();
+    }
+    if (entityName.startsWith("sam-")) {
+      sodaJSONObj.renameSample(entityName, newEntityName);
+      renderSamplesTable();
+    }
+  }
+};
 
 const renderSubjectsTable = () => {
   const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
   //Combine sample data from subjects in and out of pools
   const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+
+  // If there are no subjects, hide the subjects table
+  const subjectsTableContainer = document.getElementById("guided-section-subjects-table");
+  if (subjects.length === 0) {
+    subjectsTableContainer.classList.add("hidden");
+    console.log("Hiding container");
+    return;
+  } else {
+    console.log("Showing container");
+    // If there are subjects, show the subjects table
+    subjectsTableContainer.classList.remove("hidden");
+  }
+
+  // Map the subjects to HTML elements
   const subjectElementRows = subjects
     .map((subject) => {
       return generateSubjectRowElement(subject.subjectName);
     })
     .join("\n");
   document.getElementById("subject-specification-table-body").innerHTML = subjectElementRows;
+
+  // Add event listeners to the subject edit buttons
+  document.querySelectorAll(".guided-subject-edit-button").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const subjectName = button.dataset.subjectName;
+      await guidedOpenEntityEditSwal(subjectName);
+    });
+  });
+};
+
+const renderPoolsTable = () => {
+  const pools = sodaJSONObj.getPools();
+  const poolElementRows = Object.keys(pools)
+    .map((pool) => {
+      return generatePoolRowElement(pool);
+    })
+    .join("\n");
+  document.getElementById("pools-specification-table-body").innerHTML = poolElementRows;
+
+  // Add event listeners to the pool edit buttons
+  document.querySelectorAll(".guided-pool-edit-button").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const poolName = button.dataset.poolName;
+      await guidedOpenEntityEditSwal(poolName);
+    });
+  });
+
+  for (const poolName of Object.keys(pools)) {
+    const newPoolSubjectsSelectElement = document.querySelector(
+      `select[name="${poolName}-subjects-selection-dropdown"]`
+    );
+    //create a select2 dropdown for the pool subjects
+    $(newPoolSubjectsSelectElement).select2({
+      placeholder: "Select subjects",
+      tags: true,
+      width: "100%",
+      closeOnSelect: false,
+      createTag: function () {
+        // Disable tagging
+        return null;
+      },
+    });
+    //update the newPoolSubjectsElement with the subjects in the pool
+    updatePoolDropdown($(newPoolSubjectsSelectElement), poolName);
+    $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
+      updatePoolDropdown($(e.currentTarget), poolName);
+    });
+    $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
+      const subjectToRemove = e.params.data.id;
+      sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, poolName);
+    });
+    $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
+      const selectedSubject = e.params.data.id;
+      sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
+    });
+  }
 };
 
 const renderSamplesTable = () => {
@@ -6700,9 +7109,25 @@ const renderSamplesTable = () => {
     .join("\n");
 
   const subjectSampleAdditionTableContainer = document.getElementById(
-    "guided-div-add-samples-tables"
+    "guided-section-samples-tables"
   );
   subjectSampleAdditionTableContainer.innerHTML = subjectSampleAdditionTables;
+
+  document.querySelectorAll(".button-subject-add-samples").forEach((button) => {
+    button.addEventListener("click", async () => {
+      console.log("clicked");
+      const subjectName = button.dataset.samplesSubjectName;
+      await guidedOpenEntityAdditionSwal(subjectName);
+    });
+  });
+
+  // Add event listeners to the sample edit buttons
+  document.querySelectorAll(".guided-sample-edit-button").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const sampleName = button.dataset.sampleName;
+      await guidedOpenEntityEditSwal(sampleName);
+    });
+  });
 };
 
 const setActiveSubPage = (pageIdToActivate) => {
@@ -6710,57 +7135,11 @@ const setActiveSubPage = (pageIdToActivate) => {
 
   //create a switch statement for pageIdToActivate to load data from sodaJSONObj
   //depending on page being opened
-  if (pageIdToActivate === "guided-specify-subjects-page") {
-    document.getElementById("guided-section-dataset-subjects-text").classList.remove("hidden");
-    document.getElementById("guided-section-dataset-pools-text").classList.add("hidden");
-    document.getElementById("guided-section-dataset-samples-text").classList.add("hidden");
 
-    renderSubjectsTable();
-    //remove the add subject help text
-    document.getElementById("guided-add-subject-instructions").classList.add("hidden");
-  }
   if (pageIdToActivate === "guided-organize-subjects-into-pools-page") {
     document.getElementById("guided-section-dataset-subjects-text").classList.add("hidden");
     document.getElementById("guided-section-dataset-pools-text").classList.remove("hidden");
     document.getElementById("guided-section-dataset-samples-text").classList.add("hidden");
-
-    const pools = sodaJSONObj.getPools();
-    const poolElementRows = Object.keys(pools)
-      .map((pool) => {
-        return generatePoolRowElement(pool);
-      })
-      .join("\n");
-    document.getElementById("pools-specification-table-body").innerHTML = poolElementRows;
-
-    for (const poolName of Object.keys(pools)) {
-      const newPoolSubjectsSelectElement = document.querySelector(
-        `select[name="${poolName}-subjects-selection-dropdown"]`
-      );
-      //create a select2 dropdown for the pool subjects
-      $(newPoolSubjectsSelectElement).select2({
-        placeholder: "Select subjects",
-        tags: true,
-        width: "100%",
-        closeOnSelect: false,
-        createTag: function () {
-          // Disable tagging
-          return null;
-        },
-      });
-      //update the newPoolSubjectsElement with the subjects in the pool
-      updatePoolDropdown($(newPoolSubjectsSelectElement), poolName);
-      $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
-        updatePoolDropdown($(e.currentTarget), poolName);
-      });
-      $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
-        const subjectToRemove = e.params.data.id;
-        sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, poolName);
-      });
-      $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
-        const selectedSubject = e.params.data.id;
-        sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
-      });
-    }
   }
   if (pageIdToActivate === "guided-specify-samples-page") {
     document.getElementById("guided-section-dataset-subjects-text").classList.add("hidden");
@@ -7448,6 +7827,12 @@ const patchPreviousGuidedModeVersions = async () => {
   if (!sodaJSONObj["curation-mode"]) {
     sodaJSONObj["cuartion-mode"] = "guided";
   }
+
+  // Skip the subject spreadsheet importatin page if subjects have already been imported
+  if (getExistingSubjectNames().length > 0) {
+    guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
+  }
+
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
 };
@@ -7723,24 +8108,39 @@ const guidedWarnBeforeDeletingEntity = async (entityType, entityName) => {
 };
 
 const attachGuidedMethodsToSodaJSONObj = () => {
-  sodaJSONObj.addPool = function (poolName) {
+  sodaJSONObj.addPool = function (poolName, throwErrorIfPoolExists = true) {
     if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName]) {
-      throw new Error("Pool names must be unique.");
+      if (throwErrorIfPoolExists) {
+        throw new Error("Pool names must be unique.");
+      } else {
+        console.log(`${poolName} already exists}`);
+        return;
+      }
     }
 
     this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName] = {};
   };
-  sodaJSONObj.addSubject = function (subjectName) {
+  sodaJSONObj.addSubject = function (subjectName, throwErrorIfSubjectExists = true) {
     //check if subject with the same name already exists
     if (
       this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][subjectName] ||
       this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName]
     ) {
-      throw new Error("Subject names must be unique.");
+      if (throwErrorIfSubjectExists) {
+        throw new Error("Subject names must be unique.");
+      } else {
+        console.log(`Subject ${subjectName} already exists`);
+        return;
+      }
     }
     this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] = {};
   };
-  sodaJSONObj.addSampleToSubject = function (sampleName, subjectPoolName, subjectName) {
+  sodaJSONObj.addSampleToSubject = function (
+    sampleName,
+    subjectPoolName,
+    subjectName,
+    throwErrorIfSubjectAlreadyHasSample = true
+  ) {
     const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
     //Combine sample data from samples in and out of pools
     let samples = [...samplesInPools, ...samplesOutsidePools];
@@ -7748,9 +8148,13 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     //Check samples already added and throw an error if a sample with the sample name already exists.
     for (const sample of samples) {
       if (sample.sampleName === sampleName) {
-        throw new Error(
-          `Sample names must be unique. \n${sampleName} already exists in ${sample.subjectName}`
-        );
+        if (throwErrorIfSubjectAlreadyHasSample) {
+          throw new Error(
+            `Sample names must be unique. \n${sampleName} already exists in ${sample.subjectName}`
+          );
+        } else {
+          console.log(`${sampleName} already exists in ${sample.subjectName}`);
+        }
       }
     }
 
@@ -10020,25 +10424,18 @@ const renderSubjectSampleAdditionTable = (subject) => {
     <table
       class="ui celled striped table"
       style="margin-bottom: 10px; width: 800px"
-      data-samples-subject-name="${subject.subjectName}"
-      data-samples-subjects-pool-name="${subject.poolName ? subject.poolName : ""}"
     >
       <thead>
         <tr>
-          <th class="text-center" colspan="2" style="position: relative">
-            <div class="space-between w-100 hidden">
-              <span class="samples-subjects-pool">${subject.poolName ? subject.poolName : ""}</span>
-              <span class="samples-subject-name">${subject.subjectName}</span>
-            </div>
-          
-            Enter a unique sample ID for each sample taken from subject ${subject.subjectName}
+          <th class="text-center" colspan="2" style="position: relative">   
+            Samples taken from ${subject.subjectName}
             <button
               type="button"
-              class="btn btn-primary btn-sm"
+              class="btn btn-primary btn-sm button-subject-add-samples"
               style="position: absolute; top: 10px; right: 20px;"
-              onclick="addSampleSpecificationTableRow(this)"
+              data-samples-subject-name="${subject.subjectName}"
             >
-              Add sample
+              Add samples
             </button>
           </th>
         </tr>
@@ -10346,26 +10743,27 @@ const specifySubject = (event, subjectNameInput) => {
         subjectIdCellToAddNameTo[0].parentElement.nextElementSibling.children[0];
       trashCanElement.style.display = "block";
 
-      const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
-        subjectName,
-        "string-adheres-to-identifier-conventions"
-      );
-      if (!subjectNameIsValid) {
-        generateAlertMessage(subjectNameInput);
-        return;
+      if (subjectName.length > 0) {
+        const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+          subjectName,
+          "string-adheres-to-identifier-conventions"
+        );
+        if (!subjectNameIsValid) {
+          generateAlertMessage(subjectNameInput);
+          return;
+        }
+
+        removeAlertMessageIfExists(subjectNameInput);
+        if (subjectNameInput.attr("data-prev-name")) {
+          const subjectToRename = subjectNameInput.attr("data-prev-name");
+          sodaJSONObj.renameSubject(subjectToRename, subjectName);
+        } else {
+          //case where subject name is valid and not being renamed:
+          sodaJSONObj.addSubject(subjectName);
+        }
+        subjectIdCellToAddNameTo.html(subjectNameElement);
+        addSubjectSpecificationTableRow();
       }
-      //remove the add subject help text
-      document.getElementById("guided-add-subject-instructions").classList.add("hidden");
-      removeAlertMessageIfExists(subjectNameInput);
-      if (subjectNameInput.attr("data-prev-name")) {
-        const subjectToRename = subjectNameInput.attr("data-prev-name");
-        sodaJSONObj.renameSubject(subjectToRename, subjectName);
-      } else {
-        //case where subject name is valid and not being renamed:
-        sodaJSONObj.addSubject(subjectName);
-      }
-      subjectIdCellToAddNameTo.html(subjectNameElement);
-      addSubjectSpecificationTableRow();
     } catch (error) {
       notyf.open({
         duration: "3000",
@@ -10632,9 +11030,9 @@ const generateSubjectRowElement = (subjectName) => {
           <div class="space-between w-100">
             <span class="subject-id">${subjectName}</span>
             <i
-              class="far fa-edit"
+              class="far fa-edit guided-subject-edit-button"
               style="cursor: pointer; margin-top: .2rem"
-              onclick="openSubjectRenameInput($(this))"
+              data-subject-name="${subjectName}"
             >
             </i>
           </div>
@@ -10692,9 +11090,9 @@ const generatePoolRowElement = (poolName) => {
           <div class="space-between" style="width: 250px">
             <span class="pool-id">${poolName}</span>
             <i
-              class="far fa-edit"
+              class="far fa-edit guided-pool-edit-button"
+              data-pool-name="${poolName}"
               style="cursor: pointer"
-              onclick="openPoolRenameInput($(this))"
             >
             </i>
           </div>
@@ -10726,7 +11124,7 @@ const generateSampleRowElement = (sampleName) => {
       <div class="space-between w-100" style="align-items: center">
     <div class="space-between w-100">
       <span class="sample-id">${sampleName}</span>
-      <i class="far fa-edit jump-back" style="cursor: pointer;" onclick="openSampleRenameInput($(this))">
+      <i class="far fa-edit jump-back guided-sample-edit-button" data-sample-name="${sampleName}" style="cursor: pointer;" >
       </i>
     </div>
   </div>
@@ -10777,7 +11175,7 @@ const confirmEnter = (button) => {
     addSampleButton =
       button.parentElement.parentElement.parentElement.parentElement.previousElementSibling
         .children[0].children[0].children[1];
-    sampleTableContainers = document.getElementById("guided-div-add-samples-tables").children;
+    sampleTableContainers = document.getElementById("guided-section-subjects-tables").children;
     sampleTable = true;
     // addSampleSpecificationTableRow();
   }
@@ -10844,6 +11242,687 @@ const confirmOnBlur = (element) => {
   document.getElementById(element).addEventListener("blur", onBlurEvent);
 };
 
+const getExistingSubjectNames = () => {
+  // Get all subjects in pools and outside of pools
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  // Combine the two arrays
+  const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+  // Map each subject object to its name
+  return subjects.map((subject) => subject["subjectName"]);
+};
+
+const getSubjectsPool = (subjectName) => {
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  for (const subject of subjectsInPools) {
+    if (subject["subjectName"] === subjectName) {
+      return subject["poolName"];
+    }
+  }
+  return "";
+};
+
+const getSubjectsSamples = (subjectName) => {
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  for (const subject of subjectsInPools) {
+    if (subject["subjectName"] === subjectName) {
+      return subject["samples"];
+    }
+  }
+  for (const subject of subjectsOutsidePools) {
+    if (subject["subjectName"] === subjectName) {
+      return subject["samples"];
+    }
+  }
+  return [];
+};
+
+const getExistingPoolNames = () => {
+  return Object.keys(sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"]);
+};
+
+const getExistingSampleNames = () => {
+  // Get all samples in pools and outside of pools
+  const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
+  // Combine the two arrays
+  return [...samplesInPools, ...samplesOutsidePools].map((sample) => sample["sampleName"]);
+};
+
+const setUiBasedOnSavedDatasetStructurePath = (pathToSpreadsheet) => {
+  // If the dataset structure spreadsheet path is set, hide the button to create a new one
+  // And show the required elements for the user to view/import the spreadsheet
+  const stepOneElements = document.querySelectorAll(".step-before-spreadsheet-path-declared");
+  const stepTwoElements = document.querySelectorAll(".step-after-spreadsheet-path-declared");
+
+  if (!pathToSpreadsheet || !fs.existsSync(pathToSpreadsheet)) {
+    stepOneElements.forEach((element) => {
+      element.classList.remove("hidden");
+    });
+    stepTwoElements.forEach((element) => {
+      element.classList.add("hidden");
+    });
+  } else {
+    stepOneElements.forEach((element) => {
+      element.classList.add("hidden");
+    });
+    stepTwoElements.forEach((element) => {
+      element.classList.remove("hidden");
+    });
+  }
+};
+
+document
+  .getElementById("guided-button-choose-dataset-structure-spreadsheet-path")
+  .addEventListener("click", () => {
+    // Create a new spreadsheet based on the dataset structure
+    console.log("create dataset structure spreadsheet");
+    ipcRenderer.send("open-create-dataset-structure-spreadsheet-path-selection-dialog");
+  });
+ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (event, path) => {
+  try {
+    const workbook = new excel4node.Workbook();
+    const worksheet = workbook.addWorksheet("Subject structure");
+    const sodaGreenHeaderStyle = workbook.createStyle({
+      font: {
+        color: "#ffffff",
+        size: 12,
+        bold: true,
+      },
+      fill: {
+        type: "pattern",
+        patternType: "solid",
+        bgColor: "#13716d",
+        fgColor: "#13716d",
+      },
+    });
+
+    // Set the column widths
+    const datasetHasPools = document
+      .getElementById("guided-button-spreadsheet-subjects-are-pooled")
+      .classList.contains("selected");
+    const datasetHasSamples = document
+      .getElementById("guided-button-spreadsheet-subjects-have-samples")
+      .classList.contains("selected");
+
+    const headers = ["subject id"];
+
+    if (datasetHasPools) {
+      headers.push("pool id");
+    }
+    if (datasetHasSamples) {
+      headers.push("sample id");
+    }
+
+    for (i = 0; i < headers.length; i++) {
+      worksheet
+        .cell(1, i + 1)
+        .string(headers[i])
+        .style(sodaGreenHeaderStyle);
+      worksheet.column(i + 1).setWidth(30);
+    }
+
+    // write the spreadsheet to the selected
+    const filePath = path + "/dataset_structure.xlsx";
+    const buffer = await workbook.writeToBuffer();
+    await fs.promises.writeFile(filePath, buffer);
+    sodaJSONObj["dataset-structure-spreadsheet-path"] = filePath;
+    setUiBasedOnSavedDatasetStructurePath(filePath);
+    const openTemplateForUser = await swalConfirmAction(
+      "Template successfully generated",
+      `
+        Would you like to open the template now?
+      `,
+      "Yes",
+      "No"
+    );
+    if (openTemplateForUser) {
+      ipcRenderer.send("open-file-at-path", filePath);
+    }
+  } catch (error) {
+    notyf.error(`Error creating dataset structure spreadsheet: ${error}`);
+  }
+});
+
+document
+  .getElementById("guided-button-open-dataset-structure-spreadsheet")
+  .addEventListener("click", async () => {
+    const savedTemplatePath = sodaJSONObj["dataset-structure-spreadsheet-path"];
+    if (!savedTemplatePath) {
+      notyf.error("No dataset structure spreadsheet has been saved");
+      return;
+    }
+    ipcRenderer.send("open-file-at-path", savedTemplatePath);
+  });
+
+const validateDatasetStructureSpreadsheet = async (sheetData) => {
+  const invalidSubjectNames = [];
+  const invalidPoolNames = [];
+  const invalidSampleNames = [];
+  const duplicateSampleNames = [];
+  const validSampleNames = [];
+  const subjectsWithMismatchedPools = [];
+  const pooledSubjects = new Map();
+
+  if (sheetData.length === 0) {
+    await swalShowError(
+      "Empty subject spreadsheet structure",
+      "Please add data to the spreadsheet and try again"
+    );
+    return false;
+  }
+  // 1. Loop through the spreadsheet rows and find subs, pools, and sams that do not have valid names
+  for (const row of sheetData) {
+    const subjectName = lowercaseFirstLetter(row["subject id"]);
+    if (!subjectName) {
+      continue;
+    }
+    if (!subjectName.startsWith("sub-")) {
+      invalidSubjectNames.push(subjectName);
+      continue;
+    }
+    const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+      subjectName,
+      "string-adheres-to-identifier-conventions"
+    );
+    if (!subjectNameIsValid) {
+      invalidSubjectNames.push(subjectName);
+      continue;
+    }
+
+    const poolName = lowercaseFirstLetter(row["pool id"]);
+
+    if (poolName) {
+      if (!poolName.startsWith("pool-")) {
+        invalidPoolNames.push(poolName);
+        continue;
+      }
+
+      const poolNameIsValid = evaluateStringAgainstSdsRequirements(
+        poolName,
+        "string-adheres-to-identifier-conventions"
+      );
+      if (!poolNameIsValid) {
+        invalidPoolNames.push(poolName);
+        continue;
+      }
+
+      if (pooledSubjects.has(subjectName)) {
+        const subjectsPool = pooledSubjects.get(subjectName);
+        if (subjectsPool !== poolName) {
+          subjectsWithMismatchedPools.push(subjectName);
+        }
+      } else {
+        pooledSubjects.set(subjectName, poolName);
+      }
+    }
+
+    const sampleName = lowercaseFirstLetter(row["sample id"]);
+    console.log("SAMPLENAME", sampleName);
+    if (sampleName) {
+      if (!sampleName.startsWith("sam-")) {
+        console.log("invalid sample name", sampleName);
+        invalidSampleNames.push(sampleName);
+        continue;
+      }
+
+      const sampleNameIsValid = evaluateStringAgainstSdsRequirements(
+        sampleName,
+        "string-adheres-to-identifier-conventions"
+      );
+      if (!sampleNameIsValid) {
+        invalidSampleNames.push(sampleName);
+      } else if (validSampleNames.includes(sampleName)) {
+        duplicateSampleNames.push(sampleName);
+      } else {
+        validSampleNames.push(sampleName);
+      }
+    }
+  }
+
+  let spreadsheetIsValid = true;
+
+  if (invalidSubjectNames.length > 0) {
+    await swalFileListSingleAction(
+      invalidSubjectNames,
+      "Invalid subject names detected",
+      "Subject names must start with 'sub-' and may not contain spaces or special characters",
+      "Please fix the invalid subject names in the spreadsheet and try again"
+    );
+    spreadsheetIsValid = false;
+  }
+
+  if (invalidPoolNames.length > 0) {
+    await swalFileListSingleAction(
+      invalidPoolNames,
+      "Invalid pool names detected",
+      "Pool names must start with 'pool-' and may not contain spaces or special characters",
+      "Please fix the invalid pool names in the spreadsheet and try again"
+    );
+    spreadsheetIsValid = false;
+  }
+
+  if (invalidSampleNames.length > 0) {
+    await swalFileListSingleAction(
+      invalidSampleNames,
+      "Invalid sample names detected",
+      "Sample names must start with 'sam-' and may not contain spaces or special characters",
+      "Please fix the invalid sample names in the spreadsheet and try again"
+    );
+    spreadsheetIsValid = false;
+  }
+
+  if (duplicateSampleNames.length > 0) {
+    await swalFileListSingleAction(
+      duplicateSampleNames,
+      "Duplicate sample names detected",
+      "Sample names must be unique",
+      "Please fix the duplicate sample names in the spreadsheet and try again"
+    );
+    spreadsheetIsValid = false;
+  }
+
+  if (subjectsWithMismatchedPools.length > 0) {
+    await swalFileListSingleAction(
+      subjectsWithMismatchedPools,
+      "Subjects with mismatched pools detected",
+      "Subjects can only be in one pool",
+      "Please fix the subjects with mismatched pools in the spreadsheet and try again"
+    );
+    spreadsheetIsValid = false;
+  }
+
+  return spreadsheetIsValid;
+};
+
+// CLICK HANDLER THAT EXTRACTS THE DATASET STRUCTURE FROM A SPREADSHEET
+document
+  .getElementById("guided-button-import-dataset-structure-from-spreadsheet")
+  .addEventListener("click", async () => {
+    const savedTemplatePath = sodaJSONObj["dataset-structure-spreadsheet-path"];
+    if (!savedTemplatePath) {
+      notyf.error("No dataset structure spreadsheet has been saved");
+      return;
+    }
+    if (!fs.existsSync(savedTemplatePath)) {
+      notyf.error("The saved dataset structure spreadsheet no longer exists at the saved path");
+      return;
+    }
+    const xlsx = require("xlsx");
+    const spreadsheet = xlsx.readFile(savedTemplatePath);
+    const worksheet = spreadsheet.Sheets[spreadsheet.SheetNames[0]];
+    const sheetData = xlsx.utils.sheet_to_json(worksheet, { defval: "" });
+
+    // Validate the spreadsheet structure and return if it is invalid (Error swals are shown in the function)
+    const spreadsheetIsValid = await validateDatasetStructureSpreadsheet(sheetData);
+    if (!spreadsheetIsValid) {
+      return;
+    }
+
+    for (const row of sheetData) {
+      const subjectName = lowercaseFirstLetter(row["subject id"]);
+      const subjectsPool = lowercaseFirstLetter(row["pool id"]);
+      const sampleName = lowercaseFirstLetter(row["sample id"]);
+
+      // Check to see if the subject already exists
+      const subjectAlreadyExists = getExistingSubjectNames().includes(subjectName);
+      if (!subjectAlreadyExists) {
+        sodaJSONObj.addSubject(subjectName);
+        if (subjectsPool) {
+          const poolAlreadyExists = getExistingPoolNames().includes(subjectsPool);
+          if (!poolAlreadyExists) {
+            sodaJSONObj.addPool(subjectsPool);
+          }
+          sodaJSONObj.moveSubjectIntoPool(subjectName, subjectsPool);
+        }
+      }
+
+      if (sampleName) {
+        const sampleAlreadyExists = getExistingSampleNames().includes(sampleName);
+        if (!sampleAlreadyExists) {
+          sodaJSONObj.addSampleToSubject(sampleName, subjectsPool, subjectName);
+        }
+      }
+    }
+
+    await swalShowInfo(
+      "Subject structure successfully imported",
+      `
+        You will now be taken to the next step where you can review/edit the imported data.
+        <br />
+        <br />
+        <b>Note:</b> You will not be able to return to this step once you proceed.
+      `
+    );
+    // Skip the spreadsheet importation page so the user can't go back to it
+    guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
+    $("#guided-next-button").click();
+  });
+
+const guidedExtractEntityNamesFromFolders = async (entityType) => {
+  if (entityType === "subjects") {
+    ipcRenderer.send("open-subject-multi-folder-import-dialog");
+  }
+  if (entityType === "samples") {
+    ipcRenderer.send("open-multi-folder-dialog");
+  }
+};
+
+const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingSubjects) => {
+  // Check to see if any of the subject names are invalid
+  const validSubjecNames = [];
+  const invalidSubjectNames = [];
+  for (const subjectName of subjectNameArray) {
+    if (subjectName.length === 0) {
+      console.log("Skipping empty subject name");
+      continue;
+    }
+
+    const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+      subjectName,
+      "string-adheres-to-identifier-conventions"
+    );
+    if (subjectNameIsValid) {
+      validSubjecNames.push(subjectName);
+    } else {
+      invalidSubjectNames.push(subjectName);
+    }
+  }
+  if (invalidSubjectNames.length > 0) {
+    await swalFileListSingleAction(
+      invalidSubjectNames,
+      "Invalid subject names detected",
+      "Subject names can not contain spaces or special characters. The following subjects will not be imported into SODA:",
+      ""
+    );
+  }
+
+  // append sub- to each subject name if it doesn't already start with sub-
+  const formattedSubjectNameArray = validSubjecNames.map((subjectName) => {
+    if (!subjectName.startsWith("sub-")) {
+      subjectName = `sub-${subjectName}`;
+    }
+    return subjectName;
+  });
+  // Remove empty strings from the array
+  formattedSubjectNameArray.filter((subjectName) => subjectName.length > 0);
+
+  // Get an array of existing subjects to check for duplicates
+  const existingSubjects = getExistingSubjectNames();
+
+  // Array of the subjects that already exist in the dataset
+  const duplicateSubjects = formattedSubjectNameArray.filter((subjectName) =>
+    existingSubjects.includes(subjectName)
+  );
+
+  // Array of the subjects that do not already exist in the dataset
+  const newSubjects = formattedSubjectNameArray.filter(
+    (subjectName) => !existingSubjects.includes(subjectName)
+  );
+
+  if (showWarningForExistingSubjects && duplicateSubjects.length > 0) {
+    // Let the user know that duplicate subjects will not be added
+    await swalFileListSingleAction(
+      duplicateSubjects,
+      "Duplicate subjects detected",
+      "The following subjects have already been specified and will not be added:",
+      ""
+    );
+  }
+
+  if (newSubjects.length > 0) {
+    // Confirm that the user wants to add the subjects
+    const subjectAdditionConfirmed = await swalFileListDoubleAction(
+      newSubjects,
+      `${newSubjects.length} subjects will be added to the dataset`,
+      "Please review the list of subjects before proceeding:",
+      "yes, import the subjects",
+      "No, cancel the import",
+      "Would you like to import the subjects into SODA?"
+    );
+    if (subjectAdditionConfirmed) {
+      // Add the new subjects to the dataset
+      for (const subjectName of newSubjects) {
+        sodaJSONObj.addSubject(subjectName);
+      }
+
+      notyf.open({
+        duration: "3000",
+        type: "success",
+        message: `${newSubjects.length} subjects added`,
+      });
+
+      // Refresh the UI
+      renderSubjectsTable();
+    }
+  }
+};
+
+ipcRenderer.on("selected-subject-names-from-dialog", async (event, folders) => {
+  const subjectNames = folders.map((folder) => path.basename(folder));
+  guidedAddListOfSubjects(subjectNames, true);
+});
+
+ipcRenderer.on("selected-sample-names-from-dialog", async (event, folders) => {
+  const sampleNames = folders.map((folder) => path.basename(folder));
+  console.log(sampleNames);
+});
+
+const convertArrayToCommaSeparatedString = (array) => {
+  // Convert the array to a comma separated string with an "and" before the last element if there are more than 2 elements
+  console.log("convertArray", array);
+  if (array.length === 0) {
+    return "";
+  }
+  if (array.length === 1) {
+    return array[0];
+  }
+  if (array.length === 2) {
+    return `${array[0]} and ${array[1]}`;
+  }
+  if (array.length > 2) {
+    const lastElement = array.pop();
+    return `${array.join(", ")}, and ${lastElement}`;
+  }
+};
+
+const guidedOpenEntityAdditionSwal = async (entityName) => {
+  // Get a list of the existing entities so we can check for duplicates
+  // const subjects = getExistingSubjectNames();
+  let preExistingEntities;
+  let entityNameSingular;
+  let entityPrefix;
+
+  // case when adding subjects
+  if (entityName === "subjects") {
+    preExistingEntities = getExistingSubjectNames();
+    entityNameSingular = "subject";
+    entityPrefix = "sub-";
+  }
+
+  // case when adding samples to a subject
+  if (entityName.startsWith("sub-")) {
+    preExistingEntities = getExistingSampleNames();
+    entityNameSingular = "sample";
+    entityPrefix = "sam-";
+  }
+
+  // case when adding pools
+  if (entityName === "pools") {
+    preExistingEntities = getExistingPoolNames();
+    entityNameSingular = "pool";
+    entityPrefix = "pool-";
+  }
+
+  let newEntities = [];
+
+  const handleSwalEntityAddition = (entityName) => {
+    if (entityName.length < 1) {
+      throw new Error(`Please enter a ${entityNameSingular} name`);
+    }
+    // Check to see if the subjectName starts with sub- otherwise prepend sub- to it
+    if (!entityName.startsWith(entityPrefix)) {
+      entityName = `${entityPrefix}${entityName}`;
+    }
+    // Check to see if the subjectName already exists
+    if (preExistingEntities.includes(entityName) || newEntities.includes(entityName)) {
+      throw new Error(`${entityNameSingular} name has already been added`);
+    }
+
+    const entityNameIsValid = evaluateStringAgainstSdsRequirements(
+      entityName,
+      "string-adheres-to-identifier-conventions"
+    );
+
+    if (!entityNameIsValid) {
+      throw new Error(`${entityNameSingular} names may not contain spaces or special characters`);
+    }
+
+    // Hide any validation messages that may exist in the sweet alert
+    Swal.resetValidationMessage();
+
+    // Add the subject to the beginning of the subjects array
+    newEntities.unshift(entityName);
+    // Re-render the subjects in the Swal
+    renderEntitiesInSwal();
+  };
+
+  const deleteSwalEntity = (entityName) => {
+    // Remove subject from subjects array
+    const index = newEntities.indexOf(entityName);
+    if (index > -1) {
+      newEntities.splice(index, 1);
+    }
+    Swal.resetValidationMessage();
+    renderEntitiesInSwal();
+  };
+
+  const renderEntitiesInSwal = () => {
+    const entitiesList = document.getElementById("entities-list");
+    if (newEntities.length === 0) {
+      entitiesList.classList.add("hidden");
+    } else {
+      entitiesList.classList.remove("hidden");
+      entitiesList.innerHTML = newEntities
+        .map(
+          (entity) => `
+            <div class="swal-file-row px-2">
+              <span class="swal-file-text">${entity}</span>
+              <button class="delete-button btn btn-sm btn-outline-danger" data-entity-name="${entity}">Delete</button>
+            </div>
+          `
+        )
+        .join("");
+
+      entitiesList.querySelectorAll(".delete-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          deleteSwalEntity(button.dataset.entityName);
+        });
+      });
+    }
+  };
+  `${entityNameSingular} addition`;
+  const additionConfirmed = await Swal.fire({
+    title: `${
+      entityName.startsWith("sub-")
+        ? `Add samples taken from ${entityName}`
+        : `${entityNameSingular} addition`
+    }`,
+    html: `
+      <p class="help-text">
+        Enter a unique ${entityNameSingular} ID and press enter or the
+        'Add ${entityNameSingular}' button for each ${entityNameSingular} in your dataset.
+        <br />
+      </p>
+      <div class="space-between w-100 align-flex-center">
+        <p class="help-text m-0 mr-1">${entityPrefix}</p>
+        <input id='input-entity-addition' class='guided--input' type='text' name='guided-subject-id' placeholder='Enter ${entityNameSingular} ID and press enter'/>
+        <button
+          class="ui positive button soda-green-background ml-1"
+          style="width: 180px;"
+          id="guided-button-add-subject-in-swal"
+        >
+          Add ${entityNameSingular}
+        </button>
+      </div>
+      <div id="entities-list" class="swal-file-list my-3"></div>
+    `,
+    width: 850,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0,0.4)",
+    showConfirmButton: true,
+    showCancelButton: true,
+    showCloseButton: false,
+    confirmButtonText: `Confirm`,
+    cancelButtonText: `Cancel`,
+    didOpen: () => {
+      // Render the initial subjects in the Swal
+      renderEntitiesInSwal();
+      const swalEntityNameInput = document.getElementById("input-entity-addition");
+
+      // Add an event listener for the enter key so the user can press enter to add the subject
+      swalEntityNameInput.addEventListener("keyup", (event) => {
+        if (event.key === "Enter") {
+          try {
+            handleSwalEntityAddition(swalEntityNameInput.value);
+            swalEntityNameInput.value = "";
+          } catch (error) {
+            Swal.showValidationMessage(error);
+          }
+        }
+      });
+
+      const addEntityButton = document.getElementById("guided-button-add-subject-in-swal");
+      addEntityButton.addEventListener("click", () => {
+        try {
+          handleSwalEntityAddition(swalEntityNameInput.value);
+          swalEntityNameInput.value = "";
+        } catch (error) {
+          Swal.showValidationMessage(error);
+        }
+      });
+    },
+    preConfirm: () => {
+      if (newEntities.length === 0) {
+        Swal.showValidationMessage(`Please add at least one ${entityNameSingular} or click Cancel`);
+      }
+    },
+  });
+
+  // If the user confirmed the addition of the entities, add them to the sodaJSONObj
+  // and re-render the table
+  if (additionConfirmed.isConfirmed) {
+    // reverse newEntities array
+    newEntities.reverse();
+    if (entityName === "subjects") {
+      for (const subjectName of newEntities) {
+        sodaJSONObj.addSubject(subjectName);
+      }
+      renderSubjectsTable();
+    }
+    if (entityName === "pools") {
+      for (const poolName of newEntities) {
+        sodaJSONObj.addPool(poolName);
+      }
+      renderPoolsTable();
+    }
+    if (entityName.startsWith("sub-")) {
+      const subjectsPool = getSubjectsPool(entityName);
+      for (const sampleName of newEntities) {
+        sodaJSONObj.addSampleToSubject(sampleName, subjectsPool, entityName);
+      }
+      renderSamplesTable();
+    }
+  } else {
+    console.log("additionCancelled");
+  }
+};
+
+document.getElementById("guided-button-add-subjects").addEventListener("click", async () => {
+  guidedOpenEntityAdditionSwal("subjects");
+});
+document.getElementById("guided-button-add-pools").addEventListener("click", async () => {
+  guidedOpenEntityAdditionSwal("pools");
+});
+
 const addSubjectSpecificationTableRow = () => {
   const subjectSpecificationTableBody = document.getElementById("subject-specification-table-body");
   //check if subject specification table body has an input with the name guided-subject-id
@@ -10867,8 +11946,6 @@ const addSubjectSpecificationTableRow = () => {
     scrollToBottomOfGuidedBody();
     //CREATE EVENT LISTENER FOR ON FOCUS
     confirmOnBlur("guided--subject-input");
-
-    document.getElementById("guided-add-subject-instructions").classList.remove("hidden");
   }
 };
 const addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
@@ -11014,9 +12091,6 @@ const deleteSubject = async (subjectDeleteButton) => {
 
   //Rerender the subjects table
   renderSubjectsTable();
-
-  //remove the add subject help text
-  document.getElementById("guided-add-subject-instructions").classList.add("hidden");
 };
 
 const deletePool = (poolDeleteButton) => {
@@ -12149,7 +13223,42 @@ $("#guided-button-add-permission-team").on("click", function () {
   guidedAddTeamPermission(newTeamPermissionObj);
 });
 
+const arraysHaveSameElements = (arr1, arr2) => {
+  if (arr1.length != arr2.length) {
+    return false;
+  }
+  for (const elementValue of arr1) {
+    if (!arr2.includes(elementValue)) {
+      return false;
+    }
+  }
+  return true;
+};
+
+const showCorrectSpreadsheetInstructionSection = (datasetEntities) => {
+  if (arraysHaveSameElements(datasetEntities, ["subjects"])) {
+    // show the subjects only spreadsheet instructions
+    document.getElementById("import-instructions-subjects").classList.remove("hidden");
+  }
+  if (arraysHaveSameElements(datasetEntities, ["subjects", "pools"])) {
+    // show the subjects and pools spreadsheet instructions
+    document.getElementById("import-instructions-subjects-pools").classList.remove("hidden");
+  }
+  if (arraysHaveSameElements(datasetEntities, ["subjects", "samples"])) {
+    // show the subjects and samples spreadsheet instructions
+
+    document.getElementById("import-instructions-subjects-samples").classList.remove("hidden");
+  }
+  if (arraysHaveSameElements(datasetEntities, ["subjects", "pools", "samples"])) {
+    // show the subjects, pools, and samples spreadsheet instructions
+    document
+      .getElementById("import-instructions-subjects-pools-samples")
+      .classList.remove("hidden");
+  }
+};
+
 const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
+  console.log("controlledSectionID: ", controlledSectionID);
   const controlledElementContainer = document.getElementById(controlledSectionID);
   // Hide the children of the controlled element
   // (There should be logic below that shows the correct child)
@@ -12272,6 +13381,76 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
       document
         .getElementById("guided-sub-section-experimental-confirmation")
         .classList.remove("hidden");
+    }
+  }
+
+  if (controlledSectionID === "guided-section-spreadsheet-import") {
+    console.log("Starting controlla: ");
+    const datasetHasPools = document
+      .getElementById("guided-button-spreadsheet-subjects-are-pooled")
+      .classList.contains("selected");
+    const datasetDoesNotHavePools = document
+      .getElementById("guided-button-spreadsheet-subjects-are-not-pooled")
+      .classList.contains("selected");
+    if (!datasetHasPools && !datasetDoesNotHavePools) {
+      return;
+    }
+    console.log("Starting controlla1: ");
+
+    const datasetHasSamples = document
+      .getElementById("guided-button-spreadsheet-subjects-have-samples")
+      .classList.contains("selected");
+    const datasetDoesNotHaveSamples = document
+      .getElementById("guided-button-spreadsheet-subjects-do-not-have-samples")
+      .classList.contains("selected");
+    if (!datasetHasSamples && !datasetDoesNotHaveSamples) {
+      return;
+    }
+    console.log("Starting controlla2: ");
+
+    const datasetEntities = ["subjects"];
+    if (datasetHasPools) {
+      datasetEntities.push("pools");
+    }
+    if (datasetHasSamples) {
+      datasetEntities.push("samples");
+    }
+
+    showCorrectSpreadsheetInstructionSection(datasetEntities);
+
+    const textFormattedEntities = convertArrayToCommaSeparatedString(datasetEntities);
+
+    // If a spreadsheet has already been generated, notify the user that they will need to
+    // re-fill out the spreadsheet since the headers will be different.
+    if (sodaJSONObj["dataset-structure-spreadsheet-path"]) {
+      if (
+        sodaJSONObj["dataset-structure-entities"] &&
+        sodaJSONObj["dataset-structure-entities"] != textFormattedEntities
+      ) {
+        // Delete the spreadsheet path since it will need to be re-generated
+        delete sodaJSONObj["dataset-structure-spreadsheet-path"];
+        // Reset the UI to show that the dataset structure spreadsheet has not been generated
+        setUiBasedOnSavedDatasetStructurePath(false);
+      }
+    }
+    // Store the dataset entities in the sodaJSONObj to track if a new spreadsheet needs to be generated
+    // when the user changes the dataset structure
+    sodaJSONObj["dataset-structure-entities"] = textFormattedEntities;
+
+    const spansToInsertTextInto = document.querySelectorAll(
+      ".sub-pool-sample-structure-description-text"
+    );
+    spansToInsertTextInto.forEach((span) => {
+      span.innerHTML = textFormattedEntities;
+    });
+
+    // If the user has already added subjects but has not chosen to enter them manually
+    // (case for updating a dataset from Pennsieve or old progress files),
+    // Select the option for them
+    if (!sodaJSONObj["button-config"]["subject-addition-method"]) {
+      if (getExistingSubjectNames().length > 0) {
+        document.getElementById("guided-button-add-subject-structure-manually").click();
+      }
     }
   }
 };
@@ -14757,7 +15936,7 @@ const saveSubPageChanges = async (openSubPageID) => {
           errorArray.push({
             type: "error",
             message:
-              "Please add at least one pool or indicate that your dataset does not contain pools.",
+              "Please add at least one pool or go back and indicate that your dataset does not contain pools.",
           });
           throw errorArray;
         }

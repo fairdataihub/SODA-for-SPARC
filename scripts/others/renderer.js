@@ -246,7 +246,9 @@ let launchAnnouncement = nodeStorage.getItem("launch_announcements");
 if (autoUpdateLaunch == false || autoUpdateLaunch == null || autoUpdateLaunch == undefined) {
   // if launchAnnouncements is undefined/null then announcements havent been launched yet; set launch_announcements to true
   // later code will reference this flag to determine if announcements should be checked for
-  if (launchAnnouncement === undefined || launchAnnouncement === null) launchAnnouncement = true;
+  if (launchAnnouncement === undefined || launchAnnouncement === null) {
+    launchAnnouncement = true;
+  }
   // do not check for announcements on the next launch
   nodeStorage.setItem("launch_announcements", false); // NOTE: launch_announcements is only set to true during the auto update process ( see main.js )
 }
@@ -5531,6 +5533,56 @@ ipcRenderer.on("save-file-organization-dialog", (event) => {
   };
   dialog.showSaveDialog(null, options, (filename) => {
     event.sender.send("selected-saveorganizationfile", filename);
+  });
+});
+
+const handleFileImport = (containerID, filePath) => {
+  if (containerID === "guided-container-subjects-pools-samples-structure-import") {
+    // read the contents of the first worksheet in the excel file at the path using excelToJson
+    const excelFile = excelToJson({
+      sourceFile: filePath,
+    });
+    console.log(excelFile);
+    // log the columnn headers of the first sheet
+  }
+};
+const fileNamesWithExtensions = {
+  subjects_pools_samples_structure: ["xlsx"],
+};
+
+document.querySelectorAll(".file-import-container").forEach((fileImportContainer) => {
+  const fileImportContainerId = fileImportContainer.id;
+  const fileName = fileImportContainer.dataset.fileName;
+  fileImportContainer.addEventListener("dragover", (ev) => {
+    ev.preventDefault();
+    console.log(fileName);
+  });
+  fileImportContainer.addEventListener("drop", (ev) => {
+    ev.preventDefault();
+    const droppedFilePath = ev.dataTransfer.files[0].path;
+    const dropedFileName = path.basename(droppedFilePath).split(".")[0];
+    const droppedFileExtension = path.extname(droppedFilePath).slice(1);
+    // Throw an error if the dropped file is not the expected file
+    if (fileName !== dropedFileName) {
+      notyf.open({
+        duration: "4000",
+        type: "error",
+        message: `Please drop the ${fileName} file`,
+      });
+      return;
+    }
+    //Throw an error if the dropped file does not have an expected extension
+    if (!fileNamesWithExtensions[dropedFileName].includes(droppedFileExtension)) {
+      notyf.open({
+        duration: "4000",
+        type: "error",
+        message: `File extension must be ${fileNamesWithExtensions[dropedFileName].join(", ")}`,
+      });
+      return;
+    }
+
+    // File name and extension has been validated, not handle the file import
+    handleFileImport(fileImportContainerId, droppedFilePath);
   });
 });
 
