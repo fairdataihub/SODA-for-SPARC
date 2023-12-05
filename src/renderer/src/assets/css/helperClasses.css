@@ -1013,7 +1013,7 @@
 
 .swal2-html-container {
   max-height: 400px !important;
-  width: 32em;
+  max-width: 32em;
   display: flex !important;
   flex-direction: column !important;
 }
@@ -1098,6 +1098,11 @@ body.swal2-shown > [aria-hidden="true"] {
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
   height: 100%;
+}
+
+.swal2-popup {
+  min-width: 38rem !important;
+  min-height: 20rem;
 }
 
 .swal2-title p {
