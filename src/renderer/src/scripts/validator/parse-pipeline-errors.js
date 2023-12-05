@@ -15,7 +15,7 @@
 import { ValidationErrorParser } from "./validation-error-parser";
 
 import { ParsedErrorTranslator } from "./parsed-error-translator";
-import { VALIDATOR_CATEGORIES }  from "./validator-categories";
+import { VALIDATOR_CATEGORIES } from "./validator-categories";
 
 /* 
 Takes a validation error and parses the features of the error to determine what translation function to use on the error object
@@ -139,4 +139,4 @@ const MissingFieldNameToMetadataFileMap = {
 };
 
 // export the validationErrorPipeline function
-export {validationErrorPipeline as translatePipelineError}
+export { validationErrorPipeline as translatePipelineError };

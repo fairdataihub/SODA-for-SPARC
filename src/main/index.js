@@ -1,21 +1,21 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import os from 'os'
-import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { app, shell, BrowserWindow, ipcMain } from "electron";
+import os from "os";
+import { join } from "path";
+import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import { autoUpdater } from "electron-updater";
-import { trackEvent, trackKombuchaEvent } from "./analytics"
-import icon from '../../resources/icon.png?asset'
-import ElectronLog from "electron-log"
-import axios from "axios"
-import fp from "find-free-port"
-import { spawn, execFile, spawnSync } from "node:child_process"
-import { existsSync } from 'fs'
+import { trackEvent, trackKombuchaEvent } from "./analytics";
+import icon from "../../resources/icon.png?asset";
+import ElectronLog from "electron-log";
+import axios from "axios";
+import fp from "find-free-port";
+import { spawn, execFile, spawnSync } from "node:child_process";
+import { existsSync } from "fs";
 import { JSONStorage } from "node-localstorage";
-import log from 'electron-log/main';
-import "./manifest-workbook"
-import "./banner-image"
-import './node-storage'
-import "./main-process/native-ui/dialogs/open-file"
+import log from "electron-log/main";
+import "./manifest-workbook";
+import "./banner-image";
+import "./node-storage";
+import "./main-process/native-ui/dialogs/open-file";
 
 const sodaVersion = app.getVersion();
 // If the version includes "beta", the app will not check for updates
@@ -35,53 +35,50 @@ log.initialize({ preload: true });
 log.transports.console.level = false;
 log.transports.file.level = "debug";
 
-
-let nodeStorage = new JSONStorage(app.getPath("userData"))
+let nodeStorage = new JSONStorage(app.getPath("userData"));
 
 // TODO: Move to ipcMain handler so renderer processes can talk to the nodestorage
 var mainWindow = null;
 
-
 // import "./appUtils"
-console.log("Test up[date")
-
+console.log("Test up[date");
 
 // TODO: move to a separate file that handles all the ipcMain handlers
-ipcMain.handle('get-app-path', async (event, arg) => {
-  if (arg) return app.getPath(arg)
-  return app.getAppPath()
-})
+ipcMain.handle("get-app-path", async (event, arg) => {
+  if (arg) return app.getPath(arg);
+  return app.getAppPath();
+});
 
 ipcMain.handle("get-port", () => {
   log.info("Renderer requested port: " + selectedPort);
-  return selectedPort
+  return selectedPort;
 });
 
 ipcMain.handle("app-version", () => {
   return app.getVersion();
-})
+});
 
 ipcMain.handle("set-nodestorage-key", (key, value) => {
   return nodeStorage.setItem(key, value);
-})
+});
 
 ipcMain.handle("get-nodestorage-key", (key) => {
   return nodeStorage.getItem(key);
-})
+});
 
 ipcMain.handle("relaunch-soda", () => {
   app.relaunch();
   app.exit();
-})
+});
 
 ipcMain.handle("exit-soda", () => {
   app.exit();
-})
+});
 
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits
 ipcMain.handle("spreadsheet", (event, spreadsheet) => {
-  console.log("Spreadsheet invoked")
+  console.log("Spreadsheet invoked");
   const windowOptions = {
     minHeight: 450,
     width: 1120,
@@ -126,8 +123,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
       console.log(e);
     }
   });
-})
-
+});
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
@@ -145,8 +141,6 @@ const kombuchaServer = axios.create({
   timeout: 0,
 });
 let updatechecked = false;
-
-
 
 /**
  * Determine if the application is running from a packaged version or from a dev version.
@@ -166,7 +160,7 @@ const guessPackaged = () => {
   }
   if (process.platform === "win32") {
     if (existsSync(windowsPath)) {
-      ElectronLog.info("App is packaged returning true [ Windows ]")
+      ElectronLog.info("App is packaged returning true [ Windows ]");
 
       return true;
     } else {
@@ -231,13 +225,13 @@ const createPyProc = async () => {
     .then(([freePort]) => {
       let port = freePort;
       if (guessPackaged()) {
-        ElectronLog.info("Application is packaged")
+        ElectronLog.info("Application is packaged");
         // Store the stdout and stederr in a string to ElectronLog later
         let sessionServerOutput = "";
-        ElectronLog.info(`Starting server on port ${port}`)
+        ElectronLog.info(`Starting server on port ${port}`);
         pyflaskProcess = execFile(script, [port], (error, stdout, stderr) => {
           if (error) {
-            console.error(error)
+            console.error(error);
             ElectronLog.error(error);
             // console.error(stderr)
             throw error;
@@ -260,22 +254,22 @@ const createPyProc = async () => {
           ElectronLog.info(sessionServerOutput);
         });
       } else {
-        ElectronLog.info("Application is not packaged")
+        ElectronLog.info("Application is not packaged");
         // update code here
         pyflaskProcess = spawn("python", [script, port], {
           stdio: "ignore",
         });
 
-        pyflaskProcess.on('data', function () {
-          console.log('pyflaskProcess successfully started');
+        pyflaskProcess.on("data", function () {
+          console.log("pyflaskProcess successfully started");
         });
 
-        pyflaskProcess.on('error', function (err) {
-          console.error('Failed to start pyflaskProcess:', err);
+        pyflaskProcess.on("error", function (err) {
+          console.error("Failed to start pyflaskProcess:", err);
         });
 
-        pyflaskProcess.on('close', function (err) {
-          console.error('Failed to start pyflaskProcess:', err);
+        pyflaskProcess.on("close", function (err) {
+          console.error("Failed to start pyflaskProcess:", err);
         });
       }
       if (pyflaskProcess != null) {
@@ -297,12 +291,7 @@ const exitPyProc = async () => {
   // Windows does not properly shut off the python server process. This ensures it is killed.
   const killPythonProcess = () => {
     // kill pyproc with command line
-    const cmd = spawnSync("taskkill", [
-      "/pid",
-      pyflaskProcess.pid,
-      "/f",
-      "/t",
-    ]);
+    const cmd = spawnSync("taskkill", ["/pid", pyflaskProcess.pid, "/f", "/t"]);
   };
   console.log("Killing the process");
   await killAllPreviousProcesses();
@@ -322,7 +311,6 @@ const exitPyProc = async () => {
   }
   PORT = null;
 };
-
 
 // analytics function
 // Sends user information to Kombucha server
@@ -356,7 +344,6 @@ const sendUserAnalytics = () => {
   }
 };
 
-
 // single app instance code
 // Make this app a single instance app.
 const gotTheLock = app.requestSingleInstanceLock();
@@ -378,7 +365,6 @@ function makeSingleInstance() {
   }
 }
 
-
 // setup main processes for the app ( starting spsash screen, starting the server, what to do on all windows closed, etc )
 const initialize = () => {
   sendUserAnalytics();
@@ -389,7 +375,7 @@ const initialize = () => {
   // Some APIs can only be used after this event occurs.
   app.whenReady().then(async () => {
     // Set app user model id for windows
-    electronApp.setAppUserModelId('com.electron')
+    electronApp.setAppUserModelId("com.electron");
 
     const splashScreen = new BrowserWindow({
       width: 220,
@@ -398,30 +384,29 @@ const initialize = () => {
       icon: __dirname + "/assets/menu-icon/soda_icon.png",
       alwaysOnTop: true,
       transparent: true,
-    })
+    });
 
     // TODO: Add dev check for this path
     // HMR for renderer base on electron-vite cli.
     // Load the remote URL for development or the local html file for production.
-    if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-      splashScreen.loadURL(process.env['ELECTRON_RENDERER_URL'] + "/splash/splash-screen.html")
+    if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
+      splashScreen.loadURL(process.env["ELECTRON_RENDERER_URL"] + "/splash/splash-screen.html");
     } else {
-      splashScreen.loadFile(join(__dirname, '../renderer/public/splash/splash-screen.html'))
+      splashScreen.loadFile(join(__dirname, "../renderer/public/splash/splash-screen.html"));
     }
-
 
     splashScreen.once("ready-to-show", () => {
       splashScreen.show();
-    })
+    });
 
     // Default open or close DevTools by F12 in development
     // and ignore CommandOrControl + R in production.
     // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
-    app.on('browser-window-created', (_, window) => {
-      optimizer.watchWindowShortcuts(window)
-    })
+    app.on("browser-window-created", (_, window) => {
+      optimizer.watchWindowShortcuts(window);
+    });
 
-    createWindow()
+    createWindow();
 
     mainWindow.webContents.once("dom-ready", () => {
       setTimeout(function () {
@@ -442,19 +427,18 @@ const initialize = () => {
         }
         updatechecked = true;
       }, 6000);
-    })
+    });
 
-    // spawn the python server 
-    createPyProc()
+    // spawn the python server
+    createPyProc();
 
     // show the splash screen
 
-
-    app.on('activate', function () {
+    app.on("activate", function () {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
-      if (BrowserWindow.getAllWindows().length === 0) createWindow()
-    })
+      if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
 
     // track app launch at Kombucha analytics server
     // trackKombuchaEvent(
@@ -480,7 +464,6 @@ const initialize = () => {
     trackEvent("Success", "App Launched - OS", os.platform() + "-" + os.release());
     trackEvent("Success", "App Launched - SODA", app.getVersion());
 
-
     function createWindow() {
       // Create the browser window.
       mainWindow = new BrowserWindow({
@@ -489,25 +472,25 @@ const initialize = () => {
         show: false,
         nodeIntegration: true,
         autoHideMenuBar: true,
-        ...(process.platform === 'linux' ? { icon } : {}),
+        ...(process.platform === "linux" ? { icon } : {}),
         webPreferences: {
-          preload: join(__dirname, '../preload/index.js'),
+          preload: join(__dirname, "../preload/index.js"),
           sandbox: false,
           contextIsolation: true,
-          webSecurity: false // TODO: set to true and make the Python server a proxy to add CORS headers
-        }
-      })
+          webSecurity: false, // TODO: set to true and make the Python server a proxy to add CORS headers
+        },
+      });
 
-      mainWindow.webContents.on('new-window', (event, url) => {
-        event.preventDefault()
-        shell.openExternal(url)
-      })
+      mainWindow.webContents.on("new-window", (event, url) => {
+        event.preventDefault();
+        shell.openExternal(url);
+      });
 
       mainWindow.webContents.once("dom-ready", () => {
         if (updatechecked == false && !buildIsBeta) {
           autoUpdater.checkForUpdatesAndNotify();
         }
-      })
+      });
 
       mainWindow.on("close", async (e) => {
         if (!user_restart_confirmed) {
@@ -551,49 +534,33 @@ const initialize = () => {
       };
 
       mainWindow.webContents.setWindowOpenHandler((details) => {
-        shell.openExternal(details.url)
-        return { action: 'deny' }
-      })
+        shell.openExternal(details.url);
+        return { action: "deny" };
+      });
 
       // HMR for renderer base on electron-vite cli.
       // Load the remote URL for development or the local html file for production.
-      if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-        mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+      if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
+        mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"]);
       } else {
-        mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+        mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
       }
-
-
-
     }
-  })
+  });
 
   // Quit when all windows are closed, except on macOS. There, it's common
   // for applications and their menu bar to stay active until the user quits
   // explicitly with Cmd + Q.
-  app.on('window-all-closed', async () => {
-    await exitPyProc()
-    if (process.platform !== 'darwin') {
-      app.quit()
+  app.on("window-all-closed", async () => {
+    await exitPyProc();
+    if (process.platform !== "darwin") {
+      app.quit();
     }
-  })
+  });
 
   app.on("will-quit", () => {
     app.quit();
   });
-}
+};
 
-initialize()
-
-
-
-
-
-
-
-
-
-
-
-
-
+initialize();

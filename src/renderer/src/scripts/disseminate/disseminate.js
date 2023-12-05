@@ -8,8 +8,7 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 ******************************************************
 ******************************************************
 */
-import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
-
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
 
 // Helper functions
 const disseminatePublish = async (curationMode) => {

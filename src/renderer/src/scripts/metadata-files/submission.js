@@ -4,17 +4,15 @@ This file contains all of the functions related to the submission.xlsx file
 import Swal from "sweetalert2";
 import introJs from "intro.js";
 // import checkDiskSpace from "check-disk-space";
-import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
-import client from '../client'
+import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
+import client from "../client";
 import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
-import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
-import api from "../others/api/api"
-
-
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
+import api from "../others/api/api";
 
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
 // List of funding consortiums taken from the 2.1 submission file
@@ -510,7 +508,7 @@ window.validateSubmissionFileInputs = () => {
 
   // If all the above checks pass, then return true
   return true;
-}
+};
 
 // Set the funding consortium dropdown options / set up select picker
 document.getElementById("ffm-select-sparc-funding-consortium").innerHTML = `
@@ -605,20 +603,23 @@ $(document).ready(function () {
     }
   });
   // generate submission file
-  window.electron.ipcRenderer.on("selected-destination-generate-submission-locally", (event, dirpath) => {
-    if (dirpath.length > 0) {
-      document.getElementById("input-destination-generate-submission-locally").placeholder =
-        dirpath[0];
-      var destinationPath = window.path.join(dirpath[0], "submission.xlsx");
-      submissionDestinationPath = destinationPath;
-      $("#div-confirm-destination-submission-locally").css("display", "flex");
-      $($("#div-confirm-destination-submission-locally").children()[0]).css("display", "flex");
-    } else {
-      document.getElementById("input-destination-generate-submission-locally").placeholder =
-        "Browse here";
-      $("#div-confirm-destination-submission-locally").css("display", "none");
+  window.electron.ipcRenderer.on(
+    "selected-destination-generate-submission-locally",
+    (event, dirpath) => {
+      if (dirpath.length > 0) {
+        document.getElementById("input-destination-generate-submission-locally").placeholder =
+          dirpath[0];
+        var destinationPath = window.path.join(dirpath[0], "submission.xlsx");
+        submissionDestinationPath = destinationPath;
+        $("#div-confirm-destination-submission-locally").css("display", "flex");
+        $($("#div-confirm-destination-submission-locally").children()[0]).css("display", "flex");
+      } else {
+        document.getElementById("input-destination-generate-submission-locally").placeholder =
+          "Browse here";
+        $("#div-confirm-destination-submission-locally").css("display", "none");
+      }
     }
-  });
+  );
 
   $("#bf_dataset_load_submission").on("DOMSubtreeModified", function () {
     if (
@@ -871,7 +872,7 @@ window.generateSubmissionHelper = async (uploadBFBoolean) => {
     }
   }
 
-  let res; 
+  let res;
   try {
     res = await client.post(
       `/prepare_metadata/submission_file`,

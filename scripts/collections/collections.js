@@ -126,7 +126,11 @@ $(document).ready(function () {
       if (newTags.length > 0) {
         //upload tags that haven't been created on pennsieve (no ID)
         try {
-          let newTagsStatus = await api.uploadNewTags(window.defaultBfDataset, window.defaultBfDataset, newTags);
+          let newTagsStatus = await api.uploadNewTags(
+            window.defaultBfDataset,
+            window.defaultBfDataset,
+            newTags
+          );
           if (newTagsStatus === false) {
             success.push(false);
           } else {
@@ -234,7 +238,10 @@ $(document).ready(function () {
     }
 
     let collection_list = await api.getAllCollectionTags(window.defaultBfDataset);
-    let current_tags = await api.getCurrentCollectionTags(window.defaultBfDataset, window.defaultBfDataset);
+    let current_tags = await api.getCurrentCollectionTags(
+      window.defaultBfDataset,
+      window.defaultBfDataset
+    );
 
     let collectionNames = Object.keys(collection_list);
     let currentCollectionNames = Object.keys(current_tags);

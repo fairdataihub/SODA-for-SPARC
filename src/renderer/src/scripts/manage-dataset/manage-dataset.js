@@ -1,27 +1,25 @@
-import axios from "axios"
-import Swal from "sweetalert2"
-import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
-import client from '../client'
-import lottie from 'lottie-web'
-import {licenseLottie} from '../../assets/lotties/license-lottie'
-import kombuchaEnums from "../analytics/analytics-enums"
-import { updateDatasetList } from "../globals"
-import api from '../others/api/api'
+import axios from "axios";
+import Swal from "sweetalert2";
+import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
+import client from "../client";
+import lottie from "lottie-web";
+import { licenseLottie } from "../../assets/lotties/license-lottie";
+import kombuchaEnums from "../analytics/analytics-enums";
+import { updateDatasetList } from "../globals";
+import api from "../others/api/api";
 import datasetUploadSession from "../analytics/upload-session-tracker";
 import {
   createEventData,
   logSelectedUpdateExistingDatasetOptions,
-} from "../analytics/curation-analytics"
-
+} from "../analytics/curation-analytics";
 
 // event listeners for opening dataset or account selection dropdown
-import Accordion from 'accordion-js';
+import Accordion from "accordion-js";
 // TODO: Follow up that this is the way to import it
-import 'accordion-js/dist/accordion.min.css';
-
+import "accordion-js/dist/accordion.min.css";
 
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
 // TODO: Add logic so this doesnt apply to the organization fields
@@ -540,7 +538,11 @@ $("#button-add-permission-pi").click(async () => {
           }
         );
 
-        window.electron.ipcRenderer.invoke("set-nodestorage-item", "previously_selected_PI", selectedUser);
+        window.electron.ipcRenderer.invoke(
+          "set-nodestorage-item",
+          "previously_selected_PI",
+          selectedUser
+        );
 
         showCurrentPermission();
         changeDatasetRolePI(selectedBfDataset);
@@ -906,7 +908,6 @@ window.bfDatasetSubtitle.addEventListener("keyup", function () {
   window.countCharacters(window.bfDatasetSubtitle, bfDatasetSubtitleCharCount);
 });
 
-
 // Add subtitle //
 $("#button-add-subtitle").click(async () => {
   setTimeout(async function () {
@@ -1078,8 +1079,8 @@ const requiredSections = {
 };
 
 // open the first section of the accordion for first time user navigation to the section
-let dsAccordion = new Accordion("#dd-accordion")
-dsAccordion.open( 0);
+let dsAccordion = new Accordion("#dd-accordion");
+dsAccordion.open(0);
 
 // fires whenever a user selects a dataset, from any card
 const showCurrentDescription = async () => {
@@ -1656,8 +1657,12 @@ const showDatasetDescription = async () => {
 };
 
 window.getBase64 = async (url) => {
-  console.log("THe url passed down will be: ", url)
-  return await window.electron.ipcRenderer.invoke("get-string-representation-of-buffer", url, "binary")
+  console.log("THe url passed down will be: ", url);
+  return await window.electron.ipcRenderer.invoke(
+    "get-string-representation-of-buffer",
+    url,
+    "binary"
+  );
 };
 
 // function for importing a banner image if one already exists
@@ -1667,7 +1672,7 @@ $("#edit_banner_image_button").click(async () => {
     //Do nothing... regular import
   } else {
     let img_src = $("#current-banner-img").attr("src");
-    console.log(img_src)
+    console.log(img_src);
     img_src = "file://" + img_src;
     let img_base64 = await window.getBase64(img_src); // encode image to base64
 
@@ -2679,7 +2684,9 @@ const handleSelectedSubmitDirectory = async (filepath) => {
 };
 
 $("#selected-local-dataset-submit").click(async () => {
-  let datasetDirectory = await window.electron.ipcRenderer.invoke("open-file-dialog-submit-dataset");
+  let datasetDirectory = await window.electron.ipcRenderer.invoke(
+    "open-file-dialog-submit-dataset"
+  );
   handleSelectedSubmitDirectory(datasetDirectory);
 });
 
@@ -2805,10 +2812,16 @@ $("#button-submit-dataset").click(async () => {
           } else if (totalFileSize < window.displaySIze * window.displaySIze) {
             totalSizePrint = (totalFileSize / window.displaySIze).toFixed(2) + " KB";
           } else if (totalFileSize < window.displaySIze * window.displaySIze * window.displaySIze) {
-            totalSizePrint = (totalFileSize / window.displaySIze / window.displaySIze).toFixed(2) + " MB";
+            totalSizePrint =
+              (totalFileSize / window.displaySIze / window.displaySIze).toFixed(2) + " MB";
           } else {
             totalSizePrint =
-              (totalFileSize / window.displaySIze / window.displaySIze / window.displaySIze).toFixed(2) + " GB";
+              (
+                totalFileSize /
+                window.displaySIze /
+                window.displaySIze /
+                window.displaySIze
+              ).toFixed(2) + " GB";
           }
 
           $("#para-please-wait-manage-dataset").html("");
@@ -2856,7 +2869,8 @@ $("#button-submit-dataset").click(async () => {
         window.electron.ipcRenderer.send(
           "track-event",
           "Error",
-          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+            ` - Progress track`,
           window.defaultBfDatasetId
         );
 
@@ -2970,7 +2984,8 @@ $("#button-submit-dataset").click(async () => {
         window.electron.ipcRenderer.send(
           "track-event",
           "Success",
-          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+            ` - Progress track`,
           window.defaultBfDatasetId
         );
       }

@@ -419,7 +419,7 @@ const ValidationErrorParser = {
   },
 };
 
-export {ValidationErrorParser};
+export { ValidationErrorParser };
 
 //"None of
 // [{'contributor_name': 'Jeff, Salisbury',

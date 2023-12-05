@@ -14,5 +14,4 @@ const createEventDataPrepareMetadata = (destination, value) => {
   };
 };
 
-export default createEventDataPrepareMetadata
-
+export default createEventDataPrepareMetadata;

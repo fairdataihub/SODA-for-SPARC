@@ -6,7 +6,6 @@
  */
 const fixPath = () => {
   if (process.platform == "darwin") {
-
     process.env.PATH = [
       "./node_modules/.bin",
       "/.nodebrew/current/bin",

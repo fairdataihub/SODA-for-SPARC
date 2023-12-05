@@ -1,16 +1,15 @@
 import Swal from "sweetalert2";
 // import checkDiskSpace from "check-disk-space";
-import { updateDatasetList } from "../globals"
-import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
-import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
+import { updateDatasetList } from "../globals";
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
+import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 import { successCheck } from "../../assets/lotties/lotties";
-import client from "../client"
-import 'jstree'
+import client from "../client";
+import "jstree";
 
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
-
 
 var metadataFile = "";
 window.jstreePreview = document.getElementById("div-dataset-tree-preview");
@@ -266,7 +265,7 @@ const checkAvailableSpace = () => {
     .getElementById("input-destination-generate-dataset-locally")
     .getAttribute("placeholder");
 
-    // TODO: Place into mainjs
+  // TODO: Place into mainjs
   // checkDiskSpace(location).then(async (diskSpace) => {
   //   log.info(`Checking available disk space for ${location}`);
   //   let freeMemory = diskSpace.free; //returns in bytes
@@ -726,7 +725,9 @@ const remove_missing_files = () => {
   if (missing_metadata_files.length > 0) {
     for (let item_path in missing_metadata_files) {
       for (let item in window.sodaJSONObj["metadata-files"]) {
-        if (window.sodaJSONObj["metadata-files"][item]["path"] == missing_metadata_files[item_path]) {
+        if (
+          window.sodaJSONObj["metadata-files"][item]["path"] == missing_metadata_files[item_path]
+        ) {
           delete window.sodaJSONObj["metadata-files"][item];
         }
       }
@@ -800,8 +801,6 @@ $(document).ready(async function () {
   $("#guided_bf_list_users_and_teams").selectpicker();
   $("#guided_bf_list_users_and_teams").selectpicker("refresh");
 });
-
-
 
 $("#select-permission-list-2").change((e) => {
   // updateDatasetList(window.defaultBfDataset);
@@ -971,7 +970,7 @@ window.create_child_node = (
       }
     }
     if ("files" in oldFormatNode) {
-      let nodeType = ""
+      let nodeType = "";
       if (oldFormatNode["files"] != undefined) {
         for (var [key, value] of Object.entries(oldFormatNode["files"])) {
           if (key !== undefined || value !== undefined) {
@@ -1770,7 +1769,7 @@ window.ffOpenManifestEditSwal = async (highlevelFolderName) => {
           columnToKey: {
             "*": "{{columnHeader}}",
           },
-        })
+        });
 
         let sortedJSON = window.processManifestInfo(savedHeaders, savedData);
         jsonManifest = JSON.stringify(sortedJSON);
@@ -1789,22 +1788,23 @@ window.ffOpenManifestEditSwal = async (highlevelFolderName) => {
           if (fileNameSplit[0] === "") {
             //not in a subfolder
             cleanedFileName = fileNameSplit[1];
-            window.sodaCopy["dataset-structure"]["folders"][highlevelFolderName]["files"][cleanedFileName][
-              "description"
-            ] = description;
+            window.sodaCopy["dataset-structure"]["folders"][highlevelFolderName]["files"][
+              cleanedFileName
+            ]["description"] = description;
             sodaJSONObj["dataset-structure"]["folders"][highlevelFolderName]["files"][
               cleanedFileName
             ]["description"];
-            window.sodaCopy["dataset-structure"]["folders"][highlevelFolderName]["files"][cleanedFileName][
-              "additional-metadata"
-            ] = additionalMetadata;
+            window.sodaCopy["dataset-structure"]["folders"][highlevelFolderName]["files"][
+              cleanedFileName
+            ]["additional-metadata"] = additionalMetadata;
             sodaJSONObj["dataset-structure"]["folders"][highlevelFolderName]["files"][
               cleanedFileName
             ]["additional-metadata"] = additionalMetadata;
           } else {
             // is in a subfolder so search for it and update metadata
             // need to add description and additional metadata to original sodaJSONObj
-            let folderDepthCopy = window.sodaCopy["dataset-structure"]["folders"][highlevelFolderName];
+            let folderDepthCopy =
+              window.sodaCopy["dataset-structure"]["folders"][highlevelFolderName];
             let folderDepthReal = sodaJSONObj["dataset-structure"]["folders"][highlevelFolderName];
             for (let j = 0; j < fileNameSplit.length; j++) {
               if (j === fileNameSplit.length - 1) {
@@ -1922,7 +1922,7 @@ const ffmCreateManifest = async (sodaJson) => {
             columnToKey: {
               "*": "{{columnHeader}}",
             },
-          })
+          });
         }
         // If file doesn't exist then that means it didn't get imported properly
 

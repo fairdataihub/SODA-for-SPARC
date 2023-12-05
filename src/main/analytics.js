@@ -1,9 +1,9 @@
-import { app } from 'electron'
-import {v4 as uuid} from "uuid"
-import { JSONStorage } from "node-localstorage"
-import fs from "fs"
-import path from "path"
-import axios from "axios"
+import { app } from "electron";
+import { v4 as uuid } from "uuid";
+import { JSONStorage } from "node-localstorage";
+import fs from "fs";
+import path from "path";
+import axios from "axios";
 
 const nodeStorage = new JSONStorage(app.getPath("userData"));
 const configFolderPath = path.join(app.getPath("home"), ".soda-config"); // more config files will be placed here

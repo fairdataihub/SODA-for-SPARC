@@ -1,15 +1,14 @@
 import https from "https";
 import Swal from "sweetalert2";
-import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
 import introJs from "intro.js";
-import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
+import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
-import client from '../client'
-
+import client from "../client";
 
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
 // event listeners for open dropdown prompt
@@ -422,7 +421,7 @@ const addNewIDToTable = (newID, secondaryID, type) => {
       keyword +
       "_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
   } else if (type === "samples") {
-    console.log("In samples ttypes")
+    console.log("In samples ttypes");
     var row = (table.insertRow(rowIndex).outerHTML =
       "<tr id='row-current-" +
       keyword +
@@ -891,7 +890,10 @@ const addSampleMetadataEntriesIntoJSON = (curationMode) => {
     let subjectID = document.getElementById("guided-bootbox-subject-id-samples").value;
     let sampleID = document.getElementById("guided-bootbox-sample-id").value;
     for (let i = 1; i < window.samplesTableData.length; i++) {
-      if (window.samplesTableData[i][0] === subjectID && window.samplesTableData[i][1] === sampleID) {
+      if (
+        window.samplesTableData[i][0] === subjectID &&
+        window.samplesTableData[i][1] === sampleID
+      ) {
         window.samplesTableData[i] = valuesArr;
         break;
       }
@@ -1107,8 +1109,8 @@ window.populateForms = (subjectID, type, curationMode) => {
     fieldArr = $(window.guidedSubjectsFormDiv).children().find(".subjects-form-entry");
   }
 
-  console.log(fieldArr)
-  console.log(window.subjectsTableData)
+  console.log(fieldArr);
+  console.log(window.subjectsTableData);
 
   if (window.subjectsTableData.length > 1) {
     for (var i = 1; i < window.subjectsTableData.length; i++) {
@@ -1119,7 +1121,7 @@ window.populateForms = (subjectID, type, curationMode) => {
     }
   }
 
-  console.log(infoJson)
+  console.log(infoJson);
 
   if (subjectID !== "clear" && subjectID.trim() !== "") {
     if (curationMode === "guided") {
@@ -1218,7 +1220,10 @@ window.populateFormsSamples = (subjectID, sampleID, type, curationMode) => {
   }
   if (window.samplesTableData.length > 1) {
     for (var i = 1; i < window.samplesTableData.length; i++) {
-      if (window.samplesTableData[i][0] === subjectID && window.samplesTableData[i][1] === sampleID) {
+      if (
+        window.samplesTableData[i][0] === subjectID &&
+        window.samplesTableData[i][1] === sampleID
+      ) {
         infoJson = window.samplesTableData[i];
         break;
       }
@@ -1937,7 +1942,11 @@ const loadSamplesDataToTable = () => {
   // delete table rows except headers
   $("#table-samples tr:gt(0)").remove();
   for (var i = 1; i < window.samplesTableData.length; i++) {
-    var message = addNewIDToTable(window.samplesTableData[i][1], window.samplesTableData[i][0], "samples");
+    var message = addNewIDToTable(
+      window.samplesTableData[i][1],
+      window.samplesTableData[i][0],
+      "samples"
+    );
   }
   if (message !== "") {
     Swal.fire({
@@ -2324,26 +2333,32 @@ $(document).ready(function () {
   });
 
   // generate subjects file
-  window.electron.ipcRenderer.on("selected-destination-generate-subjects-locally", (event, dirpath) => {
-    if (dirpath.length > 0) {
-      document.getElementById("input-destination-generate-subjects-locally").placeholder =
-        dirpath[0];
-      var destinationPath = window.path.join(dirpath[0], "subjects.xlsx");
-      window.subjectsDestinationPath = destinationPath;
-      $("#div-confirm-destination-subjects-locally").css("display", "flex");
+  window.electron.ipcRenderer.on(
+    "selected-destination-generate-subjects-locally",
+    (event, dirpath) => {
+      if (dirpath.length > 0) {
+        document.getElementById("input-destination-generate-subjects-locally").placeholder =
+          dirpath[0];
+        var destinationPath = window.path.join(dirpath[0], "subjects.xlsx");
+        window.subjectsDestinationPath = destinationPath;
+        $("#div-confirm-destination-subjects-locally").css("display", "flex");
+      }
     }
-  });
+  );
 
   // generate samples file
-  window.electron.ipcRenderer.on("selected-destination-generate-samples-locally", (event, dirpath) => {
-    if (dirpath.length > 0) {
-      document.getElementById("input-destination-generate-samples-locally").placeholder =
-        dirpath[0];
-      var destinationPath = window.path.join(dirpath[0], "samples.xlsx");
-      window.samplesDestinationPath = destinationPath;
-      $("#div-confirm-destination-samples-locally").css("display", "flex");
+  window.electron.ipcRenderer.on(
+    "selected-destination-generate-samples-locally",
+    (event, dirpath) => {
+      if (dirpath.length > 0) {
+        document.getElementById("input-destination-generate-samples-locally").placeholder =
+          dirpath[0];
+        var destinationPath = window.path.join(dirpath[0], "samples.xlsx");
+        window.samplesDestinationPath = destinationPath;
+        $("#div-confirm-destination-samples-locally").css("display", "flex");
+      }
     }
-  });
+  );
 
   $("#bf_dataset_load_subjects").on("DOMSubtreeModified", function () {
     if (
@@ -2791,7 +2806,10 @@ const addAdditionalLink = async () => {
       if ($("#DD-other-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description.`);
       }
-      var duplicate = window.checkLinkDuplicate(link, document.getElementById("other-link-table-dd"));
+      var duplicate = window.checkLinkDuplicate(
+        link,
+        document.getElementById("other-link-table-dd")
+      );
       if (duplicate) {
         Swal.showValidationMessage(
           `Duplicate ${protocolLink}. The ${protocolLink} you entered is already added.`

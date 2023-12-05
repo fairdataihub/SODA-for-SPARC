@@ -433,4 +433,4 @@ const ParsedErrorTranslator = {
   },
 };
 
-export {ParsedErrorTranslator};
+export { ParsedErrorTranslator };

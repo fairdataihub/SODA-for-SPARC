@@ -1,8 +1,7 @@
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
-console.log("Going for it")
-
+console.log("Going for it");
 
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 document.body.addEventListener("click", (event) => {
@@ -191,9 +190,9 @@ const handleSectionTrigger = async (event) => {
     resetLazyLoading();
     freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
     freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-    document.querySelectorAll(".shared-folder-structure-element").forEach( folderElement => {
-      document.querySelector("#guided-folder-structure-container").appendChild(folderElement)
-    })
+    document.querySelectorAll(".shared-folder-structure-element").forEach((folderElement) => {
+      document.querySelector("#guided-folder-structure-container").appendChild(folderElement);
+    });
 
     guidedUnLockSideBar();
   }
@@ -248,7 +247,7 @@ const handleSectionTrigger = async (event) => {
 };
 
 function showMainContent() {
-  console.log(document.querySelector(".js-nav").classList)
+  console.log(document.querySelector(".js-nav").classList);
   document.querySelector(".js-nav").classList.add("is-shown");
   document.querySelector(".js-content").classList.add("is-shown");
 }
@@ -285,17 +284,15 @@ showMainContent();
 // only required for when switching between section where the menu needs to change
 // TO DISCUSS - add these for all return buttons and pulse the button on return maybe?
 // Should help if people lose their position
-document.querySelector('#shortcut-navigate-to-organize').addEventListener('click', () => {
-  document.querySelector('#prepare_dataset_tab').click()
-  document.querySelector('#organize_dataset_btn').click()
+document.querySelector("#shortcut-navigate-to-organize").addEventListener("click", () => {
+  document.querySelector("#prepare_dataset_tab").click();
+  document.querySelector("#organize_dataset_btn").click();
 });
 
 document.querySelector("#shortcut-navigate-to-create_submission").addEventListener("click", () => {
   document.querySelector("#prepare_metadata_tab").click();
   document.querySelector("#create_submission_btn").click();
 });
-
-
 
 document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
   //Free form mode will open through here
@@ -307,5 +304,4 @@ document.querySelector("#button-homepage-freeform-mode").addEventListener("click
   document.getElementById("guided_mode_view").classList.add("is-selected");
 });
 
-
-export {resetLazyLoading, guidedUnLockSideBar}
+export { resetLazyLoading, guidedUnLockSideBar };

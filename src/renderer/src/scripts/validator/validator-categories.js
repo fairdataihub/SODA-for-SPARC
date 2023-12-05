@@ -17,4 +17,4 @@ const VALIDATOR_CATEGORIES = {
   ENUM: "enum",
 };
 
-export  {VALIDATOR_CATEGORIES}
+export { VALIDATOR_CATEGORIES };

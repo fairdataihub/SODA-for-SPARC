@@ -14,7 +14,12 @@ const trackPennsieveImportProgress = async (progressContainer, hide) => {
   let { percentage_text, left_progress_bar, right_progress_bar } =
     window.getProgressContainerElements(progressContainer);
 
-  window.resetProgressContainer(progressContainer, percentage_text, left_progress_bar, right_progress_bar);
+  window.resetProgressContainer(
+    progressContainer,
+    percentage_text,
+    left_progress_bar,
+    right_progress_bar
+  );
 
   // * Update the progress container to properly display the progress of their dataset import.
   // * Once the import has been completed (i.e. the progress is 100%), the progress container will be hidden. The interval will be cleared.
@@ -86,13 +91,23 @@ window.bf_request_and_populate_dataset = async (
 
     const { data } = filesFoldersResponse;
 
-    window.electron.ipcRenderer.send("track-event", "Success", "Retrieve Dataset - Pennsieve", window.defaultBfDatasetId);
+    window.electron.ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Retrieve Dataset - Pennsieve",
+      window.defaultBfDatasetId
+    );
     return data;
   } catch (error) {
     importError = true;
     progressContainer.style.display = "none";
     clientError(error);
-    window.electron.ipcRenderer.send("track-event", "Error", "Retrieve Dataset - Pennsieve", window.defaultBfDatasetId);
+    window.electron.ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Retrieve Dataset - Pennsieve",
+      window.defaultBfDatasetId
+    );
     throw Error(userErrorMessage(error));
   }
 };

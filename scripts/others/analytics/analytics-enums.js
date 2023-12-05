@@ -91,4 +91,4 @@ const kombuchaEnums = {
   Origin,
 };
 
-export default kombuchaEnums
+export default kombuchaEnums;

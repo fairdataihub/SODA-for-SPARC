@@ -14,7 +14,7 @@ import Swal from "sweetalert2";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
 const resetSubmissionChecklistText = () => {
@@ -564,19 +564,19 @@ const createPrepublishingChecklist = async (curationMode) => {
 // check if the user is the dataset owner and transition to the prepublishing checklist question if so
 // TODO: Dorian handle the freeform withdraw button and remove it
 window.beginPrepublishingFlow = async (curationMode) => {
-  console.log("We are here rn ")
+  console.log("We are here rn ");
   let currentDataset = window.defaultBfDataset;
   let currentAccount = window.defaultBfAccount;
 
   let curationModeID = "";
   let embargoDetails;
   if (curationMode === "guided") {
-    console.log("In guided mode now nice man")
+    console.log("In guided mode now nice man");
     curationModeID = "guided--";
     currentAccount = window.sodaJSONObj["bf-account-selected"]["account-name"];
     currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    console.log(currentDataset)
-    console.log(currentAccount)
+    console.log(currentDataset);
+    console.log(currentAccount);
     let get_publishing_status = await client.get(
       `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
       {
@@ -585,20 +585,20 @@ window.beginPrepublishingFlow = async (curationMode) => {
         },
       }
     );
-    console.log("After the request")
+    console.log("After the request");
     let res = get_publishing_status.data;
 
-    console.log(res)
+    console.log(res);
 
     // Don't send true until pre-publishing checklist is complete
     embargoDetails = await window.submitReviewDatasetCheck(res, "guided");
-    console.log("Past submission review dataset check")
+    console.log("Past submission review dataset check");
     if (embargoDetails[0] === false) {
       Swal.close();
       return false;
     }
 
-    console.log("Didnt return false")
+    console.log("Didnt return false");
   }
   if (curationMode === "freeform" || curationMode === undefined) {
     resetSubmissionChecklistText();
@@ -617,7 +617,7 @@ window.beginPrepublishingFlow = async (curationMode) => {
     });
   }
 
-  console.log("DOwn here now")
+  console.log("DOwn here now");
 
   // check if the user is the dataset owner
   let role;

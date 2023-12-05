@@ -4,7 +4,7 @@
 
 */
 
-import kombuchaEnums  from "../analytics/analytics-enums";
+import kombuchaEnums from "../analytics/analytics-enums";
 
 const logSelectedUpdateExistingDatasetOptions = (origin) => {
   Array.from(document.querySelectorAll(".generate-preview")).forEach((card) => {
@@ -83,7 +83,4 @@ const createEventData = (value, destination, origin, dataset_name) => {
   };
 };
 
-export {
-  createEventData,
-  logSelectedUpdateExistingDatasetOptions,
-};
+export { createEventData, logSelectedUpdateExistingDatasetOptions };

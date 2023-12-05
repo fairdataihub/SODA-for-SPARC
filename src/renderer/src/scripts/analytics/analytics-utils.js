@@ -5,7 +5,6 @@ export const Destinations = {
   NEW: "New",
 };
 
-
 // determine if we are working with a Local, Saved, or Pennsieve dataset in the current Curation flow
 const determineDatasetLocation = () => {
   let location = "";

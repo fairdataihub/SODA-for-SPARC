@@ -1,11 +1,9 @@
 import Swal from "sweetalert2";
-import determineDatasetLocation from "../analytics/analytics-utils"
-
+import determineDatasetLocation from "../analytics/analytics-utils";
 
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
-
 
 //// option to show tool-tips for high-level folders
 const showTooltips = (ev) => {
@@ -350,7 +348,10 @@ const checkValidRenameInput = (
     let double_ext_present = false;
     for (let index in double_extensions) {
       if (oldName.search(double_extensions[index]) != -1) {
-        newName = input.trim() + window.path.parse(window.path.parse(oldName).name).ext + window.path.parse(oldName).ext;
+        newName =
+          input.trim() +
+          window.path.parse(window.path.parse(oldName).name).ext +
+          window.path.parse(oldName).ext;
         double_ext_present = true;
         break;
       }
@@ -1266,9 +1267,24 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
                 action: ["new", "renamed"],
               };
               window.listItems(myPath, "#items");
-              window.getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
-              window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-              window.hideMenu("high-level-folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
+              window.getInFolder(
+                "#items",
+                "#items",
+                organizeDSglobalPath,
+                window.datasetStructureJSONObj
+              );
+              window.hideMenu(
+                "folder",
+                window.menuFolder,
+                window.menuHighLevelFolders,
+                window.menuFile
+              );
+              window.hideMenu(
+                "high-level-folder",
+                window.menuFolder,
+                window.menuHighLevelFolders,
+                window.menuFile
+              );
             }
           }
         } else {
@@ -1297,7 +1313,12 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
 
               $("#items").html(appendString);
               window.listItems(myPath, "#items");
-              window.getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
+              window.getInFolder(
+                "#items",
+                "#items",
+                organizeDSglobalPath,
+                window.datasetStructureJSONObj
+              );
             }
           }
         }
@@ -1458,7 +1479,12 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
                 }
               }
               window.listItems(myPath, "#items");
-              window.getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
+              window.getInFolder(
+                "#items",
+                "#items",
+                organizeDSglobalPath,
+                window.datasetStructureJSONObj
+              );
             } else {
               let justName = checkboxes[i].id.substring(0, removeExt);
               let ext = checkboxes[i].id.substring(removeExt, checkboxes[i].id.length);
@@ -1479,7 +1505,12 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
                 }
               }
               window.listItems(myPath, "#items");
-              window.getInFolder("#items", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
+              window.getInFolder(
+                "#items",
+                "#items",
+                organizeDSglobalPath,
+                window.datasetStructureJSONObj
+              );
             }
           }
           let section = organizeDSglobalPath.value;
@@ -2220,7 +2251,12 @@ const lazyLoad = async () => {
             item_box.children[0].remove();
           }
         }
-        await window.getInFolder(".single-item", "#items", dataset_path, window.datasetStructureJSONObj);
+        await window.getInFolder(
+          ".single-item",
+          "#items",
+          dataset_path,
+          window.datasetStructureJSONObj
+        );
 
         if (item_box.lastChild.id === "items_container") {
           item_box.lastChild.remove();
@@ -2262,7 +2298,12 @@ const lazyLoad = async () => {
         window.amount += 500;
         await window.listItems(myPath, uiItems, window.amount);
         // window.add_items_to_view(window.already_created_elem, 400);
-        await window.getInFolder(".single-item", "#items", dataset_path, window.datasetStructureJSONObj);
+        await window.getInFolder(
+          ".single-item",
+          "#items",
+          dataset_path,
+          window.datasetStructureJSONObj
+        );
         resolved();
       });
     }
