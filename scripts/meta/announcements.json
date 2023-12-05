@@ -3,7 +3,7 @@
     "announcements": {
       "bug-fixes": [],
       "features": [
-        "Added a new feature to Guided Mode that allows you to import subjects, pools, and samples. This feature is useful for datasets with a large amount of subjects/samples."
+        "Added a new feature to Guided Mode that allows you to import subjects, pools, and samples from an external spreadsheet. This feature is useful for datasets with a large amount of subjects/samples."
       ]
     }
   },
