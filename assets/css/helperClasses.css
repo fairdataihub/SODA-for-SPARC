@@ -1011,14 +1011,18 @@
   margin-top: 5px;
 }
 
-/* .swal2-content {
+/* .swal2-html-container {
   max-height: 400px !important;
   overflow-y: auto !important;
 } */
 
-.swal2-content .guided--form-label,
-.swal2-content .tagify__input {
+.swal2-html-container .guided--form-label,
+.swal2-html-container .tagify__input {
   text-align: left;
+}
+
+.swal2-html-container {
+  width: 32em; 
 }
 
 .swal2-actions {
