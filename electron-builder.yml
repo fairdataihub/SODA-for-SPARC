@@ -28,7 +28,7 @@ nsis:
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
-  entitlementsInherit: ./entitlements.mac.plist
+  entitlementsInherit: ./entitlements.mac.inherit.plist
   notarize: true
   extraResources:
     - from: ./pyflaskdist/app
