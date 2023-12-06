@@ -5037,10 +5037,8 @@ const mergeLocalAndRemoteDatasetStructure = async (
   if (duplicateFiles.length > 0) {
     const userConfirmedFileOverwrite = await swalFileListDoubleAction(
       duplicateFiles.map((file) => `${file.virtualFilePath}${file.fileName}`),
-      "Duplicate files detected",
+      `Duplicate files detected  <p>You have two options for the duplicate files:</p>`,
       ` 
-        You have two options for the duplicate files:
-        <br />
         <span
           class="text-left"
           style="display: flex; flex-direction: column; margin-bottom: 1em">
