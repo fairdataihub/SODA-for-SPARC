@@ -25,6 +25,8 @@ import './scripts/metadata-files/readme-changes'
 import './assets/lotties/activate-lotties'
 
 // Application CSS 
+import 'fomantic-ui/dist/semantic.min.css';
+import '@fortawesome/fontawesome-free/css/all.min.css'
 import './assets/css/animations.css'
 import './assets/css/buttons.css'
 import './assets/css/containers.css'
@@ -32,7 +34,6 @@ import './assets/css/demo.css'
 import './assets/css/doc_contact_pages.css'
 import './assets/css/file_views.css'
 import './assets/css/folder_files.css'
-import './assets/css/fontawesome.css'
 import './assets/css/fontStyling.css'
 import './assets/css/global.css'
 import './assets/css/guided.css'
@@ -51,7 +52,6 @@ import './assets/css/tablepath.css'
 import './assets/css/variables.css'
 import 'notyf/notyf.min.css'; // for React, Vue and Svelte
 import 'jstree/dist/themes/default/style.css';
-import 'fomantic-ui/dist/semantic.min.css';
 import '@yaireo/tagify/dist/tagify.css'
 import "@tarekraafat/autocomplete.js/dist/css/autoComplete.css";
 import "@tarekraafat/autocomplete.js/dist/css/autoComplete.01.css";
