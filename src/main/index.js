@@ -566,8 +566,12 @@ const initialize = () => {
     function createWindow() {
       // Create the browser window.
       mainWindow = new BrowserWindow({
-        width: 900,
-        height: 670,
+        show: false,
+        minWidth: 1121,
+        minHeight: 735,
+        width: 1121,
+        height: 735,
+        center: true,
         show: false,
         nodeIntegration: true,
         autoHideMenuBar: true,
@@ -585,11 +589,6 @@ const initialize = () => {
         shell.openExternal(url)
       })
 
-      // mainWindow.webContents.once("dom-ready", () => {
-      //   if (updatechecked == false && !buildIsBeta) {
-      //     autoUpdater.checkForUpdatesAndNotify();
-      //   }
-      // })
 
       mainWindow.on("close", async (e) => {
         if (!user_restart_confirmed) {
