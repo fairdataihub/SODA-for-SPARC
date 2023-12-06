@@ -1,4 +1,4 @@
-import https from "https";
+import axios from "axios";
 import Swal from "sweetalert2";
 import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
 import introJs from "intro.js";
@@ -684,20 +684,7 @@ window.addStrain = async (ev, type, curationMode) => {
 };
 
 // populate RRID
-window.populateRRID = (strain, type, curationMode) => {
-  let curationModeSelectorPrefix = "";
-  if (curationMode == "guided") {
-    curationModeSelectorPrefix = "guided-";
-  }
-  var rridHostname = "scicrunch.org";
-  // this is to handle spaces and other special characters in strain name
-  var encodedStrain = encodeURIComponent(strain);
-  var rridInfo = {
-    hostname: rridHostname,
-    port: 443,
-    path: `/api/1/dataservices/federation/data/nlx_154697-1?q=${encodedStrain}&key=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
-    headers: { accept: "text/xml" },
-  };
+window.populateRRID = async (strain, type, curationMode) => {
   Swal.fire({
     title: `Retrieving RRID for ${strain}...`,
     allowEscapeKey: false,
@@ -709,71 +696,79 @@ window.populateRRID = (strain, type, curationMode) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
-  https.get(rridInfo, (res) => {
-    if (res.statusCode === 200) {
-      let data = "";
-      res.setEncoding("utf8");
-      res.on("data", (d) => {
-        data += d;
-      });
-      res.on("end", () => {
-        var returnRes = readXMLScicrunch(data, type, curationMode);
-        if (!returnRes) {
-          Swal.fire({
-            title: `Failed to retrieve the RRID for ${strain} from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
-            text: "Please make sure you enter the correct strain.",
-            showCancelButton: false,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("display", "none");
-          if (type.includes("subject")) {
-            $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
-              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-            );
-          } else {
-            $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
-              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-            );
-          }
-        } else {
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(strain);
-          $("#btn-confirm-strain").removeClass("confirm-disabled");
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("display", "block");
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).attr("readonly", true);
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("background", "#f5f5f5");
-          if (type.includes("subject")) {
-            $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
-              "<i class='pen icon'></i>Edit"
-            );
-          } else {
-            $(`#${curationModeSelectorPrefix}button-add-strain-sample`).html(
-              "<i class='pen icon'></i>Edit"
-            );
-          }
-          Swal.fire({
-            title: `Successfully retrieved the RRID for "${strain}".`,
-            icon: "success",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-        }
-      });
-    } else {
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
+  })
+
+  let curationModeSelectorPrefix = "";
+  if (curationMode == "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
+  
+  let rridHostname = "scicrunch.org";
+  // this is to handle spaces and other special characters in strain name
+  let encodedStrain = encodeURIComponent(strain);
+  let rridInfo = {
+    hostname: rridHostname,
+    port: 443,
+    path: `/api/1/dataservices/federation/data/nlx_154697-1?q=${encodedStrain}&key=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
+    headers: { accept: "text/xml" },
+  };
+
+  try {
+    let data = await window.electron.ipcRenderer.invoke("getStrainData", rridInfo)
+    var returnRes = readXMLScicrunch(data, type, curationMode);
+    if (!returnRes) {
       Swal.fire({
-        title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
-        text: "Please check your Internet Connection or contact us at help@fairdataihub.org",
+        title: `Failed to retrieve the RRID for ${strain} from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
+        text: "Please make sure you enter the correct strain.",
         showCancelButton: false,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("display", "none");
+      if (type.includes("subject")) {
+        $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
+          `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+        );
+      } else {
+        $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
+          `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+        );
+      }
+    } else {
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(strain);
+      $("#btn-confirm-strain").removeClass("confirm-disabled");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("display", "block");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).attr("readonly", true);
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("background", "#f5f5f5");
+      if (type.includes("subject")) {
+        $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
+          "<i class='pen icon'></i>Edit"
+        );
+      } else {
+        $(`#${curationModeSelectorPrefix}button-add-strain-sample`).html(
+          "<i class='pen icon'></i>Edit"
+        );
+      }
+      Swal.fire({
+        title: `Successfully retrieved the RRID for "${strain}".`,
+        icon: "success",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      })
     }
-  });
+}   catch (err) {
+    $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
+    $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
+    Swal.fire({
+      title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
+      text: "Please check your Internet Connection or contact us at help@fairdataihub.org",
+      showCancelButton: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+  }
 };
 
 const addSubjectMetadataEntriesIntoJSON = (curationMode) => {
