@@ -12079,6 +12079,7 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
   attachGuidedMethodsToSodaJSONObj();
   guidedTransitionFromHome();
 
+  console.log("About to unlock sidebar")
   guidedUnLockSideBar();
 
   guidedUnSkipPage("guided-select-starting-point-tab");

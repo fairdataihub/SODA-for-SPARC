@@ -79,6 +79,7 @@ const handleSectionTrigger = async (event) => {
   }
 
   if (sectionId === "guided_mode-section") {
+    console.log("IN this section")
     // Disallow the transition if an upload is in progress
     if (document.getElementById("returnButton") !== null) {
       Swal.fire({
@@ -222,8 +223,10 @@ const handleSectionTrigger = async (event) => {
   ];
 
   if (showSidebarSections.includes(sectionId)) {
+    console.log("Here?")
     forceActionSidebar("show");
   } else {
+    console.log("In elese statement")
     forceActionSidebar("hide");
   }
 
@@ -305,6 +308,19 @@ document.querySelector("#button-homepage-freeform-mode").addEventListener("click
 
   window.directToFreeFormMode();
   document.getElementById("guided_mode_view").classList.add("is-selected");
+});
+
+$(document).ready(() => {
+  $("#sidebarCollapse").on("click", function () {
+    $("#main-nav").toggleClass("active");
+    $(this).toggleClass("active");
+    $(".section").toggleClass("fullShown");
+  });
+
+  $("a").on("click", function () {
+    $($(this).parents()[1]).find("a").removeClass("is-selected");
+    $(this).addClass("is-selected");
+  });
 });
 
 
