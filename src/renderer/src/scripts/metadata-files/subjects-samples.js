@@ -702,7 +702,7 @@ window.populateRRID = async (strain, type, curationMode) => {
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
   }
-  
+
   let rridHostname = "scicrunch.org";
   // this is to handle spaces and other special characters in strain name
   let encodedStrain = encodeURIComponent(strain);
@@ -759,6 +759,7 @@ window.populateRRID = async (strain, type, curationMode) => {
       })
     }
 }   catch (err) {
+    console.log(err)
     $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
     $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
     Swal.fire({

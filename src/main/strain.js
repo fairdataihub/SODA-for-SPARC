@@ -3,18 +3,36 @@ import { ipcMain } from "electron";
 
 
 ipcMain.handle("getStrainData", async (event, rridInfo) => {
-  https.get(rridInfo, (res) => {
+  let data = await new Promise((resolve, reject) => { 
+    https.get(rridInfo, async (res) => {
+    let data = ""; 
+    let dataReady = false; 
     if (res.statusCode === 200) {
-      let data = "";
+      console.log("Status code is 200?")
       res.setEncoding("utf8");
       res.on("data", (d) => {
         data += d;
       });
       res.on("end", () => {
-        return data 
+        dataReady = true 
         })
+
+      while(!dataReady) {
+        // wait for 1 second
+        await new Promise(r => setTimeout(r, 1000));
+      }
+
+      resolve(data)
     } else {
-      throw new Error("Could not load strain") 
+      reject("Could not load strain") 
     }
-  });
+  })
+})
+
+  console.log("Data is", data)
+
+
+  // let xmlSerializer = new XMLSerializer();
+  // let serialized =  xmlSerializer.serializeToString(data) 
+  return data
 })
