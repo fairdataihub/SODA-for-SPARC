@@ -2,6 +2,7 @@
 This file contains all of the functions related to the submission.xlsx file
 */
 import Swal from "sweetalert2";
+import 'fomantic-ui/dist/semantic';
 import introJs from "intro.js";
 // import checkDiskSpace from "check-disk-space";
 import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
@@ -16,6 +17,8 @@ import api from "../others/api/api"
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100))
 }
+
+$('.ui.accordion').accordion();
 
 // List of funding consortiums taken from the 2.1 submission file
 window.sparcFundingConsortiums = ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"];
