@@ -19,7 +19,7 @@ import bootstrap from 'bootstrap'
 import 'bootstrap-select'
 import DragSort from '@yaireo/dragsort'
 import Cropper from 'cropperjs'
-import select2 from 'select2'
+import * as select2 from "select2"; // TODO: select2()
 select2()
 
 import 'jstree'
