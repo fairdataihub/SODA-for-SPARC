@@ -19,6 +19,8 @@ import bootstrap from 'bootstrap'
 import 'bootstrap-select'
 import DragSort from '@yaireo/dragsort'
 import Cropper from 'cropperjs'
+import select2 from 'select2'
+select2()
 
 import 'jstree'
 
@@ -10517,6 +10519,7 @@ window.specifyPool = (event, poolNameInput) => {
           setActiveSubPage("guided-organize-subjects-into-pools-page");
           return;
         } else {
+          console.log("Pools here?")
           //Add left border back to subject dropdown cell to separate pool name and subject dropdown
           poolSubjectsDropdownCell.removeClass("remove-left-border");
 
