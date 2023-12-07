@@ -16,13 +16,15 @@ import tippy from "tippy.js";
 import client from '../client'
 import jQuery from 'jquery'
 import bootstrap from 'bootstrap'
-import 'bootstrap-select'
-import DragSort from '@yaireo/dragsort'
-import Cropper from 'cropperjs'
 import * as select2 from "select2"; // TODO: select2()
-select2()
+
+import 'bootstrap-select'
+// import DragSort from '@yaireo/dragsort'
+import Cropper from 'cropperjs'
+
 
 import 'jstree'
+
 
 
 
@@ -6750,7 +6752,7 @@ const setActiveSubPage = (pageIdToActivate) => {
     document.getElementById("pools-specification-table-body").innerHTML = poolElementRows;
 
     for (const poolName of Object.keys(pools)) {
-      const newPoolSubjectsSelectElement = document.querySelector(
+      const newPoolSubjectsSelectElement = $(
         `select[name="${poolName}-subjects-selection-dropdown"]`
       );
       //create a select2 dropdown for the pool subjects
@@ -10531,7 +10533,7 @@ window.specifyPool = (event, poolNameInput) => {
           poolSubjectsDropdownCell.html(poolSubjectSelectElement);
 
           //Get the newly created select2 element
-          const newPoolSubjectsSelectElement = document.querySelector(
+          const newPoolSubjectsSelectElement = $(
             `select[name="${poolName}-subjects-selection-dropdown"]`
           );
 

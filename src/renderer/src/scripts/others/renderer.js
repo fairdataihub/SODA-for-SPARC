@@ -18,6 +18,7 @@ import jQuery from 'jquery'
 import bootstrap from 'bootstrap'
 import * as popper from '@popperjs/core'
 import 'bootstrap-select'
+import * as select2 from "select2"; // TODO: select2()
 // import * as bootbox from "bootbox";
 import DragSelect from "dragselect";
 import excelToJson from "convert-excel-to-json";
@@ -30,7 +31,6 @@ import validator from "validator";
 import doiRegex from "doi-regex";
 import lottie from "lottie-web";
 import { dragDrop, successCheck } from '../../assets/lotties/lotties'
-import * as select2 from "select2"; // TODO: select2()
 import autoComplete from "@tarekraafat/autocomplete.js/dist/autoComplete.min.js"
 import Cropper from 'cropperjs'
 import DragSort from "@yaireo/dragsort";
@@ -61,9 +61,12 @@ import {
 import checkForAnnouncements from './announcements'
 import { swalFileListSingleAction, swalFileListTripleAction, swalFileListDoubleAction, swalShowError } from "../utils/swal-utils"
 
+
 // add jquery to the window object
 window.$ = jQuery;
 window.jQuery = jQuery;
+window.select2 = select2;
+
 document.addEventListener("DOMContentLoaded", function () {
   $('select').select2()
 })
