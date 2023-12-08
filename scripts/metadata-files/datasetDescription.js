@@ -638,7 +638,7 @@ const combineLinksSections = () => {
 };
 
 // add protocol function for DD file
-const addProtocol = async () => {
+const window.addProtocol = async () => {
   const { value: values } = await Swal.fire({
     title: "Add a protocol",
     html:

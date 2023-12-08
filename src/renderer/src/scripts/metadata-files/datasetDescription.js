@@ -7,7 +7,8 @@ import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analyt
 import api from "../others/api/api"
 import Tagify from "@yaireo/tagify/dist/tagify.esm";
 import tippy from "tippy.js";
-
+import doiRegex from "doi-regex";
+import validator from "validator";
 
 
 while (!window.htmlPagesAdded) {
@@ -655,7 +656,7 @@ const combineLinksSections = () => {
 };
 
 // add protocol function for DD file
-const addProtocol = async () => {
+window.addProtocol = async () => {
   const { value: values } = await Swal.fire({
     title: "Add a protocol",
     html:

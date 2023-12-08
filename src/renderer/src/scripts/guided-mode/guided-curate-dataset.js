@@ -13,6 +13,7 @@ import Swal from "sweetalert2"
 import Tagify from "@yaireo/tagify/dist/tagify.esm";
 // const Tagify = require("@yaireo/tagify/dist/tagify.esm");
 import tippy from "tippy.js";
+import doiRegex from "doi-regex";
 import client from '../client'
 import jQuery from 'jquery'
 import bootstrap from 'bootstrap'

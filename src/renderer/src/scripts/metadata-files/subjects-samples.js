@@ -1,4 +1,5 @@
 import axios from "axios";
+import doiRegex from "doi-regex";
 import Swal from "sweetalert2";
 import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
 import introJs from "intro.js";
