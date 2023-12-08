@@ -12720,8 +12720,8 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
             class="${highLevelFolderName}-selection-aside-item selection-aside-item"
             style="align-self: center; width: 97%; direction: ltr;"
             data-path-suffix="${subject.poolName ? subject.poolName + "/" : ""}${
-              subject.subjectName
-            }"
+        subject.subjectName
+      }"
           >${subject.subjectName}</a>
         `;
     })
