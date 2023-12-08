@@ -12720,8 +12720,8 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
             class="${highLevelFolderName}-selection-aside-item selection-aside-item"
             style="align-self: center; width: 97%; direction: ltr;"
             data-path-suffix="${subject.poolName ? subject.poolName + "/" : ""}${
-        subject.subjectName
-      }"
+              subject.subjectName
+            }"
           >${subject.subjectName}</a>
         `;
     })
@@ -13879,6 +13879,24 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
           selected_dataset: datasetName,
         },
       }
+    );
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.SUBTITLE,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: 1,
+        dataset_id: datasetName,
+      }
+    );
+    // TODO: EDIT CODE BELOW!!!! AND CHECK dataset_id above
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+      defaultBfDatasetId
     );
     datasetSubtitleUploadText.innerHTML = `Successfully added dataset subtitle: ${datasetSubtitle}`;
     guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "success");
