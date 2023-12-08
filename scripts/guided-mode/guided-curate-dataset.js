@@ -13888,7 +13888,7 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
       kombuchaEnums.Status.SUCCESS,
       {
         value: 1,
-        dataset_id: datasetName,
+        dataset_name: datasetName,
       }
     );
     // TODO: EDIT CODE BELOW!!!! AND CHECK dataset_id above
