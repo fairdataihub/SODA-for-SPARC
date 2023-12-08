@@ -920,7 +920,7 @@ window.edit_current_sample_id = (ev) => {
   var sampleID = $(currentRow)[0].cells[2].innerText;
   loadSampleInformation(ev, subjectID, sampleID);
 };
-const edit_current_protocol_id = async (ev) => {
+window.edit_current_protocol_id = async (ev) => {
   let oldProtocolLink = "";
   var currentRow = $(ev).parents()[2];
   var link = $(currentRow)[0].cells[1].innerText;
@@ -1489,7 +1489,7 @@ window.delete_current_sample_id = (ev) => {
   });
 };
 
-const delete_current_protocol_id = (ev) => {
+window.delete_current_protocol_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this protocol?",
     showCancelButton: true,

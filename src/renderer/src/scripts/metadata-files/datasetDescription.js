@@ -747,7 +747,7 @@ const addProtocolLinktoTableDD = (protocolLink, protocolType, protocolRelation, 
     protocolRelation +
     "</td><td class='contributor-table-row' style='display:none'>" +
     protocolDesc +
-    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='window.delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 };
 
 const addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) => {
