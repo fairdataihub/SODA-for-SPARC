@@ -807,7 +807,7 @@ const generateContributorRowElement = (contributorLastName, contributorFirstName
 };
 
 const addContributortoTableDD = (name, contributorObject) => {
-  const contributorIsValid = contributorDataIsValid(contributorObject);
+  const contributorIsValid = window.contributorDataIsValid(contributorObject);
   const conRole = contributorObject.conRole;
   let conTable = document.getElementById("contributor-table-dd");
   let rowcount = conTable.rows.length;
@@ -1044,7 +1044,7 @@ const delete_current_con_id = (ev) => {
       var currentRowid = $(currentRow).prop("id");
 
       currentRow.remove();
-      updateIndexForTable(document.getElementById("contributor-table-dd"), false);
+      window.updateIndexForTable(document.getElementById("contributor-table-dd"), false);
       // 2. Delete from JSON
       var contributorName = $(currentRow)[0].cells[0].innerText;
       for (var i = 0; i < window.contributorArray.length; i++) {
@@ -1264,10 +1264,10 @@ const edit_current_con_id = (ev) => {
 };
 
 const memorizeAffiliationInfo = (values) => {
-  createMetadataDir();
-  var content = parseJson(affiliationConfigPath);
+  window.createMetadataDir();
+  var content = parseJson(window.affiliationConfigPath);
   content["affiliation"] = values;
-  fs.writeFileSync(affiliationConfigPath, JSON.stringify(content));
+  fs.writeFileSync(window.affiliationConfigPath, JSON.stringify(content));
 };
 
 const grabCurrentTagifyContributor = (tagify) => {

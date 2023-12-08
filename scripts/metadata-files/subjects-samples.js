@@ -1429,7 +1429,7 @@ const delete_current_subject_id = (ev) => {
       var currentRow = $(ev).parents()[2];
       var currentRowid = $(currentRow).prop("id");
       document.getElementById(currentRowid).outerHTML = "";
-      updateIndexForTable(document.getElementById("table-subjects"));
+      window.updateIndexForTable(document.getElementById("table-subjects"));
       // 2. Delete from JSON
       var subjectID = $(currentRow)[0].cells[1].innerText;
       for (var i = 1; i < window.subjectsTableData.length; i++) {
@@ -1459,7 +1459,7 @@ const delete_current_sample_id = (ev) => {
       var currentRow = $(ev).parents()[2];
       var currentRowid = $(currentRow).prop("id");
       document.getElementById(currentRowid).outerHTML = "";
-      updateIndexForTable(document.getElementById("table-samples"));
+      window.updateIndexForTable(document.getElementById("table-samples"));
       // 2. Delete from JSON
       var sampleId = $(currentRow)[0].cells[1].innerText;
       for (var i = 1; i < window.samplesTableData.length; i++) {
@@ -1489,7 +1489,7 @@ const delete_current_protocol_id = (ev) => {
       var currentRow = $(ev).parents()[2];
       var currentRowid = $(currentRow).prop("id");
       document.getElementById(currentRowid).outerHTML = "";
-      updateIndexForTable(document.getElementById("protocol-link-table-dd"));
+      window.updateIndexForTable(document.getElementById("protocol-link-table-dd"));
     }
   });
 };
@@ -1511,7 +1511,7 @@ const delete_current_additional_link_id = (ev) => {
       var currentRow = $(ev).parents()[2];
       var currentRowid = $(currentRow).prop("id");
       document.getElementById(currentRowid).outerHTML = "";
-      updateIndexForTable(document.getElementById("other-link-table-dd"));
+      window.updateIndexForTable(document.getElementById("other-link-table-dd"));
     }
   });
 };
@@ -1601,8 +1601,8 @@ const copy_current_sample_id = async (ev) => {
   }
 };
 
-const updateIndexForTable = (table, boolUpdateIndex) => {
-  // disable table to prevent further row-moving action before the updateIndexForTable finishes
+const window.updateIndexForTable = (table, boolUpdateIndex) => {
+  // disable table to prevent further row-moving action before the window.updateIndexForTable finishes
 
   if (table === document.getElementById("table-subjects")) {
     $("#table-subjects").css("pointer-events", "none");

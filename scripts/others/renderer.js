@@ -1631,7 +1631,7 @@ let awardFileName = "awards.json";
 let affiliationFileName = "affiliations.json";
 let milestoneFileName = "milestones.json";
 let protocolConfigFileName = "protocol-config.json";
-let affiliationConfigPath = path.join(metadataPath, affiliationFileName);
+let window.affiliationConfigPath = path.join(metadataPath, affiliationFileName);
 let milestonePath = path.join(metadataPath, milestoneFileName);
 let progressFilePath = path.join(homeDirectory, "SODA", "Progress");
 let guidedProgressFilePath = path.join(homeDirectory, "SODA", "Guided-Progress");
@@ -2464,7 +2464,7 @@ function parseJson(path) {
 }
 
 // function to make directory if metadata path does not exist
-function createMetadataDir() {
+function window.createMetadataDir() {
   try {
     fs.mkdirSync(metadataPath, { recursive: true });
   } catch (error) {
@@ -2473,7 +2473,7 @@ function createMetadataDir() {
   }
 }
 
-createMetadataDir();
+window.createMetadataDir();
 
 const specimenType = [
   "whole organism",
@@ -2950,7 +2950,7 @@ $("#table-subjects").mousedown(function (e) {
     $(document).unbind("mousemove", move).unbind("mouseup", up);
     $(tr).removeClass("grabbed");
     // the below functions updates the row index accordingly and update the order of subject IDs in json
-    updateIndexForTable(document.getElementById("table-subjects"));
+    window.updateIndexForTable(document.getElementById("table-subjects"));
     updateOrderIDTable(document.getElementById("table-subjects"), window.subjectsTableData, "subjects");
   }
   $(document).mousemove(move).mouseup(up);
@@ -2992,7 +2992,7 @@ $("#table-samples").mousedown(function (e) {
     $(document).unbind("mousemove", move).unbind("mouseup", up);
     $(tr).removeClass("grabbed");
     // the below functions updates the row index accordingly and update the order of sample IDs in json
-    updateIndexForTable(document.getElementById("table-samples"));
+    window.updateIndexForTable(document.getElementById("table-samples"));
     updateOrderIDTable(document.getElementById("table-samples"), window.samplesTableData, "samples");
   }
   $(document).mousemove(move).mouseup(up);
@@ -3033,7 +3033,7 @@ $("#table-samples").mousedown(function (e) {
 //     }
 //     $(document).unbind("mousemove", move).unbind("mouseup", up);
 //     $(tr).removeClass("grabbed");
-//     updateIndexForTable(document.getElementById("contributor-table-dd"));
+//     window.updateIndexForTable(document.getElementById("contributor-table-dd"));
 //     updateOrderContributorTable(document.getElementById("contributor-table-dd"), window.contributorArray);
 //   }
 //   $(document).mousemove(move).mouseup(up);
@@ -3074,7 +3074,7 @@ $("#protocol-link-table-dd").mousedown(function (e) {
     }
     $(document).unbind("mousemove", move).unbind("mouseup", up);
     $(tr).removeClass("grabbed");
-    updateIndexForTable(document.getElementById("protocol-link-table-dd"));
+    window.updateIndexForTable(document.getElementById("protocol-link-table-dd"));
   }
   $(document).mousemove(move).mouseup(up);
 });
@@ -3114,7 +3114,7 @@ $("#additional-link-table-dd").mousedown(function (e) {
     }
     $(document).unbind("mousemove", move).unbind("mouseup", up);
     $(tr).removeClass("grabbed");
-    updateIndexForTable(document.getElementById("additional-link-table-dd"));
+    window.updateIndexForTable(document.getElementById("additional-link-table-dd"));
   }
   $(document).mousemove(move).mouseup(up);
 });

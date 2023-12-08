@@ -1808,7 +1808,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       // Make sure that all contributors have a valid fields
       for (const contributor of contributors) {
-        if (!contributorDataIsValid(contributor)) {
+        if (!window.contributorDataIsValid(contributor)) {
           errorArray.push({
             type: "notyf",
             message: "Please make sure all contributors have valid metadata",
@@ -9256,7 +9256,7 @@ window.openGuidedAddContributorSwal = async () => {
   });
 };
 
-const contributorDataIsValid = (contributorObj) => {
+window.contributorDataIsValid = (contributorObj) => {
   if (
     contributorObj.conAffliation.length > 0 &&
     contributorObj.conID &&
@@ -9332,7 +9332,7 @@ const handleContributorDrop = (event) => {
 };
 
 const generateContributorTableRow = (contributorObj, contributorIndex) => {
-  const contributorObjIsValid = contributorDataIsValid(contributorObj);
+  const contributorObjIsValid = window.contributorDataIsValid(contributorObj);
   const contributorFullName = contributorObj["conName"];
   const contributorOrcid = contributorObj["conID"];
   const contributorRoleString = contributorObj["conRole"].join(", ");

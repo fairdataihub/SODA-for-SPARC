@@ -1389,10 +1389,10 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
 // /////// Save and load award and milestone info
 let metadataPath = window.path.join(window.homeDirectory, "SODA", "METADATA");
 // let awardFileName = "awards.json";
-// let affiliationFileName = "affiliations.json";
+let affiliationFileName = "affiliations.json";
 // let milestoneFileName = "milestones.json";
 // let protocolConfigFileName = "protocol-config.json";
-// let affiliationConfigPath = window.path.join(metadataPath, affiliationFileName);
+window.affiliationConfigPath = window.path.join(metadataPath, affiliationFileName);
 // let milestonePath = window.path.join(metadataPath, milestoneFileName);
 window.progressFilePath = window.path.join(window.homeDirectory, "SODA", "Progress");
 // let guidedProgressFilePath = window.path.join(window.homeDirectory, "SODA", "Guided-Progress");
@@ -2199,12 +2199,12 @@ async function loadSamplesFileToDataframe(filePath) {
 }
 
 // load and parse json file
-function parseJson(path) {
-  if (!fs.existsSync(path)) {
+window.parseJson = (path) => {
+  if (!window.fs.existsSync(path)) {
     return {};
   }
   try {
-    var content = fs.readFileSync(path);
+    var content = window.fs.readFileSync(path);
     contentJson = JSON.parse(content);
     return contentJson;
   } catch (error) {
@@ -2215,7 +2215,7 @@ function parseJson(path) {
 }
 
 // function to make directory if metadata path does not exist
-function createMetadataDir() {
+window.createMetadataDir = () => {
   try {
     window.fs.mkdirSync(metadataPath, { recursive: true });
   } catch (error) {
@@ -2224,7 +2224,7 @@ function createMetadataDir() {
   }
 }
 
-createMetadataDir();
+window.createMetadataDir();
 
 const specimenType = [
   "whole organism",
@@ -2695,7 +2695,7 @@ const clearOrganizationDropdowns = () => {
 //     $(document).unbind("mousemove", move).unbind("mouseup", up);
 //     $(tr).removeClass("grabbed");
 //     // the below functions updates the row index accordingly and update the order of subject IDs in json
-//     updateIndexForTable(document.getElementById("table-subjects"));
+//     window.updateIndexForTable(document.getElementById("table-subjects"));
 //     updateOrderIDTable(document.getElementById("table-subjects"), window.subjectsTableData, "subjects");
 //   }
 //   $(document).mousemove(move).mouseup(up);
@@ -2737,7 +2737,7 @@ const clearOrganizationDropdowns = () => {
 //     $(document).unbind("mousemove", move).unbind("mouseup", up);
 //     $(tr).removeClass("grabbed");
 //     // the below functions updates the row index accordingly and update the order of sample IDs in json
-//     updateIndexForTable(document.getElementById("table-samples"));
+//     window.updateIndexForTable(document.getElementById("table-samples"));
 //     updateOrderIDTable(document.getElementById("table-samples"), window.samplesTableData, "samples");
 //   }
 //   $(document).mousemove(move).mouseup(up);
@@ -2778,7 +2778,7 @@ const clearOrganizationDropdowns = () => {
 // //     }
 // //     $(document).unbind("mousemove", move).unbind("mouseup", up);
 // //     $(tr).removeClass("grabbed");
-// //     updateIndexForTable(document.getElementById("contributor-table-dd"));
+// //     window.updateIndexForTable(document.getElementById("contributor-table-dd"));
 // //     updateOrderContributorTable(document.getElementById("contributor-table-dd"), window.contributorArray);
 // //   }
 // //   $(document).mousemove(move).mouseup(up);
@@ -2819,7 +2819,7 @@ const clearOrganizationDropdowns = () => {
 //     }
 //     $(document).unbind("mousemove", move).unbind("mouseup", up);
 //     $(tr).removeClass("grabbed");
-//     updateIndexForTable(document.getElementById("protocol-link-table-dd"));
+//     window.updateIndexForTable(document.getElementById("protocol-link-table-dd"));
 //   }
 //   $(document).mousemove(move).mouseup(up);
 // });
@@ -2859,7 +2859,7 @@ const clearOrganizationDropdowns = () => {
 //     }
 //     $(document).unbind("mousemove", move).unbind("mouseup", up);
 //     $(tr).removeClass("grabbed");
-//     updateIndexForTable(document.getElementById("additional-link-table-dd"));
+//     window.updateIndexForTable(document.getElementById("additional-link-table-dd"));
 //   }
 //   $(document).mousemove(move).mouseup(up);
 // });

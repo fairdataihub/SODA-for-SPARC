@@ -6,6 +6,7 @@ import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 import api from "../others/api/api"
 import Tagify from "@yaireo/tagify/dist/tagify.esm";
+import tippy from "tippy.js";
 
 
 
@@ -823,7 +824,7 @@ const generateContributorRowElement = (contributorLastName, contributorFirstName
 };
 
 const addContributortoTableDD = (name, contributorObject) => {
-  const contributorIsValid = contributorDataIsValid(contributorObject);
+  const contributorIsValid = window.contributorDataIsValid(contributorObject);
   const conRole = contributorObject.conRole;
   let conTable = document.getElementById("contributor-table-dd");
   let rowcount = conTable.rows.length;
@@ -852,8 +853,8 @@ const addContributortoTableDD = (name, contributorObject) => {
         ? `<span class="badge badge-pill badge-success">Valid</span>`
         : `<span class="badge badge-pill badge-warning">Missing Fields</span>`
     }
-    </td> <td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button></div></td>
-    <td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>`);
+    </td> <td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button></div></td>
+    <td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>`);
 };
 
 var contributorElement = `<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="window.onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" " style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div></div> `;
@@ -864,13 +865,13 @@ var contributorElementRaw =
 window.contributorArray = [];
 var affiliationSuggestions = [];
 
-const showContributorSweetalert = (key) => {
+window.showContributorSweetalert = (key) => {
   var currentContributortagify;
   var currentAffliationtagify;
   if (key === false) {
     if (Object.keys(window.globalContributorNameObject).length !== 0) {
       var footer =
-        "<a style='text-decoration: none !important' onclick='showContributorSweetalert(\"pass\")' target='_blank'>I want to add a contributor not listed above</a>";
+        "<a style='text-decoration: none !important' onclick='window.showContributorSweetalert(\"pass\")' target='_blank'>I want to add a contributor not listed above</a>";
       var element = contributorElement;
     } else {
       var footer = "";
@@ -1042,7 +1043,7 @@ const showContributorSweetalert = (key) => {
   });
 };
 
-const delete_current_con_id = (ev) => {
+window.delete_current_con_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this contributor?",
     showCancelButton: true,
@@ -1060,7 +1061,7 @@ const delete_current_con_id = (ev) => {
       var currentRowid = $(currentRow).prop("id");
 
       currentRow.remove();
-      updateIndexForTable(document.getElementById("contributor-table-dd"), false);
+      window.updateIndexForTable(document.getElementById("contributor-table-dd"), false);
       // 2. Delete from JSON
       var contributorName = $(currentRow)[0].cells[0].innerText;
       for (var i = 0; i < window.contributorArray.length; i++) {
@@ -1073,7 +1074,7 @@ const delete_current_con_id = (ev) => {
   });
 };
 
-const edit_current_con_id = (ev) => {
+window.edit_current_con_id = (ev) => {
   var currentContributortagify;
   var currentAffliationtagify;
   var element = contributorElementRaw;
@@ -1280,10 +1281,10 @@ const edit_current_con_id = (ev) => {
 };
 
 const memorizeAffiliationInfo = (values) => {
-  createMetadataDir();
-  var content = parseJson(affiliationConfigPath);
+  window.createMetadataDir();
+  var content = window.parseJson(window.affiliationConfigPath);
   content["affiliation"] = values;
-  fs.writeFileSync(affiliationConfigPath, JSON.stringify(content));
+  window.fs.writeFileSync(window.affiliationConfigPath, JSON.stringify(content));
 };
 
 const grabCurrentTagifyContributor = (tagify) => {
