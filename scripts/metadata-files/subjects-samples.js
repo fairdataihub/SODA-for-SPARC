@@ -999,7 +999,7 @@ const edit_current_protocol_id = async (ev) => {
   }
 };
 
-const edit_current_additional_link_id = async (ev) => {
+const window.edit_current_additional_link_id = async (ev) => {
   var currentRow = $(ev).parents()[2];
   var link = $(currentRow)[0].cells[1].innerText;
   var linkType = $(currentRow)[0].cells[2].innerText;
@@ -2720,7 +2720,7 @@ const loadDataFrametoUISamples = (type) => {
   }
 };
 
-const addAdditionalLink = async () => {
+const window.addAdditionalLink = async () => {
   const { value: values } = await Swal.fire({
     title: "Add additional link",
     html:
@@ -2791,7 +2791,7 @@ const addAdditionalLink = async () => {
     },
   });
   if (values) {
-    addAdditionalLinktoTableDD(values[0], values[1], values[2], values[3]);
+    window.addAdditionalLinktoTableDD(values[0], values[1], values[2], values[3]);
   }
 };
 

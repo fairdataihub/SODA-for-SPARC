@@ -732,7 +732,7 @@ const addProtocolLinktoTableDD = (protocolLink, protocolType, protocolRelation, 
     "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 };
 
-const addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) => {
+const window.addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) => {
   let linkTable = document.getElementById("other-link-table-dd");
   linkTable.style.display = "block";
   document.getElementById("div-other-link-table-dd").style.display = "block";
@@ -758,7 +758,7 @@ const addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) =
     linkRelation +
     "</td><td class='contributor-table-row' style='display:none'>" +
     description +
-    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 };
 
 const populateSelectSPARCAward = (object, id) => {
@@ -1766,7 +1766,7 @@ const loadRelatedInfoToTable = (array) => {
       if (protocolBoolean) {
         addProtocolLinktoTableDD(arr[2], arr[3], arr[1], arr[0]);
       } else {
-        addAdditionalLinktoTableDD(arr[2], arr[3], arr[1], arr[0]);
+        window.addAdditionalLinktoTableDD(arr[2], arr[3], arr[1], arr[0]);
       }
     }
   }
