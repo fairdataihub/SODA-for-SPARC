@@ -13880,6 +13880,13 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
         },
       }
     );
+
+    datasetSubtitleUploadText.innerHTML = `Successfully added dataset subtitle: ${datasetSubtitle}`;
+    guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "success");
+    sodaJSONObj["previously-uploaded-data"]["subtitle"] = datasetSubtitle;
+    await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
+    // Track the successful upload of a dataset subtitle via Kombucha
     ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
@@ -13888,20 +13895,16 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
       kombuchaEnums.Status.SUCCESS,
       {
         value: 1,
-        dataset_name: datasetName,
+        dataset_name: guidedGetDatasetName(sodaJSONObj),
+        dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
     );
-    // TODO: EDIT CODE BELOW!!!! AND CHECK dataset_id above
     ipcRenderer.send(
       "track-event",
       "Success",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
-      defaultBfDatasetId
+      guidedGetDatasetId(sodaJSONObj)
     );
-    datasetSubtitleUploadText.innerHTML = `Successfully added dataset subtitle: ${datasetSubtitle}`;
-    guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "success");
-    sodaJSONObj["previously-uploaded-data"]["subtitle"] = datasetSubtitle;
-    await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
     console.error(error);
     let emessage = userErrorMessage(error);
@@ -14299,11 +14302,9 @@ const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsA
   const result = await Promise.allSettled(promises);
 };
 
-//const add_dataset_permission = async();
-
 //********************************************************************************************************
 
-const guidedUploadSubjectsMetadata = async (bfAccount, datasetName, subjectsTableData) => {
+const guidedGenerateSubjectsMetadata = async (destination) => {
   document.getElementById("guided-subjects-metadata-upload-tr").classList.remove("hidden");
   const subjectsMetadataUploadText = document.getElementById(
     "guided-subjects-metadata-upload-text"
@@ -14346,7 +14347,7 @@ const guidedUploadSubjectsMetadata = async (bfAccount, datasetName, subjectsTabl
     throw new Error(userErrorMessage(error));
   }
 };
-const guidedUploadSamplesMetadata = async (bfAccount, datasetName, samplesTableData) => {
+const guidedGenerateSamplesMetadata = async (bfAccount, datasetName, samplesTableData) => {
   document.getElementById("guided-samples-metadata-upload-tr").classList.remove("hidden");
   const samplesMetadataUploadText = document.getElementById("guided-samples-metadata-upload-text");
   samplesMetadataUploadText.innerHTML = "Uploading samples metadata...";
@@ -14389,7 +14390,7 @@ const guidedUploadSamplesMetadata = async (bfAccount, datasetName, samplesTableD
   }
 };
 
-const guidedUploadSubmissionMetadata = async (bfAccount, datasetName, submissionMetadataJSON) => {
+const guidedGenerateSubmissionMetadata = async (bfAccount, datasetName, submissionMetadataJSON) => {
   document.getElementById("guided-submission-metadata-upload-tr").classList.remove("hidden");
   const submissionMetadataUploadText = document.getElementById(
     "guided-submission-metadata-upload-text"
@@ -14436,7 +14437,7 @@ const guidedUploadSubmissionMetadata = async (bfAccount, datasetName, submission
   }
 };
 
-const guidedUploadDatasetDescriptionMetadata = async (
+const guidedGenerateDatasetDescriptionMetadata = async (
   bfAccount,
   datasetName,
   datasetInformation,
@@ -14508,7 +14509,7 @@ const guidedUploadDatasetDescriptionMetadata = async (
   }
 };
 
-const guidedUploadCodeDescriptionMetadata = async (
+const guidedGenerateCodeDescriptionMetadata = async (
   bfAccount,
   datasetName,
   codeDescriptionFilePath
@@ -14537,7 +14538,7 @@ const guidedUploadCodeDescriptionMetadata = async (
   }
 };
 
-const guidedUploadREADMEorCHANGESMetadata = async (
+const guidedGenerateREADMEorCHANGESMetadata = async (
   bfAccount,
   datasetName,
   readmeORchanges, //lowercase file type
@@ -14589,6 +14590,21 @@ const guidedUploadREADMEorCHANGESMetadata = async (
     clientError(error);
 
     throw new Error(userErrorMessage(error));
+  }
+};
+
+const hideDatasetMetadataGenerationTableRows = (destination) => {
+  let tableIdToHide = "";
+  if (destination === "pennsieve") {
+    tableIdToHide = "guided-tbody-pennsieve-metadata-upload";
+  }
+  if (destination === "local") {
+    tableIdToHide = "guided-tbody-local-metadata-upload";
+  }
+  const tableToHide = document.getElementById(tableIdToHide);
+  const tableRowsToHide = tableToHide.children;
+  for (const row of tableRowsToHide) {
+    row.classList.add("hidden");
   }
 };
 
@@ -14745,37 +14761,30 @@ const guidedPennsieveDatasetUpload = async () => {
     await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
     await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
 
-    // Hide the dataset metadata table rows and display the metadata upload status table
-    const datasetMetadataUploadTable = document.getElementById(
-      "guided-tbody-dataset-metadata-upload"
-    );
-    const datasetMetadataUploadTableRows = datasetMetadataUploadTable.children;
-    for (const row of datasetMetadataUploadTableRows) {
-      row.classList.add("hidden");
-    }
+    hideDatasetMetadataGenerationTableRows("pennsieve");
     unHideAndSmoothScrollToElement("guided-div-dataset-metadata-upload-status-table");
 
     if (
       guidedSubjectsMetadata.length > 1 &&
       !pageIsSkipped("guided-create-subjects-metadata-tab")
     ) {
-      await guidedUploadSubjectsMetadata(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedSubjectsMetadata
-      );
+      await guidedGenerateSubjectsMetadata("pennsieve");
     }
     if (guidedSamplesMetadata.length > 1 && !pageIsSkipped("guided-create-samples-metadata-tab")) {
-      await guidedUploadSamplesMetadata(guidedBfAccount, guidedDatasetName, guidedSamplesMetadata);
+      await guidedGenerateSamplesMetadata(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedSamplesMetadata
+      );
     }
 
-    await guidedUploadSubmissionMetadata(
+    await guidedGenerateSubmissionMetadata(
       guidedBfAccount,
       guidedDatasetName,
       guidedSubmissionMetadataArray
     );
 
-    await guidedUploadDatasetDescriptionMetadata(
+    await guidedGenerateDatasetDescriptionMetadata(
       guidedBfAccount,
       guidedDatasetName,
       guidedDatasetInformation,
@@ -14784,7 +14793,7 @@ const guidedPennsieveDatasetUpload = async () => {
       allDatasetLinks
     );
 
-    await guidedUploadREADMEorCHANGESMetadata(
+    await guidedGenerateREADMEorCHANGESMetadata(
       guidedBfAccount,
       guidedDatasetName,
       "readme",
@@ -14795,7 +14804,7 @@ const guidedPennsieveDatasetUpload = async () => {
     if (!pageIsSkipped("guided-create-changes-metadata-tab")) {
       const changes = sodaJSONObj["dataset-metadata"]["CHANGES"];
       if (changes && changes.length > 0) {
-        await guidedUploadREADMEorCHANGESMetadata(
+        await guidedGenerateREADMEorCHANGESMetadata(
           guidedBfAccount,
           guidedDatasetName,
           "changes",
@@ -14807,7 +14816,7 @@ const guidedPennsieveDatasetUpload = async () => {
     // If the code_description was provided, upload to Pennsieve
     // (This key is only set if the user choses yes to add/update code description)
     if (sodaJSONObj?.["dataset-metadata"]?.["code-metadata"]?.["code_description"]) {
-      await guidedUploadCodeDescriptionMetadata(
+      await guidedGenerateCodeDescriptionMetadata(
         guidedBfAccount,
         guidedDatasetName,
         sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]
