@@ -20,6 +20,7 @@ import './scripts/others/progressContainer'
 import './scripts/validator/validate'
 import './scripts/metadata-files/datasetDescription'
 import './scripts/metadata-files/readme-changes'
+import "./scripts/organize-dataset/validation-functions"
 
 // Application Lotties
 import './assets/lotties/activate-lotties'

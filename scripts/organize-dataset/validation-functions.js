@@ -3,7 +3,7 @@ const { v4: uuid } = require("uuid");
 
 // Validate the dataset that has just been organized in Organize Dataset Step 6: Validate Dataset
 // TODO: Pennsieve vs local considerations for result parsing and error handling
-const validateOrganizedDataset = async () => {
+const window.validateOrganizedDataset = async () => {
   let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
   let datasetOrigin = "";
   let datasetDestination = "";
@@ -141,7 +141,7 @@ const validateOrganizedDataset = async () => {
 
   let validationReport;
   try {
-    validationReport = await createValidationReport(sodaJSONObjCopy);
+    validationReport = await window.createValidationReport(sodaJSONObjCopy);
     if (validationReport.status === "Error") {
       throw new Error(validationReport.error);
     }
@@ -307,14 +307,14 @@ const validateOrganizedDataset = async () => {
   });
 
   // list the results in a table ( ideally the one used in the validate feature )
-  if (!validationErrorsOccurred(report)) {
+  if (!window.validationErrorsOccurred(report)) {
     return;
   }
 
   window.clearValidationResults(validationErrorsTable);
 
   // display errors onto the page
-  displayValidationErrors(
+  window.displayValidationErrors(
     report,
     document.querySelector("#organize--table-validation-errors tbody")
   );
@@ -354,12 +354,12 @@ const displayValidationReportErrors = (validationReport, tableBody, validationEr
   });
 
   // check if there are validation errors
-  if (!validationErrorsOccurred(validationReport)) {
+  if (!window.validationErrorsOccurred(validationReport)) {
     return;
   }
 
   // display errors onto the page
-  displayValidationErrors(validationReport, tableBody);
+  window.displayValidationErrors(validationReport, tableBody);
 
   // show the validation errors to the user
   validationErrorsContainer.style.visibility = "visible";
@@ -401,5 +401,5 @@ const displayValidationReportErrors = (validationReport, tableBody, validationEr
 const formatForDatasetGeneration = (sodaJSONObj) => {
   // update the copy of the json structure to get its state post generation initialization
   window.updateJSONStructureGenerate(false, sodaJSONObj);
-  setSodaJSONStartingPoint(sodaJSONObj);
+  window.setSodaJSONStartingPoint(sodaJSONObj);
 };

@@ -7281,7 +7281,7 @@ const checkEmptyFilesAndFolders = async (sodaJSONObj) => {
   return errorMessage;
 };
 
-const setSodaJSONStartingPoint = (sodaJSONObj) => {
+const window.setSodaJSONStartingPoint = (sodaJSONObj) => {
   if (sodaJSONObj["starting-point"]["type"] === "local") {
     sodaJSONObj["starting-point"]["type"] = "new";
   }
@@ -7343,7 +7343,7 @@ document.getElementById("button-generate").addEventListener("click", async funct
   // updateJSON structure after Generate dataset tab
   window.updateJSONStructureGenerate(false, sodaJSONObj);
 
-  setSodaJSONStartingPoint(sodaJSONObj);
+  window.setSodaJSONStartingPoint(sodaJSONObj);
 
   let [dataset_name, dataset_destination] = setDatasetNameAndDestination(sodaJSONObj);
 

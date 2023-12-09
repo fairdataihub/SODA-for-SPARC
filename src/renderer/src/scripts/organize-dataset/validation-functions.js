@@ -1,26 +1,37 @@
 // Purpose: Logic for Organize Dataset Step 7: Validate Dataset
-const { v4: uuid } = require("uuid");
+import { v4 as uuid } from "uuid";
+import api from '../others/api/api'
+import Swal from "sweetalert2";
+import {clientError, userErrorMessage} from "../others/http-error-handler/error-handler";
+import kombuchaEnums from "../analytics/analytics-enums";
+
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
+
 
 // Validate the dataset that has just been organized in Organize Dataset Step 6: Validate Dataset
 // TODO: Pennsieve vs local considerations for result parsing and error handling
-const validateOrganizedDataset = async () => {
+window.validateOrganizedDataset = async () => {
   let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
   let datasetOrigin = "";
   let datasetDestination = "";
 
-  if ("bf" in sodaJSONObj["starting-point"]["type"]) {
+  console.log(window.sodaJSONObj)
+
+  if (window.sodaJSONObj["starting-point"]["type"] == "bf") {
     datasetOrigin = "Pennsieve";
   }
 
-  if ("local" in sodaJSONObj["starting-point"]["type"]) {
+  if (window.sodaJSONObj["starting-point"]["type"] == "local") {
     datasetOrigin = "Local";
   }
 
-  if ("new" in sodaJSONObj["starting-point"]["type"]) {
+  if (window.sodaJSONObj["starting-point"]["type"] == "new") {
     datasetOrigin = "New";
   }
 
-  if ("save-progress" in sodaJSONObj) {
+  if ("save-progress" in window.sodaJSONObj) {
     datasetOrigin = "Saved";
   }
 
@@ -65,7 +76,7 @@ const validateOrganizedDataset = async () => {
     },
   });
 
-  let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
+  let sodaJSONObjCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
   formatForDatasetGeneration(sodaJSONObjCopy);
 
   // if the user performed move, rename, delete on files in an imported dataset we need to perform those actions before creating the validation report;
@@ -74,24 +85,34 @@ const validateOrganizedDataset = async () => {
     await api.performUserActions(sodaJSONObjCopy);
   }
 
+
+  console.log("After the dataeset generation")
+
   // check size before doing this
   // situations:
-  // 1. Local dataset -> count sodaJSONObj
-  // 2. Pennsieve dataset -> count sodaJSONObj
-  // 3. Saved dataset -> count sodaJSONObj
-  // 4. Merge -> count sodaJSONObj + packageTypeCounts to get the total number of files
+  // 1. Local dataset -> count window.sodaJSONObj
+  // 2. Pennsieve dataset -> count window.sodaJSONObj
+  // 3. Saved dataset -> count window.sodaJSONObj
+  // 4. Merge -> count window.sodaJSONObj + packageTypeCounts to get the total number of files
   // NOTE: I do have to consider deleted files since they will not be included, but can ignore moved/renamed files since they will be included in the count
   // for now lets count then handle option 4 later
 
+
+  console.log("Before getting the number of files and folders")
+
   // get the number of files and folders in the dataset that have been added in the virutal organizer
-  file_counter = 0;
+  let file_counter = 0;
+  let folder_counter = 0;
   window.get_num_files_and_folders(sodaJSONObjCopy["dataset-structure"]);
+
+  console.log("After getting the number of files and folders")
 
   // check if the virutal files will be merged with a Pennsieve dataset
   if (
     $('input[name="generate-4"]:checked')[0] &&
     $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing"
   ) {
+    console.log("Before getting the number of packages in the dataset")
     // get the package count of the PS dataset in order to see if it exceeds the maximumn size
     let packageTypeCounts;
     try {
@@ -122,6 +143,8 @@ const validateOrganizedDataset = async () => {
     }
     // TODO: Handle the case where a file replaces an online file
     file_counter += packageCount;
+
+    console.log("After getting the number of packages in the dataset")
   }
 
   if (file_counter >= 50000) {
@@ -139,9 +162,10 @@ const validateOrganizedDataset = async () => {
     return;
   }
 
+  console.log("Anout to create validation report")
   let validationReport;
   try {
-    validationReport = await createValidationReport(sodaJSONObjCopy);
+    validationReport = await window.createValidationReport(sodaJSONObjCopy);
     if (validationReport.status === "Error") {
       throw new Error(validationReport.error);
     }
@@ -199,9 +223,9 @@ const validateOrganizedDataset = async () => {
 
     file_counter = 0;
     folder_counter = 0;
-    window.get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
+    window.get_num_files_and_folders(window.sodaJSONObj["dataset-structure"]);
     // log successful validation run to analytics
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       "Validation - Number of Files",
@@ -209,7 +233,7 @@ const validateOrganizedDataset = async () => {
       file_counter
     );
 
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_DATASETS,
       kombuchaEnums.Action.VALIDATE_DATASET,
@@ -226,16 +250,18 @@ const validateOrganizedDataset = async () => {
     return;
   }
 
-  let SODADirectory = path.join(os.homedir(), "SODA");
-  let validationReportPath = path.join(SODADirectory, "validation.txt");
+  console.log("After creating the validation report")
+
+  let SODADirectory = window.path.join(window.os.homedir(), "SODA");
+  let validationReportPath = window.path.join(SODADirectory, "validation.txt");
   let fullReport = validationReport.full_report;
-  fs.writeFileSync(validationReportPath, fullReport);
+  window.fs.writeFileSync(validationReportPath, fullReport);
 
   file_counter = 0;
   folder_counter = 0;
-  window.get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
+  window.get_num_files_and_folders(window.sodaJSONObj["dataset-structure"]);
   // log successful validation run to analytics
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-event",
     "Success",
     "Validation - Number of Files",
@@ -243,7 +269,7 @@ const validateOrganizedDataset = async () => {
     file_counter
   );
 
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-kombucha",
     kombuchaEnums.Category.PREPARE_DATASETS,
     kombuchaEnums.Action.VALIDATE_DATASET,
@@ -307,14 +333,14 @@ const validateOrganizedDataset = async () => {
   });
 
   // list the results in a table ( ideally the one used in the validate feature )
-  if (!validationErrorsOccurred(report)) {
+  if (!window.validationErrorsOccurred(report)) {
     return;
   }
 
   window.clearValidationResults(validationErrorsTable);
 
   // display errors onto the page
-  displayValidationErrors(
+  window.displayValidationErrors(
     report,
     document.querySelector("#organize--table-validation-errors tbody")
   );
@@ -330,7 +356,7 @@ const validateOrganizedDataset = async () => {
 
 document.querySelector(".validate-raw-report_btn").addEventListener("click", (e) => {
   // open the text file stored at the raw validation report path
-  let pathToRawReport = path.join(os.homedir(), "SODA", "validation.txt");
+  let pathToRawReport = window.path.join(window.os.homedir(), "SODA", "validation.txt");
 
   shell.openPath(pathToRawReport);
 });
@@ -354,12 +380,12 @@ const displayValidationReportErrors = (validationReport, tableBody, validationEr
   });
 
   // check if there are validation errors
-  if (!validationErrorsOccurred(validationReport)) {
+  if (!window.validationErrorsOccurred(validationReport)) {
     return;
   }
 
   // display errors onto the page
-  displayValidationErrors(validationReport, tableBody);
+  window.displayValidationErrors(validationReport, tableBody);
 
   // show the validation errors to the user
   validationErrorsContainer.style.visibility = "visible";
@@ -401,5 +427,5 @@ const displayValidationReportErrors = (validationReport, tableBody, validationEr
 const formatForDatasetGeneration = (sodaJSONObj) => {
   // update the copy of the json structure to get its state post generation initialization
   window.updateJSONStructureGenerate(false, sodaJSONObj);
-  setSodaJSONStartingPoint(sodaJSONObj);
+  window.setSodaJSONStartingPoint(sodaJSONObj);
 };

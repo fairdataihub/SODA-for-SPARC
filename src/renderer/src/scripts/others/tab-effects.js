@@ -960,7 +960,7 @@ window.handleValidateCardSelection = async (ev) => {
 
   if (selectedCard.id === "validate-organize-1-A") {
     // run validation
-    await validateOrganizedDataset();
+    await window.validateOrganizedDataset();
 
     // scroll to the results table
     document.querySelector("#organize--table-validation-errors").scrollIntoView();

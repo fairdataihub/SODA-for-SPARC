@@ -4720,7 +4720,7 @@ const handleValidationTableUi = (errors) => {
   validationResultsDiv.classList.add("hidden");
   validationSucessNoErrorsDiv.classList.add("hidden");
 
-  if (!validationErrorsOccurred(errors)) {
+  if (!window.validationErrorsOccurred(errors)) {
     // Dataset successfully validated without errors
     validationSucessNoErrorsDiv.classList.remove("hidden");
   } else {
@@ -4731,7 +4731,7 @@ const handleValidationTableUi = (errors) => {
     // clear the table
     window.clearValidationResults(validationErrorsTable);
     // display errors onto the page
-    displayValidationErrors(
+    window.displayValidationErrors(
       errors,
       document.querySelector("#guided-section-dataset-validation-table tbody")
     );

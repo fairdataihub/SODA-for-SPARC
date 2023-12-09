@@ -9,7 +9,7 @@ const { translatePipelineError } = require("./scripts/validator/parse-pipeline-e
 *******************************************************************************************************************
 */
 
-const createValidationReport = async (sodaJSONObj) => {
+const window.createValidationReport = async (sodaJSONObj) => {
   const clientUUID = uuid();
 
   let manifestJSONResponse = await client.post(
@@ -186,7 +186,7 @@ const validateLocalDataset = async () => {
 
   let validationReportData;
   try {
-    validationReportData = await createValidationReport(localSodaJsonObject);
+    validationReportData = await window.createValidationReport(localSodaJsonObject);
     if (validationReportData.status === "Error") {
       throw new Error(validationReportData.error);
     }
@@ -326,13 +326,13 @@ const validateLocalDataset = async () => {
     icon: hasValidationErrors ? "error" : "success",
   });
 
-  if (!validationErrorsOccurred(errors)) {
+  if (!window.validationErrorsOccurred(errors)) {
     return;
   }
 
   // display errors onto the page
   let tbody = document.querySelector("#validation-errors-container tbody");
-  displayValidationErrors(errors, tbody);
+  window.displayValidationErrors(errors, tbody);
 
   // show the validation errors to the user
   document.querySelector("#validation-errors-container").style.visibility = "visible";
@@ -440,7 +440,7 @@ const validatePennsieveDatasetStandAlone = async () => {
 
   let validationReport;
   try {
-    validationReport = await createValidationReport(localSodaJSONObj);
+    validationReport = await window.createValidationReport(localSodaJSONObj);
     if (validationReport.status === "Error") {
       throw new Error(validationReport.error);
     }
@@ -607,13 +607,13 @@ const validatePennsieveDatasetStandAlone = async () => {
     icon: hasValidationErrors ? "error" : "success",
   });
 
-  if (!validationErrorsOccurred(errors)) {
+  if (!window.validationErrorsOccurred(errors)) {
     return;
   }
 
   // display errors onto the page
   let tbody = document.querySelector("#validation-errors-container tbody");
-  displayValidationErrors(errors, tbody);
+  window.displayValidationErrors(errors, tbody);
 
   // show the validation errors to the user
   document.querySelector("#validation-errors-container").style.visibility = "visible";
@@ -625,7 +625,7 @@ const validatePennsieveDatasetStandAlone = async () => {
 *******************************************************************************************************************
 */
 
-const displayValidationErrors = (errors, tableBody) => {
+const window.displayValidationErrors = (errors, tableBody) => {
   // get the table body
   //let tableBody = document.querySelector("#validate_dataset-question-4 tbody");
 
@@ -684,7 +684,7 @@ const addValidationErrorToTable = (tableBody, errorMessage, validatorStatement) 
   tableBody.appendChild(row);
 };
 
-const validationErrorsOccurred = (errors) =>
+const window.validationErrorsOccurred = (errors) =>
   Object.getOwnPropertyNames(errors).length >= 1 ? true : false;
 
 /*
