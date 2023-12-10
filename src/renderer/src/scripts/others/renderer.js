@@ -26,7 +26,6 @@ import csvToJson from "convert-csv-to-json";
 import tippy from "tippy.js";
 import introJs from "intro.js";
 // import selectpicker  from "bootstrap-select";
-// import diskCheck from "check-disk-space";
 import validator from "validator";
 import doiRegex from "doi-regex";
 import lottie from "lottie-web";

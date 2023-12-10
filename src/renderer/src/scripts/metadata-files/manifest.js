@@ -847,157 +847,156 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
     }
     window.sodaJSONObj["starting-point"]["local-path"] = window.finalManifestGenerationPath;
 
-    //checking size of local folder path
-    // checkDiskSpace(window.finalManifestGenerationPath).then(async (diskSpace) => {
-      // let freeMem = diskSpace.free;
-      //if free memory is less than 3MB
-      // if (freeMem < 3145728) {
-      //   Swal.fire({
-      //     title: "Not enough space in local storage",
-      //     html: "Please select another storage device or free up 3MB",
-      //     allowEscapeKey: true,
-      //     allowOutsideClick: false,
-      //     heightAuto: false,
-      //     backdrop: "rgba(0,0,0, 0.4)",
-      //     icon: "warning",
-      //     showConfirmButton: "OK",
-      //   });
-      //   window.logMetadataForAnalytics(
-      //     "Error",
-      //     window.MetadataAnalyticsPrefix.MANIFEST,
-      //     window.AnalyticsGranularity.ALL_LEVELS,
-      //     "Generate",
-      //     Destinations.LOCAL
-      //   );
+    let freeMem = await window.electron.ipcRenderer.invoke("getDiskSpace", window.finalManifestGenerationPath);
 
-      //   window.logMetadataForAnalytics(
-      //     "Error",
-      //     window.MetadataAnalyticsPrefix.MANIFEST,
-      //     window.AnalyticsGranularity.ACTION,
-      //     "Generate - Check Storage Space",
-      //     Destinations.LOCAL
-      //   );
-      // } else {
-        if (pennsievePreview) {
-          generateAfterEdits();
-          return;
-        }
+    //if free memory is less than 3MB
+    if (freeMem < 3145728) {
+      Swal.fire({
+        title: "Not enough space in local storage",
+        html: "Please select another storage device or free up 3MB",
+        allowEscapeKey: true,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "warning",
+        showConfirmButton: "OK",
+      });
+      window.logMetadataForAnalytics(
+        "Error",
+        window.MetadataAnalyticsPrefix.MANIFEST,
+        window.AnalyticsGranularity.ALL_LEVELS,
+        "Generate",
+        Destinations.LOCAL
+      );
+
+      window.logMetadataForAnalytics(
+        "Error",
+        window.MetadataAnalyticsPrefix.MANIFEST,
+        window.AnalyticsGranularity.ACTION,
+        "Generate - Check Storage Space",
+        Destinations.LOCAL
+      );
+    } else {
+      if (pennsievePreview) {
+        generateAfterEdits();
+        return;
+      }
+    
+      window.logMetadataForAnalytics(
+        "Success",
+        window.MetadataAnalyticsPrefix.MANIFEST,
+        window.AnalyticsGranularity.ACTION,
+        "Generate - Check Storage Space",
+        Destinations.LOCAL
+      );
+
+      window.sodaJSONObj["starting-point"]["type"] = "local";
+      // if the manifest is going to be recreated post edits
+      if (manifestEditBoolean) {
+        localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder");
+      }
+      await window.create_json_object(action, window.sodaJSONObj, localDatasetFolderPath);
+      console.log("FInished create json object")
+      window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
+      window.populate_existing_folders(window.datasetStructureJSONObj);
+      window.populate_existing_metadata(window.sodaJSONObj);
+      console.log("FInished populate methods")
+      window.sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
+      window.sodaJSONObj["bf-account-selected"] = {};
+      window.sodaJSONObj["bf-dataset-selected"] = {};
+      window.sodaJSONObj["generate-dataset"] = {};
+      // check for empty folders/sub-folders
+      let continueProgressEmptyFolder = await checkEmptySubFolders(
+        window.sodaJSONObj["dataset-structure"]
+      );
+      console.log("FInished check empty sub folders")
+      if (continueProgressEmptyFolder === false) {
+        Swal.fire({
+          title: "Failed to generate the manifest files.",
+          text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
+          heightAuto: false,
+          icon: "error",
+          showConfirmButton: true,
+          backdrop: "rgba(0,0,0, 0.4)",
+          didOpen: () => {
+            Swal.hideLoading();
+          },
+        }).then((result) => {});
+
+        // log the error to analytics
         window.logMetadataForAnalytics(
-          "Success",
+          "Error",
           window.MetadataAnalyticsPrefix.MANIFEST,
-          window.AnalyticsGranularity.ACTION,
-          "Generate - Check Storage Space",
+          window.AnalyticsGranularity.ALL_LEVELS,
+          "Generate",
           Destinations.LOCAL
         );
+        $("#div-confirm-manifest-local-folder-dataset").hide();
+        return;
+      }
 
-        window.sodaJSONObj["starting-point"]["type"] = "local";
-        // if the manifest is going to be recreated post edits
-        if (manifestEditBoolean) {
-          localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder");
-        }
-        await window.create_json_object(action, window.sodaJSONObj, localDatasetFolderPath);
-        console.log("FInished create json object")
-        window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-        window.populate_existing_folders(window.datasetStructureJSONObj);
-        window.populate_existing_metadata(window.sodaJSONObj);
-        console.log("FInished populate methods")
-        window.sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
-        window.sodaJSONObj["bf-account-selected"] = {};
-        window.sodaJSONObj["bf-dataset-selected"] = {};
-        window.sodaJSONObj["generate-dataset"] = {};
-        // check for empty folders/sub-folders
-        let continueProgressEmptyFolder = await checkEmptySubFolders(
-          window.sodaJSONObj["dataset-structure"]
+      // check for no SPARC folders on a Pennsieve datasets (already include check for a local dataset)
+      let continueProgressNoSPARCFolders = await checkNoSparcFolders(
+        window.sodaJSONObj["dataset-structure"]
+      );
+      console.log("FInished check no sparc folders")
+      if (continueProgressNoSPARCFolders === true) {
+        Swal.fire({
+          title: "Failed to generate the manifest files.",
+          text: "The dataset does not contain any SPARC folder(s). Please choose a valid dataset before generating the manifest files.",
+          heightAuto: false,
+          icon: "error",
+          showConfirmButton: true,
+          backdrop: "rgba(0,0,0, 0.4)",
+          didOpen: () => {
+            Swal.hideLoading();
+          },
+        }).then((result) => {});
+        // log the error to analytics
+        window.logMetadataForAnalytics(
+          "Error",
+          window.MetadataAnalyticsPrefix.MANIFEST,
+          window.AnalyticsGranularity.ALL_LEVELS,
+          "Generate",
+          Destinations.LOCAL
         );
-        console.log("FInished check empty sub folders")
-        if (continueProgressEmptyFolder === false) {
-          Swal.fire({
-            title: "Failed to generate the manifest files.",
-            text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
-            heightAuto: false,
-            icon: "error",
-            showConfirmButton: true,
-            backdrop: "rgba(0,0,0, 0.4)",
-            didOpen: () => {
-              Swal.hideLoading();
-            },
-          }).then((result) => {});
+        $("#div-confirm-manifest-local-folder-dataset").hide();
+        return;
+      }
 
-          // log the error to analytics
-          window.logMetadataForAnalytics(
-            "Error",
-            window.MetadataAnalyticsPrefix.MANIFEST,
-            window.AnalyticsGranularity.ALL_LEVELS,
-            "Generate",
-            Destinations.LOCAL
-          );
-          $("#div-confirm-manifest-local-folder-dataset").hide();
-          return;
-        }
-
-        // check for no SPARC folders on a Pennsieve datasets (already include check for a local dataset)
-        let continueProgressNoSPARCFolders = await checkNoSparcFolders(
-          window.sodaJSONObj["dataset-structure"]
+      // check for invalid high level folders in a dataset
+      let continueProgressInvalidFolders = await checkInvalidHighLevelFolders(
+        window.sodaJSONObj["dataset-structure"]
+      );
+      console.log("FInished check invalid high level folders")
+      if (continueProgressInvalidFolders === true) {
+        Swal.fire({
+          title: "Failed to generate the manifest files.",
+          text: "The dataset contains invalid, non-SPARC high level folder(s). Please delete or rename them according to SPARC standards before generating the manifest files.",
+          heightAuto: false,
+          showConfirmButton: true,
+          icon: "error",
+          backdrop: "rgba(0,0,0, 0.4)",
+          didOpen: () => {
+            Swal.hideLoading();
+          },
+        }).then((result) => {});
+        // log the error to analytics
+        window.logMetadataForAnalytics(
+          "Error",
+          window.MetadataAnalyticsPrefix.MANIFEST,
+          window.AnalyticsGranularity.ALL_LEVELS,
+          "Generate",
+          Destinations.LOCAL
         );
-        console.log("FInished check no sparc folders")
-        if (continueProgressNoSPARCFolders === true) {
-          Swal.fire({
-            title: "Failed to generate the manifest files.",
-            text: "The dataset does not contain any SPARC folder(s). Please choose a valid dataset before generating the manifest files.",
-            heightAuto: false,
-            icon: "error",
-            showConfirmButton: true,
-            backdrop: "rgba(0,0,0, 0.4)",
-            didOpen: () => {
-              Swal.hideLoading();
-            },
-          }).then((result) => {});
-          // log the error to analytics
-          window.logMetadataForAnalytics(
-            "Error",
-            window.MetadataAnalyticsPrefix.MANIFEST,
-            window.AnalyticsGranularity.ALL_LEVELS,
-            "Generate",
-            Destinations.LOCAL
-          );
-          $("#div-confirm-manifest-local-folder-dataset").hide();
-          return;
-        }
-
-        // check for invalid high level folders in a dataset
-        let continueProgressInvalidFolders = await checkInvalidHighLevelFolders(
-          window.sodaJSONObj["dataset-structure"]
-        );
-        console.log("FInished check invalid high level folders")
-        if (continueProgressInvalidFolders === true) {
-          Swal.fire({
-            title: "Failed to generate the manifest files.",
-            text: "The dataset contains invalid, non-SPARC high level folder(s). Please delete or rename them according to SPARC standards before generating the manifest files.",
-            heightAuto: false,
-            showConfirmButton: true,
-            icon: "error",
-            backdrop: "rgba(0,0,0, 0.4)",
-            didOpen: () => {
-              Swal.hideLoading();
-            },
-          }).then((result) => {});
-          // log the error to analytics
-          window.logMetadataForAnalytics(
-            "Error",
-            window.MetadataAnalyticsPrefix.MANIFEST,
-            window.AnalyticsGranularity.ALL_LEVELS,
-            "Generate",
-            Destinations.LOCAL
-          );
-          $("#div-confirm-manifest-local-folder-dataset").hide();
-          return;
-        }
-        await generateManifestHelper();
-        console.log("FInished generate manifest helper")
-        await initiate_generate_manifest_local(manifestEditBoolean, localDatasetFolderPath);
-        console.log("FInished initiate generate manifest local")
-      // }
-    // });
+        $("#div-confirm-manifest-local-folder-dataset").hide();
+        return;
+      }
+      await generateManifestHelper();
+      console.log("FInished generate manifest helper")
+      await initiate_generate_manifest_local(manifestEditBoolean, localDatasetFolderPath);
+      console.log("FInished initiate generate manifest local")
+    }
   } else {
     // Case 2: bf dataset
     if (manifestEditBoolean) {

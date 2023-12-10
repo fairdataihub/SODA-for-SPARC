@@ -4,7 +4,6 @@ This file contains all of the functions related to the submission.xlsx file
 import Swal from "sweetalert2";
 import 'fomantic-ui/dist/semantic';
 import introJs from "intro.js";
-// import checkDiskSpace from "check-disk-space";
 import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
 import client from '../client'
 import kombuchaEnums from "../analytics/analytics-enums";
@@ -650,49 +649,48 @@ $(document).ready(function () {
 //Function is used for when user is creating Metadata files locally
 //At most the metadata files should be no bigger than 3MB
 //Function checks the selected storage device to ensure at least 3MB are available
-const checkStorage = (id) => {
+const checkStorage = async (id) => {
   let location = id;
   let threeMB = 3145728;
-  // TODO: Externalize CheckDiskSpace
-  // checkDiskSpace(location).then((diskSpace) => {
-  //   freeMem = diskSpace.free;
-  //   if (freeMem < threeMB) {
-  //     Swal.fire({
-  //       backdrop: "rgba(0,0,0, 0.4)",
-  //       confirmButtonText: "OK",
-  //       heightAuto: false,
-  //       icon: "warning",
-  //       showCancelButton: false,
-  //       title: "Not enough space",
-  //       text: "Please free up at least 3MB",
-  //       showClass: {
-  //         popup: "animate__animated animate__zoomIn animate__faster",
-  //       },
-  //       hideClass: {
-  //         popup: "animate__animated animate__zoomOut animate__faster",
-  //       },
-  //     });
 
-  //     window.electron.ipcRenderer.send(
-  //       "track-event",
-  //       "Error",
-  //       "Prepare Metadata - Generate - Check Storage Space",
-  //       "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
-  //       1
-  //     );
+  let freeMem = await window.electron.ipcRenderer.invoke("getDiskSpace", location);
 
-  //     // stop execution to avoid logging a success case for the storage space check
-  //     return;
-  //   }
+  if (freeMem < threeMB) {
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "OK",
+      heightAuto: false,
+      icon: "warning",
+      showCancelButton: false,
+      title: "Not enough space",
+      text: "Please free up at least 3MB",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
 
-  //   window.electron.ipcRenderer.send(
-  //     "track-event",
-  //     "Success",
-  //     "Prepare Metadata - Generate - Check Storage Space",
-  //     "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
-  //     1
-  //   );
-  // });
+    window.electron.ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Prepare Metadata - Generate - Check Storage Space",
+      "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
+      1
+    );
+
+    // stop execution to avoid logging a success case for the storage space check
+    return;
+  }
+  
+  window.electron.ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Prepare Metadata - Generate - Check Storage Space",
+    "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
+    1
+  );
 };
 
 const localSubmissionBtn = document.getElementById("btn-confirm-local-submission-destination");
