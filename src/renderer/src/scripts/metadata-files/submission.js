@@ -653,7 +653,9 @@ const checkStorage = async (id) => {
   let location = id;
   let threeMB = 3145728;
 
+  window.log.info(`Checking available disk space for ${location}`);
   let freeMem = await window.electron.ipcRenderer.invoke("getDiskSpace", location);
+  console.log("Free memory result: ", freeMem)
 
   if (freeMem < threeMB) {
     Swal.fire({

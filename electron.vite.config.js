@@ -3,7 +3,6 @@ import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
 import react from '@vitejs/plugin-react'
 import copy from 'rollup-plugin-copy'
 import inject from "@rollup/plugin-inject";
-import commonjs from '@rollup/plugin-commonjs';
 
 const commonjsPackages = ['image-data-uri']
 
