@@ -7696,7 +7696,7 @@ const patchPreviousGuidedModeVersions = async () => {
   //Add key to track status of Pennsieve uploads
   if (!sodaJSONObj["pennsieve-upload-status"]) {
     sodaJSONObj["pennsieve-upload-status"] = {
-      "dataset-metadata-upload-status": "not-started",
+      "dataset-metadata-pennsieve-genration-status": "not-started",
     };
   }
 
@@ -14305,59 +14305,69 @@ const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsA
 //********************************************************************************************************
 
 const guidedGenerateSubjectsMetadata = async (destination) => {
-  document.getElementById("guided-subjects-metadata-upload-tr").classList.remove("hidden");
-  const subjectsMetadataUploadText = document.getElementById(
-    "guided-subjects-metadata-upload-text"
+  const generationDestination = destination === "pennsieve" ? "pennsieve" : "local";
+
+  //// Unhide the subject metadata generation table row and set the rows status to loading ////
+  document
+    .getElementById(`guided-subjects-metadata-${generationDestination}-genration-tr`)
+    .classList.remove("hidden");
+  const subjectsMetadataGenerationText = document.getElementById(
+    `guided-subjects-metadata-${generationDestination}-genration-text`
   );
-  subjectsMetadataUploadText.innerHTML = "Uploading subjects metadata...";
-  guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "loading");
+  subjectsMetadataGenerationText.innerHTML = "Uploading subjects metadata...";
+  guidedUploadStatusIcon(
+    `guided-subjects-metadata-${generationDestination}-genration-status`,
+    "loading"
+  );
+  //////////////////////////////////////////////////////////////////////////////////////////
 
-  const previouslyUpdatedSubjectsMetadata =
-    sodaJSONObj["previously-uploaded-data"]["subjects-metadata"];
-
-  if (JSON.stringify(previouslyUpdatedSubjectsMetadata) === JSON.stringify(subjectsTableData)) {
-    guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "success");
-    subjectsMetadataUploadText.innerHTML = "Subjects metadata added to Pennsieve";
-    return;
-  }
-
+  //// Generate the subjects metadata file ////
   try {
     await client.post(
       `/prepare_metadata/subjects_file`,
       {
-        filepath: "",
-        selected_account: bfAccount,
-        selected_dataset: datasetName,
+        filepath: generationDestination === "pennsieve" ? "" : destination,
+        selected_account: defaultBfAccount,
+        selected_dataset:
+          generationDestination === "pennsieve" ? guidedGetDatasetName(sodaJSONObj) : "",
         subjects_header_row: subjectsTableData,
       },
       {
         params: {
-          upload_boolean: true,
+          upload_boolean: generationDestination === "pennsieve",
         },
       }
     );
-    guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "success");
-    subjectsMetadataUploadText.innerHTML = `Subjects metadata successfully uploaded`;
-    sodaJSONObj["previously-uploaded-data"]["subjects-metadata"] = subjectsTableData;
-    await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+    guidedUploadStatusIcon(
+      `guided-subjects-metadata-${generationDestination}-genration-status`,
+      "success"
+    );
+    subjectsMetadataGenerationText.innerHTML = `Subjects metadata successfully generated`;
   } catch (error) {
-    guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "error");
-    subjectsMetadataUploadText.innerHTML = `Failed to upload subjects metadata`;
+    guidedUploadStatusIcon(
+      `guided-subjects-metadata-${generationDestination}-genration-status`,
+      "error"
+    );
+    subjectsMetadataGenerationText.innerHTML = `Failed to generate subjects metadata`;
     clientError(error);
     throw new Error(userErrorMessage(error));
   }
 };
 const guidedGenerateSamplesMetadata = async (bfAccount, datasetName, samplesTableData) => {
-  document.getElementById("guided-samples-metadata-upload-tr").classList.remove("hidden");
-  const samplesMetadataUploadText = document.getElementById("guided-samples-metadata-upload-text");
+  document
+    .getElementById("guided-samples-metadata-pennsieve-genration-tr")
+    .classList.remove("hidden");
+  const samplesMetadataUploadText = document.getElementById(
+    "guided-samples-metadata-pennsieve-genration-text"
+  );
   samplesMetadataUploadText.innerHTML = "Uploading samples metadata...";
-  guidedUploadStatusIcon("guided-samples-metadata-upload-status", "loading");
+  guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "loading");
 
   const previouslyUpdatedSamplesMetadata =
     sodaJSONObj["previously-uploaded-data"]["samples-metadata"];
 
   if (JSON.stringify(previouslyUpdatedSamplesMetadata) === JSON.stringify(samplesTableData)) {
-    guidedUploadStatusIcon("guided-samples-metadata-upload-status", "success");
+    guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "success");
     samplesMetadataUploadText.innerHTML = "Samples metadata added to Pennsieve";
     return;
   }
@@ -14377,12 +14387,12 @@ const guidedGenerateSamplesMetadata = async (bfAccount, datasetName, samplesTabl
         },
       }
     );
-    guidedUploadStatusIcon("guided-samples-metadata-upload-status", "success");
+    guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "success");
     samplesMetadataUploadText.innerHTML = `Samples metadata successfully uploaded`;
     sodaJSONObj["previously-uploaded-data"]["samples-metadata"] = samplesTableData;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
-    guidedUploadStatusIcon("guided-samples-metadata-upload-status", "error");
+    guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "error");
     samplesMetadataUploadText.innerHTML = `Failed to upload samples metadata`;
     clientError(error);
 
@@ -14391,12 +14401,14 @@ const guidedGenerateSamplesMetadata = async (bfAccount, datasetName, samplesTabl
 };
 
 const guidedGenerateSubmissionMetadata = async (bfAccount, datasetName, submissionMetadataJSON) => {
-  document.getElementById("guided-submission-metadata-upload-tr").classList.remove("hidden");
+  document
+    .getElementById("guided-submission-metadata-pennsieve-genration-tr")
+    .classList.remove("hidden");
   const submissionMetadataUploadText = document.getElementById(
-    "guided-submission-metadata-upload-text"
+    "guided-submission-metadata-pennsieve-genration-text"
   );
   submissionMetadataUploadText.innerHTML = "Uploading submission metadata...";
-  guidedUploadStatusIcon("guided-submission-metadata-upload-status", "loading");
+  guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "loading");
 
   const previouslyUpdatedSubmissionMetadata =
     sodaJSONObj["previously-uploaded-data"]["submission-metadata"];
@@ -14404,7 +14416,7 @@ const guidedGenerateSubmissionMetadata = async (bfAccount, datasetName, submissi
   if (
     JSON.stringify(previouslyUpdatedSubmissionMetadata) === JSON.stringify(submissionMetadataJSON)
   ) {
-    guidedUploadStatusIcon("guided-submission-metadata-upload-status", "success");
+    guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "success");
     submissionMetadataUploadText.innerHTML = "Submission metadata added to Pennsieve";
     return;
   }
@@ -14424,12 +14436,12 @@ const guidedGenerateSubmissionMetadata = async (bfAccount, datasetName, submissi
         },
       }
     );
-    guidedUploadStatusIcon("guided-submission-metadata-upload-status", "success");
+    guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "success");
     submissionMetadataUploadText.innerHTML = `Submission metadata successfully uploaded`;
     sodaJSONObj["previously-uploaded-data"]["submission-metadata"] = submissionMetadataJSON;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
-    guidedUploadStatusIcon("guided-submission-metadata-upload-status", "error");
+    guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "error");
     submissionMetadataUploadText.innerHTML = `Failed to upload submission metadata`;
     clientError(error);
 
@@ -14446,13 +14458,16 @@ const guidedGenerateDatasetDescriptionMetadata = async (
   additionalLinks
 ) => {
   document
-    .getElementById("guided-dataset-description-metadata-upload-tr")
+    .getElementById("guided-dataset-description-metadata-pennsieve-genration-tr")
     .classList.remove("hidden");
   const datasetDescriptionMetadataUploadText = document.getElementById(
-    "guided-dataset-description-metadata-upload-text"
+    "guided-dataset-description-metadata-pennsieve-genration-text"
   );
   datasetDescriptionMetadataUploadText.innerHTML = "Uploading dataset description metadata...";
-  guidedUploadStatusIcon("guided-dataset-description-metadata-upload-status", "loading");
+  guidedUploadStatusIcon(
+    "guided-dataset-description-metadata-pennsieve-genration-status",
+    "loading"
+  );
 
   const previouslyUpdatedDatasetDescriptionMetadata =
     sodaJSONObj["previously-uploaded-data"]["dataset-description-metadata"];
@@ -14466,7 +14481,10 @@ const guidedGenerateDatasetDescriptionMetadata = async (
       additionalLinks,
     })
   ) {
-    guidedUploadStatusIcon("guided-dataset-description-metadata-upload-status", "success");
+    guidedUploadStatusIcon(
+      "guided-dataset-description-metadata-pennsieve-genration-status",
+      "success"
+    );
     datasetDescriptionMetadataUploadText.innerHTML =
       "Dataset description metadata added to Pennsieve";
     return;
@@ -14490,7 +14508,10 @@ const guidedGenerateDatasetDescriptionMetadata = async (
         },
       }
     );
-    guidedUploadStatusIcon("guided-dataset-description-metadata-upload-status", "success");
+    guidedUploadStatusIcon(
+      "guided-dataset-description-metadata-pennsieve-genration-status",
+      "success"
+    );
     datasetDescriptionMetadataUploadText.innerHTML =
       "Dataset description metadata successfully uploaded";
     sodaJSONObj["previously-uploaded-data"]["dataset-description-metadata"] = {
@@ -14501,7 +14522,10 @@ const guidedGenerateDatasetDescriptionMetadata = async (
     };
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
-    guidedUploadStatusIcon("guided-dataset-description-metadata-upload-status", "error");
+    guidedUploadStatusIcon(
+      "guided-dataset-description-metadata-pennsieve-genration-status",
+      "error"
+    );
     datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload dataset description metadata`;
     clientError(error);
 
@@ -14514,12 +14538,14 @@ const guidedGenerateCodeDescriptionMetadata = async (
   datasetName,
   codeDescriptionFilePath
 ) => {
-  document.getElementById("guided-code-description-metadata-upload-tr").classList.remove("hidden");
+  document
+    .getElementById("guided-code-description-metadata-pennsieve-genration-tr")
+    .classList.remove("hidden");
   const codeDescriptionMetadataUploadText = document.getElementById(
-    "guided-code-description-metadata-upload-text"
+    "guided-code-description-metadata-pennsieve-genration-text"
   );
   codeDescriptionMetadataUploadText.innerHTML = "Uploading code description metadata...";
-  guidedUploadStatusIcon("guided-code-description-metadata-upload-status", "loading");
+  guidedUploadStatusIcon("guided-code-description-metadata-pennsieve-genration-status", "loading");
 
   try {
     await client.post("/prepare_metadata/code_description_file", {
@@ -14527,10 +14553,13 @@ const guidedGenerateCodeDescriptionMetadata = async (
       selected_account: bfAccount,
       selected_dataset: datasetName,
     });
-    guidedUploadStatusIcon("guided-code-description-metadata-upload-status", "success");
+    guidedUploadStatusIcon(
+      "guided-code-description-metadata-pennsieve-genration-status",
+      "success"
+    );
     codeDescriptionMetadataUploadText.innerHTML = "Code description metadata added to Pennsieve";
   } catch (error) {
-    guidedUploadStatusIcon("guided-code-description-metadata-upload-status", "error");
+    guidedUploadStatusIcon("guided-code-description-metadata-pennsieve-genration-status", "error");
     codeDescriptionMetadataUploadText.innerHTML = `Failed to upload code description metadata`;
     clientError(error);
 
@@ -14545,13 +14574,16 @@ const guidedGenerateREADMEorCHANGESMetadata = async (
   readmeOrChangesMetadata
 ) => {
   document
-    .getElementById(`guided-${readmeORchanges}-metadata-upload-tr`)
+    .getElementById(`guided-${readmeORchanges}-metadata-pennsieve-genration-tr`)
     .classList.remove("hidden");
   const datasetDescriptionMetadataUploadText = document.getElementById(
-    `guided-${readmeORchanges}-metadata-upload-text`
+    `guided-${readmeORchanges}-metadata-pennsieve-genration-text`
   );
   datasetDescriptionMetadataUploadText.innerHTML = `Uploading ${readmeORchanges.toUpperCase()} metadata...`;
-  guidedUploadStatusIcon(`guided-${readmeORchanges}-metadata-upload-status`, "loading");
+  guidedUploadStatusIcon(
+    `guided-${readmeORchanges}-metadata-pennsieve-genration-status`,
+    "loading"
+  );
 
   const previouslyUpdatedREADMEorCHANGESMetadata =
     sodaJSONObj["previously-uploaded-data"][`${readmeORchanges}-metadata`];
@@ -14560,7 +14592,10 @@ const guidedGenerateREADMEorCHANGESMetadata = async (
     JSON.stringify(previouslyUpdatedREADMEorCHANGESMetadata) ===
     JSON.stringify(readmeOrChangesMetadata)
   ) {
-    guidedUploadStatusIcon(`guided-${readmeORchanges}-metadata-upload-status`, "success");
+    guidedUploadStatusIcon(
+      `guided-${readmeORchanges}-metadata-pennsieve-genration-status`,
+      "success"
+    );
     datasetDescriptionMetadataUploadText.innerHTML = `${readmeORchanges.toUpperCase()} metadata added to Pennsieve`;
     return;
   }
@@ -14579,13 +14614,19 @@ const guidedGenerateREADMEorCHANGESMetadata = async (
         },
       }
     );
-    guidedUploadStatusIcon(`guided-${readmeORchanges}-metadata-upload-status`, "success");
+    guidedUploadStatusIcon(
+      `guided-${readmeORchanges}-metadata-pennsieve-genration-status`,
+      "success"
+    );
     datasetDescriptionMetadataUploadText.innerHTML = `${readmeORchanges.toUpperCase()} metadata successfully uploaded`;
     sodaJSONObj["previously-uploaded-data"][`${readmeORchanges}-metadata`] =
       readmeOrChangesMetadata;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
-    guidedUploadStatusIcon(`guided-${readmeORchanges}-metadata-upload-status`, "error");
+    guidedUploadStatusIcon(
+      `guided-${readmeORchanges}-metadata-pennsieve-genration-status`,
+      "error"
+    );
     datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload ${readmeORchanges.toUpperCase()} metadata`;
     clientError(error);
 
@@ -14596,10 +14637,10 @@ const guidedGenerateREADMEorCHANGESMetadata = async (
 const hideDatasetMetadataGenerationTableRows = (destination) => {
   let tableIdToHide = "";
   if (destination === "pennsieve") {
-    tableIdToHide = "guided-tbody-pennsieve-metadata-upload";
+    tableIdToHide = "guided-tbody-pennsieve-dataset-metadata-generation";
   }
   if (destination === "local") {
-    tableIdToHide = "guided-tbody-local-metadata-upload";
+    tableIdToHide = "guided-tbody-local-dataset-metadata-generation";
   }
   const tableToHide = document.getElementById(tableIdToHide);
   const tableRowsToHide = tableToHide.children;
@@ -14742,7 +14783,9 @@ const guidedPennsieveDatasetUpload = async () => {
     }
 
     //Display the Pennsieve metadata upload table
-    unHideAndSmoothScrollToElement("guided-div-pennsieve-metadata-upload-status-table");
+    unHideAndSmoothScrollToElement(
+      "guided-div-pennsieve-metadata-pennsieve-genration-status-table"
+    );
 
     // Create the dataset on Pennsieve
     await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
@@ -14762,7 +14805,7 @@ const guidedPennsieveDatasetUpload = async () => {
     await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
 
     hideDatasetMetadataGenerationTableRows("pennsieve");
-    unHideAndSmoothScrollToElement("guided-div-dataset-metadata-upload-status-table");
+    unHideAndSmoothScrollToElement("guided-div-dataset-metadata-pennsieve-genration-status-table");
 
     if (
       guidedSubjectsMetadata.length > 1 &&

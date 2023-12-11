@@ -1956,6 +1956,7 @@ const generateSubjectsFileHelper = async (uploadBFBoolean) => {
   }).then((result) => {});
 
   try {
+    console.log(subjectsDestinationPath);
     log.info(`Generating a subjects file.`);
     let save_locally = await client.post(
       `/prepare_metadata/subjects_file`,
