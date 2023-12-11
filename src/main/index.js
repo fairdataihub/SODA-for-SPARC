@@ -4,7 +4,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { autoUpdater } from "electron-updater";
 import { trackEvent, trackKombuchaEvent } from "./analytics"
-import icon from '../../resources/icon.png?asset'
+import icon from '../../resources/soda_icon.png?asset'
 import ElectronLog from "electron-log"
 import axios from "axios"
 import fp from "find-free-port"
@@ -564,8 +564,20 @@ const initialize = () => {
     trackEvent("Success", "App Launched - OS", os.platform() + "-" + os.release());
     trackEvent("Success", "App Launched - SODA", app.getVersion());
 
+    console.log(__dirname)
+
 
     function createWindow() {
+
+      let iconPath = ""
+      if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+        iconPath = process.env['ELECTRON_RENDERER_URL'] + "/public/menu-icon/soda_icon.png"
+      } else {
+        iconPath = join(__dirname, '../renderer/public/menu-icon/soda_icon.png')
+      }
+
+      console.log(iconPath)
+
       // Create the browser window.
       mainWindow = new BrowserWindow({
         show: false,
@@ -577,7 +589,7 @@ const initialize = () => {
         show: false,
         nodeIntegration: true,
         autoHideMenuBar: true,
-        ...(process.platform === 'linux' ? { icon } : {}),
+        icon: iconPath,
         webPreferences: {
           preload: join(__dirname, '../preload/index.js'),
           sandbox: false,
