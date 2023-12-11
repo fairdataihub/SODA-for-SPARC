@@ -1,5 +1,5 @@
 appId: com.fairdataihub.sodaforsparc
-productName: SODA-for-SPARC
+productName: SODA for SPARC
 directories:
   buildResources: build
 files:
