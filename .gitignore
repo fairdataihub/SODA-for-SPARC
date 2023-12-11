@@ -13,7 +13,6 @@ src/Users
 semantic
 semantic.json
 .env
-build/
 
 *.log*
 build
