@@ -8334,7 +8334,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     for (const [subjectName, subjectData] of Object.entries(
       this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
     )) {
-      for (sampleName of Object.keys(subjectData)) {
+      for (const sampleName of Object.keys(subjectData)) {
         samplesOutsidePools.push({
           sampleName: sampleName,
           subjectName: subjectName,
