@@ -13,6 +13,7 @@ files:
 asarUnpack:
   - resources/**
 win:
+  icon: 'app-icon/win/icon.ico' 
   executableName: react
   extraResources:
     - from: ./file_templates
