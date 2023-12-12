@@ -47,7 +47,6 @@ var mainWindow = null;
 
 
 // import "./appUtils"
-console.log("Test up[date")
 
 
 // TODO: move to a separate file that handles all the ipcMain handlers
