@@ -3056,6 +3056,7 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
   //Add datasetStructureJSONObj to the sodaJSONObj and use to load the
   //datasetStructureJsonObj when progress resumed
   sodaJSONObj["saved-datset-structure-json-obj"] = datasetStructureJSONObj;
+  sodaJSONObj["dataset-structure"] = datasetStructureJSONObj;
   sodaJSONObj["subjects-table-data"] = subjectsTableData;
   sodaJSONObj["samples-table-data"] = samplesTableData;
 
@@ -14304,6 +14305,31 @@ const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsA
 
 //********************************************************************************************************
 
+document
+  .getElementById("guided-button-generate-local-dataset-copy")
+  .addEventListener("click", () => {
+    ipcRenderer.send("guided-select-local-dataset-generation-path");
+  });
+
+ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, filePath) => {
+  // Check the available disk space on the drive where the user wants to generate the dataset
+  const availableDiskSpace = await checkDiskSpace(filePath);
+  console.log("Available disk space: ", availableDiskSpace);
+  const freeMemoryInMb = roundToHundredth(availableDiskSpace.free / 1024 ** 2);
+  console.log("Available disk space in MB: ", freeMemoryInMb);
+  // Get the size of the dataset that will be generated
+  const localDatasetSizeReq = await client.post(
+    "/curate_datasets/dataset_size",
+    {
+      soda_json_structure: sodaJSONObj,
+    },
+    { timeout: 0 }
+  );
+  const localDatasetSize = localDatasetSizeReq.data.dataset_size;
+  const datasetSizeInMb = roundToHundredth(localDatasetSize / 1024 ** 2);
+  console.log("Dataset size in MB: ", datasetSizeInMb);
+});
+
 const guidedGenerateSubjectsMetadata = async (destination) => {
   const generationDestination = destination === "pennsieve" ? "pennsieve" : "local";
 
@@ -14649,7 +14675,7 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
   }
 };
 
-const guidedPennsieveDatasetUpload = async () => {
+const guidedPennsieveDatasetUpload = async (generationDestination) => {
   guidedSetNavLoadingState(true);
   try {
     const guidedBfAccount = defaultBfAccount;
@@ -15711,7 +15737,7 @@ $("#guided-generate-dataset-button").on("click", async function () {
     return;
   }
   await openPage("guided-dataset-generation-tab");
-  guidedPennsieveDatasetUpload();
+  guidedPennsieveDatasetUpload("pennsieve");
 });
 
 const guidedSaveBannerImage = async () => {
