@@ -51,7 +51,7 @@ linux:
   asar: true
   maintainer: electronjs.org
   category: Utility
-  icon: 'icons/icon.icns'
+  icon: 'icons/icon.png'
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
