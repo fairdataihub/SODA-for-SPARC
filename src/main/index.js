@@ -269,7 +269,6 @@ const getScriptPath = () => {
 };
 
 const killAllPreviousProcesses = async () => {
-  console.log("Killing all previous processes");
   // kill all previous python processes that could be running.
   let promisesArray = [];
   let endRange = PORT + portRange;
