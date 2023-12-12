@@ -246,10 +246,11 @@ const dropHandler = async (
   }
 };
 
+const roundToHundredth = (value) => {
+  return Number(parseFloat(value.toFixed(2)));
+};
+
 const checkAvailableSpace = () => {
-  const roundToHundredth = (value) => {
-    return Number(parseFloat(value.toFixed(2)));
-  };
   let location = document
     .getElementById("input-destination-generate-dataset-locally")
     .getAttribute("placeholder");
