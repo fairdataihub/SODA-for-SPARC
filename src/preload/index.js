@@ -10,6 +10,9 @@ import Jimp from "jimp";
 import excel4node from "excel4node";
 // import * as excel4node from 'excel4node';
 import { spawn } from "node:child_process"
+import fixPath from "./update-path-darwin"
+
+fixPath()
 
 import "v8-compile-cache";
 
@@ -215,7 +218,7 @@ if (process.contextIsolated) {
         return new Promise((resolve, reject) => {
           let agentStopSpawn = spawn("pennsieve", ["agent", "stop"], {
             shell: true,
-            env: process.env,
+            env: window.process.env,
           });
 
           agentStopSpawn.stdout.on("data", (data) => {
@@ -232,7 +235,7 @@ if (process.contextIsolated) {
         return new Promise((resolve, reject) => {
           let agentStartSpawn = spawn("pennsieve", {
             shell: true,
-            env: process.env,
+            env: window.process.env,
           });
       
           agentStartSpawn.stdout.on("data", async (data) => {
@@ -264,7 +267,7 @@ if (process.contextIsolated) {
       
           let agentStartSpawn = spawn("pennsieve", ["agent", "start"], {
             shell: true,
-            env: process.env,
+            env: window.process.env,
           });
       
           // Listen to the output from the agent and resolve the promise if the agent outputs
@@ -338,7 +341,7 @@ if (process.contextIsolated) {
       
           let agentVersionSpawn = spawn("pennsieve", ["version"], {
             shell: true,
-            env: process.env,
+            env: window.process.env,
           });
       
           // Capture standard output and parse the version

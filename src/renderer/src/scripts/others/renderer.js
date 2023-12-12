@@ -50,7 +50,6 @@ import {
   userErrorMessage,
 } from "./http-error-handler/error-handler"
 import hasConnectedAccountWithPennsieve from "./authentication/auth";
-import fixPath from "./update-path-darwin"
 import api from "./api/api"
 import {
   confirm_click_account_function, showHideDropdownButtons,
@@ -69,7 +68,6 @@ window.select2 = select2;
 document.addEventListener("DOMContentLoaded", function () {
   $('select').select2()
 })
-fixPath()
 
 // // const prevent_sleep_id = "";
 // // const electron_app = electron.app;
@@ -484,7 +482,7 @@ let preFlightCheckNotyf = null;
 const agent_installed = async () => {
   try {
     let agentStartSpawn = await window.spawn.startPennsieveAgent()
-    console.log("Agent start spawn: ", agentStartSpawn)
+    console.log("Agent installed spawn: ", agentStartSpawn)
     return agentStartSpawn
   } catch (e) {
     window.log.info(e);

@@ -15,6 +15,8 @@ const fixPath = () => {
       "/usr/local/opt/pennsieve", // Ventura installation folder; Note: On Ventura the Agent isn't added to the Path
       window.process.env.PATH,
     ].join(":");
+
+    console.log("PATH updated to: " + window.process.env.PATH)
   }
 };
 

@@ -20,6 +20,7 @@ import "./main-process/native-ui/dialogs/open-file"
 import "./strain"
 import "./checkDiskSpace"
 
+
 const sodaVersion = app.getVersion();
 // If the version includes "beta", the app will not check for updates
 const buildIsBeta = sodaVersion.includes("beta");
