@@ -3954,7 +3954,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
   if (subjectsOrSamples === "samples") {
     //Add samples to datsetStructuresJSONObj if they don't exist
     const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
-    for (sample of samplesInPools) {
+    for (const sample of samplesInPools) {
       /**
        * Check to see if the sample's pool is in the window.datasetStructureJSONObj.
        * If not, add it.
