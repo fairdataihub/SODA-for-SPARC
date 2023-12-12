@@ -28,6 +28,7 @@ nsis:
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
+  icon: 'app-icon/mac/icon.icns'
   entitlementsInherit: ./entitlements.mac.inherit.plist
   notarize: true
   extraResources:
@@ -50,6 +51,7 @@ linux:
   asar: true
   maintainer: electronjs.org
   category: Utility
+  icon: 'icons/icon.icns'
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
