@@ -224,24 +224,11 @@ let updatechecked = false;
  * @returns {boolean} True if the app is packaged, false if it is running from a dev version.
  */
 const guessPackaged = () => {
-  const windowsPath = join(__dirname, "..", PY_FLASK_DIST_FOLDER);
-  ElectronLog.info("Windows path: " + windowsPath);
-  const unixPath = join(process.resourcesPath, PY_FLASK_MODULE);
-  if (process.platform === "darwin" || process.platform === "linux") {
-    if (existsSync(unixPath)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-  if (process.platform === "win32") {
-    if (existsSync(windowsPath)) {
-      ElectronLog.info("App is packaged returning true [ Windows ]")
-
-      return true;
-    } else {
-      return false;
-    }
+  const executablePath = join(process.resourcesPath, PY_FLASK_MODULE);
+  if (existsSync(executablePath)) {
+    return true;
+  } else {
+    return false;
   }
 };
 
@@ -258,7 +245,7 @@ const getScriptPath = () => {
     return join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py");
   }
   if (process.platform === "win32") {
-    const winPath = join(__dirname, PY_FLASK_DIST_FOLDER, PY_FLASK_MODULE + ".exe");
+    const winPath = join(process.resourcesPath, PY_FLASK_MODULE + ".exe");
     ElectronLog.info("App is packaged [Windows]; Path to server executable: " + winPath);
     return winPath;
   } else {

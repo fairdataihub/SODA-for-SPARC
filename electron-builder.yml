@@ -14,12 +14,11 @@ asarUnpack:
   - resources/**
 win:
   icon: 'app-icon/win/icon.ico' 
-  executableName: react
+  executableName: SODA for SPARC
   extraResources:
     - from: ./file_templates
       to: ./file_templates 
     - from: ./pyflaskdist/app.exe
-      to: ./pyflaskdist/app.exe
   asar: true
   target:
     - nsis
