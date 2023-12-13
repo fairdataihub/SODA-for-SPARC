@@ -14338,6 +14338,12 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
   }
 };
 const guidedGenerateSamplesMetadata = async (bfAccount, datasetName, samplesTableData) => {
+  // If the samples metadata table is empty or the user has skipped the subjects metadata tab,
+  // we don't need to generate the samples metadata file
+  if (samplesTableData.length === 0 || pageIsSkipped("guided-create-samples-metadata-tab")) {
+    console.log("No samples metadata to generate");
+    return;
+  }
   document
     .getElementById("guided-samples-metadata-pennsieve-genration-tr")
     .classList.remove("hidden");
@@ -14791,19 +14797,9 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
     hideDatasetMetadataGenerationTableRows("pennsieve");
     unHideAndSmoothScrollToElement("guided-div-dataset-metadata-pennsieve-genration-status-table");
 
-    if (
-      guidedSubjectsMetadata.length > 1 &&
-      !pageIsSkipped("guided-create-subjects-metadata-tab")
-    ) {
-      await guidedGenerateSubjectsMetadata("pennsieve");
-    }
-    if (guidedSamplesMetadata.length > 1 && !pageIsSkipped("guided-create-samples-metadata-tab")) {
-      await guidedGenerateSamplesMetadata(
-        guidedBfAccount,
-        guidedDatasetName,
-        guidedSamplesMetadata
-      );
-    }
+    await guidedGenerateSubjectsMetadata("pennsieve");
+
+    await guidedGenerateSamplesMetadata(guidedBfAccount, guidedDatasetName, guidedSamplesMetadata);
 
     await guidedGenerateSubmissionMetadata(
       guidedBfAccount,
