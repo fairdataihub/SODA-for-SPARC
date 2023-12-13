@@ -3399,6 +3399,9 @@ document
     let validationReportStatusIncomplete = false;
     const validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
 
+    let file_counter = 0 
+    let folder_counter = 0 
+
     try {
       // Lock the navigation buttons while the validation is in process
       guidedSetNavLoadingState(true);
