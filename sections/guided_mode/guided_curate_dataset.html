@@ -4728,6 +4728,131 @@
               Generate local dataset copy
             </button>
           </div>
+          <div class="guided--section">
+            <table class="ui celled striped table" style="width: 100% !important; margin-top: 0px">
+              <thead>
+                <tr>
+                  <th
+                    colspan="2"
+                    class="text-center guided--table-header"
+                    style="
+                      z-index: 2;
+                      height: 50px;
+                      position: sticky !important;
+                      top: -10px !important;
+                    "
+                  >
+                    <span>Dataset metadata upload statuses</span>
+                  </th>
+                </tr>
+                <tr>
+                  <th style="z-index: 2; position: sticky !important; top: 40px !important">
+                    Metadata files
+                  </th>
+
+                  <th
+                    class="center aligned border-left-0"
+                    style="
+                      z-index: 2;
+                      position: sticky !important;
+                      top: 40px !important;
+                      min-width: 130px;
+                    "
+                  >
+                    Upload status
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="guided-tbody-local-dataset-metadata-generation">
+                <tr
+                  class="hidden upload-status-tr"
+                  id="guided-subjects-metadata-local-genration-tr"
+                >
+                  <td class="middle aligned" id="guided-subjects-metadata-local-genration-text">
+                    Subjects metadata
+                  </td>
+                  <td class="middle aligned text-center collapsing border-left-0 p-0">
+                    <div
+                      class="guided--container-upload-status"
+                      id="guided-subjects-metadata-local-genration-status"
+                    ></div>
+                  </td>
+                </tr>
+                <tr class="hidden" id="guided-samples-metadata-local-genration-tr">
+                  <td class="middle aligned" id="guided-samples-metadata-local-genration-text">
+                    Samples metadata
+                  </td>
+                  <td class="middle aligned text-center collapsing border-left-0 p-0">
+                    <div
+                      class="guided--container-upload-status"
+                      id="guided-samples-metadata-local-genration-status"
+                    ></div>
+                  </td>
+                </tr>
+                <tr class="hidden" id="guided-submission-metadata-local-genration-tr">
+                  <td class="middle aligned" id="guided-submission-metadata-local-genration-text">
+                    Submission metadata
+                  </td>
+                  <td class="middle aligned text-center collapsing border-left-0 p-0">
+                    <div
+                      class="guided--container-upload-status"
+                      id="guided-submission-metadata-local-genration-status"
+                    ></div>
+                  </td>
+                </tr>
+                <tr class="hidden" id="guided-dataset-description-metadata-local-genration-tr">
+                  <td
+                    class="middle aligned"
+                    id="guided-dataset-description-metadata-local-genration-text"
+                  >
+                    Dataset description metadata
+                  </td>
+                  <td class="middle aligned text-center collapsing border-left-0 p-0">
+                    <div
+                      class="guided--container-upload-status"
+                      id="guided-dataset-description-metadata-local-genration-status"
+                    ></div>
+                  </td>
+                </tr>
+                <tr class="hidden" id="guided-readme-metadata-local-genration-tr">
+                  <td class="middle aligned" id="guided-readme-metadata-local-genration-text">
+                    README metadata
+                  </td>
+                  <td class="middle aligned text-center collapsing border-left-0 p-0">
+                    <div
+                      class="guided--container-upload-status"
+                      id="guided-readme-metadata-local-genration-status"
+                    ></div>
+                  </td>
+                </tr>
+                <tr class="hidden" id="guided-changes-metadata-local-genration-tr">
+                  <td class="middle aligned" id="guided-changes-metadata-local-genration-text">
+                    CHANGES metadata
+                  </td>
+                  <td class="middle aligned text-center collapsing border-left-0 p-0">
+                    <div
+                      class="guided--container-upload-status"
+                      id="guided-changes-metadata-local-genration-status"
+                    ></div>
+                  </td>
+                </tr>
+                <tr class="hidden" id="guided-code-description-metadata-local-genration-tr">
+                  <td
+                    class="middle aligned"
+                    id="guided-code-description-metadata-local-genration-text"
+                  >
+                    Dataset description metadata
+                  </td>
+                  <td class="middle aligned text-center collapsing border-left-0 p-0">
+                    <div
+                      class="guided--container-upload-status"
+                      id="guided-code-description-metadata-local-genration-status"
+                    ></div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 

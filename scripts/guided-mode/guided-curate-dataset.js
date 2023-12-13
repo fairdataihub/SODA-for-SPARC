@@ -14328,12 +14328,49 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
   const localDatasetSize = localDatasetSizeReq.data.dataset_size;
   const datasetSizeInMb = roundToHundredth(localDatasetSize / 1024 ** 2);
   console.log("Dataset size in MB: ", datasetSizeInMb);
+
+  // Attach the manifest files to the dataset structure before generating the dataset locally
+  await guidedCreateManifestFilesAndAddToDatasetStructure();
+
+  const guidedDatasetName = guidedGetDatasetName(sodaJSONObj);
+
+  // Create a temp copy of the sodaJSONObj to be used for generating the dataset locally.
+  // We do this because there are keys we want to modify in the sodaJSONObj but we don't want to
+  // modify in the original sodaJSONObj
+  const sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
+  console.log("sodaJSONObjCopy: ", sodaJSONObjCopy);
+  sodaJSONObjCopy["generate-dataset"] = {
+    "dataset-name": guidedDatasetName,
+    destination: "local",
+    "generate-option": "new",
+    "if-existing": "new",
+    path: filePath,
+  };
+
+  // Remove the bf-account-selected key from the sodaJSONObjCopy because we don't need
+  // to check if the user's pennsieve account is valid
+  delete sodaJSONObjCopy["bf-account-selected"];
+  try {
+    await client.post(
+      `/curate_datasets/curation`,
+      {
+        soda_json_structure: sodaJSONObjCopy,
+      },
+      { timeout: 0 }
+    );
+    await guidedGenerateSubjectsMetadata(`${filePath}/${guidedDatasetName}/subjects.xlsx`);
+  } catch (error) {
+    console.log(error);
+    const emessage = userErrorMessage(error);
+    console.log(emessage);
+  }
 });
 
 const guidedGenerateSubjectsMetadata = async (destination) => {
   const generationDestination = destination === "pennsieve" ? "pennsieve" : "local";
 
   //// Unhide the subject metadata generation table row and set the rows status to loading ////
+  console.log(`guided-subjects-metadata-${generationDestination}-genration-tr`);
   document
     .getElementById(`guided-subjects-metadata-${generationDestination}-genration-tr`)
     .classList.remove("hidden");
