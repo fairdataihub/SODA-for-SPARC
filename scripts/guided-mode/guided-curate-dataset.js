@@ -245,44 +245,6 @@ const datasetIsSparcFunded = () => {
   return sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] === "SPARC";
 };
 
-const checkIfPoolsFoldersAreCorrect = (poolFolderPath) => {
-  const poolFolders = Object.keys(poolFolderPath["folders"]);
-  const invalidPoolFolders = poolFolders.filter((folder) => {
-    !folder.startsWith("sub-");
-  });
-  const poolSubjectFolders = poolFolders.filter((folder) => {
-    folder.startsWith("sub-");
-  });
-  for (const subjectFolder of poolSubjectFolders) {
-    checkIfSubjectsFoldersAreCorrect(poolFolderPath["folders"][subjectFolder]);
-  }
-
-  for (const invalidPoolFolder of invalidPoolFolders) {
-    invalidFolders.push(invalidPoolFolder);
-  }
-
-  //Push all files in the pools to invalid files since the user should not have files in the pool folders
-  const poolFiles = Object.keys(poolFolderPath["files"]);
-  for (const poolFile of poolFiles) {
-    invalidFiles.push(poolFile);
-  }
-};
-
-const checkIfSubjectsFoldersAreCorrect = (subjectFolderPath) => {
-  const subjectFolders = Object.keys(subjectFolderPath["folders"]);
-  const invalidSubjectFolders = subjectFolders.filter((folder) => {
-    !folder.startsWith("sam-");
-  });
-
-  for (const invalidSubjectFolder of invalidSubjectFolders) {
-    invalidFolders.push(invalidSubjectFolder);
-  }
-  const subjectFiles = Object.keys(subjectFolderPath["files"]);
-  for (const subjectFile of subjectFiles) {
-    invalidFiles.push(subjectFile);
-  }
-};
-
 const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
   const invalidFolders = [];
   const invalidFiles = [];
@@ -2350,7 +2312,7 @@ const renderSideBar = (activePage) => {
   }
 };
 
-const updateDatasetUploadProgressTable = (progressObject) => {
+const updateDatasetUploadProgressTable = (generationDestination, progressObject) => {
   const datasetUploadTableBody = document.getElementById("guided-tbody-dataset-upload");
   //delete datasetUPloadTableBody children with class "upload-status-tr"
   const uploadStatusTRs = datasetUploadTableBody.querySelectorAll(".upload-status-tr");
@@ -2717,7 +2679,6 @@ const guidedModifyCurationTeamAccess = async (action) => {
   }
   if (action === "unshare") {
     // Add your dataset has been shared, to withdraw please do so from Pennsieve
-    // TODO: Dorian -> refactor this (it will be removed essentially)
     guidedUnshareWithCurationTeamButton.disabled = true;
     guidedUnshareWithCurationTeamButton.classList.add("loading");
 
@@ -7552,19 +7513,8 @@ const setActiveSubPage = (pageIdToActivate) => {
   // renderSideBar(CURRENT_PAGE.id);
 };
 
-const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
-  $("#guided-progress-bar-new-curate").attr(
-    "value",
-    parseInt($("#guided-progress-bar-new-curate").attr("value")) + percentToIncrease
-  );
-};
-
 const setGuidedProgressBarValue = (value) => {
   $("#guided-progress-bar-new-curate").attr("value", value);
-};
-
-const isNumberBetween = (number, minVal, maxVal) => {
-  return !isNaN(parseFloat(number)) && isFinite(number) && number >= minVal && number <= maxVal;
 };
 
 const generateAlertElement = (alertType, warningMessageText) => {
@@ -7589,22 +7539,6 @@ const removeAlertMessageIfExists = (elementToCheck) => {
   if (alertMessageToRemove.hasClass("alert")) {
     elementToCheck.next().remove();
   }
-};
-
-/////////////////////////////////////////////////////////
-//////////       GUIDED FORM VALIDATORS       ///////////
-/////////////////////////////////////////////////////////
-
-const openEditGuidedDatasetSwal = async (datasetName) => {
-  swal.fire({
-    backdrop: "rgba(0,0,0, 0.4)",
-    heightAuto: false,
-    icon: "info",
-    title: "Editing a dataset curated via guided mode is handled via Free-Form mode.",
-    html: `\nTo edit <b>${datasetName}</b>, go to Free-Form mode, select the dataset component that you would like
-    to modify, select ${datasetName} from the dataset selection drop-down, and edit the data in Free-Form mode.`,
-    confirmButtonText: "OK",
-  });
 };
 
 //function that creates a new folder object
@@ -13707,24 +13641,6 @@ $("#guided-input-destination-getting-started-locally").on("click", () => {
   ipcRenderer.send("guided-open-file-dialog-local-destination-curate");
 });
 
-//FETCH FUNCTIONS//
-//fetch
-const guidedUpdateUploadStatus = (uploadContainerElement, status) => {
-  if (status === "uploading") {
-    uploadContainerElement.classList.add("uploading");
-    uploadContainerElement.classList.remove("uploaded");
-    uploadContainerElement.classList.remove("error");
-  } else if (status === "uploaded") {
-    uploadContainerElement.classList.add("uploaded");
-    uploadContainerElement.classList.remove("uploading");
-    uploadContainerElement.classList.remove("error");
-  } else if (status === "error") {
-    uploadContainerElement.classList.add("error");
-    uploadContainerElement.classList.remove("uploading");
-    uploadContainerElement.classList.remove("uploaded");
-  }
-};
-
 const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
   document.getElementById("guided-dataset-name-upload-tr").classList.remove("hidden");
   const datasetNameUploadText = document.getElementById("guided-dataset-name-upload-text");
@@ -14367,9 +14283,15 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
 });
 
 const guidedGenerateSubjectsMetadata = async (destination) => {
-  const generationDestination = destination === "pennsieve" ? "pennsieve" : "local";
+  // If the subjects metadata table is empty or the user has skipped the subjects metadata tab,
+  // we don't need to generate the subjects metadata file
+  if (subjectsTableData.length === 0 || pageIsSkipped("guided-create-subjects-metadata-tab")) {
+    console.log("No subjects metadata to generate");
+    return;
+  }
 
-  //// Unhide the subject metadata generation table row and set the rows status to loading ////
+  const generationDestination = destination === "pennsieve" ? "pennsieve" : "local";
+  // Unhide the subject metadata generation table row and set the rows status to loading
   console.log(`guided-subjects-metadata-${generationDestination}-genration-tr`);
   document
     .getElementById(`guided-subjects-metadata-${generationDestination}-genration-tr`)
@@ -14382,9 +14304,8 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
     `guided-subjects-metadata-${generationDestination}-genration-status`,
     "loading"
   );
-  //////////////////////////////////////////////////////////////////////////////////////////
 
-  //// Generate the subjects metadata file ////
+  // Generate the subjects metadata file
   try {
     await client.post(
       `/prepare_metadata/subjects_file`,
@@ -14931,7 +14852,7 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
 
     //Reset Upload Progress Bar and then scroll to it
     setGuidedProgressBarValue(0);
-    updateDatasetUploadProgressTable({
+    updateDatasetUploadProgressTable("pennsieve", {
       "Upload status": `Preparing dataset for upload`,
     });
     unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
@@ -15020,18 +14941,11 @@ const guidedUploadDatasetToPennsieve = async () => {
   updateJSONStructureDSstructure();
 
   // Initiate curation by calling Python function
-  let manifest_files_requested = false;
   let main_curate_status = "Solving";
   let main_total_generate_dataset_size;
 
   // track the amount of files that have been uploaded/generated
   let uploadedFiles = 0;
-  let uploadedFilesSize = 0;
-  let foldersUploaded = 0;
-  let previousUploadedFileSize = 0;
-  let increaseInFileSize = 0;
-  let generated_dataset_id = undefined;
-
   let dataset_name;
   let dataset_destination;
 
@@ -15138,7 +15052,7 @@ const guidedUploadDatasetToPennsieve = async () => {
         differenceInBytes
       );
 
-      updateDatasetUploadProgressTable({
+      updateDatasetUploadProgressTable("pennsieve", {
         "Upload status": "Dataset successfully uploaded to Pennsieve!",
       });
 
@@ -15325,7 +15239,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       app.quit();
     });
 
-  const guidedUpdateUploadStatus = async () => {
+  const guidedUpdateUploadStatus = async (destination) => {
     let mainCurationProgressResponse;
     try {
       mainCurationProgressResponse = await client.get(`/curate_datasets/curation/progress`);
@@ -15360,7 +15274,6 @@ const guidedUploadDatasetToPennsieve = async () => {
           (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
         setGuidedProgressBarValue(percentOfDatasetUploaded);
 
-        let totalSizePrint;
         if (main_total_generate_dataset_size < displaySize) {
           totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
         } else if (main_total_generate_dataset_size < displaySize * displaySize) {
@@ -15375,14 +15288,14 @@ const guidedUploadDatasetToPennsieve = async () => {
             ) + " GB";
         }
         if (main_curate_progress_message.includes("Renaming files...")) {
-          updateDatasetUploadProgressTable({
+          updateDatasetUploadProgressTable("pennsieve", {
             "Upload status": `${main_curate_progress_message}`,
             "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
             "Elapsed time": `${elapsed_time_formatted}`,
             "Files Renamed": `${main_generated_dataset_size} of ${main_total_generate_dataset_size}`,
           });
         } else {
-          updateDatasetUploadProgressTable({
+          updateDatasetUploadProgressTable("pennsieve", {
             "Upload status": `${main_curate_progress_message}`,
             "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
             "Elapsed time": `${elapsed_time_formatted}`,
@@ -15391,7 +15304,7 @@ const guidedUploadDatasetToPennsieve = async () => {
         }
       }
     } else {
-      updateDatasetUploadProgressTable({
+      updateDatasetUploadProgressTable("pennsieve", {
         "Upload status": `${main_curate_progress_message}`,
         "Elapsed time": `${elapsed_time_formatted}`,
       });
@@ -15410,13 +15323,7 @@ const guidedUploadDatasetToPennsieve = async () => {
     }
   };
   // Progress tracking function for main curate
-  var timerProgress = setInterval(guidedUpdateUploadStatus, 1000);
-
-  // when generating a new dataset we need to add its ID to the ID -> Name mapping
-  // we need to do this only once
-
-  // TODO: Reintegrate
-  let loggedDatasetNameToIdMapping = false;
+  let timerProgress = setInterval(guidedUpdateUploadStatus("pennsieve"), 1000);
 
   let bytesOnPreviousLogPage = 0;
   let filesOnPreviousLogPage = 0;
