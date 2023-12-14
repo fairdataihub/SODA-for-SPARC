@@ -3973,7 +3973,89 @@ const guidedPrepareHomeScreen = async () => {
   guidedUnLockSideBar();
 };
 
-const guidedShowTreePreview = (new_dataset_name, targetElement) => {
+const guidedShowTreePreview = (new_dataset_name, targetElementId) => {
+  const folderStructurePreview = document.getElementById(targetElementId);
+  $(folderStructurePreview).jstree({
+    core: {
+      check_callback: true,
+      data: {},
+    },
+    plugins: ["types", "sort"],
+    sort: function (a, b) {
+      a1 = this.get_node(a);
+      b1 = this.get_node(b);
+
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+        //if the word assets is included in the icon then we can assume it is a file
+        //folder icons are under font awesome meanwhile files come from the assets folder
+        return a1.text > b1.text ? 1 : -1;
+      } else {
+        return a1.icon < b1.icon ? 1 : -1;
+      }
+    },
+    types: {
+      folder: {
+        icon: "fas fa-folder fa-fw",
+      },
+      "folder open": {
+        icon: "fas fa-folder-open fa-fw",
+      },
+      "folder closed": {
+        icon: "fas fa-folder fa-fw",
+      },
+      "file xlsx": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file xls": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file png": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file PNG": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file pdf": {
+        icon: "./assets/img/pdf-file.png",
+      },
+      "file txt": {
+        icon: "./assets/img/txt-file.png",
+      },
+      "file csv": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file CSV": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file DOC": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file DOCX": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file docx": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file doc": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file jpeg": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file JPEG": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file other": {
+        icon: "./assets/img/other-file.png",
+      },
+    },
+  });
+  $(folderStructurePreview).on("open_node.jstree", function (event, data) {
+    data.instance.set_type(data.node, "folder open");
+  });
+  $(folderStructurePreview).on("close_node.jstree", function (event, data) {
+    data.instance.set_type(data.node, "folder closed");
+  });
   const dsJsonObjCopy = JSON.parse(JSON.stringify(datasetStructureJSONObj));
 
   //Add the code_description metadata file to the preview if the code_description path has been declared
@@ -4050,14 +4132,8 @@ const guidedShowTreePreview = (new_dataset_name, targetElement) => {
     "",
     "preview"
   );
-  $(targetElement).jstree(true).settings.core.data = guidedJsTreePreviewData;
-  $(targetElement).jstree(true).refresh();
-  //Open Jstree element with passed in folder node name
-  const openFolder = (folderName) => {
-    const tree = $("#jstree").jstree(true);
-    const node = tree.get_node(folderName);
-    tree.open_node(node);
-  };
+  $(folderStructurePreview).jstree(true).settings.core.data = guidedJsTreePreviewData;
+  $(folderStructurePreview).jstree(true).refresh();
 };
 
 const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
@@ -5319,89 +5395,10 @@ const openPage = async (targetPageID) => {
         }
       }
 
-      const folderStructurePreview = document.getElementById("guided-folder-structure-review");
-      $(folderStructurePreview).jstree({
-        core: {
-          check_callback: true,
-          data: {},
-        },
-        plugins: ["types", "sort"],
-        sort: function (a, b) {
-          a1 = this.get_node(a);
-          b1 = this.get_node(b);
-
-          if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
-            //if the word assets is included in the icon then we can assume it is a file
-            //folder icons are under font awesome meanwhile files come from the assets folder
-            return a1.text > b1.text ? 1 : -1;
-          } else {
-            return a1.icon < b1.icon ? 1 : -1;
-          }
-        },
-        types: {
-          folder: {
-            icon: "fas fa-folder fa-fw",
-          },
-          "folder open": {
-            icon: "fas fa-folder-open fa-fw",
-          },
-          "folder closed": {
-            icon: "fas fa-folder fa-fw",
-          },
-          "file xlsx": {
-            icon: "./assets/img/excel-file.png",
-          },
-          "file xls": {
-            icon: "./assets/img/excel-file.png",
-          },
-          "file png": {
-            icon: "./assets/img/png-file.png",
-          },
-          "file PNG": {
-            icon: "./assets/img/png-file.png",
-          },
-          "file pdf": {
-            icon: "./assets/img/pdf-file.png",
-          },
-          "file txt": {
-            icon: "./assets/img/txt-file.png",
-          },
-          "file csv": {
-            icon: "./assets/img/csv-file.png",
-          },
-          "file CSV": {
-            icon: "./assets/img/csv-file.png",
-          },
-          "file DOC": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file DOCX": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file docx": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file doc": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file jpeg": {
-            icon: "./assets/img/jpeg-file.png",
-          },
-          "file JPEG": {
-            icon: "./assets/img/jpeg-file.png",
-          },
-          "file other": {
-            icon: "./assets/img/other-file.png",
-          },
-        },
-      });
-      $(folderStructurePreview).on("open_node.jstree", function (event, data) {
-        data.instance.set_type(data.node, "folder open");
-      });
-      $(folderStructurePreview).on("close_node.jstree", function (event, data) {
-        data.instance.set_type(data.node, "folder closed");
-      });
-      guidedShowTreePreview(sodaJSONObj["digital-metadata"]["name"], folderStructurePreview);
+      guidedShowTreePreview(
+        sodaJSONObj["digital-metadata"]["name"],
+        "guided-folder-structure-review"
+      );
     }
 
     if (targetPageID === "guided-manifest-file-generation-tab") {
@@ -6665,91 +6662,10 @@ const openPage = async (targetPageID) => {
       datasetTagsReviewText.innerHTML = datasetTags.join(", ");
       datasetLicenseReviewText.innerHTML = datasetLicense;
 
-      const folderStructurePreview = document.getElementById(
+      guidedShowTreePreview(
+        sodaJSONObj["digital-metadata"]["name"],
         "guided-folder-structure-review-generate"
       );
-      $(folderStructurePreview).jstree({
-        core: {
-          check_callback: true,
-          data: {},
-        },
-        plugins: ["types", "sort"],
-        sort: function (a, b) {
-          a1 = this.get_node(a);
-          b1 = this.get_node(b);
-
-          if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
-            //if the word assets is included in the icon then we can assume it is a file
-            //folder icons are under font awesome meanwhile files come from the assets folder
-            return a1.text > b1.text ? 1 : -1;
-          } else {
-            return a1.icon < b1.icon ? 1 : -1;
-          }
-        },
-        types: {
-          folder: {
-            icon: "fas fa-folder fa-fw",
-          },
-          "folder open": {
-            icon: "fas fa-folder-open fa-fw",
-          },
-          "folder closed": {
-            icon: "fas fa-folder fa-fw",
-          },
-          "file xlsx": {
-            icon: "./assets/img/excel-file.png",
-          },
-          "file xls": {
-            icon: "./assets/img/excel-file.png",
-          },
-          "file png": {
-            icon: "./assets/img/png-file.png",
-          },
-          "file PNG": {
-            icon: "./assets/img/png-file.png",
-          },
-          "file pdf": {
-            icon: "./assets/img/pdf-file.png",
-          },
-          "file txt": {
-            icon: "./assets/img/txt-file.png",
-          },
-          "file csv": {
-            icon: "./assets/img/csv-file.png",
-          },
-          "file CSV": {
-            icon: "./assets/img/csv-file.png",
-          },
-          "file DOC": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file DOCX": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file docx": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file doc": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file jpeg": {
-            icon: "./assets/img/jpeg-file.png",
-          },
-          "file JPEG": {
-            icon: "./assets/img/jpeg-file.png",
-          },
-          "file other": {
-            icon: "./assets/img/other-file.png",
-          },
-        },
-      });
-      $(folderStructurePreview).on("open_node.jstree", function (event, data) {
-        data.instance.set_type(data.node, "folder open");
-      });
-      $(folderStructurePreview).on("close_node.jstree", function (event, data) {
-        data.instance.set_type(data.node, "folder closed");
-      });
-      guidedShowTreePreview(sodaJSONObj["digital-metadata"]["name"], folderStructurePreview);
     }
 
     if (targetPageID === "guided-dataset-generation-tab") {

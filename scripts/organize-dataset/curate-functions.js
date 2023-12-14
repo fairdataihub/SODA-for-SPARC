@@ -888,7 +888,6 @@ const create_child_node = (
   viewOptions,
   parentFolder
 ) => {
-  console.log(nodeName);
   var newFormatNode = {
     text: nodeName,
     state: {
