@@ -2521,7 +2521,7 @@ const window.importExistingSamplesFile = () => {
           Swal.showLoading();
         },
       }).then((result) => {});
-      setTimeout(loadSamplesFileToDataframe(filePath), 1000);
+      setTimeout(window.loadSamplesFileToDataframe(filePath), 1000);
     }
   }
 };
@@ -2634,7 +2634,7 @@ const window.checkBFImportSamples = async () => {
       Destinations.PENNSIEVE
     );
     window.samplesTableData = res;
-    loadDataFrametoUISamples("bf");
+    window.loadDataFrametoUISamples("bf");
   } catch (error) {
     clientError(error);
     Swal.fire({
@@ -2688,7 +2688,7 @@ const window.loadDataFrametoUI = (type) => {
   }
 };
 
-const loadDataFrametoUISamples = (type) => {
+const window.loadDataFrametoUISamples = (type) => {
   // separate regular headers and custom headers
   const lowercasedHeaders = window.samplesTableData[0].map((header) => header.toLowerCase());
   var fieldSampleEntries = [];

@@ -2362,7 +2362,7 @@ async function loadSubjectsFileToDataframe(filePath) {
 }
 
 // import existing subjects.xlsx info (calling python to load info to a dataframe)
-async function loadSamplesFileToDataframe(filePath) {
+async function window.loadSamplesFileToDataframe(filePath) {
   var fieldSampleEntries = [];
   for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
     fieldSampleEntries.push(field.name.toLowerCase());
@@ -2409,7 +2409,7 @@ async function loadSamplesFileToDataframe(filePath) {
         Destinations.LOCAL
       );
 
-      loadDataFrametoUISamples("local");
+      window.loadDataFrametoUISamples("local");
     } else {
       window.logMetadataForAnalytics(
         "Error",

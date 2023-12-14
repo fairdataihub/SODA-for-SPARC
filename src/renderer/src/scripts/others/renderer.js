@@ -2112,7 +2112,7 @@ window.loadSubjectsFileToDataframe = async (filePath) => {
 }
 
 // import existing subjects.xlsx info (calling python to load info to a dataframe)
-async function loadSamplesFileToDataframe(filePath) {
+window.loadSamplesFileToDataframe = async (filePath) => {
   var fieldSampleEntries = [];
   for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
     fieldSampleEntries.push(field.name.toLowerCase());
@@ -2129,7 +2129,7 @@ async function loadSamplesFileToDataframe(filePath) {
     let res = importSamplesResponse.data.sample_file_rows;
     // res is a dataframe, now we load it into our window.samplesTableData in order to populate the UI
     if (res.length > 1) {
-      result = transformImportedExcelFile("samples", res);
+      let result = transformImportedExcelFile("samples", res);
       if (result !== false) {
         window.samplesTableData = result;
       } else {
@@ -2159,7 +2159,7 @@ async function loadSamplesFileToDataframe(filePath) {
         Destinations.LOCAL
       );
 
-      loadDataFrametoUISamples("local");
+      window.loadDataFrametoUISamples("local");
     } else {
       window.logMetadataForAnalytics(
         "Error",
