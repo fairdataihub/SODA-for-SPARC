@@ -2241,7 +2241,7 @@ ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
 });
 ipcRenderer.on("selected-local-primary-folder-samples", (event, primaryFolderPath) => {
   if (primaryFolderPath.length > 0) {
-    importPrimaryFolderSamples(primaryFolderPath[0]);
+    window.importPrimaryFolderSamples(primaryFolderPath[0]);
   }
 });
 

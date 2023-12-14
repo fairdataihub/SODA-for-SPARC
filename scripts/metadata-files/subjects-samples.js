@@ -1778,7 +1778,7 @@ const window.importPrimaryFolderSubjects = (folderPath) => {
   }
 };
 
-const importPrimaryFolderSamples = (folderPath) => {
+const window.importPrimaryFolderSamples = (folderPath) => {
   headersArrSamples = [];
   for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
     if (field.value === "" || field.value === undefined || field.value === "Select") {

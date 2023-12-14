@@ -1797,8 +1797,8 @@ window.importPrimaryFolderSubjects = (folderPath) => {
   }
 };
 
-const importPrimaryFolderSamples = (folderPath) => {
-  headersArrSamples = [];
+window.importPrimaryFolderSamples = (folderPath) => {
+  let headersArrSamples = [];
   for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
     if (field.value === "" || field.value === undefined || field.value === "Select") {
       field.value = null;
@@ -1829,11 +1829,11 @@ const importPrimaryFolderSamples = (folderPath) => {
       window.samplesTableData[0] = headersArrSamples;
       for (var folder of folders) {
         var statsSubjectID = window.fs.statSync(window.path.join(folderPath, folder));
-        if (statsSubjectID.isDirectory()) {
+        if (statsSubjectID.isDirectory) {
           var subjectFolder = window.fs.readdirSync(window.path.join(folderPath, folder));
           for (var subfolder of subjectFolder) {
             var statsSampleID = window.fs.statSync(window.path.join(folderPath, folder, subfolder));
-            if (statsSampleID.isDirectory()) {
+            if (statsSampleID.isDirectory) {
               window.samplesFileData = [];
               window.samplesFileData[0] = folder;
               window.samplesFileData[1] = subfolder;
