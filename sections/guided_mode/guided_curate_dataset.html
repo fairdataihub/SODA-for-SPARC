@@ -2740,7 +2740,7 @@
           <div class="guided--capsule" id="guided-add-code-metadata-capsule"></div>
           <div class="guided--capsule" id="guided-create-readme-metadata-capsule"></div>
           <div class="guided--capsule" id="guided-create-changes-metadata-capsule"></div>
-          <div class="guided--capsule" id="guided-create-local-dataset-copy-capsule"></div>
+          <div class="guided--capsule" id="guided-generate-dataset-locally-capsule"></div>
         </div>
 
         <div class="guided--page" id="guided-dataset-metadata-intro-tab" data-page-name="Intro">
@@ -4712,12 +4712,12 @@
           </div>
         </div>
         <div
-          id="guided-create-local-dataset-copy-tab"
+          id="guided-generate-dataset-locally-tab"
           class="guided--page"
           data-page-name="Generate locally"
         >
           <div class="guided--section">
-            <h1 class="text-sub-step-title">Create a local dataset</h1>
+            <h1 class="text-sub-step-title">Create a local dataset copy</h1>
             <p class="help-text">
               SODA provides the option to generate a local copy of your dataset... UPDATE TEXT
             </p>
@@ -4731,7 +4731,7 @@
               Generate local dataset copy
             </button>
           </div>
-          <div class="guided--section">
+          <div class="guided--section" id="guided-section-local-dataset-generation-progresss">
             <table class="ui celled striped table" style="width: 100% !important; margin-top: 0px">
               <thead>
                 <tr>
@@ -4767,10 +4767,7 @@
                 </tr>
               </thead>
               <tbody id="guided-tbody-local-dataset-metadata-generation">
-                <tr
-                  class="hidden upload-status-tr"
-                  id="guided-subjects-metadata-local-genration-tr"
-                >
+                <tr id="guided-subjects-metadata-local-genration-tr">
                   <td class="middle aligned" id="guided-subjects-metadata-local-genration-text">
                     Subjects metadata
                   </td>
@@ -4781,7 +4778,7 @@
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-samples-metadata-local-genration-tr">
+                <tr id="guided-samples-metadata-local-genration-tr">
                   <td class="middle aligned" id="guided-samples-metadata-local-genration-text">
                     Samples metadata
                   </td>
@@ -4792,7 +4789,7 @@
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-submission-metadata-local-genration-tr">
+                <tr id="guided-submission-metadata-local-genration-tr">
                   <td class="middle aligned" id="guided-submission-metadata-local-genration-text">
                     Submission metadata
                   </td>
@@ -4803,7 +4800,7 @@
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-dataset-description-metadata-local-genration-tr">
+                <tr id="guided-dataset-description-metadata-local-genration-tr">
                   <td
                     class="middle aligned"
                     id="guided-dataset-description-metadata-local-genration-text"
@@ -4817,7 +4814,7 @@
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-readme-metadata-local-genration-tr">
+                <tr id="guided-readme-metadata-local-genration-tr">
                   <td class="middle aligned" id="guided-readme-metadata-local-genration-text">
                     README metadata
                   </td>
@@ -4828,7 +4825,7 @@
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-changes-metadata-local-genration-tr">
+                <tr id="guided-changes-metadata-local-genration-tr">
                   <td class="middle aligned" id="guided-changes-metadata-local-genration-text">
                     CHANGES metadata
                   </td>
@@ -4839,7 +4836,7 @@
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-code-description-metadata-local-genration-tr">
+                <tr id="guided-code-description-metadata-local-genration-tr">
                   <td
                     class="middle aligned"
                     id="guided-code-description-metadata-local-genration-text"

@@ -6590,6 +6590,13 @@ const openPage = async (targetPageID) => {
       }
     }
 
+    if (targetPageID === "guided-generate-dataset-locally-tab") {
+      document
+        .getElementById("guided-section-local-dataset-generation-progresss")
+        .classList.add("hidden");
+      hideDatasetMetadataGenerationTableRows("local");
+    }
+
     if (targetPageID === "guided-dataset-generation-confirmation-tab") {
       //Set the inner text of the generate/retry pennsieve dataset button depending on
       //whether a dataset has bee uploaded from this progress file
@@ -7513,8 +7520,8 @@ const setActiveSubPage = (pageIdToActivate) => {
   // renderSideBar(CURRENT_PAGE.id);
 };
 
-const setGuidedProgressBarValue = (value) => {
-  $("#guided-progress-bar-new-curate").attr("value", value);
+const setGuidedProgressBarValue = (destination, value) => {
+  $("#guided-progress-bar-${destination}-generation").attr("value", value);
 };
 
 const generateAlertElement = (alertType, warningMessageText) => {
@@ -14274,7 +14281,14 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
       },
       { timeout: 0 }
     );
-    await guidedGenerateSubjectsMetadata(`${filePath}/${guidedDatasetName}/subjects.xlsx`);
+
+    // Unhide the local dataset metadata status table
+    document
+      .getElementById("guided-section-local-dataset-generation-progresss")
+      .classList.remove("hidden");
+
+    // Generate all of the dataset metadata files
+    await guidedGenerateSubjectsMetadata(path.join(filePath, guidedDatasetName, "subjects.xlsx"));
   } catch (error) {
     console.log(error);
     const emessage = userErrorMessage(error);
@@ -14847,7 +14861,7 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
     }
 
     //Reset Upload Progress Bar and then scroll to it
-    setGuidedProgressBarValue(0);
+    setGuidedProgressBarValue("pennsieve", 0);
     updateDatasetUploadProgressTable("pennsieve", {
       "Upload status": `Preparing dataset for upload`,
     });
@@ -15264,11 +15278,11 @@ const guidedUploadDatasetToPennsieve = async () => {
       $("#guided-progress-bar-new-curate").css("display", "block");
       //Case when the dataset upload is complete
       if (main_curate_progress_message.includes("Success: COMPLETED!")) {
-        setGuidedProgressBarValue(100);
+        setGuidedProgressBarValue("pennsieve", 100);
       } else {
         const percentOfDatasetUploaded =
           (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
-        setGuidedProgressBarValue(percentOfDatasetUploaded);
+        setGuidedProgressBarValue("pennsieve", percentOfDatasetUploaded);
 
         if (main_total_generate_dataset_size < displaySize) {
           totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
