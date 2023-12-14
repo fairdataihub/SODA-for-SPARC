@@ -382,7 +382,7 @@ const fill_info_details = () => {
 // amount => how many times the back button is clicked
 // element => element to scroll to in the page
 // pulse_animation => whether to pulse the element
-const traverse_back = (amount, element = "", pulse_animation = false) => {
+const window.traverse_back = (amount, element = "", pulse_animation = false) => {
   if (element === "Question-generate-dataset-existing-folders-options") {
     $("#button-confirm-bf-dataset").click();
     $("nextBtn").prop("disabled", true);
@@ -425,7 +425,7 @@ const add_card_detail = (
   element_id = "",
   pulse = false
 ) => {
-  let link_item = "<i class='far fa-edit jump-back' onclick='traverse_back(";
+  let link_item = "<i class='far fa-edit jump-back' onclick='window.traverse_back(";
   link_item += parent_tab.toString();
   temp = ', "' + element_id + '", ' + pulse + ")";
   link_item += temp;
