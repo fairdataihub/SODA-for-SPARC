@@ -2203,8 +2203,9 @@ window.parseJson = (path) => {
     return {};
   }
   try {
-    var content = window.fs.readFileSync(path);
-    contentJson = JSON.parse(content);
+    var content = window.fs.readFileSync(path, "utf8");
+    console.log(content)
+    let contentJson = JSON.parse(content);
     return contentJson;
   } catch (error) {
     window.log.error(error);

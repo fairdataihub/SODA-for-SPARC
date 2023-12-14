@@ -1283,6 +1283,7 @@ window.edit_current_con_id = (ev) => {
 
 const memorizeAffiliationInfo = (values) => {
   window.createMetadataDir();
+  console.log("affiliationConfigPath", window.affiliationConfigPath)
   var content = window.parseJson(window.affiliationConfigPath);
   content["affiliation"] = values;
   window.fs.writeFileSync(window.affiliationConfigPath, JSON.stringify(content));
