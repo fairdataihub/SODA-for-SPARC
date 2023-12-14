@@ -1699,7 +1699,7 @@ const window.showPrimaryBrowseFolderSamples = () => {
   ipcRenderer.send("open-file-dialog-local-primary-folder-samples");
 };
 
-const importPrimaryFolderSubjects = (folderPath) => {
+const window.importPrimaryFolderSubjects = (folderPath) => {
   headersArrSubjects = [];
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     if (field.value === "" || field.value === undefined || field.value === "Select") {

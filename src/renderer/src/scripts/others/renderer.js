@@ -1986,7 +1986,7 @@ window.generateSamplesFileHelper = async (uploadBFBoolean) => {
 // import Primary folder
 window.electron.ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
   if (primaryFolderPath.length > 0) {
-    importPrimaryFolderSubjects(primaryFolderPath[0]);
+    window.importPrimaryFolderSubjects(primaryFolderPath[0]);
   }
 });
 window.electron.ipcRenderer.on("selected-local-primary-folder-samples", (event, primaryFolderPath) => {

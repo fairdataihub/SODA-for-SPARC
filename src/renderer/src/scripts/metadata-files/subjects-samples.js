@@ -1717,8 +1717,8 @@ window.showPrimaryBrowseFolderSamples = () => {
   window.electron.ipcRenderer.send("open-file-dialog-local-primary-folder-samples");
 };
 
-const importPrimaryFolderSubjects = (folderPath) => {
-  headersArrSubjects = [];
+window.importPrimaryFolderSubjects = (folderPath) => {
+  let headersArrSubjects = [];
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     if (field.value === "" || field.value === undefined || field.value === "Select") {
       field.value = null;
@@ -1749,7 +1749,8 @@ const importPrimaryFolderSubjects = (folderPath) => {
       for (var folder of folders) {
         window.subjectsFileData = [];
         var stats = window.fs.statSync(window.path.join(folderPath, folder));
-        if (stats.isDirectory()) {
+        console.log(stats)
+        if (stats.isDirectory) {
           window.subjectsFileData[0] = folder;
           for (var i = 1; i < 27; i++) {
             window.subjectsFileData.push("");
