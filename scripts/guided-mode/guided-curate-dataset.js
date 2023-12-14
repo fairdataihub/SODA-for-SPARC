@@ -4044,7 +4044,7 @@ const guidedShowTreePreview = (new_dataset_name, targetElement) => {
     new_dataset_name,
     "folder",
     "",
-    true,
+    new_dataset_name,
     false,
     false,
     "",
