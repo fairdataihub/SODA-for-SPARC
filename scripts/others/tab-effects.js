@@ -100,7 +100,7 @@ const showParentTab = async (tabNow, nextOrPrev) => {
       //Hide the UI until the manifest card are created
       $("#manifest-creating-loading").removeClass("hidden");
       $("#manifest-items-container").addClass("hidden");
-      await ffmCreateManifest(sodaJSONObj);
+      await window.ffmCreateManifest(sodaJSONObj);
       $("#manifest-items-container").removeClass("hidden");
       $("#manifest-creating-loading").addClass("hidden");
       $("button-generate-manifest-locally").show();

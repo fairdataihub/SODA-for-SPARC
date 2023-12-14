@@ -1843,7 +1843,7 @@ window.ffOpenManifestEditSwal = async (highlevelFolderName) => {
 
 // Function takes in original sodaJSONObj and creates a copy of it to modify to manifest edits
 // Manifest edits will create
-const ffmCreateManifest = async (sodaJson) => {
+window.ffmCreateManifest = async (sodaJson) => {
   await new Promise((r) => setTimeout(r, 0));
   //create a copy of the sodajson object
   window.sodaCopy = sodaJson;
@@ -1976,7 +1976,7 @@ $("#generate-manifest-curate").change(async function () {
       };
     }
 
-    await ffmCreateManifest(sodaJSONObj);
+    await window.ffmCreateManifest(sodaJSONObj);
     $("#ffm-manifest-generator").show();
     $("#button-generate-manifest-locally").show();
     // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>
