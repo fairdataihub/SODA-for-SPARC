@@ -225,6 +225,7 @@ let updatechecked = false;
  */
 const guessPackaged = () => {
   const executablePath = join(process.resourcesPath, PY_FLASK_MODULE);
+  ElectronLog.info("Executable path: " + executablePath);
   if (existsSync(executablePath)) {
     return true;
   } else {
