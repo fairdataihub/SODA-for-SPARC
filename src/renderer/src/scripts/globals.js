@@ -1365,6 +1365,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
 
           let result = responseObject.data.datasets;
+          console.log("Dataset results: ", result)
           window.datasetList = [];
           window.datasetList = result;
           window.refreshDatasetList();
@@ -1700,7 +1701,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         },
       });
 
-      if (result.isConfirmed) {
+      if (result && result.isConfirmed) {
         await window.openDropdownPrompt(this, "bf");
         $(".ui.active.green.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
