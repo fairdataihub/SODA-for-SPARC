@@ -5,6 +5,7 @@ import {clientError, userErrorMessage} from '../others/http-error-handler/error-
 import { successCheck } from "../../assets/lotties/lotties";
 import client from "../client"
 import 'jstree'
+import fileTxt from "/img/txt-file.png"
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100))
@@ -1089,7 +1090,7 @@ $(document).ready(function () {
         icon: "src/assets/img/pdf-file.png",
       },
       "file txt": {
-        icon: "src/assets/img/txt-file.png",
+        icon: fileTxt,
       },
       "file csv": {
         icon: "src/assets/img/csv-file.png",
@@ -1576,7 +1577,7 @@ $(document).ready(function () {
         icon: "src/assets/img/pdf-file.png",
       },
       "file txt": {
-        icon: "src/assets/img/txt-file.png",
+        icon: fileTxt,
       },
       "file csv": {
         icon: "src/assets/img/csv-file.png",
