@@ -3014,9 +3014,7 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
     sodaJSONObj["dataset-structure"]["files"] = {};
   }
 
-  //Add datasetStructureJSONObj to the sodaJSONObj and use to load the
-  //datasetStructureJsonObj when progress resumed
-  sodaJSONObj["saved-datset-structure-json-obj"] = datasetStructureJSONObj;
+  // Store global variable values to the progress file before saving
   sodaJSONObj["dataset-structure"] = datasetStructureJSONObj;
   sodaJSONObj["subjects-table-data"] = subjectsTableData;
   sodaJSONObj["samples-table-data"] = samplesTableData;
@@ -3577,28 +3575,12 @@ document
       // if the user performed move, rename, delete on files in an imported dataset we need to perform those actions before creating the validation report;
       // rationale for this can be found in the function definition
       if (sodaJSONObjCopy["starting-point"]["type"] === "bf") {
-        // if the user resumes a dataset and validation is the first page they visit, then dataset-structure will be empty
-        // so we use the saved dataset structure key;
-        // in the case of a bf dataset that is not resumed, if dataset-structure is empty then so will saved-dataset-structure-json-obj
-        // so this swap is safe
-        if (sodaJSONObjCopy["dataset-structure"]) {
-          let files = sodaJSONObjCopy["dataset-structure"]["files"];
-          let folders = sodaJSONObjCopy["dataset-structure"]["folders"];
-          if (Object.keys(files).length === 0 && Object.keys(folders).length === 0) {
-            sodaJSONObjCopy["dataset-structure"] =
-              sodaJSONObjCopy["saved-datset-structure-json-obj"];
-          }
-        }
         await api.performUserActions(sodaJSONObjCopy);
-
-        // if the dataset-structure wasnt empty then we may have performed actions on the dataset structure in the previous step;
-        // currently the saved-dataset-structure-json-obj key is used for GM validation so set its value to match the performed actions
-        sodaJSONObjCopy["saved-datset-structure-json-obj"] = sodaJSONObjCopy["dataset-structure"];
       }
 
       // count the amount of files in the dataset
       file_counter = 0;
-      get_num_files_and_folders(sodaJSONObjCopy["saved-datset-structure-json-obj"]);
+      get_num_files_and_folders(sodaJSONObjCopy["dataset-structure"]);
 
       if (file_counter >= 50000) {
         await Swal.fire({
@@ -3653,7 +3635,7 @@ document
 
         file_counter = 0;
         folder_counter = 0;
-        get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+        get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
         // log successful validation run to analytics
         const kombuchaEventData = {
           value: file_counter,
@@ -3746,7 +3728,7 @@ document
       if (validationReport.status === "Error") {
         file_counter = 0;
         folder_counter = 0;
-        get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+        get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
         // log successful validation run to analytics
         const kombuchaEventData = {
           value: file_counter,
@@ -3780,7 +3762,7 @@ document
 
       file_counter = 0;
       folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
       // log successful validation run to analytics
       if (file_counter > 0) {
@@ -7772,6 +7754,11 @@ const patchPreviousGuidedModeVersions = async () => {
     sodaJSONObj["cuartion-mode"] = "guided";
   }
 
+  if (sodaJSONObj["saved-datset-structure-json-obj"]) {
+    sodaJSONObj["dataset-structure"] = sodaJSONObj["saved-datset-structure-json-obj"];
+    delete sodaJSONObj["saved-datset-structure-json-obj"];
+  }
+
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
 };
@@ -7887,12 +7874,12 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     sodaJSONObj = datasetResumeJsonObj;
     attachGuidedMethodsToSodaJSONObj();
 
-    datasetStructureJSONObj = sodaJSONObj["saved-datset-structure-json-obj"];
-    subjectsTableData = sodaJSONObj["subjects-table-data"];
-    samplesTableData = sodaJSONObj["samples-table-data"];
-
     //patches the sodajsonobj if it was created in a previous version of guided mode
     await patchPreviousGuidedModeVersions();
+
+    datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+    subjectsTableData = sodaJSONObj["subjects-table-data"];
+    samplesTableData = sodaJSONObj["samples-table-data"];
 
     // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
     const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
