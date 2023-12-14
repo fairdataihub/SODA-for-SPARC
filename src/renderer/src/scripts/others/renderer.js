@@ -58,6 +58,8 @@ import {
 } from '../globals'
 import checkForAnnouncements from './announcements'
 import { swalFileListSingleAction, swalFileListTripleAction, swalFileListDoubleAction, swalShowError } from "../utils/swal-utils"
+import canSmiley from "/img/can-smiley.png"
+import canSad from "/img/can-sad.png"
 
 
 // add jquery to the window object
@@ -1334,8 +1336,8 @@ const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-te
 // const blackColor = "#000";
 // const redColor = "#ff1a1a";
 // const sparcFolderNames = ["code", "derivative", "docs", "primary", "protocol", "source"];
-window.smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">';
-window.sadCan = '<img class="message-icon" src="assets/img/can-sad.png">';
+window.smileyCan = `<img class="message-icon" src=${canSmiley}>`;
+window.sadCan = `<img class="message-icon" src=${canSad}>`;
 window.delayAnimation = 250;
 
 //////////////////////////////////
