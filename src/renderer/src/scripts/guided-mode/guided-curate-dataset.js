@@ -26,6 +26,15 @@ import Cropper from 'cropperjs'
 
 import 'jstree'
 
+import fileTxt from "/img/txt-file.png"
+import filePng from "/img/png-file.png"
+import filePdf from "/img/pdf-file.png"
+import fileCsv from "/img/csv-file.png"
+import fileDoc from "/img/doc-file.png"
+import fileXlsx from "/img/excel-file.png"
+import fileJpeg from "/img/jpeg-file.png"
+import fileOther from "/img/other-file.png"
+
 
 
 
@@ -5177,49 +5186,49 @@ window.openPage = async (targetPageID) => {
             icon: "fas fa-folder fa-fw",
           },
           "file xlsx": {
-            icon: "src/assets/img/excel-file.png",
+            icon: fileXlsx,
           },
           "file xls": {
-            icon: "src/assets/img/excel-file.png",
+            icon: fileXlsx,
           },
           "file png": {
-            icon: "src/assets/img/png-file.png",
+            icon: filePng,
           },
           "file PNG": {
-            icon: "src/assets/img/png-file.png",
+            icon: filePng,
           },
           "file pdf": {
-            icon: "src/assets/img/pdf-file.png",
+            icon: filePdf,
           },
           "file txt": {
-            icon: "src/assets/img/txt-file.png",
+            icon: fileTxt,
           },
           "file csv": {
-            icon: "src/assets/img/csv-file.png",
+            icon: fileCsv,
           },
           "file CSV": {
-            icon: "src/assets/img/csv-file.png",
+            icon: fileCsv,
           },
           "file DOC": {
-            icon: "src/assets/img/doc-file.png",
+            icon: fileDoc,
           },
           "file DOCX": {
-            icon: "src/assets/img/doc-file.png",
+            icon: fileDoc,
           },
           "file docx": {
-            icon: "src/assets/img/doc-file.png",
+            icon: fileDoc,
           },
           "file doc": {
-            icon: "src/assets/img/doc-file.png",
+            icon: fileDoc,
           },
           "file jpeg": {
-            icon: "src/assets/img/jpeg-file.png",
+            icon: fileJpeg,
           },
           "file JPEG": {
-            icon: "src/assets/img/jpeg-file.png",
+            icon: fileJpeg,
           },
           "file other": {
-            icon: "src/assets/img/other-file.png",
+            icon: fileOther,
           },
         },
       });
@@ -6522,49 +6531,49 @@ window.openPage = async (targetPageID) => {
             icon: "fas fa-folder fa-fw",
           },
           "file xlsx": {
-            icon: "src/assets/img/excel-file.png",
+            icon: fileXlsx,
           },
           "file xls": {
-            icon: "src/assets/img/excel-file.png",
+            icon: fileXlsx,
           },
           "file png": {
-            icon: "src/assets/img/png-file.png",
+            icon: filePng,
           },
           "file PNG": {
-            icon: "src/assets/img/png-file.png",
+            icon: filePng,
           },
           "file pdf": {
-            icon: "src/assets/img/pdf-file.png",
+            icon: filePdf,
           },
           "file txt": {
-            icon: "src/assets/img/txt-file.png",
+            icon: fileTxt,
           },
           "file csv": {
-            icon: "src/assets/img/csv-file.png",
+            icon: fileCsv,
           },
           "file CSV": {
-            icon: "src/assets/img/csv-file.png",
+            icon: fileCsv,
           },
           "file DOC": {
-            icon: "src/assets/img/doc-file.png",
+            icon: fileDoc,
           },
           "file DOCX": {
-            icon: "src/assets/img/doc-file.png",
+            icon: fileDoc,
           },
           "file docx": {
-            icon: "src/assets/img/doc-file.png",
+            icon: fileDoc,
           },
           "file doc": {
-            icon: "src/assets/img/doc-file.png",
+            icon: fileDoc,
           },
           "file jpeg": {
-            icon: "src/assets/img/jpeg-file.png",
+            icon: fileJpeg,
           },
           "file JPEG": {
-            icon: "src/assets/img/jpeg-file.png",
+            icon: fileJpeg,
           },
           "file other": {
-            icon: "src/assets/img/other-file.png",
+            icon: fileOther,
           },
         },
       });
@@ -12465,49 +12474,49 @@ $(guidedJstreePreview).jstree({
       icon: "fas fa-folder fa-fw",
     },
     "file xlsx": {
-      icon: "src/assets/img/excel-file.png",
+      icon: fileXlsx,
     },
     "file xls": {
-      icon: "src/assets/img/excel-file.png",
+      icon: fileXlsx,
     },
     "file png": {
-      icon: "src/assets/img/png-file.png",
+      icon: filePng,
     },
     "file PNG": {
-      icon: "src/assets/img/png-file.png",
+      icon: filePng,
     },
     "file pdf": {
-      icon: "src/assets/img/pdf-file.png",
+      icon: filePdf,
     },
     "file txt": {
-      icon: "src/assets/img/txt-file.png",
+      icon: fileTxt,
     },
     "file csv": {
-      icon: "src/assets/img/csv-file.png",
+      icon: fileCsv,
     },
     "file CSV": {
-      icon: "src/assets/img/csv-file.png",
+      icon: fileCsv,
     },
     "file DOC": {
-      icon: "src/assets/img/doc-file.png",
+      icon: fileDoc,
     },
     "file DOCX": {
-      icon: "src/assets/img/doc-file.png",
+      icon: fileDoc,
     },
     "file docx": {
-      icon: "src/assets/img/doc-file.png",
+      icon: fileDoc,
     },
     "file doc": {
-      icon: "src/assets/img/doc-file.png",
+      icon: fileDoc,
     },
     "file jpeg": {
-      icon: "src/assets/img/jpeg-file.png",
+      icon: fileJpeg,
     },
     "file JPEG": {
-      icon: "src/assets/img/jpeg-file.png",
+      icon: fileJpeg,
     },
     "file other": {
-      icon: "src/assets/img/other-file.png",
+      icon: fileOther,
     },
   },
 });
