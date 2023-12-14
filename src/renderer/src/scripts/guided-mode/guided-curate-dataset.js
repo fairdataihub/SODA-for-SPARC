@@ -4791,6 +4791,7 @@ const handleNextButtonVisibility = (targetPageID) => {
 // //If the keys exist, extract the data from the window.sodaJSONObj and populate the page
 // //If the keys do not exist, reset the page (inputs, tables etc.) to the default state
 window.openPage = async (targetPageID) => {
+  console.log("TargetPageID is: ", targetPageID)
   //NOTE: 2 Bottom back buttons (one handles sub pages, and the other handles main pages)
   //Back buttons should be disabled and the function setLoading should be (set as false?)
 
@@ -5829,7 +5830,7 @@ window.openPage = async (targetPageID) => {
         "guided-confirm-pennsieve-account"
       );
       const selectPennsieveAccountDiv = document.getElementById("guided-select-pennsieve-account");
-      if (!window.defaultBfDataset) {
+      if (!window.defaultBfAccount) {
         confirmPennsieveAccountDiv.classList.add("hidden");
         selectPennsieveAccountDiv.classList.remove("hidden");
       } else {
