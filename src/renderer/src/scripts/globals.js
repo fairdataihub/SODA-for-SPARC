@@ -1703,7 +1703,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       console.log(result)
 
-      if (result && result.isConfirmed) {
+      if (result) {
         await window.openDropdownPrompt(this, "bf");
         $(".ui.active.green.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
