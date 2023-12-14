@@ -392,7 +392,7 @@ const skipOrUnSkipCodeDescriptionPage = async (pennsieveDatasetID) => {
   try {
     await client.get(`/prepare_metadata/import_metadata_file`, {
       params: {
-        selected_account: window.defaultBfDataset,
+        selected_account: window.defaultBfAccount,
         selected_dataset: pennsieveDatasetID,
         file_type: "code_description.xlsx",
       },
@@ -628,7 +628,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
 
         const datasetIsLocked = await api.isDatasetLocked(
-          window.defaultBfDataset,
+          window.defaultBfAccount,
           selectedPennsieveDataset
         );
         if (datasetIsLocked) {
@@ -648,7 +648,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         //Pull the dataset folders and files from Pennsieve\
         window.sodaJSONObj["bf-dataset-selected"] = {};
         window.sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedPennsieveDataset;
-        window.sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfDataset;
+        window.sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfAccount;
         const importProgressCircle = document.querySelector(
           "#guided_loading_pennsieve_dataset-organize"
         );
@@ -760,7 +760,7 @@ const savePageChanges = async (pageBeingLeftID) => {
               `/prepare_metadata/import_metadata_file`,
               {
                 params: {
-                  selected_account: window.defaultBfDataset,
+                  selected_account: window.defaultBfAccount,
                   selected_dataset: selectedPennsieveDatasetID,
                   file_type: "subjects.xlsx",
                   ui_fields: fieldEntries.toString(),
@@ -796,7 +796,7 @@ const savePageChanges = async (pageBeingLeftID) => {
                 `/prepare_metadata/import_metadata_file`,
                 {
                   params: {
-                    selected_account: window.defaultBfDataset,
+                    selected_account: window.defaultBfAccount,
                     selected_dataset: selectedPennsieveDatasetID,
                     file_type: "samples.xlsx",
                     ui_fields: fieldEntries.toString(),
@@ -1515,7 +1515,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         "guided-confirm-pennsieve-account-button"
       );
       if (!confirmAccountbutton.classList.contains("selected")) {
-        if (!window.defaultBfDataset) {
+        if (!window.defaultBfAccount) {
           // If the user has not logged in, throw an error
           errorArray.push({
             type: "notyf",
@@ -1557,7 +1557,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      window.sodaJSONObj["last-confirmed-bf-account-details"] = window.defaultBfDataset;
+      window.sodaJSONObj["last-confirmed-bf-account-details"] = window.defaultBfAccount;
       window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] = userSelectedWorkSpace;
     }
 
@@ -2562,7 +2562,7 @@ window.guidedModifyCurationTeamAccess = async (action) => {
 
 const checkIfDatasetExistsOnPennsieve = async (datasetNameOrID) => {
   let datasetName = null;
-  const datasetList = await api.getDatasetsForAccount(window.defaultBfDataset);
+  const datasetList = await api.getDatasetsForAccount(window.defaultBfAccount);
   for (const dataset of datasetList) {
     if (dataset.name === datasetNameOrID || dataset.id === datasetNameOrID) {
       datasetName = dataset.name;
@@ -2987,7 +2987,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     if (workspaceUserNeedsToSwitchTo) {
       // If the progress file has an organization set but the user is no longer logged in,
       // prompt the user to log in
-      if (!window.defaultBfDataset) {
+      if (!window.defaultBfAccount) {
         return `
           <button
             class="ui positive button guided--progress-button-login-to-pennsieve"
@@ -3737,7 +3737,7 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   pennsieveDatasetSelectDiv.classList.add("hidden");
 
   // If the user is not logged in, show the log in div and return
-  if (!window.defaultBfDataset) {
+  if (!window.defaultBfAccount) {
     logInDiv.classList.remove("hidden");
     return;
   }
@@ -3750,7 +3750,7 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   try {
     let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
       params: {
-        selected_account: window.defaultBfDataset,
+        selected_account: window.defaultBfAccount,
       },
     });
     const datasets = responseObject.data.datasets;
@@ -4950,7 +4950,7 @@ window.openPage = async (targetPageID) => {
           //Try to get the dataset name from Pennsieve
           //If the request fails, the subtitle input will remain blank
           const datasetSubtitle = await api.getDatasetSubtitle(
-            window.defaultBfDataset,
+            window.defaultBfAccount,
             window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
           );
 
@@ -4989,7 +4989,7 @@ window.openPage = async (targetPageID) => {
           // Get the submission metadata from Pennsieve
           const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
-              selected_account: window.defaultBfDataset,
+              selected_account: window.defaultBfAccount,
               selected_dataset: window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "submission.xlsx",
             },
@@ -5313,7 +5313,7 @@ window.openPage = async (targetPageID) => {
         try {
           const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
-              selected_account: window.defaultBfDataset,
+              selected_account: window.defaultBfAccount,
               selected_dataset: window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "submission.xlsx",
             },
@@ -5434,7 +5434,7 @@ window.openPage = async (targetPageID) => {
         try {
           let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
-              selected_account: window.defaultBfDataset,
+              selected_account: window.defaultBfAccount,
               selected_dataset: window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "dataset_description.xlsx",
             },
@@ -5486,7 +5486,7 @@ window.openPage = async (targetPageID) => {
         try {
           let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
-              selected_account: window.defaultBfDataset,
+              selected_account: window.defaultBfAccount,
               selected_dataset: window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "dataset_description.xlsx",
             },
@@ -5534,7 +5534,7 @@ window.openPage = async (targetPageID) => {
         try {
           let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
-              selected_account: window.defaultBfDataset,
+              selected_account: window.defaultBfAccount,
               selected_dataset: window.sodaJSONObj["bf-dataset-selected"]["dataset-name"],
               file_type: "dataset_description.xlsx",
             },
@@ -5644,7 +5644,7 @@ window.openPage = async (targetPageID) => {
           try {
             const currentDatasetID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
             const tagsReq = await client.get(`/manage_datasets/datasets/${currentDatasetID}/tags`, {
-              params: { selected_account: window.defaultBfDataset },
+              params: { selected_account: window.defaultBfAccount },
             });
             const { tags } = tagsReq.data;
             if (tags.length > 0) {
@@ -5675,7 +5675,7 @@ window.openPage = async (targetPageID) => {
         if (!studyPurpose && !studyDataCollection && !studyPrimaryConclusion) {
           try {
             const pennsieveDatasetDescription = await api.getDatasetReadme(
-              window.defaultBfDataset,
+              window.defaultBfAccount,
               window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
             );
             const parsedDescription = createParsedReadme(pennsieveDatasetDescription);
@@ -5869,7 +5869,7 @@ window.openPage = async (targetPageID) => {
         try {
           // pass in the id in case the name of the dataset has been
           // changed from the original Pennsieve dataset name
-          let res = await api.getDatasetBannerImageURL(window.defaultBfDataset, datasetID);
+          let res = await api.getDatasetBannerImageURL(window.defaultBfAccount, datasetID);
           if (res != "No banner image") {
             //Banner is returned as an s3 bucket url but image needs to be converted as
             //base64 to save and write to users local system
@@ -5968,10 +5968,10 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-designate-permissions-tab") {
       const usersReq = await client.get(
-        `manage_datasets/ps_get_users?selected_account=${window.defaultBfDataset}`
+        `manage_datasets/ps_get_users?selected_account=${window.defaultBfAccount}`
       );
       const teamsReq = await client.get(
-        `manage_datasets/ps_get_teams?selected_account=${window.defaultBfDataset}`
+        `manage_datasets/ps_get_teams?selected_account=${window.defaultBfAccount}`
       );
 
       const usersThatCanBeGrantedPermissions = usersReq.data.users;
@@ -5997,7 +5997,7 @@ window.openPage = async (targetPageID) => {
           });
 
           const permissions = await api.getDatasetPermissions(
-            window.defaultBfDataset,
+            window.defaultBfAccount,
             window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
             false
           );
@@ -6113,7 +6113,7 @@ window.openPage = async (targetPageID) => {
         try {
           const licenseReq = await client.get(`/manage_datasets/bf_license`, {
             params: {
-              selected_account: window.defaultBfDataset,
+              selected_account: window.defaultBfAccount,
               selected_dataset: window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
             },
           });
@@ -6304,7 +6304,7 @@ window.openPage = async (targetPageID) => {
         try {
           await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
-              selected_account: window.defaultBfDataset,
+              selected_account: window.defaultBfAccount,
               selected_dataset: window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "code_description.xlsx",
             },
@@ -6365,7 +6365,7 @@ window.openPage = async (targetPageID) => {
             params: {
               file_type: "README",
 
-              selected_account: window.defaultBfDataset,
+              selected_account: window.defaultBfAccount,
               selected_dataset: window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
             },
           });
@@ -7264,7 +7264,7 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
     return false;
   }
   // If the user has changed their Pennsieve account, they need to confirm their new Pennsieve account and workspace
-  if (window.sodaJSONObj?.["last-confirmed-bf-account-details"] !== window.defaultBfDataset) {
+  if (window.sodaJSONObj?.["last-confirmed-bf-account-details"] !== window.defaultBfAccount) {
     if (window.sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
       delete window.sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
     }
@@ -7526,7 +7526,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
       if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
         // Check to make sure the dataset is not locked
         const datasetIsLocked = await api.isDatasetLocked(
-          window.defaultBfDataset,
+          window.defaultBfAccount,
           datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"]
         );
         if (datasetIsLocked) {
@@ -12275,7 +12275,7 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
               `/prepare_metadata/import_metadata_file`,
               {
                 params: {
-                  selected_account: window.defaultBfDataset,
+                  selected_account: window.defaultBfAccount,
                   selected_dataset: window.sodaJSONObj["bf-dataset-selected"]["dataset-name"],
                   file_type: "dataset_description.xlsx",
                 },
