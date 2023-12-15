@@ -496,7 +496,12 @@ const initialize = () => {
       optimizer.watchWindowShortcuts(window)
     })
 
-    createWindow()
+    try{
+      createWindow()
+    } catch(err) {
+      console.log(err)
+      log.info(err)
+    }
 
     mainWindow.webContents.once("dom-ready", () => {
       setTimeout(function () {
@@ -521,12 +526,12 @@ const initialize = () => {
     })
 
     // spawn the python server 
-    createPyProc()
-
-    // show the splash screen
-
-
- 
+    try{
+      createPyProc()
+    } catch(err) {
+      console.log(err)
+      log.info(err)
+    }
 
     // track app launch at Kombucha analytics server
     // trackKombuchaEvent(
