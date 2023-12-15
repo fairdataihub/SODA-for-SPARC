@@ -2,7 +2,7 @@ import determineDatasetLocation, { Destinations } from "../analytics/analytics-u
 import api from "../others/api/api"
 import Swal from "sweetalert2";
 import client from '../client'
-import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
+import { clientError, userErrorMessage } from '../others/http-error-handler/error-handler'
 import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 
@@ -126,7 +126,7 @@ window.generateRCFiles = async (uploadBFBoolean, fileType) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   if (uploadBFBoolean) {
     let textValue = $(`#textarea-create-${fileType}`).val().trim();
@@ -351,7 +351,7 @@ $(document).ready(function () {
 });
 
 // write Readme or Changes files (save locally)
-window.saveRCFile = async (type) =>  {
+window.saveRCFile = async (type) => {
   var result = window.generateRCFilesHelper(type);
   if (result === "empty") {
     return;
@@ -560,7 +560,7 @@ window.getRC = async (type) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   if (type === "CHANGES.txt") {
     var shortName = "changes";
   } else {
@@ -682,63 +682,62 @@ window.importExistingRCFile = (type) => {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadExistingRCFile(filePath, type), 1000);
     }
   }
 }
 
 // main function to load existing README/CHANGES files
-const loadExistingRCFile = (filepath, type) => {
+const loadExistingRCFile = async (filepath, type) => {
   // read file
-  window.fs.readFile(filepath, "utf8", function (err, data) {
-    if (err) {
-      let emessage = userErrorMessage(error);
-      console.log(err);
-      log.error(err);
-      Swal.fire({
-        title: "Failed to import existing file",
-        html: emessage,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error",
-      });
+  try {
+    let data = await window.fs.readFileRaw(filepath, "utf8")
+    // populate textarea
+    $(`#textarea-create-${type}`).val(data);
 
-      window.electron.ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Prepare Metadata - ${type} - Existing - Local`,
-        "Local",
-        1
-      );
+    Swal.fire({
+      title: "Loaded successfully!",
+      icon: "success",
+      showConfirmButton: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      didOpen: () => {
+        Swal.hideLoading();
+      },
+    });
 
-      window.electron.ipcRenderer.send("track-event", "Error", `Prepare Metadata - ${type}`);
-    } else {
-      // populate textarea
-      $(`#textarea-create-${type}`).val(data);
+    window.logMetadataForAnalytics(
+      "Success",
+      type === "changes" ? window.MetadataAnalyticsPrefix.CHANGES : window.MetadataAnalyticsPrefix.README,
+      window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      "Existing",
+      Destinations.LOCAL
+    );
 
-      Swal.fire({
-        title: "Loaded successfully!",
-        icon: "success",
-        showConfirmButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        didOpen: () => {
-          Swal.hideLoading();
-        },
-      });
+    $(`#div-confirm-existing-${type}-import`).hide();
+    $($(`#div-confirm-existing-${type}-import button`)[0]).hide();
+    $(`#button-fake-confirm-existing-${type}-file-load`).click();
+  } catch (error) {
+    let emessage = userErrorMessage(error);
+    console.log(error);
+    window.log.error(error);
+    Swal.fire({
+      title: "Failed to import existing file",
+      html: emessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+    });
 
-      window.logMetadataForAnalytics(
-        "Success",
-        type === "changes" ? window.MetadataAnalyticsPrefix.CHANGES : window.MetadataAnalyticsPrefix.README,
-        window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        "Existing",
-        Destinations.LOCAL
-      );
+    window.electron.ipcRenderer.send(
+      "track-event",
+      "Error",
+      `Prepare Metadata - ${type} - Existing - Local`,
+      "Local",
+      1
+    );
 
-      $(`#div-confirm-existing-${type}-import`).hide();
-      $($(`#div-confirm-existing-${type}-import button`)[0]).hide();
-      $(`#button-fake-confirm-existing-${type}-file-load`).click();
-    }
-  });
+    window.electron.ipcRenderer.send("track-event", "Error", `Prepare Metadata - ${type}`);
+  }
 };

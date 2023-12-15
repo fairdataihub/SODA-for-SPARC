@@ -112,9 +112,12 @@ if (process.contextIsolated) {
         const fsStatsObj = await fs.stat(filepath);
         return fsStatsObj.isFile();
       },
-      readFile: async (filepath, encoding) => {
-        let result = await fs.readFile(filepath, encoding)
+      readFile: (filepath, encoding) => {
+        let result = fs.readFileSync(filepath, encoding)
         return JSON.parse(result)
+      },
+      readFileRaw: (filepath, encoding) => {
+        return fs.readFileSync(filepath, encoding)
       },
       fileSizeSync: (filepath) => {
         // use stat library to get the size of the directory
