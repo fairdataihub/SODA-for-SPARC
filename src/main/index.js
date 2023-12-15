@@ -5,7 +5,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { autoUpdater } from "electron-updater";
 import { trackEvent, trackKombuchaEvent } from "./analytics"
 import icon from '../../resources/soda_icon.png?asset'
-import ElectronLog from "electron-log"
+import log from "electron-log"
 import axios from "axios"
 import fp from "find-free-port"
 import { spawn, execFile, spawnSync } from "node:child_process"
@@ -227,7 +227,7 @@ const guessPackaged = () => {
   const executablePathUnix = join(process.resourcesPath, PY_FLASK_MODULE);
   const executablePathWindows = join(process.resourcesPath, PY_FLASK_MODULE + ".exe")
 
-  ElectronLog.info("Executable path: " + executablePath);
+  log.info("Executable path: " + executablePath);
   if (existsSync(executablePathUnix) || existsSync(executablePathWindows)) {
     return true;
   } else {
@@ -243,17 +243,17 @@ const guessPackaged = () => {
  */
 const getScriptPath = () => {
   if (!guessPackaged()) {
-    ElectronLog.info("App is not packaged returning path: ");
-    ElectronLog.info(join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py"));
+    log.info("App is not packaged returning path: ");
+    log.info(join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py"));
     return join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py");
   }
   if (process.platform === "win32") {
     const winPath = join(process.resourcesPath, PY_FLASK_MODULE + ".exe");
-    ElectronLog.info("App is packaged [Windows]; Path to server executable: " + winPath);
+    log.info("App is packaged [Windows]; Path to server executable: " + winPath);
     return winPath;
   } else {
     const unixPath = join(process.resourcesPath, PY_FLASK_MODULE);
-    ElectronLog.info("App is packaged [ Unix ]; Path to server executable: " + unixPath);
+    log.info("App is packaged [ Unix ]; Path to server executable: " + unixPath);
     return unixPath;
   }
 };
@@ -278,32 +278,32 @@ const selectPort = () => {
 
 const createPyProc = async () => {
   let script = getScriptPath();
-  ElectronLog.info(`Path to server executable: ${script}`);
+  log.info(`Path to server executable: ${script}`);
   let port = "" + selectPort();
   // await killAllPreviousProcesses();
   if (existsSync(script)) {
-    ElectronLog.info("Server exists at specified location", script);
+    log.info("Server exists at specified location", script);
   } else {
-    ElectronLog.info("Server doesn't exist at specified location");
+    log.info("Server doesn't exist at specified location");
   }
   fp(PORT, PORT + portRange)
     .then(([freePort]) => {
       let port = freePort;
       if (guessPackaged()) {
-        ElectronLog.info("Application is packaged")
-        // Store the stdout and stederr in a string to ElectronLog later
+        log.info("Application is packaged")
+        // Store the stdout and stederr in a string to log later
         let sessionServerOutput = "";
-        ElectronLog.info(`Starting server on port ${port}`)
+        log.info(`Starting server on port ${port}`)
         pyflaskProcess = execFile(script, [port], (error, stdout, stderr) => {
           if (error) {
             console.error(error)
-            ElectronLog.error(error);
+            log.error(error);
             // console.error(stderr)
             throw error;
           }
           console.log(stdout);
         });
-        // ElectronLog the stdout and stderr
+        // log the stdout and stderr
         pyflaskProcess.stdout.on("data", (data) => {
           const logOutput = `[pyflaskProcess output] ${data.toString()}`;
           sessionServerOutput += `${logOutput}`;
@@ -312,14 +312,14 @@ const createPyProc = async () => {
           const logOutput = `[pyflaskProcess stderr] ${data.toString()}`;
           sessionServerOutput += `${logOutput}`;
         });
-        // On close, ElectronLog the outputs and the exit code
+        // On close, log the outputs and the exit code
         pyflaskProcess.on("close", (code) => {
-          ElectronLog.info(`child process exited with code ${code}`);
-          ElectronLog.info("Server output during session found below:");
-          ElectronLog.info(sessionServerOutput);
+          log.info(`child process exited with code ${code}`);
+          log.info("Server output during session found below:");
+          log.info(sessionServerOutput);
         });
       } else {
-        ElectronLog.info("Application is not packaged")
+        log.info("Application is not packaged")
         // update code here
         pyflaskProcess = spawn("python", [script, port], {
           stdio: "ignore",
@@ -339,14 +339,14 @@ const createPyProc = async () => {
       }
       if (pyflaskProcess != null) {
         console.log("child process success on port " + port);
-        ElectronLog.info("child process success on port " + port);
+        log.info("child process success on port " + port);
       } else {
         console.error("child process failed to start on port" + port);
       }
       selectedPort = port;
     })
     .catch((err) => {
-      ElectronLog.error("Error starting the python server");
+      log.error("Error starting the python server");
       console.log(err);
     });
 };
