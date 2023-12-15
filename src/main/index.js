@@ -224,9 +224,11 @@ let updatechecked = false;
  * @returns {boolean} True if the app is packaged, false if it is running from a dev version.
  */
 const guessPackaged = () => {
-  const executablePath = join(process.resourcesPath, PY_FLASK_MODULE);
+  const executablePathUnix = join(process.resourcesPath, PY_FLASK_MODULE);
+  const executablePathWindows = join(process.resourcesPath, PY_FLASK_MODULE + ".exe")
+
   ElectronLog.info("Executable path: " + executablePath);
-  if (existsSync(executablePath)) {
+  if (existsSync(executablePathUnix) || existsSync(executablePathWindows)) {
     return true;
   } else {
     return false;
