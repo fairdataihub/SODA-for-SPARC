@@ -218,7 +218,7 @@ function window.resetSubmission(askToReset = true) {
       .removeClass("disabled")
       .removeClass("non-selected");
     $("#Question-prepare-submission-1 .option-card .folder-input-check").prop("checked", false);
-    resetSubmissionFields();
+    window.resetSubmissionFields();
     return;
   }
 
@@ -249,12 +249,12 @@ function window.resetSubmission(askToReset = true) {
         .removeClass("disabled")
         .removeClass("non-selected");
       $("#Question-prepare-submission-1 .option-card .folder-input-check").prop("checked", false);
-      resetSubmissionFields();
+      window.resetSubmissionFields();
     }
   });
 }
 
-function resetSubmissionFields() {
+function window.resetSubmissionFields() {
   $("#existing-submission-file-destination").attr("placeholder", "Browse here");
 
   $("#div-confirm-existing-submission-import").hide();

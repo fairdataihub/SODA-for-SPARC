@@ -2575,7 +2575,7 @@ async function switchMetadataSubmissionQuestion() {
       $("#existing-submission-file-destination").attr("placeholder", "Browse here");
       $($("#div-check-bf-import-submission").children()[0]).show();
       $("#div-check-bf-import-submission").css("display", "flex");
-      resetSubmissionFields();
+      window.resetSubmissionFields();
     }
     return continueProgressSubmission;
   } else {
