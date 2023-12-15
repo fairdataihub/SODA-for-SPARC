@@ -1727,156 +1727,23 @@ const savePageChanges = async (pageBeingLeftID) => {
       const selectedLicense = selectedLicenseButton.dataset.value;
       sodaJSONObj["digital-metadata"]["license"] = selectedLicense;
     }
-    /*
-    if (pageBeingLeftID === "guided-dataset-generate-location-tab") {
-      const buttonGenerateLocally = document.getElementById(
-        "guided-button-generate-dataset-locally"
-      );
-      const buttonGenerateOnPennsieve = document.getElementById(
-        "guided-button-generate-dataset-on-pennsieve"
-      );
 
-      // If the user did not select if they would like to import a SPARC award,
-      // throw an error
-      if (
-        !buttonGenerateLocally.classList.contains("selected") &&
-        !buttonGenerateOnPennsieve.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate where you would like to genrate your dataset",
-        });
-        throw errorArray;
-      }
-
-      if (buttonGenerateOnPennsieve.classList.contains("selected")) {
-        const accountName = document.getElementById("guided-bf-account");
-        if (accountName.innerHTML.trim() === "None" || accountName.innerHTML.trim() === "") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please select a Pennsieve account to generate your dataset on",
-          });
-          throw errorArray;
-        }
-        sodaJSONObj["generate-dataset"]["destination"] = "bf";
-      }
-    }
-    */
-    /*
-    if (pageBeingLeftID === "guided-dataset-generate-destination-tab") {
-      const buttonGenerateOnExistingPennsieveDataset = document.getElementById(
-        "guided-button-pennsieve-generate-existing"
-      );
-      const buttonGenerateOnNewPennsieveDataset = document.getElementById(
-        "guided-button-pennsieve-generate-new"
-      );
-
-      // If the user did not select if they would like to import a SPARC award,
-      // throw an error
-      if (
-        !buttonGenerateOnExistingPennsieveDataset.classList.contains("selected") &&
-        !buttonGenerateOnNewPennsieveDataset.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message:
-            "Please indicate if you would like to generate on a new or existing Pennsieve dataset",
-        });
-        throw errorArray;
-      }
-
-      if (buttonGenerateOnExistingPennsieveDataset.classList.contains("selected")) {
-        sodaJSONObj["generate-dataset"]["destination"] = "local";
-      }
-
-      if (buttonGenerateOnNewPennsieveDataset.classList.contains("selected")) {
-        confirmDatasetGenerationNameinput = document.getElementById("guided-input-dataset-name");
-        if (confirmDatasetGenerationNameinput.value.trim() === "") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please enter a name for your new Pennsieve dataset",
-          });
-          throw errorArray;
-        }
-        sodaJSONObj["digital-metadata"]["name"] = confirmDatasetGenerationNameinput.value.trim();
-        sodaJSONObj["generate-dataset"]["destination"] = "bf";
-      }
-    }
-    */
-
-    if (pageBeingLeftID === "guided-folder-structure-preview-tab") {
+    if (pageBeingLeftID === "guided-dataset-structure-review-tab") {
       //if folders and files in datasetStruture json obj are empty, warn the user
       if (
         Object.keys(datasetStructureJSONObj["folders"]).length === 0 &&
         Object.keys(datasetStructureJSONObj["files"]).length === 0
       ) {
-        const { value: continueProgress } = await Swal.fire({
-          title: `No folders or files have been added to your dataset.`,
-          html: `You can go back and add folders and files to your dataset, however, if
-            you choose to generate your dataset on the final step, no folders or files will be
-            added to your target destination.`,
-          allowEscapeKey: false,
-          allowOutsideClick: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showConfirmButton: true,
-          showCancelButton: true,
-          cancelButtonText: "Go back to add folders and files",
-          cancelButtonWidth: "200px",
-          confirmButtonText: "Continue without adding folders and files",
-          reverseSwalButtons: true,
+        errorArray.push({
+          type: "swal",
+          message: `
+            You have not added any files or folders to your dataset structure.
+            <br/><br/>
+            Please add files and folders to your dataset structure before continuing.
+          `,
         });
-        if (!continueProgress) {
-          $(this).removeClass("loading");
-          return;
-        }
+        throw errorArray;
       }
-
-      /*
-      // Notify the user of empty pages since this is the last page they can structure their dataset
-      const emptyFilesFoldersResponse = await client.post(
-        `/curate_datasets/empty_files_and_folders`,
-        {
-          soda_json_structure: sodaJSONObj,
-        },
-        { timeout: 0 }
-      );
-      let { data } = emptyFilesFoldersResponse;
-      //bring duplicate outside
-      empty_files = data["empty_files"];
-      empty_folders = data["empty_folders"];
-      let errorMessage = "";
-      if (empty_files.length > 0) {
-        const error_message_files = backend_to_frontend_warning_message(empty_files);
-        errorMessage += error_message_files;
-      }
-      if (empty_folders.length > 0) {
-        const error_message_folders = backend_to_frontend_warning_message(empty_folders);
-        errorMessage += error_message_folders;
-      }
-      if (errorMessage) {
-        errorMessage += "Would you like to continue?";
-        errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
-        const { value: continueWithEmptyFolders } = await Swal.fire({
-          icon: "warning",
-          html: errorMessage,
-          showCancelButton: true,
-          cancelButtonText: "No, I want to review my files",
-          focusCancel: true,
-          confirmButtonText: "Yes, Continue",
-          backdrop: "rgba(0,0,0, 0.4)",
-          reverseButtons: reverseSwalButtons,
-          heightAuto: false,
-          allowOutsideClick: false,
-        });
-        if (!continueWithEmptyFolders) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please remove the empty files before continuing",
-          });
-          throw errorArray;
-        }
-      }*/
     }
 
     if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
@@ -5382,9 +5249,8 @@ const openPage = async (targetPageID) => {
       document.getElementById("guided-file-explorer-elements").classList.remove("hidden");
     }
 
-    if (targetPageID === "guided-folder-structure-preview-tab") {
-      // TODO: move the file base guided high level folder deletion to their specific pages
-      // Delete the high level folders if they are empty
+    if (targetPageID === "guided-dataset-structure-review-tab") {
+      // Delete the guided high level folders if they are empty
       // They could possibly be empty if the user did not add any subject data
       // These will be added back safely when the user traverses back to the high level folder's page
       for (const folder of guidedHighLevelFolders) {
@@ -14138,46 +14004,49 @@ document
   });
 
 ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, filePath) => {
-  // Check the available disk space on the drive where the user wants to generate the dataset
-  const availableDiskSpace = await checkDiskSpace(filePath);
-  console.log("Available disk space: ", availableDiskSpace);
-  const freeMemoryInMb = roundToHundredth(availableDiskSpace.free / 1024 ** 2);
-  console.log("Available disk space in MB: ", freeMemoryInMb);
-  // Get the size of the dataset that will be generated
-  const localDatasetSizeReq = await client.post(
-    "/curate_datasets/dataset_size",
-    {
-      soda_json_structure: sodaJSONObj,
-    },
-    { timeout: 0 }
-  );
-  const localDatasetSize = localDatasetSizeReq.data.dataset_size;
-  const datasetSizeInMb = roundToHundredth(localDatasetSize / 1024 ** 2);
-  console.log("Dataset size in MB: ", datasetSizeInMb);
-
-  // Attach the manifest files to the dataset structure before generating the dataset locally
-  await guidedCreateManifestFilesAndAddToDatasetStructure();
-
-  const guidedDatasetName = guidedGetDatasetName(sodaJSONObj);
-
-  // Create a temp copy of the sodaJSONObj to be used for generating the dataset locally.
-  // We do this because there are keys we want to modify in the sodaJSONObj but we don't want to
-  // modify in the original sodaJSONObj
-  const sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
-  console.log("sodaJSONObjCopy: ", sodaJSONObjCopy);
-  sodaJSONObjCopy["generate-dataset"] = {
-    "dataset-name": guidedDatasetName,
-    destination: "local",
-    "generate-option": "new",
-    "if-existing": "new",
-    path: filePath,
-  };
-
-  // Remove the bf-account-selected key from the sodaJSONObjCopy because we don't need
-  // to check if the user's pennsieve account is valid
-  delete sodaJSONObjCopy["bf-account-selected"];
   try {
-    await client.post(
+    // Check the available disk space on the drive where the user wants to generate the dataset
+    console.log("Checking disk space... for file path: ", filePath);
+    const availableDiskSpace = await checkDiskSpace(filePath);
+    console.log("Available disk space: ", availableDiskSpace);
+    const freeMemoryInMb = roundToHundredth(availableDiskSpace.free / 1024 ** 2);
+    console.log("Available disk space in MB: ", freeMemoryInMb);
+    // Get the size of the dataset that will be generated
+    const localDatasetSizeReq = await client.post(
+      "/curate_datasets/dataset_size",
+      {
+        soda_json_structure: sodaJSONObj,
+      },
+      { timeout: 0 }
+    );
+    const localDatasetSize = localDatasetSizeReq.data.dataset_size;
+    const datasetSizeInMb = roundToHundredth(localDatasetSize / 1024 ** 2);
+    console.log("Dataset size in MB: ", datasetSizeInMb);
+
+    // Attach the manifest files to the dataset structure before generating the dataset locally
+    await guidedCreateManifestFilesAndAddToDatasetStructure();
+
+    const guidedDatasetName = guidedGetDatasetName(sodaJSONObj);
+
+    // Create a temp copy of the sodaJSONObj to be used for generating the dataset locally.
+    // We do this because there are keys we want to modify in the sodaJSONObj but we don't want to
+    // modify in the original sodaJSONObj
+    const sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
+    console.log("sodaJSONObjCopy: ", sodaJSONObjCopy);
+    sodaJSONObjCopy["generate-dataset"] = {
+      "dataset-name": guidedDatasetName,
+      destination: "local",
+      "generate-option": "new",
+      "if-existing": "new",
+      path: filePath,
+    };
+
+    // Remove the bf-account-selected key from the sodaJSONObjCopy because we don't need
+    // to check if the user's pennsieve account is valid
+    delete sodaJSONObjCopy["bf-account-selected"];
+
+    // Start the local dataset generation process
+    client.post(
       `/curate_datasets/curation`,
       {
         soda_json_structure: sodaJSONObjCopy,
@@ -14185,13 +14054,28 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
       { timeout: 0 }
     );
 
-    // Unhide the local dataset metadata status table
-    document
-      .getElementById("guided-section-local-dataset-generation-progresss")
-      .classList.remove("hidden");
+    // Track the status of the local dataset generation
+    const trackLocalDatasetGenerationProgress = async () => {
+      try {
+        const mainCurationProgressResponse = await client.get(`/curate_datasets/curation/progress`);
+        let { data } = mainCurationProgressResponse;
+
+        console.log(data);
+        main_curate_status = data["main_curate_status"];
+
+        if (main_curate_status === "done") {
+          console.log("done");
+          clearInterval(timerProgress);
+        }
+      } catch (error) {
+        console.log(error);
+        clearInterval(timerProgress);
+      }
+    };
+    let timerProgress = setInterval(trackLocalDatasetGenerationProgress(), 1000);
 
     // Generate all of the dataset metadata files
-    await guidedGenerateSubjectsMetadata(path.join(filePath, guidedDatasetName, "subjects.xlsx"));
+    // await guidedGenerateSubjectsMetadata(path.join(filePath, guidedDatasetName, "subjects.xlsx"));
   } catch (error) {
     console.log(error);
     const emessage = userErrorMessage(error);
@@ -15152,7 +15036,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       app.quit();
     });
 
-  const guidedUpdateUploadStatus = async (destination) => {
+  const guidedUpdateUploadStatus = async () => {
     let mainCurationProgressResponse;
     try {
       mainCurationProgressResponse = await client.get(`/curate_datasets/curation/progress`);
@@ -15236,7 +15120,7 @@ const guidedUploadDatasetToPennsieve = async () => {
     }
   };
   // Progress tracking function for main curate
-  let timerProgress = setInterval(guidedUpdateUploadStatus("pennsieve"), 1000);
+  let timerProgress = setInterval(guidedUpdateUploadStatus(), 1000);
 
   let bytesOnPreviousLogPage = 0;
   let filesOnPreviousLogPage = 0;
