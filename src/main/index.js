@@ -5,7 +5,6 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { autoUpdater } from "electron-updater";
 import { trackEvent, trackKombuchaEvent } from "./analytics"
 import icon from '../../resources/soda_icon.png?asset'
-import log from "electron-log"
 import axios from "axios"
 import fp from "find-free-port"
 import { spawn, execFile, spawnSync } from "node:child_process"
