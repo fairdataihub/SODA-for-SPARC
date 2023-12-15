@@ -246,7 +246,7 @@ document.querySelectorAll(".button-import-data-deliverables-document").forEach(a
       title: "Importing the Data Deliverables document",
       html: `
         <div class="container-milestone-upload" style="display: flex;margin:10px">
-          <input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/>
+          <input class="milestone-upload-text" id="input-milestone-select" onclick="window.openDDDImport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/>
         </div>
       `,
       heightAuto: false,
@@ -374,7 +374,7 @@ const getCheckedMilestones = () => {
   });
 };
 
-const openDDDimport = async (curationMode) => {
+const window.openDDDImport = async (curationMode) => {
   let filepath = await ipcRenderer.invoke("open-file-dialog-data-deliverables");
   if (filepath.length > 0) {
     ipcRenderer.send(

@@ -2,6 +2,7 @@
 This file contains all of the functions related to the submission.xlsx file
 */
 import Swal from "sweetalert2";
+import lottie from "lottie-web";
 import 'fomantic-ui/dist/semantic';
 import introJs from "intro.js";
 import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
@@ -10,6 +11,7 @@ import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
 import api from "../others/api/api"
+import {successCheck} from "../../assets/lotties/lotties"
 
 
 
@@ -263,7 +265,7 @@ document.querySelectorAll(".button-import-data-deliverables-document").forEach(a
       title: "Importing the Data Deliverables document",
       html: `
         <div class="container-milestone-upload" style="display: flex;margin:10px">
-          <input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/>
+          <input class="milestone-upload-text" id="input-milestone-select" onclick="window.openDDDImport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/>
         </div>
       `,
       heightAuto: false,
@@ -391,7 +393,7 @@ const getCheckedMilestones = () => {
   });
 };
 
-const openDDDimport = async (curationMode) => {
+window.openDDDImport = async (curationMode) => {
   let filepath = await window.electron.ipcRenderer.invoke("open-file-dialog-data-deliverables");
   if (filepath.length > 0) {
     window.electron.ipcRenderer.send(
@@ -402,7 +404,7 @@ const openDDDimport = async (curationMode) => {
       1
     );
     if (curationMode === "guided") {
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath[0];
+      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath[0];
       let swal_container = document.getElementsByClassName("swal2-popup")[0];
       let swal_actions = document.getElementsByClassName("swal2-actions")[0];
       let swal_content = document.getElementsByClassName("swal2-content")[0];
