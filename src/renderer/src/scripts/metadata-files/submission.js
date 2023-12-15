@@ -78,7 +78,7 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
 
   let milestoneData;
   let completionDate;
-  const milestoneValues = await Swal.mixin({
+  const Queue = await Swal.mixin({
     confirmButtonText: "Next &rarr;",
     showCancelButton: true,
     progressSteps: ["1", "2"],
@@ -86,12 +86,16 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
-  }).queue([
+    progressSteps: ["1", "2"]
+  })
+
+
+  await Queue.fire(      
     {
       title: "Select the milestones associated with this submission:",
       html: `
           <div class="scrollable-swal-content-container" id="milestone-selection-table-container">
-             <table
+            <table
                 class="ui celled striped table"
                 id="milestones-table"
                 style="margin-bottom: 25px; width: 800px"
@@ -108,7 +112,7 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
               </table>
         
           </div>
-        `,
+      `,
       didOpen: () => {
         renderMilestoneSelectionTable(milestoneRes);
       },
@@ -118,9 +122,12 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
           ? Swal.showValidationMessage("Please select at least one milestone")
           : (milestoneData = checkedMilestoneData);
       },
-    },
-    {
-      title: "Select the completion date associated with this submission:",
+      curentProgress: 0
+    })
+
+
+  await Queue.fire({
+    title: "Select the completion date associated with this submission:",
       html: `
           <div class="scrollable-swal-content-container">
             <div class="justify-center">
@@ -178,8 +185,9 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
           completionDate = selectedCompletionDate.value;
         }
       },
-    },
-  ]);
+      currentProgressStep: 1
+  })
+
 
   if (milestoneData && completionDate) {
     // Fill the SPARC award input with the imported SPARC award if it was found (otherwise it will be an empty string)
