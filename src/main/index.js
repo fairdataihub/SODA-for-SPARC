@@ -226,7 +226,6 @@ const guessPackaged = () => {
   const executablePathUnix = join(process.resourcesPath, PY_FLASK_MODULE);
   const executablePathWindows = join(process.resourcesPath, PY_FLASK_MODULE + ".exe")
 
-  log.info("Executable path: " + executablePath);
   if (existsSync(executablePathUnix) || existsSync(executablePathWindows)) {
     return true;
   } else {
