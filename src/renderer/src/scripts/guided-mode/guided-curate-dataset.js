@@ -14,6 +14,7 @@ import Tagify from "@yaireo/tagify/dist/tagify.esm";
 // const Tagify = require("@yaireo/tagify/dist/tagify.esm");
 import tippy from "tippy.js";
 import doiRegex from "doi-regex";
+import validator from "validator";
 import client from '../client'
 import jQuery from 'jquery'
 import bootstrap from 'bootstrap'
@@ -9614,7 +9615,7 @@ const determineIfLinkIsDOIorURL = (link) => {
   }
 };
 
-const openProtocolSwal = async (protocolElement) => {
+window.openProtocolSwal = async (protocolElement) => {
   // True if adding a new protocol, false if editing an existing protocol
   let protocolURL = "";
   let protocolDescription = "";
@@ -9673,7 +9674,7 @@ const openProtocolSwal = async (protocolElement) => {
   });
 };
 
-const guidedDeleteProtocol = (protocolElement) => {
+window.guidedDeleteProtocol = (protocolElement) => {
   const linkToDelete = protocolElement.dataset.protocolUrl;
   window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = window.sodaJSONObj[
     "dataset-metadata"
@@ -9743,7 +9744,7 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription, i
           style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
           data-protocol-url="${protocolUrl}"
           data-protocol-description="${protocolDescription}"
-          onclick="openProtocolSwal(this)"
+          onclick="window.openProtocolSwal(this)"
         >
         View/Edit
         </button>
@@ -9754,7 +9755,7 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription, i
           class="btn btn-danger btn-sm"
           data-protocol-url="${protocolUrl}"
           data-protocol-description="${protocolDescription}"
-          onclick="guidedDeleteProtocol(this)"
+          onclick="window.guidedDeleteProtocol(this)"
         >
         Delete
         </button>
