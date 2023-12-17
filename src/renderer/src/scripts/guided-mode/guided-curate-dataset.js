@@ -5929,12 +5929,12 @@ window.openPage = async (targetPageID) => {
               }
             }
 
-            let imageFolder = path.join(homeDirectory, "SODA", "guided-banner-images");
+            let imageFolder = window.path.join(homeDirectory, "SODA", "guided-banner-images");
             if (!window.fs.existsSync(imageFolder)) {
               //create SODA/guided-banner-images if it doesn't exist
               window.fs.mkdirSync(imageFolder, { recursive: true });
             }
-            let imagePath = path.join(imageFolder, `${datasetName}.` + imageType);
+            let imagePath = window.path.join(imageFolder, `${datasetName}.` + imageType);
             //store file at imagePath destination
 
             await window.electron.ipcRenderer.invoke("write-banner-image", img_base64, imagePath)
@@ -12577,6 +12577,7 @@ document
 // function for importing a banner image if one already exists
 $("#guided-button-add-banner-image").click(async () => {
   $("#guided-banner-image-modal").modal("show");
+  $("#guided-banner-image-modal").addClass("show")
   window.myCropper.destroy();
   window.myCropper = new Cropper(window.guidedBfViewImportedImage, window.guidedCropOptions);
 });
@@ -12584,8 +12585,12 @@ $("#guided-button-add-banner-image").click(async () => {
 // Action when user click on "Import image" button for banner image
 $("#guided-button-import-banner-image").click(async () => {
   $("#guided-para-dataset-banner-image-status").html("");
+  // add show class to modal 
   let filePaths = await window.electron.ipcRenderer.invoke("open-file-dialog-import-banner-image");
+  $("#guided-banner-image-modal").modal("show");
   window.handleSelectedBannerImage(filePaths, "guided-mode");
+  $("#guided-banner-image-modal").addClass("show")
+
 });
 
 /////////////////////////////////////////////////////////
