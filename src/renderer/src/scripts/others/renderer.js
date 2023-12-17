@@ -4122,6 +4122,7 @@ organizeDSbackButton.addEventListener("click", function () {
 
 // Add folder button
 organizeDSaddNewFolder.addEventListener("click", function (event) {
+  console.log("Wow wow")
   event.preventDefault();
   let slashCount = window.organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount !== 1) {

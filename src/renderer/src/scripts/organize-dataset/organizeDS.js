@@ -1756,7 +1756,7 @@ const addFilesfunction = async (
       didOpen: () => {
         $(".swal-popover").popover();
         let swalContainer = document.getElementsByClassName("swal2-popup")[0];
-        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        let swal_content = document.getElementsByClassName("swal2-html-container")[0];
         swalContainer.style.width = "600px";
         swal_content.style.textAlign = "justify";
       },
@@ -1802,7 +1802,7 @@ const addFilesfunction = async (
       didOpen: () => {
         $(".swal-popover").popover();
         let swalContainer = document.getElementsByClassName("swal2-popup")[0];
-        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        let swal_content = document.getElementsByClassName("swal2-html-container")[0];
         swalContainer.style.width = "600px";
         swal_content.style.textAlign = "justify";
       },
@@ -1831,7 +1831,7 @@ const addFilesfunction = async (
       didOpen: () => {
         $(".swal-popover").popover();
         let swalContainer = document.getElementsByClassName("swal2-popup")[0];
-        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        let swal_content = document.getElementsByClassName("swal2-html-container")[0];
         let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
         swalContainer.style.width = "600px";
         swal_content.style.textAlign = "justify";
@@ -1883,7 +1883,7 @@ const addFilesfunction = async (
       didOpen: () => {
         $(".swal-popover").popover();
         let swalContainer = document.getElementsByClassName("swal2-popup")[0];
-        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        let swal_content = document.getElementsByClassName("swal2-html-container")[0];
         swalContainer.style.width = "600px";
         swal_content.style.textAlign = "justify";
       },

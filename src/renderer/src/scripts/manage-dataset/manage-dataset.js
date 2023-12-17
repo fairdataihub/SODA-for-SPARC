@@ -2887,8 +2887,8 @@ $("#button-submit-dataset").click(async () => {
             popup: "animate__animated animate__zoomOut animate__faster",
           },
           didOpen: () => {
-            document.getElementById("swal2-content").style.maxHeight = "19rem";
-            document.getElementById("swal2-content").style.overflowY = "auto";
+            document.getElementById("swal2-html-container").style.maxHeight = "19rem";
+            document.getElementById("swal2-html-container").style.overflowY = "auto";
           },
         }).then((result) => {
           progressClone.remove();
@@ -3271,8 +3271,8 @@ $("#button-submit-dataset").click(async () => {
         html: emessage,
         allowOutsideClick: false,
         didOpen: () => {
-          document.getElementById("swal2-content").style.maxHeight = "19rem";
-          document.getElementById("swal2-content").style.overflowY = "auto";
+          document.getElementById("swal2-html-container").style.maxHeight = "19rem";
+          document.getElementById("swal2-html-container").style.overflowY = "auto";
         },
       }).then((result) => {
         progressClone.remove();
