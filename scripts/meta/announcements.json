@@ -1,4 +1,9 @@
 {
+  "12.5.0": {
+    "features": [
+      "Users can now upload data to Pennsieve even when an updated version of the Pennsieve Agent is detected but a release for their platform cannot be found."
+    ]
+  },
   "12.4.0": {
     "announcements": {
       "bug-fixes": [],
