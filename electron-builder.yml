@@ -28,7 +28,7 @@ nsis:
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
-  icon: 'app-icon/mac/icon.icns'
+  icon: 'app-icon/png/icon.png'
   entitlementsInherit: ./entitlements.mac.inherit.plist
   notarize: true
   extraResources:
