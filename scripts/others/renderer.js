@@ -998,20 +998,20 @@ const run_pre_flight_checks = async (check_update = true) => {
           await getLatestPennsieveAgentVersion();
       } catch (error) {
         const emessage = userErrorMessage(error);
-        const continueWithPotentiallyOutdatedAgent = await swalConfirmAction(
-          "SODA was not able to get the latest Pennsieve agent version",
+        const retryAgentVersionCheck = await swalConfirmAction(
+          "warning",
+          "",
           `
-            Error message:
             <br />
             <b>${emessage}</b>
             <br /><br />
-            Would you like to continue without ensuring you have the latest Pennsieve agent version?
+            Would you like to retry or continue with the currently installed version of the Pennsieve agent?
           `,
-          "Continue",
-          "Cancel"
+          "Retry",
+          "Contrinue with current version"
         );
-        if (!continueWithPotentiallyOutdatedAgent) {
-          throw new Error(`Error getting latest Pennsieve agent version:<br />${emessage}`);
+        if (retryAgentVersionCheck) {
+          return await run_pre_flight_checks();
         } else {
           userHasSelectedTheyAreOkWithOutdatedAgent = true;
         }
@@ -1191,7 +1191,7 @@ const apiVersionsMatch = async () => {
   let serverAppVersion = responseObject.data.version;
 
   log.info(`Server version is ${serverAppVersion}`);
-  const platformSpecificAgentDownloadURL = `https://docs.sodaforsparc.io/docs/common-errors/api-version-mismatch`;
+  const apiVersionMismatchDocsLink = `https://docs.sodaforsparc.io/docs/common-errors/api-version-mismatch`;
 
   if (serverAppVersion !== appVersion) {
     log.info("Server version does not match client version");
@@ -1215,7 +1215,7 @@ const apiVersionsMatch = async () => {
           To resolve this issue, please visit the link below and follow the instructions.
           <br />
           <br />
-          <a href="${platformSpecificAgentDownloadURL}" target="_blank">API Version Mismatch</a>
+          <a href="${apiVersionMismatchDocsLink}" target="_blank">API Version Mismatch</a>
           <br />
           <br />
           Once you have updated the SODA Server, please restart SODA.

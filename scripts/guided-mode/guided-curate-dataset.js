@@ -11358,6 +11358,7 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
     sodaJSONObj["dataset-structure-spreadsheet-path"] = filePath;
     setUiBasedOnSavedDatasetStructurePath(filePath);
     const openTemplateForUser = await swalConfirmAction(
+      null,
       "Template successfully generated",
       `
         Would you like to open the template now?
