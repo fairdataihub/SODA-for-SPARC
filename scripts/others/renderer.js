@@ -988,14 +988,15 @@ const run_pre_flight_checks = async (check_update = true) => {
       return false;
     }
 
-    let platformSpecificAgentDownloadURL;
+    let agentDownloadUrl;
     let latestPennsieveAgentVersion;
+
+    // Note: We only want to check the Pennsieve agent version if the user has not already selected that they are ok with an outdated agent
     if (!userHasSelectedTheyAreOkWithOutdatedAgent) {
       // First get the latest Pennsieve agent version on GitHub
       // This is to ensure the user has the latest version of the agent
       try {
-        [platformSpecificAgentDownloadURL, latestPennsieveAgentVersion] =
-          await getLatestPennsieveAgentVersion();
+        [agentDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
       } catch (error) {
         const emessage = userErrorMessage(error);
         const retryAgentVersionCheck = await swalConfirmAction(
@@ -1041,7 +1042,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           To update your Pennsieve Agent, please visit the link below and follow the instructions.
           <br />
           <br />
-          <a href="${platformSpecificAgentDownloadURL}" target="_blank">Download the latest Pennsieve agent</a>
+          <a href="${agentDownloadUrl}" target="_blank">Download the latest Pennsieve agent</a>
           <br />
           <br />
           Once you have updated your Pennsieve agent, please click the button below to ensure that the Pennsieve agent was updated correctly.
@@ -1362,7 +1363,7 @@ const getLatestPennsieveAgentVersion = async () => {
     targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
       if (path.extname(file_name) == ".pkg") {
-        platformSpecificAgentDownloadURL = asset.platformSpecificAgentDownloadURL;
+        platformSpecificAgentDownloadURL = asset.browser_download_url;
       }
     });
     if (!platformSpecificAgentDownloadURL) {
@@ -1380,7 +1381,7 @@ const getLatestPennsieveAgentVersion = async () => {
     targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
       if (path.extname(file_name) == ".msi" || path.extname(file_name) == ".exe") {
-        platformSpecificAgentDownloadURL = asset.platformSpecificAgentDownloadURL;
+        platformSpecificAgentDownloadURL = asset.browser_download_url;
       }
     });
     if (!platformSpecificAgentDownloadURL) {
@@ -1398,7 +1399,7 @@ const getLatestPennsieveAgentVersion = async () => {
     targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
       if (path.extname(file_name) == ".deb") {
-        platformSpecificAgentDownloadURL = asset.platformSpecificAgentDownloadURL;
+        platformSpecificAgentDownloadURL = asset.browser_download_url;
       }
     });
     if (!platformSpecificAgentDownloadURL) {

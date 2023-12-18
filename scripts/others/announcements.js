@@ -1,7 +1,7 @@
 // To change what branch the announcements.json is fetched from, enter branch name between "SODA-for-SPARC/" and "/scripts" in the url below
 // state will be either "update" or "announcements"
 const checkForAnnouncements = async (state) => {
-  const url = `https://raw.githubusercontent.com/fairdataihub/SODA-for-SPARC/staging/scripts/meta/announcements.json?timestamp=${new Date().getTime()}`;
+  const url = `https://raw.githubusercontent.com/fairdataihub/SODA-for-SPARC/main/scripts/meta/announcements.json?timestamp=${new Date().getTime()}`;
 
   const axiosInstance = axios.create({
     baseURL: url,
@@ -27,41 +27,62 @@ const checkForAnnouncements = async (state) => {
     if (appVersion in res && state === "announcements") {
       let features = res[appVersion]["announcements"]["features"];
       let bugFixes = res[appVersion]["announcements"]["bug-fixes"];
-      let htmlMessage = `
+
+      // Only show the announcement if there are features or bug fixes
+      if (features || bugFixes) {
+        // Create the HTML for the announcement
+        let featuresHtml = "";
+        let bugFixesHtml = "";
+        if (features.length > 0) {
+          featuresHtml = `
+          <label style="font-weight: 700; font-size: 17px;">Feature Additions:<br></label>
+          <ul style="margin-left: 1rem;">
+            ${features
+              .map((feature) => {
+                return `<li style="margin: .5rem 0 .5rem 0;">${feature}</li>`;
+              })
+              .join("")}
+          </ul>
+        `;
+        }
+        if (bugFixes.length > 0) {
+          bugFixesHtml = `
+          <label style="font-weight: 700; font-size: 17px;">Bug Fixes:<br></label>
+          <ul style="margin-left: 1rem;">
+            ${bugFixes
+              .map((bugfix) => {
+                return `<li style="margin: .5rem 0 .5rem 0;">${bugfix}</li>`;
+              })
+              .join("")}
+          </ul>
+        `;
+        }
+
+        const htmlMessage = `
           <div style="text-align: justify; overflow-y: auto; max-height: 350px;">
             <div style="margin-bottom: 1rem;">
-              <label style="font-weight: 700; font-size: 17px;">Feature Additions:<br></label>
-              ${features
-                .map((feature) => {
-                  console.log(feature);
-                  return `<li style="margin: .5rem 0 .5rem 0;">${feature}</li>`;
-                })
-                .join("")}
-
-              <label style="font-weight: 700; font-size: 17px;">Bug Fixes:<br></label>
-              ${bugFixes
-                .map((bugfix) => {
-                  return `<li style="margin: .5rem 0 .5rem 0;">${bugfix}</li>`;
-                })
-                .join("")}
+              ${featuresHtml}
+              ${bugFixesHtml}
             </div>
           </div>
-          `;
+        `;
 
-      await Swal.fire({
-        title: `Welcome to SODA for SPARC ${appVersion} for ${platform}`,
-        html: htmlMessage,
-        icon: "info",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Okay",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        didOpen: () => {
-          let swal_alert = document.getElementsByClassName("swal2-popup")[0];
-          swal_alert.style.width = "60rem";
-        },
-      });
+        // Display the announcement
+        await Swal.fire({
+          title: `Welcome to SODA for SPARC ${appVersion} for ${platform}`,
+          html: htmlMessage,
+          icon: "info",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Okay",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => {
+            let swal_alert = document.getElementsByClassName("swal2-popup")[0];
+            swal_alert.style.width = "60rem";
+          },
+        });
+      }
     } else if (state === "update") {
       await Swal.fire({
         title: `SODA for SPARC ${appVersion} is out of date`,
