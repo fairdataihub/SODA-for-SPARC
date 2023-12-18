@@ -809,40 +809,11 @@ const run_pre_flight_checks = async (check_update = true) => {
       }
     }
 
-    let platformSpecificAgentDownloadURL;
-    let latestPennsieveAgentVersion;
-    if (!userHasSelectedTheyAreOkWithOutdatedAgent) {
-      // First get the latest Pennsieve agent version on GitHub
-      // This is to ensure the user has the latest version of the agent
-      try {
-        [platformSpecificAgentDownloadURL, latestPennsieveAgentVersion] =
-          await getLatestPennsieveAgentVersion();
-      } catch (error) {
-        const emessage = userErrorMessage(error);
-        const continueWithPotentiallyOutdatedAgent = await swalConfirmAction(
-          "SODA was not able to get the latest Pennsieve agent version",
-          `
-            Error message:
-            <br />
-            <b>${emessage}</b>
-            <br /><br />
-            Would you like to continue without ensuring you have the latest Pennsieve agent version?
-          `,
-          "Continue",
-          "Cancel"
-        );
-        if (!continueWithPotentiallyOutdatedAgent) {
-          throw new Error(`Error getting latest Pennsieve agent version:<br />${emessage}`);
-        } else {
-          userHasSelectedTheyAreOkWithOutdatedAgent = true;
-        }
-      }
-    }
-
     // check if the Pennsieve agent is installed [ here ]
     try {
       let installed = await agent_installed();
       if (!installed) {
+        const downloadUrl = await getPlatformSpecificAgentDownloadURL();
         const { value: restartSoda } = await Swal.fire({
           icon: "info",
           title: "Pennsieve Agent Not Found",
@@ -852,10 +823,7 @@ const run_pre_flight_checks = async (check_update = true) => {
                   To install the Pennsieve Agent, please visit the link below and follow the instructions.
                   <br /> 
                   <br />
-                  <a href="${
-                    platformSpecificAgentDownloadURL ??
-                    "https://github.com/Pennsieve/pennsieve-agent/releases"
-                  }" target="_blank">Download the Pennsieve agent</a>
+                  <a href="${downloadUrl}" target="_blank">Download the Pennsieve agent</a>
                   <br />
                   <br />
                   Once you have installed the Pennsieve Agent, you will need to close and restart SODA before you can upload datasets. Would you like to close SODA now?
@@ -1020,9 +988,39 @@ const run_pre_flight_checks = async (check_update = true) => {
       return false;
     }
 
+    let platformSpecificAgentDownloadURL;
+    let latestPennsieveAgentVersion;
+    if (!userHasSelectedTheyAreOkWithOutdatedAgent) {
+      // First get the latest Pennsieve agent version on GitHub
+      // This is to ensure the user has the latest version of the agent
+      try {
+        [platformSpecificAgentDownloadURL, latestPennsieveAgentVersion] =
+          await getLatestPennsieveAgentVersion();
+      } catch (error) {
+        const emessage = userErrorMessage(error);
+        const continueWithPotentiallyOutdatedAgent = await swalConfirmAction(
+          "SODA was not able to get the latest Pennsieve agent version",
+          `
+            Error message:
+            <br />
+            <b>${emessage}</b>
+            <br /><br />
+            Would you like to continue without ensuring you have the latest Pennsieve agent version?
+          `,
+          "Continue",
+          "Cancel"
+        );
+        if (!continueWithPotentiallyOutdatedAgent) {
+          throw new Error(`Error getting latest Pennsieve agent version:<br />${emessage}`);
+        } else {
+          userHasSelectedTheyAreOkWithOutdatedAgent = true;
+        }
+      }
+    }
+
     if (
-      usersPennsieveAgentVersion !== latestPennsieveAgentVersion &&
-      !userHasSelectedTheyAreOkWithOutdatedAgent
+      !userHasSelectedTheyAreOkWithOutdatedAgent &&
+      usersPennsieveAgentVersion !== latestPennsieveAgentVersion
     ) {
       // Stop the Pennsieve agent if it is running to prevent any issues when updating while the agent is running
       try {
@@ -1320,6 +1318,17 @@ const check_api_key = async () => {
   }
 };
 
+const getPlatformSpecificAgentDownloadURL = async () => {
+  // Try to the direct download url for the platform specific agent
+  // If that fails, then return the generic download url
+  try {
+    const [directDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
+    return directDownloadUrl;
+  } catch (error) {
+    return "https://github.com/Pennsieve/pennsieve-agent/releases";
+  }
+};
+
 const getLatestPennsieveAgentVersion = async () => {
   let platformSpecificAgentDownloadURL = undefined;
 
@@ -1360,7 +1369,7 @@ const getLatestPennsieveAgentVersion = async () => {
       throw new Error(
         `
           SODA has detected that a new version of the Pennsieve agent has been released, but
-          could not find a MAC download url.
+          could not find the MAC version.
         `
       );
     }
@@ -1378,7 +1387,7 @@ const getLatestPennsieveAgentVersion = async () => {
       throw new Error(
         `
           SODA has detected that a new version of the Pennsieve agent has been released, but
-          could not find a Windows download url.
+          could not find the Windows version.
         `
       );
     }
@@ -1396,7 +1405,7 @@ const getLatestPennsieveAgentVersion = async () => {
       throw new Error(
         `
           SODA has detected that a new version of the Pennsieve agent has been released, but
-          could not find a Linux download url.
+          could not find the Linux version.
         `
       );
     }
