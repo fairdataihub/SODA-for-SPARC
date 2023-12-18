@@ -13997,42 +13997,64 @@ const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsA
 
 //********************************************************************************************************
 
+// Add click event listener to the button triggering local dataset generation
 document
   .getElementById("guided-button-generate-local-dataset-copy")
   .addEventListener("click", () => {
+    // Send an IPC message to select the local dataset generation path
     ipcRenderer.send("guided-select-local-dataset-generation-path");
   });
 
+const convertBytesToMb = (bytes) => {
+  return roundToHundredth(bytes / 1024 ** 2);
+};
+
+const convertBytesToGb = (bytes) => {
+  return roundToHundredth(bytes / 1024 ** 3);
+};
+
+// Listen for the selected path for local dataset generation
 ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, filePath) => {
   try {
-    // Check the available disk space on the drive where the user wants to generate the dataset
-    console.log("Checking disk space... for file path: ", filePath);
-    const availableDiskSpace = await checkDiskSpace(filePath);
-    console.log("Available disk space: ", availableDiskSpace);
-    const freeMemoryInMb = roundToHundredth(availableDiskSpace.free / 1024 ** 2);
-    console.log("Available disk space in MB: ", freeMemoryInMb);
+    // Check available free memory on disk
+    const diskSpaceRes = await checkDiskSpace(filePath);
+    const freeMemoryInBytes = diskSpaceRes.free;
+
+    console.log("Free memory in bytes: ", diskSpaceRes.free);
+    const freeMemoryInMb = convertBytesToMb(diskSpaceRes.free);
+    console.log("Free memory in MB: ", freeMemoryInMb);
+    console.log("Free memory in GB: ", convertBytesToGb(diskSpaceRes.free));
     // Get the size of the dataset that will be generated
     const localDatasetSizeReq = await client.post(
       "/curate_datasets/dataset_size",
-      {
-        soda_json_structure: sodaJSONObj,
-      },
+      { soda_json_structure: sodaJSONObj },
       { timeout: 0 }
     );
-    const localDatasetSize = localDatasetSizeReq.data.dataset_size;
-    const datasetSizeInMb = roundToHundredth(localDatasetSize / 1024 ** 2);
-    console.log("Dataset size in MB: ", datasetSizeInMb);
+    const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
+    const datasetSizeInMb = convertBytesToMb(localDatasetSizeInBytes);
+    console.log("Dataset size in GB: ", convertBytesToGb(localDatasetSizeInBytes));
 
-    // Attach the manifest files to the dataset structure before generating the dataset locally
+    // Check if there is enough free space on disk for the dataset
+    if (freeMemoryInMb < datasetSizeInMb) {
+      throw new Error(
+        `Not enough free space on disk. Free space: ${freeMemoryInMb} MB. Dataset size: ${datasetSizeInMb} MB`
+      );
+    } else {
+      console.log("Free space besides dataset size in MB: ", freeMemoryInMb - datasetSizeInMb);
+      console.log(
+        "Free space besided dataset size in GB: ",
+        (freeMemoryInMb - datasetSizeInMb) / 1024
+      );
+    }
+
+    // Attach manifest files to the dataset structure before local generation
     await guidedCreateManifestFilesAndAddToDatasetStructure();
 
+    // Get the dataset name based on the sodaJSONObj
     const guidedDatasetName = guidedGetDatasetName(sodaJSONObj);
 
-    // Create a temp copy of the sodaJSONObj to be used for generating the dataset locally.
-    // We do this because there are keys we want to modify in the sodaJSONObj but we don't want to
-    // modify in the original sodaJSONObj
+    // Create a temporary copy of sodaJSONObj for local dataset generation
     const sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
-    console.log("sodaJSONObjCopy: ", sodaJSONObjCopy);
     sodaJSONObjCopy["generate-dataset"] = {
       "dataset-name": guidedDatasetName,
       destination: "local",
@@ -14040,46 +14062,53 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
       "if-existing": "new",
       path: filePath,
     };
-
-    // Remove the bf-account-selected key from the sodaJSONObjCopy because we don't need
-    // to check if the user's pennsieve account is valid
+    // Remove unnecessary key from sodaJSONObjCopy since we don't need to
+    // check if the account details are valid during local generation
     delete sodaJSONObjCopy["bf-account-selected"];
 
     // Start the local dataset generation process
     client.post(
       `/curate_datasets/curation`,
-      {
-        soda_json_structure: sodaJSONObjCopy,
-      },
+      { soda_json_structure: sodaJSONObjCopy },
       { timeout: 0 }
     );
 
-    // Track the status of the local dataset generation
+    // Track the status of local dataset generation
     const trackLocalDatasetGenerationProgress = async () => {
       try {
-        const mainCurationProgressResponse = await client.get(`/curate_datasets/curation/progress`);
-        let { data } = mainCurationProgressResponse;
+        while (true) {
+          const localDatasetGenerationProgress = await client.get(
+            `/curate_datasets/curation/progress`
+          );
+          const { data } = localDatasetGenerationProgress;
+          const mainCurateStatus = data["main_curate_status"];
 
-        console.log(data);
-        main_curate_status = data["main_curate_status"];
-
-        if (main_curate_status === "done") {
-          console.log("done");
-          clearInterval(timerProgress);
+          if (mainCurateStatus === "Done") {
+            console.log("done");
+            clearInterval(progressTrackerInterval); // Stop the polling interval since the generation is done
+            break;
+          } else {
+            if (data["main_total_generate_dataset_size"]) {
+              console.log(localDatasetSizeInBytes / data["main_total_generate_dataset_size"]);
+            }
+            await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second before polling again
+          }
         }
       } catch (error) {
-        console.log(error);
-        clearInterval(timerProgress);
+        console.log("Error tracking progress", error);
+        clearInterval(progressTrackerInterval); // Stop the polling interval on error
       }
     };
-    let timerProgress = setInterval(trackLocalDatasetGenerationProgress(), 1000);
 
-    // Generate all of the dataset metadata files
-    // await guidedGenerateSubjectsMetadata(path.join(filePath, guidedDatasetName, "subjects.xlsx"));
+    // Set interval to track progress every second
+    let progressTrackerInterval = setInterval(trackLocalDatasetGenerationProgress, 1000);
+
+    // Generate all dataset metadata files
+    await guidedGenerateSubjectsMetadata(path.join(filePath, guidedDatasetName, "subjects.xlsx"));
   } catch (error) {
-    console.log(error);
-    const emessage = userErrorMessage(error);
-    console.log(emessage);
+    // Handle and log errors
+    const errorMessage = userErrorMessage(error);
+    console.log("Error thrown to main catch", errorMessage);
   }
 });
 
@@ -14092,19 +14121,22 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
   }
 
   const generationDestination = destination === "pennsieve" ? "pennsieve" : "local";
-  // Unhide the subject metadata generation table row and set the rows status to loading
-  console.log(`guided-subjects-metadata-${generationDestination}-genration-tr`);
-  document
-    .getElementById(`guided-subjects-metadata-${generationDestination}-genration-tr`)
-    .classList.remove("hidden");
-  const subjectsMetadataGenerationText = document.getElementById(
-    `guided-subjects-metadata-${generationDestination}-genration-text`
-  );
-  subjectsMetadataGenerationText.innerHTML = "Uploading subjects metadata...";
-  guidedUploadStatusIcon(
-    `guided-subjects-metadata-${generationDestination}-genration-status`,
-    "loading"
-  );
+
+  if (generationDestination === "pennsieve") {
+    // Unhide the subject metadata generation table row and set the rows status to loading
+    document
+      .getElementById(`guided-subjects-metadata-${generationDestination}-genration-tr`)
+      .classList.remove("hidden");
+    const subjectsMetadataGenerationText = document.getElementById(
+      `guided-subjects-metadata-pennsieve-genration-text`
+    );
+    subjectsMetadataGenerationText.innerHTML = "Uploading subjects metadata...";
+    guidedUploadStatusIcon(
+      `guided-subjects-metadata-${generationDestination}-genration-status`,
+      "loading"
+    );
+  } else {
+  }
 
   // Generate the subjects metadata file
   try {
