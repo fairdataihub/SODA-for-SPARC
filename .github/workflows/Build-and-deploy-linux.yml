@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - optional-outdated-agent-bypass
 
 jobs:
   deploy-on-linux:
