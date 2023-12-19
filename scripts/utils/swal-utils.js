@@ -167,8 +167,9 @@ const swalFileListTripleAction = async (
   }
 };
 
-const swalConfirmAction = async (title, text, confirmButtonText, cancelButtonText) => {
+const swalConfirmAction = async (icon, title, text, confirmButtonText, cancelButtonText) => {
   const { value: action } = await Swal.fire({
+    icon: icon,
     title: title,
     html: text,
     width: 800,

@@ -6,7 +6,8 @@ on:
     branches:
       - main
       - staging
-      
+      - optional-outdated-agent-bypass
+
 jobs:
   deploy-on-mac:
     runs-on: macos-latest
