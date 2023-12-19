@@ -903,7 +903,7 @@ window.countCharacters = (textelement, pelement) => {
 
 window.bfDatasetSubtitle = document.querySelector("#bf-dataset-subtitle");
 window.bfDatasetSubtitle.addEventListener("keyup", function () {
-  window.countCharacters(window.bfDatasetSubtitle, bfDatasetSubtitleCharCount);
+  window.countCharacters(window.bfDatasetSubtitle, window.bfDatasetSubtitleCharCount);
 });
 
 
@@ -982,7 +982,7 @@ $("#button-add-subtitle").click(async () => {
       );
 
       // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
-      showPrePublishingStatus();
+      window.showPrePublishingStatus();
     } catch (error) {
       clientError(error);
 
@@ -1048,7 +1048,7 @@ const showCurrentSubtitle = async () => {
     );
     $("#bf-dataset-subtitle").val(subtitle);
     $("#ds-description").val(subtitle);
-    let result = window.countCharacters(window.bfDatasetSubtitle, bfDatasetSubtitleCharCount);
+    let result = window.countCharacters(window.bfDatasetSubtitle, window.bfDatasetSubtitleCharCount);
     if (result === 0) {
       $("#button-add-subtitle > .btn_animated-inside").html("Add subtitle");
     } else {
@@ -1257,7 +1257,7 @@ $("#button-add-description").click(() => {
         $("#ds-isa-warning").css("display", "none");
         await addDescription(selectedBfDataset, requiredFields.join("\n"));
         // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
-        showPrePublishingStatus();
+        window.showPrePublishingStatus();
       });
     } else {
       // hide the warning message if it exists
@@ -1265,7 +1265,7 @@ $("#button-add-description").click(() => {
       // add the user's description to Pennsieve
       await addDescription(selectedBfDataset, requiredFields.join("\n"));
       // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
-      showPrePublishingStatus();
+      window.showPrePublishingStatus();
     }
   }, window.delayAnimation);
 });
@@ -1998,7 +1998,7 @@ const uploadBannerImage = async () => {
         });
 
         // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
-        showPrePublishingStatus();
+        window.showPrePublishingStatus();
       } catch (error) {
         clientError(error);
         let emessage = userErrorMessage(error);
@@ -2378,7 +2378,7 @@ $("#button-add-tags").click(async () => {
   );
 
   // run the pre-publishing checklist items to update the list found in the "Submit for pre-publishing review" section/card
-  showPrePublishingStatus();
+  window.showPrePublishingStatus();
 
   //check if tags array is empty and set Add/Edit tags appropriately
   tags === undefined || tags.length == 0
@@ -2527,7 +2527,7 @@ $("#button-add-license").click(async () => {
       );
 
       // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
-      showPrePublishingStatus();
+      window.showPrePublishingStatus();
     } catch (error) {
       clientError(error);
       let emessage = userErrorMessage(error);

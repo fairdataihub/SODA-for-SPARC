@@ -1285,7 +1285,7 @@ window.pathSubmitDataset = document.querySelector("#selected-local-dataset-submi
 window.progressBarUploadBf = document.getElementById("progress-bar-upload-bf");
 window.datasetPermissionDiv = document.getElementById("div-permission-list-2");
 
-// const bfDatasetSubtitleCharCount = document.querySelector("#para-char-count-metadata");
+window.bfDatasetSubtitleCharCount = document.querySelector("#para-char-count-metadata");
 
 // const bfCurrentBannerImg = document.getElementById("current-banner-img");
 

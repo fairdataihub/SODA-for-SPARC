@@ -177,7 +177,7 @@ const orcidSignIn = async (ev, curationMode) => {
         },
       });
 
-      log.info("Connecting orcid to Pennsieve account.");
+      window.log.info("Connecting orcid to Pennsieve account.");
 
       try {
         await client.post(
@@ -245,7 +245,7 @@ const orcidSignIn = async (ev, curationMode) => {
 //  This function is the first step to the prepublishing workflow for both guided and freeform mode
 //  Function fetches the status of each item needed to publish a dataset from the backend and updates the UI accordingly.
 //  inPrePublishing: boolean - True when the function is ran in the pre-publishing submission flow; false otherwise
-const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "") => {
+window.showPrePublishingStatus = async (inPrePublishing = false, curationMode = "") => {
   resetSubmissionChecklistText();
   document.getElementById("pre-publishing-continue-btn").disabled = true;
   $("#pre-publishing-continue-btn").disabled = true;
@@ -257,7 +257,7 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     // This is done to ensure the right element ID is called
     // Guided mode elements have 'guided--' prepended to their ID
     curationModeID = "guided--";
-    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
   }
 
   // wait until a value has been loaded into the status field
@@ -514,7 +514,7 @@ const createPrepublishingChecklist = async (curationMode) => {
   let curationModeID = "";
   let currentDataset = window.defaultBfDataset;
   if (curationMode === "guided") {
-    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     curationModeID = "guided--";
   }
 
@@ -573,8 +573,8 @@ window.beginPrepublishingFlow = async (curationMode) => {
   if (curationMode === "guided") {
     console.log("In guided mode now nice man")
     curationModeID = "guided--";
-    currentAccount = window.sodaJSONObj["bf-account-selected"]["account-name"];
-    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    currentAccount = window.window.sodaJSONObj["bf-account-selected"]["account-name"];
+    currentDataset = window.window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     console.log(currentDataset)
     console.log(currentAccount)
     let get_publishing_status = await client.get(
@@ -692,7 +692,7 @@ window.beginPrepublishingFlow = async (curationMode) => {
     if (!datasetHasBeenPublished) {
       window.smoothScrollToElement("prepublishing-checklist");
 
-      let success = await showPrePublishingStatus(true, "freeform");
+      let success = await window.showPrePublishingStatus(true, "freeform");
       if (!success) {
         await Swal.fire({
           title: "Cannot continue this submission",
@@ -714,7 +714,7 @@ window.beginPrepublishingFlow = async (curationMode) => {
     }
   } else {
     //Curation mode is guided mode
-    let status = await showPrePublishingStatus(true, "guided");
+    let status = await window.showPrePublishingStatus(true, "guided");
     return [status, embargoDetails];
   }
 };

@@ -1525,7 +1525,7 @@ const progressUploadBf = document.getElementById("div-progress-submit");
 const window.progressBarUploadBf = document.getElementById("progress-bar-upload-bf");
 const datasetPermissionDiv = document.getElementById("div-permission-list-2");
 const bfDatasetSubtitle = document.querySelector("#bf-dataset-subtitle");
-const bfDatasetSubtitleCharCount = document.querySelector("#para-char-count-metadata");
+const window.bfDatasetSubtitleCharCount = document.querySelector("#para-char-count-metadata");
 
 const bfCurrentBannerImg = document.getElementById("current-banner-img");
 

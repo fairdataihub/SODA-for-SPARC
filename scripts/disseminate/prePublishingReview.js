@@ -237,7 +237,7 @@ const orcidSignIn = async (ev, curationMode) => {
 //  This function is the first step to the prepublishing workflow for both guided and freeform mode
 //  Function fetches the status of each item needed to publish a dataset from the backend and updates the UI accordingly.
 //  inPrePublishing: boolean - True when the function is ran in the pre-publishing submission flow; false otherwise
-const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "") => {
+const window.showPrePublishingStatus = async (inPrePublishing = false, curationMode = "") => {
   resetSubmissionChecklistText();
   document.getElementById("pre-publishing-continue-btn").disabled = true;
   $("#pre-publishing-continue-btn").disabled = true;
@@ -672,7 +672,7 @@ const window.beginPrepublishingFlow = async (curationMode) => {
     if (!datasetHasBeenPublished) {
       window.smoothScrollToElement("prepublishing-checklist");
 
-      let success = await showPrePublishingStatus(true, "freeform");
+      let success = await window.showPrePublishingStatus(true, "freeform");
       if (!success) {
         await Swal.fire({
           title: "Cannot continue this submission",
@@ -694,7 +694,7 @@ const window.beginPrepublishingFlow = async (curationMode) => {
     }
   } else {
     //Curation mode is guided mode
-    let status = await showPrePublishingStatus(true, "guided");
+    let status = await window.showPrePublishingStatus(true, "guided");
     return [status, embargoDetails];
   }
 };
