@@ -12,7 +12,7 @@ import determineDatasetLocation, { Destinations } from "../analytics/analytics-u
 
 
 // Helper functions
-const disseminatePublish = async (curationMode) => {
+window.disseminatePublish = async (curationMode) => {
   if (curationMode === "freeform") {
     $("#prepublishing-submit-btn").disabled = true;
     $("#prepublishing-submit-btn").addClass("loading");

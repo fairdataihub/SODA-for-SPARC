@@ -138,7 +138,7 @@ const resetffmPrepublishingUI = async () => {
 };
 
 // take the user to the Pennsieve account to sign up for an ORCID Id
-const orcidSignIn = async (ev, curationMode) => {
+window.orcidSignIn = async (ev, curationMode) => {
   let curationModeID = "";
   if (curationMode === "guided") {
     // This is done to ensure the right element ID is called
@@ -402,7 +402,7 @@ window.showPrePublishingStatus = async (inPrePublishing = false, curationMode = 
 
       //If the user clicks the ORCID button, open the ORCID page
       if (result.isConfirmed && result.value === "ORCID") {
-        orcidSignIn("guided");
+        window.orcidSignIn("guided");
       }
       return false;
     } else {
@@ -510,7 +510,7 @@ const allPrepublishingChecklistItemsCompleted = (curationMode) => {
 };
 
 // transition to the final question and populate the file tree with the dataset's metadata files
-const createPrepublishingChecklist = async (curationMode) => {
+window.createPrepublishingChecklist = async (curationMode) => {
   let curationModeID = "";
   let currentDataset = window.defaultBfAccount;
   if (curationMode === "guided") {
@@ -553,7 +553,7 @@ const createPrepublishingChecklist = async (curationMode) => {
   $(`.${curationModeID}items-spinner`).hide();
 
   if (curationMode === "freeform") {
-    await disseminatePublish("freeform");
+    await window.disseminatePublish("freeform");
     document.getElementById("pre-publishing-continue-btn").disabled = false;
     $("#pre-publishing-continue-btn").disabled = false;
     $("#pre-publishing-continue-btn").removeClass("loading");
