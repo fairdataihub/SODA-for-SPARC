@@ -1663,12 +1663,12 @@ window.getBase64 = async (url) => {
 // function for importing a banner image if one already exists
 $("#edit_banner_image_button").click(async () => {
   $("#edit_banner_image_modal").modal("show");
-  if ($("#para-current-banner-img").text() === "None") {
+  let banner_img = $("#para-current-banner-img").text()
+  banner_img = banner_img.replace(/\s+/g, '')
+  if (banner_img === "None") {
     //Do nothing... regular import
   } else {
     let img_src = $("#current-banner-img").attr("src");
-    img_src = img_src.replace(/\s+/g, '')
-    console.log(img_src)
     img_src = "file://" + img_src;
     let img_base64 = await window.getBase64(img_src); // encode image to base64
 
