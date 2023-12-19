@@ -1667,6 +1667,7 @@ $("#edit_banner_image_button").click(async () => {
     //Do nothing... regular import
   } else {
     let img_src = $("#current-banner-img").attr("src");
+    img_src = img_src.replace(/\s+/g, '')
     console.log(img_src)
     img_src = "file://" + img_src;
     let img_base64 = await window.getBase64(img_src); // encode image to base64
