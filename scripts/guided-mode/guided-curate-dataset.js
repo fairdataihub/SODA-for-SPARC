@@ -1,6 +1,6 @@
 // sourcery skip: merge-nested-ifs
 
-const returnToGuided = () => {
+const window.returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
 

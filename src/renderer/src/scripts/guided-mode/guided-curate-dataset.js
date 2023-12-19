@@ -44,7 +44,7 @@ while (!window.htmlPagesAdded) {
 }
 
 
-const returnToGuided = () => {
+window.returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
 
