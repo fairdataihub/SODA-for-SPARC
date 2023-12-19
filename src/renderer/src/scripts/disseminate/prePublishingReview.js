@@ -70,7 +70,7 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
   // set the subtitle's status
   statuses.subtitle = description && description.length ? true : false;
 
-  let readme = await api.getDatasetReadme(window.defaultBfDataset, currentDataset);
+  let readme = await api.getDatasetReadme(window.defaultBfAccount, currentDataset);
 
   // set the readme's status
   statuses.readme = readme && readme.length >= 1 ? true : false;
@@ -78,7 +78,7 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
   // set tags's status
   statuses.tags = tags && tags.length ? true : false;
 
-  let bannerImageURL = await api.getDatasetBannerImageURL(window.defaultBfDataset, currentDataset);
+  let bannerImageURL = await api.getDatasetBannerImageURL(window.defaultBfAccount, currentDataset);
 
   // set the banner image's url status
   statuses.bannerImageURL = bannerImageURL !== "No banner image" ? true : false;
@@ -152,13 +152,13 @@ const orcidSignIn = async (ev, curationMode) => {
     }
 
     // tell the main process to open a Modal window with the webcontents of the user's Pennsieve profile so they can add an ORCID iD
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "orcid",
       "https://orcid.org/oauth/authorize?client_id=APP-DRQCE0GUWKTRCWY2&response_type=code&scope=/authenticate&redirect_uri=https://app.pennsieve.io/orcid-redirect"
     );
 
     // handle the reply from the asynhronous message to sign the user into Pennsieve
-    ipcRenderer.on("orcid-reply", async (event, accessCode) => {
+    window.electron.ipcRenderer.on("orcid-reply", async (event, accessCode) => {
       if (!accessCode || accessCode === "") {
         return;
       }
@@ -185,7 +185,7 @@ const orcidSignIn = async (ev, curationMode) => {
           { access_code: accessCode },
           {
             params: {
-              pennsieve_account: window.defaultBfDataset,
+              pennsieve_account: window.defaultBfAccount,
             },
           }
         );
@@ -226,7 +226,7 @@ const orcidSignIn = async (ev, curationMode) => {
       });
 
       // track success
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-event",
         "Success",
         window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Integrate ORCID iD",
@@ -512,7 +512,7 @@ const allPrepublishingChecklistItemsCompleted = (curationMode) => {
 // transition to the final question and populate the file tree with the dataset's metadata files
 const createPrepublishingChecklist = async (curationMode) => {
   let curationModeID = "";
-  let currentDataset = window.defaultBfDataset;
+  let currentDataset = window.defaultBfAccount;
   if (curationMode === "guided") {
     currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     curationModeID = "guided--";
@@ -573,8 +573,8 @@ window.beginPrepublishingFlow = async (curationMode) => {
   if (curationMode === "guided") {
     console.log("In guided mode now nice man")
     curationModeID = "guided--";
-    currentAccount = window.window.sodaJSONObj["bf-account-selected"]["account-name"];
-    currentDataset = window.window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    currentAccount = window.sodaJSONObj["bf-account-selected"]["account-name"];
+    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     console.log(currentDataset)
     console.log(currentAccount)
     let get_publishing_status = await client.get(
