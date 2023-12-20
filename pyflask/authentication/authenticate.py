@@ -179,7 +179,7 @@ def create_unique_profile_name(token, email, account_name):
                 organization = org["organization"]["name"]
 
         # create an updated profile name that is unqiue to the user and their workspace 
-        return f"{account_name}-{email_sub}-{organization}"
+        return format_agent_profile_name(f"{account_name}-{email_sub}-{organization}")
     except Exception as e:
         raise e
 
