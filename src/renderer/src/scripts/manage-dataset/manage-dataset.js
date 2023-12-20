@@ -1932,7 +1932,7 @@ const uploadBannerImage = async () => {
 
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
     //image is created here into temp folder
-    let image_file_size = window.fs.statSync(imagePath)["size"];
+    let image_file_size = window.fs.fileSizeSync(imagePath)
 
     if (image_file_size < 5 * 1024 * 1024) {
       let selectedBfAccount = window.defaultBfAccount;
