@@ -1,6 +1,7 @@
 import requests
 from os.path import join, expanduser, exists
 from configparser import ConfigParser
+from configUtils import format_agent_profile_name
 from constants import PENNSIEVE_URL
 from utils import (
     create_request_headers,
@@ -176,15 +177,18 @@ def get_user_organizations():
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
 def update_config_account_name(accountname):
+  # format the keyname to lowercase and replace '.' with '_'
+  formatted_account_name = format_agent_profile_name(accountname)
+
   if exists(configpath):
       config = ConfigParser()
       config.read(configpath)
 
   if not config.has_section("global"):
       config.add_section("global")
-      config.set("global", "default_profile", accountname)
+      config.set("global", "default_profile", formatted_account_name)
   else:
-      config["global"]["default_profile"] = accountname
+      config["global"]["default_profile"] = formatted_account_name
 
   with open(configpath, "w") as configfile:
       config.write(configfile)

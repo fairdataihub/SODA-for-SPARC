@@ -2,6 +2,7 @@ import boto3
 import requests
 from os.path import expanduser, join, exists
 from configparser import ConfigParser
+from configUtils import format_agent_profile_name
 from flask import abort
 from os import mkdir
 import time
@@ -139,7 +140,6 @@ def bf_delete_default_profile():
     if "global" not in config:
         return 
     
-    default_profile_name = config["global"]["default_profile"]
     config.remove_section("global")
 
     with open(configpath, "w") as configfile:
@@ -197,16 +197,11 @@ def bf_add_account_username(keyname, key, secret):
     """
     global namespace_logger
 
-    temp_keyname = "SODA_temp_generated"
-    # first delete the pre-existing default_profile entry , but not the profile itself 
-
-    # lowercase the key name 
-    keyname = keyname.lower()
+    # format the keyname to lowercase and replace '.' with '_'
+    formatted_account_name = format_agent_profile_name(keyname)
     
     bf_delete_default_profile()
     try:
-        keyname = keyname.strip()
-
         bfpath = join(userpath, ".pennsieve")
         # Load existing or create new config file
         config = ConfigParser()
@@ -223,23 +218,18 @@ def bf_add_account_username(keyname, key, secret):
             config.set(agentkey, "upload_workers", "10")
             config.set(agentkey, "upload_chunk_size", "32")
 
-
-        # ensure that if the profile already exists it has an api_host entry 
-        # if config.has_section(keyname):
-        #     config.set(keyname, "api_host", PENNSIEVE_URL)
-
         # Add new account if it does not already exist
-        if not config.has_section(keyname):
-            config.add_section(keyname)
+        namespace_logger.info(f"Adding account {formatted_account_name} to config file")
+        if not config.has_section(formatted_account_name):
+            config.add_section(formatted_account_name)
 
-        config.set(keyname, "api_token", key)
-        config.set(keyname, "api_secret", secret)
-        # config.set(keyname, "api_host", PENNSIEVE_URL)
+        config.set(formatted_account_name, "api_token", key)
+        config.set(formatted_account_name, "api_secret", secret)
 
         # set profile name in global section
         if not config.has_section("global"):
             config.add_section("global")
-            config.set("global", "default_profile", keyname)
+            config.set("global", "default_profile", formatted_account_name)
 
         
         with open(configpath, "w") as configfile:
@@ -253,7 +243,7 @@ def bf_add_account_username(keyname, key, secret):
         token = get_access_token()
     except Exception as e:
         namespace_logger.error(e)
-        bf_delete_account(keyname)
+        bf_delete_account(formatted_account_name)
         abort(401, 
             "Please check that key name, key, and secret are entered properly"
         )
@@ -268,7 +258,7 @@ def bf_add_account_username(keyname, key, secret):
         with open(configpath, "w+") as configfile:
             config.write(configfile)
 
-        return {"message": f"Successfully added account {keyname}"}
+        return {"message": f"Successfully added account {formatted_account_name}"}
 
     except Exception as e:
         bf_delete_account(keyname)
