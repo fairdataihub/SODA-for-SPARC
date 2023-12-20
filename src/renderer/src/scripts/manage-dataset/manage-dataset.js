@@ -1663,7 +1663,7 @@ window.getBase64 = async (url) => {
 // function for importing a banner image if one already exists
 $("#edit_banner_image_button").click(async () => {
   $("#edit_banner_image_modal").modal("show");
-  $("##edit_banner_image_modal").addClass("show")
+  $("#edit_banner_image_modal").addClass("show")
   let banner_img = $("#para-current-banner-img").text()
   banner_img = banner_img.replace(/\s+/g, '')
   if (banner_img === "None") {
@@ -1911,11 +1911,11 @@ $("#button-import-banner-image").click(async () => {
 const uploadBannerImage = async () => {
   $("#para-dataset-banner-image-status").html("Please wait...");
   //Save cropped image locally and check size
-  let imageFolder = path.join(homeDirectory, "SODA", "banner-image"); //banner will be saved in $HOME/SODA/banner-image
+  let imageFolder = window.path.join(homeDirectory, "SODA", "banner-image"); //banner will be saved in $HOME/SODA/banner-image
   let imageType = "";
 
-  if (!fs.existsSync(imageFolder)) {
-    fs.mkdirSync(imageFolder, { recursive: true });
+  if (!window.fs.existsSync(imageFolder)) {
+    window.fs.mkdirSync(imageFolder, { recursive: true });
   }
 
   if (imageExtension == "png") {
@@ -1925,12 +1925,12 @@ const uploadBannerImage = async () => {
   }
 
   //creating path of the image and then getting cropped image information
-  let imagePath = path.join(imageFolder, "banner-image-SODA." + imageExtension);
+  let imagePath = window.path.join(imageFolder, "banner-image-SODA." + imageExtension);
   let croppedImageDataURI = window.myCropper.getCroppedCanvas().toDataURL(imageType);
 
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
     //image is created here into temp folder
-    let image_file_size = fs.statSync(imagePath)["size"];
+    let image_file_size = window.fs.statSync(imagePath)["size"];
 
     if (image_file_size < 5 * 1024 * 1024) {
       let selectedBfAccount = window.defaultBfAccount;
@@ -2030,7 +2030,7 @@ const uploadBannerImage = async () => {
     } else {
       //final size is greater than 5mb so compress image here (image already created and stored in temp file)
       let scaledImagePath = await scaleBannerImage(imagePath); //scaled image will be in temp folder
-      let image_file_size = fs.statSync(scaledImagePath)["size"]; //update size for analytics
+      let image_file_size = window.fs.statSync(scaledImagePath)["size"]; //update size for analytics
       try {
         let uploadBannerImage = await client.put(
           `/manage_datasets/bf_banner_image`,
