@@ -1905,6 +1905,7 @@ $("#button-import-banner-image").click(async () => {
   $("#para-dataset-banner-image-status").html("");
   let filePaths = await window.electron.ipcRenderer.invoke("open-file-dialog-import-banner-image");
   handleSelectedBannerImage(filePaths, "freeform");
+  $("#edit_banner_image_modal").addClass("show")
 });
 
 // TODO: Dorian -> Simplify the if statement, redundent code
