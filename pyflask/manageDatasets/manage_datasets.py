@@ -279,7 +279,7 @@ def bf_get_accounts():
                 lowercase_account_names(config, default_profile, configpath)
                 try:
                     get_access_token()
-                    return default_profile.lower()
+                    return format_agent_profile_name(default_profile)
                 except Exception as e:
                     print(e)
     else:
@@ -300,7 +300,7 @@ def bf_get_accounts():
 
                         lowercase_account_names(config, account, configpath)
                         
-                        return account.lower()
+                        return format_agent_profile_name(account)
     return ""
 
 
