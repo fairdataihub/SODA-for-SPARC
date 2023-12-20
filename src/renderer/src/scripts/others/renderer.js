@@ -1289,7 +1289,7 @@ window.bfDatasetSubtitleCharCount = document.querySelector("#para-char-count-met
 
 // const bfCurrentBannerImg = document.getElementById("current-banner-img");
 
-const bfViewImportedImage = document.querySelector("#image-banner");
+window.bfViewImportedImage = document.querySelector("#image-banner");
 window.guidedBfViewImportedImage = document.querySelector("#guided-image-banner");
 
 // const bfSaveBannerImageBtn = document.getElementById("save-banner-image");
@@ -3122,7 +3122,7 @@ window.guidedCropOptions = {
 };
 
 window.imageExtension;
-window.myCropper = new Cropper(bfViewImportedImage, cropOptions);
+window.myCropper = new Cropper(window.bfViewImportedImage, cropOptions);
 
 const setupPublicationOptionsPopover = () => {
   // setup the calendar that is in the popup
@@ -5304,7 +5304,7 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
     cropperOptions = cropOptions;
     paraImagePath = "#para-path-image";
     saveBannerImage = "#save-banner-image";
-    viewImportedImage = bfViewImportedImage;
+    viewImportedImage = window.bfViewImportedImage;
     imgHolder = document.getElementById("div-img-container-holder");
     imgContainer = document.getElementById("div-img-container");
   }

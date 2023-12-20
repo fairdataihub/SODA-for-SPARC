@@ -1808,9 +1808,9 @@ const displayBannerImage = async (path) => {
                       document.getElementById("div-img-container").style.display = "block";
 
                       $("#para-path-image").html(image_path);
-                      bfViewImportedImage.src = converted_image_file;
+                      window.bfViewImportedImage.src = converted_image_file;
                       window.myCropper.destroy();
-                      window.myCropper = new Cropper(bfViewImportedImage, cropOptions);
+                      window.myCropper = new Cropper(window.bfViewImportedImage, cropOptions);
                       $("#save-banner-image").css("visibility", "visible");
                       $("body").removeClass("waiting");
                     });
@@ -1833,9 +1833,9 @@ const displayBannerImage = async (path) => {
               image_path = converted_image_file;
               imageExtension = "jpg";
               $("#para-path-image").html(image_path);
-              bfViewImportedImage.src = image_path;
+              window.bfViewImportedImage.src = image_path;
               window.myCropper.destroy();
-              window.myCropper = new Cropper(bfViewImportedImage, cropOptions);
+              window.myCropper = new Cropper(window.bfViewImportedImage, cropOptions);
               $("#save-banner-image").css("visibility", "visible");
             }
           });
@@ -1862,9 +1862,9 @@ const displayBannerImage = async (path) => {
       document.getElementById("div-img-container").style.display = "block";
 
       $("#para-path-image").html(image_path);
-      bfViewImportedImage.src = image_path;
+      window.bfViewImportedImage.src = image_path;
       window.myCropper.destroy();
-      window.myCropper = new Cropper(bfViewImportedImage, cropOptions);
+      window.myCropper = new Cropper(window.bfViewImportedImage, cropOptions);
 
       $("#save-banner-image").css("visibility", "visible");
     }
@@ -2097,9 +2097,9 @@ const uploadBannerImage = async () => {
 
 $("#save-banner-image").click((event) => {
   //save button for banner image (need on the size of the cropped image)
-  //bfViewImportedImage holds the entire image
+  //window.bfViewImportedImage holds the entire image
   $("#para-dataset-banner-image-status").html("");
-  if (bfViewImportedImage.src.length > 0) {
+  if (window.bfViewImportedImage.src.length > 0) {
     if (window.formBannerHeight.value > 511) {
       Swal.fire({
         icon: "warning",
@@ -2194,7 +2194,7 @@ const showCurrentBannerImage = async () => {
 
     bfCurrentBannerImg.src = "";
     document.getElementById("para-current-banner-img").innerHTML = "None";
-    bfViewImportedImage.src = "";
+    window.bfViewImportedImage.src = "";
 
     $("#div-img-container-holder").css("display", "block");
     $("#div-img-container").css("display", "none");
@@ -2223,7 +2223,7 @@ const showCurrentBannerImage = async () => {
     if (res === "No banner image") {
       bfCurrentBannerImg.src = "";
       document.getElementById("para-current-banner-img").innerHTML = "None";
-      bfViewImportedImage.src = "";
+      window.bfViewImportedImage.src = "";
 
       $("#div-img-container-holder").css("display", "block");
       $("#div-img-container").css("display", "none");
@@ -2241,7 +2241,7 @@ const showCurrentBannerImage = async () => {
 
     bfCurrentBannerImg.src = "assets/img/no-banner-image.png";
     document.getElementById("para-current-banner-img").innerHTML = "None";
-    bfViewImportedImage.src = "";
+    window.bfViewImportedImage.src = "";
 
     $("#div-img-container-holder").css("display", "block");
     $("#div-img-container").css("display", "none");
