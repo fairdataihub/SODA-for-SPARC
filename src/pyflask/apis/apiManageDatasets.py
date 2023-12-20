@@ -582,7 +582,7 @@ scale_image_model = api.model("postScaledImage", {
 })
 
 @api.route("/bf_banner_image/scale_image")
-class scaleBannerImage(Resource):
+class window.scaleBannerImage(Resource):
   parser_image = reqparse.RequestParser(bundle_errors=True)
   parser_image.add_argument('image_file_path', type=str, required=True, location='json', help='The file path of the image to be resized.')
 

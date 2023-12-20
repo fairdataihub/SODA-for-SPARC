@@ -1527,7 +1527,7 @@ const datasetPermissionDiv = document.getElementById("div-permission-list-2");
 const bfDatasetSubtitle = document.querySelector("#bf-dataset-subtitle");
 const window.bfDatasetSubtitleCharCount = document.querySelector("#para-char-count-metadata");
 
-const bfCurrentBannerImg = document.getElementById("current-banner-img");
+const window.bfCurrentBannerImg = document.getElementById("current-banner-img");
 
 const window.bfViewImportedImage = document.querySelector("#image-banner");
 const guidedBfViewImportedImage = document.querySelector("#guided-image-banner");
@@ -9090,7 +9090,7 @@ $("#validate_dataset_bttn").on("click", async () => {
 });
 
 //function used to scale banner images
-const scaleBannerImage = async (imagePath) => {
+const window.scaleBannerImage = async (imagePath) => {
   try {
     let imageScaled = await client.post(
       `/manage_datasets/scale_image`,
@@ -9111,7 +9111,7 @@ const scaleBannerImage = async (imagePath) => {
   }
 };
 
-const gatherLogs = () => {
+const window.gatherLogs = () => {
   //function will be used to gather all logs on all OS's
   let homedir = os.homedir();
   let file_path = "";
@@ -9243,7 +9243,7 @@ const gatherLogs = () => {
  * removed from our analytics database. For each computer/profile the user has they may have to perform this operation if they want all of their data
  * purged.
  */
-const displayClientId = () => {
+const window.displayClientId = () => {
   const { clipboard } = require("electron");
   clipboard.writeText("Example string", "selection");
   let clientId = nodeStorage.getItem("userId");

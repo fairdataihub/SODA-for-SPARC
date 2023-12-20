@@ -1287,18 +1287,18 @@ window.datasetPermissionDiv = document.getElementById("div-permission-list-2");
 
 window.bfDatasetSubtitleCharCount = document.querySelector("#para-char-count-metadata");
 
-// const bfCurrentBannerImg = document.getElementById("current-banner-img");
+window.bfCurrentBannerImg = document.getElementById("current-banner-img");
 
 window.bfViewImportedImage = document.querySelector("#image-banner");
 window.guidedBfViewImportedImage = document.querySelector("#guided-image-banner");
 
-// const bfSaveBannerImageBtn = document.getElementById("save-banner-image");
-// const datasetBannerImageStatus = document.querySelector("#para-dataset-banner-image-status");
+const bfSaveBannerImageBtn = document.getElementById("save-banner-image");
+const datasetBannerImageStatus = document.querySelector("#para-dataset-banner-image-status");
 window.formBannerHeight = document.getElementById("form-banner-height");
 window.guidedFormBannerHeight = document.getElementById("guided-form-banner-height");
 window.currentDatasetLicense = document.querySelector("#para-dataset-license-current");
-// const bfListLicense = document.querySelector("#bf-license-list");
-// const bfAddLicenseBtn = document.getElementById("button-add-license");
+const bfListLicense = document.querySelector("#bf-license-list");
+const bfAddLicenseBtn = document.getElementById("button-add-license");
 
 // // Pennsieve dataset permission //
 window.currentDatasetPermission = document.querySelector("#para-dataset-permission-current");
@@ -8855,178 +8855,178 @@ window.logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularit
 //   $("#dataset_validator_spinner").hide();
 // });
 
-// //function used to scale banner images
-// const scaleBannerImage = async (imagePath) => {
-//   try {
-//     let imageScaled = await client.post(
-//       `/manage_datasets/scale_image`,
-//       {
-//         image_file_path: imagePath,
-//       },
-//       {
-//         params: {
-//           selected_account: window.defaultBfAccount,
-//           selected_dataset: window.defaultBfDataset,
-//         },
-//       }
-//     );
-//     return imageScaled.data.scaled_image_path;
-//   } catch (error) {
-//     clientError(error);
-//     return error.response;
-//   }
-// };
+//function used to scale banner images
+window.scaleBannerImage = async (imagePath) => {
+  try {
+    let imageScaled = await client.post(
+      `/manage_datasets/scale_image`,
+      {
+        image_file_path: imagePath,
+      },
+      {
+        params: {
+          selected_account: window.defaultBfAccount,
+          selected_dataset: window.defaultBfDataset,
+        },
+      }
+    );
+    return imageScaled.data.scaled_image_path;
+  } catch (error) {
+    clientError(error);
+    return error.response;
+  }
+};
 
-// const gatherLogs = () => {
-//   //function will be used to gather all logs on all OS's
-//   let homedir = os.homedir();
-//   let file_path = "";
-//   let clientLogsPath = "";
-//   let serverLogsPath = window.path.join(homedir, "SODA", "logs");
-//   let logFiles = ["main.log", "renderer.log", "agent.log", "api.log"];
+window.gatherLogs = () => {
+  //function will be used to gather all logs on all OS's
+  let homedir = window.os.homedir();
+  let file_path = "";
+  let clientLogsPath = "";
+  let serverLogsPath = window.path.join(homedir, "SODA", "logs");
+  let logFiles = ["main.log", "renderer.log", "agent.log", "api.log"];
 
-//   if (os.platform() === "darwin") {
-//     clientLogsPath = window.path.join(homedir, "/Library/Logs/SODA for SPARC/");
-//   } else if (os.platform() === "win32") {
-//     clientLogsPath = window.path.join(homedir, "AppData", "Roaming", "SODA for SPARC", "logs");
-//   } else {
-//     clientLogsPath = window.path.join(homedir, ".config", "SODA for SPARC", "logs");
-//   }
+  if (os.platform() === "darwin") {
+    clientLogsPath = window.path.join(homedir, "/Library/Logs/SODA for SPARC/");
+  } else if (os.platform() === "win32") {
+    clientLogsPath = window.path.join(homedir, "AppData", "Roaming", "SODA for SPARC", "logs");
+  } else {
+    clientLogsPath = window.path.join(homedir, ".config", "SODA for SPARC", "logs");
+  }
 
-//   Swal.fire({
-//     title: "Select a destination to create log folder",
-//     html: `<div style="margin-bottom:1rem;"><p>Please note that any log files that are in your destination already will be overwritten.</p></div><input class="form-control" id="selected-log-destination" type="text" readonly="" placeholder="Select a destination">`,
-//     heightAuto: false,
-//     showCancelButton: true,
-//     allowOutsideClick: false,
-//     allowEscapeKey: true,
-//     didOpen: () => {
-//       let swal_alert_confirm = document.getElementsByClassName("swal2-confirm swal2-styled")[0];
-//       swal_alert_confirm.setAttribute("disabled", true);
+  Swal.fire({
+    title: "Select a destination to create log folder",
+    html: `<div style="margin-bottom:1rem;"><p>Please note that any log files that are in your destination already will be overwritten.</p></div><input class="form-control" id="selected-log-destination" type="text" readonly="" placeholder="Select a destination">`,
+    heightAuto: false,
+    showCancelButton: true,
+    allowOutsideClick: false,
+    allowEscapeKey: true,
+    didOpen: () => {
+      let swal_alert_confirm = document.getElementsByClassName("swal2-confirm swal2-styled")[0];
+      swal_alert_confirm.setAttribute("disabled", true);
 
-//       let log_destination_input = document.getElementById("selected-log-destination");
-//       log_destination_input.addEventListener("click", function () {
-//         window.electron.ipcRenderer.send("open-file-dialog-log-destination");
-//       });
-//       window.electron.ipcRenderer.on("selected-log-folder", (event, result) => {
-//         file_path = result["filePaths"][0];
-//         if (file_path != undefined) {
-//           log_destination_input.value = file_path;
-//           swal_alert_confirm.removeAttribute("disabled");
-//         } else {
-//           Swal.showValidationMessage(`Please enter a destination`);
-//         }
-//       });
-//     },
-//     preConfirm: () => {
-//       let log_destination_input = document.getElementById("selected-log-destination");
-//       if (log_destination_input.value === "" || log_destination_input.value === undefined) {
-//         Swal.showValidationMessage(`Please enter a destination`);
-//       }
-//     },
-//   }).then((result) => {
-//     if (result.isConfirmed === true) {
-//       if (file_path !== undefined || file_path !== "") {
-//         Swal.fire({
-//           title: "Creating log folder",
-//           html: "Please wait...",
-//           // timer: 5000,
-//           allowEscapeKey: false,
-//           allowOutsideClick: false,
-//           heightAuto: false,
-//           backdrop: "rgba(0,0,0, 0.4)",
-//           timerProgressBar: false,
-//           didOpen: () => {
-//             Swal.showLoading();
-//           },
-//         });
+      let log_destination_input = document.getElementById("selected-log-destination");
+      log_destination_input.addEventListener("click", function () {
+        window.electron.ipcRenderer.send("open-file-dialog-log-destination");
+      });
+      window.electron.ipcRenderer.on("selected-log-folder", (event, result) => {
+        file_path = result["filePaths"][0];
+        if (file_path != undefined) {
+          log_destination_input.value = file_path;
+          swal_alert_confirm.removeAttribute("disabled");
+        } else {
+          Swal.showValidationMessage(`Please enter a destination`);
+        }
+      });
+    },
+    preConfirm: () => {
+      let log_destination_input = document.getElementById("selected-log-destination");
+      if (log_destination_input.value === "" || log_destination_input.value === undefined) {
+        Swal.showValidationMessage(`Please enter a destination`);
+      }
+    },
+  }).then((result) => {
+    if (result.isConfirmed === true) {
+      if (file_path !== undefined || file_path !== "") {
+        Swal.fire({
+          title: "Creating log folder",
+          html: "Please wait...",
+          // timer: 5000,
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
 
-//         let log_folder = window.path.join(file_path, "/SODA-For-SPARC-Logs/");
-//         try {
-//           fs.mkdirSync(log_folder, { recursive: true });
-//           // destination will be created or overwritten by default.
-//           for (const logFile of logFiles) {
-//             let logFilePath;
-//             let missingLog = false;
-//             if (logFile === "agent.log") {
-//               logFilePath = window.path.join(homedir, ".pennsieve", logFile);
-//               if (!fs.existsSync(logFilePath)) missingLog = true;
-//             } else if (logFile === "api.log") {
-//               logFilePath = window.path.join(serverLogsPath, logFile);
-//               if (!fs.existsSync(logFilePath)) missingLog = true;
-//             } else {
-//               logFilePath = window.path.join(clientLogsPath, logFile);
-//               if (!fs.existsSync(logFilePath)) missingLog = true;
-//             }
-//             if (!missingLog) {
-//               let log_copy = window.path.join(log_folder, logFile);
+        let log_folder = window.path.join(file_path, "/SODA-For-SPARC-Logs/");
+        try {
+          window.fs.mkdirSync(log_folder, { recursive: true });
+          // destination will be created or overwritten by default.
+          for (const logFile of logFiles) {
+            let logFilePath;
+            let missingLog = false;
+            if (logFile === "agent.log") {
+              logFilePath = window.path.join(homedir, ".pennsieve", logFile);
+              if (!window.fs.existsSync(logFilePath)) missingLog = true;
+            } else if (logFile === "api.log") {
+              logFilePath = window.path.join(serverLogsPath, logFile);
+              if (!window.fs.existsSync(logFilePath)) missingLog = true;
+            } else {
+              logFilePath = window.path.join(clientLogsPath, logFile);
+              if (!window.fs.existsSync(logFilePath)) missingLog = true;
+            }
+            if (!missingLog) {
+              let log_copy = window.path.join(log_folder, logFile);
 
-//               fs.copyFileSync(logFilePath, log_copy);
-//             }
-//           }
-//           Swal.close();
+              window.fs.copyFileSync(logFilePath, log_copy);
+            }
+          }
+          Swal.close();
 
-//           Swal.fire({
-//             title: "Success!",
-//             text: `Successfully created SODA-For-SPARC-Logs in ${file_path}`,
-//             icon: "success",
-//             showConfirmButton: true,
-//             heightAuto: false,
-//             backdrop: "rgba(0,0,0, 0.4)",
-//             didOpen: () => {
-//               if (document.getElementsByClassName("swal2-loader").length > 0) {
-//                 document.getElementsByClassName("swal2-loader")[0].style.display = "none";
-//                 document.getElementsByClassName("swal2-confirm swal2-styled")[0].style.display =
-//                   "block";
-//               }
-//             },
-//           });
-//         } catch (error) {
-//           clientError(error);
-//           Swal.fire({
-//             title: "Failed to create log folder!",
-//             text: error,
-//             icon: "error",
-//             showConfirmButton: true,
-//             heightAuto: false,
-//             backdrop: "rgba(0,0,0, 0.4)",
-//             didOpen: () => {
-//               if (document.getElementsByClassName("swal2-loader").length > 0) {
-//                 document.getElementsByClassName("swal2-loader")[0].style.display = "none";
-//                 document.getElementsByClassName("swal2-confirm swal2-styled")[0].style.display =
-//                   "block";
-//               }
-//             },
-//           });
-//         }
-//       }
-//     }
-//   });
-// };
+          Swal.fire({
+            title: "Success!",
+            text: `Successfully created SODA-For-SPARC-Logs in ${file_path}`,
+            icon: "success",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            didOpen: () => {
+              if (document.getElementsByClassName("swal2-loader").length > 0) {
+                document.getElementsByClassName("swal2-loader")[0].style.display = "none";
+                document.getElementsByClassName("swal2-confirm swal2-styled")[0].style.display =
+                  "block";
+              }
+            },
+          });
+        } catch (error) {
+          clientError(error);
+          Swal.fire({
+            title: "Failed to create log folder!",
+            text: error,
+            icon: "error",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            didOpen: () => {
+              if (document.getElementsByClassName("swal2-loader").length > 0) {
+                document.getElementsByClassName("swal2-loader")[0].style.display = "none";
+                document.getElementsByClassName("swal2-confirm swal2-styled")[0].style.display =
+                  "block";
+              }
+            },
+          });
+        }
+      }
+    }
+  });
+};
 
-// /**
-//  * Gather the client's analytics ID and save it in a file of the user's choosing. The user can then send this to use when requesting to have their data
-//  * removed from our analytics database. For each computer/profile the user has they may have to perform this operation if they want all of their data
-//  * purged.
-//  */
-// const displayClientId = () => {
-//   const { clipboard } = require("electron");
-//   clipboard.writeText("Example string", "selection");
-//   let clientId = nodeStorage.getItem("userId");
+/**
+ * Gather the client's analytics ID and save it in a file of the user's choosing. The user can then send this to use when requesting to have their data
+ * removed from our analytics database. For each computer/profile the user has they may have to perform this operation if they want all of their data
+ * purged.
+ */
+window.displayClientId = () => {
+  const { clipboard } = require("electron");
+  clipboard.writeText("Example string", "selection");
+  let clientId = nodeStorage.getItem("userId");
 
-//   const copyClientIdToClipboard = () => {
-//     clipboard.writeText(clientId, "clipboard");
-//   };
-//   copyClientIdToClipboard();
-//   let copyIcon = `<i class="fas fa-copy" id="copy-icon-client-id" click="${copyClientIdToClipboard()}" ></i>`;
-//   Swal.fire({
-//     title: "Click the Copy Icon to Copy Your Client ID",
-//     html: `<div style="margin-bottom:1rem;">${clientId} ${copyIcon}</div>`,
-//     heightAuto: false,
-//     allowOutsideClick: false,
-//     allowEscapeKey: true,
-//   });
-// };
+  const copyClientIdToClipboard = () => {
+    clipboard.writeText(clientId, "clipboard");
+  };
+  copyClientIdToClipboard();
+  let copyIcon = `<i class="fas fa-copy" id="copy-icon-client-id" click="${copyClientIdToClipboard()}" ></i>`;
+  Swal.fire({
+    title: "Click the Copy Icon to Copy Your Client ID",
+    html: `<div style="margin-bottom:1rem;">${clientId} ${copyIcon}</div>`,
+    heightAuto: false,
+    allowOutsideClick: false,
+    allowEscapeKey: true,
+  });
+};
 
 const gettingStarted = () => {
   let getting_started = document.getElementById("main_tabs_view");

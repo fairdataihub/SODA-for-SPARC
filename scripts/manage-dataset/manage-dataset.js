@@ -2006,7 +2006,7 @@ const uploadBannerImage = async () => {
       }
     } else {
       //final size is greater than 5mb so compress image here (image already created and stored in temp file)
-      let scaledImagePath = await scaleBannerImage(imagePath); //scaled image will be in temp folder
+      let scaledImagePath = await window.scaleBannerImage(imagePath); //scaled image will be in temp folder
       let image_file_size = fs.statSync(scaledImagePath)["size"]; //update size for analytics
       try {
         let uploadBannerImage = await client.put(
@@ -2192,7 +2192,7 @@ const showCurrentBannerImage = async () => {
   if (selectedBfDataset === "Select dataset") {
     $("#banner_image_loader").hide();
 
-    bfCurrentBannerImg.src = "";
+    window.bfCurrentBannerImg.src = "";
     document.getElementById("para-current-banner-img").innerHTML = "None";
     window.bfViewImportedImage.src = "";
 
@@ -2221,7 +2221,7 @@ const showCurrentBannerImage = async () => {
     );
 
     if (res === "No banner image") {
-      bfCurrentBannerImg.src = "";
+      window.bfCurrentBannerImg.src = "";
       document.getElementById("para-current-banner-img").innerHTML = "None";
       window.bfViewImportedImage.src = "";
 
@@ -2232,14 +2232,14 @@ const showCurrentBannerImage = async () => {
       window.myCropper.destroy();
     } else {
       document.getElementById("para-current-banner-img").innerHTML = "";
-      bfCurrentBannerImg.src = res;
+      window.bfCurrentBannerImg.src = res;
     }
     $("#banner_image_loader").hide();
   } catch (error) {
     clientError(error);
     $("#banner_image_loader").hide();
 
-    bfCurrentBannerImg.src = "assets/img/no-banner-image.png";
+    window.bfCurrentBannerImg.src = "assets/img/no-banner-image.png";
     document.getElementById("para-current-banner-img").innerHTML = "None";
     window.bfViewImportedImage.src = "";
 

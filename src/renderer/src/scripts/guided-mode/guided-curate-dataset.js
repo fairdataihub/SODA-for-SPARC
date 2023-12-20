@@ -14577,7 +14577,7 @@ const guidedSaveBannerImage = async () => {
     } else {
       //image needs to be scaled
       $("#guided-para-dataset-banner-image-status").html("");
-      let scaledImagePath = await scaleBannerImage(imagePath);
+      let scaledImagePath = await window.scaleBannerImage(imagePath);
       setGuidedBannerImage(scaledImagePath);
       $("#guided-banner-image-modal").modal("hide");
       $("#guided-button-add-banner-image").text("Edit banner image");
