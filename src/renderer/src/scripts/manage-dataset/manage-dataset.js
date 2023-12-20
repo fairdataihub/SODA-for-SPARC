@@ -2032,7 +2032,8 @@ const uploadBannerImage = async () => {
     } else {
       //final size is greater than 5mb so compress image here (image already created and stored in temp file)
       let scaledImagePath = await window.scaleBannerImage(imagePath); //scaled image will be in temp folder
-      let image_file_size = window.fs.statSync(scaledImagePath)["size"]; //update size for analytics
+      console.log("Scaled image path value: ", scaledImagePath)
+      let image_file_size = window.fs.fileSizeSync(scaledImagePath); //update size for analytics
       try {
         let uploadBannerImage = await client.put(
           `/manage_datasets/bf_banner_image`,
