@@ -1663,6 +1663,7 @@ window.getBase64 = async (url) => {
 // function for importing a banner image if one already exists
 $("#edit_banner_image_button").click(async () => {
   $("#edit_banner_image_modal").modal("show");
+  $("##edit_banner_image_modal").addClass("show")
   let banner_img = $("#para-current-banner-img").text()
   banner_img = banner_img.replace(/\s+/g, '')
   if (banner_img === "None") {
