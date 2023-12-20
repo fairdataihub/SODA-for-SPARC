@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - handle-ps-accounts-with-periods
 
 jobs:
   deploy-on-windows:
