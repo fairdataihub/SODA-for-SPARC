@@ -3864,7 +3864,7 @@ for (var i = 0; i < buttons.length; i++) {
 // Input:
 //  elementId:  string - id selector of the section the user will transition to from the Submit for pre-publishing tab
 // transition from the pre-publishing review tab to the given prepare metadata tabs
-const transitionFromPrePublishingChecklist = (ev, elementId) => {
+window.transitionFromPrePublishingChecklist = (ev, elementId) => {
   if (ev.classList.contains("no-pointer")) {
     return;
   }
