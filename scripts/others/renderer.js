@@ -3736,7 +3736,7 @@ const window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   });
 
   if (curationMode != "guided") {
-    await resetffmPrepublishingUI();
+    await window.resetffmPrepublishingUI();
   } else {
     // Update the UI again and hide the flow
     $("#guided--prepublishing-checklist-container").addClass("hidden");
@@ -3892,7 +3892,7 @@ const withdrawReviewDataset = async (curationMode) => {
 
     if (curationMode != "guided") {
       // reveal the current section (question-3) again using the new publishing status value
-      await resetffmPrepublishingUI();
+      await window.resetffmPrepublishingUI();
 
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
       bfWithdrawReviewDatasetBtn.disabled = false;

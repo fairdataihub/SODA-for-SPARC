@@ -52,7 +52,7 @@ window.disseminatePublish = async (curationMode) => {
       // submit the dataset for review with the given embargoReleaseDate
       await window.submitReviewDataset(embargoReleaseDate, curationMode);
       $("#prepublishing-submit-btn-container").hide();
-      resetffmPrepublishingUI();
+      window.resetffmPrepublishingUI();
     }
   } catch (error) {
     log.error(error);

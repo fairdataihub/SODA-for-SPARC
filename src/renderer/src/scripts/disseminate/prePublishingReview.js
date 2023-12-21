@@ -111,7 +111,7 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
 // once the user clicks the Begin Submission button check if they are the data set owner'
 // show the next section - which has the pre-publishing checklist - if so
 // Function returns true if the dataset has been published, false otherwise
-const resetffmPrepublishingUI = async () => {
+window.resetffmPrepublishingUI = async () => {
   // hide the begin publishing button
   $("#begin-prepublishing-btn").addClass("hidden");
   // resetPrePublishingChecklist();
@@ -557,7 +557,7 @@ window.createPrepublishingChecklist = async (curationMode) => {
     document.getElementById("pre-publishing-continue-btn").disabled = false;
     $("#pre-publishing-continue-btn").disabled = false;
     $("#pre-publishing-continue-btn").removeClass("loading");
-    resetffmPrepublishingUI();
+    window.resetffmPrepublishingUI();
   }
 };
 
@@ -681,7 +681,7 @@ window.beginPrepublishingFlow = async (curationMode) => {
   // load the next question's data
   if (curationMode !== "guided") {
     let reviewDatasetInfo = $("#para-review-dataset-info-disseminate").text();
-    let datasetHasBeenPublished = await resetffmPrepublishingUI();
+    let datasetHasBeenPublished = await window.resetffmPrepublishingUI();
 
     $("#begin-prepublishing-btn").addClass("hidden");
     $("#submit_prepublishing_review-question-2").removeClass("show");
