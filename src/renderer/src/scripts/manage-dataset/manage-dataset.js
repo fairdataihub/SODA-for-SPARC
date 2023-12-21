@@ -542,7 +542,7 @@ $("#button-add-permission-pi").click(async () => {
 
         window.electron.ipcRenderer.invoke("set-nodestorage-item", "previously_selected_PI", selectedUser);
 
-        showCurrentPermission();
+        window.showCurrentPermission();
         changeDatasetRolePI(selectedBfDataset);
 
         Swal.fire({
@@ -596,7 +596,7 @@ const changeDatasetRolePI = (selectedDataset) => {
   }
 };
 
-const showCurrentPermission = async () => {
+window.showCurrentPermission = async () => {
   let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 
@@ -729,7 +729,7 @@ const addPermissionUser = async (
     ["Add User Permissions"]
   );
 
-  showCurrentPermission();
+  window.showCurrentPermission();
 
   try {
     // refresh dataset lists with filter
@@ -857,7 +857,7 @@ $("#button-add-permission-team").click(async () => {
         backdrop: "rgba(0,0,0, 0.4)",
       });
 
-      showCurrentPermission();
+      window.showCurrentPermission();
     } catch (error) {
       clientError(error);
 

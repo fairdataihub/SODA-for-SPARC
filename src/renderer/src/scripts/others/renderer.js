@@ -3021,7 +3021,7 @@ const metadataDatasetlistChange = () => {
 
 // Manage dataset permission
 const permissionDatasetlistChange = () => {
-  showCurrentPermission();
+  window.showCurrentPermission();
 };
 
 const datasetStatusListChange = () => {

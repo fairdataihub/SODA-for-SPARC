@@ -519,7 +519,7 @@ $("#button-add-permission-pi").click(async () => {
         let nodeStorage = new JSONStorage(app.getPath("userData"));
         nodeStorage.setItem("previously_selected_PI", selectedUser);
 
-        showCurrentPermission();
+        window.showCurrentPermission();
         changeDatasetRolePI(selectedBfDataset);
 
         Swal.fire({
@@ -573,7 +573,7 @@ const changeDatasetRolePI = (selectedDataset) => {
   }
 };
 
-const showCurrentPermission = async () => {
+const window.showCurrentPermission = async () => {
   let selectedBfAccount = window.defaultBfDataset;
   let selectedBfDataset = window.defaultBfDataset;
 
@@ -706,7 +706,7 @@ const addPermissionUser = async (
     ["Add User Permissions"]
   );
 
-  showCurrentPermission();
+  window.showCurrentPermission();
 
   try {
     // refresh dataset lists with filter
@@ -834,7 +834,7 @@ $("#button-add-permission-team").click(async () => {
         backdrop: "rgba(0,0,0, 0.4)",
       });
 
-      showCurrentPermission();
+      window.showCurrentPermission();
     } catch (error) {
       clientError(error);
 
