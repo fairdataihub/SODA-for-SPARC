@@ -12,7 +12,7 @@ import {
   createEventData,
   logSelectedUpdateExistingDatasetOptions,
 } from "../analytics/curation-analytics"
-
+import Cropper from "cropperjs"
 
 // event listeners for opening dataset or account selection dropdown
 import Accordion from 'accordion-js';
@@ -1766,7 +1766,7 @@ $("#edit_banner_image_button").click(async () => {
     );
 
     window.myCropper.destroy();
-    window.myCropper = new Cropper(document.getElementById("image-banner"), cropOptions);
+    window.myCropper = new Cropper(document.getElementById("image-banner"), window.cropOptions);
   }
 });
 
@@ -1835,7 +1835,7 @@ const displayBannerImage = async (path) => {
                       $("#para-path-image").html(image_path);
                       window.bfViewImportedImage.src = converted_image_file;
                       window.myCropper.destroy();
-                      window.myCropper = new Cropper(window.bfViewImportedImage, cropOptions);
+                      window.myCropper = new Cropper(window.bfViewImportedImage, window.cropOptions);
                       $("#save-banner-image").css("visibility", "visible");
                       $("body").removeClass("waiting");
                     });
@@ -1860,7 +1860,7 @@ const displayBannerImage = async (path) => {
               $("#para-path-image").html(image_path);
               window.bfViewImportedImage.src = image_path;
               window.myCropper.destroy();
-              window.myCropper = new Cropper(window.bfViewImportedImage, cropOptions);
+              window.myCropper = new Cropper(window.bfViewImportedImage, window.cropOptions);
               $("#save-banner-image").css("visibility", "visible");
             }
           });
@@ -1889,7 +1889,7 @@ const displayBannerImage = async (path) => {
       $("#para-path-image").html(image_path);
       window.bfViewImportedImage.src = image_path;
       window.myCropper.destroy();
-      window.myCropper = new Cropper(window.bfViewImportedImage, cropOptions);
+      window.myCropper = new Cropper(window.bfViewImportedImage, window.cropOptions);
 
       $("#save-banner-image").css("visibility", "visible");
     }

@@ -3047,7 +3047,7 @@ const postCurationListChange = () => {
 // const { rename } = require("fs");
 // const { resolveSoa } = require("dns");
 // const internal = require("stream");
-var cropOptions = {
+window.cropOptions = {
   aspectRatio: 1,
   movable: false,
   // Enable to rotate the image
@@ -3122,7 +3122,7 @@ window.guidedCropOptions = {
 };
 
 window.imageExtension;
-window.myCropper = new Cropper(window.bfViewImportedImage, cropOptions);
+window.myCropper = new Cropper(window.bfViewImportedImage, window.cropOptions);
 
 const setupPublicationOptionsPopover = () => {
   // setup the calendar that is in the popup
@@ -5301,7 +5301,7 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
     cropperOptions = window.guidedCropOptions;
   }
   if (curationMode === "freeform") {
-    cropperOptions = cropOptions;
+    cropperOptions = window.cropOptions;
     paraImagePath = "#para-path-image";
     saveBannerImage = "#save-banner-image";
     viewImportedImage = window.bfViewImportedImage;

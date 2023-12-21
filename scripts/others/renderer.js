@@ -3302,7 +3302,7 @@ const { background } = require("jimp");
 const { rename } = require("fs");
 const { resolveSoa } = require("dns");
 const internal = require("stream");
-var cropOptions = {
+var window.cropOptions = {
   aspectRatio: 1,
   movable: false,
   // Enable to rotate the image
@@ -3376,7 +3376,7 @@ const guidedCropOptions = {
 };
 
 var imageExtension;
-var window.myCropper = new Cropper(window.bfViewImportedImage, cropOptions);
+var window.myCropper = new Cropper(window.bfViewImportedImage, window.cropOptions);
 
 const setupPublicationOptionsPopover = () => {
   // setup the calendar that is in the popup
@@ -5552,7 +5552,7 @@ const handleSelectedBannerImage = async (path, curationMode) => {
     cropperOptions = guidedCropOptions;
   }
   if (curationMode === "freeform") {
-    cropperOptions = cropOptions;
+    cropperOptions = window.cropOptions;
     paraImagePath = "#para-path-image";
     saveBannerImage = "#save-banner-image";
     viewImportedImage = window.bfViewImportedImage;
