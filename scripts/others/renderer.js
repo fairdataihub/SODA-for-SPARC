@@ -4042,7 +4042,7 @@ const refreshBfTeamsList = async (teamList) => {
   }
 };
 
-const selectOptionColor = (mylist) => {
+const window.selectOptionColor = (mylist) => {
   mylist.style.color = mylist.options[mylist.selectedIndex].style.color;
 };
 

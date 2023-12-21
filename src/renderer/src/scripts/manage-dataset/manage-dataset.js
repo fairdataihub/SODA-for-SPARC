@@ -3395,7 +3395,7 @@ $("#bf_list_dataset_status").on("change", async () => {
   $(window.bfCurrentDatasetStatusProgress).css("visibility", "visible");
   $("#bf-dataset-status-spinner").css("display", "block");
 
-  selectOptionColor(window.bfListDatasetStatus);
+  window.selectOptionColor(window.bfListDatasetStatus);
 
   let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
@@ -3540,7 +3540,7 @@ window.showCurrentDatasetStatus = async (callback) => {
 
     $(`input[name=dataset_status_radio][value=${res["current_status"]}]`).prop("checked", true);
 
-    selectOptionColor(window.bfListDatasetStatus);
+    window.selectOptionColor(window.bfListDatasetStatus);
 
     $(window.bfCurrentDatasetStatusProgress).css("visibility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");

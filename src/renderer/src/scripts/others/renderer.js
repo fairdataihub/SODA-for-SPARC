@@ -3785,9 +3785,9 @@ const refreshBfTeamsList = async (teamList) => {
   }
 };
 
-// const selectOptionColor = (mylist) => {
-//   mylist.style.color = mylist.options[mylist.selectedIndex].style.color;
-// };
+window.selectOptionColor = (mylist) => {
+  mylist.style.color = mylist.options[mylist.selectedIndex].style.color;
+};
 
 // ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 // /////////////////////////////////////////////////////////////////////////////////////////////

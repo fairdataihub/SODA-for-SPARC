@@ -183,7 +183,7 @@ const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) 
         window.bfListDatasetStatus.appendChild(option);
       }
       window.bfListDatasetStatus.value = current_status;
-      selectOptionColor(window.bfListDatasetStatus);
+      window.selectOptionColor(window.bfListDatasetStatus);
       //window.bfCurrentDatasetStatusProgress.style.display = "none";
       $(window.bfCurrentDatasetStatusProgress).css("visbility", "hidden");
       $("#bf-dataset-status-spinner").css("display", "none");
