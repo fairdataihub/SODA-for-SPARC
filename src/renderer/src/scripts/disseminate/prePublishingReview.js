@@ -47,6 +47,7 @@ const resetSubmissionChecklistText = () => {
  * @returns statuses - A status object that details the state of each pre-publishing checklist item for the given dataset and user
  */
 const getPrepublishingChecklistStatuses = async (currentDataset) => {
+  console.log("Running get prepublishing checklist statuses")
   // check that a dataset name or id is provided
   if (!currentDataset || currentDataset === "") {
     throw new Error(
@@ -429,6 +430,8 @@ window.showPrePublishingStatus = async (inPrePublishing = false, curationMode = 
 // gets the pre-publishing checklist item element by id and gives it a check or an 'x' based off the value of the pre-publishing item's status
 const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
   let addButton = $(`#${iconElementId}`).parent().siblings()[0];
+  console.log("In set prepublishing checklist item icon by status")
+  console.log(addButton)
   if (status) {
     // Change icon of iconElementId to a checkmark
     $(`#${iconElementId}`).attr("class", "check icon");
