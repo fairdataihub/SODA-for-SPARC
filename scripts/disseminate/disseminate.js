@@ -17,7 +17,7 @@ const disseminatePublish = async (curationMode) => {
   }
 
   // check that the user completed all pre-publishing checklist items for the given dataset
-  if (!allPrepublishingChecklistItemsCompleted(curationMode)) {
+  if (!window.allPrepublishingChecklistItemsCompleted(curationMode)) {
     // alert the user they must complete all checklist items before beginning the prepublishing process
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",

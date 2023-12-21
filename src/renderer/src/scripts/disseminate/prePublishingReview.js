@@ -369,7 +369,7 @@ window.showPrePublishingStatus = async (inPrePublishing = false, curationMode = 
   if (curationMode === "guided") {
     // Check the status of checklist items for the dataset and alert
     // the user if any of the items are not completed through a sweet alert
-    let checklistItemCheck = allPrepublishingChecklistItemsCompleted("guided");
+    let checklistItemCheck = window.allPrepublishingChecklistItemsCompleted("guided");
     let allItemsChecked = checklistItemCheck[0];
     let checklistItems = checklistItemCheck[1];
     if (!allItemsChecked) {
@@ -484,7 +484,7 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
 // reads the pre-publishing checklist items from the UI and returns true if all are completed and false otherwise
 // This function checks elements with icon wrapper i class
 // If curationMode is guided the return will include an array of the checklist items that are not completed to alert user
-const allPrepublishingChecklistItemsCompleted = (curationMode) => {
+window.allPrepublishingChecklistItemsCompleted = (curationMode) => {
   let curationModeID = "";
   let prePublishingChecklistItemNames = [];
   if (curationMode === "guided") {
@@ -525,7 +525,7 @@ window.createPrepublishingChecklist = async (curationMode) => {
   }
 
   // check that the user completed all pre-publishing checklist items for the given dataset
-  if (!allPrepublishingChecklistItemsCompleted(curationMode)) {
+  if (!window.allPrepublishingChecklistItemsCompleted(curationMode)) {
     // alert the user they must complete all checklist items before beginning the prepublishing process
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
