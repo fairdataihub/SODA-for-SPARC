@@ -254,9 +254,9 @@ function initialize() {
       shell.openExternal(url);
     });
     mainWindow.webContents.once("dom-ready", () => {
-      if (updatechecked == false && !buildIsBeta) {
+      // if (updatechecked == false && !buildIsBeta) {
         autoUpdater.checkForUpdatesAndNotify();
-      }
+      // }
     });
     mainWindow.on("close", async (e) => {
       if (!user_restart_confirmed) {
@@ -344,9 +344,9 @@ function initialize() {
         }
 
         start_pre_flight_checks();
-        if (!buildIsBeta) {
+        // if (!buildIsBeta) {
           autoUpdater.checkForUpdatesAndNotify();
-        }
+        // }
         updatechecked = true;
       }, 6000);
     });
