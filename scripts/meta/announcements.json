@@ -1,4 +1,10 @@
 {
+  "12.4.2": {
+    "announcements": {
+      "bug-fixes": ["Fixed Pennsieve login bug for accounts with Emails containing periods."],
+      "features": []
+    }
+  },
   "12.4.1": {
     "announcements": {
       "features": [

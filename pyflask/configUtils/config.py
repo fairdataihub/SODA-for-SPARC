@@ -3,6 +3,7 @@ Purpose: Functions for dealing with the pennsieve config file located at ~/.penn
 """
 from constants import PENNSIEVE_URL
 
+
 def add_api_host_to_config(configparser, target_section_name, configpath):
     """
     Args:
@@ -26,6 +27,18 @@ def add_api_host_to_config(configparser, target_section_name, configpath):
 
 
 
+def format_agent_profile_name(profile_name):
+    """
+    Args:
+        profile_name: the profile name to format
+    Returns:
+        The formatted profile name
+    Notes:
+        We replace the '.' with '_' because the config parser on the Node side does not like '.' in the profile name.
+    """
+    return profile_name.lower().replace('.', '_').strip()
+
+
 def lowercase_account_names(config, account_name, configpath):
     """
     Args:
@@ -34,19 +47,20 @@ def lowercase_account_names(config, account_name, configpath):
     Action:
         Converts the account name and global default_profile value to lowercase and updates the config file.
     """
+    formatted_account_name = format_agent_profile_name(account_name)
     # if the section exists lowercased do nothing 
-    if config.has_section(account_name.lower()):
+    if config.has_section(formatted_account_name):
         return
 
     # add the section back with the lowercase account name
-    config.add_section(account_name.lower()) 
-    config.set(account_name.lower(), "api_token", config.get(account_name, "api_token"))
-    config.set(account_name.lower(), "api_secret", config.get(account_name, "api_secret"))
+    config.add_section(formatted_account_name) 
+    config.set(formatted_account_name, "api_token", config.get(formatted_account_name, "api_token"))
+    config.set(formatted_account_name, "api_secret", config.get(formatted_account_name, "api_secret"))
 
     # set the global default_profile option to lowercase
-    config.set("global", "default_profile", account_name.lower())
+    config.set("global", "default_profile", formatted_account_name)
 
-    # remove the existing section
+    # remove the unformatted account name
     config.remove_section(account_name)
 
     # finalize the changes
