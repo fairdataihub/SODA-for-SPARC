@@ -3009,15 +3009,15 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetList) {
 }
 // ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
-// const metadataDatasetlistChange = () => {
-//   $("#bf-dataset-subtitle").val("");
-//   $("#para-dataset-banner-image-status").html("");
-//   showCurrentSubtitle();
-//   showCurrentDescription();
-//   showCurrentLicense();
-//   showCurrentBannerImage();
-//   showCurrentTags();
-// };
+const metadataDatasetlistChange = () => {
+  $("#bf-dataset-subtitle").val("");
+  $("#para-dataset-banner-image-status").html("");
+  window.showCurrentSubtitle();
+  window.showCurrentDescription();
+  window.showCurrentLicense();
+  window.showCurrentBannerImage();
+  window.showCurrentTags();
+};
 
 // // Manage dataset permission
 // const permissionDatasetlistChange = () => {
@@ -3030,14 +3030,14 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetList) {
 //   showCurrentDatasetStatus();
 // };
 
-// // This function is called when the user selects a dataset from the dropdown list
-// // It is called to update the UI elements that are related to the publishing status
-// // of the dataset and displaying the correct UI elements
-// const postCurationListChange = () => {
-//   // display the pre-publishing page
-//   showPrePublishingPageElements();
-//   window.showPublishingStatus();
-// };
+// This function is called when the user selects a dataset from the dropdown list
+// It is called to update the UI elements that are related to the publishing status
+// of the dataset and displaying the correct UI elements
+const postCurationListChange = () => {
+  // display the pre-publishing page
+  showPrePublishingPageElements();
+  window.showPublishingStatus();
+};
 
 // // upload banner image //
 // const Cropper = require("cropperjs");
@@ -3844,7 +3844,7 @@ const populateDatasetDropdowns = (mylist) => {
   }
   // metadataDatasetlistChange();
   // permissionDatasetlistChange();
-  // postCurationListChange();
+  postCurationListChange();
   // datasetStatusListChange();
 };
 
@@ -3925,22 +3925,22 @@ window.loadDefaultAccount = async () => {
   }
 };
 
-// const showPrePublishingPageElements = () => {
-//   let selectedBfAccount = window.defaultBfAccount;
-//   let selectedBfDataset = window.defaultBfDataset;
+const showPrePublishingPageElements = () => {
+  let selectedBfAccount = window.defaultBfAccount;
+  let selectedBfDataset = window.defaultBfDataset;
 
-//   if (selectedBfDataset === "Select dataset") {
-//     return;
-//   }
+  if (selectedBfDataset === "Select dataset") {
+    return;
+  }
 
-//   // show the "Begin Publishing" button and hide the checklist and submission section
-//   $("#begin-prepublishing-btn").removeClass("hidden");
-//   $("#submit_prepublishing_review-question-2").addClass("hidden");
-//   $("#curation-dataset-status-loading").removeClass("hidden");
-//   $("#prepublishing-checklist-container").hide();
-//   $("#prepublishing-submit-btn-container").hide();
-//   $(".pre-publishing-continue-container").hide();
-// };
+  // show the "Begin Publishing" button and hide the checklist and submission section
+  $("#begin-prepublishing-btn").removeClass("hidden");
+  $("#submit_prepublishing_review-question-2").addClass("hidden");
+  $("#curation-dataset-status-loading").removeClass("hidden");
+  $("#prepublishing-checklist-container").hide();
+  $("#prepublishing-submit-btn-container").hide();
+  $(".pre-publishing-continue-container").hide();
+};
 
 // The callback argument is used to determine whether or not to publish or unpublish the dataset
 // If callback is empty then the dataset status will only be fetched and displayed

@@ -997,7 +997,7 @@ $("#button-add-subtitle").click(async () => {
   }, window.delayAnimation);
 });
 
-const showCurrentSubtitle = async () => {
+const window.showCurrentSubtitle = async () => {
   let selectedBfAccount = window.defaultBfDataset;
   let selectedBfDataset = window.defaultBfDataset;
 

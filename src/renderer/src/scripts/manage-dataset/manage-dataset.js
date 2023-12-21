@@ -1020,7 +1020,7 @@ $("#button-add-subtitle").click(async () => {
   }, window.delayAnimation);
 });
 
-const showCurrentSubtitle = async () => {
+window.showCurrentSubtitle = async () => {
   let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 
@@ -1082,7 +1082,7 @@ let dsAccordion = new Accordion("#dd-accordion")
 dsAccordion.open( 0);
 
 // fires whenever a user selects a dataset, from any card
-const showCurrentDescription = async () => {
+window.showCurrentDescription = async () => {
   let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 
@@ -1954,7 +1954,7 @@ const uploadBannerImage = async () => {
         let res = bf_add_banner.data.message;
         $("#para-dataset-banner-image-status").html(res);
 
-        showCurrentBannerImage();
+        window.showCurrentBannerImage();
 
         $("#edit_banner_image_modal").modal("hide");
 
@@ -2050,7 +2050,7 @@ const uploadBannerImage = async () => {
         let bannerImage = uploadBannerImage.data.message;
         $("#para-dataset-banner-image-status").html(bannerImage);
 
-        showCurrentBannerImage();
+        window.showCurrentBannerImage();
 
         $("#edit_banner_image_modal").modal("hide");
 
@@ -2207,7 +2207,7 @@ $("#save-banner-image").click((event) => {
   }
 });
 
-const showCurrentBannerImage = async () => {
+window.showCurrentBannerImage = async () => {
   let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 
@@ -2395,7 +2395,7 @@ $("#button-add-tags").click(async () => {
 // this function fires from two events:
 //    1. when a user clicks on the pencil icon to view their list of datasets in any of the manage-dataset sections
 //    2. after the user selects a dataset from the very same dropdown list
-const showCurrentTags = async () => {
+window.showCurrentTags = async () => {
   var selectedBfAccount = window.defaultBfAccount;
   var selectedBfDataset = window.defaultBfDataset;
 
@@ -2510,7 +2510,7 @@ $("#button-add-license").click(async () => {
         backdrop: "rgba(0,0,0, 0.4)",
       });
 
-      showCurrentLicense();
+      window.showCurrentLicense();
 
       window.electron.ipcRenderer.send(
         "track-event",
@@ -2568,7 +2568,7 @@ $("#button-add-license").click(async () => {
   }, window.delayAnimation);
 });
 
-const showCurrentLicense = async () => {
+window.showCurrentLicense = async () => {
   let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 

@@ -3267,7 +3267,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 const metadataDatasetlistChange = () => {
   $("#bf-dataset-subtitle").val("");
   $("#para-dataset-banner-image-status").html("");
-  showCurrentSubtitle();
+  window.showCurrentSubtitle();
   showCurrentDescription();
   showCurrentLicense();
   showCurrentBannerImage();
