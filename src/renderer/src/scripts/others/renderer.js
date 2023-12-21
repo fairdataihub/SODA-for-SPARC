@@ -3019,16 +3019,16 @@ const metadataDatasetlistChange = () => {
   window.showCurrentTags();
 };
 
-// // Manage dataset permission
-// const permissionDatasetlistChange = () => {
-//   showCurrentPermission();
-// };
+// Manage dataset permission
+const permissionDatasetlistChange = () => {
+  showCurrentPermission();
+};
 
-// const datasetStatusListChange = () => {
-//   $(bfCurrentDatasetStatusProgress).css("visibility", "visible");
-//   $("#bf-dataset-status-spinner").css("display", "block");
-//   showCurrentDatasetStatus();
-// };
+const datasetStatusListChange = () => {
+  $(bfCurrentDatasetStatusProgress).css("visibility", "visible");
+  $("#bf-dataset-status-spinner").css("display", "block");
+  showCurrentDatasetStatus();
+};
 
 // This function is called when the user selects a dataset from the dropdown list
 // It is called to update the UI elements that are related to the publishing status
@@ -3842,10 +3842,10 @@ const populateDatasetDropdowns = (mylist) => {
 
     window.curateDatasetDropdown.appendChild(option2);
   }
-  // metadataDatasetlistChange();
-  // permissionDatasetlistChange();
+  metadataDatasetlistChange();
+  permissionDatasetlistChange();
   postCurationListChange();
-  // datasetStatusListChange();
+  datasetStatusListChange();
 };
 
 const populateOrganizationDropdowns = (organizations) => {
