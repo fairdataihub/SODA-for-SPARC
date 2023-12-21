@@ -75,6 +75,8 @@ def get_user_information(token):
 
 
 def set_preferred_organization(organization_id, email, password, account_name):
+    # format the keyname to lowercase and replace '.' with '_'
+    formatted_account_name = format_agent_profile_name(account_name)
     try:
         token = get_cognito_userpool_access_token(email, password)
 
@@ -138,14 +140,15 @@ def set_preferred_organization(organization_id, email, password, account_name):
               organization = org["organization"]["name"]
 
       # create an updated profile name that is unqiue to the user and their workspace 
-      account_name = f"{account_name}-{email_sub}-{organization}"
+      formatted_account_name = format_agent_profile_name(f"{account_name}-{email_sub}-{organization}")
+
              
     except Exception as e:
        raise e 
     
     try:
       # create the new profile for the user, associate the api key and secret with the profile, and set it as the default profile
-      bf_add_account_username(account_name, key, secret)
+      bf_add_account_username(formatted_account_name, key, secret)
     except Exception as e:
       raise e
     
