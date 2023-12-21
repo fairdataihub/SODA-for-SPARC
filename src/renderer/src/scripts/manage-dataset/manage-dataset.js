@@ -1690,13 +1690,13 @@ $("#edit_banner_image_button").click(async () => {
       let new_position = new_img_src.lastIndexOf("."); //
 
       if (new_position != -1) {
-        imageExtension = new_img_src.substring(new_position + 1);
+        window.imageExtension = new_img_src.substring(new_position + 1);
 
-        if (imageExtension.toLowerCase() == "png") {
+        if (window.imageExtension.toLowerCase() == "png") {
           $("#image-banner").attr("src", "data:image/png;base64," + img_base64);
-        } else if (imageExtension.toLowerCase() == "jpeg") {
+        } else if (window.imageExtension.toLowerCase() == "jpeg") {
           $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
-        } else if (imageExtension.toLowerCase() == "jpg") {
+        } else if (window.imageExtension.toLowerCase() == "jpg") {
           $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
         } else {
           window.log.error(`An error happened: ${img_src}`);
@@ -1782,9 +1782,9 @@ const displayBannerImage = async (path) => {
     );
     let converted_image_file = require("path").join(destination_image_path, "converted-tiff.jpg");
     let conversion_success = true;
-    imageExtension = path[0].split(".").pop();
+    window.imageExtension = path[0].split(".").pop();
 
-    if (imageExtension.toLowerCase() == "tiff") {
+    if (window.imageExtension.toLowerCase() == "tiff") {
       $("body").addClass("waiting");
       Swal.fire({
         title: "Image conversion in progress!",
@@ -1856,7 +1856,7 @@ const displayBannerImage = async (path) => {
                 }
               }
               image_path = converted_image_file;
-              imageExtension = "jpg";
+              window.imageExtension = "jpg";
               $("#para-path-image").html(image_path);
               window.bfViewImportedImage.src = image_path;
               window.myCropper.destroy();
@@ -1922,14 +1922,14 @@ const uploadBannerImage = async () => {
     window.fs.mkdirSync(imageFolder, { recursive: true });
   }
 
-  if (imageExtension == "png") {
+  if (window.imageExtension == "png") {
     imageType = "image/png";
   } else {
     imageType = "image/jpeg";
   }
 
   //creating path of the image and then getting cropped image information
-  let imagePath = window.path.join(imageFolder, "banner-image-SODA." + imageExtension);
+  let imagePath = window.path.join(imageFolder, "banner-image-SODA." + window.imageExtension);
   let croppedImageDataURI = window.myCropper.getCroppedCanvas().toDataURL(imageType);
 
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
