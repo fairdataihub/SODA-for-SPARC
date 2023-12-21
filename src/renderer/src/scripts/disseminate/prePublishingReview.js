@@ -46,7 +46,7 @@ const resetSubmissionChecklistText = () => {
  * @param {string} currentDataset - The currently selected dataset - name
  * @returns statuses - A status object that details the state of each pre-publishing checklist item for the given dataset and user
  */
-const getPrepublishingChecklistStatuses = async (currentDataset) => {
+window.getPrepublishingChecklistStatuses = async (currentDataset) => {
   console.log("Running get prepublishing checklist statuses")
   // check that a dataset name or id is provided
   if (!currentDataset || currentDataset === "") {
@@ -66,12 +66,15 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
   }
 
   // get the description - aka subtitle (unfortunate naming), tags, banner image URL, collaborators, and license
-  const { description, tags, license } = dataset["content"];
+  let { description, tags, license } = dataset["content"];
+  description = description.trim()
 
   // set the subtitle's status
   statuses.subtitle = description && description.length ? true : false;
 
+
   let readme = await api.getDatasetReadme(window.defaultBfAccount, currentDataset);
+  readme = readme.trim()
 
   // set the readme's status
   statuses.readme = readme && readme.length >= 1 ? true : false;
@@ -105,6 +108,8 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
 
   // the user has an ORCID iD if the property is defined and non-empty
   statuses.ORCID = orcidId && orcidId.length ? true : false;
+
+  console.log(statuses)
 
   return statuses;
 };
@@ -293,7 +298,8 @@ window.showPrePublishingStatus = async (inPrePublishing = false, curationMode = 
   // run the validation checks on each pre-publishing checklist item
   let statuses;
   try {
-    statuses = await getPrepublishingChecklistStatuses(currentDataset);
+    statuses = await window.getPrepublishingChecklistStatuses(currentDataset);
+    console.log(statuses)
   } catch (error) {
     clientError(error);
     if (inPrePublishing) {
