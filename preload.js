@@ -1239,7 +1239,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         //If there is no API key pair, warning will pop up allowing user to sign in
         await Swal.fire({
           icon: "warning",
-          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
+          text: "Its seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           confirmButtonText: "Yes",
@@ -1598,6 +1598,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     try {
       accountPresent = await check_api_key();
     } catch (error) {
+      console.log(`Account not present error: ${error}`);
       clientError(error);
       $(".ui.active.green.inline.loader.small").css("display", "none");
       $(".svg-change-current-account.dataset").css("display", "block");
@@ -1673,6 +1674,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           },
         });
       } catch (error) {
+        console.log("qwer organization error is:" + error);
         clientError(error);
         initializeBootstrapSelect("#curatebforganizationlist", "show");
         return;
@@ -1855,6 +1857,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
           try {
             let organizationId = organizationNameToIdMapping[bfOrganization];
+            console.log("Setting preferred organization" + organizationId);
             await api.setPreferredOrganization(login, password, organizationId, "soda-pennsieve");
           } catch (err) {
             clientError(err);

@@ -1280,17 +1280,21 @@ const check_api_key = async () => {
   let responseObject;
 
   if (!hasConnectedAccountWithPennsieve()) {
+    console.log("hasConnectedAccountWithPennsieve() returned false");
     notyf.dismiss(notification);
     notyf.open({
       type: "error",
       message: "No account was found",
     });
     return false;
+  } else {
+    console.log("Found a set of valid API keys");
   }
-
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
   } catch (e) {
+    console.log("await client.get('manage_datasets/bf_account_list') failed");
+    console.log(e);
     notyf.dismiss(notification);
     notyf.open({
       type: "error",

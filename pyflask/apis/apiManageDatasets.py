@@ -298,6 +298,10 @@ class BfGetTeams(Resource):
       
       return ps_get_teams(selected_account)
     except Exception as e:
+      api.logger.info(f"qwer Error getting teams: {e}")
+      if (e.response.status_code == 403):
+        return {"teams": []}
+    
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e

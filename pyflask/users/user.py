@@ -138,7 +138,7 @@ def set_preferred_organization(organization_id, email, password, account_name):
               organization = org["organization"]["name"]
 
       # create an updated profile name that is unqiue to the user and their workspace 
-      account_name = f"{account_name}-{email_sub}-{organization}"
+      account_name = format_agent_profile_name(f"{account_name}-{email_sub}-{organization}")
              
     except Exception as e:
        raise e 
@@ -165,6 +165,8 @@ def get_user_organizations():
 
 
   r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token))
+  if (r.status_code != 200):
+    logger.info(f"get_user_organizations failed error message: {r.json()}")
   r.raise_for_status()
 
   organizations_list = r.json()["organizations"]

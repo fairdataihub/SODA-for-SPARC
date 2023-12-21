@@ -169,6 +169,8 @@ def create_unique_profile_name(token, email, account_name):
 
         # get the organizations this user account has access to 
         r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=headers)
+        if r.status_code != 200:
+            namespace_logger.info(f"Error getting organizations for user {email} with account name {account_name}")
         r.raise_for_status()
 
         organizations = r.json()

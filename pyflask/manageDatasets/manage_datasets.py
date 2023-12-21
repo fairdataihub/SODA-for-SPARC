@@ -203,6 +203,7 @@ def bf_add_account_api_key(keyname, key, secret):
         return {"message": f"Successfully added account {str(bf)}"}
 
     except Exception as e:
+        namespace_logger.error(f"Error while adding account {str(bf)}: ")
         bf_delete_account(formatted_key_name)
         raise e
     
@@ -840,6 +841,7 @@ def ps_get_teams(selected_bfaccount):
         
         return {"teams": list_teams}
     except Exception as e:
+        namespace_logger.error(f"qwer Error while ps_get_teams: {e}")
         raise e
 
 # Also remove selected_bfaccount from parameters since it isn't used

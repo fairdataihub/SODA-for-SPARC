@@ -3,6 +3,8 @@ Purpose: Functions for dealing with the pennsieve config file located at ~/.penn
 """
 from constants import PENNSIEVE_URL
 
+from namespaces import NamespaceEnum, get_namespace_logger
+namespace_logger = get_namespace_logger(NamespaceEnum.USER)
 
 def add_api_host_to_config(configparser, target_section_name, configpath):
     """
@@ -36,6 +38,8 @@ def format_agent_profile_name(profile_name):
     Notes:
         We replace the '.' with '_' because the config parser on the Node side does not like '.' in the profile name.
     """
+    global namespace_logger
+    namespace_logger.info(f"Formatting profile name: {profile_name}")
     return profile_name.lower().replace('.', '_').strip()
 
 
