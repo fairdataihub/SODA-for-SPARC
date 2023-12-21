@@ -3392,14 +3392,14 @@ $("body").on("change", "input[type=radio][name=dataset_status_radio]", function 
 
 // Change dataset status option change
 $("#bf_list_dataset_status").on("change", async () => {
-  $(bfCurrentDatasetStatusProgress).css("visibility", "visible");
+  $(window.bfCurrentDatasetStatusProgress).css("visibility", "visible");
   $("#bf-dataset-status-spinner").css("display", "block");
 
-  selectOptionColor(bfListDatasetStatus);
+  selectOptionColor(window.bfListDatasetStatus);
 
   let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
-  let selectedStatusOption = bfListDatasetStatus.options[bfListDatasetStatus.selectedIndex].text;
+  let selectedStatusOption = window.bfListDatasetStatus.options[window.bfListDatasetStatus.selectedIndex].text;
 
   window.log.info(`Changing dataset status to ${selectedStatusOption}`);
 
@@ -3430,7 +3430,7 @@ $("#bf_list_dataset_status").on("change", async () => {
       }
     );
 
-    $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
+    $(window.bfCurrentDatasetStatusProgress).css("visibility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
 
     Swal.fire({
@@ -3473,15 +3473,15 @@ $("#bf_list_dataset_status").on("change", async () => {
         backdrop: "rgba(0,0,0, 0.4)",
       });
 
-      $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
+      $(window.bfCurrentDatasetStatusProgress).css("visibility", "hidden");
       $("#bf-dataset-status-spinner").css("display", "none");
     }
 
-    showCurrentDatasetStatus(showErrorDatasetStatus);
+    window.showCurrentDatasetStatus(showErrorDatasetStatus);
   }
 });
 
-const showCurrentDatasetStatus = async (callback) => {
+window.showCurrentDatasetStatus = async (callback) => {
   let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 
@@ -3490,13 +3490,13 @@ const showCurrentDatasetStatus = async (callback) => {
   }
 
   if (selectedBfDataset === "Select dataset") {
-    $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
+    $(window.bfCurrentDatasetStatusProgress).css("visibility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
 
-    window.removeOptions(bfListDatasetStatus);
+    window.removeOptions(window.bfListDatasetStatus);
     removeRadioOptions("dataset_status_ul");
 
-    bfListDatasetStatus.style.color = "black";
+    window.bfListDatasetStatus.style.color = "black";
 
     return;
   }
@@ -3518,7 +3518,7 @@ const showCurrentDatasetStatus = async (callback) => {
       window.defaultBfDatasetId
     );
 
-    window.removeOptions(bfListDatasetStatus);
+    window.removeOptions(window.bfListDatasetStatus);
     removeRadioOptions("dataset_status_ul");
 
     for (let item in res["status_options"]) {
@@ -3528,7 +3528,7 @@ const showCurrentDatasetStatus = async (callback) => {
       option.value = res["status_options"][item]["name"];
       option.style.color = res["status_options"][item]["color"];
 
-      bfListDatasetStatus.appendChild(option);
+      window.bfListDatasetStatus.appendChild(option);
 
       addRadioOption(
         "dataset_status_ul",
@@ -3536,13 +3536,13 @@ const showCurrentDatasetStatus = async (callback) => {
         res["status_options"][item]["name"]
       );
     }
-    bfListDatasetStatus.value = res["current_status"];
+    window.bfListDatasetStatus.value = res["current_status"];
 
     $(`input[name=dataset_status_radio][value=${res["current_status"]}]`).prop("checked", true);
 
-    selectOptionColor(bfListDatasetStatus);
+    selectOptionColor(window.bfListDatasetStatus);
 
-    $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
+    $(window.bfCurrentDatasetStatusProgress).css("visibility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
 
     if (callback !== undefined) {
@@ -3566,7 +3566,7 @@ const showCurrentDatasetStatus = async (callback) => {
       ["Get Dataset Status"]
     );
 
-    $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
+    $(window.bfCurrentDatasetStatusProgress).css("visibility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
   }
 };

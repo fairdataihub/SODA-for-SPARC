@@ -153,10 +153,10 @@ const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
 // This function is used to show the current dataset status in freeform mode
 const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) => {
   if (dataset === "Select dataset") {
-    $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
+    $(window.bfCurrentDatasetStatusProgress).css("visbility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
-    window.removeOptions(bfListDatasetStatus);
-    bfListDatasetStatus.style.color = "black";
+    window.removeOptions(window.bfListDatasetStatus);
+    window.bfListDatasetStatus.style.color = "black";
   } else {
     try {
       let statusOptionsResponse = await client.get(`/manage_datasets/bf_dataset_status`, {
@@ -176,25 +176,25 @@ const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) 
         window.defaultBfDatasetId
       );
       var myitemselect = [];
-      window.removeOptions(bfListDatasetStatus);
+      window.removeOptions(window.bfListDatasetStatus);
       for (const item in res["status_options"]) {
         var option = document.createElement("option");
         option.textContent = res["status_options"][item]["displayName"];
         option.value = res["status_options"][item]["name"];
         option.style.color = res["status_options"][item]["color"];
-        bfListDatasetStatus.appendChild(option);
+        window.bfListDatasetStatus.appendChild(option);
       }
-      bfListDatasetStatus.value = current_status;
-      selectOptionColor(bfListDatasetStatus);
-      //bfCurrentDatasetStatusProgress.style.display = "none";
-      $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
+      window.bfListDatasetStatus.value = current_status;
+      selectOptionColor(window.bfListDatasetStatus);
+      //window.bfCurrentDatasetStatusProgress.style.display = "none";
+      $(window.bfCurrentDatasetStatusProgress).css("visbility", "hidden");
       $("#bf-dataset-status-spinner").css("display", "none");
       if (callback !== "") {
         callback();
       }
     } catch (error) {
       clientError(error);
-      $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
+      $(window.bfCurrentDatasetStatusProgress).css("visbility", "hidden");
       $("#bf-dataset-status-spinner").css("display", "none");
       ipcRenderer.send(
         "track-event",

@@ -1318,17 +1318,17 @@ const bfListTeams = document.querySelector("#bf_list_teams");
 const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
 const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-team");
 
-// //Pennsieve dataset status
-// const bfCurrentDatasetStatusProgress = document.querySelector(
-//   "#div-bf-current-dataset-status-progress"
-// );
-// const bfListDatasetStatus = document.querySelector("#bf_list_dataset_status");
+//Pennsieve dataset status
+window.bfCurrentDatasetStatusProgress = document.querySelector(
+  "#div-bf-current-dataset-status-progress"
+);
+window.bfListDatasetStatus = document.querySelector("#bf_list_dataset_status");
 
-// //Pennsieve post curation
-// const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
-//   "#button-refresh-publishing-status"
-// );
-// const bfWithdrawReviewDatasetBtn = document.querySelector("#btn-withdraw-review-dataset");
+//Pennsieve post curation
+const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
+  "#button-refresh-publishing-status"
+);
+const bfWithdrawReviewDatasetBtn = document.querySelector("#btn-withdraw-review-dataset");
 
 // //////////////////////////////////
 // // Constant parameters
@@ -3025,9 +3025,9 @@ const permissionDatasetlistChange = () => {
 };
 
 const datasetStatusListChange = () => {
-  $(bfCurrentDatasetStatusProgress).css("visibility", "visible");
+  $(window.bfCurrentDatasetStatusProgress).css("visibility", "visible");
   $("#bf-dataset-status-spinner").css("display", "block");
-  showCurrentDatasetStatus();
+  window.showCurrentDatasetStatus();
 };
 
 // This function is called when the user selects a dataset from the dropdown list

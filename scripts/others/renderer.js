@@ -1559,10 +1559,10 @@ const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
 const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-team");
 
 //Pennsieve dataset status
-const bfCurrentDatasetStatusProgress = document.querySelector(
+const window.bfCurrentDatasetStatusProgress = document.querySelector(
   "#div-bf-current-dataset-status-progress"
 );
-const bfListDatasetStatus = document.querySelector("#bf_list_dataset_status");
+const window.bfListDatasetStatus = document.querySelector("#bf_list_dataset_status");
 
 //Pennsieve post curation
 const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
@@ -3280,9 +3280,9 @@ const permissionDatasetlistChange = () => {
 };
 
 const datasetStatusListChange = () => {
-  $(bfCurrentDatasetStatusProgress).css("visibility", "visible");
+  $(window.bfCurrentDatasetStatusProgress).css("visibility", "visible");
   $("#bf-dataset-status-spinner").css("display", "block");
-  showCurrentDatasetStatus();
+  window.showCurrentDatasetStatus();
 };
 
 // This function is called when the user selects a dataset from the dropdown list
