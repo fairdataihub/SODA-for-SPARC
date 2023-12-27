@@ -1,6 +1,7 @@
 import requests
 from os.path import join, expanduser, exists
 from configparser import ConfigParser
+from configUtils import format_agent_profile_name
 from constants import PENNSIEVE_URL
 from utils import (
     create_request_headers,
@@ -74,6 +75,8 @@ def get_user_information(token):
 
 
 def set_preferred_organization(organization_id, email, password, account_name):
+    # format the keyname to lowercase and replace '.' with '_'
+    formatted_account_name = format_agent_profile_name(account_name)
     try:
         token = get_cognito_userpool_access_token(email, password)
 
@@ -137,14 +140,15 @@ def set_preferred_organization(organization_id, email, password, account_name):
               organization = org["organization"]["name"]
 
       # create an updated profile name that is unqiue to the user and their workspace 
-      account_name = f"{account_name}-{email_sub}-{organization}"
+      formatted_account_name = format_agent_profile_name(f"{account_name}-{email_sub}-{organization}")
+
              
     except Exception as e:
        raise e 
     
     try:
       # create the new profile for the user, associate the api key and secret with the profile, and set it as the default profile
-      bf_add_account_username(account_name, key, secret)
+      bf_add_account_username(formatted_account_name, key, secret)
     except Exception as e:
       raise e
     
@@ -176,15 +180,18 @@ def get_user_organizations():
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
 def update_config_account_name(accountname):
+  # format the keyname to lowercase and replace '.' with '_'
+  formatted_account_name = format_agent_profile_name(accountname)
+
   if exists(configpath):
       config = ConfigParser()
       config.read(configpath)
 
   if not config.has_section("global"):
       config.add_section("global")
-      config.set("global", "default_profile", accountname)
+      config.set("global", "default_profile", formatted_account_name)
   else:
-      config["global"]["default_profile"] = accountname
+      config["global"]["default_profile"] = formatted_account_name
 
   with open(configpath, "w") as configfile:
       config.write(configfile)

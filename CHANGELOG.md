@@ -5,6 +5,18 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.12.4.2 - 2023-12-21
+
+## Bug fixes:
+
+- Fixed Pennsieve login bug for accounts with Emails containing periods.
+
+## v.12.4.1 - 2023-12-19
+
+## Feature Additions:
+
+- Added a method to bypass Pennsieve agent updates when a platform specific release is not able to be found.
+
 ## v.12.4.0 - 2023-12-04
 
 ## Feature Additions:

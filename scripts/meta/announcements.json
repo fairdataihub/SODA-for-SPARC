@@ -1,4 +1,17 @@
 {
+  "12.4.2": {
+    "announcements": {
+      "bug-fixes": ["Fixed Pennsieve login bug for accounts with Emails containing periods."],
+      "features": []
+    }
+  },
+  "12.4.1": {
+    "announcements": {
+      "features": [
+        "Users can now upload data to Pennsieve even when an updated version of the Pennsieve Agent is detected but a release for their platform cannot be found."
+      ]
+    }
+  },
   "12.4.0": {
     "announcements": {
       "bug-fixes": [],

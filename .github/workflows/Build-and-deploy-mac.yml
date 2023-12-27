@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      
+
 jobs:
   deploy-on-mac:
     runs-on: macos-latest

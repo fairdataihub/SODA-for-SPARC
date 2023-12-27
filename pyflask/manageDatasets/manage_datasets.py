@@ -32,7 +32,7 @@ from utils import (
 from authentication import get_access_token, bf_delete_account
 from users import get_user_information, update_config_account_name
 from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
-from configUtils import lowercase_account_names
+from configUtils import lowercase_account_names, format_agent_profile_name
 from constants import PENNSIEVE_URL
 from pysodaUtils import (
     check_forbidden_characters_ps,
@@ -125,11 +125,11 @@ def bf_add_account_api_key(keyname, key, secret):
         Adds account to the Pennsieve configuration file (local machine)
     """
     try:
-        keyname = keyname.strip()
-        if (not keyname) or (not key) or (not secret):
+        formatted_key_name = format_agent_profile_name(keyname)
+        if (not formatted_key_name) or (not key) or (not secret):
             abort(401, "Please enter valid keyname, key, and/or secret")
 
-        if (keyname.isspace()) or (key.isspace()) or (secret.isspace()):
+        if (formatted_key_name.isspace()) or (key.isspace()) or (secret.isspace()):
             abort(401, "Please enter valid keyname, key, and/or secret")
 
         ps_path = join(userpath, ".pennsieve")
@@ -137,7 +137,7 @@ def bf_add_account_api_key(keyname, key, secret):
         config = ConfigParser()
         if exists(configpath):
             config.read(configpath)
-            if config.has_section(keyname):
+            if config.has_section(formatted_key_name):
                 abort(400, "Key name already exists")
         else:
             if not exists(ps_path):
@@ -154,14 +154,14 @@ def bf_add_account_api_key(keyname, key, secret):
             config.set(agentkey, "upload_chunk_size", "32")
 
         # Add new account
-        config.add_section(keyname)
-        config.set(keyname, "api_token", key)
-        config.set(keyname, "api_secret", secret)
+        config.add_section(formatted_key_name)
+        config.set(formatted_key_name, "api_token", key)
+        config.set(formatted_key_name, "api_secret", secret)
 
 
         if not config.has_section("global"):
             config.add_section("global")
-        config.set("global", "default_profile", keyname)
+        config.set("global", "default_profile", formatted_key_name)
 
         with open(configpath, "w") as configfile:
             config.write(configfile)
@@ -174,7 +174,7 @@ def bf_add_account_api_key(keyname, key, secret):
         token = get_access_token()
     except Exception as e:
         namespace_logger.error(e)
-        bf_delete_account(keyname)
+        bf_delete_account(formatted_key_name)
         abort(401, 
             "Please check that key name, key, and secret are entered properly"
         )
@@ -195,7 +195,7 @@ def bf_add_account_api_key(keyname, key, secret):
             config.add_section("global")
 
         default_acc = config["global"]
-        default_acc["default_profile"] = keyname
+        default_acc["default_profile"] = formatted_key_name
 
         with open(configpath, "w") as configfile:
             config.write(configfile)
@@ -203,7 +203,7 @@ def bf_add_account_api_key(keyname, key, secret):
         return {"message": f"Successfully added account {str(bf)}"}
 
     except Exception as e:
-        bf_delete_account(keyname)
+        bf_delete_account(formatted_key_name)
         raise e
     
 def check_forbidden_characters_ps(my_string):
@@ -279,7 +279,7 @@ def bf_get_accounts():
                 lowercase_account_names(config, default_profile, configpath)
                 try:
                     get_access_token()
-                    return default_profile.lower()
+                    return format_agent_profile_name(default_profile)
                 except Exception as e:
                     print(e)
     else:
@@ -300,7 +300,7 @@ def bf_get_accounts():
 
                         lowercase_account_names(config, account, configpath)
                         
-                        return account.lower()
+                        return format_agent_profile_name(account)
     return ""
 
 
