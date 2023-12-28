@@ -13789,6 +13789,7 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
     throw new Error(userErrorMessage(error));
   }
 };
+
 const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle) => {
   document.getElementById("guided-dataset-subtitle-upload-tr").classList.remove("hidden");
   const datasetSubtitleUploadText = document.getElementById("guided-dataset-subtitle-upload-text");
@@ -13822,7 +13823,7 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
     sodaJSONObj["previously-uploaded-data"]["subtitle"] = datasetSubtitle;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
-    // Track the successful upload of a dataset subtitle via Kombucha
+    // Send successful dataset subtitle upload event to Kombucha
     ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
@@ -13842,11 +13843,30 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
       guidedGetDatasetId(sodaJSONObj)
     );
   } catch (error) {
+    // Send failed dataset subtitle upload event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.SUBTITLE,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+        dataset_name: guidedGetDatasetName(sodaJSONObj),
+        dataset_id: guidedGetDatasetId(sodaJSONObj),
+      }
+    );
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+      guidedGetDatasetId(sodaJSONObj)
+    );
     console.error(error);
     let emessage = userErrorMessage(error);
     datasetSubtitleUploadText.innerHTML = "Failed to add a dataset subtitle.";
     guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "error");
-    throw new Error(userErrorMessage(error));
+    throw new Error(emessage);
   }
 };
 
@@ -13891,10 +13911,49 @@ const guidedAddDatasetDescription = async (
     guidedUploadStatusIcon("guided-dataset-description-upload-status", "success");
     sodaJSONObj["previously-uploaded-data"]["description"] = description;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
+    // Send successful dataset description upload event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.DESCRIPTION,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: 1,
+        dataset_name: guidedGetDatasetName(sodaJSONObj),
+        dataset_id: guidedGetDatasetId(sodaJSONObj),
+      }
+    );
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+      guidedGetDatasetId(sodaJSONObj)
+    );
   } catch (error) {
+    // Send failed dataset description upload event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.DESCRIPTION,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+        dataset_name: guidedGetDatasetName(sodaJSONObj),
+        dataset_id: guidedGetDatasetId(sodaJSONObj),
+      }
+    );
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+      guidedGetDatasetId(sodaJSONObj)
+    );
+
     datasetDescriptionUploadText.innerHTML = "Failed to add a dataset description.";
     guidedUploadStatusIcon("guided-dataset-description-upload-status", "error");
-
     throw new Error(userErrorMessage(error));
   }
 };
@@ -13915,6 +13974,16 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
     return;
   }
 
+  // Get the banner image size for Kombucha
+  // If there is an error getting the banner image size, "Unable to retrieve size"
+  // will be sent to Kombucha
+  let bannerImageSize;
+  try {
+    bannerImageSize = fs.statSync(bannerImagePath).size;
+  } catch (error) {
+    bannerImageSize = "Unable to retrieve size";
+  }
+
   try {
     await client.put(
       `/manage_datasets/bf_banner_image`,
@@ -13932,10 +14001,50 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
     guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "success");
     sodaJSONObj["previously-uploaded-data"]["banner-image-path"] = bannerImagePath;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
+    // Send successful banner image upload event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.BANNER_SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        banner_image_size: bannerImageSize,
+        dataset_name: guidedGetDatasetName(sodaJSONObj),
+        dataset_id: guidedGetDatasetId(sodaJSONObj),
+      }
+    );
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+      guidedGetDatasetId(sodaJSONObj)
+    );
   } catch (error) {
     console.error(error);
     datasetBannerImageUploadText.innerHTML = "Failed to add a dataset banner image.";
     guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "error");
+
+    // Send failed banner image upload event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.BANNER_SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        banner_image_size: bannerImageSize,
+        dataset_name: guidedGetDatasetName(sodaJSONObj),
+        dataset_id: guidedGetDatasetId(sodaJSONObj),
+      }
+    );
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+      guidedGetDatasetId(sodaJSONObj)
+    );
 
     throw new Error(userErrorMessage(error));
   }
@@ -13971,11 +14080,50 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
     guidedUploadStatusIcon("guided-dataset-license-upload-status", "success");
     sodaJSONObj["previously-uploaded-data"]["license"] = datasetLicense;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
+    // Send successful license upload event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.LICENSE,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: 1,
+        dataset_name: guidedGetDatasetName(sodaJSONObj),
+        dataset_id: guidedGetDatasetId(sodaJSONObj),
+      }
+    );
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
+      guidedGetDatasetId(sodaJSONObj)
+    );
   } catch (error) {
     console.error(error);
     datasetLicenseUploadText.innerHTML = "Failed to add a dataset license.";
     guidedUploadStatusIcon("guided-dataset-license-upload-status", "error");
 
+    // Send failed license upload event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.LICENSE,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+        dataset_name: guidedGetDatasetName(sodaJSONObj),
+        dataset_id: guidedGetDatasetId(sodaJSONObj),
+      }
+    );
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
+      guidedGetDatasetId(sodaJSONObj)
+    );
     throw new Error(userErrorMessage(error));
   }
 };
@@ -14009,9 +14157,49 @@ const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
     guidedUploadStatusIcon("guided-dataset-tags-upload-status", "success");
     sodaJSONObj["previously-uploaded-data"]["tags"] = tags;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
+    // Send successful tags upload event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.TAGS,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: 1,
+        dataset_name: guidedGetDatasetName(sodaJSONObj),
+        dataset_id: guidedGetDatasetId(sodaJSONObj),
+      }
+    );
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
+      guidedGetDatasetId(sodaJSONObj)
+    );
   } catch (error) {
     datasetTagsUploadText.innerHTML = "Failed to add dataset tags.";
     guidedUploadStatusIcon("guided-dataset-tags-upload-status", "error");
+
+    // Send failed tags upload event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.TAGS,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+        dataset_name: guidedGetDatasetName(sodaJSONObj),
+        dataset_id: guidedGetDatasetId(sodaJSONObj),
+      }
+    );
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
+      guidedGetDatasetId(sodaJSONObj)
+    );
 
     throw new Error(userErrorMessage(error));
   }
@@ -14092,6 +14280,26 @@ const guidedGrantUserPermission = async (
       userPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to user: ${userName}`;
       log.info(`${selectedRole} permissions granted to ${userName}`);
     }
+
+    // Send successful user permissions modification event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.USER_PERMISSIONS,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: 1,
+        dataset_name: guidedGetDatasetName(sodaJSONObj),
+        dataset_id: guidedGetDatasetId(sodaJSONObj),
+      }
+    );
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+      guidedGetDatasetId(sodaJSONObj)
+    );
   } catch (error) {
     guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "error");
     if (selectedRole === "remove current permissions") {
@@ -14099,10 +14307,29 @@ const guidedGrantUserPermission = async (
     } else {
       userPermissionUploadStatusText.innerHTML = `Failed to grant ${selectedRole} permissions to ${userName}`;
     }
-    log.error(error);
-    console.error(error);
     let emessage = userErrorMessage(error);
-    throw error;
+    log.error(emessage);
+
+    // Send failed user permissions modification event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.USER_PERMISSIONS,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+        dataset_name: guidedGetDatasetName(sodaJSONObj),
+        dataset_id: guidedGetDatasetId(sodaJSONObj),
+      }
+    );
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+      guidedGetDatasetId(sodaJSONObj)
+    );
+    throw emessage;
   }
 };
 
@@ -14201,6 +14428,26 @@ const guidedGrantTeamPermission = async (
       teamPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to team: ${teamString}`;
       log.info(`${selectedRole} permissions granted to ${teamString}`);
     }
+
+    // Send successful team permissions modification event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.TEAM_PERMISSIONS,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: 1,
+        dataset_name: guidedGetDatasetName(sodaJSONObj),
+        dataset_id: guidedGetDatasetId(sodaJSONObj),
+      }
+    );
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+      guidedGetDatasetId(sodaJSONObj)
+    );
   } catch (error) {
     if (selectedRole === "remove current permissions") {
       teamPermissionUploadStatusText.innerHTML = `Failed to remove permissions for ${teamString}`;
@@ -14208,10 +14455,29 @@ const guidedGrantTeamPermission = async (
       teamPermissionUploadStatusText.innerHTML = `Failed to grant ${selectedRole} permissions to ${teamString}`;
     }
     guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "error");
-    log.error(error);
-    console.error(error);
     let emessage = userErrorMessage(error);
-    throw error;
+    log.error(emessage);
+
+    // Send failed team permissions modification event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.TEAM_PERMISSIONS,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+        dataset_name: guidedGetDatasetName(sodaJSONObj),
+        dataset_id: guidedGetDatasetId(sodaJSONObj),
+      }
+    );
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+      guidedGetDatasetId(sodaJSONObj)
+    );
+    throw emessage;
   }
 };
 
@@ -14536,6 +14802,26 @@ const guidedGenerateDatasetDescriptionMetadata = async (
       contributorInformation,
       additionalLinks,
     };
+    const kombuchaEventData = {
+      value: 1,
+      dataset_id: guidedGetDatasetId(sodaJSONObj),
+    };
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.CREATE_NEW_DATASET,
+      datasetName,
+      kombuchaEnums.Status.SUCCCESS,
+      kombuchaEventData
+    );
+
+    ipcRenderer.send(
+      "track-event",
+      "Dataset ID to Dataset Name Map",
+      createdDatasetsID,
+      datasetName
+    );
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
     guidedUploadStatusIcon(
