@@ -13917,7 +13917,7 @@ const guidedAddDatasetDescription = async (
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
-      kombuchaEnums.Label.DESCRIPTION,
+      kombuchaEnums.Label.README_TXT,
       kombuchaEnums.Status.SUCCESS,
       {
         value: 1,
@@ -13928,7 +13928,7 @@ const guidedAddDatasetDescription = async (
     ipcRenderer.send(
       "track-event",
       "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
       guidedGetDatasetId(sodaJSONObj)
     );
   } catch (error) {
@@ -13937,7 +13937,7 @@ const guidedAddDatasetDescription = async (
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
-      kombuchaEnums.Label.DESCRIPTION,
+      kombuchaEnums.Label.README_TXT,
       kombuchaEnums.Status.FAIL,
       {
         value: 1,
@@ -13948,7 +13948,7 @@ const guidedAddDatasetDescription = async (
     ipcRenderer.send(
       "track-event",
       "Error",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
       guidedGetDatasetId(sodaJSONObj)
     );
 
@@ -14032,7 +14032,7 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
       kombuchaEnums.Label.BANNER_SIZE,
-      kombuchaEnums.Status.SUCCESS,
+      kombuchaEnums.Status.FAIL,
       {
         banner_image_size: bannerImageSize,
         dataset_name: guidedGetDatasetName(sodaJSONObj),
@@ -14802,26 +14802,7 @@ const guidedGenerateDatasetDescriptionMetadata = async (
       contributorInformation,
       additionalLinks,
     };
-    const kombuchaEventData = {
-      value: 1,
-      dataset_id: guidedGetDatasetId(sodaJSONObj),
-    };
 
-    ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.GUIDED_MODE,
-      kombuchaEnums.Action.CREATE_NEW_DATASET,
-      datasetName,
-      kombuchaEnums.Status.SUCCCESS,
-      kombuchaEventData
-    );
-
-    ipcRenderer.send(
-      "track-event",
-      "Dataset ID to Dataset Name Map",
-      createdDatasetsID,
-      datasetName
-    );
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
     guidedUploadStatusIcon(
