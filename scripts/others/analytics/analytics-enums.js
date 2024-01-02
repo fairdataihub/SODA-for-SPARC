@@ -67,6 +67,7 @@ const Label = {
   SUBMISSION_XLSX_SIZE: "submission.xlsx - Size",
   README_TXT_SIZE: "README.txt - Size",
   CHANGES_TXT_SIZE: "CHANGES.txt - Size",
+  CODE_DESCRIPTION_XLSX: "code_description.xlsx",
   PROGRESS_TRACK: "Progress Track",
   TOTAL_UPLOADS: "Total Uploads",
   PI_OWNER: "Change PI Owner",

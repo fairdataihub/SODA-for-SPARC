@@ -14647,20 +14647,25 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
       kombuchaEnums.Status.SUCCESS,
       guidedCreateEventDataPrepareMetadata(generationDestination, 1)
     );
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-      guidedGetDatasetId(sodaJSONObj)
-    );
   } catch (error) {
-    guidedUploadStatusIcon(
-      `guided-subjects-metadata-${generationDestination}-genration-status`,
-      "error"
+    const emessage = userErrorMessage(error);
+    if (generationDestination === "Pennsieve") {
+      guidedUploadStatusIcon(
+        `guided-subjects-metadata-${generationDestination}-genration-status`,
+        "error"
+      );
+      subjectsMetadataGenerationText.innerHTML = `Failed to generate subjects metadata`;
+    }
+    // Send failed subjects metadata generation event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SUBJECTS_XLSX,
+      kombuchaEnums.Status.FAIL,
+      guidedCreateEventDataPrepareMetadata(generationDestination, 1)
     );
-    subjectsMetadataGenerationText.innerHTML = `Failed to generate subjects metadata`;
-    clientError(error);
-    throw new Error(userErrorMessage(error));
+    throw new Error(emessage);
   }
 };
 const guidedGenerateSamplesMetadata = async (bfAccount, datasetName, samplesTableData) => {
@@ -14707,12 +14712,30 @@ const guidedGenerateSamplesMetadata = async (bfAccount, datasetName, samplesTabl
     samplesMetadataUploadText.innerHTML = `Samples metadata successfully uploaded`;
     sodaJSONObj["previously-uploaded-data"]["samples-metadata"] = samplesTableData;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+    // Send successful samples metadata generation event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SAMPLES_XLSX,
+      kombuchaEnums.Status.SUCCESS,
+      guidedCreateEventDataPrepareMetadata("Pennsieve", 1)
+    );
   } catch (error) {
+    const emessage = userErrorMessage(error);
     guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "error");
     samplesMetadataUploadText.innerHTML = `Failed to upload samples metadata`;
-    clientError(error);
+    // Send failed samples metadata generation event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SAMPLES_XLSX,
+      kombuchaEnums.Status.FAIL,
+      guidedCreateEventDataPrepareMetadata("Pennsieve", 1)
+    );
 
-    throw new Error(userErrorMessage(error));
+    throw new Error(emessage);
   }
 };
 
@@ -14756,12 +14779,32 @@ const guidedGenerateSubmissionMetadata = async (bfAccount, datasetName, submissi
     submissionMetadataUploadText.innerHTML = `Submission metadata successfully uploaded`;
     sodaJSONObj["previously-uploaded-data"]["submission-metadata"] = submissionMetadataJSON;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
+    // Send successful submission metadata generation event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SUBMISSION_XLSX,
+      kombuchaEnums.Status.SUCCESS,
+      guidedCreateEventDataPrepareMetadata("Pennsieve", 1)
+    );
   } catch (error) {
+    const emessage = userErrorMessage(error);
     guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "error");
     submissionMetadataUploadText.innerHTML = `Failed to upload submission metadata`;
-    clientError(error);
 
-    throw new Error(userErrorMessage(error));
+    // Send failed submission metadata generation event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SUBMISSION_XLSX,
+      kombuchaEnums.Status.FAIL,
+      guidedCreateEventDataPrepareMetadata("Pennsieve", 1)
+    );
+
+    throw new Error(emessage);
   }
 };
 
@@ -14836,17 +14879,36 @@ const guidedGenerateDatasetDescriptionMetadata = async (
       contributorInformation,
       additionalLinks,
     };
-
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
+    // Send successful dataset_description metadata generation event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.DATASET_DESCRIPTION_XLSX,
+      kombuchaEnums.Status.SUCCESS,
+      guidedCreateEventDataPrepareMetadata("Pennsieve", 1)
+    );
   } catch (error) {
+    const emessage = userErrorMessage(error);
     guidedUploadStatusIcon(
       "guided-dataset-description-metadata-pennsieve-genration-status",
       "error"
     );
     datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload dataset description metadata`;
-    clientError(error);
 
-    throw new Error(userErrorMessage(error));
+    // Send failed dataset_description metadata generation event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.DATASET_DESCRIPTION_XLSX,
+      kombuchaEnums.Status.FAIL,
+      guidedCreateEventDataPrepareMetadata("Pennsieve", 1)
+    );
+
+    throw new Error(emessage);
   }
 };
 
@@ -14875,12 +14937,30 @@ const guidedGenerateCodeDescriptionMetadata = async (
       "success"
     );
     codeDescriptionMetadataUploadText.innerHTML = "Code description metadata added to Pennsieve";
+
+    // Send successful code_description metadata generation event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.CODE_DESCRIPTION_XLSX,
+      kombuchaEnums.Status.SUCCESS,
+      guidedCreateEventDataPrepareMetadata("Pennsieve", 1)
+    );
   } catch (error) {
+    const emessage = userErrorMessage(error);
     guidedUploadStatusIcon("guided-code-description-metadata-pennsieve-genration-status", "error");
     codeDescriptionMetadataUploadText.innerHTML = `Failed to upload code description metadata`;
-    clientError(error);
-
-    throw new Error(userErrorMessage(error));
+    // Send failed code_description metadata generation event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.CODE_DESCRIPTION_XLSX,
+      kombuchaEnums.Status.FAIL,
+      guidedCreateEventDataPrepareMetadata("Pennsieve", 1)
+    );
+    throw new Error(emessage);
   }
 };
 
@@ -14939,7 +15019,21 @@ const guidedGenerateREADMEorCHANGESMetadata = async (
     sodaJSONObj["previously-uploaded-data"][`${readmeORchanges}-metadata`] =
       readmeOrChangesMetadata;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
+    // Send successful README/CHANGES metadata generation event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      readmeORchanges === "readme"
+        ? kombuchaEnums.Label.README_TXT
+        : kombuchaEnums.Label.CHANGES_TXT,
+      kombuchaEnums.Status.SUCCESS,
+      guidedCreateEventDataPrepareMetadata("Pennsieve", 1)
+    );
   } catch (error) {
+    const emessage = userErrorMessage(error);
+
     guidedUploadStatusIcon(
       `guided-${readmeORchanges}-metadata-pennsieve-genration-status`,
       "error"
@@ -14947,7 +15041,19 @@ const guidedGenerateREADMEorCHANGESMetadata = async (
     datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload ${readmeORchanges.toUpperCase()} metadata`;
     clientError(error);
 
-    throw new Error(userErrorMessage(error));
+    // Send failed README/CHANGES metadata generation event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      readmeORchanges === "readme"
+        ? kombuchaEnums.Label.README_TXT
+        : kombuchaEnums.Label.CHANGES_TXT,
+      kombuchaEnums.Status.SUCCESS,
+      guidedCreateEventDataPrepareMetadata("Pennsieve", 1)
+    );
+
+    throw new Error(emessage);
   }
 };
 
