@@ -38,6 +38,22 @@ const guidedGetDatasetOrigin = (sodaJSON) => {
   return "New";
 };
 
+const guidedCreateEventDataPrepareMetadata = (destination, value) => {
+  if (destination === "Pennsieve") {
+    return {
+      value,
+      destination: "Pennsieve",
+      dataset_name: guidedGetDatasetName(sodaJSONObj),
+      dataset_id: guidedGetDatasetId(sodaJSONObj),
+    };
+  }
+
+  return {
+    value,
+    destination,
+  };
+};
+
 const handleGuidedModeOrgSwitch = async (buttonClicked) => {
   const clickedButtonId = buttonClicked.id;
   if (clickedButtonId === "guided-button-change-workspace-dataset-import") {
@@ -14582,43 +14598,61 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
     return;
   }
 
-  const generationDestination = destination === "pennsieve" ? "pennsieve" : "local";
-  // Unhide the subject metadata generation table row and set the rows status to loading
-  console.log(`guided-subjects-metadata-${generationDestination}-genration-tr`);
-  document
-    .getElementById(`guided-subjects-metadata-${generationDestination}-genration-tr`)
-    .classList.remove("hidden");
-  const subjectsMetadataGenerationText = document.getElementById(
-    `guided-subjects-metadata-${generationDestination}-genration-text`
-  );
-  subjectsMetadataGenerationText.innerHTML = "Uploading subjects metadata...";
-  guidedUploadStatusIcon(
-    `guided-subjects-metadata-${generationDestination}-genration-status`,
-    "loading"
-  );
+  const generationDestination = destination === "Pennsieve" ? "Pennsieve" : "local";
+
+  // If the subjects metadata is being generated for Pennsieve, Update the
+  // subjects metadata table row to indicate the upload is in progress
+  if (generationDestination === "Pennsieve") {
+    document
+      .getElementById(`guided-subjects-metadata-pennsieve-genration-tr`)
+      .classList.remove("hidden");
+    const subjectsMetadataGenerationText = document.getElementById(
+      `guided-subjects-metadata-pennsieve-genration-text`
+    );
+    subjectsMetadataGenerationText.innerHTML = "Uploading subjects metadata...";
+    guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "loading");
+  }
 
   // Generate the subjects metadata file
   try {
     await client.post(
       `/prepare_metadata/subjects_file`,
       {
-        filepath: generationDestination === "pennsieve" ? "" : destination,
+        filepath: generationDestination === "Pennsieve" ? "" : destination,
         selected_account: defaultBfAccount,
         selected_dataset:
-          generationDestination === "pennsieve" ? guidedGetDatasetName(sodaJSONObj) : "",
+          generationDestination === "Pennsieve" ? guidedGetDatasetName(sodaJSONObj) : "",
         subjects_header_row: subjectsTableData,
       },
       {
         params: {
-          upload_boolean: generationDestination === "pennsieve",
+          upload_boolean: generationDestination === "Pennsieve",
         },
       }
     );
-    guidedUploadStatusIcon(
-      `guided-subjects-metadata-${generationDestination}-genration-status`,
-      "success"
+
+    // If the subjects metadata is being generated on Pennsieve, update the
+    // subjects metadata table row to indicate the upload was successful
+    if (generationDestination === "Pennsieve") {
+      guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "success");
+      subjectsMetadataGenerationText.innerHTML = `Subjects metadata successfully generated`;
+    }
+
+    // Send successful subjects metadata generation event to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SUBJECTS_XLSX,
+      kombuchaEnums.Status.SUCCESS,
+      guidedCreateEventDataPrepareMetadata(generationDestination, 1)
     );
-    subjectsMetadataGenerationText.innerHTML = `Subjects metadata successfully generated`;
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
+      guidedGetDatasetId(sodaJSONObj)
+    );
   } catch (error) {
     guidedUploadStatusIcon(
       `guided-subjects-metadata-${generationDestination}-genration-status`,
@@ -15090,7 +15124,7 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
     hideDatasetMetadataGenerationTableRows("pennsieve");
     unHideAndSmoothScrollToElement("guided-div-dataset-metadata-pennsieve-genration-status-table");
 
-    await guidedGenerateSubjectsMetadata("pennsieve");
+    await guidedGenerateSubjectsMetadata("Pennsieve");
 
     await guidedGenerateSamplesMetadata(guidedBfAccount, guidedDatasetName, guidedSamplesMetadata);
 
