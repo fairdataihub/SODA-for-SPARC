@@ -72,33 +72,33 @@ const authenticationError = (error) => {
   return error.response.status === 401;
 };
 
-
 const previousAccountKeyFormat = async () => {
-  return defaultBfAccount.includes("soda-pennsieve") && !defaultBfAccount.includes("n:organization")
-}
+  return (
+    defaultBfAccount.includes("soda-pennsieve") && !defaultBfAccount.includes("n:organization")
+  );
+};
 
 const defaultProfileMatchesCurrentWorkspace = async () => {
   if (previousAccountKeyFormat()) {
-    // get index of the third dash in the defaultBfAccount 
-    let currentDefaultProfileWorkspace = defaultBfAccount.split('-').slice(3).join('-')
-    console.log(currentDefaultProfileWorkspace)
-  
+    // get index of the third dash in the defaultBfAccount
+    let currentDefaultProfileWorkspace = defaultBfAccount.split("-").slice(3).join("-");
+    console.log(currentDefaultProfileWorkspace);
 
     let workspaces = await api.getUserWorkspaces();
-    console.log(workspaces)
+    console.log(workspaces);
 
-    for(const workspace of workspaces["organizations"]) {
-      console.log(workspace)
-      if(workspace["organization"]["name"].toLowerCase() == currentDefaultProfileWorkspace) {
-        console.log("Match found")
-        return true
+    for (const workspace of workspaces["organizations"]) {
+      console.log(workspace);
+      if (workspace["organization"]["name"].toLowerCase() == currentDefaultProfileWorkspace) {
+        console.log("Match found");
+        return true;
       }
     }
 
-    return false
+    return false;
   }
 
-  // else the user is using the current account key format 
+  // else the user is using the current account key format
   // ( NOTE: There is the 3rd case where the user has neither format. In that case the below fails and we simply ask the user to sign in agains)
   let userInfo = await api.getUserInformation();
   let currentWorkspace = userInfo["preferredOrganization"];
