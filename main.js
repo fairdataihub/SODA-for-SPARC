@@ -570,3 +570,7 @@ ipcMain.on("get-port", (event) => {
   log.info("Renderer requested port: " + selectedPort);
   event.returnValue = selectedPort;
 });
+
+ipcMain.on("open-file-at-path", async (event, path) => {
+  shell.openPath(path);
+});

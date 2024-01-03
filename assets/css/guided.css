@@ -24,6 +24,11 @@
   width: 200px;
 }
 
+.guided--container-lottie-small {
+  height: 70px;
+  width: 70px;
+}
+
 .black-arrow-lottie-container {
   height: 150px;
   width: 150px;
@@ -46,6 +51,24 @@
   border: 1px dashed #258193;
   padding: 20px;
   margin: 0px 10px 10px 10px;
+}
+
+.file-import-container {
+  display: flex;
+  border-radius: 10px;
+  border: 1px dashed #258193;
+}
+
+.file-import-container.horizontal {
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  margin: 0px 10px 10px 10px;
+}
+
+.file-import-container.vertical {
+  flex-direction: column;
+  justify-content: center;
 }
 
 .guided--container {
@@ -748,6 +771,12 @@
   padding: 0px 3px;
 }
 
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .guided--container-footer-buttons.flex-start {
   justify-content: flex-start;
 }
@@ -1052,4 +1081,44 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.guided--container-card {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  overflow-x: auto;
+}
+
+.guided--card-item {
+  display: flex;
+  flex: 1;
+  margin: 5px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-teal);
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.guided--card-item-text {
+  margin: 0px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #000;
+}
+
+.guided--card-item-header-text {
+  margin: 0px;
+  margin-bottom: 5px;
+  font-weight: 700;
+  font-size: 16px;
+  color: #000;
+}
+
+.align-flex-center {
+  align-items: center;
 }

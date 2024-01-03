@@ -5,6 +5,46 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.12.4.2 - 2023-12-21
+
+## Bug fixes:
+
+- Fixed Pennsieve login bug for accounts with Emails containing periods.
+
+## v.12.4.1 - 2023-12-19
+
+## Feature Additions:
+
+- Added a method to bypass Pennsieve agent updates when a platform specific release is not able to be found.
+
+## v.12.4.0 - 2023-12-04
+
+## Feature Additions:
+
+- Added a new feature to Guided Mode that allows you to import subjects, pools, and samples from an external spreadsheet.
+
+## v.12.3.3 - 2023-10-24
+
+## Bug fixes:
+
+- If multiple Pennsieve Agents are installed on a user's system the most current Pennsieve Agent is started.
+
+## v.12.3.2 - 2023-10-19
+
+## Bug fixes:
+
+- Updated urllib3 and request versions to fix issues with the back-end processing responses from Pennsieve API.
+- Modified the request to retrieve a list of datasets by utilizing Pennsieve's dataset pagination endpoint. This change was implemented to address an issue that was affecting users with a large number of datasets.
+- Migrated the notarization tool from alttool to notarytool.
+- SODA for SPARC launches the Pennsieve Agent for OS X Ventura.
+- Duplicate files were being created when uploading a dataset through `Organize Datasets` and selecting the 'skip' existing files option. The 'skip' option now works as intended. Local files that exist on a Pennsieve dataset are no longer duplicated.
+
+## v.12.3.1 - 2023-09-21
+
+## Bug fixes:
+
+- Fixed a bug allowing subjects and samples to be created without a name.
+
 ## v.12.3.0 - 2023-09-13
 
 ## Feature Additions:

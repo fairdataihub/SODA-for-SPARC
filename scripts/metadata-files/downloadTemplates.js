@@ -97,10 +97,18 @@ downloadManifest.addEventListener("click", (event) => {
   ipcRenderer.send("open-folder-dialog-save-metadata", templateArray[4]);
 });
 
-document
-  .getElementById("guided-data-deliverables-download-button")
-  .addEventListener("click", (event) => {
+document.querySelectorAll(".guided-data-deliverables-download-button").forEach((button) => {
+  button.addEventListener("click", (event) => {
     ipcRenderer.send("open-folder-dialog-save-metadata", "code_description.xlsx");
+  });
+});
+
+document
+  .querySelectorAll(".guided-subject-sample-pool-structure-download-button")
+  .forEach((button) => {
+    button.addEventListener("click", (event) => {
+      ipcRenderer.send("open-folder-dialog-save-metadata", "subjects_pools_samples_structure.xlsx");
+    });
   });
 
 ipcRenderer.on("selected-metadata-download-folder", (event, path, filename) => {

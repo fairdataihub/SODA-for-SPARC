@@ -1,6 +1,7 @@
 import requests
 from os.path import join, expanduser, exists
 from configparser import ConfigParser
+from configUtils import format_agent_profile_name
 from constants import PENNSIEVE_URL
 from utils import (
     create_request_headers,
@@ -11,7 +12,7 @@ from utils import (
 from namespaces import NamespaceEnum, get_namespace_logger
 from flask import abort
 from profileUtils import create_unique_profile_name
-from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, delete_duplicate_keys, clear_cached_access_token
+from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, delete_duplicate_keys, clear_cached_access_token, create_profile_name
 
 
 logger = get_namespace_logger(NamespaceEnum.USER)
@@ -57,59 +58,10 @@ def get_user():
 
 
 
-def get_user_information(token):
-  """
-  Get a user's information from Pennsieve.
-  """
-
-  PENNSIEVE_URL = "https://api.pennsieve.io"
-
-  headers = {
-    "Content-Type": "application/json",
-    "Authorization": f"Bearer {token}",
-  }
-
-  try:
-    r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)    
-    r.raise_for_status()    
-    return r.json()
-  except Exception as e:
-    raise Exception(e) from e
 
 
-def create_profile_name(machineUsernameSpecifier, email=None, password=None, token=None, organization_id=None):
-    """
-      Create a uniquely identifiable profile name for a user. This is used in the config.ini file to associate Pennsieve API Keys with a user and their selected workspace.
-      NOTE: API Keys and Secrets are associated with a workspace at time of creation. Due to this we need to create a unqiue profile for each workspace a user has access to.
-            The given organization id is used to associate the profile name with a given workspace. 
-    """
 
-    if token is None:
-       # we are not logged in as the user we want to create a profile name for so get a cognito userpool token for the user 
-       token = get_cognito_userpool_access_token(email, password)
-       user_info = get_user_information(token)
-       organization_id = user_info["preferredOrganization"]
-       email_sub = email.split("@")[0]
-
-       return f"soda-pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization_id.lower()}"
-
-
-    # get the users email 
-    user_info = get_user_information(token)
-    email = user_info["email"]
-
-    # create a substring of the start of the email to the @ symbol
-    email_sub = email.split("@")[0]
-
-    organizations = get_user_organizations()
-    organization = None
-    for org in organizations["organizations"]:
-        if org["organization"]["id"] == organization_id:
-            organization = org["organization"]["name"]
-
-    # create an updated profile name that is unique to the user and their workspace 
-    return f"soda-pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization.lower()}"
-             
+           
 
 def set_default_profile(profile_name):
     """
@@ -147,28 +99,28 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
         raise Exception(new_err_msg) from err
     
 
-    profile_name = create_unique_profile_name(token, machine_username_specifier)
+    formatted_profile_name = create_profile_name(machine_username_specifier, email, password, token)
 
     logger.info(f"Switched to organization {organization_id}")
-    logger.info(f"New profile name: {profile_name}") 
+    logger.info(f"New profile name: {formatted_profile_name}") 
 
     try: 
-      set_default_profile(profile_name)
+      set_default_profile(formatted_profile_name)
       return 
     except Exception as err:
-      logger.info(f"Existing api key and secret for profile {profile_name} are invalid. Creating new api key and secret for profile {profile_name}")
+      logger.info(f"Existing api key and secret for profile {formatted_profile_name} are invalid. Creating new api key and secret for profile {formatted_profile_name}")
 
     # TODO: Determine where to move this and the below duplicate key deletion methods. Perhaps the bottom one stays and this one moves up before checking for existing keys. 
     # any users coming from versions of SODA < 12.0.2 will potentially have duplicate SODA-Pennsieve API keys on their Pennsieve profile we want to clean up for them
     delete_duplicate_keys(token, "SODA-Pennsieve")
 
     # for now remove the old api key and secret associated with this profile name if one already exists
-    delete_duplicate_keys(token, profile_name)
+    delete_duplicate_keys(token, formatted_profile_name)
     
     # get an api key and secret for programmatic access to the Pennsieve API
     url = "https://api.pennsieve.io/token/"
 
-    payload = {"name": profile_name}
+    payload = {"name": formatted_profile_name}
     headers = {
         "Accept": "*/*",
         "Content-Type": "application/json",
@@ -182,48 +134,39 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
     key =  response["key"]
     secret = response["secret"]
 
+    
+    try:
+      # create the new profile for the user, associate the api key and secret with the profile, and set it as the default profile
+      bf_add_account_username(formatted_profile_name, key, secret)
+    except Exception as e:
+      raise e
+    
     # clear the cached access token 
     clear_cached_access_token()
-
-    # create the new profile for the user, associate the api key and secret with the profile, and set it as the default profile
-    bf_add_account_username(profile_name, key, secret)
 
 
     
 
 
-def get_user_organizations():
-  """
-  Get a user's organizations.
-  """
-  try:
-    token = get_access_token()
-  except Exception as e:
-     abort(400, "Please select a valid Pennsieve account")
 
-
-  r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token))
-  r.raise_for_status()
-
-  organizations_list = r.json()["organizations"]
-  logger.info(organizations_list)
-  
-  return {"organizations": organizations_list}
 
 
 
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
 def update_config_account_name(accountname):
+  # format the keyname to lowercase and replace '.' with '_'
+  formatted_account_name = format_agent_profile_name(accountname)
+
   if exists(configpath):
       config = ConfigParser()
       config.read(configpath)
 
   if not config.has_section("global"):
       config.add_section("global")
-      config.set("global", "default_profile", accountname)
+      config.set("global", "default_profile", formatted_account_name)
   else:
-      config["global"]["default_profile"] = accountname
+      config["global"]["default_profile"] = formatted_account_name
 
   with open(configpath, "w") as configfile:
       config.write(configfile)

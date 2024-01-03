@@ -9,8 +9,6 @@ from utils import connect_pennsieve_client, get_dataset_id, authenticate_user_wi
 from errorHandlers import handle_http_error
 from authentication import get_access_token
 
-
-
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
 

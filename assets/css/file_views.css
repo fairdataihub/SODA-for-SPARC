@@ -15,7 +15,8 @@
   display: flex;
   white-space: nowrap;
   width: 100%;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
   padding: 2px;
 }
 /* Add borders to swal file row in swal file list besides the top border for first element and bottom border for last element */

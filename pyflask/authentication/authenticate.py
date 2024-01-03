@@ -2,14 +2,14 @@ import boto3
 import requests
 from os.path import expanduser, join, exists
 from configparser import ConfigParser
+from configUtils import format_agent_profile_name
 from flask import abort
 from os import mkdir
 import time
+from utils import create_request_headers
 
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.USER)
-
-from profileUtils import create_unique_profile_name
 
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
@@ -153,13 +153,84 @@ def bf_delete_default_profile():
     if "global" not in config:
         return 
     
-    default_profile_name = config["global"]["default_profile"]
     config.remove_section("global")
 
     with open(configpath, "w") as configfile:
         config.write(configfile)
 
 
+def get_user_information(token):
+  """
+  Get a user's information from Pennsieve.
+  """
+
+  PENNSIEVE_URL = "https://api.pennsieve.io"
+
+  headers = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {token}",
+  }
+
+  try:
+    r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)    
+    r.raise_for_status()    
+    return r.json()
+  except Exception as e:
+    raise Exception(e) from e
+  
+
+def get_user_organizations():
+  """
+  Get a user's organizations.
+  """
+  try:
+    token = get_access_token()
+  except Exception as e:
+     abort(400, "Please select a valid Pennsieve account")
+
+
+  r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token))
+  r.raise_for_status()
+
+  organizations_list = r.json()["organizations"]
+#   logger.info(organizations_list)
+  
+  return {"organizations": organizations_list}
+
+
+def create_profile_name(machineUsernameSpecifier, email=None, password=None, token=None, organization_id=None):
+    """
+      Create a uniquely identifiable profile name for a user. This is used in the config.ini file to associate Pennsieve API Keys with a user and their selected workspace.
+      NOTE: API Keys and Secrets are associated with a workspace at time of creation. Due to this we need to create a unqiue profile for each workspace a user has access to.
+            The given organization id is used to associate the profile name with a given workspace. 
+    """
+
+    if token is None:
+       # we are not logged in as the user we want to create a profile name for so get a cognito userpool token for the user 
+       token = get_cognito_userpool_access_token(email, password)
+       user_info = get_user_information(token)
+       organization_id = user_info["preferredOrganization"]
+       email_sub = email.split("@")[0]
+
+       return format_agent_profile_name(f"soda-pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization_id.lower()}")
+
+
+    # get the users email 
+    user_info = get_user_information(token)
+    email = user_info["email"]
+
+    # create a substring of the start of the email to the @ symbol
+    email_sub = email.split("@")[0]
+
+    organizations = get_user_organizations()
+    organization = None
+    for org in organizations["organizations"]:
+        if org["organization"]["id"] == organization_id:
+            organization = org["organization"]["name"]
+
+    # create an updated profile name that is unique to the user and their workspace 
+    return format_agent_profile_name( f"soda-pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization.lower()}")
+  
 
 def bf_add_account_username(keyname, key, secret):
     """
@@ -173,16 +244,11 @@ def bf_add_account_username(keyname, key, secret):
         Adds account to the Pennsieve configuration file (local machine)
     """
 
-    temp_keyname = "SODA_temp_generated"
-    # first delete the pre-existing default_profile entry , but not the profile itself 
-
-    # lowercase the key name 
-    keyname = keyname.lower()
+    # format the keyname to lowercase and replace '.' with '_'
+    formatted_account_name = format_agent_profile_name(keyname)
     
     bf_delete_default_profile()
     try:
-        keyname = keyname.strip()
-
         bfpath = join(userpath, ".pennsieve")
         # Load existing or create new config file
         config = ConfigParser()
@@ -199,24 +265,18 @@ def bf_add_account_username(keyname, key, secret):
             config.set(agentkey, "upload_workers", "10")
             config.set(agentkey, "upload_chunk_size", "32")
 
-
-        # ensure that if the profile already exists it has an api_host entry 
-        # if config.has_section(keyname):
-        #     config.set(keyname, "api_host", PENNSIEVE_URL)
-
         # Add new account if it does not already exist
-        if not config.has_section(keyname):
-            config.add_section(keyname)
+        namespace_logger.info(f"Adding account {formatted_account_name} to config file")
+        if not config.has_section(formatted_account_name):
+            config.add_section(formatted_account_name)
 
-
-        config.set(keyname, "api_token", key)
-        config.set(keyname, "api_secret", secret)
-        # config.set(keyname, "api_host", PENNSIEVE_URL)
+        config.set(formatted_account_name, "api_token", key)
+        config.set(formatted_account_name, "api_secret", secret)
 
         # set profile name in global section
         if not config.has_section("global"):
             config.add_section("global")
-            config.set("global", "default_profile", keyname)
+            config.set("global", "default_profile", formatted_account_name)
 
         
         with open(configpath, "w") as configfile:
@@ -229,7 +289,8 @@ def bf_add_account_username(keyname, key, secret):
     try:
         token = get_access_token()
     except Exception as e:
-        bf_delete_account(keyname)
+        namespace_logger.error(e)
+        bf_delete_account(formatted_account_name)
         abort(401, 
             "Please check that key name, key, and secret are entered properly"
         )
@@ -244,7 +305,7 @@ def bf_add_account_username(keyname, key, secret):
         with open(configpath, "w+") as configfile:
             config.write(configfile)
 
-        return {"message": f"Successfully added account {keyname}"}
+        return {"message": f"Successfully added account {formatted_account_name}"}
 
     except Exception as e:
         bf_delete_account(keyname)
@@ -278,7 +339,7 @@ def create_pennsieve_api_key_secret(email, password, machine_username_specifier)
     api_key = get_cognito_userpool_access_token(email, password)
 
     # TODO: Send in computer and profile of computer from frontend to this endpoint and use it in this function
-    profile_name = create_unique_profile_name(api_key, machine_username_specifier)
+    profile_name = create_profile_name(machine_username_specifier, email, password)
 
 
     delete_duplicate_keys(api_key, "SODA-Pennsieve")

@@ -52,16 +52,11 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
     dataset_structure = soda_json_structure["dataset-structure"]
 
     # handle updating any existing manifest files on Pennsieve
-    namespace_logger.info("Updating existing manifest files on Pennsieve...")
-    namespace_logger.info(f"DS Items: {ds_items}")
     for i in ds_items:
-        namespace_logger.info(f"Item: {i}")
         if i["content"]["name"] in ["code", "derivative", "docs", "primary", "protocol", "source"] and i["content"]["packageType"] == "Collection":
             # request the packages of that folder
             folder_name = i["content"]["name"]
             folder_collection_id = i["content"]["nodeId"]
-            namespace_logger.info(f"Folder Name: {folder_name}")
-            namespace_logger.info(f"Folder Collection ID: {folder_collection_id}")
             r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_collection_id}", headers=create_request_headers(ps))
             r.raise_for_status()
 
@@ -89,7 +84,6 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
 
                     high_level_folders.remove(folder_name)
 
-                    namespace_logger.info(f"dataset_structure: {dataset_structure['folders']}")
                     updated_manifest_dict = update_existing_pennsieve_manifest_file(dataset_structure["folders"][folder_name], manifest_df)
 
                     if not exists(join(manifest_path, folder_name)):

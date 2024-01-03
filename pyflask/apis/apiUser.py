@@ -1,8 +1,8 @@
 from flask_restx import Resource, reqparse
 from namespaces import get_namespace, NamespaceEnum
 
-from users import integrate_orcid_with_pennsieve, get_user, set_preferred_organization, get_user_organizations, create_profile_name, set_default_profile
-
+from users import integrate_orcid_with_pennsieve, get_user, set_preferred_organization, create_profile_name, set_default_profile
+from authentication import get_user_organizations
 api = get_namespace(NamespaceEnum.USER)
 
 @api.route("/orcid")

@@ -3226,8 +3226,8 @@ const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
       } else if ($('input[name="generate-1"]:checked')[0].id === "generate-upload-BF") {
         sodaJSONObj["generate-dataset"] = {
           destination: "bf",
-          "generate-option": "new",
         };
+
         if ($("#current-bf-account-generate").text() !== "None") {
           if ("bf-account-selected" in sodaJSONObj) {
             sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
@@ -3242,6 +3242,9 @@ const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
           if (
             $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing"
           ) {
+            // The user selected to generate to an existing dataset on Pennsieve
+            // Set the generate option to existing-bf
+            sodaJSONObj["generate-dataset"]["generate-option"] = "existing-bf";
             if ($('input[name="generate-5"]:checked').length > 0) {
               if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-duplicate") {
                 sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";
@@ -3280,6 +3283,9 @@ const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
           } else if (
             $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-new"
           ) {
+            // The user chose to generate to a new dataset on Pennsieve
+            // Set the generate option to new (we're creating a new dataset)
+            sodaJSONObj["generate-dataset"]["generate-option"] = "new";
             var newDatasetName = $("#inputNewNameDataset").val().trim();
             sodaJSONObj["generate-dataset"]["dataset-name"] = newDatasetName;
             sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";

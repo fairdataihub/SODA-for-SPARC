@@ -968,7 +968,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       confirmButtonTextValue = "Grant Access";
     }
 
-    let { value: result } = await Swal.fire({
+    let result = await Swal.fire({
       allowOutsideClick: false,
       backdrop: "rgba(0,0,0, 0.4)",
       cancelButtonText: "Cancel",
@@ -1049,7 +1049,9 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           machineUsernameSpecifier
         );
 
-        // attempt to set the profile name as the default profile
+        console.log("Profile that will be set is: ", profileResponse)
+
+        // attempt to set the profile nameg as the default profile
         try {
           await api.setDefaultProfile(profileResponse);
           defaultBfAccount = profileResponse.toLowerCase();
@@ -1103,7 +1105,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       },
     });
 
-    if (result === true) {
+    if (result && result.value === true) {
       defaultBfDataset = "Select dataset";
       try {
         let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
@@ -1170,16 +1172,19 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
         },
       });
     } else {
-      let key_name = result.name;
-      let apiKey = result.key;
-      let apiSecret = result.secret;
+      let key_name = result.value.name;
+      let apiKey = result.value.key;
+      let apiSecret = result.value.secret;
+
+      console.log("About to add the api key information to the backend config.ini");
+      console.log("The key name is: ". key_name)
 
       // lowercase the key_name the user provided
       // this is to prevent an issue caused by the pennsiev agent
       // wherein it fails to validate an account if it is not lowercase
       key_name = key_name.toLowerCase();
       //needs to be replaced
-      console.log("About to add the api key information to the backend config.ini");
+
       try {
         await client.put(`/manage_datasets/account/username`, {
           keyname: key_name,
@@ -1245,7 +1250,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       defaultBfDataset = null;
       clearDatasetDropdowns();
 
-      titleText = "Successfully added! <br/>Loading your account details...";
+      let titleText = "Successfully added! <br/>Loading your account details...";
       if (verifyingOrganization) {
         titleText = "Workspace details loaded!";
       }
@@ -1262,9 +1267,11 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           Swal.showLoading();
         },
       });
-    }
+
+    } 
   }
-};
+}
+
 
 var dropdownEventID = "";
 const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
@@ -1386,7 +1393,11 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             },
           });
         } catch (error) {
-          clientError(error);
+          const emessage = userErrorMessage(error);
+          await swalShowError("Failed to fetch datasets from Pennsieve", emessage);
+          // Reset the dataset select UI
+          $(".ui.active.green.inline.loader.small").css("display", "none");
+          $(".svg-change-current-account.dataset").css("display", "block");
           return;
         }
 

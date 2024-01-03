@@ -1,5 +1,5 @@
 name: Build-and-deploy-linux
-run-name: ${{ github.actor }} is building a linux release for SODA
+run-name: ${{ github.actor }} is building a linux release for SODA - should work
 
 on:
   push:

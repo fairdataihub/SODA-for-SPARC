@@ -1,1 +1,1 @@
-from .user import get_user_information, update_config_account_name, get_user, integrate_orcid_with_pennsieve, set_preferred_organization, get_user_organizations, create_profile_name, set_default_profile
+from .user import update_config_account_name, get_user, integrate_orcid_with_pennsieve, set_preferred_organization, create_profile_name, set_default_profile

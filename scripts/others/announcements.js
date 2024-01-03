@@ -27,9 +27,11 @@ const checkForAnnouncements = async (state) => {
     if (appVersion in res && state === "announcements") {
       let features = res[appVersion]["announcements"]["features"];
       let bugFixes = res[appVersion]["announcements"]["bug-fixes"];
-      let htmlMessage = `
-          <div style="text-align: justify; overflow-y: auto; max-height: 350px;">
-            <div style="margin-bottom: 1rem;">
+
+      let htmlMessageFeatures = ``;
+
+      if (features && features.length > 0) {
+        htmlMessageFeatures = `
               <label style="font-weight: 700; font-size: 17px;">Feature Additions:<br></label>
               ${features
                 .map((feature) => {
@@ -37,13 +39,26 @@ const checkForAnnouncements = async (state) => {
                   return `<li style="margin: .5rem 0 .5rem 0;">${feature}</li>`;
                 })
                 .join("")}
+        `;
+      }
 
+      let htmlMessageBugFixes = ``;
+
+      if (bugFixes && bugFixes.length > 0) {
+        htmlMessageBugFixes = `
               <label style="font-weight: 700; font-size: 17px;">Bug Fixes:<br></label>
               ${bugFixes
                 .map((bugfix) => {
                   return `<li style="margin: .5rem 0 .5rem 0;">${bugfix}</li>`;
                 })
                 .join("")}
+        `;
+      }
+      let htmlMessage = `
+          <div style="text-align: justify; overflow-y: auto; max-height: 350px;">
+            <div style="margin-bottom: 1rem;">
+              ${htmlMessageFeatures}
+              ${htmlMessageBugFixes}
             </div>
           </div>
           `;
