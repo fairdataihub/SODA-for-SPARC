@@ -7309,9 +7309,14 @@ const setActiveSubPage = (pageIdToActivate) => {
   // renderSideBar(CURRENT_PAGE.id);
 };
 
-const setGuidedProgressBarValue = (destination, value) => {
-  $("#guided-progress-bar-${destination}-generation").attr("value", value);
-};
+function setGuidedProgressBarValue(destination, value) {
+  const progressBar = document.querySelector(`#guided-progress-bar-${destination}-generation`);
+  if (progressBar) {
+    progressBar.setAttribute("value", value);
+  } else {
+    console.error(`Could not find progress bar for ${destination}`);
+  }
+}
 
 const generateAlertElement = (alertType, warningMessageText) => {
   return `
@@ -14417,15 +14422,16 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
 
   const generationDestination = destination === "Pennsieve" ? "Pennsieve" : "local";
 
+  const subjectsMetadataGenerationText = document.getElementById(
+    `guided-subjects-metadata-pennsieve-genration-text`
+  );
   // If the subjects metadata is being generated for Pennsieve, Update the
   // subjects metadata table row to indicate the upload is in progress
   if (generationDestination === "Pennsieve") {
     document
       .getElementById(`guided-subjects-metadata-pennsieve-genration-tr`)
       .classList.remove("hidden");
-    const subjectsMetadataGenerationText = document.getElementById(
-      `guided-subjects-metadata-pennsieve-genration-text`
-    );
+
     subjectsMetadataGenerationText.innerHTML = "Uploading subjects metadata...";
     guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "loading");
   }
@@ -14467,10 +14473,7 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
   } catch (error) {
     const emessage = userErrorMessage(error);
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon(
-        `guided-subjects-metadata-${generationDestination}-genration-status`,
-        "error"
-      );
+      guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "error");
       subjectsMetadataGenerationText.innerHTML = `Failed to generate subjects metadata`;
     }
     // Send failed subjects metadata generation event to Kombucha
@@ -14930,9 +14933,6 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
     const guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
     const guidedLicense = sodaJSONObj["digital-metadata"]["license"];
     const guidedBannerImagePath = sodaJSONObj["digital-metadata"]["banner-image-path"];
-
-    //Subjects Metadata Variables
-    const guidedSubjectsMetadata = sodaJSONObj["subjects-table-data"];
 
     //Samples Metadata variables
     const guidedSamplesMetadata = sodaJSONObj["samples-table-data"];
