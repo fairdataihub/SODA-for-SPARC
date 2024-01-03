@@ -14521,12 +14521,13 @@ const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsA
 };
 
 //********************************************************************************************************
-
+/*Commented out for gm metadata analytics release
 document
   .getElementById("guided-button-generate-local-dataset-copy")
   .addEventListener("click", () => {
     ipcRenderer.send("guided-select-local-dataset-generation-path");
   });
+*/
 
 ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, filePath) => {
   // Check the available disk space on the drive where the user wants to generate the dataset
