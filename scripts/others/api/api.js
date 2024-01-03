@@ -490,11 +490,10 @@ const getUserPoolAccessToken = async (email, password) => {
   return response.data;
 };
 
-
 const getUserWorkspaces = async () => {
   const response = await client.get("/user/organizations");
   return response.data;
-}
+};
 
 const api = {
   getUserInformation,
@@ -526,7 +525,7 @@ const api = {
   getUserPoolAccessToken,
   setDefaultProfile,
   createProfileName,
-  getUserWorkspaces
+  getUserWorkspaces,
 };
 
 module.exports = api;
