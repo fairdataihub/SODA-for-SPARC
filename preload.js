@@ -1335,6 +1335,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         accountPresent = false;
       }
 
+      console.log("Account present value: ", accountPresent)
+
       if (!accountPresent) {
         //If there is no API key pair, warning will pop up allowing user to sign in
         await Swal.fire({
@@ -1375,6 +1377,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         //           under the default profile does not mean that key is associated with the user's current workspace.
         let matching = await defaultProfileMatchesCurrentWorkspace();
         if (!matching) {
+          console.log("Workspace for default profile does not match user's current worksapce")
           log.info("Default api key is for a different workspace");
           await switchToCurrentWorkspace();
         }
