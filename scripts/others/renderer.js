@@ -849,15 +849,15 @@ const run_pre_flight_checks = async (check_update = true) => {
         return false;
       }
 
-    // check that the valid api key in the default profile is for the user's current workspace
-    // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
-    //           under the default profile does not mean that key is associated with the user's current workspace.
-    let matching = await defaultProfileMatchesCurrentWorkspace();
-    if (!matching) {
-      log.info("Default api key is for a different workspace");
-      await switchToCurrentWorkspace();
-      return false;
-    }
+      // check that the valid api key in the default profile is for the user's current workspace
+      // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
+      //           under the default profile does not mean that key is associated with the user's current workspace.
+      let matching = await defaultProfileMatchesCurrentWorkspace();
+      if (!matching) {
+        log.info("Default api key is for a different workspace");
+        await switchToCurrentWorkspace();
+        return false;
+      }
     }
 
     // check if the Pennsieve agent is installed [ here ]
