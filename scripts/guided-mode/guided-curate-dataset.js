@@ -1752,156 +1752,23 @@ const savePageChanges = async (pageBeingLeftID) => {
       const selectedLicense = selectedLicenseButton.dataset.value;
       sodaJSONObj["digital-metadata"]["license"] = selectedLicense;
     }
-    /*
-    if (pageBeingLeftID === "guided-dataset-generate-location-tab") {
-      const buttonGenerateLocally = document.getElementById(
-        "guided-button-generate-dataset-locally"
-      );
-      const buttonGenerateOnPennsieve = document.getElementById(
-        "guided-button-generate-dataset-on-pennsieve"
-      );
 
-      // If the user did not select if they would like to import a SPARC award,
-      // throw an error
-      if (
-        !buttonGenerateLocally.classList.contains("selected") &&
-        !buttonGenerateOnPennsieve.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate where you would like to genrate your dataset",
-        });
-        throw errorArray;
-      }
-
-      if (buttonGenerateOnPennsieve.classList.contains("selected")) {
-        const accountName = document.getElementById("guided-bf-account");
-        if (accountName.innerHTML.trim() === "None" || accountName.innerHTML.trim() === "") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please select a Pennsieve account to generate your dataset on",
-          });
-          throw errorArray;
-        }
-        sodaJSONObj["generate-dataset"]["destination"] = "bf";
-      }
-    }
-    */
-    /*
-    if (pageBeingLeftID === "guided-dataset-generate-destination-tab") {
-      const buttonGenerateOnExistingPennsieveDataset = document.getElementById(
-        "guided-button-pennsieve-generate-existing"
-      );
-      const buttonGenerateOnNewPennsieveDataset = document.getElementById(
-        "guided-button-pennsieve-generate-new"
-      );
-
-      // If the user did not select if they would like to import a SPARC award,
-      // throw an error
-      if (
-        !buttonGenerateOnExistingPennsieveDataset.classList.contains("selected") &&
-        !buttonGenerateOnNewPennsieveDataset.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message:
-            "Please indicate if you would like to generate on a new or existing Pennsieve dataset",
-        });
-        throw errorArray;
-      }
-
-      if (buttonGenerateOnExistingPennsieveDataset.classList.contains("selected")) {
-        sodaJSONObj["generate-dataset"]["destination"] = "local";
-      }
-
-      if (buttonGenerateOnNewPennsieveDataset.classList.contains("selected")) {
-        confirmDatasetGenerationNameinput = document.getElementById("guided-input-dataset-name");
-        if (confirmDatasetGenerationNameinput.value.trim() === "") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please enter a name for your new Pennsieve dataset",
-          });
-          throw errorArray;
-        }
-        sodaJSONObj["digital-metadata"]["name"] = confirmDatasetGenerationNameinput.value.trim();
-        sodaJSONObj["generate-dataset"]["destination"] = "bf";
-      }
-    }
-    */
-
-    if (pageBeingLeftID === "guided-folder-structure-preview-tab") {
+    if (pageBeingLeftID === "guided-dataset-structure-review-tab") {
       //if folders and files in datasetStruture json obj are empty, warn the user
       if (
         Object.keys(datasetStructureJSONObj["folders"]).length === 0 &&
         Object.keys(datasetStructureJSONObj["files"]).length === 0
       ) {
-        const { value: continueProgress } = await Swal.fire({
-          title: `No folders or files have been added to your dataset.`,
-          html: `You can go back and add folders and files to your dataset, however, if
-            you choose to generate your dataset on the final step, no folders or files will be
-            added to your target destination.`,
-          allowEscapeKey: false,
-          allowOutsideClick: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showConfirmButton: true,
-          showCancelButton: true,
-          cancelButtonText: "Go back to add folders and files",
-          cancelButtonWidth: "200px",
-          confirmButtonText: "Continue without adding folders and files",
-          reverseSwalButtons: true,
+        errorArray.push({
+          type: "swal",
+          message: `
+            You have not added any files or folders to your dataset structure.
+            <br/><br/>
+            Please add files and folders to your dataset structure before continuing.
+          `,
         });
-        if (!continueProgress) {
-          $(this).removeClass("loading");
-          return;
-        }
+        throw errorArray;
       }
-
-      /*
-      // Notify the user of empty pages since this is the last page they can structure their dataset
-      const emptyFilesFoldersResponse = await client.post(
-        `/curate_datasets/empty_files_and_folders`,
-        {
-          soda_json_structure: sodaJSONObj,
-        },
-        { timeout: 0 }
-      );
-      let { data } = emptyFilesFoldersResponse;
-      //bring duplicate outside
-      empty_files = data["empty_files"];
-      empty_folders = data["empty_folders"];
-      let errorMessage = "";
-      if (empty_files.length > 0) {
-        const error_message_files = backend_to_frontend_warning_message(empty_files);
-        errorMessage += error_message_files;
-      }
-      if (empty_folders.length > 0) {
-        const error_message_folders = backend_to_frontend_warning_message(empty_folders);
-        errorMessage += error_message_folders;
-      }
-      if (errorMessage) {
-        errorMessage += "Would you like to continue?";
-        errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
-        const { value: continueWithEmptyFolders } = await Swal.fire({
-          icon: "warning",
-          html: errorMessage,
-          showCancelButton: true,
-          cancelButtonText: "No, I want to review my files",
-          focusCancel: true,
-          confirmButtonText: "Yes, Continue",
-          backdrop: "rgba(0,0,0, 0.4)",
-          reverseButtons: reverseSwalButtons,
-          heightAuto: false,
-          allowOutsideClick: false,
-        });
-        if (!continueWithEmptyFolders) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please remove the empty files before continuing",
-          });
-          throw errorArray;
-        }
-      }*/
     }
 
     if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
@@ -3039,9 +2906,7 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
     sodaJSONObj["dataset-structure"]["files"] = {};
   }
 
-  //Add datasetStructureJSONObj to the sodaJSONObj and use to load the
-  //datasetStructureJsonObj when progress resumed
-  sodaJSONObj["saved-datset-structure-json-obj"] = datasetStructureJSONObj;
+  // Store global variable values to the progress file before saving
   sodaJSONObj["dataset-structure"] = datasetStructureJSONObj;
   sodaJSONObj["subjects-table-data"] = subjectsTableData;
   sodaJSONObj["samples-table-data"] = samplesTableData;
@@ -3602,28 +3467,12 @@ document
       // if the user performed move, rename, delete on files in an imported dataset we need to perform those actions before creating the validation report;
       // rationale for this can be found in the function definition
       if (sodaJSONObjCopy["starting-point"]["type"] === "bf") {
-        // if the user resumes a dataset and validation is the first page they visit, then dataset-structure will be empty
-        // so we use the saved dataset structure key;
-        // in the case of a bf dataset that is not resumed, if dataset-structure is empty then so will saved-dataset-structure-json-obj
-        // so this swap is safe
-        if (sodaJSONObjCopy["dataset-structure"]) {
-          let files = sodaJSONObjCopy["dataset-structure"]["files"];
-          let folders = sodaJSONObjCopy["dataset-structure"]["folders"];
-          if (Object.keys(files).length === 0 && Object.keys(folders).length === 0) {
-            sodaJSONObjCopy["dataset-structure"] =
-              sodaJSONObjCopy["saved-datset-structure-json-obj"];
-          }
-        }
         await api.performUserActions(sodaJSONObjCopy);
-
-        // if the dataset-structure wasnt empty then we may have performed actions on the dataset structure in the previous step;
-        // currently the saved-dataset-structure-json-obj key is used for GM validation so set its value to match the performed actions
-        sodaJSONObjCopy["saved-datset-structure-json-obj"] = sodaJSONObjCopy["dataset-structure"];
       }
 
       // count the amount of files in the dataset
       file_counter = 0;
-      get_num_files_and_folders(sodaJSONObjCopy["saved-datset-structure-json-obj"]);
+      get_num_files_and_folders(sodaJSONObjCopy["dataset-structure"]);
 
       if (file_counter >= 50000) {
         await Swal.fire({
@@ -3678,7 +3527,7 @@ document
 
         file_counter = 0;
         folder_counter = 0;
-        get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+        get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
         // log successful validation run to analytics
         const kombuchaEventData = {
           value: file_counter,
@@ -3771,7 +3620,7 @@ document
       if (validationReport.status === "Error") {
         file_counter = 0;
         folder_counter = 0;
-        get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+        get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
         // log successful validation run to analytics
         const kombuchaEventData = {
           value: file_counter,
@@ -3805,7 +3654,7 @@ document
 
       file_counter = 0;
       folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
       // log successful validation run to analytics
       if (file_counter > 0) {
@@ -4016,7 +3865,89 @@ const guidedPrepareHomeScreen = async () => {
   guidedUnLockSideBar();
 };
 
-const guidedShowTreePreview = (new_dataset_name, targetElement) => {
+const guidedShowTreePreview = (new_dataset_name, targetElementId) => {
+  const folderStructurePreview = document.getElementById(targetElementId);
+  $(folderStructurePreview).jstree({
+    core: {
+      check_callback: true,
+      data: {},
+    },
+    plugins: ["types", "sort"],
+    sort: function (a, b) {
+      a1 = this.get_node(a);
+      b1 = this.get_node(b);
+
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+        //if the word assets is included in the icon then we can assume it is a file
+        //folder icons are under font awesome meanwhile files come from the assets folder
+        return a1.text > b1.text ? 1 : -1;
+      } else {
+        return a1.icon < b1.icon ? 1 : -1;
+      }
+    },
+    types: {
+      folder: {
+        icon: "fas fa-folder fa-fw",
+      },
+      "folder open": {
+        icon: "fas fa-folder-open fa-fw",
+      },
+      "folder closed": {
+        icon: "fas fa-folder fa-fw",
+      },
+      "file xlsx": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file xls": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file png": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file PNG": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file pdf": {
+        icon: "./assets/img/pdf-file.png",
+      },
+      "file txt": {
+        icon: "./assets/img/txt-file.png",
+      },
+      "file csv": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file CSV": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file DOC": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file DOCX": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file docx": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file doc": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file jpeg": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file JPEG": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file other": {
+        icon: "./assets/img/other-file.png",
+      },
+    },
+  });
+  $(folderStructurePreview).on("open_node.jstree", function (event, data) {
+    data.instance.set_type(data.node, "folder open");
+  });
+  $(folderStructurePreview).on("close_node.jstree", function (event, data) {
+    data.instance.set_type(data.node, "folder closed");
+  });
   const dsJsonObjCopy = JSON.parse(JSON.stringify(datasetStructureJSONObj));
 
   //Add the code_description metadata file to the preview if the code_description path has been declared
@@ -4087,20 +4018,14 @@ const guidedShowTreePreview = (new_dataset_name, targetElement) => {
     new_dataset_name,
     "folder",
     "",
-    true,
+    new_dataset_name,
     false,
     false,
     "",
     "preview"
   );
-  $(targetElement).jstree(true).settings.core.data = guidedJsTreePreviewData;
-  $(targetElement).jstree(true).refresh();
-  //Open Jstree element with passed in folder node name
-  const openFolder = (folderName) => {
-    const tree = $("#jstree").jstree(true);
-    const node = tree.get_node(folderName);
-    tree.open_node(node);
-  };
+  $(folderStructurePreview).jstree(true).settings.core.data = guidedJsTreePreviewData;
+  $(folderStructurePreview).jstree(true).refresh();
 };
 
 const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
@@ -5349,9 +5274,8 @@ const openPage = async (targetPageID) => {
       document.getElementById("guided-file-explorer-elements").classList.remove("hidden");
     }
 
-    if (targetPageID === "guided-folder-structure-preview-tab") {
-      // TODO: move the file base guided high level folder deletion to their specific pages
-      // Delete the high level folders if they are empty
+    if (targetPageID === "guided-dataset-structure-review-tab") {
+      // Delete the guided high level folders if they are empty
       // They could possibly be empty if the user did not add any subject data
       // These will be added back safely when the user traverses back to the high level folder's page
       for (const folder of guidedHighLevelFolders) {
@@ -5362,89 +5286,10 @@ const openPage = async (targetPageID) => {
         }
       }
 
-      const folderStructurePreview = document.getElementById("guided-folder-structure-review");
-      $(folderStructurePreview).jstree({
-        core: {
-          check_callback: true,
-          data: {},
-        },
-        plugins: ["types", "sort"],
-        sort: function (a, b) {
-          a1 = this.get_node(a);
-          b1 = this.get_node(b);
-
-          if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
-            //if the word assets is included in the icon then we can assume it is a file
-            //folder icons are under font awesome meanwhile files come from the assets folder
-            return a1.text > b1.text ? 1 : -1;
-          } else {
-            return a1.icon < b1.icon ? 1 : -1;
-          }
-        },
-        types: {
-          folder: {
-            icon: "fas fa-folder fa-fw",
-          },
-          "folder open": {
-            icon: "fas fa-folder-open fa-fw",
-          },
-          "folder closed": {
-            icon: "fas fa-folder fa-fw",
-          },
-          "file xlsx": {
-            icon: "./assets/img/excel-file.png",
-          },
-          "file xls": {
-            icon: "./assets/img/excel-file.png",
-          },
-          "file png": {
-            icon: "./assets/img/png-file.png",
-          },
-          "file PNG": {
-            icon: "./assets/img/png-file.png",
-          },
-          "file pdf": {
-            icon: "./assets/img/pdf-file.png",
-          },
-          "file txt": {
-            icon: "./assets/img/txt-file.png",
-          },
-          "file csv": {
-            icon: "./assets/img/csv-file.png",
-          },
-          "file CSV": {
-            icon: "./assets/img/csv-file.png",
-          },
-          "file DOC": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file DOCX": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file docx": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file doc": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file jpeg": {
-            icon: "./assets/img/jpeg-file.png",
-          },
-          "file JPEG": {
-            icon: "./assets/img/jpeg-file.png",
-          },
-          "file other": {
-            icon: "./assets/img/other-file.png",
-          },
-        },
-      });
-      $(folderStructurePreview).on("open_node.jstree", function (event, data) {
-        data.instance.set_type(data.node, "folder open");
-      });
-      $(folderStructurePreview).on("close_node.jstree", function (event, data) {
-        data.instance.set_type(data.node, "folder closed");
-      });
-      guidedShowTreePreview(sodaJSONObj["digital-metadata"]["name"], folderStructurePreview);
+      guidedShowTreePreview(
+        sodaJSONObj["digital-metadata"]["name"],
+        "guided-folder-structure-review"
+      );
     }
 
     if (targetPageID === "guided-manifest-file-generation-tab") {
@@ -6708,91 +6553,10 @@ const openPage = async (targetPageID) => {
       datasetTagsReviewText.innerHTML = datasetTags.join(", ");
       datasetLicenseReviewText.innerHTML = datasetLicense;
 
-      const folderStructurePreview = document.getElementById(
+      guidedShowTreePreview(
+        sodaJSONObj["digital-metadata"]["name"],
         "guided-folder-structure-review-generate"
       );
-      $(folderStructurePreview).jstree({
-        core: {
-          check_callback: true,
-          data: {},
-        },
-        plugins: ["types", "sort"],
-        sort: function (a, b) {
-          a1 = this.get_node(a);
-          b1 = this.get_node(b);
-
-          if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
-            //if the word assets is included in the icon then we can assume it is a file
-            //folder icons are under font awesome meanwhile files come from the assets folder
-            return a1.text > b1.text ? 1 : -1;
-          } else {
-            return a1.icon < b1.icon ? 1 : -1;
-          }
-        },
-        types: {
-          folder: {
-            icon: "fas fa-folder fa-fw",
-          },
-          "folder open": {
-            icon: "fas fa-folder-open fa-fw",
-          },
-          "folder closed": {
-            icon: "fas fa-folder fa-fw",
-          },
-          "file xlsx": {
-            icon: "./assets/img/excel-file.png",
-          },
-          "file xls": {
-            icon: "./assets/img/excel-file.png",
-          },
-          "file png": {
-            icon: "./assets/img/png-file.png",
-          },
-          "file PNG": {
-            icon: "./assets/img/png-file.png",
-          },
-          "file pdf": {
-            icon: "./assets/img/pdf-file.png",
-          },
-          "file txt": {
-            icon: "./assets/img/txt-file.png",
-          },
-          "file csv": {
-            icon: "./assets/img/csv-file.png",
-          },
-          "file CSV": {
-            icon: "./assets/img/csv-file.png",
-          },
-          "file DOC": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file DOCX": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file docx": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file doc": {
-            icon: "./assets/img/doc-file.png",
-          },
-          "file jpeg": {
-            icon: "./assets/img/jpeg-file.png",
-          },
-          "file JPEG": {
-            icon: "./assets/img/jpeg-file.png",
-          },
-          "file other": {
-            icon: "./assets/img/other-file.png",
-          },
-        },
-      });
-      $(folderStructurePreview).on("open_node.jstree", function (event, data) {
-        data.instance.set_type(data.node, "folder open");
-      });
-      $(folderStructurePreview).on("close_node.jstree", function (event, data) {
-        data.instance.set_type(data.node, "folder closed");
-      });
-      guidedShowTreePreview(sodaJSONObj["digital-metadata"]["name"], folderStructurePreview);
     }
 
     if (targetPageID === "guided-dataset-generation-tab") {
@@ -7797,6 +7561,11 @@ const patchPreviousGuidedModeVersions = async () => {
     sodaJSONObj["cuartion-mode"] = "guided";
   }
 
+  if (sodaJSONObj["saved-datset-structure-json-obj"]) {
+    sodaJSONObj["dataset-structure"] = sodaJSONObj["saved-datset-structure-json-obj"];
+    delete sodaJSONObj["saved-datset-structure-json-obj"];
+  }
+
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
 };
@@ -7914,12 +7683,12 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     sodaJSONObj = datasetResumeJsonObj;
     attachGuidedMethodsToSodaJSONObj();
 
-    datasetStructureJSONObj = sodaJSONObj["saved-datset-structure-json-obj"];
-    subjectsTableData = sodaJSONObj["subjects-table-data"];
-    samplesTableData = sodaJSONObj["samples-table-data"];
-
     //patches the sodajsonobj if it was created in a previous version of guided mode
     await patchPreviousGuidedModeVersions();
+
+    datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+    subjectsTableData = sodaJSONObj["subjects-table-data"];
+    samplesTableData = sodaJSONObj["samples-table-data"];
 
     // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
     const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
@@ -14521,73 +14290,120 @@ const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsA
 };
 
 //********************************************************************************************************
-/*Commented out for gm metadata analytics release
+/*  Commented out for gm metadata analytics release
+// Add click event listener to the button triggering local dataset generation
 document
   .getElementById("guided-button-generate-local-dataset-copy")
   .addEventListener("click", () => {
+    // Send an IPC message to select the local dataset generation path
     ipcRenderer.send("guided-select-local-dataset-generation-path");
   });
 */
 
+const convertBytesToMb = (bytes) => {
+  return roundToHundredth(bytes / 1024 ** 2);
+};
+
+const convertBytesToGb = (bytes) => {
+  return roundToHundredth(bytes / 1024 ** 3);
+};
+
+// Listen for the selected path for local dataset generation
 ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, filePath) => {
-  // Check the available disk space on the drive where the user wants to generate the dataset
-  const availableDiskSpace = await checkDiskSpace(filePath);
-  console.log("Available disk space: ", availableDiskSpace);
-  const freeMemoryInMb = roundToHundredth(availableDiskSpace.free / 1024 ** 2);
-  console.log("Available disk space in MB: ", freeMemoryInMb);
-  // Get the size of the dataset that will be generated
-  const localDatasetSizeReq = await client.post(
-    "/curate_datasets/dataset_size",
-    {
-      soda_json_structure: sodaJSONObj,
-    },
-    { timeout: 0 }
-  );
-  const localDatasetSize = localDatasetSizeReq.data.dataset_size;
-  const datasetSizeInMb = roundToHundredth(localDatasetSize / 1024 ** 2);
-  console.log("Dataset size in MB: ", datasetSizeInMb);
-
-  // Attach the manifest files to the dataset structure before generating the dataset locally
-  await guidedCreateManifestFilesAndAddToDatasetStructure();
-
-  const guidedDatasetName = guidedGetDatasetName(sodaJSONObj);
-
-  // Create a temp copy of the sodaJSONObj to be used for generating the dataset locally.
-  // We do this because there are keys we want to modify in the sodaJSONObj but we don't want to
-  // modify in the original sodaJSONObj
-  const sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
-  console.log("sodaJSONObjCopy: ", sodaJSONObjCopy);
-  sodaJSONObjCopy["generate-dataset"] = {
-    "dataset-name": guidedDatasetName,
-    destination: "local",
-    "generate-option": "new",
-    "if-existing": "new",
-    path: filePath,
-  };
-
-  // Remove the bf-account-selected key from the sodaJSONObjCopy because we don't need
-  // to check if the user's pennsieve account is valid
-  delete sodaJSONObjCopy["bf-account-selected"];
   try {
-    await client.post(
+    // Check available free memory on disk
+    const diskSpaceRes = await checkDiskSpace(filePath);
+    const freeMemoryInBytes = diskSpaceRes.free;
+
+    console.log("Free memory in bytes: ", diskSpaceRes.free);
+    const freeMemoryInMb = convertBytesToMb(diskSpaceRes.free);
+    console.log("Free memory in MB: ", freeMemoryInMb);
+    console.log("Free memory in GB: ", convertBytesToGb(diskSpaceRes.free));
+    // Get the size of the dataset that will be generated
+    const localDatasetSizeReq = await client.post(
+      "/curate_datasets/dataset_size",
+      { soda_json_structure: sodaJSONObj },
+      { timeout: 0 }
+    );
+    const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
+    const datasetSizeInMb = convertBytesToMb(localDatasetSizeInBytes);
+    console.log("Dataset size in GB: ", convertBytesToGb(localDatasetSizeInBytes));
+
+    // Check if there is enough free space on disk for the dataset
+    if (freeMemoryInMb < datasetSizeInMb) {
+      throw new Error(
+        `Not enough free space on disk. Free space: ${freeMemoryInMb} MB. Dataset size: ${datasetSizeInMb} MB`
+      );
+    } else {
+      console.log("Free space besides dataset size in MB: ", freeMemoryInMb - datasetSizeInMb);
+      console.log(
+        "Free space besided dataset size in GB: ",
+        (freeMemoryInMb - datasetSizeInMb) / 1024
+      );
+    }
+
+    // Attach manifest files to the dataset structure before local generation
+    await guidedCreateManifestFilesAndAddToDatasetStructure();
+
+    // Get the dataset name based on the sodaJSONObj
+    const guidedDatasetName = guidedGetDatasetName(sodaJSONObj);
+
+    // Create a temporary copy of sodaJSONObj for local dataset generation
+    const sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
+    sodaJSONObjCopy["generate-dataset"] = {
+      "dataset-name": guidedDatasetName,
+      destination: "local",
+      "generate-option": "new",
+      "if-existing": "new",
+      path: filePath,
+    };
+    // Remove unnecessary key from sodaJSONObjCopy since we don't need to
+    // check if the account details are valid during local generation
+    delete sodaJSONObjCopy["bf-account-selected"];
+
+    // Start the local dataset generation process
+    client.post(
       `/curate_datasets/curation`,
-      {
-        soda_json_structure: sodaJSONObjCopy,
-      },
+      { soda_json_structure: sodaJSONObjCopy },
       { timeout: 0 }
     );
 
-    // Unhide the local dataset metadata status table
-    document
-      .getElementById("guided-section-local-dataset-generation-progresss")
-      .classList.remove("hidden");
+    // Track the status of local dataset generation
+    const trackLocalDatasetGenerationProgress = async () => {
+      try {
+        while (true) {
+          const localDatasetGenerationProgress = await client.get(
+            `/curate_datasets/curation/progress`
+          );
+          const { data } = localDatasetGenerationProgress;
+          const mainCurateStatus = data["main_curate_status"];
 
-    // Generate all of the dataset metadata files
+          if (mainCurateStatus === "Done") {
+            console.log("done");
+            clearInterval(progressTrackerInterval); // Stop the polling interval since the generation is done
+            break;
+          } else {
+            if (data["main_total_generate_dataset_size"]) {
+              console.log(localDatasetSizeInBytes / data["main_total_generate_dataset_size"]);
+            }
+            await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second before polling again
+          }
+        }
+      } catch (error) {
+        console.log("Error tracking progress", error);
+        clearInterval(progressTrackerInterval); // Stop the polling interval on error
+      }
+    };
+
+    // Set interval to track progress every second
+    let progressTrackerInterval = setInterval(trackLocalDatasetGenerationProgress, 1000);
+
+    // Generate all dataset metadata files
     await guidedGenerateSubjectsMetadata(path.join(filePath, guidedDatasetName, "subjects.xlsx"));
   } catch (error) {
-    console.log(error);
-    const emessage = userErrorMessage(error);
-    console.log(emessage);
+    // Handle and log errors
+    const errorMessage = userErrorMessage(error);
+    console.log("Error thrown to main catch", errorMessage);
   }
 });
 
@@ -15680,7 +15496,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       app.quit();
     });
 
-  const guidedUpdateUploadStatus = async (destination) => {
+  const guidedUpdateUploadStatus = async () => {
     let mainCurationProgressResponse;
     try {
       mainCurationProgressResponse = await client.get(`/curate_datasets/curation/progress`);
@@ -15764,7 +15580,7 @@ const guidedUploadDatasetToPennsieve = async () => {
     }
   };
   // Progress tracking function for main curate
-  let timerProgress = setInterval(guidedUpdateUploadStatus("pennsieve"), 1000);
+  let timerProgress = setInterval(guidedUpdateUploadStatus(), 1000);
 
   let bytesOnPreviousLogPage = 0;
   let filesOnPreviousLogPage = 0;

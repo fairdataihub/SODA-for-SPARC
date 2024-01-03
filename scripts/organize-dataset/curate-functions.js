@@ -881,7 +881,7 @@ const create_child_node = (
   nodeName,
   type,
   ext,
-  openedState,
+  treePreviewName,
   selectedState,
   disabledState,
   selectedOriginalLocation,
@@ -891,7 +891,7 @@ const create_child_node = (
   var newFormatNode = {
     text: nodeName,
     state: {
-      opened: openedState,
+      opened: nodeName === treePreviewName,
       selected: selectedState,
       disabled: disabledState,
     },
@@ -910,13 +910,13 @@ const create_child_node = (
           }
           if (key === selectedOriginalLocation && parentFolder === high_lvl_folder_node) {
             newFormatNode.state.selected = true;
-            newFormatNode.state.opened = true;
+
             var new_node = create_child_node(
               value,
               key,
               "folder",
               "",
-              true,
+              treePreviewName,
               true,
               true,
               selectedOriginalLocation,
@@ -925,13 +925,12 @@ const create_child_node = (
             );
           } else {
             newFormatNode.state.selected = true;
-            newFormatNode.state.opened = true;
             var new_node = create_child_node(
               value,
               key,
               "folder",
               "",
-              false,
+              treePreviewName,
               false,
               false,
               selectedOriginalLocation,
@@ -945,13 +944,12 @@ const create_child_node = (
       } else {
         if (key === selectedOriginalLocation) {
           newFormatNode.state.selected = true;
-          newFormatNode.state.opened = true;
           var new_node = create_child_node(
             value,
             key,
             "folder",
             "",
-            true,
+            treePreviewName,
             true,
             true,
             selectedOriginalLocation,
@@ -964,7 +962,7 @@ const create_child_node = (
             key,
             "folder",
             "",
-            false,
+            treePreviewName,
             false,
             false,
             selectedOriginalLocation,
@@ -1042,7 +1040,7 @@ var jsTreeData = create_child_node(
   "dataset_root",
   "folder",
   "",
-  true,
+  "dataset_root",
   true,
   true,
   "",
@@ -1161,7 +1159,7 @@ const moveItems = async (ev, category) => {
     "dataset_root",
     "folder",
     "",
-    true,
+    "dataset_root",
     true,
     true,
     selectedOriginalLocation,
@@ -1644,7 +1642,7 @@ const showTreeViewPreview = (
     new_dataset_name,
     "folder",
     "",
-    true,
+    new_dataset_name,
     selectedBoolean,
     disabledBoolean,
     "",

@@ -7961,6 +7961,7 @@ const initiate_generate = async () => {
     }
 
     let { data } = mainCurationProgressResponse;
+    console.log(data);
 
     main_curate_status = data["main_curate_status"];
     var start_generate = data["start_generate"];
