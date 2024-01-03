@@ -1049,7 +1049,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           machineUsernameSpecifier
         );
 
-        console.log("Profile that will be set is: ", profileResponse)
+        console.log("Profile that will be set is: ", profileResponse);
 
         // attempt to set the profile nameg as the default profile
         try {
@@ -1177,7 +1177,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       let apiSecret = result.value.secret;
 
       console.log("About to add the api key information to the backend config.ini");
-      console.log("The key name is: ". key_name)
+      console.log("The key name is: ".key_name);
 
       // lowercase the key_name the user provided
       // this is to prevent an issue caused by the pennsiev agent
@@ -1267,11 +1267,9 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           Swal.showLoading();
         },
       });
-
-    } 
+    }
   }
-}
-
+};
 
 var dropdownEventID = "";
 const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
