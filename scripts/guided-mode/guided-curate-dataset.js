@@ -14917,6 +14917,18 @@ const guidedGenerateCodeDescriptionMetadata = async (
   datasetName,
   codeDescriptionFilePath
 ) => {
+  // If the code description file path is empty or the user has skipped the code description metadata tab,
+  // we don't need to generate the code description metadata file
+
+  if (pageIsSkipped("guided-add-code-metadata-tab")) {
+    console.log("Code description page skipped not generating");
+    return;
+  }
+  if (!codeDescriptionFilePath) {
+    console.log("No code description path provided not generating");
+    return;
+  }
+
   document
     .getElementById("guided-code-description-metadata-pennsieve-genration-tr")
     .classList.remove("hidden");
@@ -14970,6 +14982,15 @@ const guidedGenerateREADMEorCHANGESMetadata = async (
   readmeORchanges, //lowercase file type
   readmeOrChangesMetadata
 ) => {
+  if (pageIsSkipped(`guided-create-${readmeORchanges}-metadata-tab`)) {
+    console.log(`${readmeORchanges} page skipped not generating`);
+    return;
+  }
+  if (!readmeOrChangesMetadata) {
+    console.log(`No ${readmeORchanges} provided not generating`);
+    return;
+  }
+
   document
     .getElementById(`guided-${readmeORchanges}-metadata-pennsieve-genration-tr`)
     .classList.remove("hidden");
@@ -15256,28 +15277,18 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
       guidedReadMeMetadata
     );
 
-    // Only upload the changes metadata if the changes page has not been skipped (when the user is uploading a new dataset)
-    if (!pageIsSkipped("guided-create-changes-metadata-tab")) {
-      const changes = sodaJSONObj["dataset-metadata"]["CHANGES"];
-      if (changes && changes.length > 0) {
-        await guidedGenerateREADMEorCHANGESMetadata(
-          guidedBfAccount,
-          guidedDatasetName,
-          "changes",
-          changes
-        );
-      }
-    }
+    await guidedGenerateREADMEorCHANGESMetadata(
+      guidedBfAccount,
+      guidedDatasetName,
+      "changes",
+      sodaJSONObj?.["dataset-metadata"]?.["CHANGES"]
+    );
 
-    // If the code_description was provided, upload to Pennsieve
-    // (This key is only set if the user choses yes to add/update code description)
-    if (sodaJSONObj?.["dataset-metadata"]?.["code-metadata"]?.["code_description"]) {
-      await guidedGenerateCodeDescriptionMetadata(
-        guidedBfAccount,
-        guidedDatasetName,
-        sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]
-      );
-    }
+    await guidedGenerateCodeDescriptionMetadata(
+      guidedBfAccount,
+      guidedDatasetName,
+      sodaJSONObj["dataset-metadata"]?.["code-metadata"]?.["code_description"]
+    );
 
     //Reset Upload Progress Bar and then scroll to it
     setGuidedProgressBarValue("pennsieve", 0);
