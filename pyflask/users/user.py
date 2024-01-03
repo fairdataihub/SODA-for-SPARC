@@ -99,6 +99,7 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
         raise Exception(new_err_msg) from err
     
 
+  
     formatted_profile_name = create_profile_name(machine_username_specifier, email, password, token, organization_id)
 
     logger.info(f"Switched to organization {organization_id}")

@@ -1966,7 +1966,10 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
 
           try {
+            console.log(organizationNameToIdMapping)
             let organizationId = organizationNameToIdMapping[bfOrganization];
+            console.log(organizationId)
+          
             let machineUsernameSpecifier = localStorage.getItem(os.userInfo().username);
             await api.setPreferredOrganization(
               login,

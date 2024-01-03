@@ -222,14 +222,8 @@ def create_profile_name(machineUsernameSpecifier, email=None, password=None, tok
     # create a substring of the start of the email to the @ symbol
     email_sub = email.split("@")[0]
 
-    organizations = get_user_organizations()
-    organization = None
-    for org in organizations["organizations"]:
-        if org["organization"]["id"] == organization_id:
-            organization = org["organization"]["name"]
-
     # create an updated profile name that is unique to the user and their workspace 
-    return format_agent_profile_name( f"soda-pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization.lower()}")
+    return format_agent_profile_name( f"soda-pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization_id.lower()}")
   
 
 def bf_add_account_username(keyname, key, secret):
