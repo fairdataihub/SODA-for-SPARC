@@ -917,10 +917,10 @@ const run_pre_flight_checks = async (check_update = true) => {
         const { value: deleteFilesRerunChecks } = await Swal.fire({
           icon: "error",
           title: "The Pennsieve Agent Failed to Start Due to A Duplicate User Profile Being Detected",
-          html: `This is a known issue with the Pennsieve Agent. 
+          html: `<p style="text-align: left">This is a known issue with the Pennsieve Agent. 
                  To resolve it SODA will need to delete the Pennsieve Agent database files. 
-                 This will not affect your Pennsieve account, any of your existing datasets, or upload manifests stored on Pennsieve.
-                 You will lose any upload manifests that are stored locally in the Pennsieve Agent database files.`,
+                 This will not affect your Pennsieve account, any of your existing datasets, or any existing upload manifests stored on Pennsieve.
+                 You will lose any upload manifests that are stored locally in the Pennsieve Agent database files.</p>`,
           width: 800,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -929,18 +929,19 @@ const run_pre_flight_checks = async (check_update = true) => {
           showCancelButton: true,
           showCloseButton: true,
           reverseButtons: reverseSwalButtons,
-          confirmButtonText: "Delete Database Files and Try Again",
+          confirmButtonText: "Delete Database Files and Start Agent",
           cancelButtonText: "Exit SODA",
         })
 
         if (!deleteFilesRerunChecks) {
-          await ipcRenderer.invoke("quit-app");
+          return await ipcRenderer.invoke("quit-app");
         }
 
         // wait for the Agent to stop using the db files so they may be deleted
         await wait(1000)
         const fs = require('fs').promises
         const fsSync = require('fs')
+        // delete any db files that exist
         if (fsSync.existsSync(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db`))
           await fs.unlink(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db`);
         if (fsSync.existsSync(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db-shm`))
