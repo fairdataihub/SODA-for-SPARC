@@ -6460,11 +6460,22 @@ const openPage = async (targetPageID) => {
       }
     }
 
-    if (targetPageID === "guided-generate-dataset-locally-tab") {
-      document
-        .getElementById("guided-section-local-dataset-generation-progresss")
-        .classList.add("hidden");
-      hideDatasetMetadataGenerationTableRows("local");
+    if (targetPageID === "guided-create-local-copy-tab") {
+      // Show the dataset structure preview using jsTree
+      guidedShowTreePreview(
+        sodaJSONObj["digital-metadata"]["name"],
+        "guided-folder-and-metadata-structure-review"
+      );
+
+      // If the dataset was not started from Pennsieve, show the "Copy dataset" section
+      // (We don't display this feature when starting from Pennsieve because we don't currently have the ability
+      // to copy a dataset from Pennsieve to the user's local system)
+      const createCopySection = document.getElementById("guided-section-create-local-dataset-copy");
+      if (sodaJSONObj["starting-point"]["type"] === "new") {
+        createCopySection.classList.remove("hidden");
+      } else {
+        createCopySection.classList.add("hidden");
+      }
     }
 
     if (targetPageID === "guided-dataset-generation-confirmation-tab") {
@@ -14253,15 +14264,6 @@ const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsA
 };
 
 //********************************************************************************************************
-/*  Commented out for gm metadata analytics release
-// Add click event listener to the button triggering local dataset generation
-document
-  .getElementById("guided-button-generate-local-dataset-copy")
-  .addEventListener("click", () => {
-    // Send an IPC message to select the local dataset generation path
-    ipcRenderer.send("guided-select-local-dataset-generation-path");
-  });
-*/
 
 const convertBytesToMb = (bytes) => {
   return roundToHundredth(bytes / 1024 ** 2);
@@ -14271,6 +14273,14 @@ const convertBytesToGb = (bytes) => {
   return roundToHundredth(bytes / 1024 ** 3);
 };
 
+// Add click event listener to the button triggering local dataset generation
+document
+  .getElementById("guided-button-generate-local-dataset-copy")
+  .addEventListener("click", () => {
+    // Send an IPC message to select the local dataset generation path
+    ipcRenderer.send("guided-select-local-dataset-generation-path");
+  });
+
 // Listen for the selected path for local dataset generation
 ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, filePath) => {
   try {
@@ -14278,10 +14288,13 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
     const diskSpaceRes = await checkDiskSpace(filePath);
     const freeMemoryInBytes = diskSpaceRes.free;
 
-    console.log("Free memory in bytes: ", diskSpaceRes.free);
-    const freeMemoryInMb = convertBytesToMb(diskSpaceRes.free);
+    console.log("Free memory in bytes: ", freeMemoryInBytes);
+    const freeMemoryInMb = convertBytesToMb(freeMemoryInBytes);
+    const freeMemoryInGb = convertBytesToGb(freeMemoryInBytes);
+
     console.log("Free memory in MB: ", freeMemoryInMb);
-    console.log("Free memory in GB: ", convertBytesToGb(diskSpaceRes.free));
+    console.log("Free memory in GB: ", freeMemoryInGb);
+
     // Get the size of the dataset that will be generated
     const localDatasetSizeReq = await client.post(
       "/curate_datasets/dataset_size",
@@ -14290,7 +14303,9 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
     );
     const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
     const datasetSizeInMb = convertBytesToMb(localDatasetSizeInBytes);
-    console.log("Dataset size in GB: ", convertBytesToGb(localDatasetSizeInBytes));
+    const datasetSizeInGb = convertBytesToGb(localDatasetSizeInBytes);
+    console.log("Dataset size in MB: ", datasetSizeInMb);
+    console.log("Dataset size in GB: ", datasetSizeInGb);
 
     // Check if there is enough free space on disk for the dataset
     if (freeMemoryInMb < datasetSizeInMb) {
@@ -14323,7 +14338,7 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
     // Remove unnecessary key from sodaJSONObjCopy since we don't need to
     // check if the account details are valid during local generation
     delete sodaJSONObjCopy["bf-account-selected"];
-
+    console.log("making post request to /curate_datasets/curation");
     // Start the local dataset generation process
     client.post(
       `/curate_datasets/curation`,
@@ -14333,8 +14348,8 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
 
     // Track the status of local dataset generation
     const trackLocalDatasetGenerationProgress = async () => {
-      try {
-        while (true) {
+      while (true) {
+        try {
           const localDatasetGenerationProgress = await client.get(
             `/curate_datasets/curation/progress`
           );
@@ -14343,20 +14358,21 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
 
           if (mainCurateStatus === "Done") {
             console.log("done");
-            clearInterval(progressTrackerInterval); // Stop the polling interval since the generation is done
-            break;
+            return;
           } else {
             if (data["main_total_generate_dataset_size"]) {
               console.log(localDatasetSizeInBytes / data["main_total_generate_dataset_size"]);
             }
             await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second before polling again
           }
+        } catch (error) {
+          console.log("errorrr", error);
+          throw new Error(userErrorMessage(error));
         }
-      } catch (error) {
-        console.log("Error tracking progress", error);
-        clearInterval(progressTrackerInterval); // Stop the polling interval on error
       }
     };
+
+    await trackLocalDatasetGenerationProgress();
 
     // Set interval to track progress every second
     let progressTrackerInterval = setInterval(trackLocalDatasetGenerationProgress, 1000);
