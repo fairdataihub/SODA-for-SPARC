@@ -913,11 +913,43 @@ const run_pre_flight_checks = async (check_update = true) => {
       // check if the Agent is failing to start due to Unique constraint violation 
       // if so then we prompt the user to allow us to remove the pennsieve Agent DB files and try again 
       if (emessage.includes("UNIQUE constraint failed: user_settings.user_id, user_settings.profile")) {
-        console.log("Removing those pesky db files")
+
+        const { value: deleteFilesRerunChecks } = await Swal.fire({
+          icon: "error",
+          title: "The Pennsieve Agent Failed to Start Due to A Duplicate User Profile Being Detected",
+          html: `This is a known issue with the Pennsieve Agent. 
+                 To resolve it SODA will need to delete the Pennsieve Agent database files. 
+                 This will not affect your Pennsieve account, any of your existing datasets, or upload manifests stored on Pennsieve.
+                 You will lose any upload manifests that are stored locally in the Pennsieve Agent database files.`,
+          width: 800,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showCancelButton: true,
+          showCloseButton: true,
+          reverseButtons: reverseSwalButtons,
+          confirmButtonText: "Delete Database Files and Try Again",
+          cancelButtonText: "Exit SODA",
+        })
+
+        if (!deleteFilesRerunChecks) {
+          await ipcRenderer.invoke("quit-app");
+        }
+
+        // wait for the Agent to stop using the db files so they may be deleted
+        await wait(1000)
         const fs = require('fs').promises
-        await fs.unlink(`${app.getPath("home")}/pennsieve_agent.db`);
-        await fs.unlink(`${app.getPath("home")}/pennsieve_agent.db-shm`);
-        await fs.unlink(`${app.getPath("home")}/pennsieve_agent.db-wal`);
+        const fsSync = require('fs')
+        if (fsSync.existsSync(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db`))
+          await fs.unlink(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db`);
+        if (fsSync.existsSync(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db-shm`))
+          await fs.unlink(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db-shm`);
+        if (fsSync.existsSync(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db-wal`))
+          await fs.unlink(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db-wal`);
+
+        // rerun checks 
+        return await run_pre_flight_checks();
       }
 
       const { value: rerunPreFlightChecks } = await Swal.fire({
@@ -1890,7 +1922,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
             didOpen: () => {
               Swal.showLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           generateSubjectsFileHelper(false);
         }
       });
@@ -1906,7 +1938,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       generateSubjectsFileHelper(false);
     }
   }
@@ -1989,7 +2021,7 @@ const generateSubjectsFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   try {
     log.info(`Generating a subjects file.`);
@@ -2099,7 +2131,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
             didOpen: () => {
               Swal.showLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           generateSamplesFileHelper(uploadBFBoolean);
         }
       });
@@ -2115,7 +2147,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       generateSamplesFileHelper(uploadBFBoolean);
     }
   }
@@ -2197,7 +2229,7 @@ const generateSamplesFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   try {
     let samplesFileResponse = await client.post(
@@ -2717,7 +2749,7 @@ const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) =
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
@@ -6720,9 +6752,8 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           ${dragDropInstructionsText}
         </p>
         <p class="text-center">
-          You may also <b>add</b> or <b>import</b> ${
-            folderType === undefined ? "folders or files" : folderType + " data"
-          } using the buttons in the upper right corner
+          You may also <b>add</b> or <b>import</b> ${folderType === undefined ? "folders or files" : folderType + " data"
+      } using the buttons in the upper right corner
         </p>
       </div>`
     );
@@ -7410,7 +7441,7 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
     if (
       "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
       sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
-        "forTreeview"
+      "forTreeview"
       ]
     ) {
       delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
