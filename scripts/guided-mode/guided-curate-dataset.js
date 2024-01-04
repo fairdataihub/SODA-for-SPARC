@@ -13788,7 +13788,7 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
       kombuchaEnums.Label.BANNER_SIZE,
       kombuchaEnums.Status.SUCCESS,
       {
-        banner_image_size: bannerImageSize,
+        value: bannerImageSize,
         dataset_name: guidedGetDatasetName(sodaJSONObj),
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
@@ -13806,7 +13806,7 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
       kombuchaEnums.Label.BANNER_SIZE,
       kombuchaEnums.Status.FAIL,
       {
-        banner_image_size: bannerImageSize,
+        value: bannerImageSize,
         dataset_name: guidedGetDatasetName(sodaJSONObj),
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
