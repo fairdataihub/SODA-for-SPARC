@@ -14350,32 +14350,29 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
     const trackLocalDatasetGenerationProgress = async () => {
       while (true) {
         try {
-          const localDatasetGenerationProgress = await client.get(
-            `/curate_datasets/curation/progress`
-          );
-          const { data } = localDatasetGenerationProgress;
+          const response = await client.get(`/curate_datasets/curation/progress`);
+          const { data } = response;
           const mainCurateStatus = data["main_curate_status"];
 
           if (mainCurateStatus === "Done") {
             console.log("done");
-            return;
-          } else {
-            if (data["main_total_generate_dataset_size"]) {
-              console.log(localDatasetSizeInBytes / data["main_total_generate_dataset_size"]);
-            }
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second before polling again
+            break; // Exit the loop when generation is done
           }
+
+          const progress = data["main_total_generate_dataset_size"]
+            ? localDatasetSizeInBytes / data["main_total_generate_dataset_size"]
+            : null;
+          console.log(progress); // Log progress or null if unavailable
+
+          await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
         } catch (error) {
-          console.log("errorrr", error);
-          throw new Error(userErrorMessage(error));
+          console.error("Error tracking progress:", error);
+          throw new Error(userErrorMessage(error)); // Re-throw with user-friendly message
         }
       }
     };
 
     await trackLocalDatasetGenerationProgress();
-
-    // Set interval to track progress every second
-    let progressTrackerInterval = setInterval(trackLocalDatasetGenerationProgress, 1000);
 
     // Generate all dataset metadata files
     await guidedGenerateSubjectsMetadata(path.join(filePath, guidedDatasetName, "subjects.xlsx"));
