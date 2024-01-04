@@ -1,7 +1,18 @@
 {
+  "12.5.0": {
+    "announcements": {
+      "bug-fixes": [],
+      "features": [
+        "SODA will help resolve certain issues with starting the Pennsieve Agent that some users experience.",
+        "SODA will show high level folders in Guided Mode and Free Form mode file structure review. These folders are expandable to show the rest of the dataset structure."
+      ]
+    }
+  },
   "12.4.2": {
     "announcements": {
-      "bug-fixes": ["Fixed Pennsieve login bug for accounts with Emails containing periods."],
+      "bug-fixes": [
+        "Fixed Pennsieve login bug for accounts with Emails containing periods."
+      ],
       "features": []
     }
   },
@@ -40,7 +51,9 @@
   },
   "12.3.1": {
     "announcements": {
-      "bug-fixes": ["Fixed a bug allowing subjects and samples to be created without a name."],
+      "bug-fixes": [
+        "Fixed a bug allowing subjects and samples to be created without a name."
+      ],
       "features": []
     }
   },
