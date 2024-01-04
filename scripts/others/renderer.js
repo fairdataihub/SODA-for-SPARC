@@ -910,6 +910,16 @@ const run_pre_flight_checks = async (check_update = true) => {
       clientError(error);
       const emessage = userErrorMessage(error);
 
+      // check if the Agent is failing to start due to Unique constraint violation 
+      // if so then we prompt the user to allow us to remove the pennsieve Agent DB files and try again 
+      if (emessage.includes("UNIQUE constraint failed: user_settings.user_id, user_settings.profile")) {
+        console.log("Removing those pesky db files")
+        const fs = require('fs').promises
+        await fs.unlink(`${app.getPath("home")}/pennsieve_agent.db`);
+        await fs.unlink(`${app.getPath("home")}/pennsieve_agent.db-shm`);
+        await fs.unlink(`${app.getPath("home")}/pennsieve_agent.db-wal`);
+      }
+
       const { value: rerunPreFlightChecks } = await Swal.fire({
         icon: "info",
         title: "The Pennsieve Agent failed to start",
