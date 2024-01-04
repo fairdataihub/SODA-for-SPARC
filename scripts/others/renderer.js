@@ -910,9 +910,9 @@ const run_pre_flight_checks = async (check_update = true) => {
       clientError(error);
       const emessage = userErrorMessage(error);
 
-      // check if the Agent is failing to start due to Unique constraint violation
+      // check if the Agent is failing to start due to Unique constraint violation or due to the Agent caching an outdated username and password after the user updates their Key + Secret
       // if so then we prompt the user to allow us to remove the pennsieve Agent DB files and try again
-      if (emessage.includes("UNIQUE constraint failed:")) {
+      if (emessage.includes("UNIQUE constraint failed:") || emessage.includes("NotAuthorizedException: Incorrect username or password.")) {
         const { value: deleteFilesRerunChecks } = await Swal.fire({
           icon: "error",
           title: "The Pennsieve Agent Failed to Start",
