@@ -913,15 +913,16 @@ const run_pre_flight_checks = async (check_update = true) => {
       // check if the Agent is failing to start due to Unique constraint violation
       // if so then we prompt the user to allow us to remove the pennsieve Agent DB files and try again
       if (
-        emessage.includes("UNIQUE constraint failed: user_settings.user_id, user_settings.profile")
+        emessage.includes("UNIQUE constraint failed:")
       ) {
         const { value: deleteFilesRerunChecks } = await Swal.fire({
           icon: "error",
-          title: "The Pennsieve Agent Failed to Start Due to A Duplicate User Profile Being Detected",
-          html: `<p style="text-align: left">This is a known issue with the Pennsieve Agent. 
-                 To resolve it SODA will need to delete the Pennsieve Agent database files. 
-                 This will not affect your Pennsieve account, any of your existing datasets, or any existing upload manifests stored on Pennsieve.
-                 You will lose any upload manifests that are stored locally in the Pennsieve Agent database files.</p>`,
+          title: "The Pennsieve Agent Failed to Start",
+          html: `
+                <br />
+                <div class="div--code-block-error">${emessage}</div>
+                <br />
+                <p style="text-align: left">This is a known issue with the Pennsieve Agent and is typically resolved by deleting the local Pennsieve Agent database files from your computer. Would you like SODA to do that and restart the Agent?</p>`,
           width: 800,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -930,12 +931,12 @@ const run_pre_flight_checks = async (check_update = true) => {
           showCancelButton: true,
           showCloseButton: true,
           reverseButtons: reverseSwalButtons,
-          confirmButtonText: "Delete Database Files and Start Agent",
-          cancelButtonText: "Exit SODA",
+          confirmButtonText: "Yes",
+          cancelButtonText: "No",
         });
 
         if (!deleteFilesRerunChecks) {
-          return await ipcRenderer.invoke("quit-app");
+          return false
         }
 
         // wait for the Agent to stop using the db files so they may be deleted
