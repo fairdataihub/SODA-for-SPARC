@@ -7310,7 +7310,7 @@ const setActiveSubPage = (pageIdToActivate) => {
 };
 
 function setGuidedProgressBarValue(destination, value) {
-  const progressBar = document.querySelector(`#guided-progress-bar-${destination}-generation`);
+  const progressBar = document.getElementById(`guided-progress-bar-${destination}-generation`);
   if (progressBar) {
     progressBar.setAttribute("value", value);
   } else {
@@ -14396,7 +14396,7 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
 
   // Generate the subjects metadata file
   try {
-    await client.post(
+    const res = await client.post(
       `/prepare_metadata/subjects_file`,
       {
         filepath: generationDestination === "Pennsieve" ? "" : destination,
@@ -14411,6 +14411,9 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
         },
       }
     );
+
+    // Get the size of the subjects metadata file for analytics
+    const subjectsMetadataFileSizeForAnalytics = res.data;
 
     // If the subjects metadata is being generated on Pennsieve, update the
     // subjects metadata table row to indicate the upload was successful
@@ -14427,6 +14430,19 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
       kombuchaEnums.Label.SUBJECTS_XLSX,
       kombuchaEnums.Status.SUCCESS,
       guidedCreateEventDataPrepareMetadata(generationDestination, 1)
+    );
+
+    // Send the size of the subjects file to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SUBJECTS_XLSX_SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      guidedCreateEventDataPrepareMetadata(
+        generationDestination,
+        subjectsMetadataFileSizeForAnalytics
+      )
     );
   } catch (error) {
     const emessage = userErrorMessage(error);
@@ -14472,7 +14488,7 @@ const guidedGenerateSamplesMetadata = async (bfAccount, datasetName, samplesTabl
   }
 
   try {
-    await client.post(
+    const res = await client.post(
       `/prepare_metadata/samples_file`,
       {
         filepath: "",
@@ -14486,10 +14502,14 @@ const guidedGenerateSamplesMetadata = async (bfAccount, datasetName, samplesTabl
         },
       }
     );
+    // Get the size of the samples metadata file for analytics
+    const samplesMetadataFileSizeForAnalytics = res.data.size;
+
     guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "success");
     samplesMetadataUploadText.innerHTML = `Samples metadata successfully uploaded`;
     sodaJSONObj["previously-uploaded-data"]["samples-metadata"] = samplesTableData;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+
     // Send successful samples metadata generation event to Kombucha
     ipcRenderer.send(
       "track-kombucha",
@@ -14498,6 +14518,15 @@ const guidedGenerateSamplesMetadata = async (bfAccount, datasetName, samplesTabl
       kombuchaEnums.Label.SAMPLES_XLSX,
       kombuchaEnums.Status.SUCCESS,
       guidedCreateEventDataPrepareMetadata("Pennsieve", 1)
+    );
+    // Send the size of the samples file to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SAMPLES_XLSX_SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      guidedCreateEventDataPrepareMetadata("Pennsieve", samplesMetadataFileSizeForAnalytics)
     );
   } catch (error) {
     const emessage = userErrorMessage(error);
@@ -14539,7 +14568,7 @@ const guidedGenerateSubmissionMetadata = async (bfAccount, datasetName, submissi
   }
 
   try {
-    await client.post(
+    const res = await client.post(
       `/prepare_metadata/submission_file`,
       {
         submission_file_rows: submissionMetadataJSON,
@@ -14553,6 +14582,9 @@ const guidedGenerateSubmissionMetadata = async (bfAccount, datasetName, submissi
         },
       }
     );
+    // Get the size of the submission metadata file for analytics
+    const submissionMetadataFileSizeForAnalytics = res.data.size;
+
     guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "success");
     submissionMetadataUploadText.innerHTML = `Submission metadata successfully uploaded`;
     sodaJSONObj["previously-uploaded-data"]["submission-metadata"] = submissionMetadataJSON;
@@ -14566,6 +14598,15 @@ const guidedGenerateSubmissionMetadata = async (bfAccount, datasetName, submissi
       kombuchaEnums.Label.SUBMISSION_XLSX,
       kombuchaEnums.Status.SUCCESS,
       guidedCreateEventDataPrepareMetadata("Pennsieve", 1)
+    );
+    // Send the size of the submission file to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SUBMISSION_XLSX_SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      guidedCreateEventDataPrepareMetadata("Pennsieve", submissionMetadataFileSizeForAnalytics)
     );
   } catch (error) {
     const emessage = userErrorMessage(error);
@@ -14628,7 +14669,7 @@ const guidedGenerateDatasetDescriptionMetadata = async (
   }
 
   try {
-    await client.post(
+    const res = await client.post(
       `/prepare_metadata/dataset_description_file`,
       {
         selected_account: bfAccount,
@@ -14645,6 +14686,9 @@ const guidedGenerateDatasetDescriptionMetadata = async (
         },
       }
     );
+    // Get the size of the dataset_description metadata file for analytics
+    const datasetDescriptionMetadataFileSizeForAnalytics = res.data.size;
+
     guidedUploadStatusIcon(
       "guided-dataset-description-metadata-pennsieve-genration-status",
       "success"
@@ -14667,6 +14711,18 @@ const guidedGenerateDatasetDescriptionMetadata = async (
       kombuchaEnums.Label.DATASET_DESCRIPTION_XLSX,
       kombuchaEnums.Status.SUCCESS,
       guidedCreateEventDataPrepareMetadata("Pennsieve", 1)
+    );
+    // Send the size of the dataset_description file to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.DATASET_DESCRIPTION_XLSX_SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      guidedCreateEventDataPrepareMetadata(
+        "Pennsieve",
+        datasetDescriptionMetadataFileSizeForAnalytics
+      )
     );
   } catch (error) {
     const emessage = userErrorMessage(error);
@@ -14717,11 +14773,12 @@ const guidedGenerateCodeDescriptionMetadata = async (
   guidedUploadStatusIcon("guided-code-description-metadata-pennsieve-genration-status", "loading");
 
   try {
-    await client.post("/prepare_metadata/code_description_file", {
+    const res = await client.post("/prepare_metadata/code_description_file", {
       filepath: codeDescriptionFilePath,
       selected_account: bfAccount,
       selected_dataset: datasetName,
     });
+
     guidedUploadStatusIcon(
       "guided-code-description-metadata-pennsieve-genration-status",
       "success"
@@ -14797,7 +14854,7 @@ const guidedGenerateREADMEorCHANGESMetadata = async (
   }
 
   try {
-    await client.post(
+    const res = await client.post(
       "/prepare_metadata/readme_changes_file",
       {
         text: readmeOrChangesMetadata,
@@ -14810,6 +14867,9 @@ const guidedGenerateREADMEorCHANGESMetadata = async (
         },
       }
     );
+    // Get the size of the dataset_description metadata file for analytics
+    const readmeOrChangesMetadataFileSizeForAnalytics = res.data.size;
+
     guidedUploadStatusIcon(
       `guided-${readmeORchanges}-metadata-pennsieve-genration-status`,
       "success"
@@ -14829,6 +14889,17 @@ const guidedGenerateREADMEorCHANGESMetadata = async (
         : kombuchaEnums.Label.CHANGES_TXT,
       kombuchaEnums.Status.SUCCESS,
       guidedCreateEventDataPrepareMetadata("Pennsieve", 1)
+    );
+    // Send the size of the dataset_description file to Kombucha
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      readmeORchanges === "readme"
+        ? kombuchaEnums.Label.README_TXT_SIZE
+        : kombuchaEnums.Label.CHANGES_TXT_SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      guidedCreateEventDataPrepareMetadata("Pennsieve", readmeOrChangesMetadataFileSizeForAnalytics)
     );
   } catch (error) {
     const emessage = userErrorMessage(error);
