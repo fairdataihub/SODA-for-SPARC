@@ -13626,12 +13626,6 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
     );
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
-      guidedGetDatasetId(sodaJSONObj)
-    );
   } catch (error) {
     // Send failed dataset subtitle upload event to Kombucha
     ipcRenderer.send(
@@ -13714,12 +13708,6 @@ const guidedAddDatasetDescription = async (
         dataset_name: guidedGetDatasetName(sodaJSONObj),
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
-    );
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
-      guidedGetDatasetId(sodaJSONObj)
     );
   } catch (error) {
     // Send failed dataset description upload event to Kombucha
@@ -13805,12 +13793,6 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
     );
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-      guidedGetDatasetId(sodaJSONObj)
-    );
   } catch (error) {
     console.error(error);
     datasetBannerImageUploadText.innerHTML = "Failed to add a dataset banner image.";
@@ -13884,12 +13866,6 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
     );
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
-      guidedGetDatasetId(sodaJSONObj)
-    );
   } catch (error) {
     console.error(error);
     datasetLicenseUploadText.innerHTML = "Failed to add a dataset license.";
@@ -13960,12 +13936,6 @@ const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
         dataset_name: guidedGetDatasetName(sodaJSONObj),
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
-    );
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
-      guidedGetDatasetId(sodaJSONObj)
     );
   } catch (error) {
     datasetTagsUploadText.innerHTML = "Failed to add dataset tags.";
@@ -14083,12 +14053,6 @@ const guidedGrantUserPermission = async (
         dataset_name: guidedGetDatasetName(sodaJSONObj),
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
-    );
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-      guidedGetDatasetId(sodaJSONObj)
     );
   } catch (error) {
     guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "error");
@@ -14231,12 +14195,6 @@ const guidedGrantTeamPermission = async (
         dataset_name: guidedGetDatasetName(sodaJSONObj),
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
-    );
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-      guidedGetDatasetId(sodaJSONObj)
     );
   } catch (error) {
     if (selectedRole === "remove current permissions") {
