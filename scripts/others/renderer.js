@@ -910,10 +910,11 @@ const run_pre_flight_checks = async (check_update = true) => {
       clientError(error);
       const emessage = userErrorMessage(error);
 
-      // check if the Agent is failing to start due to Unique constraint violation 
-      // if so then we prompt the user to allow us to remove the pennsieve Agent DB files and try again 
-      if (emessage.includes("UNIQUE constraint failed: user_settings.user_id, user_settings.profile")) {
-
+      // check if the Agent is failing to start due to Unique constraint violation
+      // if so then we prompt the user to allow us to remove the pennsieve Agent DB files and try again
+      if (
+        emessage.includes("UNIQUE constraint failed: user_settings.user_id, user_settings.profile")
+      ) {
         const { value: deleteFilesRerunChecks } = await Swal.fire({
           icon: "error",
           title: "The Pennsieve Agent Failed to Start Due to A Duplicate User Profile Being Detected",
@@ -931,7 +932,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           reverseButtons: reverseSwalButtons,
           confirmButtonText: "Delete Database Files and Start Agent",
           cancelButtonText: "Exit SODA",
-        })
+        });
 
         if (!deleteFilesRerunChecks) {
           return await ipcRenderer.invoke("quit-app");
@@ -949,7 +950,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         if (fsSync.existsSync(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db-wal`))
           await fs.unlink(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db-wal`);
 
-        // rerun checks 
+        // rerun checks
         return await run_pre_flight_checks();
       }
 
@@ -1923,7 +1924,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
             didOpen: () => {
               Swal.showLoading();
             },
-          }).then((result) => { });
+          }).then((result) => {});
           generateSubjectsFileHelper(false);
         }
       });
@@ -1939,7 +1940,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       generateSubjectsFileHelper(false);
     }
   }
@@ -2022,7 +2023,7 @@ const generateSubjectsFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   try {
     log.info(`Generating a subjects file.`);
@@ -2132,7 +2133,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
             didOpen: () => {
               Swal.showLoading();
             },
-          }).then((result) => { });
+          }).then((result) => {});
           generateSamplesFileHelper(uploadBFBoolean);
         }
       });
@@ -2148,7 +2149,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       generateSamplesFileHelper(uploadBFBoolean);
     }
   }
@@ -2230,7 +2231,7 @@ const generateSamplesFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   try {
     let samplesFileResponse = await client.post(
@@ -2750,7 +2751,7 @@ const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) =
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
@@ -6753,8 +6754,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           ${dragDropInstructionsText}
         </p>
         <p class="text-center">
-          You may also <b>add</b> or <b>import</b> ${folderType === undefined ? "folders or files" : folderType + " data"
-      } using the buttons in the upper right corner
+          You may also <b>add</b> or <b>import</b> ${
+            folderType === undefined ? "folders or files" : folderType + " data"
+          } using the buttons in the upper right corner
         </p>
       </div>`
     );
@@ -7442,7 +7444,7 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
     if (
       "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
       sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
-      "forTreeview"
+        "forTreeview"
       ]
     ) {
       delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
