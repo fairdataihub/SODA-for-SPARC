@@ -9,10 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Feature Additions:
 
-  - SODA will help resolve certain issues with starting the Pennsieve Agent that some users experience. 
-  - SODA will show high level folders in Guided Mode and Free Form mode file structure review. These folders are expandable to show the rest of the dataset structure. 
-  - SODA tracks the size and amount of metadadta files created in Guided Mode more granularly. 
-
+- SODA will help resolve certain issues with starting the Pennsieve Agent that some users experience.
+- SODA will show high level folders in Guided Mode and Free Form mode file structure review. These folders are expandable to show the rest of the dataset structure.
+- SODA tracks the size and amount of metadadta files created in Guided Mode more granularly.
 
 ## v.12.4.2 - 2023-12-21
 
