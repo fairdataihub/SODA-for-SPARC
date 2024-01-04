@@ -940,9 +940,9 @@ const run_pre_flight_checks = async (check_update = true) => {
         }
 
         // wait for the Agent to stop using the db files so they may be deleted
-        await wait(1000)
-        const fs = require('fs').promises
-        const fsSync = require('fs')
+        await wait(1000);
+        const fs = require("fs").promises;
+        const fsSync = require("fs");
         // delete any db files that exist
         if (fsSync.existsSync(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db`))
           await fs.unlink(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db`);
