@@ -912,9 +912,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
       // check if the Agent is failing to start due to Unique constraint violation
       // if so then we prompt the user to allow us to remove the pennsieve Agent DB files and try again
-      if (
-        emessage.includes("UNIQUE constraint failed:")
-      ) {
+      if (emessage.includes("UNIQUE constraint failed:")) {
         const { value: deleteFilesRerunChecks } = await Swal.fire({
           icon: "error",
           title: "The Pennsieve Agent Failed to Start",
@@ -936,7 +934,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         });
 
         if (!deleteFilesRerunChecks) {
-          return false
+          return false;
         }
 
         // wait for the Agent to stop using the db files so they may be deleted
