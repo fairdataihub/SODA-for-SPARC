@@ -1,9 +1,28 @@
 /*
 This file contains all of the functions related to the submission.xlsx file
 */
+import Swal from "sweetalert2";
+import lottie from "lottie-web";
+import 'fomantic-ui/dist/semantic';
+import introJs from "intro.js";
+import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
+import client from '../client'
+import kombuchaEnums from "../analytics/analytics-enums";
+import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
+import api from "../others/api/api"
+import {successCheck} from "../../assets/lotties/lotties"
+
+
+
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
+
+$('.ui.accordion').accordion();
 
 // List of funding consortiums taken from the 2.1 submission file
-const sparcFundingConsortiums = ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"];
+window.sparcFundingConsortiums = ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"];
 
 // event listeners for opendropdown prompt
 document.querySelectorAll(".submission-change-current-account").forEach((element) => {
@@ -42,7 +61,7 @@ const renderMilestoneSelectionTable = (milestoneData) => {
   milestonesTableContainer.innerHTML = milestoneTableRows;
 };
 
-const window.resetFundingConsortiumDropdown = () => {
+window.resetFundingConsortiumDropdown = () => {
   $("#ffm-select-sparc-funding-consortium").val("").change();
 };
 
@@ -59,7 +78,7 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
 
   let milestoneData;
   let completionDate;
-  const milestoneValues = await Swal.mixin({
+  const Queue = await Swal.mixin({
     confirmButtonText: "Next &rarr;",
     showCancelButton: true,
     progressSteps: ["1", "2"],
@@ -67,12 +86,16 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
-  }).queue([
+    progressSteps: ["1", "2"]
+  })
+
+
+  await Queue.fire(      
     {
       title: "Select the milestones associated with this submission:",
       html: `
           <div class="scrollable-swal-content-container" id="milestone-selection-table-container">
-             <table
+            <table
                 class="ui celled striped table"
                 id="milestones-table"
                 style="margin-bottom: 25px; width: 800px"
@@ -89,7 +112,7 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
               </table>
         
           </div>
-        `,
+      `,
       didOpen: () => {
         renderMilestoneSelectionTable(milestoneRes);
       },
@@ -99,9 +122,12 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
           ? Swal.showValidationMessage("Please select at least one milestone")
           : (milestoneData = checkedMilestoneData);
       },
-    },
-    {
-      title: "Select the completion date associated with this submission:",
+      curentProgress: 0
+    })
+
+
+  await Queue.fire({
+    title: "Select the completion date associated with this submission:",
       html: `
           <div class="scrollable-swal-content-container">
             <div class="justify-center">
@@ -159,8 +185,9 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
           completionDate = selectedCompletionDate.value;
         }
       },
-    },
-  ]);
+      currentProgressStep: 1
+  })
+
 
   if (milestoneData && completionDate) {
     // Fill the SPARC award input with the imported SPARC award if it was found (otherwise it will be an empty string)
@@ -181,8 +208,8 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
       window.milestoneTagify1.addTags(uniqueMilestones);
     }
     if (curationMode === "guided") {
-      guidedSubmissionTagsTagifyManual.removeAllTags();
-      guidedSubmissionTagsTagifyManual.addTags(uniqueMilestones);
+      window.guidedSubmissionTagsTagifyManual.removeAllTags();
+      window.guidedSubmissionTagsTagifyManual.addTags(uniqueMilestones);
     }
 
     if (curationMode === "free-form") {
@@ -374,10 +401,10 @@ const getCheckedMilestones = () => {
   });
 };
 
-const window.openDDDImport = async (curationMode) => {
-  let filepath = await ipcRenderer.invoke("open-file-dialog-data-deliverables");
+window.openDDDImport = async (curationMode) => {
+  let filepath = await window.electron.ipcRenderer.invoke("open-file-dialog-data-deliverables");
   if (filepath.length > 0) {
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Success",
       "Prepare Metadata - submission - import-DDD",
@@ -385,7 +412,7 @@ const window.openDDDImport = async (curationMode) => {
       1
     );
     if (curationMode === "guided") {
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath[0];
+      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath[0];
       let swal_container = document.getElementsByClassName("swal2-popup")[0];
       let swal_actions = document.getElementsByClassName("swal2-actions")[0];
       let swal_content = document.getElementsByClassName("swal2-content")[0];
@@ -451,7 +478,7 @@ const onboardingSubmission = async () => {
   }, 1500);
 };
 
-function window.validateSubmissionFileInputs() {
+window.validateSubmissionFileInputs = () => {
   // Retrieve the value from the funding consortium dropdown and return false if it is empty
   const fundingConsortiumFromDropdown = $("#ffm-select-sparc-funding-consortium").val();
   if (fundingConsortiumFromDropdown === "") {
@@ -500,7 +527,7 @@ function window.validateSubmissionFileInputs() {
 // Set the funding consortium dropdown options / set up select picker
 document.getElementById("ffm-select-sparc-funding-consortium").innerHTML = `
   <option value="">Select a funding consortium</option>
-    ${sparcFundingConsortiums
+    ${window.sparcFundingConsortiums
       .map((consortium) => {
         return `<option value="${consortium}">${consortium}</option>`;
       })
@@ -565,7 +592,7 @@ window.resetFundingConsortiumDropdown();
 var submissionDestinationPath = "";
 
 $(document).ready(function () {
-  ipcRenderer.on("selected-existing-submission", (event, filepath) => {
+  window.electron.ipcRenderer.on("selected-existing-submission", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath !== null) {
         document.getElementById("existing-submission-file-destination").placeholder = filepath[0];
@@ -590,11 +617,11 @@ $(document).ready(function () {
     }
   });
   // generate submission file
-  ipcRenderer.on("selected-destination-generate-submission-locally", (event, dirpath) => {
+  window.electron.ipcRenderer.on("selected-destination-generate-submission-locally", (event, dirpath) => {
     if (dirpath.length > 0) {
       document.getElementById("input-destination-generate-submission-locally").placeholder =
         dirpath[0];
-      var destinationPath = path.join(dirpath[0], "submission.xlsx");
+      var destinationPath = window.path.join(dirpath[0], "submission.xlsx");
       submissionDestinationPath = destinationPath;
       $("#div-confirm-destination-submission-locally").css("display", "flex");
       $($("#div-confirm-destination-submission-locally").children()[0]).css("display", "flex");
@@ -632,48 +659,50 @@ $(document).ready(function () {
 //Function is used for when user is creating Metadata files locally
 //At most the metadata files should be no bigger than 3MB
 //Function checks the selected storage device to ensure at least 3MB are available
-const checkStorage = (id) => {
+const checkStorage = async (id) => {
   let location = id;
   let threeMB = 3145728;
-  checkDiskSpace(location).then((diskSpace) => {
-    freeMem = diskSpace.free;
-    if (freeMem < threeMB) {
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "OK",
-        heightAuto: false,
-        icon: "warning",
-        showCancelButton: false,
-        title: "Not enough space",
-        text: "Please free up at least 3MB",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
 
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Prepare Metadata - Generate - Check Storage Space",
-        "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
-        1
-      );
+  window.log.info(`Checking available disk space for ${location}`);
+  let freeMem = await window.electron.ipcRenderer.invoke("getDiskSpace", location);
+  console.log("Free memory result: ", freeMem)
 
-      // stop execution to avoid logging a success case for the storage space check
-      return;
-    }
+  if (freeMem < threeMB) {
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "OK",
+      heightAuto: false,
+      icon: "warning",
+      showCancelButton: false,
+      title: "Not enough space",
+      text: "Please free up at least 3MB",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
 
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
-      "Success",
+      "Error",
       "Prepare Metadata - Generate - Check Storage Space",
       "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
       1
     );
-  });
+
+    // stop execution to avoid logging a success case for the storage space check
+    return;
+  }
+  
+  window.electron.ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Prepare Metadata - Generate - Check Storage Space",
+    "Free memory: " + freeMem + "\nMemory needed: " + threeMB,
+    1
+  );
 };
 
 const localSubmissionBtn = document.getElementById("btn-confirm-local-submission-destination");
@@ -748,7 +777,7 @@ localReadmeBtn.addEventListener(
   false
 );
 
-const window.generateSubmissionHelper = async (uploadBFBoolean) => {
+window.generateSubmissionHelper = async (uploadBFBoolean) => {
   let datasetName = $("#bf_dataset_load_submission").text().trim();
   if (uploadBFBoolean) {
     // Run pre-flight checks before uploading the submission file to Pennsieve
@@ -758,7 +787,7 @@ const window.generateSubmissionHelper = async (uploadBFBoolean) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked(window.defaultBfDataset, datasetName);
+    const isLocked = await api.isDatasetLocked(window.defaultBfAccount, datasetName);
 
     if (isLocked) {
       await Swal.fire({
@@ -855,6 +884,7 @@ const window.generateSubmissionHelper = async (uploadBFBoolean) => {
     }
   }
 
+  let res; 
   try {
     res = await client.post(
       `/prepare_metadata/submission_file`,
@@ -865,7 +895,7 @@ const window.generateSubmissionHelper = async (uploadBFBoolean) => {
       },
       {
         params: {
-          selected_account: window.defaultBfDataset,
+          selected_account: window.defaultBfAccount,
           selected_dataset: datasetName,
         },
       }
@@ -880,7 +910,7 @@ const window.generateSubmissionHelper = async (uploadBFBoolean) => {
       title: "Failed to generate the submission file",
     });
 
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_METADATA,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -916,7 +946,7 @@ const window.generateSubmissionHelper = async (uploadBFBoolean) => {
     uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
   );
 
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-kombucha",
     kombuchaEnums.Category.PREPARE_METADATA,
     kombuchaEnums.Action.GENERATE_METADATA,
@@ -929,7 +959,7 @@ const window.generateSubmissionHelper = async (uploadBFBoolean) => {
   const { size } = res.data;
 
   // log the size of the metadata file that was generated at varying levels of granularity
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-kombucha",
     kombuchaEnums.Category.PREPARE_METADATA,
     kombuchaEnums.Action.GENERATE_METADATA,
@@ -987,7 +1017,7 @@ $("#submission-completion-date").change(function () {
 
 $("#input-milestone-select-reupload").click(function () {
   document.getElementById("para-milestone-document-info-long-reupload").style.display = "none";
-  ipcRenderer.send("open-file-dialog-milestone-doc-reupload");
+  window.electron.ipcRenderer.send("open-file-dialog-milestone-doc-reupload");
 });
 
 $("#cancel-reupload-DDD").click(function () {
@@ -998,7 +1028,7 @@ $("#cancel-reupload-DDD").click(function () {
 });
 
 // import existing Changes/README file
-const window.showExistingSubmissionFile = (type) => {
+window.showExistingSubmissionFile = (type) => {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !== "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
@@ -1017,7 +1047,7 @@ const window.showExistingSubmissionFile = (type) => {
       reverseButtons: window.reverseSwalButtons,
     }).then((boolean) => {
       if (boolean.isConfirmed) {
-        ipcRenderer.send(`open-file-dialog-existing-submission`);
+        window.electron.ipcRenderer.send(`open-file-dialog-existing-submission`);
         document.getElementById(`existing-submission-file-destination`).placeholder = "Browse here";
         $(`#div-confirm-existing-submission-import`).hide();
         $($(`#div-confirm-existing-submission-import button`)[0]).hide();
@@ -1025,15 +1055,15 @@ const window.showExistingSubmissionFile = (type) => {
       }
     });
   } else {
-    ipcRenderer.send(`open-file-dialog-existing-submission`);
+    window.electron.ipcRenderer.send(`open-file-dialog-existing-submission`);
   }
 };
 
-const window.openFileBrowserDestination = (metadataType) => {
-  ipcRenderer.send(`open-destination-generate-${metadataType}-locally`);
+window.openFileBrowserDestination = (metadataType) => {
+  window.electron.ipcRenderer.send(`open-destination-generate-${metadataType}-locally`);
 };
 
-const window.importExistingSubmissionFile = (type) => {
+window.importExistingSubmissionFile = (type) => {
   let filePath = $(`#existing-submission-file-destination`).prop("placeholder");
   if (filePath === "Browse here") {
     Swal.fire("No file chosen", `Please select a path to your submission.xlsx file`, "error");
@@ -1046,7 +1076,7 @@ const window.importExistingSubmissionFile = (type) => {
       Destinations.LOCAL
     );
   } else {
-    if (path.parse(filePath).base !== "submission.xlsx") {
+    if (window.path.parse(filePath).base !== "submission.xlsx") {
       Swal.fire({
         title: "Incorrect file name",
         text: `Your file must be named submission.xlsx to be imported to SODA.`,
@@ -1082,7 +1112,7 @@ const window.importExistingSubmissionFile = (type) => {
 
 // function to load existing submission files
 const loadExistingSubmissionFile = async (filepath) => {
-  log.info(`Loading existing submission file: ${filepath}`);
+  window.log.info(`Loading existing submission file: ${filepath}`);
   try {
     let load_submission_file = await client.get(`/prepare_metadata/submission_file`, {
       params: {
@@ -1118,7 +1148,7 @@ const loadSubmissionFileToUI = (data, type) => {
   $("#submission-sparc-award").val("");
 
   // 1. populate Funding consortium dropdown
-  if (sparcFundingConsortiums.includes(data["Funding consortium"])) {
+  if (window.sparcFundingConsortiums.includes(data["Funding consortium"])) {
     $("#ffm-select-sparc-funding-consortium").val(data["Funding consortium"]).change();
   } else {
     // reset the funding consortium dropdown
@@ -1157,7 +1187,7 @@ const loadSubmissionFileToUI = (data, type) => {
   // 4. populate Completion date (only if milestones were imported, otherwise leave as default value)
   if (data["Milestone completion date"] !== "" && milestonesImported) {
     window.addOption(
-      descriptionDateInput,
+      window.descriptionDateInput,
       data["Milestone completion date"],
       data["Milestone completion date"]
     );
@@ -1197,7 +1227,7 @@ const loadSubmissionFileToUI = (data, type) => {
 };
 
 // function to check for existing submission file on Penn
-const checkBFImportSubmission = async () => {
+window.checkBFImportSubmission = async () => {
   Swal.fire({
     title: "Importing the submission.xlsx file",
     html: "Please wait...",
@@ -1213,12 +1243,12 @@ const checkBFImportSubmission = async () => {
     },
   }).then((result) => {});
   const bfDataset = $("#bf_dataset_load_submission").text().trim();
-  log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
+  window.log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
   try {
     let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
       params: {
         file_type: "submission.xlsx",
-        selected_account: window.defaultBfDataset,
+        selected_account: window.defaultBfAccount,
         selected_dataset: bfDataset,
       },
     });

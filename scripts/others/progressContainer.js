@@ -15,7 +15,7 @@ const ProgressContainerType = {
  * @param {boolean} hide - Determines whether or not the progress container will be hidden after the import is complete. Default = true; hides after 2 seconds. (optional)
  *
  */
-const window.updateProgressContainer = (
+window.updateProgressContainer = (
   progress_container,
   percentage_text,
   left_progress_bar,
@@ -155,7 +155,7 @@ const updateProgressContainerPennsieveImport = (
  * @param {HTMLElement} left_progress_bar
  * @param {HTMLElement} right_progress_bar
  */
-const window.resetProgressContainer = async (
+window.resetProgressContainer = async (
   progress_container,
   percentage_text,
   left_progress_bar,
@@ -178,7 +178,7 @@ const window.resetProgressContainer = async (
  * @param {HTMLElement} progress_container
  * @returns
  */
-const window.getProgressContainerElements = (progressContainer) => {
+window.getProgressContainerElements = (progressContainer) => {
   let percentage_text = progressContainer.querySelector(".pennsieve_loading_dataset_percentage");
 
   let left_progress_bar = progressContainer.querySelector(".pennsieve_left-side_less_than_50");
@@ -192,6 +192,6 @@ const window.getProgressContainerElements = (progressContainer) => {
   };
 };
 
-const window.hideProgressContainer = (progressContainer) => {
+window.hideProgressContainer = (progressContainer) => {
   progressContainer.style.display = "none";
 };

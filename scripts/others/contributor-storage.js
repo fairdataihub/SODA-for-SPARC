@@ -1,19 +1,22 @@
-const window.storedContributorsPath = path.join(homeDirectory, "SODA", "stored-contributors.json");
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
+
 
 // Save the contributors array to the JSON file
 const saveStoredContributors = (contributors) => {
   try {
-    fs.writeFileSync(window.storedContributorsPath, JSON.stringify(contributors));
+    window.fs.writeFileSync(window.storedContributorsPath, JSON.stringify(contributors));
   } catch (err) {
-    log.info("Error saving stored contributors file: " + err);
+    window.log.info("Error saving stored contributors file: " + err);
   }
 };
 
 // Load the stored contributors array from the JSON file
 // If the file doesn't exist, return an empty array
-const loadStoredContributors = () => {
+window.loadStoredContributors = () => {
   try {
-    const contributorFileData = fs.readFileSync(window.storedContributorsPath);
+    const contributorFileData = window.fs.readFileSync(window.storedContributorsPath);
     return JSON.parse(contributorFileData);
   } catch (err) {
     return [];
@@ -30,32 +33,32 @@ window.addOrUpdateStoredContributor = (
   rolesArray
 ) => {
   if (typeof firstName !== "string" || !firstName.length > 0) {
-    log.info("Attempted to add contributor with invalid first name");
+    window.log.info("Attempted to add contributor with invalid first name");
     return;
   }
   if (typeof lastName !== "string" || !lastName.length > 0) {
-    log.info("Attempted to add contributor with invalid last name");
+    window.log.info("Attempted to add contributor with invalid last name");
     return;
   }
   if (typeof ORCiD !== "string" || !ORCiD.length > 0) {
-    log.info("Attempted to add contributor with invalid ORCiD");
+    window.log.info("Attempted to add contributor with invalid ORCiD");
     return;
   }
   if (!Array.isArray(affiliationsArray) || affiliationsArray.length === 0) {
-    log.info("Invalid affiliations array");
+    window.log.info("Invalid affiliations array");
     return;
   }
   if (!Array.isArray(rolesArray) || rolesArray.length === 0) {
-    log.info("Invalid roles array");
+    window.log.info("Invalid roles array");
     return;
   }
 
   // If the stored contributors file doesn't exist, create it and write an empty array to it
-  if (!fs.existsSync(window.storedContributorsPath)) {
+  if (!window.fs.existsSync(window.storedContributorsPath)) {
     try {
-      fs.writeFileSync(window.storedContributorsPath, "[]");
+      window.fs.writeFileSync(window.storedContributorsPath, "[]");
     } catch (err) {
-      log.info("Error creating stored contributors file: " + err);
+      window.log.info("Error creating stored contributors file: " + err);
       return;
     }
   }
@@ -68,7 +71,7 @@ window.addOrUpdateStoredContributor = (
     roles: rolesArray,
   };
 
-  const storedContributorsArray = loadStoredContributors();
+  const storedContributorsArray = window.loadStoredContributors();
 
   const existingStoredContributorWithSameORCiDIndex = storedContributorsArray.findIndex(
     (contributorObj) => contributorObj.ORCiD === ORCiD
@@ -84,3 +87,4 @@ window.addOrUpdateStoredContributor = (
   // Write the updated array to the JSON file
   saveStoredContributors(storedContributorsArray);
 };
+

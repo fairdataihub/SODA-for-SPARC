@@ -1,4 +1,4 @@
-const { VALIDATOR_CATEGORIES } = require("./validator-categories.js");
+import { VALIDATOR_CATEGORIES } from "./validator-categories";
 
 const ValidationErrorParser = {
   parseMissingSubmission: (errorMessage) => {
@@ -419,7 +419,7 @@ const ValidationErrorParser = {
   },
 };
 
-exports.ValidationErrorParser = ValidationErrorParser;
+export {ValidationErrorParser};
 
 //"None of
 // [{'contributor_name': 'Jeff, Salisbury',

@@ -60,4 +60,4 @@ const handleAxiosValidationErrors = async (errorObject) => {
   }
 };
 
-exports.handleAxiosValidationErrors = handleAxiosValidationErrors;
+export {handleAxiosValidationErrors}

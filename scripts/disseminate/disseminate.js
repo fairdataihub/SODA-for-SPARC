@@ -8,9 +8,13 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 ******************************************************
 ******************************************************
 */
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
+import Swal from "sweetalert2"
+import api from "../others/api/api"
+import {clientError, userErrorMessage} from "../others/http-error-handler/error-handler"
 
 // Helper functions
-const disseminatePublish = async (curationMode) => {
+window.disseminatePublish = async (curationMode) => {
   if (curationMode === "freeform") {
     $("#prepublishing-submit-btn").disabled = true;
     $("#prepublishing-submit-btn").addClass("loading");
@@ -70,7 +74,7 @@ const disseminatePublish = async (curationMode) => {
     });
 
     // log the failure to publish to analytics
-    logCurationForAnalytics(
+    window.logCurationForAnalytics(
       "Error",
       window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
       window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
@@ -117,7 +121,7 @@ const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
     permissions = await api.getDatasetPermissions(bfAcct, bfDS, false);
   } catch (error) {
     clientError(error);
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       "Disseminate Datasets - Show current dataset permission",
@@ -139,7 +143,7 @@ const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
 
   window.currentDatasetPermission.innerHTML = datasetOwner;
 
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-event",
     "Success",
     "Disseminate Datasets - Show current dataset permission",
@@ -167,7 +171,7 @@ const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) 
       let res = statusOptionsResponse.data;
       let { current_status } = statusOptionsResponse.data;
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-event",
         "Success",
         "Disseminate Datasets - Show current dataset status",
@@ -194,7 +198,7 @@ const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) 
       clientError(error);
       $(window.bfCurrentDatasetStatusProgress).css("visbility", "hidden");
       $("#bf-dataset-status-spinner").css("display", "none");
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-event",
         "Error",
         "Disseminate Datasets - Show current dataset status",

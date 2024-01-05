@@ -1,3 +1,21 @@
+import Swal from "sweetalert2";
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
+import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
+import client from '../client'
+import kombuchaEnums from "../analytics/analytics-enums";
+import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
+import api from "../others/api/api"
+import Tagify from "@yaireo/tagify/dist/tagify.esm";
+import tippy from "tippy.js";
+import doiRegex from "doi-regex";
+import validator from "validator";
+
+
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
+
+
 // opendropdown event listeners
 document.querySelectorAll(".dd-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
@@ -16,9 +34,9 @@ const dsAwardArray = document.getElementById("ds-description-award-list");
 const dsContributorArrayLast1 = document.getElementById("ds-description-contributor-list-last-1");
 const dsContributorArrayFirst1 = document.getElementById("ds-description-contributor-list-first-1");
 
-var window.currentContributorsLastNames = [];
+window.currentContributorsLastNames = [];
 var currentContributorsFirstNames = [];
-var window.globalContributorNameObject = {};
+window.globalContributorNameObject = {};
 
 // const affiliationInput = document.getElementById("input-con-affiliation-1");
 const addCurrentContributorsBtn = document.getElementById("button-ds-add-contributor");
@@ -33,17 +51,17 @@ var sparcAwards = [];
 var ddDestinationPath = "";
 
 $(document).ready(function () {
-  ipcRenderer.on("show-missing-items-ds-description", (event, index) => {
+  window.electron.ipcRenderer.on("show-missing-items-ds-description", (event, index) => {
     if (index === 0) {
-      ipcRenderer.send("open-folder-dialog-save-ds-description", "dataset_description.xlsx");
+      window.electron.ipcRenderer.send("open-folder-dialog-save-ds-description", "dataset_description.xlsx");
     }
   });
 
   // generate dd file
-  ipcRenderer.on("selected-destination-generate-dd-locally", (event, dirpath) => {
+  window.electron.ipcRenderer.on("selected-destination-generate-dd-locally", (event, dirpath) => {
     if (dirpath.length > 0) {
       document.getElementById("input-destination-generate-dd-locally").placeholder = dirpath[0];
-      let destinationPath = path.join(dirpath[0], "dataset_description.xlsx");
+      let destinationPath = window.path.join(dirpath[0], "dataset_description.xlsx");
       ddDestinationPath = destinationPath;
       $("#div-confirm-destination-dd-locally").css("display", "flex");
       $($("#div-confirm-destination-dd-locally").children()[0]).css("display", "flex");
@@ -88,7 +106,7 @@ $(document).ready(function () {
   when users add a row and then delete it, the ID for such row is deleted (row-name-2),
   but the row count for the table (used for naming row ID) is changed and that messes up the naming and ID retrieval process
 */
-const window.checkForUniqueRowID = (rowID, no) => {
+window.checkForUniqueRowID = (rowID, no) => {
   if ($("#" + rowID + no.toString()).length == 0) {
     return no;
   } else {
@@ -258,7 +276,7 @@ const resetDDUI = (table) => {
     "' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
     newRowIndex +
     ")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
-  changeAwardInputDsDescription();
+  window.changeAwardInputDsDescription();
   cloneConNamesSelect("ds-description-contributor-list-last-" + rowIndex.toString());
 };
 
@@ -293,7 +311,7 @@ const checkEmptyConRowInfo = (table, row) => {
   return empty;
 };
 
-const window.showExistingDDFile = () => {
+window.showExistingDDFile = () => {
   if (
     $("#existing-dd-file-destination").prop("placeholder") !== "Browse here" &&
     $("#Question-prepare-dd-2").hasClass("show")
@@ -312,7 +330,7 @@ const window.showExistingDDFile = () => {
       reverseButtons: window.reverseSwalButtons,
     }).then((boolean) => {
       if (boolean.isConfirmed) {
-        ipcRenderer.send("open-file-dialog-existing-DD");
+        window.electron.ipcRenderer.send("open-file-dialog-existing-DD");
         document.getElementById("existing-dd-file-destination").placeholder = "Browse here";
         $("#div-confirm-existing-dd-import").hide();
         $($("#div-confirm-existing-dd-import button")[0]).hide();
@@ -320,13 +338,13 @@ const window.showExistingDDFile = () => {
       }
     });
   } else {
-    ipcRenderer.send("open-file-dialog-existing-DD");
+    window.electron.ipcRenderer.send("open-file-dialog-existing-DD");
   }
 };
 
 /////////////// Generate ds description file ///////////////////
 ////////////////////////////////////////////////////////////////
-const window.generateDatasetDescription = async () => {
+window.generateDatasetDescription = async () => {
   var funding = $("#ds-description-award-input").val().trim();
   var allFieldsSatisfied = window.detectEmptyRequiredFields(funding)[0];
   var errorMessage = window.detectEmptyRequiredFields(funding)[1];
@@ -371,8 +389,8 @@ const window.generateDatasetDescription = async () => {
   }
 };
 
-const window.generateDDFile = async (uploadBFBoolean) => {
-  let bfaccountname = window.defaultBfDataset;
+window.generateDDFile = async (uploadBFBoolean) => {
+  let bfaccountname = window.defaultBfAccount;
   let bf_dataset = document.getElementById("bf_dataset_load_dd").innerText.trim();
   if (uploadBFBoolean) {
     /// get current, selected Pennsieve account
@@ -528,7 +546,7 @@ const window.generateDDFile = async (uploadBFBoolean) => {
     });
 
     // log the successful attempt to generate the description file in analytics at this step in the Generation process
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_METADATA,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -539,7 +557,7 @@ const window.generateDDFile = async (uploadBFBoolean) => {
 
     // log the size of the metadata file that was generated at varying levels of granularity
     const size = res;
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_METADATA,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -560,7 +578,7 @@ const window.generateDDFile = async (uploadBFBoolean) => {
     });
 
     // log the failure to generate the description file to analytics at this step in the Generation process
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_METADATA,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -602,7 +620,7 @@ const grabAdditionalLinkSection = () => {
   var table = document.getElementById("other-link-table-dd");
   var rowcountLink = table.rows.length;
   var additionalLinkInfo = [];
-  for (i = 1; i < rowcountLink; i++) {
+  for (let i = 1; i < rowcountLink; i++) {
     var additionalLink = {
       link: table.rows[i].cells[1].innerText,
       type: table.rows[i].cells[2].innerText,
@@ -618,7 +636,7 @@ const grabProtocolSection = () => {
   var table = document.getElementById("protocol-link-table-dd");
   var rowcountLink = table.rows.length;
   var protocolLinkInfo = [];
-  for (i = 1; i < rowcountLink; i++) {
+  for (let i = 1; i < rowcountLink; i++) {
     var protocol = {
       link: table.rows[i].cells[1].innerText,
       type: table.rows[i].cells[2].innerText,
@@ -638,7 +656,7 @@ const combineLinksSections = () => {
 };
 
 // add protocol function for DD file
-const window.addProtocol = async () => {
+window.addProtocol = async () => {
   const { value: values } = await Swal.fire({
     title: "Add a protocol",
     html:
@@ -681,7 +699,7 @@ const window.addProtocol = async () => {
       if ($("#DD-protocol-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description!`);
       }
-      var duplicate = checkLinkDuplicate(
+      var duplicate = window.checkLinkDuplicate(
         $("#DD-protocol-link").val(),
         document.getElementById("protocol-link-table-dd")
       );
@@ -729,10 +747,10 @@ const addProtocolLinktoTableDD = (protocolLink, protocolType, protocolRelation, 
     protocolRelation +
     "</td><td class='contributor-table-row' style='display:none'>" +
     protocolDesc +
-    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='window.delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 };
 
-const window.addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) => {
+window.addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) => {
   let linkTable = document.getElementById("other-link-table-dd");
   linkTable.style.display = "block";
   document.getElementById("div-other-link-table-dd").style.display = "block";
@@ -836,8 +854,8 @@ const addContributortoTableDD = (name, contributorObject) => {
         ? `<span class="badge badge-pill badge-success">Valid</span>`
         : `<span class="badge badge-pill badge-warning">Missing Fields</span>`
     }
-    </td> <td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button></div></td>
-    <td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>`);
+    </td> <td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button></div></td>
+    <td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>`);
 };
 
 var contributorElement = `<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="window.onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" " style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div></div> `;
@@ -845,16 +863,16 @@ var contributorElement = `<div id="contributor-popup"><div style="display:flex">
 var contributorElementRaw =
   '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div></div>';
 
-var window.contributorArray = [];
+window.contributorArray = [];
 var affiliationSuggestions = [];
 
-const showContributorSweetalert = (key) => {
+window.showContributorSweetalert = (key) => {
   var currentContributortagify;
   var currentAffliationtagify;
   if (key === false) {
     if (Object.keys(window.globalContributorNameObject).length !== 0) {
       var footer =
-        "<a style='text-decoration: none !important' onclick='showContributorSweetalert(\"pass\")' target='_blank'>I want to add a contributor not listed above</a>";
+        "<a style='text-decoration: none !important' onclick='window.showContributorSweetalert(\"pass\")' target='_blank'>I want to add a contributor not listed above</a>";
       var element = contributorElement;
     } else {
       var footer = "";
@@ -1026,7 +1044,7 @@ const showContributorSweetalert = (key) => {
   });
 };
 
-const delete_current_con_id = (ev) => {
+window.delete_current_con_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this contributor?",
     showCancelButton: true,
@@ -1057,7 +1075,7 @@ const delete_current_con_id = (ev) => {
   });
 };
 
-const edit_current_con_id = (ev) => {
+window.edit_current_con_id = (ev) => {
   var currentContributortagify;
   var currentAffliationtagify;
   var element = contributorElementRaw;
@@ -1265,9 +1283,10 @@ const edit_current_con_id = (ev) => {
 
 const memorizeAffiliationInfo = (values) => {
   window.createMetadataDir();
-  var content = parseJson(window.affiliationConfigPath);
+  console.log("affiliationConfigPath", window.affiliationConfigPath)
+  var content = window.parseJson(window.affiliationConfigPath);
   content["affiliation"] = values;
-  fs.writeFileSync(window.affiliationConfigPath, JSON.stringify(content));
+  window.fs.writeFileSync(window.affiliationConfigPath, JSON.stringify(content));
 };
 
 const grabCurrentTagifyContributor = (tagify) => {
@@ -1318,7 +1337,7 @@ const checkContactPersonStatus = (type, ev) => {
   }
 };
 
-const window.checkAtLeastOneContactPerson = () => {
+window.checkAtLeastOneContactPerson = () => {
   let contactPersonExists = false;
   let allConTable = document.getElementById("contributor-table-dd");
   let rowcount = allConTable.rows.length;
@@ -1365,7 +1384,7 @@ const checkDuplicateLink = (link, table) => {
 ///// Functions to grab each piece of info to generate the dd file
 
 // dataset and participant info
-const window.grabDSInfoEntries = () => {
+window.grabDSInfoEntries = () => {
   let name = document.getElementById("ds-name").value;
   let description = document.getElementById("ds-description").value;
   let type = $("#ds-type").val();
@@ -1490,7 +1509,7 @@ const addNewRow = (table) => {
   }
 };
 
-const importExistingDDFile = () => {
+window.importExistingDDFile = () => {
   let filePath = $("#existing-dd-file-destination").prop("placeholder");
   if (filePath === "Browse here") {
     Swal.fire(
@@ -1499,7 +1518,7 @@ const importExistingDDFile = () => {
       "error"
     );
   } else {
-    if (path.parse(filePath).base !== "dataset_description.xlsx") {
+    if (window.path.parse(filePath).base !== "dataset_description.xlsx") {
       Swal.fire({
         title: "Incorrect file name",
         text: "Your file must be named 'dataset_description.xlsx' to be imported to SODA.",
@@ -1526,7 +1545,7 @@ const importExistingDDFile = () => {
   }
 };
 
-const checkBFImportDD = async () => {
+window.checkBFImportDD = async () => {
   Swal.fire({
     title: "Importing the dataset_description.xlsx file",
     html: "Please wait...",
@@ -1547,7 +1566,7 @@ const checkBFImportDD = async () => {
   try {
     let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
       params: {
-        selected_account: window.defaultBfDataset,
+        selected_account: window.defaultBfAccount,
         selected_dataset: bf_dataset,
         file_type: "dataset_description.xlsx",
       },

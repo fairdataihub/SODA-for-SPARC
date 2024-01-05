@@ -4,7 +4,9 @@
 
 */
 
-const window.logSelectedUpdateExistingDatasetOptions = (origin) => {
+import kombuchaEnums  from "../analytics/analytics-enums";
+
+const logSelectedUpdateExistingDatasetOptions = (origin) => {
   Array.from(document.querySelectorAll(".generate-preview")).forEach((card) => {
     let header = card.querySelector("h5");
     if (header.textContent.includes("folders")) {
@@ -19,7 +21,7 @@ const window.logSelectedUpdateExistingDatasetOptions = (origin) => {
       }
 
       // log the folder instructions to analytics
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_DATASETS,
         action,
@@ -42,7 +44,7 @@ const window.logSelectedUpdateExistingDatasetOptions = (origin) => {
         action = kombuchaEnums.Action.DUPLICATE_ITEMS;
       }
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-kombucha",
         "Success",
         kombuchaEnums.Category.PREPARE_DATASETS,
@@ -81,7 +83,7 @@ const createEventData = (value, destination, origin, dataset_name) => {
   };
 };
 
-module.exports = {
+export {
   createEventData,
-  window.logSelectedUpdateExistingDatasetOptions,
+  logSelectedUpdateExistingDatasetOptions,
 };

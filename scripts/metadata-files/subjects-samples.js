@@ -1,3 +1,19 @@
+import axios from "axios";
+import validator from "validator";
+import doiRegex from "doi-regex";
+import Swal from "sweetalert2";
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
+import introJs from "intro.js";
+import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
+import kombuchaEnums from "../analytics/analytics-enums";
+import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
+import client from '../client'
+
+
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
+
 // event listeners for open dropdown prompt
 document.querySelectorAll(".subjects-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
@@ -24,20 +40,20 @@ document.querySelectorAll(".samples-change-current-ds").forEach((element) => {
 });
 
 var subjectsFormDiv = document.getElementById("form-add-a-subject");
-var guidedSubjectsFormDiv = document.getElementById("guided-form-add-a-subject");
+window.guidedSubjectsFormDiv = document.getElementById("guided-form-add-a-subject");
 var samplesFormDiv = document.getElementById("form-add-a-sample");
-var window.guidedSamplesFormDiv = document.getElementById("guided-form-add-a-sample");
-var window.subjectsTableData = [];
-var window.subjectsFileData = [];
-var window.samplesTableData = [];
-var window.samplesFileData = [];
+window.guidedSamplesFormDiv = document.getElementById("guided-form-add-a-sample");
+window.subjectsTableData = [];
+window.subjectsFileData = [];
+window.samplesTableData = [];
+window.samplesFileData = [];
 var headersArrSubjects = [];
 var headersArrSamples = [];
 let guidedSamplesTableData = [];
 
-const window.showForm = (type, editBoolean) => {
+window.showForm = (type, editBoolean) => {
   if (type !== "edit") {
-    clearAllSubjectFormFields(subjectsFormDiv);
+    window.clearAllSubjectFormFields(subjectsFormDiv);
   }
   subjectsFormDiv.style.display = "flex";
   $("#create_subjects-tab").removeClass("show");
@@ -49,7 +65,7 @@ const window.showForm = (type, editBoolean) => {
 
 window.showFormSamples = (type, editBoolean) => {
   if (type !== "edit") {
-    clearAllSubjectFormFields(samplesFormDiv);
+    window.clearAllSubjectFormFields(samplesFormDiv);
   }
   samplesFormDiv.style.display = "flex";
   $("#create_samples-tab").removeClass("show");
@@ -91,7 +107,7 @@ const promptImportPrevInfoSamples = (arr1, arr2) => {
   }).then((result) => {
     if (result.isConfirmed) {
       if ($("#previous-subject").val() !== "Select" && $("#previous-sample").val() !== "Select") {
-        populateFormsSamples(prevSubID, prevSamID, "import", "free-form");
+        window.populateFormsSamples(prevSubID, prevSamID, "import", "free-form");
       }
     } else {
       hideForm("sample");
@@ -211,7 +227,7 @@ const confirmSample = () => {
 };
 
 // for "Done adding" button - subjects
-const window.addSubject = (curationMode) => {
+window.addSubject = (curationMode) => {
   let subjectID = "";
   if (curationMode === "free-form") {
     subjectID = $("#bootbox-subject-id").val().trim();
@@ -224,7 +240,7 @@ const window.addSubject = (curationMode) => {
       return;
     }
 
-    const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+    const subjectNameIsValid = window.evaluateStringAgainstSdsRequirements(
       subjectID,
       "string-adheres-to-identifier-conventions"
     );
@@ -252,7 +268,7 @@ const window.addSubject = (curationMode) => {
 };
 
 // for "Done adding" button - samples
-const window.addSample = (curationMode) => {
+window.addSample = (curationMode) => {
   let sampleID = "";
   let subjectID = "";
   if (curationMode === "free-form") {
@@ -267,7 +283,7 @@ const window.addSample = (curationMode) => {
       return;
     }
 
-    const sampleNameIsValid = evaluateStringAgainstSdsRequirements(
+    const sampleNameIsValid = window.evaluateStringAgainstSdsRequirements(
       sampleID,
       "string-adheres-to-identifier-conventions"
     );
@@ -279,7 +295,7 @@ const window.addSample = (curationMode) => {
       });
       return;
     }
-    const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+    const subjectNameIsValid = window.evaluateStringAgainstSdsRequirements(
       subjectID,
       "string-adheres-to-identifier-conventions"
     );
@@ -306,7 +322,7 @@ const window.addSample = (curationMode) => {
   }
 };
 
-const window.warningBeforeHideForm = (type) => {
+window.warningBeforeHideForm = (type) => {
   Swal.fire({
     title: "Are you sure you want to cancel?",
     text: "This will reset your progress with the current subject_id.",
@@ -345,11 +361,11 @@ const hideForm = (type) => {
   $("#btn-add-" + type + "").css("display", "inline-block");
 };
 
-const window.validateSubSamID = (ev) => {
+window.validateSubSamID = (ev) => {
   var id = $(ev).prop("id");
   var value = $("#" + id).val();
   //Validate TextBox value against the Regex.
-  var isValid = evaluateStringAgainstSdsRequirements(
+  var isValid = window.evaluateStringAgainstSdsRequirements(
     value,
     "string-adheres-to-identifier-conventions"
   );
@@ -408,6 +424,7 @@ const addNewIDToTable = (newID, secondaryID, type) => {
       keyword +
       "_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
   } else if (type === "samples") {
+    console.log("In samples ttypes")
     var row = (table.insertRow(rowIndex).outerHTML =
       "<tr id='row-current-" +
       keyword +
@@ -504,7 +521,7 @@ const addSampleIDtoDataBase = (samID, subID) => {
   }
 };
 
-const clearAllSubjectFormFields = (form) => {
+window.clearAllSubjectFormFields = (form) => {
   for (var field of $(form).children().find("input")) {
     $(field).val("");
   }
@@ -515,12 +532,12 @@ const clearAllSubjectFormFields = (form) => {
   $(form).find(".content").removeClass("active");
 
   // hide Strains and Species
-  if (form === subjectsFormDiv || form === guidedSubjectsFormDiv) {
+  if (form === subjectsFormDiv || form === window.guidedSubjectsFormDiv) {
     let curationModeSelectorPrefix = "";
     if (form === subjectsFormDiv) {
       curationModeSelectorPrefix = "";
     }
-    if (form === guidedSubjectsFormDiv) {
+    if (form === window.guidedSubjectsFormDiv) {
       curationModeSelectorPrefix = "guided-";
     }
 
@@ -528,7 +545,7 @@ const clearAllSubjectFormFields = (form) => {
     $(`#${curationModeSelectorPrefix}bootbox-${keyword}-species`).css("display", "none");
     $(`#${curationModeSelectorPrefix}bootbox-${keyword}-strain`).css("display", "none");
 
-    if (form === guidedSubjectsFormDiv) {
+    if (form === window.guidedSubjectsFormDiv) {
       guidedSetStrainRRID("");
     }
 
@@ -570,7 +587,7 @@ window.addSpecies = async (ev, type, curationMode) => {
     },
     didOpen: () => {
       $(".swal2-confirm").attr("id", "btn-confirm-species");
-      createSpeciesAutocomplete(`sweetalert-${type}-species`, curationMode);
+      window.createSpeciesAutocomplete(`sweetalert-${type}-species`, curationMode);
     },
     preConfirm: () => {
       if (document.getElementById(`sweetalert-${type}-species`).value === "") {
@@ -589,7 +606,7 @@ window.addSpecies = async (ev, type, curationMode) => {
   }
 };
 
-const window.switchSpeciesStrainInput = (type, mode, curationMode) => {
+window.switchSpeciesStrainInput = (type, mode, curationMode) => {
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -626,7 +643,7 @@ const guidedSetStrainRRID = (RRID) => {
   rridInput.value = RRID;
 };
 
-const window.addStrain = async (ev, type, curationMode) => {
+window.addStrain = async (ev, type, curationMode) => {
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -669,20 +686,7 @@ const window.addStrain = async (ev, type, curationMode) => {
 };
 
 // populate RRID
-const window.populateRRID = (strain, type, curationMode) => {
-  let curationModeSelectorPrefix = "";
-  if (curationMode == "guided") {
-    curationModeSelectorPrefix = "guided-";
-  }
-  var rridHostname = "scicrunch.org";
-  // this is to handle spaces and other special characters in strain name
-  var encodedStrain = encodeURIComponent(strain);
-  var rridInfo = {
-    hostname: rridHostname,
-    port: 443,
-    path: `/api/1/dataservices/federation/data/nlx_154697-1?q=${encodedStrain}&key=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
-    headers: { accept: "text/xml" },
-  };
+window.populateRRID = async (strain, type, curationMode) => {
   Swal.fire({
     title: `Retrieving RRID for ${strain}...`,
     allowEscapeKey: false,
@@ -694,71 +698,80 @@ const window.populateRRID = (strain, type, curationMode) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
-  https.get(rridInfo, (res) => {
-    if (res.statusCode === 200) {
-      let data = "";
-      res.setEncoding("utf8");
-      res.on("data", (d) => {
-        data += d;
-      });
-      res.on("end", () => {
-        var returnRes = readXMLScicrunch(data, type, curationMode);
-        if (!returnRes) {
-          Swal.fire({
-            title: `Failed to retrieve the RRID for ${strain} from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
-            text: "Please make sure you enter the correct strain.",
-            showCancelButton: false,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("display", "none");
-          if (type.includes("subject")) {
-            $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
-              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-            );
-          } else {
-            $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
-              `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-            );
-          }
-        } else {
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(strain);
-          $("#btn-confirm-strain").removeClass("confirm-disabled");
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("display", "block");
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).attr("readonly", true);
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("background", "#f5f5f5");
-          if (type.includes("subject")) {
-            $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
-              "<i class='pen icon'></i>Edit"
-            );
-          } else {
-            $(`#${curationModeSelectorPrefix}button-add-strain-sample`).html(
-              "<i class='pen icon'></i>Edit"
-            );
-          }
-          Swal.fire({
-            title: `Successfully retrieved the RRID for "${strain}".`,
-            icon: "success",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-        }
-      });
-    } else {
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
+  })
+
+  let curationModeSelectorPrefix = "";
+  if (curationMode == "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
+
+  let rridHostname = "scicrunch.org";
+  // this is to handle spaces and other special characters in strain name
+  let encodedStrain = encodeURIComponent(strain);
+  let rridInfo = {
+    hostname: rridHostname,
+    port: 443,
+    path: `/api/1/dataservices/federation/data/nlx_154697-1?q=${encodedStrain}&key=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
+    headers: { accept: "text/xml" },
+  };
+
+  try {
+    let data = await window.electron.ipcRenderer.invoke("getStrainData", rridInfo)
+    var returnRes = readXMLScicrunch(data, type, curationMode);
+    if (!returnRes) {
       Swal.fire({
-        title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
-        text: "Please check your Internet Connection or contact us at help@fairdataihub.org",
+        title: `Failed to retrieve the RRID for ${strain} from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
+        text: "Please make sure you enter the correct strain.",
         showCancelButton: false,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("display", "none");
+      if (type.includes("subject")) {
+        $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
+          `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+        );
+      } else {
+        $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
+          `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
+        );
+      }
+    } else {
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(strain);
+      $("#btn-confirm-strain").removeClass("confirm-disabled");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("display", "block");
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).attr("readonly", true);
+      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("background", "#f5f5f5");
+      if (type.includes("subject")) {
+        $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
+          "<i class='pen icon'></i>Edit"
+        );
+      } else {
+        $(`#${curationModeSelectorPrefix}button-add-strain-sample`).html(
+          "<i class='pen icon'></i>Edit"
+        );
+      }
+      Swal.fire({
+        title: `Successfully retrieved the RRID for "${strain}".`,
+        icon: "success",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      })
     }
-  });
+}   catch (err) {
+    console.log(err)
+    $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
+    $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
+    Swal.fire({
+      title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
+      text: "Please check your Internet Connection or contact us at help@fairdataihub.org",
+      showCancelButton: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+  }
 };
 
 const addSubjectMetadataEntriesIntoJSON = (curationMode) => {
@@ -825,7 +838,7 @@ const addSubjectMetadataEntriesIntoJSON = (curationMode) => {
   if (curationMode === "free-form") {
     $("#table-subjects").css("display", "block");
     $("#button-generate-subjects").css("display", "block");
-    clearAllSubjectFormFields(subjectsFormDiv);
+    window.clearAllSubjectFormFields(subjectsFormDiv);
     hideForm("subject");
   }
 };
@@ -885,7 +898,7 @@ const addSampleMetadataEntriesIntoJSON = (curationMode) => {
   if (curationMode === "free-form") {
     $("#table-samples").css("display", "block");
     $("#button-generate-samples").css("display", "block");
-    clearAllSubjectFormFields(samplesFormDiv);
+    window.clearAllSubjectFormFields(samplesFormDiv);
     hideForm("sample");
   }
 };
@@ -897,18 +910,18 @@ const addSampleIDtoJSON = (sampleID) => {
 };
 
 // associated with the edit icon (edit a subject)
-const edit_current_subject_id = (ev) => {
+window.edit_current_subject_id = (ev) => {
   var currentRow = $(ev).parents()[2];
   var subjectID = $(currentRow)[0].cells[1].innerText;
   loadSubjectInformation(ev, subjectID);
 };
-const edit_current_sample_id = (ev) => {
+window.edit_current_sample_id = (ev) => {
   var currentRow = $(ev).parents()[2];
   var subjectID = $(currentRow)[0].cells[1].innerText;
   var sampleID = $(currentRow)[0].cells[2].innerText;
   loadSampleInformation(ev, subjectID, sampleID);
 };
-const edit_current_protocol_id = async (ev) => {
+window.edit_current_protocol_id = async (ev) => {
   let oldProtocolLink = "";
   var currentRow = $(ev).parents()[2];
   var link = $(currentRow)[0].cells[1].innerText;
@@ -969,7 +982,7 @@ const edit_current_protocol_id = async (ev) => {
       }
 
       if (protocolEdited) {
-        let duplicate = checkLinkDuplicate(
+        let duplicate = window.checkLinkDuplicate(
           $("#DD-protocol-link").val(),
           document.getElementById("protocol-link-table-dd")
         );
@@ -999,7 +1012,7 @@ const edit_current_protocol_id = async (ev) => {
   }
 };
 
-const window.edit_current_additional_link_id = async (ev) => {
+window.edit_current_additional_link_id = async (ev) => {
   var currentRow = $(ev).parents()[2];
   var link = $(currentRow)[0].cells[1].innerText;
   var linkType = $(currentRow)[0].cells[2].innerText;
@@ -1060,7 +1073,7 @@ const loadSubjectInformation = (ev, subjectID) => {
   window.showForm("display", true);
   $("#btn-edit-subject").css("display", "inline-block");
   $("#btn-add-subject").css("display", "none");
-  clearAllSubjectFormFields(subjectsFormDiv);
+  window.clearAllSubjectFormFields(subjectsFormDiv);
   window.populateForms(subjectID, "", "free-form");
   $("#btn-edit-subject").unbind("click");
   $("#btn-edit-subject").click(function () {
@@ -1076,7 +1089,7 @@ const loadSubjectInformation = (ev, subjectID) => {
   });
 };
 
-const window.populateForms = (subjectID, type, curationMode) => {
+window.populateForms = (subjectID, type, curationMode) => {
   //Initialize variables shared between different curation modes and set them
   //based on curationMode passed in as parameter
   let fieldArr;
@@ -1089,8 +1102,11 @@ const window.populateForms = (subjectID, type, curationMode) => {
   }
   if (curationMode === "guided") {
     curationModeSelectorPrefix = "guided-";
-    fieldArr = $(guidedSubjectsFormDiv).children().find(".subjects-form-entry");
+    fieldArr = $(window.guidedSubjectsFormDiv).children().find(".subjects-form-entry");
   }
+
+  console.log(fieldArr)
+  console.log(window.subjectsTableData)
 
   if (window.subjectsTableData.length > 1) {
     for (var i = 1; i < window.subjectsTableData.length; i++) {
@@ -1100,6 +1116,8 @@ const window.populateForms = (subjectID, type, curationMode) => {
       }
     }
   }
+
+  console.log(infoJson)
 
   if (subjectID !== "clear" && subjectID.trim() !== "") {
     if (curationMode === "guided") {
@@ -1181,7 +1199,7 @@ const window.populateForms = (subjectID, type, curationMode) => {
   }
 };
 
-const populateFormsSamples = (subjectID, sampleID, type, curationMode) => {
+window.populateFormsSamples = (subjectID, sampleID, type, curationMode) => {
   //Initialize variables shared between different curation modes and set them
   //based on curationMode passed in as parameter
   let fieldArr;
@@ -1288,8 +1306,8 @@ const loadSampleInformation = (ev, subjectID, sampleID) => {
   window.showFormSamples("display", true);
   $("#btn-edit-sample").css("display", "inline-block");
   $("#btn-add-sample").css("display", "none");
-  clearAllSubjectFormFields(samplesFormDiv);
-  populateFormsSamples(subjectID, sampleID, "", "free-form");
+  window.clearAllSubjectFormFields(samplesFormDiv);
+  window.populateFormsSamples(subjectID, sampleID, "", "free-form");
   $("#btn-edit-sample").unbind("click");
   $("#btn-edit-sample").click(function () {
     editSample(ev, sampleID);
@@ -1412,7 +1430,7 @@ const editSample = (ev, sampleID) => {
   window.samplesFileData = [];
 };
 
-const delete_current_subject_id = (ev) => {
+window.delete_current_subject_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this subject?",
     showCancelButton: true,
@@ -1442,7 +1460,7 @@ const delete_current_subject_id = (ev) => {
   });
 };
 
-const delete_current_sample_id = (ev) => {
+window.delete_current_sample_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this sample?",
     showCancelButton: true,
@@ -1472,7 +1490,7 @@ const delete_current_sample_id = (ev) => {
   });
 };
 
-const delete_current_protocol_id = (ev) => {
+window.delete_current_protocol_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this protocol?",
     showCancelButton: true,
@@ -1494,7 +1512,7 @@ const delete_current_protocol_id = (ev) => {
   });
 };
 
-const delete_current_additional_link_id = (ev) => {
+window.delete_current_additional_link_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this link?",
     showCancelButton: true,
@@ -1516,7 +1534,7 @@ const delete_current_additional_link_id = (ev) => {
   });
 };
 
-const copy_current_subject_id = async (ev) => {
+window.copy_current_subject_id = async (ev) => {
   const { value: newSubject } = await Swal.fire({
     title: "Enter an ID for the new subject:",
     input: "text",
@@ -1556,7 +1574,7 @@ const copy_current_subject_id = async (ev) => {
   }
 };
 
-const copy_current_sample_id = async (ev) => {
+window.copy_current_sample_id = async (ev) => {
   const { value: newSubSam } = await Swal.fire({
     title: "Enter an ID for the new subject and sample: ",
     html:
@@ -1601,7 +1619,7 @@ const copy_current_sample_id = async (ev) => {
   }
 };
 
-const window.updateIndexForTable = (table, boolUpdateIndex) => {
+window.updateIndexForTable = (table, boolUpdateIndex) => {
   // disable table to prevent further row-moving action before the window.updateIndexForTable finishes
 
   if (table === document.getElementById("table-subjects")) {
@@ -1692,15 +1710,15 @@ const updateOrderContributorTable = (table, json) => {
   window.contributorArray = orderedTableData;
 };
 
-const showPrimaryBrowseFolder = () => {
-  ipcRenderer.send("open-file-dialog-local-primary-folder");
+window.showPrimaryBrowseFolder = () => {
+  window.electron.ipcRenderer.send("open-file-dialog-local-primary-folder");
 };
-const window.showPrimaryBrowseFolderSamples = () => {
-  ipcRenderer.send("open-file-dialog-local-primary-folder-samples");
+window.showPrimaryBrowseFolderSamples = () => {
+  window.electron.ipcRenderer.send("open-file-dialog-local-primary-folder-samples");
 };
 
-const window.importPrimaryFolderSubjects = (folderPath) => {
-  headersArrSubjects = [];
+window.importPrimaryFolderSubjects = (folderPath) => {
+  let headersArrSubjects = [];
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     if (field.value === "" || field.value === undefined || field.value === "Select") {
       field.value = null;
@@ -1716,7 +1734,7 @@ const window.importPrimaryFolderSubjects = (folderPath) => {
       icon: "error",
     });
   } else {
-    if (path.parse(folderPath).base !== "primary") {
+    if (window.path.parse(folderPath).base !== "primary") {
       Swal.fire({
         title: "Incorrect folder name",
         text: "Your folder must be named 'primary' to be imported to SODA.",
@@ -1725,13 +1743,14 @@ const window.importPrimaryFolderSubjects = (folderPath) => {
         icon: "error",
       });
     } else {
-      var folders = fs.readdirSync(folderPath);
+      var folders = window.fs.readdirSync(folderPath);
       var j = 1;
       window.subjectsTableData[0] = headersArrSubjects;
       for (var folder of folders) {
         window.subjectsFileData = [];
-        var stats = fs.statSync(path.join(folderPath, folder));
-        if (stats.isDirectory()) {
+        var stats = window.fs.statSync(window.path.join(folderPath, folder));
+        console.log(stats)
+        if (stats.isDirectory) {
           window.subjectsFileData[0] = folder;
           for (var i = 1; i < 27; i++) {
             window.subjectsFileData.push("");
@@ -1778,8 +1797,8 @@ const window.importPrimaryFolderSubjects = (folderPath) => {
   }
 };
 
-const window.importPrimaryFolderSamples = (folderPath) => {
-  headersArrSamples = [];
+window.importPrimaryFolderSamples = (folderPath) => {
+  let headersArrSamples = [];
   for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
     if (field.value === "" || field.value === undefined || field.value === "Select") {
       field.value = null;
@@ -1796,7 +1815,7 @@ const window.importPrimaryFolderSamples = (folderPath) => {
       icon: "error",
     });
   } else {
-    if (path.parse(folderPath).base !== "primary") {
+    if (window.path.parse(folderPath).base !== "primary") {
       Swal.fire({
         title: "Incorrect folder name",
         text: "Your folder must be named 'primary' to be imported to SODA.",
@@ -1805,16 +1824,16 @@ const window.importPrimaryFolderSamples = (folderPath) => {
         icon: "error",
       });
     } else {
-      var folders = fs.readdirSync(folderPath);
+      var folders = window.fs.readdirSync(folderPath);
       var j = 1;
       window.samplesTableData[0] = headersArrSamples;
       for (var folder of folders) {
-        var statsSubjectID = fs.statSync(path.join(folderPath, folder));
-        if (statsSubjectID.isDirectory()) {
-          var subjectFolder = fs.readdirSync(path.join(folderPath, folder));
+        var statsSubjectID = window.fs.statSync(window.path.join(folderPath, folder));
+        if (statsSubjectID.isDirectory) {
+          var subjectFolder = window.fs.readdirSync(window.path.join(folderPath, folder));
           for (var subfolder of subjectFolder) {
-            var statsSampleID = fs.statSync(path.join(folderPath, folder, subfolder));
-            if (statsSampleID.isDirectory()) {
+            var statsSampleID = window.fs.statSync(window.path.join(folderPath, folder, subfolder));
+            if (statsSampleID.isDirectory) {
               window.samplesFileData = [];
               window.samplesFileData[0] = folder;
               window.samplesFileData[1] = subfolder;
@@ -1943,7 +1962,7 @@ const loadSamplesDataToTable = () => {
 };
 
 // functions below are to show/add/cancel a custom header
-const window.addCustomField = async (type, curationMode) => {
+window.addCustomField = async (type, curationMode) => {
   let subjectsHeaderArray = null;
   let samplesHeaderArray = null;
   if (curationMode == "free-form") {
@@ -2094,7 +2113,7 @@ const addCustomHeader = (type, customHeaderValue, curationMode) => {
   }
 };
 
-const window.deleteCustomField = (ev, customField, category, curationMode) => {
+window.deleteCustomField = (ev, customField, category, curationMode) => {
   // category 0 => subjects;
   // category 1 => samples
   Swal.fire({
@@ -2198,8 +2217,8 @@ const addExistingCustomHeaderSamples = (customName) => {
   headersArrSamples.push(customName);
 };
 
-var window.subjectsDestinationPath = "";
-var window.samplesDestinationPath = "";
+window.subjectsDestinationPath = "";
+window.samplesDestinationPath = "";
 
 $(document).ready(function () {
   // loadExistingProtocolInfo();
@@ -2216,11 +2235,11 @@ $(document).ready(function () {
     headersArrSamples.push(field.name);
   }
 
-  ipcRenderer.on("selected-existing-subjects", (event, filepath) => {
+  window.electron.ipcRenderer.on("selected-existing-subjects", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath != null) {
         document.getElementById("existing-subjects-file-destination").placeholder = filepath[0];
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-event",
           "Success",
           "Prepare Metadata - Continue with existing subjects.xlsx",
@@ -2245,7 +2264,7 @@ $(document).ready(function () {
     }
   });
 
-  ipcRenderer.on("selected-existing-samples", (event, filepath) => {
+  window.electron.ipcRenderer.on("selected-existing-samples", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath != null) {
         document.getElementById("existing-samples-file-destination").placeholder = filepath[0];
@@ -2276,11 +2295,11 @@ $(document).ready(function () {
     }
   });
 
-  ipcRenderer.on("selected-existing-DD", (event, filepath) => {
+  window.electron.ipcRenderer.on("selected-existing-DD", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath !== null) {
         document.getElementById("existing-dd-file-destination").placeholder = filepath[0];
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-event",
           "Success",
           "Prepare Metadata - Continue with existing dataset_description.xlsx",
@@ -2304,22 +2323,22 @@ $(document).ready(function () {
   });
 
   // generate subjects file
-  ipcRenderer.on("selected-destination-generate-subjects-locally", (event, dirpath) => {
+  window.electron.ipcRenderer.on("selected-destination-generate-subjects-locally", (event, dirpath) => {
     if (dirpath.length > 0) {
       document.getElementById("input-destination-generate-subjects-locally").placeholder =
         dirpath[0];
-      var destinationPath = path.join(dirpath[0], "subjects.xlsx");
+      var destinationPath = window.path.join(dirpath[0], "subjects.xlsx");
       window.subjectsDestinationPath = destinationPath;
       $("#div-confirm-destination-subjects-locally").css("display", "flex");
     }
   });
 
   // generate samples file
-  ipcRenderer.on("selected-destination-generate-samples-locally", (event, dirpath) => {
+  window.electron.ipcRenderer.on("selected-destination-generate-samples-locally", (event, dirpath) => {
     if (dirpath.length > 0) {
       document.getElementById("input-destination-generate-samples-locally").placeholder =
         dirpath[0];
-      var destinationPath = path.join(dirpath[0], "samples.xlsx");
+      var destinationPath = window.path.join(dirpath[0], "samples.xlsx");
       window.samplesDestinationPath = destinationPath;
       $("#div-confirm-destination-samples-locally").css("display", "flex");
     }
@@ -2371,7 +2390,7 @@ $(document).ready(function () {
   });
 });
 
-const showExistingSubjectsFile = () => {
+window.showExistingSubjectsFile = () => {
   if ($("#existing-subjects-file-destination").prop("placeholder") !== "Browse here") {
     Swal.fire({
       title: "Are you sure you want to import a different subjects file?",
@@ -2387,7 +2406,7 @@ const showExistingSubjectsFile = () => {
       reverseButtons: window.reverseSwalButtons,
     }).then((boolean) => {
       if (boolean.isConfirmed) {
-        ipcRenderer.send("open-file-dialog-existing-subjects");
+        window.electron.ipcRenderer.send("open-file-dialog-existing-subjects");
         document.getElementById("existing-subjects-file-destination").placeholder = "Browse here";
         $("#div-confirm-existing-subjects-import").hide();
         $($("#div-confirm-existing-subjects-import button")[0]).hide();
@@ -2395,11 +2414,11 @@ const showExistingSubjectsFile = () => {
       }
     });
   } else {
-    ipcRenderer.send("open-file-dialog-existing-subjects");
+    window.electron.ipcRenderer.send("open-file-dialog-existing-subjects");
   }
 };
 
-const window.showExistingSamplesFile = () => {
+window.showExistingSamplesFile = () => {
   if ($("#existing-samples-file-destination").prop("placeholder") !== "Browse here") {
     Swal.fire({
       title: "Are you sure you want to import a different samples file?",
@@ -2415,7 +2434,7 @@ const window.showExistingSamplesFile = () => {
       reverseButtons: window.reverseSwalButtons,
     }).then((boolean) => {
       if (boolean.isConfirmed) {
-        ipcRenderer.send("open-file-dialog-existing-samples");
+        window.electron.ipcRenderer.send("open-file-dialog-existing-samples");
         document.getElementById("existing-samples-file-destination").placeholder = "Browse here";
         $("#div-confirm-existing-samples-import").hide();
         $($("#div-confirm-existing-samples-import button")[0]).hide();
@@ -2423,11 +2442,11 @@ const window.showExistingSamplesFile = () => {
       }
     });
   } else {
-    ipcRenderer.send("open-file-dialog-existing-samples");
+    window.electron.ipcRenderer.send("open-file-dialog-existing-samples");
   }
 };
 
-const importExistingSubjectsFile = () => {
+window.importExistingSubjectsFile = () => {
   var filePath = $("#existing-subjects-file-destination").prop("placeholder");
   if (filePath === "Browse here") {
     Swal.fire("No file chosen", "Please select a path to your subjects.xlsx file,", "error");
@@ -2441,7 +2460,7 @@ const importExistingSubjectsFile = () => {
       Destinations.LOCAL
     );
   } else {
-    if (path.parse(filePath).base !== "subjects.xlsx") {
+    if (window.path.parse(filePath).base !== "subjects.xlsx") {
       Swal.fire({
         title: "Incorrect file name",
         text: "Your file must be named 'subjects.xlsx' to be imported to SODA.",
@@ -2476,7 +2495,7 @@ const importExistingSubjectsFile = () => {
   }
 };
 
-const window.importExistingSamplesFile = () => {
+window.importExistingSamplesFile = () => {
   var filePath = $("#existing-samples-file-destination").prop("placeholder");
   if (filePath === "Browse here") {
     Swal.fire("No file chosen", "Please select a path to your samples.xlsx file.", "error");
@@ -2490,7 +2509,7 @@ const window.importExistingSamplesFile = () => {
       Destinations.LOCAL
     );
   } else {
-    if (path.parse(filePath).base !== "samples.xlsx") {
+    if (window.path.parse(filePath).base !== "samples.xlsx") {
       Swal.fire({
         title: "Incorrect file name",
         text: "Your file must be named 'samples.xlsx' to be imported to SODA.",
@@ -2526,7 +2545,7 @@ const window.importExistingSamplesFile = () => {
   }
 };
 
-const checkBFImportSubjects = async () => {
+window.checkBFImportSubjects = async () => {
   Swal.fire({
     title: "Importing the subjects.xlsx file",
     html: "Please wait...",
@@ -2547,7 +2566,7 @@ const checkBFImportSubjects = async () => {
   }
   let bfDataset = document.getElementById("bf_dataset_load_subjects").innerText.trim();
 
-  window.log.info(`Getting subjects.xlsx for dataset ${bfDataset} from Pennsieve.`);
+  log.info(`Getting subjects.xlsx for dataset ${bfDataset} from Pennsieve.`);
   try {
     let import_metadata_file = await client.get(`/prepare_metadata/import_metadata_file`, {
       params: {
@@ -2590,7 +2609,7 @@ const checkBFImportSubjects = async () => {
   }
 };
 
-const window.checkBFImportSamples = async () => {
+window.checkBFImportSamples = async () => {
   Swal.fire({
     title: "Importing the samples.xlsx file",
     html: "Please wait...",
@@ -2612,7 +2631,7 @@ const window.checkBFImportSamples = async () => {
 
   let bfDataset = document.getElementById("bf_dataset_load_samples").innerText;
 
-  window.log.info(`Getting samples.xlsx for dataset ${bfDataset} from Pennsieve.`);
+  log.info(`Getting samples.xlsx for dataset ${bfDataset} from Pennsieve.`);
   try {
     let importMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
       params: {
@@ -2656,7 +2675,7 @@ const window.checkBFImportSamples = async () => {
   }
 };
 
-const window.loadDataFrametoUI = (type) => {
+window.loadDataFrametoUI = (type) => {
   var fieldSubjectEntries = [];
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     fieldSubjectEntries.push(field.name.toLowerCase());
@@ -2688,7 +2707,7 @@ const window.loadDataFrametoUI = (type) => {
   }
 };
 
-const window.loadDataFrametoUISamples = (type) => {
+window.loadDataFrametoUISamples = (type) => {
   // separate regular headers and custom headers
   const lowercasedHeaders = window.samplesTableData[0].map((header) => header.toLowerCase());
   var fieldSampleEntries = [];
@@ -2720,7 +2739,8 @@ const window.loadDataFrametoUISamples = (type) => {
   }
 };
 
-const window.addAdditionalLink = async () => {
+window.addAdditionalLink = async () => {
+  let protocolLink = ""
   const { value: values } = await Swal.fire({
     title: "Add additional link",
     html:
@@ -2771,7 +2791,7 @@ const window.addAdditionalLink = async () => {
       if ($("#DD-other-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description.`);
       }
-      var duplicate = checkLinkDuplicate(link, document.getElementById("other-link-table-dd"));
+      var duplicate = window.checkLinkDuplicate(link, document.getElementById("other-link-table-dd"));
       if (duplicate) {
         Swal.showValidationMessage(
           `Duplicate ${protocolLink}. The ${protocolLink} you entered is already added.`
@@ -2795,7 +2815,7 @@ const window.addAdditionalLink = async () => {
   }
 };
 
-const checkLinkDuplicate = (link, table) => {
+window.checkLinkDuplicate = (link, table) => {
   var duplicate = false;
   var rowcount = table.rows.length;
   for (var i = 1; i < rowcount; i++) {

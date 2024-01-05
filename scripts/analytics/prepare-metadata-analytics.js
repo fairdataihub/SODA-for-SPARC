@@ -14,6 +14,5 @@ const createEventDataPrepareMetadata = (destination, value) => {
   };
 };
 
-module.exports = {
-  createEventDataPrepareMetadata,
-};
+export default createEventDataPrepareMetadata
+

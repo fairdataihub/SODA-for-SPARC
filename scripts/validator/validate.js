@@ -1,7 +1,17 @@
 // Purpose: The front end logic for the Validate Dataset section
-const { handleAxiosValidationErrors } = require("./scripts/validator/axios-validator-utility.js");
+import { v4 as uuid } from "uuid";
+import Swal from "sweetalert2";
+import { handleAxiosValidationErrors } from "./axios-validator-utility"
+import { translatePipelineError } from "./parse-pipeline-errors";
+import client from '../client'
+import {clientError, userErrorMessage} from "../others/http-error-handler/error-handler"
+import kombuchaEnums from "../analytics/analytics-enums"
+import api from '../others/api/api'
 
-const { translatePipelineError } = require("./scripts/validator/parse-pipeline-errors.js");
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
+
 
 /*
 *******************************************************************************************************************
@@ -9,7 +19,7 @@ const { translatePipelineError } = require("./scripts/validator/parse-pipeline-e
 *******************************************************************************************************************
 */
 
-const window.createValidationReport = async (sodaJSONObj) => {
+window.createValidationReport = async (sodaJSONObj) => {
   const clientUUID = uuid();
 
   let manifestJSONResponse = await client.post(
@@ -85,6 +95,9 @@ const pollForValidationResults = async (clientUUID) => {
 };
 
 const validateLocalDataset = async () => {
+
+  let file_counter = 0 
+  let folder_counter = 0
   // grab the local dataset path from the input's placeholder attribute
   let datasetPath = document.querySelector("#validate-local-dataset-path").value;
 
@@ -196,7 +209,7 @@ const validateLocalDataset = async () => {
     folder_counter = 0;
     window.get_num_files_and_folders(localSodaJsonObject["dataset-structure"]);
     // log successful validation run to analytics
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       "Validation - Number of Files",
@@ -260,16 +273,16 @@ const validateLocalDataset = async () => {
 
   // write the full report to the ~/SODA/validation.txt file
   let fullReport = validationReportData.full_report;
-  let validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
-  fs.writeFileSync(validationReportPath, fullReport);
+  let validationReportPath = window.path.join(window.os.homedir(), "SODA", "validation.txt");
+  window.fs.writeFileSync(validationReportPath, fullReport);
 
-  let SODADirectory = path.join(os.homedir(), "SODA");
+  let SODADirectory = window.path.join(window.os.homedir(), "SODA");
 
   file_counter = 0;
   folder_counter = 0;
   window.get_num_files_and_folders(localSodaJsonObject["dataset-structure"]);
   // log successful validation run to analytics
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-event",
     "Success",
     "Validation - Number of Files",
@@ -341,6 +354,9 @@ const validateLocalDataset = async () => {
 const validatePennsieveDatasetStandAlone = async () => {
   // get the dataset name from the dataset selection card
   let datasetName = document.querySelector("#bf_dataset_load_validator").textContent;
+
+  let file_counter = 0
+  let folder_counter = 0
 
   Swal.fire({
     title: `Validating your dataset`,
@@ -452,7 +468,7 @@ const validatePennsieveDatasetStandAlone = async () => {
     // hide the validation question
     $("#validate_dataset-question-4").removeClass("show");
     // log successful validation run to analytics
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       "Validation - Number of Files",
@@ -460,7 +476,7 @@ const validatePennsieveDatasetStandAlone = async () => {
       file_counter
     );
 
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_DATASETS,
       kombuchaEnums.Action.VALIDATE_DATASET,
@@ -527,16 +543,16 @@ const validatePennsieveDatasetStandAlone = async () => {
 
   // write the full report to the ~/SODA/validation.txt file
   let fullReport = validationReport.full_report;
-  let validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
-  fs.writeFileSync(validationReportPath, fullReport);
+  let validationReportPath = window.path.join(window.os.homedir(), "SODA", "validation.txt");
+  window.fs.writeFileSync(validationReportPath, fullReport);
 
-  let SODADirectory = path.join(os.homedir(), "SODA");
+  let SODADirectory = window.path.join(window.os.homedir(), "SODA");
 
   file_counter = 0;
   folder_counter = 0;
   window.get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
   // log successful validation run to analytics
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-event",
     "Success",
     "Validation - Number of Files",
@@ -544,7 +560,7 @@ const validatePennsieveDatasetStandAlone = async () => {
     file_counter
   );
 
-  ipcRenderer.send(
+  window.electron.ipcRenderer.send(
     "track-kombucha",
     kombuchaEnums.Category.PREPARE_DATASETS,
     kombuchaEnums.Action.VALIDATE_DATASET,
@@ -625,7 +641,7 @@ const validatePennsieveDatasetStandAlone = async () => {
 *******************************************************************************************************************
 */
 
-const window.displayValidationErrors = (errors, tableBody) => {
+window.displayValidationErrors = (errors, tableBody) => {
   // get the table body
   //let tableBody = document.querySelector("#validate_dataset-question-4 tbody");
 
@@ -684,7 +700,7 @@ const addValidationErrorToTable = (tableBody, errorMessage, validatorStatement) 
   tableBody.appendChild(row);
 };
 
-const window.validationErrorsOccurred = (errors) =>
+window.validationErrorsOccurred = (errors) =>
   Object.getOwnPropertyNames(errors).length >= 1 ? true : false;
 
 /*
@@ -694,7 +710,7 @@ const window.validationErrorsOccurred = (errors) =>
 */
 
 // Presentation logic for transitioning from question one to question two
-const transitionToValidateQuestionTwo = async () => {
+window.transitionToValidateQuestionTwo = async () => {
   // hide both local and pennsieve sections
   let pennsieveSection = document.querySelector("#pennsieve-question-2-container");
 
@@ -744,7 +760,7 @@ const transitionToValidateQuestionTwo = async () => {
 };
 
 // Presentation logic for transitioning from question 2 to question 3
-const transitionToValidateQuestionThree = async () => {
+window.transitionToValidateQuestionThree = async () => {
   let userWantsToReset = await userWantsToResetValidation();
 
   if (userWantsToReset === false) return userWantsToReset;
@@ -861,10 +877,10 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
   }
 
   // open folder select dialog
-  ipcRenderer.send("open-folder-dialog-validate-local-dataset");
+  window.electron.ipcRenderer.send("open-folder-dialog-validate-local-dataset");
 
   // listen for user's folder path
-  ipcRenderer.on("selected-validate-local-dataset", async (evtSender, folderPaths) => {
+  window.electron.ipcRenderer.on("selected-validate-local-dataset", async (evtSender, folderPaths) => {
     // check if a folder was not selected
     if (!folderPaths.length) {
       return;
@@ -887,7 +903,7 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
     document.querySelector("#run_validator_btn").style.display = "flex";
 
     window.transitionFreeFormMode(
-      this,
+      document.querySelector("#validate_dataset-question-2"),
       "validate_dataset-question-2",
       "validate_dataset-tab",
       "",
@@ -944,7 +960,7 @@ document.querySelector("#run_validator_btn").addEventListener("click", async fun
       "",
       "individual-question validate_dataset"
     );
-    scrollToElement("#validation-errors-container");
+    window.smoothScrollToElement(document.querySelector("#validation-errors-container"));
   }
 });
 
@@ -1062,7 +1078,7 @@ const undoOptionCardSelection = (activeOptionCard) => {
   activeOptionCard.classList.remove("checked");
 };
 
-const window.clearValidationResults = (validationTableElement) => {
+window.clearValidationResults = (validationTableElement) => {
   // remove its children
   while (validationTableElement.firstChild) {
     validationTableElement.removeChild(validationTableElement.firstChild);

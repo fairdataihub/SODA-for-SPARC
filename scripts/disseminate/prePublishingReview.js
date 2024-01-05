@@ -8,6 +8,14 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 ******************************************************
 ******************************************************
 */
+import client from "../client";
+import api from "../others/api/api";
+import Swal from "sweetalert2";
+import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
+
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
 
 const resetSubmissionChecklistText = () => {
   let subtitleText = $(`#prepublishing-checklist-icon-subtitle`).parent().siblings()[0];
@@ -38,7 +46,8 @@ const resetSubmissionChecklistText = () => {
  * @param {string} currentDataset - The currently selected dataset - name
  * @returns statuses - A status object that details the state of each pre-publishing checklist item for the given dataset and user
  */
-const getPrepublishingChecklistStatuses = async (currentDataset) => {
+window.getPrepublishingChecklistStatuses = async (currentDataset) => {
+  console.log("Running get prepublishing checklist statuses")
   // check that a dataset name or id is provided
   if (!currentDataset || currentDataset === "") {
     throw new Error(
@@ -57,12 +66,15 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
   }
 
   // get the description - aka subtitle (unfortunate naming), tags, banner image URL, collaborators, and license
-  const { description, tags, license } = dataset["content"];
+  let { description, tags, license } = dataset["content"];
+  description = description.trim()
 
   // set the subtitle's status
   statuses.subtitle = description && description.length ? true : false;
 
-  let readme = await api.getDatasetReadme(window.defaultBfDataset, currentDataset);
+
+  let readme = await api.getDatasetReadme(window.defaultBfAccount, currentDataset);
+  readme = readme.trim()
 
   // set the readme's status
   statuses.readme = readme && readme.length >= 1 ? true : false;
@@ -70,7 +82,7 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
   // set tags's status
   statuses.tags = tags && tags.length ? true : false;
 
-  let bannerImageURL = await api.getDatasetBannerImageURL(window.defaultBfDataset, currentDataset);
+  let bannerImageURL = await api.getDatasetBannerImageURL(window.defaultBfAccount, currentDataset);
 
   // set the banner image's url status
   statuses.bannerImageURL = bannerImageURL !== "No banner image" ? true : false;
@@ -97,13 +109,15 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
   // the user has an ORCID iD if the property is defined and non-empty
   statuses.ORCID = orcidId && orcidId.length ? true : false;
 
+  console.log(statuses)
+
   return statuses;
 };
 
 // once the user clicks the Begin Submission button check if they are the data set owner'
 // show the next section - which has the pre-publishing checklist - if so
 // Function returns true if the dataset has been published, false otherwise
-const window.resetffmPrepublishingUI = async () => {
+window.resetffmPrepublishingUI = async () => {
   // hide the begin publishing button
   $("#begin-prepublishing-btn").addClass("hidden");
   // resetPrePublishingChecklist();
@@ -130,7 +144,7 @@ const window.resetffmPrepublishingUI = async () => {
 };
 
 // take the user to the Pennsieve account to sign up for an ORCID Id
-const orcidSignIn = async (ev, curationMode) => {
+window.orcidSignIn = async (ev, curationMode) => {
   let curationModeID = "";
   if (curationMode === "guided") {
     // This is done to ensure the right element ID is called
@@ -144,13 +158,13 @@ const orcidSignIn = async (ev, curationMode) => {
     }
 
     // tell the main process to open a Modal window with the webcontents of the user's Pennsieve profile so they can add an ORCID iD
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "orcid",
       "https://orcid.org/oauth/authorize?client_id=APP-DRQCE0GUWKTRCWY2&response_type=code&scope=/authenticate&redirect_uri=https://app.pennsieve.io/orcid-redirect"
     );
 
     // handle the reply from the asynhronous message to sign the user into Pennsieve
-    ipcRenderer.on("orcid-reply", async (event, accessCode) => {
+    window.electron.ipcRenderer.on("orcid-reply", async (event, accessCode) => {
       if (!accessCode || accessCode === "") {
         return;
       }
@@ -169,7 +183,7 @@ const orcidSignIn = async (ev, curationMode) => {
         },
       });
 
-      log.info("Connecting orcid to Pennsieve account.");
+      window.log.info("Connecting orcid to Pennsieve account.");
 
       try {
         await client.post(
@@ -177,7 +191,7 @@ const orcidSignIn = async (ev, curationMode) => {
           { access_code: accessCode },
           {
             params: {
-              pennsieve_account: window.defaultBfDataset,
+              pennsieve_account: window.defaultBfAccount,
             },
           }
         );
@@ -218,7 +232,7 @@ const orcidSignIn = async (ev, curationMode) => {
       });
 
       // track success
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-event",
         "Success",
         window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Integrate ORCID iD",
@@ -237,7 +251,7 @@ const orcidSignIn = async (ev, curationMode) => {
 //  This function is the first step to the prepublishing workflow for both guided and freeform mode
 //  Function fetches the status of each item needed to publish a dataset from the backend and updates the UI accordingly.
 //  inPrePublishing: boolean - True when the function is ran in the pre-publishing submission flow; false otherwise
-const window.showPrePublishingStatus = async (inPrePublishing = false, curationMode = "") => {
+window.showPrePublishingStatus = async (inPrePublishing = false, curationMode = "") => {
   resetSubmissionChecklistText();
   document.getElementById("pre-publishing-continue-btn").disabled = true;
   $("#pre-publishing-continue-btn").disabled = true;
@@ -249,7 +263,7 @@ const window.showPrePublishingStatus = async (inPrePublishing = false, curationM
     // This is done to ensure the right element ID is called
     // Guided mode elements have 'guided--' prepended to their ID
     curationModeID = "guided--";
-    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
   }
 
   // wait until a value has been loaded into the status field
@@ -284,7 +298,8 @@ const window.showPrePublishingStatus = async (inPrePublishing = false, curationM
   // run the validation checks on each pre-publishing checklist item
   let statuses;
   try {
-    statuses = await getPrepublishingChecklistStatuses(currentDataset);
+    statuses = await window.getPrepublishingChecklistStatuses(currentDataset);
+    console.log(statuses)
   } catch (error) {
     clientError(error);
     if (inPrePublishing) {
@@ -394,7 +409,7 @@ const window.showPrePublishingStatus = async (inPrePublishing = false, curationM
 
       //If the user clicks the ORCID button, open the ORCID page
       if (result.isConfirmed && result.value === "ORCID") {
-        orcidSignIn("guided");
+        window.orcidSignIn("guided");
       }
       return false;
     } else {
@@ -421,6 +436,8 @@ const window.showPrePublishingStatus = async (inPrePublishing = false, curationM
 // gets the pre-publishing checklist item element by id and gives it a check or an 'x' based off the value of the pre-publishing item's status
 const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
   let addButton = $(`#${iconElementId}`).parent().siblings()[0];
+  console.log("In set prepublishing checklist item icon by status")
+  console.log(addButton)
   if (status) {
     // Change icon of iconElementId to a checkmark
     $(`#${iconElementId}`).attr("class", "check icon");
@@ -476,7 +493,7 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
 // reads the pre-publishing checklist items from the UI and returns true if all are completed and false otherwise
 // This function checks elements with icon wrapper i class
 // If curationMode is guided the return will include an array of the checklist items that are not completed to alert user
-const window.allPrepublishingChecklistItemsCompleted = (curationMode) => {
+window.allPrepublishingChecklistItemsCompleted = (curationMode) => {
   let curationModeID = "";
   let prePublishingChecklistItemNames = [];
   if (curationMode === "guided") {
@@ -502,11 +519,11 @@ const window.allPrepublishingChecklistItemsCompleted = (curationMode) => {
 };
 
 // transition to the final question and populate the file tree with the dataset's metadata files
-const createPrepublishingChecklist = async (curationMode) => {
+window.createPrepublishingChecklist = async (curationMode) => {
   let curationModeID = "";
-  let currentDataset = window.defaultBfDataset;
+  let currentDataset = window.defaultBfAccount;
   if (curationMode === "guided") {
-    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     curationModeID = "guided--";
   }
 
@@ -545,7 +562,7 @@ const createPrepublishingChecklist = async (curationMode) => {
   $(`.${curationModeID}items-spinner`).hide();
 
   if (curationMode === "freeform") {
-    await disseminatePublish("freeform");
+    await window.disseminatePublish("freeform");
     document.getElementById("pre-publishing-continue-btn").disabled = false;
     $("#pre-publishing-continue-btn").disabled = false;
     $("#pre-publishing-continue-btn").removeClass("loading");
@@ -555,16 +572,20 @@ const createPrepublishingChecklist = async (curationMode) => {
 
 // check if the user is the dataset owner and transition to the prepublishing checklist question if so
 // TODO: Dorian handle the freeform withdraw button and remove it
-const window.beginPrepublishingFlow = async (curationMode) => {
+window.beginPrepublishingFlow = async (curationMode) => {
+  console.log("We are here rn ")
   let currentDataset = window.defaultBfDataset;
-  let currentAccount = window.defaultBfDataset;
+  let currentAccount = window.defaultBfAccount;
 
   let curationModeID = "";
   let embargoDetails;
   if (curationMode === "guided") {
+    console.log("In guided mode now nice man")
     curationModeID = "guided--";
-    currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
-    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    currentAccount = window.sodaJSONObj["bf-account-selected"]["account-name"];
+    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    console.log(currentDataset)
+    console.log(currentAccount)
     let get_publishing_status = await client.get(
       `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
       {
@@ -573,14 +594,20 @@ const window.beginPrepublishingFlow = async (curationMode) => {
         },
       }
     );
+    console.log("After the request")
     let res = get_publishing_status.data;
+
+    console.log(res)
 
     // Don't send true until pre-publishing checklist is complete
     embargoDetails = await window.submitReviewDatasetCheck(res, "guided");
+    console.log("Past submission review dataset check")
     if (embargoDetails[0] === false) {
       Swal.close();
       return false;
     }
+
+    console.log("Didnt return false")
   }
   if (curationMode === "freeform" || curationMode === undefined) {
     resetSubmissionChecklistText();
@@ -598,6 +625,8 @@ const window.beginPrepublishingFlow = async (curationMode) => {
       },
     });
   }
+
+  console.log("DOwn here now")
 
   // check if the user is the dataset owner
   let role;

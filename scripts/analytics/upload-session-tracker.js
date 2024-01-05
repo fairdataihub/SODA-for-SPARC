@@ -4,7 +4,8 @@ Purpose: Creates a session ID that is used for tracking which dataset upload ses
          being able to log the amount of files and their size because the user closes SODA in response. More than that we could never activate an analytics call without knowing when 
          the Agent has frozen. This is something that the Pennsieve team has a milestone to fix however, so we will not want to work with this. 
 */
-const { v4: uuid } = require("uuid");
+import {v4 as uuid} from "uuid";
+
 
 const datasetUploadSession = {
   id: undefined,
@@ -13,4 +14,4 @@ const datasetUploadSession = {
   },
 };
 
-module.exports = { datasetUploadSession };
+export default datasetUploadSession

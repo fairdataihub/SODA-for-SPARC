@@ -12,10 +12,10 @@
 //       handling for the different string values (each representing a field or metadata file ) should be simple
 //       enough.
 
-const { ValidationErrorParser } = require("./validation-error-parser.js");
+import { ValidationErrorParser } from "./validation-error-parser";
 
-const { ParsedErrorTranslator } = require("./parsed-error-translator.js");
-const { VALIDATOR_CATEGORIES } = require("./validator-categories.js");
+import { ParsedErrorTranslator } from "./parsed-error-translator";
+import { VALIDATOR_CATEGORIES }  from "./validator-categories";
 
 /* 
 Takes a validation error and parses the features of the error to determine what translation function to use on the error object
@@ -139,4 +139,4 @@ const MissingFieldNameToMetadataFileMap = {
 };
 
 // export the validationErrorPipeline function
-exports.translatePipelineError = validationErrorPipeline;
+export {validationErrorPipeline as translatePipelineError}

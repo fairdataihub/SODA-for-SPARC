@@ -1,9 +1,15 @@
+import jspreadsheet from "jspreadsheet";
+
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
+
 // this function runs when the DOM is ready, i.e. when the document has been parsed
 document.addEventListener("DOMContentLoaded", function () {
-  const { ipcRenderer } = require("electron");
+
 
   //Request the spreadsheet data from main
-  ipcRenderer.once("requested-spreadsheet", async (ev, spreadsheet) => {
+  window.Electron.ipcRenderer.once("requested-spreadsheet", async (ev, spreadsheet) => {
     if (!spreadsheet || spreadsheet === "") {
       return;
     } else {
