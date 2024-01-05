@@ -910,6 +910,52 @@ const run_pre_flight_checks = async (check_update = true) => {
       clientError(error);
       const emessage = userErrorMessage(error);
 
+      // check if the Agent is failing to start due to Unique constraint violation or due to the Agent caching an outdated username and password after the user updates their Key + Secret
+      // if so then we prompt the user to allow us to remove the pennsieve Agent DB files and try again
+      if (
+        emessage.includes("UNIQUE constraint failed:") ||
+        emessage.includes("NotAuthorizedException: Incorrect username or password.")
+      ) {
+        const { value: deleteFilesRerunChecks } = await Swal.fire({
+          icon: "error",
+          title: "The Pennsieve Agent Failed to Start",
+          html: `
+                <br />
+                <div class="div--code-block-error">${emessage}</div>
+                <br />
+                <p style="text-align: left">This is a known issue with the Pennsieve Agent and is typically resolved by deleting the local Pennsieve Agent database files from your computer. Would you like SODA to do that and restart the Agent?</p>`,
+          width: 800,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showCancelButton: true,
+          showCloseButton: true,
+          reverseButtons: reverseSwalButtons,
+          confirmButtonText: "Yes",
+          cancelButtonText: "No",
+        });
+
+        if (!deleteFilesRerunChecks) {
+          return false;
+        }
+
+        // wait for the Agent to stop using the db files so they may be deleted
+        await wait(1000);
+        const fs = require("fs").promises;
+        const fsSync = require("fs");
+        // delete any db files that exist
+        if (fsSync.existsSync(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db`))
+          await fs.unlink(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db`);
+        if (fsSync.existsSync(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db-shm`))
+          await fs.unlink(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db-shm`);
+        if (fsSync.existsSync(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db-wal`))
+          await fs.unlink(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db-wal`);
+
+        // rerun checks
+        return await run_pre_flight_checks();
+      }
+
       const { value: rerunPreFlightChecks } = await Swal.fire({
         icon: "info",
         title: "The Pennsieve Agent failed to start",
