@@ -7666,8 +7666,6 @@ const guidedResumeProgress = async (datasetNameToResume) => {
 
           const intitiallyPulledDatasetStructure =
             datasetResumeJsonObj["initially-pulled-dataset-structure"];
-          console.log("currentPennsieveDatasetStructure", currentPennsieveDatasetStructure);
-          console.log("intitiallyPulledDatasetStructure", intitiallyPulledDatasetStructure);
 
           // check to make sure current and initially pulled dataset structures are the same
           if (
@@ -14278,10 +14276,8 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
     const diskSpaceRes = await checkDiskSpace(filePath);
     const freeMemoryInBytes = diskSpaceRes.free;
 
-    console.log("Free memory in bytes: ", diskSpaceRes.free);
     const freeMemoryInMb = convertBytesToMb(diskSpaceRes.free);
-    console.log("Free memory in MB: ", freeMemoryInMb);
-    console.log("Free memory in GB: ", convertBytesToGb(diskSpaceRes.free));
+
     // Get the size of the dataset that will be generated
     const localDatasetSizeReq = await client.post(
       "/curate_datasets/dataset_size",
@@ -14290,7 +14286,6 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
     );
     const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
     const datasetSizeInMb = convertBytesToMb(localDatasetSizeInBytes);
-    console.log("Dataset size in GB: ", convertBytesToGb(localDatasetSizeInBytes));
 
     // Check if there is enough free space on disk for the dataset
     if (freeMemoryInMb < datasetSizeInMb) {
@@ -14298,11 +14293,6 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
         `Not enough free space on disk. Free space: ${freeMemoryInMb} MB. Dataset size: ${datasetSizeInMb} MB`
       );
     } else {
-      console.log("Free space besides dataset size in MB: ", freeMemoryInMb - datasetSizeInMb);
-      console.log(
-        "Free space besided dataset size in GB: ",
-        (freeMemoryInMb - datasetSizeInMb) / 1024
-      );
     }
 
     // Attach manifest files to the dataset structure before local generation
@@ -14342,7 +14332,6 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
           const mainCurateStatus = data["main_curate_status"];
 
           if (mainCurateStatus === "Done") {
-            console.log("done");
             clearInterval(progressTrackerInterval); // Stop the polling interval since the generation is done
             break;
           } else {
@@ -14353,7 +14342,6 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
           }
         }
       } catch (error) {
-        console.log("Error tracking progress", error);
         clearInterval(progressTrackerInterval); // Stop the polling interval on error
       }
     };
@@ -14366,7 +14354,6 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
   } catch (error) {
     // Handle and log errors
     const errorMessage = userErrorMessage(error);
-    console.log("Error thrown to main catch", errorMessage);
   }
 });
 
@@ -14374,7 +14361,6 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
   // If the subjects metadata table is empty or the user has skipped the subjects metadata tab,
   // we don't need to generate the subjects metadata file
   if (subjectsTableData.length === 0 || pageIsSkipped("guided-create-subjects-metadata-tab")) {
-    console.log("No subjects metadata to generate");
     return;
   }
 
@@ -14450,7 +14436,6 @@ const guidedGenerateSamplesMetadata = async (bfAccount, datasetName, samplesTabl
   // If the samples metadata table is empty or the user has skipped the subjects metadata tab,
   // we don't need to generate the samples metadata file
   if (samplesTableData.length === 0 || pageIsSkipped("guided-create-samples-metadata-tab")) {
-    console.log("No samples metadata to generate");
     return;
   }
   document
@@ -14699,11 +14684,9 @@ const guidedGenerateCodeDescriptionMetadata = async (
   // we don't need to generate the code description metadata file
 
   if (pageIsSkipped("guided-add-code-metadata-tab")) {
-    console.log("Code description page skipped not generating");
     return;
   }
   if (!codeDescriptionFilePath) {
-    console.log("No code description path provided not generating");
     return;
   }
 
@@ -14761,11 +14744,9 @@ const guidedGenerateREADMEorCHANGESMetadata = async (
   readmeOrChangesMetadata
 ) => {
   if (pageIsSkipped(`guided-create-${readmeORchanges}-metadata-tab`)) {
-    console.log(`${readmeORchanges} page skipped not generating`);
     return;
   }
   if (!readmeOrChangesMetadata) {
-    console.log(`No ${readmeORchanges} provided not generating`);
     return;
   }
 
