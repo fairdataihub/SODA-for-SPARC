@@ -15067,6 +15067,7 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
 
     //Reset Upload Progress Bar and then scroll to it
     setGuidedProgressBarValue("pennsieve", 0);
+
     updateDatasetUploadProgressTable("pennsieve", {
       "Upload status": `Preparing dataset for upload`,
     });
@@ -15459,11 +15460,8 @@ const guidedUploadDatasetToPennsieve = async () => {
     try {
       mainCurationProgressResponse = await client.get(`/curate_datasets/curation/progress`);
     } catch (error) {
-      clientError(error);
-      let emessage = userErrorMessage(error);
-      console.error(emessage);
-      console.error(error);
-      //Clear the interval to stop the generation of new sweet alerts after intitial error
+      const emessage = userErrorMessage(error);
+      console.error("Error getting curation progress", emessage);
       clearInterval(timerProgress);
       throw emessage;
     }
@@ -15537,8 +15535,9 @@ const guidedUploadDatasetToPennsieve = async () => {
       // electron.powerSaveBlocker.stop(prevent_sleep_id)
     }
   };
+
   // Progress tracking function for main curate
-  let timerProgress = setInterval(guidedUpdateUploadStatus(), 1000);
+  let timerProgress = setInterval(() => guidedUpdateUploadStatus(), 1000);
 
   let bytesOnPreviousLogPage = 0;
   let filesOnPreviousLogPage = 0;
