@@ -1,4 +1,4 @@
-const docu_lottie = {
+export const docu_lottie = {
   v: "5.1.18",
   fr: 29.9700012207031,
   ip: 0,

@@ -1,4 +1,4 @@
-const dragDrop = {
+export const dragDrop = {
   v: "5.5.8",
   fr: 30,
   ip: 0,
@@ -927,7 +927,7 @@ const dragDrop = {
   markers: [],
 };
 
-const successCheck = {
+export const successCheck = {
   v: "4.8.0",
   meta: { g: "LottieFiles AE 1.0.0", a: "", k: "", d: "", tc: "" },
   fr: 60,
@@ -1312,7 +1312,7 @@ const successCheck = {
   markers: [],
 };
 
-const errorMark = {
+export const errorMark = {
   v: "5.7.11",
   fr: 30,
   ip: 0,
@@ -12574,7 +12574,7 @@ const newDataset = {
   markers: [],
 };
 
-const blackArrow = {
+export const blackArrow = {
   v: "5.5.7",
   fr: 24,
   ip: 0,
@@ -12920,7 +12920,7 @@ const blackArrow = {
   markers: [],
 };
 
-const modifyDataset = {
+export const modifyDataset = {
   v: "5.7.8",
   fr: 60,
   ip: 0,
@@ -29200,7 +29200,7 @@ const modifyDataset = {
   markers: [],
 };
 
-const existingDataset = {
+export const existingDataset = {
   ip: 0,
   fr: 60,
   v: "5.1.20",
@@ -39750,7 +39750,7 @@ const existingDataset = {
   h: 400,
 };
 
-const questionList = {
+export const questionList = {
   v: "4.8.0",
   meta: { g: "LottieFiles AE ", a: "", k: "", d: "", tc: "" },
   fr: 25,
@@ -41375,7 +41375,7 @@ const questionList = {
   markers: [],
 };
 
-const datasetMetadataIntroLottie = {
+export const datasetMetadataIntroLottie = {
   v: "4.8.0",
   meta: {
     g: "LottieFiles AE 3.2.2",
@@ -42852,7 +42852,7 @@ const datasetMetadataIntroLottie = {
   markers: [],
 };
 
-const addScienceData = {
+export const addScienceData = {
   v: "5.7.6",
   fr: 60,
   ip: 0,
@@ -49635,7 +49635,7 @@ const addScienceData = {
   markers: [],
 };
 
-const startNew = {
+export const startNew = {
   v: "5.5.2",
   fr: 25,
   ip: 0,
@@ -50335,7 +50335,7 @@ const startNew = {
   ],
 };
 
-const resumeExisting = {
+export const resumeExisting = {
   v: "5.7.8",
   fr: 25,
   ip: 0,

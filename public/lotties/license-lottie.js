@@ -1,4 +1,4 @@
-const licenseLottie = {
+export const licenseLottie = {
   v: "5.7.12",
   fr: 24,
   ip: 0,

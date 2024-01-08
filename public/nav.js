@@ -1,3 +1,9 @@
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100))
+}
+console.log("Going for it")
+
+
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 document.body.addEventListener("click", (event) => {
   if (event.target.dataset.section) {
@@ -14,6 +20,42 @@ document.body.addEventListener("custom-back", (e) => {
 });
 // Variable used to determine the disabled status of the organize datasets next button
 let boolNextButtonDisabled = true;
+
+// function to hide the sidebar and disable the sidebar expand button
+function forceActionSidebar(action) {
+  if (action === "show") {
+    document.querySelector("#sidebarCollapse").classList.remove("active");
+    document.querySelector("#main-nav").classList.remove("active");
+  } else {
+    document.querySelector("#sidebarCollapse").classList.remove("active");
+    document.querySelector("#main-nav").classList.remove("active");
+    // $("#sidebarCollapse").prop("disabled", false);
+  }
+}
+
+const resetLazyLoading = () => {
+  window.already_created_elem = [];
+  window.listed_count = 0;
+  window.start = 0;
+  window.preprended_items = 0;
+  window.amount = 500;
+};
+
+const guidedUnLockSideBar = () => {
+  const sidebar = document.getElementById("sidebarCollapse");
+  const guidedModeSection = document.getElementById("guided_mode-section");
+  const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
+  const guidedNav = document.getElementById("guided-nav");
+
+  if (sidebar.classList.contains("active")) {
+    sidebar.click();
+  }
+  sidebar.disabled = false;
+  guidedModeSection.style.marginLeft = "-15px";
+  //remove the marginLeft style from guidedDatasetTab
+  guidedDatsetTab.style.marginLeft = "";
+  guidedNav.style.display = "none";
+};
 
 const handleSectionTrigger = async (event) => {
   // Display the current section
@@ -37,6 +79,7 @@ const handleSectionTrigger = async (event) => {
   }
 
   if (sectionId === "guided_mode-section") {
+    console.log("IN this section")
     // Disallow the transition if an upload is in progress
     if (document.getElementById("returnButton") !== null) {
       Swal.fire({
@@ -77,7 +120,7 @@ const handleSectionTrigger = async (event) => {
       }
     });
 
-    if (sodaJSONObj != undefined && boolRadioButtonsSelected === true) {
+    if (window.sodaJSONObj != undefined && boolRadioButtonsSelected === true) {
       //get the element with data-next="Question-getting-started-BF-account"
       const buttonContinueExistingPennsieve = document.querySelector(
         '[data-next="Question-getting-started-BF-account"]'
@@ -134,22 +177,24 @@ const handleSectionTrigger = async (event) => {
     }
 
     if (sectionRenderFileExplorer != "file-explorer") {
-      sodaJSONObj = {};
-      datasetStructureJSONObj = {};
+      window.sodaJSONObj = {};
+      window.datasetStructureJSONObj = {};
       window.subjectsTableData = [];
       window.samplesTableData = [];
     }
 
     //Transition file explorer elements to guided mode
-    organizeDSglobalPath = document.getElementById("guided-input-global-path");
-    organizeDSglobalPath.value = "";
-    dataset_path = document.getElementById("guided-input-global-path");
-    scroll_box = document.querySelector("#guided-body");
+    window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
+    window.organizeDSglobalPath.value = "";
+    window.dataset_path = document.getElementById("guided-input-global-path");
+    window.scroll_box = document.querySelector("#guided-body");
     itemsContainer.innerHTML = "";
     resetLazyLoading();
     freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
     freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-    $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
+    document.querySelectorAll(".shared-folder-structure-element").forEach( folderElement => {
+      document.querySelector("#guided-folder-structure-container").appendChild(folderElement)
+    })
 
     guidedUnLockSideBar();
   }
@@ -178,16 +223,18 @@ const handleSectionTrigger = async (event) => {
   ];
 
   if (showSidebarSections.includes(sectionId)) {
+    console.log("Here?")
     forceActionSidebar("show");
   } else {
+    console.log("In elese statement")
     forceActionSidebar("hide");
   }
 
   boolNextButtonDisabled = document.getElementById("nextBtn").disabled;
 
   if (sectionId === "validate_dataset-section") {
-    localDatasetButton = document.getElementById("validate_dataset-1-local");
-    pennsieveDatasetButton = document.getElementById("validate_dataset-1-pennsieve");
+    let localDatasetButton = document.getElementById("validate_dataset-1-local");
+    let pennsieveDatasetButton = document.getElementById("validate_dataset-1-pennsieve");
 
     if (
       !localDatasetButton.classList.contains("checked") &&
@@ -204,6 +251,7 @@ const handleSectionTrigger = async (event) => {
 };
 
 function showMainContent() {
+  console.log(document.querySelector(".js-nav").classList)
   document.querySelector(".js-nav").classList.add("is-shown");
   document.querySelector(".js-content").classList.add("is-shown");
 }
@@ -240,12 +288,40 @@ showMainContent();
 // only required for when switching between section where the menu needs to change
 // TO DISCUSS - add these for all return buttons and pulse the button on return maybe?
 // Should help if people lose their position
-$("#shortcut-navigate-to-organize").on("click", () => {
-  $("#prepare_dataset_tab").click();
-  $("#organize_dataset_btn").click();
+document.querySelector('#shortcut-navigate-to-organize').addEventListener('click', () => {
+  document.querySelector('#prepare_dataset_tab').click()
+  document.querySelector('#organize_dataset_btn').click()
 });
 
-$("#shortcut-navigate-to-create_submission").on("click", () => {
-  $("#prepare_metadata_tab").click();
-  $("#create_submission_btn").click();
+document.querySelector("#shortcut-navigate-to-create_submission").addEventListener("click", () => {
+  document.querySelector("#prepare_metadata_tab").click();
+  document.querySelector("#create_submission_btn").click();
 });
+
+
+
+document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
+  //Free form mode will open through here
+  window.guidedPrepareHomeScreen();
+
+  // guidedResetSkippedPages();
+
+  window.directToFreeFormMode();
+  document.getElementById("guided_mode_view").classList.add("is-selected");
+});
+
+$(document).ready(() => {
+  $("#sidebarCollapse").on("click", function () {
+    $("#main-nav").toggleClass("active");
+    $(this).toggleClass("active");
+    $(".section").toggleClass("fullShown");
+  });
+
+  $("a").on("click", function () {
+    $($(this).parents()[1]).find("a").removeClass("is-selected");
+    $(this).addClass("is-selected");
+  });
+});
+
+
+export {resetLazyLoading, guidedUnLockSideBar}

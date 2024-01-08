@@ -920,12 +920,14 @@ progress.progresstrack[value]::-webkit-progress-value {
   margin: 0 auto;
 }
 
+/*
 .img-container img {
   display: block;
-  /* This is important */
+  /* This is important 
   max-width: 100%;
   background-color: white;
 }
+*/
 
 #cleared {
   clear: both;
@@ -993,6 +995,11 @@ label.input-banner-img {
   padding-left: 10px;
   color: black;
   float: left;
+}
+
+.banner-img {
+  max-width: 100%;
+  display: block; 
 }
 
 /* Submission file Preparation */

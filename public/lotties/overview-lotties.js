@@ -1,4 +1,4 @@
-const column1Lottie = {
+export const column1Lottie = {
   v: "5.7.3",
   fr: 25,
   ip: 0,
@@ -29926,7 +29926,7 @@ const column3Lottie = {
   markers: [],
 };
 
-const heartLottie = {
+export const heartLottie = {
   v: "5.4.4",
   fr: 20,
   ip: 0,
