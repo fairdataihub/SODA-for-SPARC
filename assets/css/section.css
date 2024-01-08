@@ -1,0 +1,72 @@
+/* Section ------------------ */
+
+.section {
+  position: absolute;
+  top: 0;
+  left: 210px;
+  right: 0;
+  bottom: 0;
+  max-height: 100%;
+  margin-right: 0;
+  padding: 0;
+  padding-top: 7px;
+  padding-left: 30px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: var(--color-accent);
+  background-color: var(--color-section);
+  /* Hide */
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: visibility 0s 0.12s linear, opacity 0.12s ease-in, transform 0.12s ease-in-out;
+}
+.section.is-shown {
+  pointer-events: auto;
+  visibility: visible;
+  opacity: 1;
+  z-index: 1000;
+  transform: translateX(20px);
+  transition: visibility 0s 0s linear, opacity 0.36s ease-out, transform 0.36s ease-out;
+}
+
+.section.fullShown {
+  left: 210px;
+  max-width: 100%;
+  transition: all 0.25s linear;
+}
+
+.section h3,
+.section p {
+  color: var(--color);
+}
+.section h1 {
+  font-size: 20px;
+}
+
+.section h3 {
+  padding-bottom: 30px;
+  font-size: 16px;
+}
+
+.section-wrapper {
+  position: relative;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0px 20px 0px 25px;
+  border-bottom: 1px solid var(--color-border);
+}
+/* @media (min-width: 940px) {
+  .section-wrapper {
+    padding-top: 4rem;
+  }
+} */
+
+.section-icon {
+  width: 32px;
+  height: 32px;
+  vertical-align: sub;
+  margin-right: 0.5em;
+}
