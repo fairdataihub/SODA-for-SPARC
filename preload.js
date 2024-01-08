@@ -1,699 +1,773 @@
-// Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
-//          needed by the renderer process in order to run.
+import Swal from 'sweetalert2'
+import 'bootstrap-select'
+import DragSort from '@yaireo/dragsort'
 
-// Contributors table for the dataset description editing page
-const currentConTable = document.getElementById("table-current-contributors");
 
-// function to show dataset or account Confirm buttons
+import api from './others/api/api'
+import {clientError, userErrorMessage} from './others/http-error-handler/error-handler'
+import client from './client'
+import {swalShowError} from './utils/swal-utils'
+// import { window.clearValidationResults } from './validator/validate'
+// // Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
+// //          needed by the renderer process in order to run.
+
+
+
+
+
+// // Contributors table for the dataset description editing page
+const currentConTable = document.getElementById('table-current-contributors')
+
+// // function to show dataset or account Confirm buttons
 const showHideDropdownButtons = (category, action) => {
-  if (category === "dataset") {
-    if (action === "show") {
+  if (category === 'dataset') {
+    if (action === 'show') {
       // btn under Step 6
-      $($("#button-confirm-bf-dataset").parents()[0]).css("display", "flex");
-      $("#button-confirm-bf-dataset").show();
+      $($('#button-confirm-bf-dataset').parents()[0]).css('display', 'flex')
+      $('#button-confirm-bf-dataset').show()
       // btn under Step 1
-      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "flex");
-      $("#button-confirm-bf-dataset-getting-started").show();
+      $($('#button-confirm-bf-dataset-getting-started').parents()[0]).css('display', 'flex')
+      $('#button-confirm-bf-dataset-getting-started').show()
     } else {
       // btn under Step 6
-      $($("#button-confirm-bf-dataset").parents()[0]).css("display", "none");
-      $("#button-confirm-bf-dataset").hide();
+      $($('#button-confirm-bf-dataset').parents()[0]).css('display', 'none')
+      $('#button-confirm-bf-dataset').hide()
       // btn under Step 1
-      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "none");
-      $("#button-confirm-bf-dataset-getting-started").hide();
+      $($('#button-confirm-bf-dataset-getting-started').parents()[0]).css('display', 'none')
+      $('#button-confirm-bf-dataset-getting-started').hide()
     }
-  } else if (category === "account") {
-    if (action === "show") {
+  } else if (category === 'account') {
+    if (action === 'show') {
       // btn under Step 6
-      $("#div-bf-account-btns").css("display", "flex");
-      $("#div-bf-account-btns button").show();
+      $('#div-bf-account-btns').css('display', 'flex')
+      $('#div-bf-account-btns button').show()
       // btn under Step 1
-      $("#div-bf-account-btns-getting-started").css("display", "flex");
-      $("#div-bf-account-btns-getting-started button").show();
+      $('#div-bf-account-btns-getting-started').css('display', 'flex')
+      $('#div-bf-account-btns-getting-started button').show()
     } else {
       // btn under Step 6
-      $("#div-bf-account-btns").css("display", "none");
-      $("#div-bf-account-btns button").hide();
+      $('#div-bf-account-btns').css('display', 'none')
+      $('#div-bf-account-btns button').hide()
       // btn under Step 1
-      $("#div-bf-account-btns-getting-started").css("display", "none");
-      $("#div-bf-account-btns-getting-started button").hide();
+      $('#div-bf-account-btns-getting-started').css('display', 'none')
+      $('#div-bf-account-btns-getting-started button').hide()
     }
-  } else if (category === "organization") {
+  } else if (category === 'organization') {
   }
-};
+}
 
 // Function to clear the confirm options in the curate feature
 const confirm_click_account_function = () => {
-  let temp = $(".bf-account-span")
+  let temp = $('.bf-account-span')
     .html()
-    .replace(/^\s+|\s+$/g, "");
-  if (temp == "None" || temp == "") {
-    $("#div-create_empty_dataset-account-btns").css("display", "none");
-    $("#div-bf-account-btns-getting-started").css("display", "none");
-    $("#div-bf-account-btns-getting-started button").hide();
+    .replace(/^\s+|\s+$/g, '')
+  if (temp == 'None' || temp == '') {
+    $('#div-create_empty_dataset-account-btns').css('display', 'none')
+    $('#div-bf-account-btns-getting-started').css('display', 'none')
+    $('#div-bf-account-btns-getting-started button').hide()
   } else {
-    $("#div-create_empty_dataset-account-btns").css("display", "flex");
-    $("#div-bf-account-btns-getting-started").css("display", "flex");
-    $("#div-bf-account-btns-getting-started button").show();
+    $('#div-create_empty_dataset-account-btns').css('display', 'flex')
+    $('#div-bf-account-btns-getting-started').css('display', 'flex')
+    $('#div-bf-account-btns-getting-started button').show()
   }
-};
+}
 
 /// helper function to refresh live search dropdowns per dataset permission on change event
 const initializeBootstrapSelect = (dropdown, action) => {
-  if (action === "disabled") {
-    $(dropdown).attr("disabled", true);
-    $(".dropdown.bootstrap-select button").addClass("disabled");
-    $(".dropdown.bootstrap-select").addClass("disabled");
-    $(dropdown).selectpicker("refresh");
-  } else if (action === "show") {
-    $(dropdown).selectpicker();
-    $(dropdown).selectpicker("refresh");
-    $(dropdown).attr("disabled", false);
-    $(".dropdown.bootstrap-select button").removeClass("disabled");
-    $(".dropdown.bootstrap-select").removeClass("disabled");
+  if (action === 'disabled') {
+    $(dropdown).attr('disabled', true)
+    $('.dropdown.bootstrap-select button').addClass('disabled')
+    $('.dropdown.bootstrap-select').addClass('disabled')
+    $(dropdown).selectpicker('refresh')
+  } else if (action === 'show') {
+    $(dropdown).selectpicker()
+    $(dropdown).selectpicker('refresh')
+    $(dropdown).attr('disabled', false)
+    $('.dropdown.bootstrap-select button').removeClass('disabled')
+    $('.dropdown.bootstrap-select').removeClass('disabled')
   }
-};
+}
 
 const updateDatasetList = (bfaccount) => {
-  var filteredDatasets = [];
+  var filteredDatasets = []
 
-  $("#div-filter-datasets-progress-2").css("display", "none");
+  $('#div-filter-datasets-progress-2').css('display', 'none')
 
-  window.removeOptions(curateDatasetDropdown);
-  window.addOption(curateDatasetDropdown, "Search here...", "Select dataset");
+  window.removeOptions(window.curateDatasetDropdown)
+  window.addOption(window.curateDatasetDropdown, 'Search here...', 'Select dataset')
 
-  initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
+  initializeBootstrapSelect('#curatebfdatasetlist', 'disabled')
 
-  $("#bf-dataset-select-header").css("display", "none");
-  $("#curatebfdatasetlist").selectpicker("hide");
-  $("#curatebfdatasetlist").selectpicker("refresh");
-  $(".selectpicker").selectpicker("hide");
-  $(".selectpicker").selectpicker("refresh");
-  $("#bf-dataset-select-div").hide();
+  $('#bf-dataset-select-header').css('display', 'none')
+  $('#curatebfdatasetlist').selectpicker('hide')
+  $('#curatebfdatasetlist').selectpicker('refresh')
+  $('.selectpicker').selectpicker('hide')
+  $('.selectpicker').selectpicker('refresh')
+  $('#bf-dataset-select-div').hide()
 
   // waiting for dataset list to load first before initiating BF dataset dropdown list
   setTimeout(() => {
-    var myPermission = $(datasetPermissionDiv).find("#select-permission-list-2").val();
+    var myPermission = $(window.datasetPermissionDiv).find('#select-permission-list-2').val()
 
     if (!myPermission) {
-      myPermission = "All";
+      myPermission = 'All'
     }
 
-    if (myPermission.toLowerCase() === "all") {
-      for (var i = 0; i < datasetList.length; i++) {
-        filteredDatasets.push(datasetList[i].name);
+    if (myPermission.toLowerCase() === 'all') {
+      for (var i = 0; i < window.datasetList.length; i++) {
+        filteredDatasets.push(window.datasetList[i].name)
       }
     } else {
-      for (var i = 0; i < datasetList.length; i++) {
-        if (datasetList[i].role === myPermission.toLowerCase()) {
-          filteredDatasets.push(datasetList[i].name);
+      for (var i = 0; i < window.datasetList.length; i++) {
+        if (window.datasetList[i].role === myPermission.toLowerCase()) {
+          filteredDatasets.push(window.datasetList[i].name)
         }
       }
     }
 
     filteredDatasets.sort((a, b) => {
-      return a.toLowerCase().localeCompare(b.toLowerCase());
-    });
+      return a.toLowerCase().localeCompare(b.toLowerCase())
+    })
 
     // The window.removeOptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
-    $("#curatebfdatasetlist").find("option:not(:first)").remove();
+    $('#curatebfdatasetlist').find('option:not(:first)').remove()
 
-    for (myitem in filteredDatasets) {
-      var myitemselect = filteredDatasets[myitem];
-      var option = document.createElement("option");
-      option.textContent = myitemselect;
-      option.value = myitemselect;
-      curateDatasetDropdown.appendChild(option);
+    for (const myitem in filteredDatasets) {
+      var myitemselect = filteredDatasets[myitem]
+      var option = document.createElement('option')
+      option.textContent = myitemselect
+      option.value = myitemselect
+      window.curateDatasetDropdown.appendChild(option)
     }
 
-    initializeBootstrapSelect("#curatebfdatasetlist", "show");
+    initializeBootstrapSelect('#curatebfdatasetlist', 'show')
 
-    $("#div-filter-datasets-progress-2").css("display", "none");
+    $('#div-filter-datasets-progress-2').css('display', 'none')
     //$("#bf-dataset-select-header").css("display", "block")
-    $("#curatebfdatasetlist").selectpicker("show");
-    $("#curatebfdatasetlist").selectpicker("refresh");
-    $(".selectpicker").selectpicker("show");
-    $(".selectpicker").selectpicker("refresh");
-    $("#bf-dataset-select-div").show();
+    $('#curatebfdatasetlist').selectpicker('show')
+    $('#curatebfdatasetlist').selectpicker('refresh')
+    $('.selectpicker').selectpicker('show')
+    $('.selectpicker').selectpicker('refresh')
+    $('#bf-dataset-select-div').show()
 
-    if (document.getElementById("div-permission-list-2")) {
-      document.getElementById("para-filter-datasets-status-2").innerHTML =
+    if (document.getElementById('div-permission-list-2')) {
+      document.getElementById('para-filter-datasets-status-2').innerHTML =
         filteredDatasets.length +
-        " dataset(s) where you have " +
+        ' dataset(s) where you have ' +
         myPermission.toLowerCase() +
-        " permissions were loaded successfully below.";
+        ' permissions were loaded successfully below.'
     }
-  }, 100);
-};
+  }, 100)
+}
 
-const updateOrganizationList = async (bfaccount) => {
-  let organizations = [];
-
-  $("#div-filter-datasets-progress-2").css("display", "none");
-
-  window.removeOptions(curateOrganizationDropdown);
-  window.addOption(curateOrganizationDropdown, "Search here...", "Select organization");
-
-  initializeBootstrapSelect("#curatebforganizationlist", "disabled");
-
-  $("#bf-organization-select-header").css("display", "none");
-  $("#curatebforganizationlist").selectpicker("hide");
-  $("#curatebforganizationlist").selectpicker("refresh");
-  $(".selectpicker").selectpicker("hide");
-  $(".selectpicker").selectpicker("refresh");
-  $("#bf-organization-select-div").hide();
-
-  await window.wait(100);
-
-  $("#curatebforganizationlist").find("option:not(:first)").remove();
-
-  // add the organization options to the dropdown
-  for (const myOrganization in organizations) {
-    var myitemselect = organiztions[myOrganization];
-    var option = document.createElement("option");
-    option.textContent = myitemselect;
-    option.value = myitemselect;
-    curateOrganizationDropdown.appendChild(option);
+window.removeOptions = (selectbox) => {
+  for (let i = selectbox.options.length - 1; i >= 0; i--) {
+    selectbox.remove(i);
   }
-
-  initializeBootstrapSelect("#curatebforganizationlist", "show");
-
-  // $("#div-filter-datasets-progress-2").css("display", "none");
-  //$("#bf-dataset-select-header").css("display", "block")
-  $("#curatebforganizationlist").selectpicker("show");
-  $("#curatebforganizationlist").selectpicker("refresh");
-  $(".selectpicker").selectpicker("show");
-  $(".selectpicker").selectpicker("refresh");
-  $("#bf-organization-select-div").show();
 };
+
+// Function to add options to dropdown list
+window.addOption = (selectbox, text, value)  => {
+  var opt = document.createElement("OPTION");
+  opt.text = text;
+  opt.value = value;
+  selectbox.options.add(opt);
+}
+
+
+
+// global variables to be modularized
+window.bfAccountOptionsStatus = ''
+window.myitem;
+
+let bfAccountOptions = []
+window.defaultBfAccount = undefined;
+window.defaultBfDataset = "Select dataset";
+window.defaultBfDatasetId = undefined;
+window.reverseSwalButtons = false;
+window.SODA_SPARC_API_KEY = "SODA-Pennsieve";
+window.datasetList = [];
+window.organizationList = [];
+
+// TODO: Place in a location for GM and FFM for now 'Global' scope is fine but should probably be placed in a file more related to organize datasets
+window.organizeDSglobalPath = "";
+
+// TODO: Organize ds related global variable; so modularize that appropriately 
+window.dataset_path = document.getElementById("input-global-path");
+
+// GM Contributors page
+const homeDirectory = await window.electron.ipcRenderer.invoke('get-app-path', 'home')
+window.storedContributorsPath = window.path.join(homeDirectory, "SODA", "stored-contributors.json");
+
+
+
+
+
+
+
+// used in renderer and guided Mode
+window.createDragSort = (tagify) => {
+  const onDragEnd = () => {
+    tagify.updateValueByDOMTags();
+  };
+  new DragSort(tagify.DOM.scope, {
+    selector: "." + tagify.settings.classNames.tag,
+    callbacks: {
+      dragEnd: onDragEnd,
+    },
+  });
+};
+
+
+
+window.updateOrganizationList = async (bfaccount) => {
+let organizations = []
+
+$('#div-filter-datasets-progress-2').css('display', 'none')
+
+window.removeOptions(window.curateOrganizationDropdown)
+window.addOption(window.curateOrganizationDropdown, 'Search here...', 'Select organization')
+
+initializeBootstrapSelect('#curatebforganizationlist', 'disabled')
+
+$('#bf-organization-select-header').css('display', 'none')
+$('#curatebforganizationlist').selectpicker('hide')
+$('#curatebforganizationlist').selectpicker('refresh')
+$('.selectpicker').selectpicker('hide')
+$('.selectpicker').selectpicker('refresh')
+$('#bf-organization-select-div').hide()
+
+await window.wait(100)
+
+$('#curatebforganizationlist').find('option:not(:first)').remove()
+
+// add the organization options to the dropdown
+for (const myOrganization in organizations) {
+  var myitemselect = organiztions[myOrganization]
+  var option = document.createElement('option')
+  option.textContent = myitemselect
+  option.value = myitemselect
+  window.curateOrganizationDropdown.appendChild(option)
+}
+
+initializeBootstrapSelect('#curatebforganizationlist', 'show')
+
+$("#div-filter-datasets-progress-2").css("display", "none");
+$("#bf-dataset-select-header").css("display", "block")
+$('#curatebforganizationlist').selectpicker('show')
+$('#curatebforganizationlist').selectpicker('refresh')
+$('.selectpicker').selectpicker('show')
+$('.selectpicker').selectpicker('refresh')
+$('#bf-organization-select-div').show()
+}
 
 // per change event of current dataset span text
 const confirm_click_function = () => {
-  let temp = $(".bf-dataset-span").html();
-  if (temp == "None" || temp == "") {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
-    $("#para-review-dataset-info-disseminate").text("None");
+  let temp = $('.bf-dataset-span').html()
+  if (temp == 'None' || temp == '') {
+    $($(this).parents().find('.field').find('.div-confirm-button')).css('display', 'none')
+    $('#para-review-dataset-info-disseminate').text('None')
   } else {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex");
-    if ($($(this).parents().find(".field").find(".synced-progress")).length) {
-      if ($($(this).parents().find(".field").find(".synced-progress")).css("display") === "none") {
-        $(".confirm-button").click();
+    $($(this).parents().find('.field').find('.div-confirm-button')).css('display', 'flex')
+    if ($($(this).parents().find('.field').find('.synced-progress')).length) {
+      if ($($(this).parents().find('.field').find('.synced-progress')).css('display') === 'none') {
+        $('.confirm-button').click()
       }
     } else {
-      $(".confirm-button").click();
+      $('.confirm-button').click()
     }
   }
-};
+}
 
 // RESET UI LOGIC SECTION ---------------------------------------------------------------------
-function window.resetSubmission(askToReset = true) {
+window.resetSubmission = (askToReset = true) => {
   if (!askToReset) {
     // 1. remove Prev and Show from all individual-question except for the first one
     // 2. empty all input, textarea, select, para-elements
-    $("#Question-prepare-submission-1").removeClass("prev");
-    $("#Question-prepare-submission-1").nextAll().removeClass("show");
-    $("#Question-prepare-submission-1").nextAll().removeClass("prev");
-    $("#Question-prepare-submission-1 .option-card")
-      .removeClass("checked")
-      .removeClass("disabled")
-      .removeClass("non-selected");
-    $("#Question-prepare-submission-1 .option-card .folder-input-check").prop("checked", false);
-    window.resetSubmissionFields();
-    return;
+    $('#Question-prepare-submission-1').removeClass('prev')
+    $('#Question-prepare-submission-1').nextAll().removeClass('show')
+    $('#Question-prepare-submission-1').nextAll().removeClass('prev')
+    $('#Question-prepare-submission-1 .option-card')
+      .removeClass('checked')
+      .removeClass('disabled')
+      .removeClass('non-selected')
+    $('#Question-prepare-submission-1 .option-card .folder-input-check').prop('checked', false)
+    window.resetSubmissionFields()
+    return
   }
 
   Swal.fire({
-    backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "I want to start over!",
+    backdrop: 'rgba(0,0,0, 0.4)',
+    confirmButtonText: 'I want to start over!',
     focusCancel: true,
     heightAuto: false,
-    icon: "warning",
+    icon: 'warning',
     reverseButtons: window.reverseSwalButtons,
     showCancelButton: true,
-    text: "Are you sure you want to start over and reset your progress?",
+    text: 'Are you sure you want to start over and reset your progress?',
     showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
+      popup: 'animate__animated animate__zoomIn animate__faster'
     },
     hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
+      popup: 'animate__animated animate__zoomOut animate__faster'
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       // 1. remove Prev and Show from all individual-question except for the first one
       // 2. empty all input, textarea, select, para-elements
-      $("#Question-prepare-submission-1").removeClass("prev");
-      $("#Question-prepare-submission-1").nextAll().removeClass("show");
-      $("#Question-prepare-submission-1").nextAll().removeClass("prev");
-      $("#Question-prepare-submission-1 .option-card")
-        .removeClass("checked")
-        .removeClass("disabled")
-        .removeClass("non-selected");
-      $("#Question-prepare-submission-1 .option-card .folder-input-check").prop("checked", false);
-      window.resetSubmissionFields();
+      $('#Question-prepare-submission-1').removeClass('prev')
+      $('#Question-prepare-submission-1').nextAll().removeClass('show')
+      $('#Question-prepare-submission-1').nextAll().removeClass('prev')
+      $('#Question-prepare-submission-1 .option-card')
+        .removeClass('checked')
+        .removeClass('disabled')
+        .removeClass('non-selected')
+      $('#Question-prepare-submission-1 .option-card .folder-input-check').prop('checked', false)
+      window.resetSubmissionFields()
     }
-  });
+  })
 }
 
-function window.resetSubmissionFields() {
-  $("#existing-submission-file-destination").attr("placeholder", "Browse here");
+window.resetSubmissionFields = () => {
+  $('#existing-submission-file-destination').attr('placeholder', 'Browse here')
 
-  $("#div-confirm-existing-submission-import").hide();
+  $('#div-confirm-existing-submission-import').hide()
 
-  if ($("#bf_dataset_load_submission").text().trim() !== "None") {
-    $($("#div-check-bf-import-submission").children()[0]).show();
-    $("#div-check-bf-import-submission").css("display", "flex");
+  if ($('#bf_dataset_load_submission').text().trim() !== 'None') {
+    $($('#div-check-bf-import-submission').children()[0]).show()
+    $('#div-check-bf-import-submission').css('display', 'flex')
   } else {
-    $("#div-check-bf-import-submission").hide();
+    $('#div-check-bf-import-submission').hide()
   }
 
-  var inputFields = $("#Question-prepare-submission-1").nextAll().find("input");
-  var textAreaFields = $("#Question-prepare-submission-1").nextAll().find("textarea");
-  var selectFields = $("#Question-prepare-submission-1").nextAll().find("select");
+  var inputFields = $('#Question-prepare-submission-1').nextAll().find('input')
+  var textAreaFields = $('#Question-prepare-submission-1').nextAll().find('textarea')
+  var selectFields = $('#Question-prepare-submission-1').nextAll().find('select')
 
   for (var field of inputFields) {
-    $(field).val("");
+    $(field).val('')
   }
   for (var field of textAreaFields) {
-    $(field).val("");
+    $(field).val('')
   }
-  window.milestoneTagify1.removeAllTags();
+  window.milestoneTagify1.removeAllTags()
 
   // Reset the funding consortium dropdown
-  window.resetFundingConsortiumDropdown();
+  window.resetFundingConsortiumDropdown()
 
   // make accordion active again
-  $("#submission-title-accordion").addClass("active");
-  $("#submission-accordion").addClass("active");
+  $('#submission-title-accordion').addClass('active')
+  $('#submission-accordion').addClass('active')
 
   // show generate button again
-  $("#button-generate-submission").show();
+  $('#button-generate-submission').show()
 
   for (var field of selectFields) {
-    $(field).val("Select");
+    $(field).val('Select')
   }
 
   // reset the completion date dropdown
-  const completionDateDropdown = document.getElementById("submission-completion-date");
+  const completionDateDropdown = document.getElementById('submission-completion-date')
 
   completionDateDropdown.innerHTML = `
     <option value="">Select a completion date</option>
     <option value="Enter my own date">Enter my own date</option>
     <option value="N/A">N/A</option>
-  `;
+  `
 }
 
-function window.resetDD(askToReset = true) {
+window.resetDD = (askToReset = true) => {
   if (!askToReset) {
     // 1. remove Prev and Show from all individual-question except for the first one
     // 2. empty all input, textarea, select, para-elements
-    $("#Question-prepare-dd-1").removeClass("prev");
-    $("#Question-prepare-dd-1").nextAll().removeClass("show");
-    $("#Question-prepare-dd-1").nextAll().removeClass("prev");
-    $("#Question-prepare-dd-1 .option-card")
-      .removeClass("checked")
-      .removeClass("disabled")
-      .removeClass("non-selected");
-    $("#Question-prepare-dd-1 .option-card .folder-input-check").prop("checked", false);
-    resetDDFields();
-    return;
+    $('#Question-prepare-dd-1').removeClass('prev')
+    $('#Question-prepare-dd-1').nextAll().removeClass('show')
+    $('#Question-prepare-dd-1').nextAll().removeClass('prev')
+    $('#Question-prepare-dd-1 .option-card')
+      .removeClass('checked')
+      .removeClass('disabled')
+      .removeClass('non-selected')
+    $('#Question-prepare-dd-1 .option-card .folder-input-check').prop('checked', false)
+    resetDDFields()
+    return
   }
 
   Swal.fire({
-    backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "I want to start over!",
+    backdrop: 'rgba(0,0,0, 0.4)',
+    confirmButtonText: 'I want to start over!',
     focusCancel: true,
     heightAuto: false,
-    icon: "warning",
+    icon: 'warning',
     reverseButtons: window.reverseSwalButtons,
     showCancelButton: true,
-    text: "Are you sure you want to start over and reset your progress?",
+    text: 'Are you sure you want to start over and reset your progress?',
     showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
+      popup: 'animate__animated animate__zoomIn animate__faster'
     },
     hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
+      popup: 'animate__animated animate__zoomOut animate__faster'
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       // 1. remove Prev and Show from all individual-question except for the first one
       // 2. empty all input, textarea, select, para-elements
-      $("#Question-prepare-dd-1").removeClass("prev");
-      $("#Question-prepare-dd-1").nextAll().removeClass("show");
-      $("#Question-prepare-dd-1").nextAll().removeClass("prev");
-      $("#Question-prepare-dd-1 .option-card")
-        .removeClass("checked")
-        .removeClass("disabled")
-        .removeClass("non-selected");
-      $("#Question-prepare-dd-1 .option-card .folder-input-check").prop("checked", false);
-      resetDDFields();
+      $('#Question-prepare-dd-1').removeClass('prev')
+      $('#Question-prepare-dd-1').nextAll().removeClass('show')
+      $('#Question-prepare-dd-1').nextAll().removeClass('prev')
+      $('#Question-prepare-dd-1 .option-card')
+        .removeClass('checked')
+        .removeClass('disabled')
+        .removeClass('non-selected')
+      $('#Question-prepare-dd-1 .option-card .folder-input-check').prop('checked', false)
+      resetDDFields()
     }
-  });
+  })
 }
 
 function resetDDFields() {
   // 1. empty all input, textarea, select, para-elements
   // 2. delete all rows from table Contributor
   // 3. delete all rows from table Links
-  var inputFields = $("#Question-prepare-dd-2").find("input");
-  var textAreaFields = $("#Question-prepare-dd-2").find("textarea");
+  var inputFields = $('#Question-prepare-dd-2').find('input')
+  var textAreaFields = $('#Question-prepare-dd-2').find('textarea')
 
   // var selectFields = $("#Question-prepare-dd-4-sections").find("select");
 
   for (var field of inputFields) {
-    $(field).val("");
+    $(field).val('')
   }
   for (var field of textAreaFields) {
-    $(field).val("");
+    $(field).val('')
   }
 
-  $("#existing-dd-file-destination").attr("placeholder", "Browse here");
+  $('#existing-dd-file-destination').attr('placeholder', 'Browse here')
 
-  $("#div-confirm-existing-dd-import").hide();
+  $('#div-confirm-existing-dd-import').hide()
 
-  if ($("#bf_dataset_load_dd").text().trim() !== "None") {
-    $($("#div-check-bf-import-dd").children()[0]).show();
-    $("#div-check-bf-import-dd").css("display", "flex");
+  if ($('#bf_dataset_load_dd').text().trim() !== 'None') {
+    $($('#div-check-bf-import-dd').children()[0]).show()
+    $('#div-check-bf-import-dd').css('display', 'flex')
   } else {
-    $("#div-check-bf-import-dd").hide();
+    $('#div-check-bf-import-dd').hide()
   }
 
   // show generate button again
-  $("#button-generate-dd").show();
+  $('#button-generate-dd').show()
 
-  window.keywordTagify.removeAllTags();
-  window.otherFundingTagify.removeAllTags();
-  window.studyTechniquesTagify.removeAllTags();
-  window.studyOrganSystemsTagify.removeAllTags();
-  window.studyApproachesTagify.removeAllTags();
+  window.keywordTagify.removeAllTags()
+  window.otherFundingTagify.removeAllTags()
+  window.studyTechniquesTagify.removeAllTags()
+  window.studyOrganSystemsTagify.removeAllTags()
+  window.studyApproachesTagify.removeAllTags()
 
   // 3. deleting table rows
-  window.globalContributorNameObject = {};
-  window.currentContributorsLastNames = [];
-  window.contributorArray = [];
-  $("#contributor-table-dd tr:gt(0)").remove();
-  $("#protocol-link-table-dd tr:gt(0)").remove();
-  $("#other-link-table-dd tr:gt(0)").remove();
+  window.globalContributorNameObject = {}
+  window.currentContributorsLastNames = []
+  window.contributorArray = []
+  $('#contributor-table-dd tr:gt(0)').remove()
+  $('#protocol-link-table-dd tr:gt(0)').remove()
+  $('#other-link-table-dd tr:gt(0)').remove()
 
-  $("#div-contributor-table-dd").css("display", "none");
-  document.getElementById("protocol-link-table-dd").style.display = "none";
-  document.getElementById("div-protocol-link-table-dd").style.display = "none";
-  document.getElementById("div-other-link-table-dd").style.display = "none";
-  document.getElementById("other-link-table-dd").style.display = "none";
+  $('#div-contributor-table-dd').css('display', 'none')
+  document.getElementById('protocol-link-table-dd').style.display = 'none'
+  document.getElementById('div-protocol-link-table-dd').style.display = 'none'
+  document.getElementById('div-other-link-table-dd').style.display = 'none'
+  document.getElementById('other-link-table-dd').style.display = 'none'
 
-  $("#dd-accordion").find(".title").removeClass("active");
-  $("#dd-accordion").find(".content").removeClass("active");
+  $('#dd-accordion').find('.title').removeClass('active')
+  $('#dd-accordion').find('.content').removeClass('active')
 
-  $("#input-destination-generate-dd-locally").attr("placeholder", "Browse here");
-  $("#div-confirm-destination-dd-locally").css("display", "none");
+  $('#input-destination-generate-dd-locally').attr('placeholder', 'Browse here')
+  $('#div-confirm-destination-dd-locally').css('display', 'none')
 }
 
-function window.resetSubjects(askToReset = true) {
+window.resetSubjects = (askToReset = true) => {
   if (!askToReset) {
     // 1. remove Prev and Show from all individual-question except for the first one
     // 2. empty all input, textarea, select, para-elements
-    $("#Question-prepare-subjects-1").removeClass("prev");
-    $("#Question-prepare-subjects-1").nextAll().removeClass("show");
-    $("#Question-prepare-subjects-1").nextAll().removeClass("prev");
-    $("#Question-prepare-subjects-1 .option-card")
-      .removeClass("checked")
-      .removeClass("disabled")
-      .removeClass("non-selected");
-    $("#Question-prepare-subjects-1 .option-card .folder-input-check").prop("checked", false);
-    $("#Question-prepare-subjects-2").find("button").show();
-    $("#div-confirm-primary-folder-import").find("button").hide();
+    $('#Question-prepare-subjects-1').removeClass('prev')
+    $('#Question-prepare-subjects-1').nextAll().removeClass('show')
+    $('#Question-prepare-subjects-1').nextAll().removeClass('prev')
+    $('#Question-prepare-subjects-1 .option-card')
+      .removeClass('checked')
+      .removeClass('disabled')
+      .removeClass('non-selected')
+    $('#Question-prepare-subjects-1 .option-card .folder-input-check').prop('checked', false)
+    $('#Question-prepare-subjects-2').find('button').show()
+    $('#div-confirm-primary-folder-import').find('button').hide()
 
-    $("#Question-prepare-subjects-primary-import").find("input").prop("placeholder", "Browse here");
-    window.subjectsFileData = [];
-    window.subjectsTableData = [];
+    $('#Question-prepare-subjects-primary-import').find('input').prop('placeholder', 'Browse here')
+    window.subjectsFileData = []
+    window.subjectsTableData = []
 
-    $("#existing-subjects-file-destination").attr("placeholder", "Browse here");
+    $('#existing-subjects-file-destination').attr('placeholder', 'Browse here')
 
-    $("#div-confirm-existing-subjects-import").hide();
+    $('#div-confirm-existing-subjects-import').hide()
 
     // hide Strains and Species
-    $("#bootbox-subject-species").css("display", "none");
-    $("#bootbox-subject-strain").css("display", "none");
+    $('#bootbox-subject-species').css('display', 'none')
+    $('#bootbox-subject-strain').css('display', 'none')
 
     // delete custom subjects metadata fields (if any)
     document
-      .getElementById("accordian-custom-fields")
-      .querySelectorAll(".div-dd-info")
+      .getElementById('accordian-custom-fields')
+      .querySelectorAll('.div-dd-info')
       .forEach((customField) => {
-        customField.remove();
-      });
+        customField.remove()
+      })
 
     // show Primary import hyperlink again
-    $("#div-import-primary-folder-subjects").show();
+    $('#div-import-primary-folder-subjects').show()
 
     // delete table rows except headers
-    $("#table-subjects tr:gt(0)").remove();
-    $("#table-subjects").css("display", "none");
+    $('#table-subjects tr:gt(0)').remove()
+    $('#table-subjects').css('display', 'none')
 
-    $("#div-import-primary-folder-subjects").show();
+    $('#div-import-primary-folder-subjects').show()
 
     // Hide Generate button
-    $("#button-generate-subjects").css("display", "none");
+    $('#button-generate-subjects').css('display', 'none')
 
-    $("#button-add-a-subject").show();
+    $('#button-add-a-subject').show()
 
-    $("#input-destination-generate-subjects-locally").attr("placeholder", "Browse here");
-    $("#div-confirm-destination-subjects-locally").css("display", "none");
-    return;
+    $('#input-destination-generate-subjects-locally').attr('placeholder', 'Browse here')
+    $('#div-confirm-destination-subjects-locally').css('display', 'none')
+    return
   }
 
   Swal.fire({
-    text: "Are you sure you want to start over and reset your progress?",
-    icon: "warning",
+    text: 'Are you sure you want to start over and reset your progress?',
+    icon: 'warning',
     showCancelButton: true,
     reverseButtons: window.reverseSwalButtons,
     heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "I want to start over",
+    backdrop: 'rgba(0,0,0, 0.4)',
+    confirmButtonText: 'I want to start over'
   }).then((result) => {
     if (result.isConfirmed) {
       // 1. remove Prev and Show from all individual-question except for the first one
       // 2. empty all input, textarea, select, para-elements
-      $("#Question-prepare-subjects-1").removeClass("prev");
-      $("#Question-prepare-subjects-1").nextAll().removeClass("show");
-      $("#Question-prepare-subjects-1").nextAll().removeClass("prev");
-      $("#Question-prepare-subjects-1 .option-card")
-        .removeClass("checked")
-        .removeClass("disabled")
-        .removeClass("non-selected");
-      $("#Question-prepare-subjects-1 .option-card .folder-input-check").prop("checked", false);
-      $("#Question-prepare-subjects-2").find("button").show();
-      $("#div-confirm-primary-folder-import").find("button").hide();
+      $('#Question-prepare-subjects-1').removeClass('prev')
+      $('#Question-prepare-subjects-1').nextAll().removeClass('show')
+      $('#Question-prepare-subjects-1').nextAll().removeClass('prev')
+      $('#Question-prepare-subjects-1 .option-card')
+        .removeClass('checked')
+        .removeClass('disabled')
+        .removeClass('non-selected')
+      $('#Question-prepare-subjects-1 .option-card .folder-input-check').prop('checked', false)
+      $('#Question-prepare-subjects-2').find('button').show()
+      $('#div-confirm-primary-folder-import').find('button').hide()
 
-      $("#Question-prepare-subjects-primary-import")
-        .find("input")
-        .prop("placeholder", "Browse here");
-      window.subjectsFileData = [];
-      window.subjectsTableData = [];
+      $('#Question-prepare-subjects-primary-import')
+        .find('input')
+        .prop('placeholder', 'Browse here')
+      window.subjectsFileData = []
+      window.subjectsTableData = []
 
-      $("#existing-subjects-file-destination").attr("placeholder", "Browse here");
+      $('#existing-subjects-file-destination').attr('placeholder', 'Browse here')
 
-      $("#div-confirm-existing-subjects-import").hide();
+      $('#div-confirm-existing-subjects-import').hide()
 
       // hide Strains and Species
-      $("#bootbox-subject-species").css("display", "none");
-      $("#bootbox-subject-strain").css("display", "none");
+      $('#bootbox-subject-species').css('display', 'none')
+      $('#bootbox-subject-strain').css('display', 'none')
 
       // delete custom fields (if any)
-      var fieldLength = $(".subjects-form-entry").length;
+      var fieldLength = $('.subjects-form-entry').length
       if (fieldLength > 18) {
-        for (var field of $(".subjects-form-entry").slice(18, fieldLength)) {
-          $($(field).parents()[2]).remove();
+        for (var field of $('.subjects-form-entry').slice(18, fieldLength)) {
+          $($(field).parents()[2]).remove()
         }
       }
       // show Primary import hyperlink again
-      $("#div-import-primary-folder-subjects").show();
+      $('#div-import-primary-folder-subjects').show()
 
       // delete table rows except headers
-      $("#table-subjects tr:gt(0)").remove();
-      $("#table-subjects").css("display", "none");
+      $('#table-subjects tr:gt(0)').remove()
+      $('#table-subjects').css('display', 'none')
 
-      $("#div-import-primary-folder-subjects").show();
+      $('#div-import-primary-folder-subjects').show()
 
       // Hide Generate button
-      $("#button-generate-subjects").css("display", "none");
+      $('#button-generate-subjects').css('display', 'none')
 
-      $("#button-add-a-subject").show();
+      $('#button-add-a-subject').show()
 
-      $("#input-destination-generate-subjects-locally").attr("placeholder", "Browse here");
-      $("#div-confirm-destination-subjects-locally").css("display", "none");
+      $('#input-destination-generate-subjects-locally').attr('placeholder', 'Browse here')
+      $('#div-confirm-destination-subjects-locally').css('display', 'none')
     }
-  });
+  })
 }
 
-function window.resetSamples(askToReset = true) {
+window.resetSamples = (askToReset = true) => {
   if (!askToReset) {
     // 1. remove Prev and Show from all individual-question except for the first one
     // 2. empty all input, textarea, select, para-elements
-    $("#Question-prepare-samples-1").removeClass("prev");
-    $("#Question-prepare-samples-1").nextAll().removeClass("show");
-    $("#Question-prepare-samples-1").nextAll().removeClass("prev");
-    $("#Question-prepare-samples-1 .option-card")
-      .removeClass("checked")
-      .removeClass("disabled")
-      .removeClass("non-selected");
-    $("#Question-prepare-samples-1 .option-card .folder-input-check").prop("checked", false);
-    $("#Question-prepare-samples-2").find("button").show();
-    $("#div-confirm-primary-folder-import-samples").find("button").hide();
+    $('#Question-prepare-samples-1').removeClass('prev')
+    $('#Question-prepare-samples-1').nextAll().removeClass('show')
+    $('#Question-prepare-samples-1').nextAll().removeClass('prev')
+    $('#Question-prepare-samples-1 .option-card')
+      .removeClass('checked')
+      .removeClass('disabled')
+      .removeClass('non-selected')
+    $('#Question-prepare-samples-1 .option-card .folder-input-check').prop('checked', false)
+    $('#Question-prepare-samples-2').find('button').show()
+    $('#div-confirm-primary-folder-import-samples').find('button').hide()
 
-    $("#Question-prepare-subjects-primary-import-samples")
-      .find("input")
-      .prop("placeholder", "Browse here");
-    window.samplesFileData = [];
-    window.samplesTableData = [];
+    $('#Question-prepare-subjects-primary-import-samples')
+      .find('input')
+      .prop('placeholder', 'Browse here')
+    window.samplesFileData = []
+    window.samplesTableData = []
 
-    $("#existing-samples-file-destination").attr("placeholder", "Browse here");
-    $("#div-confirm-existing-samples-import").hide();
+    $('#existing-samples-file-destination').attr('placeholder', 'Browse here')
+    $('#div-confirm-existing-samples-import').hide()
 
     // hide Strains and Species
-    $("#bootbox-sample-species").css("display", "none");
-    $("#bootbox-sample-strain").css("display", "none");
+    $('#bootbox-sample-species').css('display', 'none')
+    $('#bootbox-sample-strain').css('display', 'none')
 
     // delete custom fields (if any)
     // delete custom samples metadata fields (if any)
     document
-      .getElementById("accordian-custom-fields-samples")
-      .querySelectorAll(".div-dd-info")
+      .getElementById('accordian-custom-fields-samples')
+      .querySelectorAll('.div-dd-info')
       .forEach((customField) => {
-        customField.remove();
-      });
-    $("#div-import-primary-folder-samples").show();
+        customField.remove()
+      })
+    $('#div-import-primary-folder-samples').show()
     // delete table rows except headers
-    $("#table-samples tr:gt(0)").remove();
-    $("#table-samples").css("display", "none");
+    $('#table-samples tr:gt(0)').remove()
+    $('#table-samples').css('display', 'none')
     // Hide Generate button
-    $("#button-generate-samples").css("display", "none");
+    $('#button-generate-samples').css('display', 'none')
 
-    $("#button-add-a-sample").show();
+    $('#button-add-a-sample').show()
 
-    $("#input-destination-generate-samples-locally").attr("placeholder", "Browse here");
-    $("#div-confirm-destination-samples-locally").css("display", "none");
-    return;
+    $('#input-destination-generate-samples-locally').attr('placeholder', 'Browse here')
+    $('#div-confirm-destination-samples-locally').css('display', 'none')
+    return
   }
 
   Swal.fire({
-    text: "Are you sure you want to start over and reset your progress?",
-    icon: "warning",
+    text: 'Are you sure you want to start over and reset your progress?',
+    icon: 'warning',
     showCancelButton: true,
     reverseButtons: window.reverseSwalButtons,
     heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "I want to start over",
+    backdrop: 'rgba(0,0,0, 0.4)',
+    confirmButtonText: 'I want to start over'
   }).then((result) => {
     if (result.isConfirmed) {
       // 1. remove Prev and Show from all individual-question except for the first one
       // 2. empty all input, textarea, select, para-elements
-      $("#Question-prepare-samples-1").removeClass("prev");
-      $("#Question-prepare-samples-1").nextAll().removeClass("show");
-      $("#Question-prepare-samples-1").nextAll().removeClass("prev");
-      $("#Question-prepare-samples-1 .option-card")
-        .removeClass("checked")
-        .removeClass("disabled")
-        .removeClass("non-selected");
-      $("#Question-prepare-samples-1 .option-card .folder-input-check").prop("checked", false);
-      $("#Question-prepare-samples-2").find("button").show();
-      $("#div-confirm-primary-folder-import-samples").find("button").hide();
+      $('#Question-prepare-samples-1').removeClass('prev')
+      $('#Question-prepare-samples-1').nextAll().removeClass('show')
+      $('#Question-prepare-samples-1').nextAll().removeClass('prev')
+      $('#Question-prepare-samples-1 .option-card')
+        .removeClass('checked')
+        .removeClass('disabled')
+        .removeClass('non-selected')
+      $('#Question-prepare-samples-1 .option-card .folder-input-check').prop('checked', false)
+      $('#Question-prepare-samples-2').find('button').show()
+      $('#div-confirm-primary-folder-import-samples').find('button').hide()
 
-      $("#Question-prepare-subjects-primary-import-samples")
-        .find("input")
-        .prop("placeholder", "Browse here");
-      window.samplesFileData = [];
-      window.samplesTableData = [];
+      $('#Question-prepare-subjects-primary-import-samples')
+        .find('input')
+        .prop('placeholder', 'Browse here')
+      window.samplesFileData = []
+      window.samplesTableData = []
 
-      $("#existing-samples-file-destination").attr("placeholder", "Browse here");
-      $("#div-confirm-existing-samples-import").hide();
+      $('#existing-samples-file-destination').attr('placeholder', 'Browse here')
+      $('#div-confirm-existing-samples-import').hide()
 
       // hide Strains and Species
-      $("#bootbox-sample-species").css("display", "none");
-      $("#bootbox-sample-strain").css("display", "none");
+      $('#bootbox-sample-species').css('display', 'none')
+      $('#bootbox-sample-strain').css('display', 'none')
 
       // delete custom samples metadata fields (if any)
       document
-        .getElementById("accordian-custom-fields-samples")
-        .querySelectorAll(".div-dd-info")
+        .getElementById('accordian-custom-fields-samples')
+        .querySelectorAll('.div-dd-info')
         .forEach((customField) => {
-          customField.remove();
-        });
-      $("#div-import-primary-folder-samples").show();
+          customField.remove()
+        })
+      $('#div-import-primary-folder-samples').show()
       // delete table rows except headers
-      $("#table-samples tr:gt(0)").remove();
-      $("#table-samples").css("display", "none");
+      $('#table-samples tr:gt(0)').remove()
+      $('#table-samples').css('display', 'none')
       // Hide Generate button
-      $("#button-generate-samples").css("display", "none");
+      $('#button-generate-samples').css('display', 'none')
 
-      $("#button-add-a-sample").show();
+      $('#button-add-a-sample').show()
 
-      $("#input-destination-generate-samples-locally").attr("placeholder", "Browse here");
-      $("#div-confirm-destination-samples-locally").css("display", "none");
+      $('#input-destination-generate-samples-locally').attr('placeholder', 'Browse here')
+      $('#div-confirm-destination-samples-locally').css('display', 'none')
     }
-  });
+  })
 }
 
-function window.resetManifest(askToReset = true) {
+window.resetManifest = (askToReset = true) => {
   if (askToReset) {
     Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "I want to start over!",
+      backdrop: 'rgba(0,0,0, 0.4)',
+      confirmButtonText: 'I want to start over!',
       focusCancel: true,
       heightAuto: false,
-      icon: "warning",
+      icon: 'warning',
       reverseButtons: window.reverseSwalButtons,
       showCancelButton: true,
-      text: "Are you sure you want to start over and reset your progress?",
+      text: 'Are you sure you want to start over and reset your progress?',
       showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
+        popup: 'animate__animated animate__zoomIn animate__faster'
       },
       hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+        popup: 'animate__animated animate__zoomOut animate__faster'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         // 1. remove Prev and Show from all individual-question except for the first one
         // 2. empty all input, textarea, select, para-elements
-        $("#Question-prepare-manifest-1").removeClass("prev");
-        $("#Question-prepare-manifest-1").nextAll().removeClass("show");
-        $("#Question-prepare-manifest-1").nextAll().removeClass("prev");
-        $("#Question-prepare-manifest-1 .option-card")
-          .removeClass("checked")
-          .removeClass("disabled")
-          .removeClass("non-selected");
-        $("#Question-prepare-manifest-1 .option-card .folder-input-check").prop("checked", false);
-        $("#input-manifest-local-folder-dataset").attr("placeholder", "Browse here");
-        $("#div-confirm-manifest-local-folder-dataset").hide();
-        $("#bf_dataset_create_manifest").text("None");
-        let dir1 = path.join(homeDirectory, "SODA", "manifest_files");
-        let dir2 = path.join(homeDirectory, "SODA", "SODA Manifest Files");
-        window.removeDir(dir1);
-        window.removeDir(dir2);
+        $('#Question-prepare-manifest-1').removeClass('prev')
+        $('#Question-prepare-manifest-1').nextAll().removeClass('show')
+        $('#Question-prepare-manifest-1').nextAll().removeClass('prev')
+        $('#Question-prepare-manifest-1 .option-card')
+          .removeClass('checked')
+          .removeClass('disabled')
+          .removeClass('non-selected')
+        $('#Question-prepare-manifest-1 .option-card .folder-input-check').prop('checked', false)
+        $('#input-manifest-local-folder-dataset').attr('placeholder', 'Browse here')
+        $('#div-confirm-manifest-local-folder-dataset').hide()
+        $('#bf_dataset_create_manifest').text('None')
+        let dir1 = window.path.join(window.homeDirectory, 'SODA', 'manifest_files')
+        let dir2 = window.path.join(window.homeDirectory, 'SODA', 'SODA Manifest Files')
+        window.removeDir(dir1)
+        window.removeDir(dir2)
       } else {
-        return;
+        return
       }
-    });
+    })
   } else {
     // 1. remove Prev and Show from all individual-question except for the first one
     // 2. empty all input, textarea, select, para-elements
-    $("#Question-prepare-manifest-1").removeClass("prev");
-    $("#Question-prepare-manifest-1").nextAll().removeClass("show");
-    $("#Question-prepare-manifest-1").nextAll().removeClass("prev");
-    $("#Question-prepare-manifest-1 .option-card")
-      .removeClass("checked")
-      .removeClass("disabled")
-      .removeClass("non-selected");
-    $("#Question-prepare-manifest-1 .option-card .folder-input-check").prop("checked", false);
-    $("#input-manifest-local-folder-dataset").attr("placeholder", "Browse here");
-    $("#div-confirm-manifest-local-folder-dataset").hide();
-    $("#bf_dataset_create_manifest").text("None");
-    let dir1 = path.join(homeDirectory, "SODA", "manifest_files");
-    let dir2 = path.join(homeDirectory, "SODA", "SODA Manifest Files");
-    window.removeDir(dir1);
-    window.removeDir(dir2);
+    $('#Question-prepare-manifest-1').removeClass('prev')
+    $('#Question-prepare-manifest-1').nextAll().removeClass('show')
+    $('#Question-prepare-manifest-1').nextAll().removeClass('prev')
+    $('#Question-prepare-manifest-1 .option-card')
+      .removeClass('checked')
+      .removeClass('disabled')
+      .removeClass('non-selected')
+    $('#Question-prepare-manifest-1 .option-card .folder-input-check').prop('checked', false)
+    $('#input-manifest-local-folder-dataset').attr('placeholder', 'Browse here')
+    $('#div-confirm-manifest-local-folder-dataset').hide()
+    $('#bf_dataset_create_manifest').text('None')
+    let dir1 = window.path.join(window.homeDirectory, 'SODA', 'manifest_files')
+    let dir2 = window.path.join(window.homeDirectory, 'SODA', 'SODA Manifest Files')
+    window.removeDir(dir1)
+    window.removeDir(dir2)
 
     // reset the global variables for detecting the manifest path
-    window.finalManifestGenerationPath = "";
+    window.finalManifestGenerationPath = ''
   }
 }
 
@@ -702,152 +776,153 @@ function window.resetManifest(askToReset = true) {
  */
 window.resetFFMUI = (ev) => {
   // reset the manage dataset UI
-  $("#div_add_edit_subtitle").removeClass("show");
-  $("#div_add_edit_subtitle_tab").removeClass("prev");
+  $('#div_add_edit_subtitle').removeClass('show')
+  $('#div_add_edit_subtitle_tab').removeClass('prev')
 
-  $("#div-rename-bf-dataset").removeClass("show");
-  $("#rename_dataset_BF_account_tab").removeClass("prev");
+  $('#div-rename-bf-dataset').removeClass('show')
+  $('#rename_dataset_BF_account_tab').removeClass('prev')
 
-  $("#div_make_pi_owner_permissions").removeClass("show");
-  $("#pi_dataset_owner_tab").removeClass("prev");
+  $('#div_make_pi_owner_permissions').removeClass('show')
+  $('#pi_dataset_owner_tab').removeClass('prev')
 
-  $("#add_edit_permissions_choice_div").removeClass("show");
-  $("#add_edit_permissions_choice_div").removeClass("prev");
-  $("#add_edit_permissions_choice_tab").removeClass("prev");
-  $("#add_edit_team_permissions_div").removeClass("show");
-  $("#add_edit_user_permissions_div").removeClass("show");
-  $("#para-add-edit-dataset-permission-current").text("None");
+  $('#add_edit_permissions_choice_div').removeClass('show')
+  $('#add_edit_permissions_choice_div').removeClass('prev')
+  $('#add_edit_permissions_choice_tab').removeClass('prev')
+  $('#add_edit_team_permissions_div').removeClass('show')
+  $('#add_edit_user_permissions_div').removeClass('show')
+  $('#para-add-edit-dataset-permission-current').text('None')
 
-  $("#div_add_edit_description").removeClass("show");
-  $("#add_edit_description_tab").removeClass("prev");
+  $('#div_add_edit_description').removeClass('show')
+  $('#add_edit_description_tab').removeClass('prev')
 
-  $("#div_add_edit_banner").removeClass("show");
+  $('#div_add_edit_banner').removeClass('show')
   // $("#div_add_edit_banner").hide();
-  $("#add_edit_banner_tab").removeClass("prev");
+  $('#add_edit_banner_tab').removeClass('prev')
 
-  $("#add_license_tab").removeClass("prev");
-  $("#div_add_license").removeClass("show");
-  $("#para-dataset-license-current").text("None");
+  $('#add_license_tab').removeClass('prev')
+  $('#div_add_license').removeClass('show')
+  $('#para-dataset-license-current').text('None')
 
-  $("#add_tags_tab").removeClass("prev");
-  $("#div_add_tags").removeClass("show");
+  $('#add_tags_tab').removeClass('prev')
+  $('#div_add_tags').removeClass('show')
 
-  $("#view_change_dataset_status_tab").removeClass("prev");
-  $("#div_view_change_dataset_status").removeClass("show");
+  $('#view_change_dataset_status_tab').removeClass('prev')
+  $('#div_view_change_dataset_status').removeClass('show')
 
-  $("#collection_BF_account_tab").removeClass("prev");
-  $("#div-collection-bf-dataset").removeClass("show");
+  $('#collection_BF_account_tab').removeClass('prev')
+  $('#div-collection-bf-dataset').removeClass('show')
 
-  $("#upload_local_dataset_tab").removeClass("prev");
-  $("#upload_local_dataset_div").removeClass("show");
+  $('#upload_local_dataset_tab').removeClass('prev')
+  $('#upload_local_dataset_div').removeClass('show')
 
   // reset the prepare metadata UI -- only reset if the user is not in that section of the UI
-  let resetSubmissionTab = true;
-  let resetSubjectsTab = true;
-  let resetSamplesTab = true;
-  let resetDDTab = true;
-  let resetManifestTab = true;
-  let resetValidation = true;
-  let resetOrganizationTab = true;
+  let resetSubmissionTab = true
+  let resetSubjectsTab = true
+  let resetSamplesTab = true
+  let resetDDTab = true
+  let resetManifestTab = true
+  let resetValidation = true
+  let resetOrganizationTab = true
   if (ev?.parentNode?.parentNode) {
-    if (ev.parentNode.parentNode.classList.contains("prepare-submission")) {
-      resetSubmissionTab = false;
+    if (ev.parentNode.parentNode.classList.contains('prepare-submission')) {
+      resetSubmissionTab = false
     }
-    if (ev.parentNode.parentNode.classList.contains("prepare-subjects")) {
-      resetSubjectsTab = false;
+    if (ev.parentNode.parentNode.classList.contains('prepare-subjects')) {
+      resetSubjectsTab = false
     }
-    if (ev.parentNode.parentNode.classList.contains("prepare-samples")) {
-      resetSamplesTab = false;
+    if (ev.parentNode.parentNode.classList.contains('prepare-samples')) {
+      resetSamplesTab = false
     }
-    if (ev.parentNode.parentNode.classList.contains("prepare-dataset-description")) {
-      resetDDTab = false;
+    if (ev.parentNode.parentNode.classList.contains('prepare-dataset-description')) {
+      resetDDTab = false
     }
-    if (ev.parentNode.parentNode.classList.contains("prepare-manifest")) {
-      resetManifestTab = false;
+    if (ev.parentNode.parentNode.classList.contains('prepare-manifest')) {
+      resetManifestTab = false
     }
     // if (ev.parentNode.parentNode.classList.contains("prepare-validation")) {
     //   resetValidation = false;
     // }
-    if (ev.parentNode.parentNode.classList.contains("organize-dataset")) {
-      resetOrganizationTab = false;
-      if (ev.parentNode.parentNode.id === "bf-organization-curate-first-question-container") {
-        $("#current-bf-dataset").text("None");
-        $("#para-continue-bf-dataset-getting-started").hide();
-        $("#button-confirm-bf-dataset-getting-started").css("display", "none");
+    if (ev.parentNode.parentNode.classList.contains('organize-dataset')) {
+      resetOrganizationTab = false
+      if (ev.parentNode.parentNode.id === 'bf-organization-curate-first-question-container') {
+        $('#current-bf-dataset').text('None')
+        $('#para-continue-bf-dataset-getting-started').hide()
+        $('#button-confirm-bf-dataset-getting-started').css('display', 'none')
       } else if (
-        ev.parentNode.parentNode.id === "bf-organization-curate-second-question-container"
+        ev.parentNode.parentNode.id === 'bf-organization-curate-second-question-container'
       ) {
-        $("#current-bf-dataset-generate").text("None");
+        $('#current-bf-dataset-generate').text('None')
         // show the confirm button under the workspace selection question
-        $("#btn-bf-workspace").css("display", "flex");
+        $('#btn-bf-workspace').css('display', 'flex')
         // hide the dataset options selection section
         window.transitionSubQuestionsButton(
-          document.querySelector("#btn-bf-workspace"),
-          "Question-generate-dataset-BF-workspace",
-          "generate-dataset-tab",
-          "delete",
-          "individual-question generate-dataset"
-        );
+          document.querySelector('#btn-bf-workspace'),
+          'Question-generate-dataset-BF-workspace',
+          'generate-dataset-tab',
+          'delete',
+          'individual-question generate-dataset'
+        )
       }
     }
   }
 
   if (resetSubmissionTab) {
-    window.resetSubmission(false);
+    window.resetSubmission(false)
   }
 
   if (resetDDTab) {
-    window.resetDD(false);
+    window.resetDD(false)
   }
 
   if (resetSubjectsTab) {
-    window.resetSubjects(false);
+    window.resetSubjects(false)
   }
 
   if (resetSamplesTab) {
-    window.resetSamples(false);
+    window.resetSamples(false)
   }
 
   if (resetManifestTab) {
-    window.resetManifest(false);
+    window.resetManifest(false)
   }
 
   // reset the prepare datasets sections
   // do not wipe curation progress when resetting in GM or from within Organize Datasets
   if (resetOrganizationTab) {
     // if we are going to reset the organization and are not within the organize flow, set the first dataset field value to None -- the second dataset field gets reset within window.resetCuration
-    $("#current-bf-dataset").text("None");
-    $("#button-confirm-bf-dataset-getting-started").css("display", "none");
-    window.resetCuration();
+    $('#current-bf-dataset').text('None')
+    $('#button-confirm-bf-dataset-getting-started').css('display', 'none')
+    window.resetCuration()
   }
 
   // validation reset
-  let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
+  let validationErrorsTable = document.querySelector('#validation-errors-container tbody')
   if (resetValidation) {
     // Function only resets the table and hides the validation section
     // If they have selected the first cards those will not be reset
     // $("#div-check-bf-import-validator").css("display", "flex");
-    $("#validate_dataset-question-3").removeClass("show");
-    $("#validate_dataset-question-3").removeClass("prev");
-    $("#validate_dataset-question-4").removeClass("show");
-    window.clearValidationResults(validationErrorsTable);
+    $('#validate_dataset-question-3').removeClass('show')
+    $('#validate_dataset-question-3').removeClass('prev')
+    $('#validate_dataset-question-4').removeClass('show')
+    window.clearValidationResults(validationErrorsTable)
   }
   // reset the Disseminate Datasets sections
-  $("#share_curation_team-question-1").removeClass("prev");
-  $("#share_curation_team-question-2").removeClass("show");
+  $('#share_curation_team-question-1').removeClass('prev')
+  $('#share_curation_team-question-2').removeClass('show')
 
-  $("#share_sparc_consortium-question-1").removeClass("prev");
-  $("#share_sparc_consortium-question-2").removeClass("show");
+  $('#share_sparc_consortium-question-1').removeClass('prev')
+  $('#share_sparc_consortium-question-2').removeClass('show')
 
-  $("#submit_prepublishing_review-question-1").removeClass("prev");
-  $("#submit_prepublishing_review-question-2").addClass("hidden");
-  $("#submit_prepublishing_review-question-3").removeClass("show");
-  $("#submit_prepublishing_review-question-4").removeClass("show");
-  $("#para-review-dataset-info-disseminate").text("None");
-};
+  $('#submit_prepublishing_review-question-1').removeClass('prev')
+  $('#submit_prepublishing_review-question-2').addClass('hidden')
+  $('#submit_prepublishing_review-question-3').removeClass('show')
+  $('#submit_prepublishing_review-question-4').removeClass('show')
+  $('#para-review-dataset-info-disseminate').text('None')
+}
 
 const addBfAccount = async (ev, verifyingOrganization = False) => {
   var resolveMessage = "";
+  let footerMessage = "No existing accounts to load. Please add an account.";
   if (bfAccountOptionsStatus === "") {
     if (Object.keys(bfAccountOptions).length === 1) {
       footerMessage = "No existing accounts to load. Please add an account.";
@@ -912,7 +987,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
         $("#current-bf-account-generate").text(user_email);
         $("#create_empty_dataset_BF_account_span").text(user_email);
         $(".bf-account-span").text(user_email);
-        updateBfAccountList();
+        window.updateBfAccountList();
         //change icons in getting started page (guided mode)
         const gettingStartedPennsieveBtn = document.getElementById(
           "getting-started-pennsieve-account"
@@ -927,9 +1002,9 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
             },
           });
 
-          datasetList = [];
-          datasetList = responseObject.data.datasets;
-          clearDatasetDropdowns();
+          window.datasetList = [];
+          window.datasetList = responseObject.data.datasets;
+          window.clearDatasetDropdowns();
           window.refreshDatasetList();
         } catch (error) {
           clientError(error);
@@ -1021,7 +1096,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           api_button.appendChild(api_arrow);
           swal_actions.parentElement.insertBefore(api_button, div_footer);
           swal_actions.parentElement.insertBefore(helpText, div_footer);
-          api_button.addEventListener("click", (e) => showBFAddAccountSweetalert(e));
+          api_button.addEventListener("click", (e) => window.showBFAddAccountSweetalert(e));
         } else {
           // hide the cancel button
           let cancel_button = document.getElementsByClassName("swal2-cancel")[0];
@@ -1095,13 +1170,13 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
 
         // set the user's email to be the window.defaultBfDataset value
         bfAccountOptions[key_name] = key_name;
-        window.defaultBfDataset = key_name;
+        window.defaultBfAccount = key_name;
         window.defaultBfDataset = "Select dataset";
 
         try {
           let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
             params: {
-              selected_account: window.defaultBfDataset,
+              selected_account: window.defaultBfAccount,
             },
           });
           // reset the dataset field values
@@ -1116,13 +1191,13 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
 
           showHideDropdownButtons("account", "show");
           confirm_click_account_function();
-          updateBfAccountList();
+          window.updateBfAccountList();
 
           // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
           // then reset the guided mode page
           if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
             // Get the current page that the user is on in the guided mode
-            const currentPage = CURRENT_PAGE.id;
+            const currentPage = window.CURRENT_PAGE.id;
             if (currentPage) {
               await window.openPage(currentPage);
             }
@@ -1141,9 +1216,9 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           confirm_click_account_function();
         }
 
-        datasetList = [];
+        window.datasetList = [];
         window.defaultBfDataset = null;
-        clearDatasetDropdowns();
+        window.clearDatasetDropdowns();
 
         let titleText = "Successfully added! <br/>Loading your account details...";
         if (verifyingOrganization) {
@@ -1171,8 +1246,8 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
   }
 };
 
-var dropdownEventID = "";
-const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
+var dropdownEventID = ''
+window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
   if (dropdown === "bf") {
     await addBfAccount(ev, false);
@@ -1206,23 +1281,23 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       var bfDataset = "";
 
       // if users edit Current dataset
-      datasetPermissionDiv.style.display = "none";
-      $(datasetPermissionDiv)
+      window.datasetPermissionDiv.style.display = "none";
+      $(window.datasetPermissionDiv)
         .find("#curatebfdatasetlist")
         .find("option")
         .empty()
         .append('<option value="Select dataset">Search here...</option>')
         .val("Select dataset");
 
-      $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "block");
+      $(window.datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "block");
 
       $("#bf-dataset-select-header").css("display", "none");
 
-      $(datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
+      $(window.datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
       $("#para-continue-bf-dataset-getting-started").text("");
 
-      $(datasetPermissionDiv).find("#select-permission-list-2").val("All").trigger("change");
-      $(datasetPermissionDiv).find("#curatebfdatasetlist").val("Select dataset").trigger("change");
+      $(window.datasetPermissionDiv).find("#select-permission-list-2").val("All").trigger("change");
+      $(window.datasetPermissionDiv).find("#curatebfdatasetlist").val("Select dataset").trigger("change");
 
       initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
@@ -1262,7 +1337,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $(".svg-change-current-account.dataset").css("display", "block");
           }
         });
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-event",
           "Error",
           "Selecting dataset",
@@ -1272,12 +1347,12 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       } else {
         //account is signed in but no datasets have been fetched or created
         //invoke dataset request to ensure no datasets have been created
-        if (datasetList.length === 0) {
+        if (window.datasetList.length === 0) {
           let responseObject;
           try {
             responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
               params: {
-                selected_account: window.defaultBfDataset,
+                selected_account: window.defaultBfAccount,
               },
             });
           } catch (error) {
@@ -1290,15 +1365,16 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
 
           let result = responseObject.data.datasets;
-          datasetList = [];
-          datasetList = result;
+          console.log("Dataset results: ", result)
+          window.datasetList = [];
+          window.datasetList = result;
           window.refreshDatasetList();
         }
       }
 
       //after request check length again
       //if 0 then no datasets have been created
-      if (datasetList.length === 0) {
+      if (window.datasetList.length === 0) {
         Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           cancelButtonText: "Cancel",
@@ -1327,7 +1403,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#create_new_bf_dataset_btn").click();
           }
         });
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-event",
           "Error",
           "Selecting dataset",
@@ -1338,7 +1414,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       //datasets do exist so display popup with dataset options
       //else datasets have been created
-      if (datasetList.length > 0) {
+      if (window.datasetList.length > 0) {
         await Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
           cancelButtonText: "Cancel",
@@ -1348,7 +1424,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           heightAuto: false,
           allowOutsideClick: false,
           allowEscapeKey: true,
-          html: datasetPermissionDiv,
+          html: window.datasetPermissionDiv,
           reverseButtons: window.reverseSwalButtons,
           showCloseButton: true,
           showCancelButton: true,
@@ -1367,16 +1443,16 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           didOpen: () => {
             $("#div-permission-list-2").css("display", "block");
             $(".ui.active.green.inline.loader.small").css("display", "none");
-            datasetPermissionDiv.style.display = "block";
+            window.datasetPermissionDiv.style.display = "block";
             $("#curatebfdatasetlist").attr("disabled", false);
-            $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
+            $(window.datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
             $("#curatebfdatasetlist").selectpicker("refresh");
             $("#curatebfdatasetlist").selectpicker("show");
             $("#bf-dataset-select-div").show();
             $("#bf-organization-select-div").hide();
 
             bfDataset = $("#curatebfdatasetlist").val();
-            let sweet_al = document.getElementsByClassName("swal2-content")[0];
+            let sweet_al = document.getElementsByClassName("swal2-html-container")[0];
             let sweet_alrt = document.getElementsByClassName("swal2-actions")[0];
             sweet_alrt.style.marginTop = "1rem";
 
@@ -1395,7 +1471,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             if (!bfDataset) {
               Swal.showValidationMessage("Please select a dataset!");
 
-              $(datasetPermissionDiv)
+              $(window.datasetPermissionDiv)
                 .find("#div-filter-datasets-progress-2")
                 .css("display", "none");
               $("#curatebfdatasetlist").selectpicker("show");
@@ -1407,7 +1483,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               if (bfDataset === "Select dataset") {
                 Swal.showValidationMessage("Please select a dataset!");
 
-                $(datasetPermissionDiv)
+                $(window.datasetPermissionDiv)
                   .find("#div-filter-datasets-progress-2")
                   .css("display", "none");
                 $("#curatebfdatasetlist").selectpicker("show");
@@ -1531,7 +1607,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         }
 
         // update the gloabl dataset id
-        for (const item of datasetList) {
+        for (const item of window.datasetList) {
           let { name, id } = item;
           if (name === bfDataset) {
             window.defaultBfDatasetId = id;
@@ -1544,7 +1620,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
         // log a map of datasetId to dataset name to analytics
         // this will be used to help us track private datasets which are not trackable using a datasetId alone
-        ipcRenderer.send(
+        window.electron.ipcRenderer.send(
           "track-event",
           "Dataset ID to Dataset Name Map",
           window.defaultBfDatasetId,
@@ -1576,7 +1652,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $("body").removeClass("waiting");
       $(".svg-change-current-account.dataset").css("display", "block");
       $(".ui.active.green.inline.loader.small").css("display", "none");
-      ipcRenderer.send("track-event", "Success", "Selecting dataset", window.defaultBfDatasetId, 1);
+      window.electron.ipcRenderer.send("track-event", "Success", "Selecting dataset", window.defaultBfDatasetId, 1);
     }, 10);
   } else if (dropdown === "organization") {
     // TODO: Change these classes to organization classes
@@ -1625,10 +1701,13 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         },
       });
 
-      if (result.isConfirmed) {
+      console.log(result)
+
+      if (result) {
         await window.openDropdownPrompt(this, "bf");
         $(".ui.active.green.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
+        return
       } else {
         $(".ui.active.green.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
@@ -1652,7 +1731,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         return;
       }
 
-      ipcRenderer.send(
+      window.electron.ipcRenderer.send(
         "track-event",
         "Error",
         "Selecting dataset",
@@ -1704,7 +1783,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         heightAuto: false,
         allowOutsideClick: false,
         allowEscapeKey: true,
-        html: datasetPermissionDiv,
+        html: window.datasetPermissionDiv,
         reverseButtons: window.reverseSwalButtons,
         showCloseButton: true,
         showCancelButton: true,
@@ -1726,9 +1805,9 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         didOpen: () => {
           $("#div-permission-list-2").css("display", "block");
           $(".ui.active.green.inline.loader.small").css("display", "none");
-          datasetPermissionDiv.style.display = "block";
+          window.datasetPermissionDiv.style.display = "block";
           $("#curatebforganizationlist").attr("disabled", false);
-          $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
+          $(window.datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
           $("#curatebforganizationlist").selectpicker("refresh");
           $("#curatebforganizationlist").selectpicker("show");
           $("#bf-organization-select-div").show();
@@ -1736,7 +1815,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#bf-dataset-select-header").hide();
 
           window.bfOrganization = $("#curatebforganizationlist").val();
-          let sweet_al = document.getElementsByClassName("swal2-content")[0];
+          let sweet_al = document.getElementsByClassName("swal2-html-container")[0];
           let sweet_alrt = document.getElementsByClassName("swal2-actions")[0];
           sweet_alrt.style.marginTop = "1rem";
 
@@ -1755,7 +1834,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           if (!window.bfOrganization) {
             Swal.showValidationMessage("Please select an organization!");
 
-            $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
+            $(window.datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
             $("#curatebforganizationlist").selectpicker("show");
             $("#curatebforganizationlist").selectpicker("refresh");
             $("#bf-organization-select-div").show();
@@ -1766,7 +1845,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           if (window.bfOrganization === "Select organization") {
             Swal.showValidationMessage("Please select an organization!");
 
-            $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
+            $(window.datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
             $("#curatebforganizationlist").selectpicker("show");
             $("#curatebforganizationlist").selectpicker("refresh");
             $("#bf-organization-select-div").show();
@@ -1785,7 +1864,7 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
         $("#license-lottie-div").css("display", "block");
         $("#license-assigned").css("display", "block");
-        currentDatasetLicense.innerText = currentDatasetLicense.innerText;
+        window.currentDatasetLicense.innerText = window.currentDatasetLicense.innerText;
         initializeBootstrapSelect("#curatebforganizationlist", "show");
         return;
       }
@@ -1907,9 +1986,9 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         : window.resetFFMUI(ev);
 
       // reset the dataset list
-      datasetList = [];
+      window.datasetList = [];
       window.defaultBfDataset = null;
-      clearDatasetDropdowns();
+      window.clearDatasetDropdowns();
 
       // checkPrevDivForConfirmButton("dataset");
     }
@@ -1926,3 +2005,33 @@ const window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
   }
 };
+
+const get_api_key = (login, password, key_name) => {
+  return new Promise(async (resolve) => {
+    try {
+      let bf_get_pennsieve_secret_key = await client.post(
+        `/manage_datasets/pennsieve_api_key_secret`,
+        {
+          username: login,
+          password: password,
+          api_key: key_name,
+        }
+      );
+      let res = bf_get_pennsieve_secret_key.data;
+      resolve(res);
+    } catch (error) {
+      clientError(error);
+      resolve(["failed", userErrorMessage(error)]);
+    }
+  });
+};
+
+export {
+  currentConTable,
+  showHideDropdownButtons,
+  confirm_click_account_function,
+  initializeBootstrapSelect,
+  updateDatasetList,
+  bfAccountOptions,
+  get_api_key
+}
