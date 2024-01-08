@@ -222,7 +222,7 @@
             <input
               class="form-control"
               style="width: 450px !important"
-              onclick="showExistingSubjectsFile()"
+              onclick="window.showExistingSubjectsFile()"
               id="existing-subjects-file-destination"
               type="text"
               readonly
@@ -234,7 +234,7 @@
             id="div-confirm-existing-subjects-import"
           >
             <button
-              onclick="importExistingSubjectsFile()"
+              onclick="window.importExistingSubjectsFile()"
               style="
                 cursor: pointer;
                 border-radius: 8px;
@@ -392,7 +392,7 @@
               id="div-check-bf-import-subjects"
             >
               <button
-                onclick="checkBFImportSubjects()"
+                onclick="window.checkBFImportSubjects()"
                 class="prepare-metadata-confirm-dataset-button"
               >
                 Confirm
@@ -535,7 +535,7 @@
             style="margin: 0 auto; text-decoration: underline"
             id="div-import-primary-folder-subjects"
           >
-            <a href="#" onclick="showPrimaryBrowseFolder()" id="primary-folder-destination-input">
+            <a href="#" onclick="window.showPrimaryBrowseFolder()" id="primary-folder-destination-input">
               I want to import subject ID(s) from my primary folder
             </a>
           </div>
@@ -1253,7 +1253,7 @@
                 />
               </div>
               <div class="tooltipnew demo-controls-end">
-                <img class="info" src="assets/img/info.png" style="margin-top: -2px" />
+                <img class="info" src="./img/info.png" style="margin-top: -2px" />
                 <span class="tooltiptext">
                   Research Resource Identifier Identification (RRID) for the strain For this field.
                 </span>

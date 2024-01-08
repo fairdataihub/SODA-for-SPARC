@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <section
   id="guided_mode-section"
   class="section js-section u-category-windows is-shown"
@@ -74,7 +74,7 @@
             <img
               id="curate-and-share-logo"
               style="width: 30%; height: 100%; margin-top: 3px"
-              src="assets/img/logo-soda1024.png"
+              src="./img/logo-soda1024.png"
             />
           </div>
           <h2 class="mt-2 mb-3" style="font-size: 16px">What would you like to do today?</h2>
@@ -509,12 +509,7 @@
                 data-button-config-value-state="re-join"
               >
                 <div class="tile-button-icon">
-                  <img
-                    src="assets\img\rejoinLogo.png"
-                    alt="REJOINlogo"
-                    width="50px"
-                    height="50px"
-                  />
+                  <img src="./img/rejoinLogo.png" alt="REJOINlogo" width="50px" height="50px" />
                 </div>
                 <div class="tile-button-text">
                   <h2>NIH RE-JOIN program</h2>
@@ -1303,7 +1298,7 @@
                   </thead>
                   <tbody id="pools-specification-table-body"></tbody>
                 </table>
-                <button class="ui primary basic button mt-2" onclick="addPoolTableRow()">
+                <button class="ui primary basic button mt-2" onclick="window.addPoolTableRow()">
                   <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new pool
                 </button>
               </div>
@@ -4598,9 +4593,10 @@
 
                     <div
                       id="guided-div-img-container"
+                      class="img-container"
                       style="display: none; flex-direction: column"
                     >
-                      <img id="guided-image-banner" class="banner-img" />
+                      <img id="guided-image-banner" class="banner-img" width="100%" />
                       <p
                         id="guided-para-path-image"
                         style="margin-top: 0.5em; text-align: center; display: none"
@@ -5791,7 +5787,7 @@
                             <button
                               id="guided--ORCID-btn"
                               class="prepublishing-item-button green-hollow-button ml-3"
-                              onclick="orcidSignIn(this, 'guided')"
+                              onclick="window.orcidSignIn(this, 'guided')"
                             >
                               Link ORCID iD
                             </button>
@@ -5837,7 +5833,7 @@
           class="ui secondary basic button save-and-exit-button"
           id="guided-button-save-and-exit"
           style="width: 200px !important; font-family: Poppins"
-          onclick="guidedSaveAndExit()"
+          onclick="window.guidedSaveAndExit()"
         >
           <i class="far fa-save" style="margin-right: 10px"></i>
           Save and Exit
@@ -5865,7 +5861,7 @@
           class="ui secondary basic button save-and-exit-button"
           id="guided-button-sub-page-save-and-exit"
           style="width: 165px !important; font-family: Poppins"
-          onclick="guidedSaveAndExit()"
+          onclick="window.guidedSaveAndExit()"
         >
           <i class="far fa-save" style="margin-right: 10px"></i>
           Save and Exit

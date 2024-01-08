@@ -290,7 +290,7 @@
                         </div>
                         <button
                           class="prepublishing-item-button ml-3 text-left"
-                          onClick="transitionFromPrePublishingChecklist(this, 'add_edit_subtitle-section')"
+                          onClick="window.transitionFromPrePublishingChecklist(this, 'add_edit_subtitle-section')"
                         >
                           Checking subtitle
                         </button>
@@ -308,7 +308,7 @@
                         </div>
                         <button
                           class="prepublishing-item-button ml-3 text-left"
-                          onClick="transitionFromPrePublishingChecklist(this, 'add_tags-section')"
+                          onClick="window.transitionFromPrePublishingChecklist(this, 'add_tags-section')"
                         >
                           Checking tags
                         </button>
@@ -326,7 +326,7 @@
                         </div>
                         <button
                           class="prepublishing-item-button ml-3 text-left"
-                          onClick="transitionFromPrePublishingChecklist(this, 'add_edit_description-section')"
+                          onClick="window.transitionFromPrePublishingChecklist(this, 'add_edit_description-section')"
                         >
                           Checking description
                         </button>
@@ -346,7 +346,7 @@
                         </div>
                         <button
                           class="prepublishing-item-button ml-3 text-left"
-                          onClick="transitionFromPrePublishingChecklist(this, 'add_edit_banner-section')"
+                          onClick="window.transitionFromPrePublishingChecklist(this, 'add_edit_banner-section')"
                         >
                           Checking banner image
                         </button>
@@ -364,7 +364,7 @@
                         </div>
                         <button
                           class="prepublishing-item-button ml-3 text-left"
-                          onClick="transitionFromPrePublishingChecklist(this, 'add_license-section')"
+                          onClick="window.transitionFromPrePublishingChecklist(this, 'add_license-section')"
                         >
                           Checking license
                         </button>
@@ -383,7 +383,7 @@
                         <button
                           class="prepublishing-item-button ml-3 text-left"
                           id="ORCID-btn"
-                          onclick="orcidSignIn(this, 'freeform')"
+                          onclick="window.orcidSignIn(this, 'freeform')"
                         >
                           Checking ORCID ID
                         </button>
@@ -403,7 +403,7 @@
               <button
                 class="ui positive button soda-green-background mt-lg"
                 id="pre-publishing-continue-btn"
-                onclick="createPrepublishingChecklist('freeform')"
+                onclick="window.createPrepublishingChecklist('freeform')"
                 style="width: 200px; height: 40px; font-size: 15px; margin-top: 2rem"
               >
                 <i class="fas fa-sign-in-alt" style="padding-right: 5px"></i>
@@ -444,7 +444,7 @@
             >
               <button
                 id="prepublishing-submit-btn"
-                onclick="disseminatePublish('freeform')"
+                onclick="window.disseminatePublish('freeform')"
                 class="ui positive button mt-lg"
                 style="
                   width: 200px;
