@@ -14279,6 +14279,25 @@ document
     ipcRenderer.send("guided-select-local-dataset-generation-path");
   });
 
+// Counts the number of files in the dataset structure
+// Note: This function should only be used for local datasets (Not datasets pulled from Pennsieve)
+const countFilesInDatasetStructure = (datasetStructure) => {
+  let totalFiles = 0;
+  const keys = Object.keys(datasetStructure);
+  for (const key of keys) {
+    if (key === "files") {
+      totalFiles += Object.keys(datasetStructure[key]).length;
+    }
+    if (key === "folders") {
+      const folders = Object.keys(datasetStructure[key]);
+      for (const folder of folders) {
+        totalFiles += countFilesInDatasetStructure(datasetStructure[key][folder]);
+      }
+    }
+  }
+  return totalFiles;
+};
+
 // Listen for the selected path for local dataset generation
 ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, filePath) => {
   try {
@@ -14341,22 +14360,42 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
 
     // Track the status of local dataset generation
     const trackLocalDatasetGenerationProgress = async () => {
+      // set a timeout for .5 seconds
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const numberOfFilesToGenerate = countFilesInDatasetStructure(datasetStructureJSONObj);
       while (true) {
         try {
           const response = await client.get(`/curate_datasets/curation/progress`);
           const { data } = response;
-          const mainCurateStatus = data["main_curate_status"];
+          const main_curate_status = data["main_curate_status"];
+          const start_generate = data["start_generate"];
+          const main_curate_progress_message = data["main_curate_progress_message"];
 
-          if (mainCurateStatus === "Done") {
-            console.log("done");
+          if (main_curate_progress_message === "Success: COMPLETED!") {
+            console.log("Done with generation");
             break; // Exit the loop when generation is done
+          } else {
+            console.log(data);
           }
+          const main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
+          const main_generated_dataset_size = data["main_generated_dataset_size"];
+          const elapsed_time_formatted = data["elapsed_time_formatted"];
+          const totalUploadedFiles = data["total_files_uploaded"];
+          console.log("main_curate_status: ", main_curate_status);
+          console.log("start_generate: ", start_generate);
+          console.log("main_curate_progress_message: ", main_curate_progress_message);
+          console.log("main_total_generate_dataset_size: ", main_total_generate_dataset_size);
+          console.log("main_generated_dataset_size: ", main_generated_dataset_size);
+          console.log("elapsed_time_formatted: ", elapsed_time_formatted);
+          console.log("totalUploadedFiles: ", totalUploadedFiles);
+          const percentOfDatasetUploaded =
+            (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
+          console.log("percentOfDatasetUploaded: ", percentOfDatasetUploaded);
 
-          const progress = data["main_total_generate_dataset_size"]
-            ? localDatasetSizeInBytes / data["main_total_generate_dataset_size"]
-            : null;
-          console.log(progress); // Log progress or null if unavailable
+          totalSizePrint = generateReadableFileSize(main_total_generate_dataset_size);
+          console.log("total size print", totalSizePrint);
 
+          console.log("Generation still in progress");
           await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
         } catch (error) {
           console.error("Error tracking progress:", error);
@@ -15152,6 +15191,21 @@ const openGuidedDatasetRenameSwal = async () => {
   }
 };
 
+function generateReadableFileSize(bytes) {
+  const units = ["B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"];
+  let unitIndex = 0;
+
+  // Use the provided `bytes` argument as the starting size
+  let size = bytes;
+
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex++;
+  }
+
+  return `${size.toFixed(2)} ${units[unitIndex]}`;
+}
+
 const guidedUploadDatasetToPennsieve = async () => {
   updateJSONStructureDSstructure();
 
@@ -15486,19 +15540,8 @@ const guidedUploadDatasetToPennsieve = async () => {
           (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
         setGuidedProgressBarValue("pennsieve", percentOfDatasetUploaded);
 
-        if (main_total_generate_dataset_size < displaySize) {
-          totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
-        } else if (main_total_generate_dataset_size < displaySize * displaySize) {
-          totalSizePrint = (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
-        } else if (main_total_generate_dataset_size < displaySize * displaySize * displaySize) {
-          totalSizePrint =
-            (main_total_generate_dataset_size / displaySize / displaySize).toFixed(2) + " MB";
-        } else {
-          totalSizePrint =
-            (main_total_generate_dataset_size / displaySize / displaySize / displaySize).toFixed(
-              2
-            ) + " GB";
-        }
+        totalSizePrint = generateReadableFileSize(main_total_generate_dataset_size);
+        console.log("total size print", totalSizePrint);
         if (main_curate_progress_message.includes("Renaming files...")) {
           updateDatasetUploadProgressTable("pennsieve", {
             "Upload status": `${main_curate_progress_message}`,
