@@ -197,4 +197,4 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
   // KEY: The UserDetailsCard imports this and uses the a given field as a parma to use this function to create the desired field name
 };
 
-module.exports = { UserDetailsCardField, FIELD_OPTIONS };
+export { UserDetailsCardField, FIELD_OPTIONS };

@@ -1,4 +1,4 @@
-const { UserDetailsCardField } = require("./UserDetailsCardField");
+import {UserDetailsCardField}  from './UserDetailsCardField'
 
 const UserDetailsCard = ({
   tabName,
@@ -67,4 +67,4 @@ const UserDetailsCard = ({
   return cardContainer;
 };
 
-module.exports = { UserDetailsCard };
+export default UserDetailsCard;
