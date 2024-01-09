@@ -483,7 +483,7 @@ const getPennsieveAgentVersion = async () => {
 
 let preFlightCheckNotyf = null;
 
-const agent_installed = () => {
+const agent_installed = async () => {
   try {
     let agentStartSpawn = await window.spawn.startPennsieveAgent()
     console.log("Agent installed spawn: ", agentStartSpawn)
