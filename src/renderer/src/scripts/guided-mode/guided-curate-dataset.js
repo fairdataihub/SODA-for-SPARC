@@ -11117,9 +11117,12 @@ document
   .getElementById("guided-button-choose-dataset-structure-spreadsheet-path")
   .addEventListener("click", () => {
     // Create a new spreadsheet based on the dataset structure
-    ipcRenderer.send("open-create-dataset-structure-spreadsheet-path-selection-dialog");
+    window.electron.ipcRenderer.send("open-create-dataset-structure-spreadsheet-path-selection-dialog");
   });
-ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (event, path) => {
+
+
+  // TODO: Convert to new conventions
+window.electron.ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (event, path) => {
   try {
     const workbook = new excel4node.Workbook();
     const worksheet = workbook.addWorksheet("Subject structure");
@@ -11178,7 +11181,7 @@ ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (even
       "No"
     );
     if (openTemplateForUser) {
-      ipcRenderer.send("open-file-at-path", filePath);
+      window.electron.ipcRenderer.send("open-file-at-path", filePath);
     }
   } catch (error) {
     notyf.error(`Error creating dataset structure spreadsheet: ${error}`);
@@ -11193,7 +11196,7 @@ document
       notyf.error("No dataset structure spreadsheet has been saved");
       return;
     }
-    ipcRenderer.send("open-file-at-path", savedTemplatePath);
+    window.electron.ipcRenderer.send("open-file-at-path", savedTemplatePath);
   });
 
 const validateDatasetStructureSpreadsheet = async (sheetData) => {
@@ -11398,10 +11401,10 @@ document
 
 const guidedExtractEntityNamesFromFolders = async (entityType) => {
   if (entityType === "subjects") {
-    ipcRenderer.send("open-subject-multi-folder-import-dialog");
+    window.electron.ipcRenderer.send("open-subject-multi-folder-import-dialog");
   }
   if (entityType === "samples") {
-    ipcRenderer.send("open-multi-folder-dialog");
+    window.electron.ipcRenderer.send("open-multi-folder-dialog");
   }
 };
 
@@ -11494,12 +11497,12 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
   }
 };
 
-ipcRenderer.on("selected-subject-names-from-dialog", async (event, folders) => {
+window.electron.ipcRenderer.on("selected-subject-names-from-dialog", async (event, folders) => {
   const subjectNames = folders.map((folder) => path.basename(folder));
   guidedAddListOfSubjects(subjectNames, true);
 });
 
-ipcRenderer.on("selected-sample-names-from-dialog", async (event, folders) => {
+window.electron.ipcRenderer.on("selected-sample-names-from-dialog", async (event, folders) => {
   const sampleNames = folders.map((folder) => path.basename(folder));
 });
 
@@ -13705,7 +13708,7 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
     await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
 
     // Send successful dataset subtitle upload event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
@@ -13719,7 +13722,7 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
     );
   } catch (error) {
     // Send failed dataset subtitle upload event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
@@ -13731,7 +13734,7 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
     );
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
@@ -13788,7 +13791,7 @@ const guidedAddDatasetDescription = async (
     await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
 
     // Send successful dataset description upload event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
@@ -13802,7 +13805,7 @@ const guidedAddDatasetDescription = async (
     );
   } catch (error) {
     // Send failed dataset description upload event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
@@ -13814,7 +13817,7 @@ const guidedAddDatasetDescription = async (
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
     );
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
@@ -13872,7 +13875,7 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
     await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
 
     // Send successful banner image upload event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
@@ -13890,7 +13893,7 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
     guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "error");
 
     // Send failed banner image upload event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
@@ -13902,7 +13905,7 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
     );
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
@@ -13945,7 +13948,7 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
     await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
 
     // Send successful license upload event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
@@ -13963,7 +13966,7 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
     guidedUploadStatusIcon("guided-dataset-license-upload-status", "error");
 
     // Send failed license upload event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
@@ -13975,7 +13978,7 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
     );
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
@@ -14016,7 +14019,7 @@ const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
     await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
 
     // Send successful tags upload event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
@@ -14033,7 +14036,7 @@ const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
     guidedUploadStatusIcon("guided-dataset-tags-upload-status", "error");
 
     // Send failed tags upload event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
@@ -14045,7 +14048,7 @@ const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
     );
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
@@ -14133,7 +14136,7 @@ const guidedGrantUserPermission = async (
     }
 
     // Send successful user permissions modification event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
@@ -14156,7 +14159,7 @@ const guidedGrantUserPermission = async (
     log.error(emessage);
 
     // Send failed user permissions modification event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
@@ -14168,7 +14171,7 @@ const guidedGrantUserPermission = async (
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
     );
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
@@ -14275,7 +14278,7 @@ const guidedGrantTeamPermission = async (
     }
 
     // Send successful team permissions modification event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
@@ -14298,7 +14301,7 @@ const guidedGrantTeamPermission = async (
     log.error(emessage);
 
     // Send failed team permissions modification event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
@@ -14310,7 +14313,7 @@ const guidedGrantTeamPermission = async (
         dataset_id: guidedGetDatasetId(sodaJSONObj),
       }
     );
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
@@ -14350,7 +14353,7 @@ document
   .getElementById("guided-button-generate-local-dataset-copy")
   .addEventListener("click", () => {
     // Send an IPC message to select the local dataset generation path
-    ipcRenderer.send("guided-select-local-dataset-generation-path");
+    window.electron.ipcRenderer.send("guided-select-local-dataset-generation-path");
   });
 */
 
@@ -14363,7 +14366,7 @@ const convertBytesToGb = (bytes) => {
 };
 
 // Listen for the selected path for local dataset generation
-ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, filePath) => {
+window.electron.ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, filePath) => {
   try {
     // Check available free memory on disk
     const diskSpaceRes = await checkDiskSpace(filePath);
@@ -14499,7 +14502,7 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
     }
 
     // Send successful subjects metadata generation event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -14514,7 +14517,7 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
       subjectsMetadataGenerationText.innerHTML = `Failed to generate subjects metadata`;
     }
     // Send failed subjects metadata generation event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -14569,7 +14572,7 @@ const guidedGenerateSamplesMetadata = async (bfAccount, datasetName, samplesTabl
     window.sodaJSONObj["previously-uploaded-data"]["samples-metadata"] = samplesTableData;
     await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
     // Send successful samples metadata generation event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -14582,7 +14585,7 @@ const guidedGenerateSamplesMetadata = async (bfAccount, datasetName, samplesTabl
     guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "error");
     samplesMetadataUploadText.innerHTML = `Failed to upload samples metadata`;
     // Send failed samples metadata generation event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -14637,7 +14640,7 @@ const guidedGenerateSubmissionMetadata = async (bfAccount, datasetName, submissi
     await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
 
     // Send successful submission metadata generation event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -14651,7 +14654,7 @@ const guidedGenerateSubmissionMetadata = async (bfAccount, datasetName, submissi
     submissionMetadataUploadText.innerHTML = `Failed to upload submission metadata`;
 
     // Send failed submission metadata generation event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -14738,7 +14741,7 @@ const guidedGenerateDatasetDescriptionMetadata = async (
     await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
 
     // Send successful dataset_description metadata generation event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -14755,7 +14758,7 @@ const guidedGenerateDatasetDescriptionMetadata = async (
     datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload dataset description metadata`;
 
     // Send failed dataset_description metadata generation event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -14805,7 +14808,7 @@ const guidedGenerateCodeDescriptionMetadata = async (
     codeDescriptionMetadataUploadText.innerHTML = "Code description metadata added to Pennsieve";
 
     // Send successful code_description metadata generation event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -14818,7 +14821,7 @@ const guidedGenerateCodeDescriptionMetadata = async (
     guidedUploadStatusIcon("guided-code-description-metadata-pennsieve-genration-status", "error");
     codeDescriptionMetadataUploadText.innerHTML = `Failed to upload code description metadata`;
     // Send failed code_description metadata generation event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -14894,7 +14897,7 @@ const guidedGenerateREADMEorCHANGESMetadata = async (
     await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
 
     // Send successful README/CHANGES metadata generation event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -14915,7 +14918,7 @@ const guidedGenerateREADMEorCHANGESMetadata = async (
     clientError(error);
 
     // Send failed README/CHANGES metadata generation event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_METADATA,
