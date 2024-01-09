@@ -270,7 +270,6 @@ const checkAvailableSpace = async () => {
     return Number(parseFloat(value.toFixed(2)));
   };
 
-
   let freeMemory = await window.electron.ipcRenderer.invoke("getDiskSpace", location)
   let freeMemoryMB = roundToHundredth(freeMemory / 1024 ** 2);
 
@@ -882,7 +881,7 @@ window.create_child_node = (
   nodeName,
   type,
   ext,
-  openedState,
+  treePreviewName,
   selectedState,
   disabledState,
   selectedOriginalLocation,
@@ -892,7 +891,7 @@ window.create_child_node = (
   var newFormatNode = {
     text: nodeName,
     state: {
-      opened: openedState,
+      opened: nodeName === treePreviewName,
       selected: selectedState,
       disabled: disabledState,
     },
@@ -911,13 +910,13 @@ window.create_child_node = (
           }
           if (key === selectedOriginalLocation && parentFolder === high_lvl_folder_node) {
             newFormatNode.state.selected = true;
-            newFormatNode.state.opened = true;
+
             var new_node = window.create_child_node(
               value,
               key,
               "folder",
               "",
-              true,
+              treePreviewName,
               true,
               true,
               selectedOriginalLocation,
@@ -926,13 +925,12 @@ window.create_child_node = (
             );
           } else {
             newFormatNode.state.selected = true;
-            newFormatNode.state.opened = true;
             var new_node = window.create_child_node(
               value,
               key,
               "folder",
               "",
-              false,
+              treePreviewName,
               false,
               false,
               selectedOriginalLocation,
@@ -946,13 +944,12 @@ window.create_child_node = (
       } else {
         if (key === selectedOriginalLocation) {
           newFormatNode.state.selected = true;
-          newFormatNode.state.opened = true;
           var new_node = window.create_child_node(
             value,
             key,
             "folder",
             "",
-            true,
+            treePreviewName,
             true,
             true,
             selectedOriginalLocation,
@@ -965,7 +962,7 @@ window.create_child_node = (
             key,
             "folder",
             "",
-            false,
+            treePreviewName,
             false,
             false,
             selectedOriginalLocation,
@@ -1044,7 +1041,7 @@ var jsTreeData = window.create_child_node(
   "dataset_root",
   "folder",
   "",
-  true,
+  "dataset_root",
   true,
   true,
   "",
@@ -1163,7 +1160,7 @@ window.moveItems = async (ev, category) => {
     "dataset_root",
     "folder",
     "",
-    true,
+    "dataset_root",
     true,
     true,
     selectedOriginalLocation,
@@ -1646,7 +1643,7 @@ window.showTreeViewPreview = (
     new_dataset_name,
     "folder",
     "",
-    true,
+    new_dataset_name,
     selectedBoolean,
     disabledBoolean,
     "",

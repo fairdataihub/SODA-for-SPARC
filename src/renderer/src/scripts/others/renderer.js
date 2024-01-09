@@ -130,7 +130,9 @@ let launchAnnouncement = await window.electron.ipcRenderer.invoke("get-nodestora
 if (autoUpdateLaunch == false || autoUpdateLaunch == null || autoUpdateLaunch == undefined) {
   // if launchAnnouncements is undefined/null then announcements havent been launched yet; set launch_announcements to true
   // later code will reference this flag to determine if announcements should be checked for
-  if (launchAnnouncement === undefined || launchAnnouncement === null) launchAnnouncement = true;
+  if (launchAnnouncement === undefined || launchAnnouncement === null) {
+    launchAnnouncement = true;
+  }
   // do not check for announcements on the next launch
   await window.electron.ipcRenderer.invoke("set-nodestorage-key", "launch_announcements", false); // NOTE: launch_announcements is only set to true during the auto update process ( see main.js )
 }
@@ -481,7 +483,7 @@ const getPennsieveAgentVersion = async () => {
 
 let preFlightCheckNotyf = null;
 
-const agent_installed = async () => {
+const agent_installed = () => {
   try {
     let agentStartSpawn = await window.spawn.startPennsieveAgent()
     console.log("Agent installed spawn: ", agentStartSpawn)
@@ -490,7 +492,8 @@ const agent_installed = async () => {
     window.log.info(e);
     throw e;
   }
-};
+}
+let userHasSelectedTheyAreOkWithOutdatedAgent = false;
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 window.run_pre_flight_checks = async (check_update = true) => {
@@ -558,21 +561,11 @@ window.run_pre_flight_checks = async (check_update = true) => {
       }
     }
 
-    // First get the latest Pennsieve agent version on GitHub
-    // This is to ensure the user has the latest version of the agent
-    let browser_download_url;
-    let latest_agent_version;
-    try {
-      [browser_download_url, latest_agent_version] = await get_latest_agent_version();
-    } catch (error) {
-      const emessage = userErrorMessage(error);
-      throw new Error(`Error getting latest Pennsieve agent version:<br />${emessage}`);
-    }
-
     // check if the Pennsieve agent is installed [ here ]
     try {
       let installed = await agent_installed();
       if (!installed) {
+        const downloadUrl = await getPlatformSpecificAgentDownloadURL();
         const { value: restartSoda } = await Swal.fire({
           icon: "info",
           title: "Pennsieve Agent Not Found",
@@ -580,9 +573,9 @@ window.run_pre_flight_checks = async (check_update = true) => {
                   It looks like the Pennsieve Agent is not installed on your computer. It is recommended that you install the Pennsieve Agent now if you want to upload datasets to Pennsieve through SODA.
                   <br />
                   To install the Pennsieve Agent, please visit the link below and follow the instructions.
+                  <br /> 
                   <br />
-                  <br />
-                  <a href="${browser_download_url}" target="_blank">Download the Pennsieve agent</a>
+                  <a href="${downloadUrl}" target="_blank">Download the Pennsieve agent</a>
                   <br />
                   <br />
                   Once you have installed the Pennsieve Agent, you will need to close and restart SODA before you can upload datasets. Would you like to close SODA now?
@@ -669,6 +662,52 @@ window.run_pre_flight_checks = async (check_update = true) => {
       clientError(error);
       const emessage = userErrorMessage(error);
 
+      // check if the Agent is failing to start due to Unique constraint violation or due to the Agent caching an outdated username and password after the user updates their Key + Secret
+      // if so then we prompt the user to allow us to remove the pennsieve Agent DB files and try again
+      if (
+        emessage.includes("UNIQUE constraint failed:") ||
+        emessage.includes("NotAuthorizedException: Incorrect username or password.")
+      ) {
+        const { value: deleteFilesRerunChecks } = await Swal.fire({
+          icon: "error",
+          title: "The Pennsieve Agent Failed to Start",
+          html: `
+                <br />
+                <div class="div--code-block-error">${emessage}</div>
+                <br />
+                <p style="text-align: left">This is a known issue with the Pennsieve Agent and is typically resolved by deleting the local Pennsieve Agent database files from your computer. Would you like SODA to do that and restart the Agent?</p>`,
+          width: 800,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showCancelButton: true,
+          showCloseButton: true,
+          reverseButtons: reverseSwalButtons,
+          confirmButtonText: "Yes",
+          cancelButtonText: "No",
+        });
+
+        if (!deleteFilesRerunChecks) {
+          return false;
+        }
+
+        // wait for the Agent to stop using the db files so they may be deleted
+        await wait(1000);
+        const fs = require("fs").promises;
+        const fsSync = require("fs");
+        // delete any db files that exist
+        if (fsSync.existsSync(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db`))
+          await fs.unlink(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db`);
+        if (fsSync.existsSync(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db-shm`))
+          await fs.unlink(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db-shm`);
+        if (fsSync.existsSync(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db-wal`))
+          await fs.unlink(`${app.getPath("home")}/.pennsieve/pennsieve_agent.db-wal`);
+
+        // rerun checks
+        return await run_pre_flight_checks();
+      }
+
       const { value: rerunPreFlightChecks } = await Swal.fire({
         icon: "info",
         title: "The Pennsieve Agent failed to start",
@@ -747,7 +786,41 @@ window.run_pre_flight_checks = async (check_update = true) => {
       return false;
     }
 
-    if (usersPennsieveAgentVersion !== latest_agent_version) {
+    let agentDownloadUrl;
+    let latestPennsieveAgentVersion;
+
+    // Note: We only want to check the Pennsieve agent version if the user has not already selected that they are ok with an outdated agent
+    if (!userHasSelectedTheyAreOkWithOutdatedAgent) {
+      // First get the latest Pennsieve agent version on GitHub
+      // This is to ensure the user has the latest version of the agent
+      try {
+        [agentDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
+      } catch (error) {
+        const emessage = userErrorMessage(error);
+        const retryAgentVersionCheck = await swalConfirmAction(
+          "warning",
+          "",
+          `
+            <br />
+            <b>${emessage}</b>
+            <br /><br />
+            Would you like to retry or continue with the currently installed version of the Pennsieve agent?
+          `,
+          "Retry",
+          "Contrinue with current version"
+        );
+        if (retryAgentVersionCheck) {
+          return await run_pre_flight_checks();
+        } else {
+          userHasSelectedTheyAreOkWithOutdatedAgent = true;
+        }
+      }
+    }
+
+    if (
+      !userHasSelectedTheyAreOkWithOutdatedAgent &&
+      usersPennsieveAgentVersion !== latestPennsieveAgentVersion
+    ) {
       // Stop the Pennsieve agent if it is running to prevent any issues when updating while the agent is running
       try {
         await stopPennsieveAgent();
@@ -761,13 +834,13 @@ window.run_pre_flight_checks = async (check_update = true) => {
         html: `
           Your Pennsieve agent version: <b>${usersPennsieveAgentVersion}</b>
           <br />
-          Latest Pennsieve agent version: <b>${latest_agent_version}</b>
+          Latest Pennsieve agent version: <b>${latestPennsieveAgentVersion}</b>
           <br />
           <br />
           To update your Pennsieve Agent, please visit the link below and follow the instructions.
           <br />
           <br />
-          <a href="${browser_download_url}" target="_blank">Download the latest Pennsieve agent</a>
+          <a href="${agentDownloadUrl}" target="_blank">Download the latest Pennsieve agent</a>
           <br />
           <br />
           Once you have updated your Pennsieve agent, please click the button below to ensure that the Pennsieve agent was updated correctly.
@@ -917,7 +990,7 @@ const apiVersionsMatch = async () => {
   let serverAppVersion = responseObject.data.version;
 
   window.log.info(`Server version is ${serverAppVersion}`);
-  const browser_download_url = `https://docs.sodaforsparc.io/docs/common-errors/api-version-mismatch`;
+  const apiVersionMismatchDocsLink = `https://docs.sodaforsparc.io/docs/common-errors/api-version-mismatch`;
 
   if (serverAppVersion !== appVersion) {
     window.log.info("Server version does not match client version");
@@ -941,7 +1014,7 @@ const apiVersionsMatch = async () => {
           To resolve this issue, please visit the link below and follow the instructions.
           <br />
           <br />
-          <a href="${browser_download_url}" target="_blank">API Version Mismatch</a>
+          <a href="${apiVersionMismatchDocsLink}" target="_blank">API Version Mismatch</a>
           <br />
           <br />
           Once you have updated the SODA Server, please restart SODA.
@@ -1048,41 +1121,19 @@ window.check_api_key = async () => {
   }
 };
 
-// // return the agent version or an error if the agent is not installed
-// const check_agent_installed = async () => {
-//   let notification = null;
-//   notification = window.notyf.open({
-//     type: "ps_agent",
-//     message: "Searching for Pennsieve Agent...",
-//   });
+const getPlatformSpecificAgentDownloadURL = async () => {
+  // Try to the direct download url for the platform specific agent
+  // If that fails, then return the generic download url
+  try {
+    const [directDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
+    return directDownloadUrl;
+  } catch (error) {
+    return "https://github.com/Pennsieve/pennsieve-agent/releases";
+  }
+};
 
-//   try {
-//     responseObject = await client.get("/manage_datasets/check_agent_install");
-//   } catch (error) {
-//     clientError(error);
-//     window.notyf.dismiss(notification);
-//     window.notyf.open({
-//       type: "error",
-//       message: "Pennsieve agent not found",
-//     });
-//     window.log.warn("Pennsieve agent not found");
-//     return [false, userErrorMessage(error)];
-//   }
-
-//   let { agent_version } = responseObject.data;
-
-//   window.notyf.dismiss(notification);
-//   window.notyf.open({
-//     type: "success",
-//     message: "Pennsieve agent found",
-//   });
-//   window.log.info("Pennsieve agent found");
-//   return [true, agent_version];
-// };
-
-const get_latest_agent_version = async () => {
-  console.log("In this place now and about to fail here")
-  let browser_download_url = undefined;
+const getLatestPennsieveAgentVersion = async () => {
+  let platformSpecificAgentDownloadURL = undefined;
 
   // let the error raise up to the caller if one occurs
   let releasesResponse;
@@ -1098,23 +1149,36 @@ const get_latest_agent_version = async () => {
 
   console.log(releases)
   let targetRelease = undefined;
-  let latest_agent_version = undefined;
+  let latestPennsieveAgentVersion = undefined;
   for (const release of releases) {
     targetRelease = release;
-    latest_agent_version = release.tag_name;
+    latestPennsieveAgentVersion = release.tag_name;
     if (!release.prerelease && !release.draft) {
       break;
     }
   }
+
+  if (latestPennsieveAgentVersion == undefined) {
+    throw new Error("Could not extract the latest agent version from the release.");
+  }
+
 
   if (window.process.platform() == "darwin") {
     window.reverseSwalButtons = true;
     targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
       if (window.path.extname(file_name) == ".pkg") {
-        browser_download_url = asset.browser_download_url;
+        platformSpecificAgentDownloadURL = asset.browser_download_url;
       }
     });
+    if (!platformSpecificAgentDownloadURL) {
+      throw new Error(
+        `
+          SODA has detected that a new version of the Pennsieve agent has been released, but
+          could not find the MAC version.
+        `
+      );
+    }
   }
 
   if (window.process.platform() == "win32") {
@@ -1122,9 +1186,17 @@ const get_latest_agent_version = async () => {
     targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
       if (window.path.extname(file_name) == ".msi" || window.path.extname(file_name) == ".exe") {
-        browser_download_url = asset.browser_download_url;
+        platformSpecificAgentDownloadURL = asset.browser_download_url;
       }
     });
+    if (!platformSpecificAgentDownloadURL) {
+      throw new Error(
+        `
+          SODA has detected that a new version of the Pennsieve agent has been released, but
+          could not find the Windows version.
+        `
+      );
+    }
   }
 
   if (window.process.platform() == "linux") {
@@ -1133,19 +1205,20 @@ const get_latest_agent_version = async () => {
     targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
       if (window.path.extname(file_name) == ".deb") {
-        browser_download_url = asset.browser_download_url;
+        platformSpecificAgentDownloadURL = asset.browser_download_url;
       }
     });
+    if (!platformSpecificAgentDownloadURL) {
+      throw new Error(
+        `
+          SODA has detected that a new version of the Pennsieve agent has been released, but
+          could not find the Linux version.
+        `
+      );
+    }
   }
 
-  if (browser_download_url == undefined) {
-    throw new Error("Could not find a download url for the agent.");
-  }
-  if (latest_agent_version == undefined) {
-    throw new Error("Could not extract the latest agent version from the release.");
-  }
-
-  return [browser_download_url, latest_agent_version];
+  return [platformSpecificAgentDownloadURL, latestPennsieveAgentVersion];
 };
 
 const checkNewAppVersion = async () => {
@@ -1703,6 +1776,7 @@ window.generateSubjectsFileHelper = async (uploadBFBoolean) => {
   }).then((result) => {});
 
   try {
+    console.log(subjectsDestinationPath);
     window.log.info(`Generating a subjects file.`);
     let save_locally = await client.post(
       `/prepare_metadata/subjects_file`,
@@ -5281,6 +5355,56 @@ window.removeIrregularFolders = (pathElement) => {
 //   });
 // });
 
+const handleFileImport = (containerID, filePath) => {
+  if (containerID === "guided-container-subjects-pools-samples-structure-import") {
+    // read the contents of the first worksheet in the excel file at the path using excelToJson
+    const excelFile = excelToJson({
+      sourceFile: filePath,
+    });
+    console.log(excelFile);
+    // log the columnn headers of the first sheet
+  }
+};
+const fileNamesWithExtensions = {
+  subjects_pools_samples_structure: ["xlsx"],
+};
+
+document.querySelectorAll(".file-import-container").forEach((fileImportContainer) => {
+  const fileImportContainerId = fileImportContainer.id;
+  const fileName = fileImportContainer.dataset.fileName;
+  fileImportContainer.addEventListener("dragover", (ev) => {
+    ev.preventDefault();
+    console.log(fileName);
+  });
+  fileImportContainer.addEventListener("drop", (ev) => {
+    ev.preventDefault();
+    const droppedFilePath = ev.dataTransfer.files[0].path;
+    const dropedFileName = path.basename(droppedFilePath).split(".")[0];
+    const droppedFileExtension = path.extname(droppedFilePath).slice(1);
+    // Throw an error if the dropped file is not the expected file
+    if (fileName !== dropedFileName) {
+      notyf.open({
+        duration: "4000",
+        type: "error",
+        message: `Please drop the ${fileName} file`,
+      });
+      return;
+    }
+    //Throw an error if the dropped file does not have an expected extension
+    if (!fileNamesWithExtensions[dropedFileName].includes(droppedFileExtension)) {
+      notyf.open({
+        duration: "4000",
+        type: "error",
+        message: `File extension must be ${fileNamesWithExtensions[dropedFileName].join(", ")}`,
+      });
+      return;
+    }
+
+    // File name and extension has been validated, not handle the file import
+    handleFileImport(fileImportContainerId, droppedFilePath);
+  });
+});
+
 // displays the user selected banner image using Jimp in the edit banner image modal
 //path: array
 //curationMode: string (guided-moded) (freeform)
@@ -7655,6 +7779,7 @@ const initiate_generate = async () => {
     }
 
     let { data } = mainCurationProgressResponse;
+    console.log(data);
 
     main_curate_status = data["main_curate_status"];
     var start_generate = data["start_generate"];

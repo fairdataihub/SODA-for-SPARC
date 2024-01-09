@@ -120,12 +120,11 @@
       >
         <div class="guided--capsule-container" id="structure-dataset-capsule-container">
           <div class="guided--capsule" id="guided-select-starting-point-capsule"></div>
-
           <div class="guided--capsule" id="guided-curation-preparation-intro-capsule"></div>
           <div class="guided--capsule" id="guided-ask-if-submission-is-sparc-funded-capsule"></div>
+          <div class="guided--capsule" id="guided-prepare-helpers-capsule"></div>
           <div class="guided--capsule" id="guided-pennsieve-intro-capsule"></div>
           <div class="guided--capsule" id="guided-prepare-dataset-structure-capsule"></div>
-          <div class="guided--capsule" id="guided-prepare-helpers-capsule"></div>
           <div class="guided--capsule" id="guided-name-subtitle-capsule"></div>
         </div>
         <div
@@ -618,6 +617,84 @@
           </div>
         </div>
 
+        <div id="guided-prepare-helpers-tab" class="guided--page" data-page-name="Prepare data">
+          <h1 class="text-sub-step-title">Before getting started</h1>
+
+          <div class="guided--section">
+            <p class="help-text">
+              Several resources are required to curate and share a SPARC dataset. They are listed
+              below so you can make sure you can have access to them before getting started.
+            </p>
+          </div>
+          <div class="guided--section">
+            <label class="guided--welcome-section-label text-center mb-3">Pennsieve Account</label>
+            <p class="help-text">
+              All SPARC datasets must be uploaded to the Pennsieve data platform. To upload your
+              dataset, you'll need a Pennsieve account with access to the appropriate workspace for
+              your dataset (e.g. "SPARC" workspace for SPARC-funded datasets, "RE-JOIN" workspace
+              for RE-JOIN funded datasets, etc.).
+            </p>
+            <div class="info-dropdown">
+              <p class="info-dropdown-text" data-dropdown-type="warning">
+                I don't have a Pennsieve account
+              </p>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="info-container">
+              <p class="help-text">
+                To get access to Pennsieve and the workspace for your dataset, please fill out
+                <a
+                  target="_blank"
+                  href="https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjMyMDM1ODgsInRhc2tGb3JtSWQiOjUwMzQzN30JNDgwNTg4NjU3MjA3Nwk0MTg5ZTY0ODEyZGYxNTU1ZDJkYmU5MzIxNWZiNTQyZWUwZTMzY2U4NDQ5ODI0ZWI0YzZiMWZhNjVhYzgyOTRm"
+                  >this form.</a
+                >
+              </p>
+            </div>
+          </div>
+          <div class="guided--section sparc-funded-only">
+            <label class="guided--welcome-section-label text-center mb-3"
+              >Data Deliverables document</label
+            >
+            <p class="help-text">
+              The milestones and associated datasets as agreed between awardees and SPARC are
+              summarized in a document called Data Deliverables document. Information contained in
+              this document is required in one of the metadata files to be included in your dataset.
+              You will therefore need access to the Data Deliverables document associated with your
+              SPARC award.
+            </p>
+            <div class="info-dropdown">
+              <p class="info-dropdown-text" data-dropdown-type="info">
+                Where can I find my Data Deliverables document?
+              </p>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="info-container">
+              <p class="help-text">
+                To obtain the Data Deliverables document associated with your award, simply ask your
+                PI or grant manager. Download a template of the Data Deliverables document
+                <a
+                  target="_blank"
+                  href="https://github.com/fairdataihub/SODA-for-SPARC/blob/main/file_templates/DataDeliverablesDocument-template.docx?raw=true"
+                  >here</a
+                >
+                to see the expected format.
+              </p>
+            </div>
+          </div>
+          <div class="guided--section">
+            <label class="guided--welcome-section-label text-center mb-3"
+              >ORCID iDs for all dataset contributors</label
+            >
+            <p class="help-text">
+              SPARC datasets require that all contributors have an ORCID iD. If you are not sure if
+              a contributor has an ORCID iD, you can check by searching for their name on
+              <a target="_blank" href="https://orcid.org">orcid.org</a>. If a contributor does not
+              have an ORCID iD, they can create one for free at
+              <a target="_blank" href="https://orcid.org/register">orcid.org/register</a>.
+            </p>
+          </div>
+        </div>
+
         <div id="guided-pennsieve-intro-tab" class="guided--page" data-page-name="Pennsieve log in">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Pennsieve metadata</h1>
@@ -792,7 +869,7 @@
             <p class="help-text" id="subject-deletion-block-text">
               <b
                 >Subjects have already been added to your dataset. If you would like to
-                add/edit/delete subjects, you may do so in the "dataset structuring" tab.</b
+                add/edit/delete subjects, you may do so in the "Subject addition" tab.</b
               >
             </p>
           </div>
@@ -999,84 +1076,6 @@
           </div>
         </div>
 
-        <div id="guided-prepare-helpers-tab" class="guided--page" data-page-name="Prepare data">
-          <h1 class="text-sub-step-title">Before getting started</h1>
-
-          <div class="guided--section">
-            <p class="help-text">
-              Several resources are required to curate and share a SPARC dataset. They are listed
-              below so you can make sure you can have access to them before getting started.
-            </p>
-          </div>
-          <div class="guided--section">
-            <label class="guided--welcome-section-label text-center mb-3">Pennsieve Account</label>
-            <p class="help-text">
-              All SPARC datasets must be uploaded to the Pennsieve data platform. To upload your
-              dataset, you'll need a Pennsieve account with access to the appropriate workspace for
-              your dataset (e.g. "SPARC" workspace for SPARC-funded datasets, "RE-JOIN" workspace
-              for RE-JOIN funded datasets, etc.).
-            </p>
-            <div class="info-dropdown">
-              <p class="info-dropdown-text" data-dropdown-type="warning">
-                I don't have a Pennsieve account
-              </p>
-              <i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="info-container">
-              <p class="help-text">
-                To get access to Pennsieve and the workspace for your dataset, please fill out
-                <a
-                  target="_blank"
-                  href="https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjMyMDM1ODgsInRhc2tGb3JtSWQiOjUwMzQzN30JNDgwNTg4NjU3MjA3Nwk0MTg5ZTY0ODEyZGYxNTU1ZDJkYmU5MzIxNWZiNTQyZWUwZTMzY2U4NDQ5ODI0ZWI0YzZiMWZhNjVhYzgyOTRm"
-                  >this form.</a
-                >
-              </p>
-            </div>
-          </div>
-          <div class="guided--section sparc-funded-only">
-            <label class="guided--welcome-section-label text-center mb-3"
-              >Data Deliverables document</label
-            >
-            <p class="help-text">
-              The milestones and associated datasets as agreed between awardees and SPARC are
-              summarized in a document called Data Deliverables document. Information contained in
-              this document is required in one of the metadata files to be included in your dataset.
-              You will therefore need access to the Data Deliverables document associated with your
-              SPARC award.
-            </p>
-            <div class="info-dropdown">
-              <p class="info-dropdown-text" data-dropdown-type="info">
-                Where can I find my Data Deliverables document?
-              </p>
-              <i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="info-container">
-              <p class="help-text">
-                To obtain the Data Deliverables document associated with your award, simply ask your
-                PI or grant manager. Download a template of the Data Deliverables document
-                <a
-                  target="_blank"
-                  href="https://github.com/fairdataihub/SODA-for-SPARC/blob/main/file_templates/DataDeliverablesDocument-template.docx?raw=true"
-                  >here</a
-                >
-                to see the expected format.
-              </p>
-            </div>
-          </div>
-          <div class="guided--section">
-            <label class="guided--welcome-section-label text-center mb-3"
-              >ORCID iDs for all dataset contributors</label
-            >
-            <p class="help-text">
-              SPARC datasets require that all contributors have an ORCID iD. If you are not sure if
-              a contributor has an ORCID iD, you can check by searching for their name on
-              <a target="_blank" href="https://orcid.org">orcid.org</a>. If a contributor does not
-              have an ORCID iD, they can create one for free at
-              <a target="_blank" href="https://orcid.org/register">orcid.org/register</a>.
-            </p>
-          </div>
-        </div>
-
         <div id="guided-name-subtitle-tab" class="guided--page" data-page-name="Name and subtitle">
           <h1 class="text-sub-step-title">Dataset name and subtitle</h1>
           <div class="guided--section">
@@ -1151,14 +1150,20 @@
       >
         <div class="guided--capsule-container">
           <div class="guided--capsule" id="guided-dataset-structure-intro-capsule"></div>
-          <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
+          <div
+            class="guided--capsule"
+            id="guided-subject-structure-spreadsheet-importation-capsule"
+          ></div>
+          <div class="guided--capsule" id="guided-subjects-addition-capsule"></div>
+          <div class="guided--capsule" id="guided-subjects-pooling-capsule"></div>
+          <div class="guided--capsule" id="guided-samples-addition-capsule"></div>
           <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
           <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
           <div class="guided--capsule" id="guided-derivative-data-organization-capsule"></div>
           <div class="guided--capsule" id="guided-code-folder-capsule"></div>
           <div class="guided--capsule" id="guided-protocol-folder-capsule"></div>
           <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
-          <div class="guided--capsule" id="guided-folder-structure-preview-capsule"></div>
+          <div class="guided--capsule" id="guided-dataset-structure-review-capsule"></div>
         </div>
 
         <div class="guided--page" id="guided-dataset-structure-intro-tab" data-page-name="Intro">
@@ -1183,155 +1188,443 @@
             </h2>
           </div>
         </div>
-
+        <!---------------------------------------------------------->
         <div
-          id="guided-subjects-folder-tab"
+          id="guided-subject-structure-spreadsheet-importation-tab"
           class="guided--page"
-          data-page-name="Dataset structuring"
+          data-page-name="Subject/sample IDs specification"
         >
-          <div class="guided--section" id="guided-section-dataset-subjects-text">
-            <h1 class="text-sub-step-title">Subject specification</h1>
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Subject/sample IDs specification</h1>
             <p class="help-text">
-              Create a unique ID for each of the subjects that data was collected from in the
-              interface below.
+              The SDS requires a unique ID to be specified for each subject (and sample if
+              applicable) in our dataset. You can type these IDs in the SODA interfaces on the next
+              pages. SODA also provides a feature to import these IDs through an external
+              spreadsheet saving you from typing them in the SODA interfaces. This is especially
+              convenient if you have a large number of subjects/samples.
             </p>
+            <div class="alert alert-primary" role="alert">
+              <p class="help-text">
+                <strong>Tip:</strong> Importing subjects from a spreadsheet is recommended if you
+                have a large amount of subjects and/or samples.
+              </p>
+            </div>
           </div>
-          <div class="guided--section" id="guided-section-dataset-pools-text">
-            <h1 class="text-sub-step-title">Subject pooling</h1>
-            <p class="help-text">
-              Your dataset's subjects can optionally be organized into subject pools, which are
-              groups of subjects that share a common characteristic.
-            </p>
-          </div>
-          <div class="guided--section" id="guided-section-dataset-samples-text">
-            <h1 class="text-sub-step-title">Sample specification</h1>
-            <p class="help-text">
-              If any measurements were taken from samples collected from subjects (e.g., tissue
-              samples), you can specify the samples in the interface below.
-            </p>
-          </div>
-
-          <div class="guided--capsule-container-sub-page">
-            <div
-              class="guided--capsule-sub-page active"
-              id="guided-specify-subjects-page-capsule"
-            ></div>
-            <div
-              class="guided--capsule-sub-page"
-              id="guided-organize-subjects-into-pools-page-capsule"
-            ></div>
-            <div class="guided--capsule-sub-page" id="guided-specify-samples-page-capsule"></div>
-          </div>
-
-          <div class="guided--panel sub-page" id="guided-specify-subjects-page">
-            <div class="guided--section" id="guided-specify-subjects-prompt">
-              <div class="guided--panel">
-                <table
-                  class="ui celled striped table mt-md"
-                  style="margin-bottom: 10px; width: 800px"
-                >
-                  <thead>
-                    <tr>
-                      <th class="text-center" colspan="2">Dataset subjects</th>
-                    </tr>
-                  </thead>
-                  <tbody id="subject-specification-table-body"></tbody>
-                </table>
-                <p
-                  class="guided--text-input-instructions text-center mb-sm hidden"
-                  id="guided-add-subject-instructions"
-                  style="margin-top: -7px"
-                >
-                  Hit enter/click the checkbox after entering the subject ID to add a subject.
-                </p>
-                <button
-                  class="ui primary basic button mt-2"
-                  onclick="addSubjectSpecificationTableRow()"
-                >
-                  <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new subject
-                </button>
-              </div>
-              <div
-                class="guided--panel hidden"
-                id="guided-div-warning-before-deleting-pool-sub-sam-structure"
+          <div class="guided--section">
+            <label class="guided--form-label centered">
+              Would you like to import your subjects/samples IDs through a spreadsheet?
+            </label>
+            <div class="guided--radio-button-container" style="margin-bottom: 7px">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-import-subject-structure-from-spreadsheet"
+                data-next-element="guided-section-user-chose-to-add-subs-sams-pools-via-spreadsheet"
+                data-button-config-value="subject-addition-method"
+                data-button-config-value-state="spreadsheet"
               >
-                <h2 class="text-sub-step-title">
-                  Click Next to confirm that your dataset does not contain human or non-human
-                  subjects.
-                </h2>
-              </div>
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-add-subject-structure-manually"
+                data-next-element="guided-section-user-chose-to-add-subs-sams-pools-manually"
+                data-button-config-value="subject-addition-method"
+                data-button-config-value-state="manual"
+              >
+                No
+              </button>
             </div>
           </div>
-          <div class="guided--panel sub-page hidden" id="guided-organize-subjects-into-pools-page">
-            <div class="guided--section" id="guided-organize-into-pools-prompt">
+          <div
+            class="guided--section"
+            id="guided-section-user-chose-to-add-subs-sams-pools-manually"
+          >
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" below to continue.
+            </h2>
+          </div>
+          <div
+            class="guided--section"
+            id="guided-section-user-chose-to-add-subs-sams-pools-via-spreadsheet"
+          >
+            <h2 class="text-sub-step-title mb-4">
+              <b>Step 1: </b>Respond to the following questions so we can generate the appropriate
+              spreadsheet for you
+            </h2>
+            <div class="guided--section" id="guided-section-spreadsheet-subject-pooling-query">
               <label class="guided--form-label centered">
-                Would you like to organize subjects into pools?
+                Will you be organizing your subjects into pools?
               </label>
+              <div class="info-dropdown" style="align-self: center">
+                <p class="info-dropdown-text" data-dropdown-type="info">What are pools?</p>
+                <i class="fas fa-chevron-right"></i>
+              </div>
+              <div class="info-container">
+                <p class="help-text">
+                  <b>Pools</b> are used to seperate subjects into groups that share common
+                  charactersitics with each other to make it easier to organize and analyze data
+                  collected from subjects.
+                </p>
+                <p class="help-text">
+                  <b>Note:</b> If all data collected from subjects in your study were collected at
+                  the same time using the same methods, you do not need to group your subjects into
+                  pools.
+                </p>
+              </div>
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
-                  class="ui positive basic button guided--radio-button"
-                  id="guided-button-organize-subjects-into-pools"
-                  data-next-element="guided-div-organize-subjects-into-pools"
+                  class="ui positive basic button guided--radio-button button-controls-sub-pools-sam-text"
+                  id="guided-button-spreadsheet-subjects-are-pooled"
+                  data-next-element="guided-section-spreadsheet-subjects-have-samples-query"
                   data-button-config-value="dataset-contains-pools"
                   data-button-config-value-state="yes"
+                  data-controls-section="guided-section-spreadsheet-import"
                 >
                   Yes
                 </button>
                 <button
-                  class="ui negative basic button guided--radio-button"
-                  id="guided-button-no-pools"
+                  class="ui negative basic button guided--radio-button button-controls-sub-pools-sam-text"
+                  id="guided-button-spreadsheet-subjects-are-not-pooled"
+                  data-next-element="guided-section-spreadsheet-subjects-have-samples-query"
                   data-button-config-value="dataset-contains-pools"
                   data-button-config-value-state="no"
+                  data-controls-section="guided-section-spreadsheet-import"
                 >
                   No
                 </button>
               </div>
-              <div class="guided--panel hidden" id="guided-div-organize-subjects-into-pools">
-                <table class="ui celled striped table" style="margin-bottom: 10px; width: 800px">
-                  <thead>
-                    <tr>
-                      <th class="text-center" style="min-width: 250px" colspan="3">
-                        Enter a unique ID for each of your pools and specify the subjects they
-                        contain
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody id="pools-specification-table-body"></tbody>
-                </table>
-                <button class="ui primary basic button mt-2" onclick="window.addPoolTableRow()">
-                  <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new pool
-                </button>
-              </div>
             </div>
-          </div>
-          <div class="guided--panel sub-page hidden" id="guided-specify-samples-page">
-            <div class="guided--section" id="guided-number-of-samples-prompt">
+            <div
+              class="guided--section"
+              id="guided-section-spreadsheet-subjects-have-samples-query"
+            >
               <label class="guided--form-label centered">
-                Do you have sample data for any of your subjects?
+                Did you collect data from samples in this study?
               </label>
+              <div class="info-dropdown" style="align-self: center">
+                <p class="info-dropdown-text" data-dropdown-type="info">What are samples?</p>
+                <i class="fas fa-chevron-right"></i>
+              </div>
+              <div class="info-container">
+                <p class="help-text">
+                  <b>Samples</b> are a portion of a subject's tissue, fluid, or other biological
+                  materal that data is collected from.
+                </p>
+              </div>
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
-                  class="ui positive basic button guided--radio-button"
-                  id="guided-button-add-samples-tables"
-                  data-next-element="guided-div-add-samples-tables"
+                  class="ui positive basic button guided--radio-button button-controls-sub-pools-sam-text"
+                  id="guided-button-spreadsheet-subjects-have-samples"
+                  data-next-element="guided-section-spreadsheet-import"
                   data-button-config-value="dataset-contains-samples"
                   data-button-config-value-state="yes"
+                  data-controls-section="guided-section-spreadsheet-import"
                 >
                   Yes
                 </button>
                 <button
-                  class="ui negative basic button guided--radio-button"
-                  id="guided-button-no-samples"
+                  class="ui negative basic button guided--radio-button button-controls-sub-pools-sam-text"
+                  id="guided-button-spreadsheet-subjects-do-not-have-samples"
+                  data-next-element="guided-section-spreadsheet-import"
                   data-button-config-value="dataset-contains-samples"
                   data-button-config-value-state="no"
+                  data-controls-section="guided-section-spreadsheet-import"
                 >
                   No
                 </button>
               </div>
-              <div class="guided--panel hidden" id="guided-div-add-samples-tables"></div>
+            </div>
+            <div class="guided--section" id="guided-section-spreadsheet-import">
+              <h2 class="text-sub-step-title mb-3 step-before-spreadsheet-path-declared">
+                <b>Step 2: </b>Save the spreadsheet template on your computer using the button below
+              </h2>
+              <button
+                class="ui positive button soda-green-background step-before-spreadsheet-path-declared"
+                id="guided-button-choose-dataset-structure-spreadsheet-path"
+                style="width: 350px !important"
+              >
+                Save spreadsheet template
+              </button>
+
+              <p class="help-text step-after-spreadsheet-path-declared mb-2">
+                To open/edit the spreadsheet generated in the previous step, click the button below.
+              </p>
+              <button
+                class="ui positive button soda-green-background step-after-spreadsheet-path-declared"
+                id="guided-button-open-dataset-structure-spreadsheet"
+                style="width: 450px !important"
+              >
+                Open spreadsheet template
+              </button>
+              <p class="help-text text-left step-after-spreadsheet-path-declared mt-5 mb-2 w-100">
+                <b>Step 3. </b>Add your
+                <span class="sub-pool-sample-structure-description-text"></span> IDS to the
+                spreadsheet and save it.
+              </p>
+              <div class="guided--section step-after-spreadsheet-path-declared">
+                <div class="sub-section mb-3" id="import-instructions-subjects">
+                  <div class="info-dropdown" style="align-self: center">
+                    <p class="info-dropdown-text" data-dropdown-type="info">
+                      How do I fill out the
+                      <span class="sub-pool-sample-structure-description-text"></span> spreadsheet?
+                    </p>
+                    <i class="fas fa-chevron-right"></i>
+                  </div>
+                  <div class="info-container">
+                    <div class="flex-center">
+                      <img
+                        class="mb-3"
+                        style="width: 90%"
+                        src="assets/img/subjects-spreadseet-example.png"
+                      />
+                    </div>
+                    <p class="help-text text-left w-100">
+                      <b>Subject ID column: </b> Type each subject's name here, starting with
+                      'sub-'. Avoid using special characters or spaces.
+                    </p>
+                  </div>
+                </div>
+                <div class="sub-section mb-3" id="import-instructions-subjects-pools">
+                  <div class="info-dropdown" style="align-self: center">
+                    <p class="info-dropdown-text" data-dropdown-type="info">
+                      How do I fill out the
+                      <span class="sub-pool-sample-structure-description-text"></span> spreadsheet?
+                    </p>
+                    <i class="fas fa-chevron-right"></i>
+                  </div>
+                  <div class="info-container">
+                    <div class="flex-center">
+                      <img
+                        class="mb-3"
+                        style="width: 90%"
+                        src="assets/img/subjects-pools-spreadseet-example.png"
+                      />
+                    </div>
+                    <p class="help-text text-left w-100">
+                      <b>Subject ID column: </b> Type each subject's name here, starting with
+                      'sub-'. Avoid using special characters or spaces.
+                    </p>
+                    <p class="help-text text-left">
+                      <b>Pool ID column: </b> Type the name of the pool that subject belongs to
+                      here, starting with 'pool-'. Avoid using special characters or spaces.
+                    </p>
+                  </div>
+                </div>
+                <div class="sub-section mb-3" id="import-instructions-subjects-samples">
+                  <div class="info-dropdown" style="align-self: center">
+                    <p class="info-dropdown-text" data-dropdown-type="info">
+                      How do I fill out the
+                      <span class="sub-pool-sample-structure-description-text"></span> spreadsheet?
+                    </p>
+                    <i class="fas fa-chevron-right"></i>
+                  </div>
+                  <div class="info-container">
+                    <div class="flex-center">
+                      <img
+                        class="mb-3"
+                        style="width: 90%"
+                        src="assets/img/subjects-samples-spreadseet-example.png"
+                      />
+                    </div>
+                    <p class="help-text text-left w-100">
+                      <b>Subject ID column: </b> Type each subject's name here, starting with
+                      'sub-'. Avoid using special characters or spaces.
+                    </p>
+                    <p class="help-text text-left">
+                      <b>Sample ID column: </b> Type each sample's name here, starting with 'sam-'.
+                      All sample names must be unique. Avoid using special characters or spaces.
+                    </p>
+                    <p class="help-text text-left">
+                      <b>Note: </b> If a subject has more than one sample, repeat the subject's name
+                      in the 'Subject ID' column for each sample.
+                    </p>
+                  </div>
+                </div>
+                <div class="sub-section mb-3" id="import-instructions-subjects-pools-samples">
+                  <div class="info-dropdown" style="align-self: center">
+                    <p class="info-dropdown-text" data-dropdown-type="info">
+                      How do I fill out the
+                      <span class="sub-pool-sample-structure-description-text"></span> spreadsheet?
+                    </p>
+                    <i class="fas fa-chevron-right"></i>
+                  </div>
+                  <div class="info-container">
+                    <div class="flex-center">
+                      <img
+                        class="mb-3"
+                        style="width: 90%"
+                        src="assets/img/subjects-pools-samples-spreadseet-example.png"
+                      />
+                    </div>
+                    <p class="help-text text-left w-100">
+                      <b>Subject ID column: </b> Type each subject's name here, starting with
+                      'sub-'. Avoid using special characters or spaces.
+                    </p>
+                    <p class="help-text text-left">
+                      <b>Pool ID column: </b> Type the name of the pool that subject belongs to
+                      here, starting with 'pool-'. Avoid using special characters or spaces.
+                    </p>
+                    <p class="help-text text-left">
+                      <b>Sample ID column: </b> Type each sample's name here, starting with 'sam-'.
+                      All sample names must be unique. Avoid using special characters or spaces.
+                    </p>
+                    <p class="help-text text-left">
+                      <b>Note: </b> If a pooled subject has more than one sample, repeat the
+                      subject's name in the 'Subject ID' column, the subject's pool's name in the
+                      'Pool ID' column, and the sample's name in the 'Sample ID' column for each
+                      sample.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <p class="help-text text-left step-after-spreadsheet-path-declared mt-2 mb-2">
+                <b>Step 4. </b>Once you have filled out the spreadsheet, import the spreadsheet with
+                IDs into SODA using the button below
+              </p>
+              <button
+                class="ui positive button soda-green-background step-after-spreadsheet-path-declared"
+                id="guided-button-import-dataset-structure-from-spreadsheet"
+                style="width: 450px !important"
+              >
+                Import spreadsheet with IDs
+              </button>
             </div>
           </div>
         </div>
+        <!---------------------------------------------------------->
+
+        <div
+          id="guided-subjects-addition-tab"
+          class="guided--page"
+          data-page-name="Subject addition"
+        >
+          <h1 class="text-sub-step-title">Subjects specification</h1>
+          <div class="guided--section">
+            <p class="help-text">
+              Enter a unique ID for each of the subjects that data was collected from in the table
+              below.
+            </p>
+          </div>
+          <div class="guided--section">
+            <button
+              class="ui positive button soda-green-background"
+              id="guided-button-add-subjects"
+            >
+              Add subjects
+            </button>
+          </div>
+          <div class="guided--section" id="guided-section-subjects-table">
+            <table class="ui celled striped table mt-md" style="margin-bottom: 10px; width: 800px">
+              <thead>
+                <tr>
+                  <th class="text-center" colspan="2">Dataset subjects</th>
+                </tr>
+              </thead>
+              <tbody id="subject-specification-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="guided-subjects-pooling-tab" class="guided--page" data-page-name="Subject pooling">
+          <h1 class="text-sub-step-title">Subject pooling</h1>
+          <div class="guided--section">
+            <p class="help-text">
+              Your dataset's subjects can optionally be organized into pools, which are groups that
+              share common charactersitics with each other to make it easier to organize and analyze
+              data collected from subjects. If you would like to organize your subjects into pools,
+              you can do so in the interface below.
+            </p>
+          </div>
+          <div class="guided--section">
+            <label class="guided--form-label centered">
+              Would you like to organize your subjects into pools?
+            </label>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-pool-page-subjects-are-pooled"
+                data-next-element="guided-section-pools-table"
+                data-button-config-value="dataset-contains-pools"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-pool-page-subjects-are-not-pooled"
+                data-next-element="guided-section-no-pools"
+                data-button-config-value="dataset-contains-pools"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
+          </div>
+          <div class="guided--section" id="guided-section-pools-table">
+            <button class="ui positive button soda-green-background" id="guided-button-add-pools">
+              Add pools
+            </button>
+            <table class="ui celled striped table" style="margin-bottom: 10px; width: 800px">
+              <thead>
+                <tr>
+                  <th class="text-center" style="min-width: 250px" colspan="3">
+                    Enter a unique ID for each of your pools and specify the subjects they contain
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="pools-specification-table-body"></tbody>
+            </table>
+          </div>
+          <div class="guided--section" id="guided-section-no-pools">
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" to continue.
+            </h2>
+          </div>
+        </div>
+        <div
+          id="guided-samples-addition-tab"
+          class="guided--page"
+          data-page-name="Samples addition"
+        >
+          <h1 class="text-sub-step-title">Samples specification</h1>
+          <div class="guided--section">
+            <p class="help-text">
+              If any measurements were taken from samples collected from subjects (e.g. tissue
+              samples), you can specify the samples in the interface below.
+            </p>
+          </div>
+          <div class="guided--section">
+            <label class="guided--form-label centered">
+              Did you collect data from samples in this study?
+            </label>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-samples-page-subjects-have-samples"
+                data-next-element="guided-section-samples-tables"
+                data-button-config-value="dataset-contains-samples"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-samples-page-subjects-do-not-have-samples"
+                data-next-element="guided-section-no-samples"
+                data-button-config-value="dataset-contains-samples"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
+          </div>
+          <div class="guided--section" id="guided-section-samples-tables"></div>
+          <div class="guided--section" id="guided-section-no-samples">
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" to continue.
+            </h2>
+          </div>
+        </div>
+
         <div
           id="guided-primary-data-organization-tab"
           class="guided--page"
@@ -1401,10 +1694,7 @@
                     original data will be modified).
                   </p>
                 </div>
-                <!-- <div>
-                  <p>Here will be a temp place for the dataset path</p>
-                  <p id="datasetPathDisplay"></p>
-                </div> -->
+
                 <div
                   class="guided--container-subject-samples mt-md"
                   id="guided-primary-samples-file-explorer-container"
@@ -2405,12 +2695,12 @@
         </div>
 
         <div
-          id="guided-folder-structure-preview-tab"
+          id="guided-dataset-structure-review-tab"
           class="guided--page"
-          data-page-name="Dataset structure preview"
+          data-page-name="Dataset structure review"
         >
           <div class="guided--section">
-            <h1 class="text-sub-step-title">Folder structure review</h1>
+            <h1 class="text-sub-step-title">Dataset structure review</h1>
             <p class="help-text">
               The SDS compliant dataset structure shown below will be generated by SODA (during the
               last step of this process) based on the data files you specified in the previous
@@ -2424,6 +2714,15 @@
               id="guided-folder-structure-review"
               style="display: block; margin-left: 0px; margin-right: 0px"
             ></div>
+          </div>
+          <div class="guided--section hidden">
+            <button
+              class="ui positive button soda-green-background"
+              id="guided-button-generate-local-dataset-copy"
+              style="width: 350px !important"
+            >
+              Generate local dataset copy
+            </button>
           </div>
         </div>
       </div>
@@ -4265,7 +4564,7 @@
               out to
               <a href="mailto:curation@sparc.science" target="_blank">the SPARC Curation Team.</a>
               Alternatively, you can download the code_description.xslx template
-              <a id="guided-data-deliverables-download-button" style="text-decoration: underline"
+              <a class="guided-data-deliverables-download-button" style="text-decoration: underline"
                 >here</a
               >
               and fill it out manually
@@ -4280,7 +4579,7 @@
               out to
               <a href="mailto:curation@sparc.science" target="_blank">the SPARC Curation Team.</a>
               Alternatively, you can download the code_description.xslx template
-              <a id="guided-data-deliverables-download-button" style="text-decoration: underline"
+              <a class="guided-data-deliverables-download-button" style="text-decoration: underline"
                 >here</a
               >
               and fill it out manually
@@ -4807,10 +5106,6 @@
         data-parent-tab-name="Generate dataset"
       >
         <div class="guided--capsule-container">
-          <!--
-          <div class="guided--capsule" id="guided-dataset-generate-location-capsule"></div>
-          <div class="guided--capsule" id="guided-dataset-generate-destination-capsule"></div>
-          -->
           <div class="guided--capsule" id="guided-dataset-validation-capsule"></div>
           <div class="guided--capsule" id="guided-dataset-generation-confirmation-capsule"></div>
           <div class="guided--capsule" id="guided-dataset-generation-capsule"></div>
@@ -5225,7 +5520,7 @@
           </div>
           <div
             class="guided--section hidden mt-lg guided-upload-table"
-            id="guided-div-pennsieve-metadata-upload-status-table"
+            id="guided-div-pennsieve-metadata-pennsieve-genration-status-table"
           >
             <table class="ui celled striped table" style="width: 100% !important">
               <thead>
@@ -5341,7 +5636,7 @@
           </div>
           <div
             class="guided--section hidden mt-lg guided-upload-table"
-            id="guided-div-dataset-metadata-upload-status-table"
+            id="guided-div-dataset-metadata-pennsieve-genration-status-table"
           >
             <table class="ui celled striped table" style="width: 100% !important; margin-top: 0px">
               <thead>
@@ -5377,81 +5672,93 @@
                   </th>
                 </tr>
               </thead>
-              <tbody id="guided-tbody-dataset-metadata-upload">
-                <tr class="hidden upload-status-tr" id="guided-subjects-metadata-upload-tr">
-                  <td class="middle aligned" id="guided-subjects-metadata-upload-text">
+              <tbody id="guided-tbody-pennsieve-dataset-metadata-generation">
+                <tr
+                  class="hidden upload-status-tr"
+                  id="guided-subjects-metadata-pennsieve-genration-tr"
+                >
+                  <td class="middle aligned" id="guided-subjects-metadata-pennsieve-genration-text">
                     Subjects metadata
                   </td>
                   <td class="middle aligned text-center collapsing border-left-0 p-0">
                     <div
                       class="guided--container-upload-status"
-                      id="guided-subjects-metadata-upload-status"
+                      id="guided-subjects-metadata-pennsieve-genration-status"
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-samples-metadata-upload-tr">
-                  <td class="middle aligned" id="guided-samples-metadata-upload-text">
+                <tr class="hidden" id="guided-samples-metadata-pennsieve-genration-tr">
+                  <td class="middle aligned" id="guided-samples-metadata-pennsieve-genration-text">
                     Samples metadata
                   </td>
                   <td class="middle aligned text-center collapsing border-left-0 p-0">
                     <div
                       class="guided--container-upload-status"
-                      id="guided-samples-metadata-upload-status"
+                      id="guided-samples-metadata-pennsieve-genration-status"
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-submission-metadata-upload-tr">
-                  <td class="middle aligned" id="guided-submission-metadata-upload-text">
+                <tr class="hidden" id="guided-submission-metadata-pennsieve-genration-tr">
+                  <td
+                    class="middle aligned"
+                    id="guided-submission-metadata-pennsieve-genration-text"
+                  >
                     Submission metadata
                   </td>
                   <td class="middle aligned text-center collapsing border-left-0 p-0">
                     <div
                       class="guided--container-upload-status"
-                      id="guided-submission-metadata-upload-status"
+                      id="guided-submission-metadata-pennsieve-genration-status"
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-dataset-description-metadata-upload-tr">
-                  <td class="middle aligned" id="guided-dataset-description-metadata-upload-text">
+                <tr class="hidden" id="guided-dataset-description-metadata-pennsieve-genration-tr">
+                  <td
+                    class="middle aligned"
+                    id="guided-dataset-description-metadata-pennsieve-genration-text"
+                  >
                     Dataset description metadata
                   </td>
                   <td class="middle aligned text-center collapsing border-left-0 p-0">
                     <div
                       class="guided--container-upload-status"
-                      id="guided-dataset-description-metadata-upload-status"
+                      id="guided-dataset-description-metadata-pennsieve-genration-status"
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-readme-metadata-upload-tr">
-                  <td class="middle aligned" id="guided-readme-metadata-upload-text">
+                <tr class="hidden" id="guided-readme-metadata-pennsieve-genration-tr">
+                  <td class="middle aligned" id="guided-readme-metadata-pennsieve-genration-text">
                     README metadata
                   </td>
                   <td class="middle aligned text-center collapsing border-left-0 p-0">
                     <div
                       class="guided--container-upload-status"
-                      id="guided-readme-metadata-upload-status"
+                      id="guided-readme-metadata-pennsieve-genration-status"
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-changes-metadata-upload-tr">
-                  <td class="middle aligned" id="guided-changes-metadata-upload-text">
+                <tr class="hidden" id="guided-changes-metadata-pennsieve-genration-tr">
+                  <td class="middle aligned" id="guided-changes-metadata-pennsieve-genration-text">
                     CHANGES metadata
                   </td>
                   <td class="middle aligned text-center collapsing border-left-0 p-0">
                     <div
                       class="guided--container-upload-status"
-                      id="guided-changes-metadata-upload-status"
+                      id="guided-changes-metadata-pennsieve-genration-status"
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-code-description-metadata-upload-tr">
-                  <td class="middle aligned" id="guided-code-description-metadata-upload-text">
+                <tr class="hidden" id="guided-code-description-metadata-pennsieve-genration-tr">
+                  <td
+                    class="middle aligned"
+                    id="guided-code-description-metadata-pennsieve-genration-text"
+                  >
                     Dataset description metadata
                   </td>
                   <td class="middle aligned text-center collapsing border-left-0 p-0">
                     <div
                       class="guided--container-upload-status"
-                      id="guided-code-description-metadata-upload-status"
+                      id="guided-code-description-metadata-pennsieve-genration-status"
                     ></div>
                   </td>
                 </tr>
@@ -5484,7 +5791,7 @@
                   <td class="middle aligned" colspan="2">
                     <progress
                       class="progresstrack"
-                      id="guided-progress-bar-new-curate"
+                      id="guided-progress-bar-pennsieve-generation"
                       style="width: 100%"
                       max="100"
                       value="0"
