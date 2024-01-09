@@ -472,6 +472,7 @@ ipcMain.on("restart_app", async () => {
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits
 ipcMain.handle("spreadsheet", (event, spreadsheet) => {
+  console.log("Spreadsheet invoked")
   const windowOptions = {
     minHeight: 450,
     width: 1120,
@@ -571,6 +572,7 @@ ipcMain.on("get-port", (event) => {
   event.returnValue = selectedPort;
 });
 
+// TODO: Convert to new conventions
 ipcMain.on("open-file-at-path", async (event, path) => {
   shell.openPath(path);
 });

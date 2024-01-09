@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <section
   id="guided_mode-section"
   class="section js-section u-category-windows is-shown"
@@ -74,7 +74,7 @@
             <img
               id="curate-and-share-logo"
               style="width: 30%; height: 100%; margin-top: 3px"
-              src="assets/img/logo-soda1024.png"
+              src="./img/logo-soda1024.png"
             />
           </div>
           <h2 class="mt-2 mb-3" style="font-size: 16px">What would you like to do today?</h2>
@@ -307,7 +307,7 @@
               <button
                 class="ui positive button mt-md"
                 data-reset-guided-mode-page="true"
-                onclick="openDropdownPrompt(this, 'bf')"
+                onclick="window.openDropdownPrompt(this, 'bf')"
                 style="
                   background-color: var(--color-light-green) !important;
                   width: 200px !important;
@@ -508,12 +508,7 @@
                 data-button-config-value-state="re-join"
               >
                 <div class="tile-button-icon">
-                  <img
-                    src="assets\img\rejoinLogo.png"
-                    alt="REJOINlogo"
-                    width="50px"
-                    height="50px"
-                  />
+                  <img src="./img/rejoinLogo.png" alt="REJOINlogo" width="50px" height="50px" />
                 </div>
                 <div class="tile-button-text">
                   <h2>NIH RE-JOIN program</h2>
@@ -726,7 +721,7 @@
                   </div>
                   <div
                     class="guided--dataset-content-container"
-                    onclick="openDropdownPrompt(this, 'bf')"
+                    onclick="window.openDropdownPrompt(this, 'bf')"
                   >
                     <h5 id="guided-pennsive-intro-bf-account" class="guided--dataset-content"></h5>
                     <i class="far fa-edit jump-back" style="color: #000"></i>
@@ -749,7 +744,7 @@
                 class="ui negative basic button guided--radio-button"
                 data-prevent-radio-handler="true"
                 data-reset-guided-mode-page="true"
-                onclick="openDropdownPrompt(this, 'bf')"
+                onclick="window.openDropdownPrompt(this, 'bf')"
                 style="width: 247px"
               >
                 No, connect another account
@@ -761,7 +756,7 @@
             <button
               class="ui positive button mt-md"
               data-reset-guided-mode-page="true"
-              onclick="openDropdownPrompt(this, 'bf')"
+              onclick="window.openDropdownPrompt(this, 'bf')"
               style="background-color: var(--color-light-green) !important; width: 200px !important"
             >
               Log in to Pennsieve
@@ -2850,7 +2845,7 @@
               <div
                 class="guided--container-file-import"
                 droppable="true"
-                ondrop="dropHandler(event, 'guided-data-deliverable-para-text', 'DataDeliverablesDocument', 'guided', dataDeliverables=true);"
+                ondrop="window.dropHandler(event, 'guided-data-deliverable-para-text', 'DataDeliverablesDocument', 'guided', dataDeliverables=true);"
                 ondragover="return false;"
               >
                 <div
@@ -2997,7 +2992,7 @@
             <button
               class="ui primary basic button mt-sm"
               id="guided-button-add-contributor"
-              onclick="openGuidedAddContributorSwal(false)"
+              onclick="window.openGuidedAddContributorSwal(false)"
             >
               <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new contributor
             </button>
@@ -3222,7 +3217,7 @@
             <button
               class="ui primary basic button mt-lg"
               id="guided-button-add-protocol"
-              onclick="openProtocolSwal()"
+              onclick="window.openProtocolSwal()"
             >
               <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new protocol
             </button>
@@ -3458,7 +3453,7 @@
                 type="button"
                 id="guided-button-subject-metadata-copy"
                 class="btn btn-primary btn-sm"
-                onclick="openCopySubjectMetadataPopup()"
+                onclick="window.openCopySubjectMetadataPopup()"
                 style="margin-top: 10px; height: 42px !important; width: 210px"
               >
                 Copy metadata from other subjects
@@ -3553,7 +3548,7 @@
                     />
                     <button
                       class="button-add-species ml-0"
-                      onclick="addSpecies(this, 'subject', 'guided')"
+                      onclick="window.addSpecies(this, 'subject', 'guided')"
                       id="guided-button-add-species-subject"
                     >
                       <svg
@@ -3610,7 +3605,7 @@
                     />
                     <button
                       class="button-add-species ml-0"
-                      onclick="addStrain(this, 'subject', 'guided')"
+                      onclick="window.addStrain(this, 'subject', 'guided')"
                       id="guided-button-add-strain-subject"
                     >
                       <svg
@@ -4045,7 +4040,7 @@
                 <div
                   class="ui secondary submit button"
                   style="margin: 20px; font-family: Poppins"
-                  onclick="addCustomField('subjects', 'guided')"
+                  onclick="window.addCustomField('subjects', 'guided')"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -4100,7 +4095,7 @@
                 type="button"
                 class="btn btn-primary btn-sm"
                 id="guided-button-sample-metadata-copy"
-                onclick="openCopySampleMetadataPopup()"
+                onclick="window.openCopySampleMetadataPopup()"
                 style="margin: 10px; height: 42px !important; width: 210px"
               >
                 Copy metadata from other samples
@@ -4474,7 +4469,7 @@
                 <div
                   class="ui secondary submit button"
                   style="margin: 20px; font-family: Poppins"
-                  onclick="addCustomField('samples', 'guided')"
+                  onclick="window.addCustomField('samples', 'guided')"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -4596,7 +4591,7 @@
             <div
               class="guided--container-file-import"
               droppable="true"
-              ondrop="dropHandler(event, 'guided-code-description-para-text', 'code_description', 'guided');"
+              ondrop="window.dropHandler(event, 'guided-code-description-para-text', 'code_description', 'guided');"
               ondragover="return false;"
             >
               <div class="guided--file-import" data-code-metadata-file-type="code_description">
@@ -4610,7 +4605,7 @@
                 <p class="help-text text-center mt-md mb-md">OR</p>
                 <button
                   class="ui primary basic button mt-sm"
-                  onclick="importMetadataFiles(this, 'code_description', ['.xlsx'], 'guided-code-description-para-text', 'guided')"
+                  onclick="window.importMetadataFiles(this, 'code_description', ['.xlsx'], 'guided-code-description-para-text', 'guided')"
                 >
                   <i class="fas fa-file-import" style="margin-right: 7px"></i>Import
                   code_description.xslx
@@ -4788,7 +4783,7 @@
               <div id="guided-banner-image-preview"></div>
             </div>
             <!-- <div id="guided--banner-image-drag" style="margin-top: 1.5rem;">
-              <div class="guided--container-file-import" droppable="true" ondrop="dropHandler(event, 'guided-para-path-image', 'bannerImage', 'guided-mode', dataDeliverables=false);" ondragover="return false;">
+              <div class="guided--container-file-import" droppable="true" ondrop="window.dropHandler(event, 'guided-para-path-image', 'bannerImage', 'guided-mode', dataDeliverables=false);" ondragover="return false;">
                 <div class="guided--file-import" data-code-metadata-file-type="bannerImage" style="min-height: 333px; width: 324px;">
                   <div id="swal-data-deliverable" class="code-metadata-lottie-container" style="height: 100px"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 300 300" width="300" height="300" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px); content-visibility: visible;"><defs><clipPath id="__lottie_element_791"><rect width="300" height="300" x="0" y="0"></rect></clipPath></defs><g clip-path="url(#__lottie_element_791)"><g transform="matrix(1,0,0,1,99,36.82099914550781)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,65.67900085449219 C12,65.67900085449219 12,59.67900085449219 12,59.67900085449219"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 13.893 13.893" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,45.7859992980957 C12,45.7859992980957 12,24.94700050354004 12,24.94700050354004"></path></g><g opacity="1" transform="matrix(1,0,0,1,15,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,3 C-3,3 -3,-3 -3,-3 C-3,-3 3,-3 3,-3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M28.909000396728516,12 C28.909000396728516,12 132.5449981689453,12 132.5449981689453,12"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,-3 C-3,-3 3,-3 3,-3 C3,-3 3,3 3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M144,28.909000396728516 C144,28.909000396728516 144,132.54600524902344 144,132.54600524902344"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,141)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M3,-3 C3,-3 3,3 3,3 C3,3 -3,3 -3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 11.333 11.333" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M126.66699981689453,144 C126.66699981689453,144 109.66699981689453,144 109.66699981689453,144"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M104,144 C104,144 98,144 98,144"></path></g></g><g transform="matrix(1,0,0,1,122.58927917480469,49.94279098510742)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,60.5620002746582,60.5620002746582)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="10" d=" M35.5620002746582,-35.5620002746582 C35.5620002746582,-35.5620002746582 -35.5620002746582,-23.679000854492188 -35.5620002746582,-23.679000854492188 C-35.5620002746582,-23.679000854492188 -10.25100040435791,-10.25100040435791 -10.25100040435791,-10.25100040435791 C-10.25100040435791,-10.25100040435791 -35.20399856567383,14.70300006866455 -35.20399856567383,14.70300006866455 C-35.20399856567383,14.70300006866455 -15.003999710083008,34.90299987792969 -15.003999710083008,34.90299987792969 C-15.003999710083008,34.90299987792969 9.949000358581543,9.949999809265137 9.949000358581543,9.949999809265137 C9.949000358581543,9.949999809265137 23.679000854492188,35.5620002746582 23.679000854492188,35.5620002746582 C23.679000854492188,35.5620002746582 35.5620002746582,-35.5620002746582 35.5620002746582,-35.5620002746582z"></path></g></g><g transform="matrix(1,0,0,1,102.64799499511719,40.451995849609375)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,74.48500061035156,74.48500061035156)"><path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-66,0 C-66,-33 -66,-66 -66,-66 C-66,-66 66,-66 66,-66 C66,-66 66,66 66,66 C66,66 66,66 66,66 C66,66 -66,66 -66,66 C-66,66 -66,33 -66,0"></path></g></g></g></svg></div>
                   <div style="display: flex;">
@@ -4812,13 +4807,13 @@
           <div
             class="modal fade"
             droppable="true"
-            ondrop="dropHandler(event, 'guided-para-path-image', 'bannerImage', 'guided-mode', dataDeliverables=false);"
+            ondrop="window.dropHandler(event, 'guided-para-path-image', 'bannerImage', 'guided-mode', dataDeliverables=false);"
             ondragover="return false;"
             id="guided-banner-image-modal"
             tabindex="-1"
             role="dialog"
             droppable="true"
-            ondrop="dropHandler(event, 'guided-para-path-image', 'bannerImage', 'guided-mode', dataDeliverables=false);"
+            ondrop="window.dropHandler(event, 'guided-para-path-image', 'bannerImage', 'guided-mode', dataDeliverables=false);"
             ondragover="return false;"
             data-backdrop="false"
             style="background-color: rgba(0, 0, 0, 0.5); width: 100%; height: 100%"
@@ -5891,7 +5886,7 @@
               class="ui positive button soda-green-background mt-3"
               id="curate-button-reserve-doi"
               style="width: 150px !important; height: 3.2rem"
-              onclick="guidedReserveAndSaveDOI()"
+              onclick="window.guidedReserveAndSaveDOI()"
             >
               Reserve DOI
             </button>
@@ -5924,14 +5919,14 @@
               class="ui positive button soda-green-background mt-lg"
               id="guided-button-share-dataset-with-curation-team"
               style="width: 281px !important; height: 3.2rem"
-              onclick="guidedModifyCurationTeamAccess('share')"
+              onclick="window.guidedModifyCurationTeamAccess('share')"
             >
               Share with SPARC Curation Team</button
             ><button
               class="ui positive button plum-background mt-lg"
               id="guided-button-unshare-dataset-with-curation-team"
               style="width: 281px !important; height: 3.2rem"
-              onclick="guidedModifyCurationTeamAccess('unshare')"
+              onclick="window.guidedModifyCurationTeamAccess('unshare')"
             >
               Withdraw from review
             </button>
@@ -6099,7 +6094,7 @@
                             <button
                               id="guided--ORCID-btn"
                               class="prepublishing-item-button green-hollow-button ml-3"
-                              onclick="orcidSignIn(this, 'guided')"
+                              onclick="window.orcidSignIn(this, 'guided')"
                             >
                               Link ORCID iD
                             </button>
@@ -6145,7 +6140,7 @@
           class="ui secondary basic button save-and-exit-button"
           id="guided-button-save-and-exit"
           style="width: 200px !important; font-family: Poppins"
-          onclick="guidedSaveAndExit()"
+          onclick="window.guidedSaveAndExit()"
         >
           <i class="far fa-save" style="margin-right: 10px"></i>
           Save and Exit
@@ -6173,7 +6168,7 @@
           class="ui secondary basic button save-and-exit-button"
           id="guided-button-sub-page-save-and-exit"
           style="width: 165px !important; font-family: Poppins"
-          onclick="guidedSaveAndExit()"
+          onclick="window.guidedSaveAndExit()"
         >
           <i class="far fa-save" style="margin-right: 10px"></i>
           Save and Exit

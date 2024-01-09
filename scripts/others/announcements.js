@@ -1,3 +1,6 @@
+import axios from "axios";
+import Swal from "sweetalert2";
+
 // To change what branch the announcements.json is fetched from, enter branch name between "SODA-for-SPARC/" and "/scripts" in the url below
 // state will be either "update" or "announcements"
 const checkForAnnouncements = async (state) => {
@@ -10,8 +13,9 @@ const checkForAnnouncements = async (state) => {
 
   try {
     // Retrieve the platform, app version, and request the announcement
-    let platform = String(os.platform);
-    let appVersion = String(app.getVersion());
+    let platform = String(window.os.platform);
+    let appVersion = await window.electron.ipcRenderer.invoke("app-version")
+    appVersion = String(appVersion);
     let result = await axiosInstance.get();
     let res = result.data;
 
@@ -162,3 +166,5 @@ const checkForAnnouncements = async (state) => {
     console.error(error);
   }
 };
+
+export default checkForAnnouncements

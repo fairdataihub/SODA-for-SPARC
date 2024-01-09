@@ -1,4 +1,4 @@
-const { default: Swal } = require("sweetalert2");
+import Swal from "sweetalert2";
 
 const swalGetUserTextInput = async (
   title,
@@ -33,7 +33,7 @@ const swalGetUserTextInput = async (
   return textInput;
 };
 
-const swalShowError = async (title, errorText) => {
+export const swalShowError = async (title, errorText) => {
   await Swal.fire({
     title: title,
     html: errorText,
@@ -59,7 +59,7 @@ const swalShowInfo = async (title, infoText) => {
   });
 };
 
-const swalFileListSingleAction = async (fileList, title, helpText, postActionText) => {
+export const swalFileListSingleAction = async (fileList, title, helpText, postActionText) => {
   await Swal.fire({
     title: title,
     html: `
@@ -85,7 +85,7 @@ const swalFileListSingleAction = async (fileList, title, helpText, postActionTex
   });
 };
 
-const swalFileListDoubleAction = async (
+export const swalFileListDoubleAction = async (
   fileList,
   title,
   helpText,
@@ -119,7 +119,7 @@ const swalFileListDoubleAction = async (
   return action;
 };
 
-const swalFileListTripleAction = async (
+export const swalFileListTripleAction = async (
   fileList,
   title,
   helpText,

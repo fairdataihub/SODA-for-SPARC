@@ -2,6 +2,7 @@
 *~
 
 # Ignore node_modules folder
+out
 node_modules
 build/api
 pysodadist
@@ -12,14 +13,15 @@ src/Users
 semantic
 semantic.json
 .env
-build/
+
+*.log*
+__pycache__
 
 app.spec
 
 *.pyc
 src/.DS_Store
 .DS_Store
-electron-builder.yml
 website/.eslintcache
 website/images-bhavesh/~$suggestions.pptx
 website/package-lock.json
@@ -35,3 +37,4 @@ src/build
 access_token.txt
 
 .vscode
+
