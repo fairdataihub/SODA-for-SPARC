@@ -670,11 +670,6 @@ const initialize = () => {
   });
 }
 
-// TODO: Convert to new conventions
-ipcMain.on("open-file-at-path", async (event, path) => {
-  shell.openPath(path);
-});
-
 contextMenu()
 
 initialize()
