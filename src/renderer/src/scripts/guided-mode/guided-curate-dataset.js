@@ -19,6 +19,7 @@ import client from '../client'
 import jQuery from 'jquery'
 import bootstrap from 'bootstrap'
 import * as select2 from "select2"; // TODO: select2()
+import {swalConfirmAction} from "../utils/swal-utils"
 
 import 'bootstrap-select'
 // import DragSort from '@yaireo/dragsort'
@@ -11124,21 +11125,6 @@ document
   // TODO: Convert to new conventions
 window.electron.ipcRenderer.on("selected-create-dataset-structure-spreadsheet-path", async (event, path) => {
   try {
-    const workbook = new excel4node.Workbook();
-    const worksheet = workbook.addWorksheet("Subject structure");
-    const sodaGreenHeaderStyle = workbook.createStyle({
-      font: {
-        color: "#ffffff",
-        size: 12,
-        bold: true,
-      },
-      fill: {
-        type: "pattern",
-        patternType: "solid",
-        bgColor: "#13716d",
-        fgColor: "#13716d",
-      },
-    });
 
     // Set the column widths
     const datasetHasPools = document
@@ -11147,28 +11133,12 @@ window.electron.ipcRenderer.on("selected-create-dataset-structure-spreadsheet-pa
     const datasetHasSamples = document
       .getElementById("guided-button-spreadsheet-subjects-have-samples")
       .classList.contains("selected");
-
-    const headers = ["subject id"];
-
-    if (datasetHasPools) {
-      headers.push("pool id");
-    }
-    if (datasetHasSamples) {
-      headers.push("sample id");
-    }
-
-    for (i = 0; i < headers.length; i++) {
-      worksheet
-        .cell(1, i + 1)
-        .string(headers[i])
-        .style(sodaGreenHeaderStyle);
-      worksheet.column(i + 1).setWidth(30);
-    }
-
-    // write the spreadsheet to the selected
     const filePath = path + "/dataset_structure.xlsx";
-    const buffer = await workbook.writeToBuffer();
-    await fs.promises.writeFile(filePath, buffer);
+    
+
+    await window.electron.ipcRenderer.invoke("create-and-save-dataset-structure-spreadsheet", datasetHasPools, datasetHasSamples, filePath)
+
+
     sodaJSONObj["dataset-structure-spreadsheet-path"] = filePath;
     setUiBasedOnSavedDatasetStructurePath(filePath);
     const openTemplateForUser = await swalConfirmAction(
@@ -11184,6 +11154,7 @@ window.electron.ipcRenderer.on("selected-create-dataset-structure-spreadsheet-pa
       window.electron.ipcRenderer.send("open-file-at-path", filePath);
     }
   } catch (error) {
+    clientError(error)
     notyf.error(`Error creating dataset structure spreadsheet: ${error}`);
   }
 });
