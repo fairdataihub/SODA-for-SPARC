@@ -14397,26 +14397,21 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
           const main_generated_dataset_size = data["main_generated_dataset_size"];
           const elapsed_time_formatted = data["elapsed_time_formatted"];
           const totalUploadedFiles = data["total_files_uploaded"];
-          const localGenerationProgress = (totalUploadedFiles / numberOfFilesToGenerate) * 100;
-          setGuidedProgressBarValue("local", localGenerationProgress);
-          if (localGenerationProgress > 100) {
-            console.log("UH OH" + localGenerationProgress);
-          } else {
-            console.log("localGenerationProgress: ", localGenerationProgress);
-          }
-          if (main_curate_progress_message.includes("Renaming files...")) {
-            console.log("Renaming files");
-          }
+
+          // Get the current progress of local dataset generation
+          // Note: The progress is calculated based on the number of files that have been generated
+          // and the total number of files that need to be generated
+          const localGenerationProgressPercentage = Math.min(
+            100,
+            Math.max(0, (totalUploadedFiles / numberOfFilesToGenerate) * 100)
+          );
+          setGuidedProgressBarValue("local", localGenerationProgressPercentage);
           updateDatasetUploadProgressTable("local", {
-            "Upload status": `${main_curate_progress_message}`,
-            "Percent uploaded": `${localGenerationProgress.toFixed(2)}%`,
+            "Generation status": `${main_curate_progress_message}`,
+            "Percent generated": `${localGenerationProgress.toFixed(2)}%`,
             "Elapsed time": `${elapsed_time_formatted}`,
-            "Files Generated": `${totalUploadedFiles} of ${numberOfFilesToGenerate}`,
+            "Files generated": `${totalUploadedFiles} of ${numberOfFilesToGenerate}`,
           });
-
-          totalSizePrint = generateReadableFileSize(main_total_generate_dataset_size);
-
-          console.log("Generation still in progress");
           await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
         } catch (error) {
           console.error("Error tracking progress:", error);
@@ -14427,8 +14422,33 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
 
     await trackLocalDatasetGenerationProgress();
 
+    setGuidedProgressBarValue("local", 100);
+    updateDatasetUploadProgressTable("local", {
+      "Generation status": `Generating metadata files`,
+    });
+
     // Generate all dataset metadata files
     await guidedGenerateSubjectsMetadata(path.join(filePath, guidedDatasetName, "subjects.xlsx"));
+    /*await guidedGenerateSubmissionMetadata(
+      path.join(filePath, guidedDatasetName, "submission.xlsx")
+    );
+    await guidedGenerateDatasetDescriptionMetadata(
+      path.join(filePath, guidedDatasetName, "dataset_description.xlsx")
+    );
+    await guidedGenerateREADMEorCHANGESMetadata(
+      "README",
+      path.join(filePath, guidedDatasetName, "README.txt")
+    );
+    await guidedGenerateREADMEorCHANGESMetadata(
+      "CHANGES",
+      path.join(filePath, guidedDatasetName, "CHANGES.txt")
+    );
+    await guidedGenerateCodeDescriptionMetadata(
+      path.join(filePath, guidedDatasetName, "code_description.xlsx")
+    );
+    updateDatasetUploadProgressTable("local", {
+      "Generation status": `Dataset successfully generated`,
+    });*/
   } catch (error) {
     // Handle and log errors
     const errorMessage = userErrorMessage(error);
@@ -17144,9 +17164,9 @@ const generateFileText = (fileSize) => {
   if (fileSize == "small") {
     numberOfLines = 100;
   } else if (fileSize == "medium") {
-    numberOfLines = 1000;
-  } else if (fileSize == "large") {
     numberOfLines = 10000;
+  } else if (fileSize == "large") {
+    numberOfLines = 100000;
   }
 
   for (let i = 0; i < numberOfLines; i++) {
