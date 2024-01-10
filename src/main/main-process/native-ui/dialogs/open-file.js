@@ -1,4 +1,5 @@
-const { ipcMain, dialog, BrowserWindow } = require("electron");
+import { ipcMain, dialog, BrowserWindow } from "electron";
+
 
 ipcMain.on("open-file-dialog-dataset", (event) => {
   dialog.showOpenDialog(
