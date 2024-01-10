@@ -1,4 +1,4 @@
-import { ipcMain, app } from "electron";
+import { ipcMain, app, BrowserWindow, dialog } from "electron";
 
 
 
