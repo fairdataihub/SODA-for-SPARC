@@ -1,7 +1,7 @@
 import { ipcMain, BrowserWindow, dialog, shell} from "electron";
 import excel4node from "excel4node";
 import {writeFile} from "fs/promises"
-
+import * as xlsx from "xlsx";
 
 ipcMain.on("open-create-dataset-structure-spreadsheet-path-selection-dialog", (event) => {
   const mainWindow = BrowserWindow.getFocusedWindow();
@@ -80,6 +80,15 @@ ipcMain.handle("create-and-save-dataset-structure-spreadsheet", async (event, ha
   // write the spreadsheet to the selected
   const buffer = await workbook.writeToBuffer();
   await writeFile(savePath, buffer);
+})
+
+ipcMain.handle("get-sheet-data", async (event, filePath) => {
+  const spreadsheet = xlsx.readFile(filePath);
+  const worksheet = spreadsheet.Sheets[spreadsheet.SheetNames[0]];
+  const sheetData = xlsx.utils.sheet_to_json(worksheet, { defval: "" });
+
+
+  return sheetData
 })
 
 

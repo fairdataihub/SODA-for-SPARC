@@ -19,7 +19,8 @@ import client from '../client'
 import jQuery from 'jquery'
 import bootstrap from 'bootstrap'
 import * as select2 from "select2"; // TODO: select2()
-import {swalConfirmAction, swalShowError, swalFileListSingleAction, swalFileListDoubleAction} from "../utils/swal-utils"
+import {swalConfirmAction, swalShowError, swalFileListSingleAction, swalFileListDoubleAction, swalShowInfo} from "../utils/swal-utils"
+import * as xlsx from "xlsx"
 
 import 'bootstrap-select'
 // import DragSort from '@yaireo/dragsort'
@@ -5237,7 +5238,7 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-subject-structure-spreadsheet-importation-tab") {
-      const savedSpreadSheetPath = sodaJSONObj["dataset-structure-spreadsheet-path"];
+      const savedSpreadSheetPath = window.sodaJSONObj["dataset-structure-spreadsheet-path"];
       setUiBasedOnSavedDatasetStructurePath(savedSpreadSheetPath);
     }
 
@@ -11162,7 +11163,7 @@ window.electron.ipcRenderer.on("selected-create-dataset-structure-spreadsheet-pa
 document
   .getElementById("guided-button-open-dataset-structure-spreadsheet")
   .addEventListener("click", async () => {
-    const savedTemplatePath = sodaJSONObj["dataset-structure-spreadsheet-path"];
+    const savedTemplatePath = window.sodaJSONObj["dataset-structure-spreadsheet-path"];
     if (!savedTemplatePath) {
       notyf.error("No dataset structure spreadsheet has been saved");
       return;
@@ -11309,22 +11310,21 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
 };
 
 // CLICK HANDLER THAT EXTRACTS THE DATASET STRUCTURE FROM A SPREADSHEET
+// TODO: Convert to new conventions
 document
   .getElementById("guided-button-import-dataset-structure-from-spreadsheet")
   .addEventListener("click", async () => {
-    const savedTemplatePath = sodaJSONObj["dataset-structure-spreadsheet-path"];
+    const savedTemplatePath = window.sodaJSONObj["dataset-structure-spreadsheet-path"];
     if (!savedTemplatePath) {
       notyf.error("No dataset structure spreadsheet has been saved");
       return;
     }
-    if (!fs.existsSync(savedTemplatePath)) {
+    if (!window.fs.existsSync(savedTemplatePath)) {
       notyf.error("The saved dataset structure spreadsheet no longer exists at the saved path");
       return;
     }
-    const xlsx = require("xlsx");
-    const spreadsheet = xlsx.readFile(savedTemplatePath);
-    const worksheet = spreadsheet.Sheets[spreadsheet.SheetNames[0]];
-    const sheetData = xlsx.utils.sheet_to_json(worksheet, { defval: "" });
+    
+    const sheetData = await window.electron.ipcRenderer.invoke("get-sheet-data", savedTemplatePath)
 
     // Validate the spreadsheet structure and return if it is invalid (Error swals are shown in the function)
     const spreadsheetIsValid = await validateDatasetStructureSpreadsheet(sheetData);
@@ -11340,20 +11340,20 @@ document
       // Check to see if the subject already exists
       const subjectAlreadyExists = getExistingSubjectNames().includes(subjectName);
       if (!subjectAlreadyExists) {
-        sodaJSONObj.addSubject(subjectName);
+        window.sodaJSONObj.addSubject(subjectName);
         if (subjectsPool) {
           const poolAlreadyExists = getExistingPoolNames().includes(subjectsPool);
           if (!poolAlreadyExists) {
-            sodaJSONObj.addPool(subjectsPool);
+            window.sodaJSONObj.addPool(subjectsPool);
           }
-          sodaJSONObj.moveSubjectIntoPool(subjectName, subjectsPool);
+          window.sodaJSONObj.moveSubjectIntoPool(subjectName, subjectsPool);
         }
       }
 
       if (sampleName) {
         const sampleAlreadyExists = getExistingSampleNames().includes(sampleName);
         if (!sampleAlreadyExists) {
-          sodaJSONObj.addSampleToSubject(sampleName, subjectsPool, subjectName);
+          window.sodaJSONObj.addSampleToSubject(sampleName, subjectsPool, subjectName);
         }
       }
     }
@@ -13209,7 +13209,7 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
         sodaJSONObj["dataset-structure-entities"] != textFormattedEntities
       ) {
         // Delete the spreadsheet path since it will need to be re-generated
-        delete sodaJSONObj["dataset-structure-spreadsheet-path"];
+        delete window.sodaJSONObj["dataset-structure-spreadsheet-path"];
         // Reset the UI to show that the dataset structure spreadsheet has not been generated
         setUiBasedOnSavedDatasetStructurePath(false);
       }

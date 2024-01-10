@@ -48,7 +48,7 @@ export const swalShowError = async (title, errorText) => {
   });
 };
 
-const swalShowInfo = async (title, infoText) => {
+export const swalShowInfo = async (title, infoText) => {
   await Swal.fire({
     title: title,
     html: infoText,
