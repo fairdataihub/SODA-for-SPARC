@@ -19,7 +19,7 @@ import client from '../client'
 import jQuery from 'jquery'
 import bootstrap from 'bootstrap'
 import * as select2 from "select2"; // TODO: select2()
-import {swalConfirmAction} from "../utils/swal-utils"
+import {swalConfirmAction, swalShowError, swalFileListSingleAction, swalFileListDoubleAction} from "../utils/swal-utils"
 
 import 'bootstrap-select'
 // import DragSort from '@yaireo/dragsort'
@@ -6788,7 +6788,7 @@ const guidedOpenEntityEditSwal = async (entityName) => {
       if (newEntityName === entityName) {
         Swal.close();
       }
-      const entityNameIsValid = evaluateStringAgainstSdsRequirements(
+      const entityNameIsValid = window.evaluateStringAgainstSdsRequirements(
         newEntityName,
         "string-adheres-to-identifier-conventions"
       );
@@ -10521,7 +10521,7 @@ window.specifySubject = (event, subjectNameInput) => {
 
       // TODO: Convert to new conventions
       if (subjectName.length > 0) {
-        const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+        const subjectNameIsValid = window.evaluateStringAgainstSdsRequirements(
           subjectName,
           "string-adheres-to-identifier-conventions"
         );
@@ -11196,7 +11196,7 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
       invalidSubjectNames.push(subjectName);
       continue;
     }
-    const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+    const subjectNameIsValid = window.evaluateStringAgainstSdsRequirements(
       subjectName,
       "string-adheres-to-identifier-conventions"
     );
@@ -11213,7 +11213,7 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
         continue;
       }
 
-      const poolNameIsValid = evaluateStringAgainstSdsRequirements(
+      const poolNameIsValid = window.evaluateStringAgainstSdsRequirements(
         poolName,
         "string-adheres-to-identifier-conventions"
       );
@@ -11239,7 +11239,7 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
         continue;
       }
 
-      const sampleNameIsValid = evaluateStringAgainstSdsRequirements(
+      const sampleNameIsValid = window.evaluateStringAgainstSdsRequirements(
         sampleName,
         "string-adheres-to-identifier-conventions"
       );
@@ -11388,7 +11388,7 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
       continue;
     }
 
-    const subjectNameIsValid = evaluateStringAgainstSdsRequirements(
+    const subjectNameIsValid = window.evaluateStringAgainstSdsRequirements(
       subjectName,
       "string-adheres-to-identifier-conventions"
     );
@@ -11537,7 +11537,7 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
       throw new Error(`${entityNameSingular} name has already been added`);
     }
 
-    const entityNameIsValid = evaluateStringAgainstSdsRequirements(
+    const entityNameIsValid = window.evaluateStringAgainstSdsRequirements(
       entityName,
       "string-adheres-to-identifier-conventions"
     );

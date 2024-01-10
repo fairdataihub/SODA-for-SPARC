@@ -83,7 +83,6 @@ ipcMain.handle("create-and-save-dataset-structure-spreadsheet", async (event, ha
 })
 
 
-// TODO: Convert to new conventions
 ipcMain.on("open-file-at-path", async (event, path) => {
   shell.openPath(path);
 });
