@@ -4741,6 +4741,39 @@
               Generate local dataset copy
             </button>
           </div>
+          <div class="guided--section" id="guided-section-local-generation-status-table">
+            <table class="ui celled striped table" style="width: 100% !important">
+              <thead>
+                <tr>
+                  <th
+                    colspan="2"
+                    class="text-center guided--table-header"
+                    style="
+                      z-index: 2;
+                      height: 50px;
+                      position: sticky !important;
+                      top: -10px !important;
+                    "
+                  >
+                    <span>Local generation status</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="guided-tbody-local-generation-status">
+                <tr class="guided-tr-progress-bar">
+                  <td class="middle aligned" colspan="2">
+                    <progress
+                      class="progresstrack"
+                      id="guided-progress-bar-local-generation"
+                      style="width: 100%"
+                      max="100"
+                      value="0"
+                    ></progress>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -5702,7 +5735,7 @@
               </thead>
               <tbody id="guided-tbody-pennsieve-dataset-metadata-generation">
                 <tr
-                  class="hidden upload-status-tr"
+                  class="hidden generation-status-tr"
                   id="guided-subjects-metadata-pennsieve-genration-tr"
                 >
                   <td class="middle aligned" id="guided-subjects-metadata-pennsieve-genration-text">
@@ -5814,8 +5847,8 @@
                   </th>
                 </tr>
               </thead>
-              <tbody id="guided-tbody-dataset-upload">
-                <tr id="guided-upload-progress-bar-tr">
+              <tbody id="guided-tbody-pennsieve-generation-status">
+                <tr class="guided-tr-progress-bar">
                   <td class="middle aligned" colspan="2">
                     <progress
                       class="progresstrack"

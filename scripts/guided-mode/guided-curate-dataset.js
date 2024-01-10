@@ -2204,29 +2204,32 @@ const renderSideBar = (activePage) => {
   }
 };
 
-const updateDatasetUploadProgressTable = (generationDestination, progressObject) => {
-  const datasetUploadTableBody = document.getElementById("guided-tbody-dataset-upload");
-  //delete datasetUPloadTableBody children with class "upload-status-tr"
-  const uploadStatusTRs = datasetUploadTableBody.querySelectorAll(".upload-status-tr");
+const updateDatasetUploadProgressTable = (destination, progressObject) => {
+  const datasetUploadTableBody = document.getElementById(
+    `guided-tbody-${destination}-generation-status`
+  );
+  //delete datasetUPloadTableBody children with class "generation-status-tr"
+  const uploadStatusTRs = datasetUploadTableBody.querySelectorAll(".generation-status-tr");
   for (const uploadStatusTR of uploadStatusTRs) {
     datasetUploadTableBody.removeChild(uploadStatusTR);
   }
-  //remove dtasetUploadTableBody children that don't have the id guided-upload-progress-bar-tr
+  //remove dtasetUploadTableBody children that don't have the id guided-tr-progress-bar
   for (const child of datasetUploadTableBody.children) {
-    if (!child.getAttribute("id") === "guided-upload-progress-bar-tr") {
+    if (!child.classList.contains("guided-tr-progress-bar")) {
       datasetUploadTableBody.removeChild(child);
     }
   }
   let uploadStatusElement = "";
   for (const [uploadStatusKey, uploadStatusValue] of Object.entries(progressObject))
     uploadStatusElement += `
-      <tr class="upload-status-tr">
+      <tr class="generation-status-tr">
         <td class="middle aligned progress-bar-table-left">
           <b>${uploadStatusKey}:</b>
         </td>
         <td class="middle aligned remove-left-border">${uploadStatusValue}</td>
       </tr>
     `;
+
   //insert adjustStatusElement at the end of datasetUploadTablebody
   datasetUploadTableBody.insertAdjacentHTML("beforeend", uploadStatusElement);
 };
@@ -6476,6 +6479,11 @@ const openPage = async (targetPageID) => {
       } else {
         createCopySection.classList.add("hidden");
       }
+
+      // Hide the local dataset copy generation section that containst the table/generation progress
+      document
+        .getElementById("guided-section-local-generation-status-table")
+        .classList.add("hidden");
     }
 
     if (targetPageID === "guided-dataset-generation-confirmation-tab") {
@@ -14351,6 +14359,16 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
     // check if the account details are valid during local generation
     delete sodaJSONObjCopy["bf-account-selected"];
     console.log("making post request to /curate_datasets/curation");
+
+    // Show and reset the progress bar
+    document
+      .getElementById("guided-section-local-generation-status-table")
+      .classList.remove("hidden");
+    setGuidedProgressBarValue("local", 0);
+    updateDatasetUploadProgressTable("pennsieve", {
+      "Generation status": `Preparing dataset for upload`,
+    });
+
     // Start the local dataset generation process
     client.post(
       `/curate_datasets/curation`,
@@ -14367,33 +14385,36 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
         try {
           const response = await client.get(`/curate_datasets/curation/progress`);
           const { data } = response;
-          const main_curate_status = data["main_curate_status"];
-          const start_generate = data["start_generate"];
           const main_curate_progress_message = data["main_curate_progress_message"];
-
           if (main_curate_progress_message === "Success: COMPLETED!") {
             console.log("Done with generation");
             break; // Exit the loop when generation is done
-          } else {
-            console.log(data);
           }
+
+          const main_curate_status = data["main_curate_status"];
+          const start_generate = data["start_generate"];
           const main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
           const main_generated_dataset_size = data["main_generated_dataset_size"];
           const elapsed_time_formatted = data["elapsed_time_formatted"];
           const totalUploadedFiles = data["total_files_uploaded"];
-          console.log("main_curate_status: ", main_curate_status);
-          console.log("start_generate: ", start_generate);
-          console.log("main_curate_progress_message: ", main_curate_progress_message);
-          console.log("main_total_generate_dataset_size: ", main_total_generate_dataset_size);
-          console.log("main_generated_dataset_size: ", main_generated_dataset_size);
-          console.log("elapsed_time_formatted: ", elapsed_time_formatted);
-          console.log("totalUploadedFiles: ", totalUploadedFiles);
-          const percentOfDatasetUploaded =
-            (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
-          console.log("percentOfDatasetUploaded: ", percentOfDatasetUploaded);
+          const localGenerationProgress = (totalUploadedFiles / numberOfFilesToGenerate) * 100;
+          setGuidedProgressBarValue("local", localGenerationProgress);
+          if (localGenerationProgress > 100) {
+            console.log("UH OH" + localGenerationProgress);
+          } else {
+            console.log("localGenerationProgress: ", localGenerationProgress);
+          }
+          if (main_curate_progress_message.includes("Renaming files...")) {
+            console.log("Renaming files");
+          }
+          updateDatasetUploadProgressTable("local", {
+            "Upload status": `${main_curate_progress_message}`,
+            "Percent uploaded": `${localGenerationProgress.toFixed(2)}%`,
+            "Elapsed time": `${elapsed_time_formatted}`,
+            "Files Generated": `${totalUploadedFiles} of ${numberOfFilesToGenerate}`,
+          });
 
           totalSizePrint = generateReadableFileSize(main_total_generate_dataset_size);
-          console.log("total size print", totalSizePrint);
 
           console.log("Generation still in progress");
           await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
