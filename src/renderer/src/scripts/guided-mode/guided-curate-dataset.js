@@ -11665,20 +11665,20 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
     newEntities.reverse();
     if (entityName === "subjects") {
       for (const subjectName of newEntities) {
-        sodaJSONObj.addSubject(subjectName);
+        window.sodaJSONObj.addSubject(subjectName);
       }
       renderSubjectsTable();
     }
     if (entityName === "pools") {
       for (const poolName of newEntities) {
-        sodaJSONObj.addPool(poolName);
+        window.sodaJSONObj.addPool(poolName);
       }
       renderPoolsTable();
     }
     if (entityName.startsWith("sub-")) {
       const subjectsPool = getSubjectsPool(entityName);
       for (const sampleName of newEntities) {
-        sodaJSONObj.addSampleToSubject(sampleName, subjectsPool, entityName);
+        window.sodaJSONObj.addSampleToSubject(sampleName, subjectsPool, entityName);
       }
       renderSamplesTable();
     }
