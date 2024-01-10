@@ -44,6 +44,6 @@ jobs:
 
       - name: Deploy the app to GitHub
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm run deploy-linux
