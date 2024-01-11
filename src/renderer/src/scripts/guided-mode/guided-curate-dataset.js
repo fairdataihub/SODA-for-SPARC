@@ -3916,8 +3916,8 @@ const guidedShowTreePreview = (new_dataset_name, targetElementId) => {
     },
     plugins: ["types", "sort"],
     sort: function (a, b) {
-      a1 = this.get_node(a);
-      b1 = this.get_node(b);
+      let a1 = this.get_node(a);
+      let b1 = this.get_node(b);
 
       if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
         //if the word assets is included in the icon then we can assume it is a file
