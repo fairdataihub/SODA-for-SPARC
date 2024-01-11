@@ -9,7 +9,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   //Request the spreadsheet data from main
-  window.Electron.ipcRenderer.once("requested-spreadsheet", async (ev, spreadsheet) => {
+  window.electron.ipcRenderer.once("requested-spreadsheet", async (ev, spreadsheet) => {
+    console.log("We have the spreadsheet data again")
     if (!spreadsheet || spreadsheet === "") {
       return;
     } else {
