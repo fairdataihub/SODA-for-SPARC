@@ -38,7 +38,7 @@ global.trackKombuchaEvent = trackKombuchaEvent;
 log.initialize({ preload: true });
 log.transports.console.level = false;
 log.transports.file.level = "debug";
-
+let user_restart_confirmed = false;
 
 let nodeStorage = new JSONStorage(app.getPath("userData"))
 
