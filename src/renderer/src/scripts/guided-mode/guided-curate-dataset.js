@@ -19,7 +19,7 @@ import client from '../client'
 import jQuery from 'jquery'
 import bootstrap from 'bootstrap'
 import * as select2 from "select2"; // TODO: select2()
-select2()
+// select2()
 import {swalConfirmAction, swalShowError, swalFileListSingleAction, swalFileListDoubleAction, swalShowInfo} from "../utils/swal-utils"
 import * as xlsx from "xlsx"
 
