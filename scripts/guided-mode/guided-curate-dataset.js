@@ -14336,7 +14336,7 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
     const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
 
     // Check if there is enough free space on disk for the dataset
-    if (freeMemoryInMb < datasetSizeInMb) {
+    if (freeMemoryInBytes < localDatasetSizeInBytes) {
       const diskSpaceInGb = convertBytesToGb(freeMemoryInBytes);
       const datasetSizeInGb = convertBytesToGb(localDatasetSizeInBytes);
       throw new Error(
