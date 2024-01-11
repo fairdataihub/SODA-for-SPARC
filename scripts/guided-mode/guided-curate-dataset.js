@@ -6484,6 +6484,11 @@ const openPage = async (targetPageID) => {
       document
         .getElementById("guided-section-local-generation-status-table")
         .classList.add("hidden");
+
+      // Hide the local dataset generation success section
+      document
+        .getElementById("guided-section-post-local-generation-success")
+        .classList.add("hidden");
     }
 
     if (targetPageID === "guided-dataset-generation-confirmation-tab") {
@@ -14318,35 +14323,25 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
     });
     unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
 
-    // Check available free memory on disk
+    // Get available free memory on disk
     const diskSpaceRes = await checkDiskSpace(filePath);
     const freeMemoryInBytes = diskSpaceRes.free;
 
-    console.log("Free memory in bytes: ", freeMemoryInBytes);
-    const freeMemoryInMb = convertBytesToMb(freeMemoryInBytes);
-    const freeMemoryInGb = convertBytesToGb(freeMemoryInBytes);
-
-    console.log("Free memory in MB: ", freeMemoryInMb);
-    console.log("Free memory in GB: ", freeMemoryInGb);
-
-    // Get the size of the dataset that will be generated
+    // Get the size of the dataset to be generated
     const localDatasetSizeReq = await client.post(
       "/curate_datasets/dataset_size",
       { soda_json_structure: sodaJSONObj },
       { timeout: 0 }
     );
     const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
-    const datasetSizeInMb = convertBytesToMb(localDatasetSizeInBytes);
-    const datasetSizeInGb = convertBytesToGb(localDatasetSizeInBytes);
-    console.log("Dataset size in MB: ", datasetSizeInMb);
-    console.log("Dataset size in GB: ", datasetSizeInGb);
 
     // Check if there is enough free space on disk for the dataset
     if (freeMemoryInMb < datasetSizeInMb) {
+      const diskSpaceInGb = convertBytesToGb(freeMemoryInBytes);
+      const datasetSizeInGb = convertBytesToGb(localDatasetSizeInBytes);
       throw new Error(
-        `Not enough free space on disk. Free space: ${freeMemoryInMb} MB. Dataset size: ${datasetSizeInMb} MB`
+        `Not enough free space on disk. Free space: ${diskSpaceInGb}GB. Dataset size: ${datasetSizeInGb}GB`
       );
-    } else {
     }
 
     // Attach manifest files to the dataset structure before local generation
@@ -14380,10 +14375,14 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
       { timeout: 0 }
     );
 
+    let userHasBeenScrolledToProgressTable = false;
+
     // Track the status of local dataset generation
     const trackLocalDatasetGenerationProgress = async () => {
-      // set a timeout for .5 seconds
+      // set a timeout for .5 seconds to allow the server to start generating the dataset
       await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Get the number of files that need to be generated to calculate the progress
       const numberOfFilesToGenerate = countFilesInDatasetStructure(datasetStructureJSONObj);
       while (true) {
         try {
@@ -14394,11 +14393,6 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
             console.log("Done with generation");
             break; // Exit the loop when generation is done
           }
-
-          const main_curate_status = data["main_curate_status"];
-          const start_generate = data["start_generate"];
-          const main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
-          const main_generated_dataset_size = data["main_generated_dataset_size"];
           const elapsed_time_formatted = data["elapsed_time_formatted"];
           const totalUploadedFiles = data["total_files_uploaded"];
 
@@ -14415,6 +14409,15 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
             "Percent generated": `${localGenerationProgressPercentage.toFixed(2)}%`,
             "Elapsed time": `${elapsed_time_formatted}`,
           });
+
+          // Scroll the user down to the progress table if they haven't been scrolled down yet
+          // (This only happens once)
+          if (!userHasBeenScrolledToProgressTable) {
+            unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
+            userHasBeenScrolledToProgressTable = true;
+          }
+
+          // Wait 1 second before checking the progress again
           await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
         } catch (error) {
           console.error("Error tracking progress:", error);
@@ -14444,9 +14447,12 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
     await guidedGenerateCodeDescriptionMetadata(
       path.join(filePath, guidedDatasetName, "code_description.xlsx")
     );
+
+    // Update UI for successful local dataset generation
     updateDatasetUploadProgressTable("local", {
       "Generation status": `Dataset successfully generated locally`,
     });
+    unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
   } catch (error) {
     // Handle and log errors
     const errorMessage = userErrorMessage(error);

@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - gm-local-dataset-generation
 
 jobs:
   deploy-on-mac:
