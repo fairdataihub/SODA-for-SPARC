@@ -3938,49 +3938,49 @@ const guidedShowTreePreview = (new_dataset_name, targetElementId) => {
         icon: "fas fa-folder fa-fw",
       },
       "file xlsx": {
-        icon: "./assets/img/excel-file.png",
+        icon: fileXlsx,
       },
       "file xls": {
-        icon: "./assets/img/excel-file.png",
+        icon: fileXlsx,
       },
       "file png": {
-        icon: "./assets/img/png-file.png",
+        icon: filePng,
       },
       "file PNG": {
-        icon: "./assets/img/png-file.png",
+        icon: filePng,
       },
       "file pdf": {
-        icon: "./assets/img/pdf-file.png",
+        icon: filePdf,
       },
       "file txt": {
-        icon: "./assets/img/txt-file.png",
+        icon: fileTxt,
       },
       "file csv": {
-        icon: "./assets/img/csv-file.png",
+        icon: fileCsv,
       },
       "file CSV": {
-        icon: "./assets/img/csv-file.png",
+        icon: fileCsv,
       },
       "file DOC": {
-        icon: "./assets/img/doc-file.png",
+        icon: fileDoc,
       },
       "file DOCX": {
-        icon: "./assets/img/doc-file.png",
+        icon: fileDoc,
       },
       "file docx": {
-        icon: "./assets/img/doc-file.png",
+        icon: fileDoc,
       },
       "file doc": {
-        icon: "./assets/img/doc-file.png",
+        icon: fileDoc,
       },
       "file jpeg": {
-        icon: "./assets/img/jpeg-file.png",
+        icon: fileJpeg,
       },
       "file JPEG": {
-        icon: "./assets/img/jpeg-file.png",
+        icon: fileJpeg,
       },
       "file other": {
-        icon: "./assets/img/other-file.png",
+        icon: fileOther,
       },
     },
   });
