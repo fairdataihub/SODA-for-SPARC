@@ -939,7 +939,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       // If the user selected that the dataset is SPARC funded, unskip the submission metadata page
       if (userSelectedDatasetIsSparcFunded) {
         // Set the consortium data standard value in the JSON
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
+        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
           "SPARC";
         // Get the funding source value from the dropdown
         const selectedFuncingSourceFromDropdown = $(
@@ -955,14 +955,14 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         } else {
           // Set the funding consortium value in the JSON
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+          window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
             selectedFuncingSourceFromDropdown;
         }
       }
 
       if (userSelectedDatasetIsReJoinFunded) {
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "HEAL";
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "HEAL";
+        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
           "REJOIN-HEAL";
       }
 
@@ -992,16 +992,16 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "EXTERNAL";
+        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
+        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "EXTERNAL";
       }
 
       const setConsortiumDataStandard =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"];
+        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"];
       // If the set consortium data standard is SPARC, unskip the SPARC specific metadata pages
       if (setConsortiumDataStandard === "SPARC") {
         const setFundingConsortium =
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
+          window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
         if (setFundingConsortium === "SPARC") {
           // If the funding consortium is SPARC, unskip the protocols page
           guidedUnSkipPage("guided-protocols-tab");
@@ -1015,9 +1015,9 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedSkipPage("guided-create-submission-metadata-tab");
         guidedSkipPage("guided-protocols-tab");
         // Manually set the SPARC award number to "EXTERNAL" for non-SPARC funded datasets (case for all non-SPARC funded datasets)
-        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "";
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = [""];
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = "";
+        window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "";
+        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = [""];
+        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = "";
       }
     }
 
@@ -1050,7 +1050,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       if (errorArray.length > 0) {
         throw errorArray;
       }
-      const currentDatasetName = sodaJSONObj["digital-metadata"]["name"];
+      const currentDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
       if (currentDatasetName) {
         // Update the progress file path name and banner image path if needed
         if (datasetNameInput !== currentDatasetName) {
@@ -1063,9 +1063,9 @@ const savePageChanges = async (pageBeingLeftID) => {
             throw errorArray;
           }
           updateGuidedDatasetName(datasetNameInput);
-          sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
+          window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
         } else {
-          sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
+          window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
         }
       } else {
         const currentProgressFileNames = getGuidedProgressFileNames();
@@ -1076,8 +1076,8 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
-        sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
-        sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
+        window.sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
+        window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
       }
     }
 
@@ -1224,8 +1224,9 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
+    // TODO: Convert to new conventions
     if (pageBeingLeftID === "guided-subjects-pooling-tab") {
-      const pools = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
+      const pools = window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
 
       const userSelectedDatasetHasPools = document
         .getElementById("guided-button-pool-page-subjects-are-pooled")
@@ -1255,7 +1256,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         for (const pool of Object.keys(pools)) {
           if (
             Object.keys(
-              sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][pool]
+              window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][pool]
             ).length === 0
           ) {
             errorArray.push({
@@ -1341,9 +1342,13 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
       
 
+      const userSelectedDatasetIsReJoinFunded = document
+        .getElementById("guided-button-dataset-is-re-join-funded")
+        .classList.contains("selected");
+
       if (userSelectedDatasetIsReJoinFunded) {
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "HEAL";
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "HEAL";
+        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
           "REJOIN-HEAL";
       }
     }
