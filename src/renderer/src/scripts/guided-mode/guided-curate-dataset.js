@@ -15546,6 +15546,7 @@ const guidedUploadDatasetToPennsieve = async () => {
           (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
         setGuidedProgressBarValue("pennsieve", percentOfDatasetUploaded);
 
+        let totalSizePrint;
         if (main_total_generate_dataset_size < window.displaySIze) {
           totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
         } else if (main_total_generate_dataset_size < window.displaySIze * window.displaySIze) {
