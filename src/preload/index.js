@@ -140,6 +140,9 @@ if (process.contextIsolated) {
       },
       closeSync: (fileDescriptor) => {
         return fs.closeSync(fileDescriptor)
+      },
+      unlink: async (filepath) => {
+        return await fs.unlink(filepath)
       }
     })
     contextBridge.exposeInMainWorld('process', {
