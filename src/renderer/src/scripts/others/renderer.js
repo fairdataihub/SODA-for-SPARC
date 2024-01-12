@@ -9135,6 +9135,7 @@ window.gatherLogs = () => {
  * purged.
  */
 window.displayClientId = () => {
+  // TODO: Convert to new conventions
   const { clipboard } = require("electron");
   clipboard.writeText("Example string", "selection");
   let clientId = nodeStorage.getItem("userId");
