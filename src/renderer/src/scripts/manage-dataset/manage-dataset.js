@@ -1771,18 +1771,18 @@ $("#edit_banner_image_button").click(async () => {
 });
 
 // displays the user selected banner image using Jimp in the edit banner image modal
-const displayBannerImage = async (path) => {
-  if (path.length > 0) {
-    let original_image_path = path[0];
+const displayBannerImage = async (bannerImagePath) => {
+  if (bannerImagePath.length > 0) {
+    let original_image_path = bannerImagePath[0];
     let image_path = original_image_path;
-    let destination_image_path = require("path").join(
-      homeDirectory,
+    let destination_image_path = window.path.join(
+      window.homeDirectory,
       "SODA",
       "banner-image-conversion"
     );
-    let converted_image_file = require("path").join(destination_image_path, "converted-tiff.jpg");
+    let converted_image_file = window.path.join(destination_image_path, "converted-tiff.jpg");
     let conversion_success = true;
-    window.imageExtension = path[0].split(".").pop();
+    window.imageExtension = bannerImagePath[0].split(".").pop();
 
     if (window.imageExtension.toLowerCase() == "tiff") {
       $("body").addClass("waiting");
@@ -1804,13 +1804,13 @@ const displayBannerImage = async (path) => {
 
       await Jimp.read(original_image_path)
         .then(async (file) => {
-          if (!fs.existsSync(destination_image_path)) {
-            fs.mkdirSync(destination_image_path);
+          if (!window.fs.existsSync(destination_image_path)) {
+            window.fs.mkdirSync(destination_image_path);
           }
 
           try {
-            if (fs.existsSync(converted_image_file)) {
-              fs.unlinkSync(converted_image_file);
+            if (window.fs.existsSync(converted_image_file)) {
+              window.fs.unlinkSync(converted_image_file);
             }
           } catch (err) {
             conversion_success = false;
@@ -1818,13 +1818,13 @@ const displayBannerImage = async (path) => {
           }
 
           return file.write(converted_image_file, async () => {
-            if (fs.existsSync(converted_image_file)) {
-              let stats = fs.statSync(converted_image_file);
+            if (window.fs.existsSync(converted_image_file)) {
+              let stats = window.fs.statSync(converted_image_file);
               let fileSizeInBytes = stats.size;
               let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
 
               if (fileSizeInMegabytes > 5) {
-                fs.unlinkSync(converted_image_file);
+                window.fs.unlinkSync(converted_image_file);
 
                 await Jimp.read(original_image_path)
                   .then((file) => {
@@ -1844,8 +1844,8 @@ const displayBannerImage = async (path) => {
                     conversion_success = false;
                     console.error(err);
                   });
-                if (fs.existsSync(converted_image_file)) {
-                  let stats = fs.statSync(converted_image_file);
+                if (window.fs.existsSync(converted_image_file)) {
+                  let stats = window.fs.statSync(converted_image_file);
                   let fileSizeInBytes = stats.size;
                   let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
 
