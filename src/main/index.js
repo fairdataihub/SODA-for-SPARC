@@ -161,11 +161,9 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
 
   spreadSheetModal.loadFile(__dirname + "/../../src/renderer/src/sections/spreadSheetModal/spreadSheet.html");
   spreadSheetModal.once("ready-to-show", async () => {
-    console.log("Ready to show now")
     //display window when ready to show
     spreadSheetModal.show();
     //send data to child window
-    console.log(spreadsheet)
     spreadSheetModal.send("requested-spreadsheet", spreadsheet);
   });
   ipcMain.on("spreadsheet-results", async (ev, res) => {
