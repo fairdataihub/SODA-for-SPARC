@@ -1,15 +1,13 @@
-import jspreadsheet from "jspreadsheet";
-
-while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
-}
+const jspreadsheet = require("jspreadsheet");
 
 // this function runs when the DOM is ready, i.e. when the document has been parsed
 document.addEventListener("DOMContentLoaded", function () {
+  const {ipcRenderer} = require("electron");
 
+  let saveAndExitManifest = document.getElementById("manifest-save-exit");
 
   //Request the spreadsheet data from main
-  window.electron.ipcRenderer.once("requested-spreadsheet", async (ev, spreadsheet) => {
+  ipcRenderer.once("requested-spreadsheet", async (ev, spreadsheet) => {
     console.log("We have the spreadsheet data again")
     if (!spreadsheet || spreadsheet === "") {
       return;
