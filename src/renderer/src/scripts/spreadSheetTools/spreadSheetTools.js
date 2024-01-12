@@ -1,14 +1,9 @@
-const jspreadsheet = require("jspreadsheet");
-
 // this function runs when the DOM is ready, i.e. when the document has been parsed
 document.addEventListener("DOMContentLoaded", function () {
-  const {ipcRenderer} = require("electron");
-
-  let saveAndExitManifest = document.getElementById("manifest-save-exit");
+  const { ipcRenderer } = require("electron");
 
   //Request the spreadsheet data from main
   ipcRenderer.once("requested-spreadsheet", async (ev, spreadsheet) => {
-    console.log("We have the spreadsheet data again")
     if (!spreadsheet || spreadsheet === "") {
       return;
     } else {
