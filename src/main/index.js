@@ -162,7 +162,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
   if(is.dev && process.env['ELECTRON_RENDERER_URL']) {
   spreadSheetModal.loadFile(__dirname + "/../../src/renderer/src/assets/spreadSheetModal/spreadSheet.html");
   } else {
-    spreadSheetModal.loadFile(join(__dirname, '../renderer/assets/spreadSheetModal/spreadSheet.html'))
+    spreadSheetModal.loadFile(join(__dirname, '../renderer/src/assets/spreadSheetModal/spreadSheet.html'))
   }
   spreadSheetModal.once("ready-to-show", async () => {
     //display window when ready to show
