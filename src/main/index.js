@@ -159,7 +159,9 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
     }
   });
 
-  spreadSheetModal.loadFile(__dirname + "/../../src/renderer/src/sections/spreadSheetModal/spreadSheet.html");
+
+  spreadSheetModal.loadFile(__dirname + "/../../src/renderer/src/assets/spreadSheetModal/spreadSheet.html");
+
   spreadSheetModal.once("ready-to-show", async () => {
     //display window when ready to show
     spreadSheetModal.show();
