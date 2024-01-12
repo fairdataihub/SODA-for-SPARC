@@ -218,6 +218,13 @@ const hideAndShowElementsDependingOnStartType = (pageElement) => {
   }
 };
 
+const guidedResetLocalGenerationUI = () => {
+  // Hide the local dataset copy generation section that containst the table/generation progress
+  document.getElementById("guided-section-local-generation-status-table").classList.add("hidden");
+  // Hide the local dataset generation success section
+  document.getElementById("guided-section-post-local-generation-success").classList.add("hidden");
+};
+
 const folderImportedFromPennsieve = (folderJSONPath) => {
   return folderJSONPath.type === "bf";
 };
@@ -1934,6 +1941,31 @@ const savePageChanges = async (pageBeingLeftID) => {
         const changes = changesTextArea.value.trim();
         sodaJSONObj["dataset-metadata"]["CHANGES"] = changes;
       }
+    }
+    if (pageBeingLeftID === "guided-create-local-copy-tab") {
+      // If the user generated a local copy of the dataset, ask them if they would like to delete it
+      if (fs.existsSync(sodaJSONObj["path-to-local-dataset-copy"])) {
+        if (!sodaJSONObj["user-confirmed-to-keep-local-copy"]) {
+          const deleteLocalCopy = await swalConfirmAction(
+            null,
+            "Would you like SODA to delete your local dataset copy?",
+            "Deleting your local dataset copy will free up space on your computer.",
+            "Yes",
+            "No"
+          );
+          if (deleteLocalCopy) {
+            // User chose to delete the local copy
+            fs.rmdirSync(sodaJSONObj["path-to-local-dataset-copy"], { recursive: true });
+            delete sodaJSONObj["path-to-local-dataset-copy"];
+            delete sodaJSONObj["user-confirmed-to-keep-local-copy"];
+          } else {
+            // User chose to keep the local copy so set the user-confirmed-to-keep-local-copy to true
+            // So they don't get asked again
+            sodaJSONObj["user-confirmed-to-keep-local-copy"] = true;
+          }
+        }
+      }
+      sodaJSONObj["path-to-local-dataset-copy"];
     }
 
     if (pageBeingLeftID === "guided-dataset-dissemination-tab") {
@@ -6480,15 +6512,7 @@ const openPage = async (targetPageID) => {
         createCopySection.classList.add("hidden");
       }
 
-      // Hide the local dataset copy generation section that containst the table/generation progress
-      document
-        .getElementById("guided-section-local-generation-status-table")
-        .classList.add("hidden");
-
-      // Hide the local dataset generation success section
-      document
-        .getElementById("guided-section-post-local-generation-success")
-        .classList.add("hidden");
+      guidedResetLocalGenerationUI();
     }
 
     if (targetPageID === "guided-dataset-generation-confirmation-tab") {
@@ -14448,6 +14472,9 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
       path.join(filePath, guidedDatasetName, "code_description.xlsx")
     );
 
+    // Save the location of the generated dataset to the sodaJSONObj
+    sodaJSONObj["path-to-local-dataset-copy"] = path.join(filePath, guidedDatasetName);
+
     // Update UI for successful local dataset generation
     updateDatasetUploadProgressTable("local", {
       "Generation status": `Dataset successfully generated locally`,
@@ -14457,6 +14484,7 @@ ipcRenderer.on("selected-guided-local-dataset-generation-path", async (event, fi
     // Handle and log errors
     const errorMessage = userErrorMessage(error);
     console.error(errorMessage);
+    guidedResetLocalGenerationUI();
     await swalShowError("Error generating dataset locally", errorMessage);
   }
   guidedSetNavLoadingState(false); // Unlock the nav after local dataset generation is done
