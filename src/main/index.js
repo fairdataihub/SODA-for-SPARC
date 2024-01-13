@@ -160,7 +160,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
   });
 
   if(is.dev && process.env['ELECTRON_RENDERER_URL']) {
-  spreadSheetModal.loadFile(__dirname + "/../../src/renderer/src/assets/spreadSheetModal/spreadSheet.html");
+  spreadSheetModal.loadFile(__dirname + "/../../src/renderer/public/spreadSheetModal/spreadSheet.html");
   } else {
     spreadSheetModal.loadFile(join(__dirname, '../renderer/spreadSheetModal/spreadSheet.html'))
   }
