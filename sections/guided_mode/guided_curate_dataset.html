@@ -2715,15 +2715,6 @@
               style="display: block; margin-left: 0px; margin-right: 0px"
             ></div>
           </div>
-          <div class="guided--section hidden">
-            <button
-              class="ui positive button soda-green-background"
-              id="guided-button-generate-local-dataset-copy"
-              style="width: 350px !important"
-            >
-              Generate local dataset copy
-            </button>
-          </div>
         </div>
       </div>
 
@@ -2744,6 +2735,7 @@
           <div class="guided--capsule" id="guided-add-code-metadata-capsule"></div>
           <div class="guided--capsule" id="guided-create-readme-metadata-capsule"></div>
           <div class="guided--capsule" id="guided-create-changes-metadata-capsule"></div>
+          <div class="guided--capsule" id="guided-create-local-copy-capsule"></div>
         </div>
 
         <div class="guided--page" id="guided-dataset-metadata-intro-tab" data-page-name="Intro">
@@ -4714,6 +4706,80 @@
             </div>
           </div>
         </div>
+        <div
+          id="guided-create-local-copy-tab"
+          class="guided--page"
+          data-page-name="Complete dataset structure review"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Complete dataset structure review</h1>
+            <p class="help-text">
+              The tree view displayed below shows the complete structure of your dataset and its
+              metadata as it will be generated on Pennsieve on the final step of the curation
+              process.
+            </p>
+          </div>
+          <div class="guided--section">
+            <div
+              id="guided-folder-and-metadata-structure-review"
+              style="display: block; margin-left: 0px; margin-right: 0px"
+            ></div>
+          </div>
+          <div class="guided--section" id="guided-section-create-local-dataset-copy">
+            <h2 class="text-sub-step-title">Create a local dataset copy</h2>
+            <p class="help-text">
+              If you would like to create a local copy of your SDS compliant dataset on your
+              computer, click the button below.
+            </p>
+            <button
+              class="ui positive button soda-green-background"
+              id="guided-button-generate-local-dataset-copy"
+              style="width: 350px !important"
+            >
+              Generate local dataset copy
+            </button>
+          </div>
+          <div class="guided--section" id="guided-section-local-generation-status-table">
+            <table class="ui celled striped table mt-3" style="width: 100% !important">
+              <thead>
+                <tr>
+                  <th
+                    colspan="2"
+                    class="text-center guided--table-header"
+                    style="
+                      z-index: 2;
+                      height: 50px;
+                      position: sticky !important;
+                      top: -10px !important;
+                    "
+                  >
+                    <span>Local generation status</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="guided-tbody-local-generation-status">
+                <tr class="guided-tr-progress-bar">
+                  <td class="middle aligned" colspan="2">
+                    <progress
+                      class="progresstrack"
+                      id="guided-progress-bar-local-generation"
+                      style="width: 100%"
+                      max="100"
+                      value="0"
+                    ></progress>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="guided--section" id="guided-section-post-local-generation-success">
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" after the local dataset copy has been
+              reviewed.
+            </h2>
+          </div>
+        </div>
       </div>
 
       <div
@@ -5674,7 +5740,7 @@
               </thead>
               <tbody id="guided-tbody-pennsieve-dataset-metadata-generation">
                 <tr
-                  class="hidden upload-status-tr"
+                  class="hidden generation-status-tr"
                   id="guided-subjects-metadata-pennsieve-genration-tr"
                 >
                   <td class="middle aligned" id="guided-subjects-metadata-pennsieve-genration-text">
@@ -5786,8 +5852,8 @@
                   </th>
                 </tr>
               </thead>
-              <tbody id="guided-tbody-dataset-upload">
-                <tr id="guided-upload-progress-bar-tr">
+              <tbody id="guided-tbody-pennsieve-generation-status">
+                <tr class="guided-tr-progress-bar">
                   <td class="middle aligned" colspan="2">
                     <progress
                       class="progresstrack"

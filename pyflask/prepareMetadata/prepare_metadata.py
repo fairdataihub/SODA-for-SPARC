@@ -431,6 +431,8 @@ def save_ds_description_file(
     source = join(TEMPLATE_PATH, "dataset_description.xlsx")
     destination = join(METADATA_UPLOAD_BF_PATH, "dataset_description.xlsx") if upload_boolean else filepath
     shutil.copyfile(source, destination)
+    global namespace_logger
+    namespace_logger.info(f"constributor_info_dict: {constributor_info_dict}")
 
     # write to excel file
     wb = load_workbook(destination)
