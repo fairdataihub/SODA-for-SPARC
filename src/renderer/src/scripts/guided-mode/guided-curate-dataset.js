@@ -2032,8 +2032,8 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
     if (pageBeingLeftID === "guided-create-local-copy-tab") {
       // If the user generated a local copy of the dataset, ask them if they would like to delete it
-      if (fs.existsSync(sodaJSONObj["path-to-local-dataset-copy"])) {
-        if (!sodaJSONObj["user-confirmed-to-keep-local-copy"]) {
+      if (window.fs.existsSync(window.sodaJSONObj["path-to-local-dataset-copy"])) {
+        if (!window.sodaJSONObj["user-confirmed-to-keep-local-copy"]) {
           const deleteLocalCopy = await swalConfirmAction(
             null,
             "Would you like SODA to delete your local dataset copy?",
@@ -2043,17 +2043,17 @@ const savePageChanges = async (pageBeingLeftID) => {
           );
           if (deleteLocalCopy) {
             // User chose to delete the local copy
-            fs.rmdirSync(sodaJSONObj["path-to-local-dataset-copy"], { recursive: true });
-            delete sodaJSONObj["path-to-local-dataset-copy"];
-            delete sodaJSONObj["user-confirmed-to-keep-local-copy"];
+            window.fs.rmdirSync(sodaJSONObj["path-to-local-dataset-copy"], { recursive: true });
+            delete window.sodaJSONObj["path-to-local-dataset-copy"];
+            delete window.sodaJSONObj["user-confirmed-to-keep-local-copy"];
           } else {
             // User chose to keep the local copy so set the user-confirmed-to-keep-local-copy to true
             // So they don't get asked again
-            sodaJSONObj["user-confirmed-to-keep-local-copy"] = true;
+            window.sodaJSONObj["user-confirmed-to-keep-local-copy"] = true;
           }
         }
       }
-      sodaJSONObj["path-to-local-dataset-copy"];
+      window.sodaJSONObj["path-to-local-dataset-copy"];
     }
 
     if (pageBeingLeftID === "guided-dataset-dissemination-tab") {
@@ -14521,13 +14521,12 @@ window.electron.ipcRenderer.on(
       unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
 
       // Get available free memory on disk
-      const diskSpaceRes = await checkDiskSpace(filePath);
-      const freeMemoryInBytes = diskSpaceRes.free;
+      const freeMemoryInBytes = await window.electron.ipcRenderer.invoke("getDiskSpace", filePath);
 
       // Get the size of the dataset to be generated
       const localDatasetSizeReq = await client.post(
         "/curate_datasets/dataset_size",
-        { soda_json_structure: sodaJSONObj },
+        { soda_json_structure: window.sodaJSONObj },
         { timeout: 0 }
       );
       const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
@@ -14545,10 +14544,10 @@ window.electron.ipcRenderer.on(
       await guidedCreateManifestFilesAndAddToDatasetStructure();
 
       // Get the dataset name based on the sodaJSONObj
-      const guidedDatasetName = guidedGetDatasetName(sodaJSONObj);
+      const guidedDatasetName = guidedGetDatasetName(window.sodaJSONObj);
 
       // Create a temporary copy of sodaJSONObj for local dataset generation
-      const sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
+      const sodaJSONObjCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
       sodaJSONObjCopy["generate-dataset"] = {
         "dataset-name": guidedDatasetName,
         destination: "local",
@@ -14580,7 +14579,7 @@ window.electron.ipcRenderer.on(
         await new Promise((resolve) => setTimeout(resolve, 500));
 
         // Get the number of files that need to be generated to calculate the progress
-        const numberOfFilesToGenerate = countFilesInDatasetStructure(datasetStructureJSONObj);
+        const numberOfFilesToGenerate = countFilesInDatasetStructure(window.datasetStructureJSONObj);
         while (true) {
           try {
             const response = await client.get(`/curate_datasets/curation/progress`);
@@ -14631,22 +14630,22 @@ window.electron.ipcRenderer.on(
       });
 
       // Generate all dataset metadata files
-      await guidedGenerateSubjectsMetadata(path.join(filePath, guidedDatasetName, "subjects.xlsx"));
-      await guidedGenerateSamplesMetadata(path.join(filePath, guidedDatasetName, "samples.xlsx"));
+      await guidedGenerateSubjectsMetadata(window.path.join(filePath, guidedDatasetName, "subjects.xlsx"));
+      await guidedGenerateSamplesMetadata(window.path.join(filePath, guidedDatasetName, "samples.xlsx"));
       await guidedGenerateSubmissionMetadata(
-        path.join(filePath, guidedDatasetName, "submission.xlsx")
+        window.path.join(filePath, guidedDatasetName, "submission.xlsx")
       );
       await guidedGenerateDatasetDescriptionMetadata(
-        path.join(filePath, guidedDatasetName, "dataset_description.xlsx")
+        window.path.join(filePath, guidedDatasetName, "dataset_description.xlsx")
       );
-      await guidedGenerateReadmeMetadata(path.join(filePath, guidedDatasetName, "README.txt"));
-      await guidedGenerateChangesMetadata(path.join(filePath, guidedDatasetName, "CHANGES.txt"));
+      await guidedGenerateReadmeMetadata(window.path.join(filePath, guidedDatasetName, "README.txt"));
+      await guidedGenerateChangesMetadata(window.path.join(filePath, guidedDatasetName, "CHANGES.txt"));
       await guidedGenerateCodeDescriptionMetadata(
-        path.join(filePath, guidedDatasetName, "code_description.xlsx")
+        window.path.join(filePath, guidedDatasetName, "code_description.xlsx")
       );
 
       // Save the location of the generated dataset to the sodaJSONObj
-      sodaJSONObj["path-to-local-dataset-copy"] = path.join(filePath, guidedDatasetName);
+      window.sodaJSONObj["path-to-local-dataset-copy"] = window.path.join(filePath, guidedDatasetName);
 
       // Update UI for successful local dataset generation
       updateDatasetUploadProgressTable("local", {

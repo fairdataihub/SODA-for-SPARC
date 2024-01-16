@@ -136,8 +136,8 @@ if (process.contextIsolated) {
         let fsStatsObj = fs.lstatSync(filepath);
         return fsStatsObj.isDirectory();
       },
-      rmdirSync: (dirpath) => {
-        return fs.rmdirSync(dirpath)
+      rmdirSync: (dirpath, options) => {
+        return fs.rmdirSync(dirpath, options)
       },
       openSync: (filepath, flag) => {
         return fs.openSync(filepath, flag)
