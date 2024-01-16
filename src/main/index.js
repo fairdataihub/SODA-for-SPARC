@@ -522,10 +522,10 @@ const initialize = () => {
         }
 
         // start_pre_flight_checks();
-        // if (!buildIsBeta) {
+        if (!buildIsBeta) {
           log.info("Checking for updates in initialize");
           autoUpdater.checkForUpdatesAndNotify();
-        // }
+        }
         updatechecked = true;
       }, 6000);
     })
