@@ -675,3 +675,18 @@ ipcMain.handle("open-manifest-preview-location", async () => {
 
   return result.filePaths;
 });
+
+
+ipcMain.on("guided-select-local-dataset-generation-path", (event) => {
+  const mainWindow = BrowserWindow.getFocusedWindow();
+
+  // Get the path to the directory where the user wants to save the spreadsheet
+  const spreadsheetPath = dialog.showOpenDialogSync(mainWindow, {
+    properties: ["openDirectory"],
+    title: "Select a folder to copy the dataset to",
+  });
+
+  if (spreadsheetPath) {
+    event.sender.send("selected-guided-local-dataset-generation-path", spreadsheetPath[0]);
+  }
+});
