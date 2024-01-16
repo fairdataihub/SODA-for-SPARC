@@ -2,6 +2,7 @@ import { contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import os from "os"
 import fs from "fs-extra"
+import {writeFile} from "fs/promises"
 import path from "path"
 import process from "process"
 import log from 'electron-log'
@@ -76,6 +77,9 @@ if (process.contextIsolated) {
       },
       writeFileSync: (filepath, data) => {
         return fs.writeFileSync(filepath, data)
+      },
+      writeFileAsync: async (destination, data) => {
+        return await writeFile(destination, data)
       },
       writeFile: (destinationPath, data, errcallback) => {
         return fs.writeFile(destinationPath, data, errcallback)

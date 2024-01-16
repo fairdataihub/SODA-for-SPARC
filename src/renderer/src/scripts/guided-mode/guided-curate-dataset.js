@@ -1256,7 +1256,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
-    // TODO: Convert to new conventions
     if (pageBeingLeftID === "guided-subjects-pooling-tab") {
       const pools =
         window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
@@ -3398,7 +3397,7 @@ const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
       guidedManifestData[highLevelFolder]["headers"],
       guidedManifestData[highLevelFolder]["data"]
     );
-    // TODO: Doesnt have to be global?
+
     let jsonManifest = JSON.stringify(manifestJSON);
 
     const manifestPath = window.path.join(
@@ -3976,7 +3975,6 @@ window.guidedPrepareHomeScreen = async () => {
   guidedUnLockSideBar();
 };
 
-// TODO: Convert to new conventions
 const guidedShowTreePreview = (new_dataset_name, targetElementId) => {
   const folderStructurePreview = document.getElementById(targetElementId);
   $(folderStructurePreview).jstree({
@@ -6972,7 +6970,7 @@ const renderSubjectsTable = () => {
     .join("\n");
   document.getElementById("subject-specification-table-body").innerHTML = subjectElementRows;
 
-  // Add event listeners to the subject edit buttons TODO: Convert to new conventions
+  // Add event listeners to the subject edit buttons
   document.querySelectorAll(".guided-subject-edit-button").forEach((button) => {
     button.addEventListener("click", async () => {
       const subjectName = button.dataset.subjectName;
@@ -8712,7 +8710,6 @@ const updateFolderStructureUI = (folderPath) => {
 
   fileExplorer.classList.remove("file-explorer-transition");
 
-  //TODO: Figure out why this is undefined when transitioning with no subjects
   $("#guided-input-global-path").val(`dataset_root/${folderPath}`);
   window.organizeDSglobalPath = $("#guided-input-global-path")[0];
   var filtered = window.getGlobalPath(window.organizeDSglobalPath);
@@ -10672,7 +10669,7 @@ window.specifySubject = (event, subjectNameInput) => {
         subjectIdCellToAddNameTo[0].parentElement.nextElementSibling.children[0];
       trashCanElement.style.display = "block";
 
-      // TODO: Convert to new conventions
+
       if (subjectName.length > 0) {
         const subjectNameIsValid = window.evaluateStringAgainstSdsRequirements(
           subjectName,
@@ -10686,10 +10683,10 @@ window.specifySubject = (event, subjectNameInput) => {
         removeAlertMessageIfExists(subjectNameInput);
         if (subjectNameInput.attr("data-prev-name")) {
           const subjectToRename = subjectNameInput.attr("data-prev-name");
-          sodaJSONObj.renameSubject(subjectToRename, subjectName);
+          window.sodaJSONObj.renameSubject(subjectToRename, subjectName);
         } else {
           //case where subject name is valid and not being renamed:
-          sodaJSONObj.addSubject(subjectName);
+          window.sodaJSONObj.addSubject(subjectName);
         }
         subjectIdCellToAddNameTo.html(subjectNameElement);
         addSubjectSpecificationTableRow();
@@ -11171,7 +11168,6 @@ const confirmOnBlur = (element) => {
   document.getElementById(element).addEventListener("blur", onBlurEvent);
 };
 
-// TODO: Convert to new conventions ( until the STOP DELETING HERE line )
 const addSubjectSpecificationTableRow = () => {
   const subjectSpecificationTableBody = document.getElementById("subject-specification-table-body");
   //check if subject specification table body has an input with the name guided-subject-id
@@ -11200,7 +11196,7 @@ const addSubjectSpecificationTableRow = () => {
 
 const getExistingSubjectNames = () => {
   // Get all subjects in pools and outside of pools
-  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
   // Combine the two arrays
   const subjects = [...subjectsInPools, ...subjectsOutsidePools];
   // Map each subject object to its name
@@ -11208,7 +11204,7 @@ const getExistingSubjectNames = () => {
 };
 
 const getSubjectsPool = (subjectName) => {
-  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
   for (const subject of subjectsInPools) {
     if (subject["subjectName"] === subjectName) {
       return subject["poolName"];
@@ -11218,7 +11214,7 @@ const getSubjectsPool = (subjectName) => {
 };
 
 const getSubjectsSamples = (subjectName) => {
-  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
   for (const subject of subjectsInPools) {
     if (subject["subjectName"] === subjectName) {
       return subject["samples"];
@@ -11233,12 +11229,12 @@ const getSubjectsSamples = (subjectName) => {
 };
 
 const getExistingPoolNames = () => {
-  return Object.keys(sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"]);
+  return Object.keys(window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"]);
 };
 
 const getExistingSampleNames = () => {
   // Get all samples in pools and outside of pools
-  const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
+  const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
   // Combine the two arrays
   return [...samplesInPools, ...samplesOutsidePools].map((sample) => sample["sampleName"]);
 };
@@ -11275,7 +11271,7 @@ document
     );
   });
 
-// TODO: Convert to new conventions
+
 window.electron.ipcRenderer.on(
   "selected-create-dataset-structure-spreadsheet-path",
   async (event, path) => {
@@ -11296,7 +11292,7 @@ window.electron.ipcRenderer.on(
         filePath
       );
 
-      sodaJSONObj["dataset-structure-spreadsheet-path"] = filePath;
+      window.sodaJSONObj["dataset-structure-spreadsheet-path"] = filePath;
       setUiBasedOnSavedDatasetStructurePath(filePath);
       const openTemplateForUser = await swalConfirmAction(
         null,
@@ -11467,7 +11463,6 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
 };
 
 // CLICK HANDLER THAT EXTRACTS THE DATASET STRUCTURE FROM A SPREADSHEET
-// TODO: Convert to new conventions
 document
   .getElementById("guided-button-import-dataset-structure-from-spreadsheet")
   .addEventListener("click", async () => {
@@ -14492,14 +14487,6 @@ const convertBytesToGb = (bytes) => {
   return roundToHundredth(bytes / 1024 ** 3);
 };
 
-// Add click event listener to the button triggering local dataset generation
-document
-  .getElementById("guided-button-generate-local-dataset-copy")
-  .addEventListener("click", () => {
-    // Send an IPC message to select the local dataset generation path
-    window.electron.ipcRenderer.send("guided-select-local-dataset-generation-path");
-  });
-
 // Counts the number of files in the dataset structure
 // Note: This function should only be used for local datasets (Not datasets pulled from Pennsieve)
 const countFilesInDatasetStructure = (datasetStructure) => {
@@ -14748,7 +14735,7 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
 };
 const guidedGenerateSamplesMetadata = async (destination) => {
   // Early return if samples metadata table is empty or the tab is skipped
-  if (samplesTableData.length === 0 || pageIsSkipped("guided-create-samples-metadata-tab")) {
+  if (window.samplesTableData.length === 0 || pageIsSkipped("guided-create-samples-metadata-tab")) {
     return;
   }
 
@@ -14757,7 +14744,8 @@ const guidedGenerateSamplesMetadata = async (destination) => {
   // Prepare UI elements for Pennsieve upload (if applicable)
   const samplesMetadataUploadText = document.getElementById(
     "guided-samples-metadata-pennsieve-genration-text"
-  ); // TODO: Update to new conventions
+  ); 
+
   if (generationDestination === "Pennsieve") {
     document
       .getElementById("guided-samples-metadata-pennsieve-genration-tr")
@@ -14772,7 +14760,7 @@ const guidedGenerateSamplesMetadata = async (destination) => {
       `/prepare_metadata/samples_file`,
       {
         filepath: generationDestination === "Pennsieve" ? "" : destination,
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfAccount,
         selected_dataset:
           generationDestination === "Pennsieve" ? guidedGetDatasetName(sodaJSONObj) : "",
         samples_str: samplesTableData,
@@ -14789,7 +14777,7 @@ const guidedGenerateSamplesMetadata = async (destination) => {
       samplesMetadataUploadText.innerHTML = `Samples metadata successfully uploaded`;
     }
 
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -15114,9 +15102,8 @@ const guidedGenerateCodeDescriptionMetadata = async (destination) => {
     throw new Error(emessage);
   }
 };
-//TODO: Update to new conventions
 const guidedGenerateReadmeMetadata = async (destination) => {
-  const guidedReadMeMetadata = sodaJSONObj["dataset-metadata"]["README"];
+  const guidedReadMeMetadata = window.sodaJSONObj["dataset-metadata"]["README"];
 
   const generationDestination = destination === "Pennsieve" ? "Pennsieve" : "local";
 
@@ -15142,13 +15129,13 @@ const guidedGenerateReadmeMetadata = async (destination) => {
         {
           params: {
             file_type: "README.txt",
-            selected_account: defaultBfAccount,
+            selected_account: window.defaultBfAccount,
             selected_dataset: guidedGetDatasetName(sodaJSONObj),
           },
         }
       );
     } else {
-      await fs.writeFile(destination, guidedReadMeMetadata);
+      await window.fs.writeFileAsync(destination, guidedReadMeMetadata);
     }
 
     // Update UI for successful generation (Pennsieve) and send success event
@@ -15158,7 +15145,7 @@ const guidedGenerateReadmeMetadata = async (destination) => {
     }
 
     // Send successful README metadata generation event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -15176,7 +15163,7 @@ const guidedGenerateReadmeMetadata = async (destination) => {
     }
 
     // Send failed README metadata generation event to Kombucha
-    ipcRenderer.send(
+    window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_METADATA,
@@ -15187,13 +15174,12 @@ const guidedGenerateReadmeMetadata = async (destination) => {
     throw new Error(emessage); // Re-throw for further handling
   }
 };
-//TODO: Update to new conventions
 const guidedGenerateChangesMetadata = async (destination) => {
   // Early return if changes metadata table is empty or the tab is skipped
   if (pageIsSkipped("guided-create-changes-metadata-tab")) {
     return;
   }
-  const guidedChangesMetadata = sodaJSONObj["dataset-metadata"]["CHANGES"];
+  const guidedChangesMetadata = window.sodaJSONObj["dataset-metadata"]["CHANGES"];
 
   const generationDestination = destination === "Pennsieve" ? "Pennsieve" : "local";
 
@@ -15219,13 +15205,13 @@ const guidedGenerateChangesMetadata = async (destination) => {
         {
           params: {
             file_type: "CHANGES.txt",
-            selected_account: defaultBfAccount,
+            selected_account: window.defaultBfAccount,
             selected_dataset: guidedGetDatasetName(sodaJSONObj),
           },
         }
       );
     } else {
-      await fs.writeFile(destination, guidedChangesMetadata);
+      await window.fs.writeFileAsync(destination, guidedChangesMetadata);
     }
 
     // Update UI for successful generation (Pennsieve) and send success event
@@ -15295,10 +15281,9 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
       window.sodaJSONObj["digital-metadata"]["description"]["data-collection"];
     let guidedPennsievePrimaryConclusion =
       window.sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
-    // TODO: Update new conventions
-    const guidedTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
-    const guidedLicense = sodaJSONObj["digital-metadata"]["license"];
-    const guidedBannerImagePath = sodaJSONObj["digital-metadata"]["banner-image-path"];
+    const guidedTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
+    const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
+    const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]["banner-image-path"];
 
     // get apps base path
     const basepath = await window.electron.ipcRenderer.invoke("get-app-path", undefined);
@@ -15618,7 +15603,6 @@ const guidedUploadDatasetToPennsieve = async () => {
             selected_account: window.defaultBfAccount,
           },
         });
-        // TODO: This is window?
         window.datasetList = [];
         window.datasetList = responseObject.data.datasets;
       } catch (error) {
@@ -15775,7 +15759,7 @@ const guidedUploadDatasetToPennsieve = async () => {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
       });
-      // TODO: This needs to be redone as we cant access app i dont think?
+      // TODO: Update to new conventions
       app.showExitPrompt = false;
       app.quit();
     });
@@ -15837,7 +15821,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       });
     }
 
-    // TODO: Reintegrate
+    // TODO: Update to new conventions
     // logProgressToAnalytics(totalUploadedFiles, main_generated_dataset_size);
 
     //If the curate function is complete, clear the interval
