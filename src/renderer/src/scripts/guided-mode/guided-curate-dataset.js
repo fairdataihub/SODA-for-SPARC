@@ -6835,7 +6835,7 @@ const guidedOpenEntityEditSwal = async (entityName) => {
         <br />
       </p>
       <div class="space-between w-100 align-flex-center">
-        <p class="help-text m-0 mr-1">${entityPrefix}</p>
+        <p class="help-text m-0 mr-1 no-text-wrap">${entityPrefix}</p>
         <input value="${entityName.replace(
           entityPrefix,
           ""
@@ -11714,7 +11714,7 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
         <br />
       </p>
       <div class="space-between w-100 align-flex-center">
-        <p class="help-text m-0 mr-1">${entityPrefix}</p>
+        <p class="help-text m-0 mr-1 no-text-wrap">${entityPrefix}</p>
         <input id='input-entity-addition' class='guided--input' type='text' name='guided-subject-id' placeholder='Enter ${entityNameSingular} ID and press enter'/>
         <button
           class="ui positive button soda-green-background ml-1"
