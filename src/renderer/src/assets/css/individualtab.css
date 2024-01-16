@@ -1353,6 +1353,7 @@
   border-bottom: 1px solid rgba(34, 36, 38, 0.15) !important;
   border-radius: 0 !important;
   color: inherit !important;
+  background-image: none !important; /* Prevents lib icon from appearing */
 }
 
 .button-add-species {

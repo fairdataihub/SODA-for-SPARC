@@ -10,6 +10,16 @@ import {
   startNew,
   resumeExisting,
 } from "../../assets/lotties/lotties";
+import {
+  existingDataset,
+  modifyDataset,
+  blackArrow,
+  questionList,
+  datasetMetadataIntroLottie,
+  addScienceData,
+  startNew,
+  resumeExisting,
+} from "../../assets/lotties/lotties";
 import { resetLazyLoading, guidedUnLockSideBar } from "../../assets/nav";
 import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
@@ -6881,7 +6891,7 @@ const guidedOpenEntityEditSwal = async (entityName) => {
         <br />
       </p>
       <div class="space-between w-100 align-flex-center">
-        <p class="help-text m-0 mr-1">${entityPrefix}</p>
+        <p class="help-text m-0 mr-1 no-text-wrap">${entityPrefix}</p>
         <input value="${entityName.replace(
           entityPrefix,
           ""
@@ -7756,17 +7766,19 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
   const loadingSwal = Swal.fire({
     title: "Resuming where you last left off",
     html: `
-    <div class="lds-roller">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
-  `,
+      <div class="guided--loading-div">
+        <div class="lds-roller">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+    `,
     width: 500,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -10669,7 +10681,6 @@ window.specifySubject = (event, subjectNameInput) => {
         subjectIdCellToAddNameTo[0].parentElement.nextElementSibling.children[0];
       trashCanElement.style.display = "block";
 
-
       if (subjectName.length > 0) {
         const subjectNameIsValid = window.evaluateStringAgainstSdsRequirements(
           subjectName,
@@ -11229,7 +11240,9 @@ const getSubjectsSamples = (subjectName) => {
 };
 
 const getExistingPoolNames = () => {
-  return Object.keys(window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"]);
+  return Object.keys(
+    window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
+  );
 };
 
 const getExistingSampleNames = () => {
@@ -11270,7 +11283,6 @@ document
       "open-create-dataset-structure-spreadsheet-path-selection-dialog"
     );
   });
-
 
 window.electron.ipcRenderer.on(
   "selected-create-dataset-structure-spreadsheet-path",
@@ -11755,7 +11767,7 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
         <br />
       </p>
       <div class="space-between w-100 align-flex-center">
-        <p class="help-text m-0 mr-1">${entityPrefix}</p>
+        <p class="help-text m-0 mr-1 no-text-wrap">${entityPrefix}</p>
         <input id='input-entity-addition' class='guided--input' type='text' name='guided-subject-id' placeholder='Enter ${entityNameSingular} ID and press enter'/>
         <button
           class="ui positive button soda-green-background ml-1"
@@ -12668,8 +12680,8 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
             class="${highLevelFolderName}-selection-aside-item selection-aside-item"
             style="align-self: center; width: 97%; direction: ltr;"
             data-path-suffix="${subject.poolName ? subject.poolName + "/" : ""}${
-        subject.subjectName
-      }"
+              subject.subjectName
+            }"
           >${subject.subjectName}</a>
         `;
     })
@@ -14542,6 +14554,8 @@ window.electron.ipcRenderer.on(
 
       // Attach manifest files to the dataset structure before local generation
       await guidedCreateManifestFilesAndAddToDatasetStructure();
+      // Attach manifest files to the dataset structure before local generation
+      await guidedCreateManifestFilesAndAddToDatasetStructure();
 
       // Get the dataset name based on the sodaJSONObj
       const guidedDatasetName = guidedGetDatasetName(window.sodaJSONObj);
@@ -14579,7 +14593,9 @@ window.electron.ipcRenderer.on(
         await new Promise((resolve) => setTimeout(resolve, 500));
 
         // Get the number of files that need to be generated to calculate the progress
-        const numberOfFilesToGenerate = countFilesInDatasetStructure(window.datasetStructureJSONObj);
+        const numberOfFilesToGenerate = countFilesInDatasetStructure(
+          window.datasetStructureJSONObj
+        );
         while (true) {
           try {
             const response = await client.get(`/curate_datasets/curation/progress`);
@@ -14630,22 +14646,33 @@ window.electron.ipcRenderer.on(
       });
 
       // Generate all dataset metadata files
-      await guidedGenerateSubjectsMetadata(window.path.join(filePath, guidedDatasetName, "subjects.xlsx"));
-      await guidedGenerateSamplesMetadata(window.path.join(filePath, guidedDatasetName, "samples.xlsx"));
+      await guidedGenerateSubjectsMetadata(
+        window.path.join(filePath, guidedDatasetName, "subjects.xlsx")
+      );
+      await guidedGenerateSamplesMetadata(
+        window.path.join(filePath, guidedDatasetName, "samples.xlsx")
+      );
       await guidedGenerateSubmissionMetadata(
         window.path.join(filePath, guidedDatasetName, "submission.xlsx")
       );
       await guidedGenerateDatasetDescriptionMetadata(
         window.path.join(filePath, guidedDatasetName, "dataset_description.xlsx")
       );
-      await guidedGenerateReadmeMetadata(window.path.join(filePath, guidedDatasetName, "README.txt"));
-      await guidedGenerateChangesMetadata(window.path.join(filePath, guidedDatasetName, "CHANGES.txt"));
+      await guidedGenerateReadmeMetadata(
+        window.path.join(filePath, guidedDatasetName, "README.txt")
+      );
+      await guidedGenerateChangesMetadata(
+        window.path.join(filePath, guidedDatasetName, "CHANGES.txt")
+      );
       await guidedGenerateCodeDescriptionMetadata(
         window.path.join(filePath, guidedDatasetName, "code_description.xlsx")
       );
 
       // Save the location of the generated dataset to the sodaJSONObj
-      window.sodaJSONObj["path-to-local-dataset-copy"] = window.path.join(filePath, guidedDatasetName);
+      window.sodaJSONObj["path-to-local-dataset-copy"] = window.path.join(
+        filePath,
+        guidedDatasetName
+      );
 
       // Update UI for successful local dataset generation
       updateDatasetUploadProgressTable("local", {
@@ -14743,7 +14770,7 @@ const guidedGenerateSamplesMetadata = async (destination) => {
   // Prepare UI elements for Pennsieve upload (if applicable)
   const samplesMetadataUploadText = document.getElementById(
     "guided-samples-metadata-pennsieve-genration-text"
-  ); 
+  );
 
   if (generationDestination === "Pennsieve") {
     document
@@ -15444,21 +15471,6 @@ const openGuidedDatasetRenameSwal = async () => {
   }
 };
 
-function generateReadableFileSize(bytes) {
-  const units = ["B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"];
-  let unitIndex = 0;
-
-  // Use the provided `bytes` argument as the starting size
-  let size = bytes;
-
-  while (size >= 1024 && unitIndex < units.length - 1) {
-    size /= 1024;
-    unitIndex++;
-  }
-
-  return `${size.toFixed(2)} ${units[unitIndex]}`;
-}
-
 const guidedUploadDatasetToPennsieve = async () => {
   window.updateJSONStructureDSstructure();
 
@@ -15795,8 +15807,6 @@ const guidedUploadDatasetToPennsieve = async () => {
           (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
         setGuidedProgressBarValue("pennsieve", percentOfDatasetUploaded);
 
-        totalSizePrint = generateReadableFileSize(main_total_generate_dataset_size);
-        console.log("total size print", totalSizePrint);
         if (main_curate_progress_message.includes("Renaming files...")) {
           updateDatasetUploadProgressTable("pennsieve", {
             "Upload status": `${main_curate_progress_message}`,
