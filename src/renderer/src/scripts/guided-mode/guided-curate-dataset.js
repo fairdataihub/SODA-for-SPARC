@@ -10,16 +10,6 @@ import {
   startNew,
   resumeExisting,
 } from "../../assets/lotties/lotties";
-import {
-  existingDataset,
-  modifyDataset,
-  blackArrow,
-  questionList,
-  datasetMetadataIntroLottie,
-  addScienceData,
-  startNew,
-  resumeExisting,
-} from "../../assets/lotties/lotties";
 import { resetLazyLoading, guidedUnLockSideBar } from "../../assets/nav";
 import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
