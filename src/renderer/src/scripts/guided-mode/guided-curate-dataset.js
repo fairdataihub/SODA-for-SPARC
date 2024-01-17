@@ -100,8 +100,8 @@ const guidedCreateEventDataPrepareMetadata = (destination, value) => {
     return {
       value,
       destination: "Pennsieve",
-      dataset_name: guidedGetDatasetName(sodaJSONObj),
-      dataset_id: guidedGetDatasetId(sodaJSONObj),
+      dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+      dataset_id: guidedGetDatasetId(window.sodaJSONObj),
     };
   }
 
@@ -2043,7 +2043,9 @@ const savePageChanges = async (pageBeingLeftID) => {
           );
           if (deleteLocalCopy) {
             // User chose to delete the local copy
-            window.fs.rmdirSync(sodaJSONObj["path-to-local-dataset-copy"], { recursive: true });
+            window.fs.rmdirSync(window.sodaJSONObj["path-to-local-dataset-copy"], {
+              recursive: true,
+            });
             delete window.sodaJSONObj["path-to-local-dataset-copy"];
             delete window.sodaJSONObj["user-confirmed-to-keep-local-copy"];
           } else {
@@ -3015,9 +3017,9 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
   }
 
   // Store global variable values to the progress file before saving
-  sodaJSONObj["dataset-structure"] = datasetStructureJSONObj;
-  sodaJSONObj["subjects-table-data"] = subjectsTableData;
-  sodaJSONObj["samples-table-data"] = samplesTableData;
+  window.sodaJSONObj["dataset-structure"] = datasetStructureJSONObj;
+  window.sodaJSONObj["subjects-table-data"] = subjectsTableData;
+  window.sodaJSONObj["samples-table-data"] = samplesTableData;
 
   window.fs.writeFileSync(guidedFilePath, JSON.stringify(window.sodaJSONObj, null, 2));
 };
@@ -3567,7 +3569,7 @@ document
       validationLoadingDiv.classList.remove("hidden");
 
       let sodaJSONObjCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
-      // formatForDatasetGeneration(sodaJSONObjCopy);
+      // formatForDatasetGeneration(window.sodaJSONObjCopy);
 
       // if the user performed move, rename, delete on files in an imported dataset we need to perform those actions before creating the validation report;
       // rationale for this can be found in the function definition
@@ -5321,8 +5323,8 @@ window.openPage = async (targetPageID) => {
       // indicated that they will be adding subjects, and the user is not starting from Pennsieve
       if (
         getExistingSubjectNames().length === 0 &&
-        sodaJSONObj["starting-point"]["type"] != "bf" &&
-        sodaJSONObj["button-config"]["dataset-contains-subjects"] === "yes"
+        window.sodaJSONObj["starting-point"]["type"] != "bf" &&
+        window.sodaJSONObj["button-config"]["dataset-contains-subjects"] === "yes"
       ) {
         guidedUnSkipPage("guided-subject-structure-spreadsheet-importation-tab");
       } else {
@@ -5421,7 +5423,7 @@ window.openPage = async (targetPageID) => {
       }
 
       guidedShowTreePreview(
-        sodaJSONObj["digital-metadata"]["name"],
+        window.sodaJSONObj["digital-metadata"]["name"],
         "guided-folder-structure-review"
       );
     }
@@ -6620,7 +6622,7 @@ window.openPage = async (targetPageID) => {
     if (targetPageID === "guided-create-local-copy-tab") {
       // Show the dataset structure preview using jsTree
       guidedShowTreePreview(
-        sodaJSONObj["digital-metadata"]["name"],
+        window.sodaJSONObj["digital-metadata"]["name"],
         "guided-folder-and-metadata-structure-review"
       );
 
@@ -6628,7 +6630,7 @@ window.openPage = async (targetPageID) => {
       // (We don't display this feature when starting from Pennsieve because we don't currently have the ability
       // to copy a dataset from Pennsieve to the user's local system)
       const createCopySection = document.getElementById("guided-section-create-local-dataset-copy");
-      if (sodaJSONObj["starting-point"]["type"] === "new") {
+      if (window.sodaJSONObj["starting-point"]["type"] === "new") {
         createCopySection.classList.remove("hidden");
       } else {
         createCopySection.classList.add("hidden");
@@ -6724,7 +6726,7 @@ window.openPage = async (targetPageID) => {
       datasetLicenseReviewText.innerHTML = datasetLicense;
 
       guidedShowTreePreview(
-        sodaJSONObj["digital-metadata"]["name"],
+        window.sodaJSONObj["digital-metadata"]["name"],
         "guided-folder-structure-review-generate"
       );
     }
@@ -6933,15 +6935,15 @@ const guidedOpenEntityEditSwal = async (entityName) => {
 
   if (entityEditConfirmed.isConfirmed) {
     if (entityName.startsWith("sub-")) {
-      sodaJSONObj.renameSubject(entityName, newEntityName);
+      window.sodaJSONObj.renameSubject(entityName, newEntityName);
       renderSubjectsTable();
     }
     if (entityName.startsWith("pool-")) {
-      sodaJSONObj.renamePool(entityName, newEntityName);
+      window.sodaJSONObj.renamePool(entityName, newEntityName);
       renderPoolsTable();
     }
     if (entityName.startsWith("sam-")) {
-      sodaJSONObj.renameSample(entityName, newEntityName);
+      window.sodaJSONObj.renameSample(entityName, newEntityName);
       renderSamplesTable();
     }
   }
@@ -6980,7 +6982,7 @@ const renderSubjectsTable = () => {
 };
 
 const renderPoolsTable = () => {
-  const pools = sodaJSONObj.getPools();
+  const pools = window.sodaJSONObj.getPools();
   const poolElementRows = Object.keys(pools)
     .map((pool) => {
       return generatePoolRowElement(pool);
@@ -7028,7 +7030,7 @@ const renderPoolsTable = () => {
 };
 
 const renderSamplesTable = () => {
-  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
   //Combine sample data from subjects in and out of pools
   let subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
@@ -7552,10 +7554,10 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
 
 const guidedGetPageToReturnTo = (sodaJSONObj) => {
   // Set by window.openPage function
-  const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
+  const usersPageBeforeExit = window.sodaJSONObj["page-before-exit"];
 
   //If the dataset was successfully uploaded, send the user to the share with curation team
-  if (sodaJSONObj["previous-guided-upload-dataset-name"]) {
+  if (window.sodaJSONObj["previous-guided-upload-dataset-name"]) {
     return "guided-dataset-dissemination-tab";
   }
 
@@ -7563,7 +7565,7 @@ const guidedGetPageToReturnTo = (sodaJSONObj) => {
   const firstPageID = getNonSkippedGuidedModePages(document)[0].id;
 
   const currentSodaVersion = document.getElementById("version").innerHTML;
-  const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
+  const lastVersionOfSodaUsedOnProgressFile = window.sodaJSONObj["last-version-of-soda-used"];
 
   if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
     // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
@@ -7742,9 +7744,9 @@ const patchPreviousGuidedModeVersions = async () => {
     window.sodaJSONObj["cuartion-mode"] = "guided";
   }
 
-  if (sodaJSONObj["saved-datset-structure-json-obj"]) {
-    sodaJSONObj["dataset-structure"] = sodaJSONObj["saved-datset-structure-json-obj"];
-    delete sodaJSONObj["saved-datset-structure-json-obj"];
+  if (window.sodaJSONObj["saved-datset-structure-json-obj"]) {
+    window.sodaJSONObj["dataset-structure"] = window.sodaJSONObj["saved-datset-structure-json-obj"];
+    delete window.sodaJSONObj["saved-datset-structure-json-obj"];
   }
 
   // If no other conditions are met, return the page the user was last on
@@ -7867,9 +7869,9 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     //patches the sodajsonobj if it was created in a previous version of guided mode
     await patchPreviousGuidedModeVersions();
 
-    datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-    subjectsTableData = sodaJSONObj["subjects-table-data"];
-    samplesTableData = sodaJSONObj["samples-table-data"];
+    datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
+    subjectsTableData = window.sodaJSONObj["subjects-table-data"];
+    samplesTableData = window.sodaJSONObj["samples-table-data"];
 
     // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
     const prevSessionSkikppedPages = [...window.sodaJSONObj["skipped-pages"]];
@@ -11607,7 +11609,7 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
     if (subjectAdditionConfirmed) {
       // Add the new subjects to the dataset
       for (const subjectName of newSubjects) {
-        sodaJSONObj.addSubject(subjectName);
+        window.sodaJSONObj.addSubject(subjectName);
       }
 
       notyf.open({
@@ -13358,10 +13360,10 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
 
     // If a spreadsheet has already been generated, notify the user that they will need to
     // re-fill out the spreadsheet since the headers will be different.
-    if (sodaJSONObj["dataset-structure-spreadsheet-path"]) {
+    if (window.sodaJSONObj["dataset-structure-spreadsheet-path"]) {
       if (
-        sodaJSONObj["dataset-structure-entities"] &&
-        sodaJSONObj["dataset-structure-entities"] != textFormattedEntities
+        window.sodaJSONObj["dataset-structure-entities"] &&
+        window.sodaJSONObj["dataset-structure-entities"] != textFormattedEntities
       ) {
         // Delete the spreadsheet path since it will need to be re-generated
         delete window.sodaJSONObj["dataset-structure-spreadsheet-path"];
@@ -13371,7 +13373,7 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
     }
     // Store the dataset entities in the sodaJSONObj to track if a new spreadsheet needs to be generated
     // when the user changes the dataset structure
-    sodaJSONObj["dataset-structure-entities"] = textFormattedEntities;
+    window.sodaJSONObj["dataset-structure-entities"] = textFormattedEntities;
 
     const spansToInsertTextInto = document.querySelectorAll(
       ".sub-pool-sample-structure-description-text"
@@ -13841,8 +13843,8 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
       kombuchaEnums.Status.SUCCESS,
       {
         value: 1,
-        dataset_name: guidedGetDatasetName(sodaJSONObj),
-        dataset_id: guidedGetDatasetId(sodaJSONObj),
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
       }
     );
   } catch (error) {
@@ -13855,15 +13857,15 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
       kombuchaEnums.Status.FAIL,
       {
         value: 1,
-        dataset_name: guidedGetDatasetName(sodaJSONObj),
-        dataset_id: guidedGetDatasetId(sodaJSONObj),
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
       }
     );
     window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
-      guidedGetDatasetId(sodaJSONObj)
+      guidedGetDatasetId(window.sodaJSONObj)
     );
     console.error(error);
     let emessage = userErrorMessage(error);
@@ -13925,8 +13927,8 @@ const guidedAddDatasetDescription = async (
       kombuchaEnums.Status.SUCCESS,
       {
         value: 1,
-        dataset_name: guidedGetDatasetName(sodaJSONObj),
-        dataset_id: guidedGetDatasetId(sodaJSONObj),
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
       }
     );
   } catch (error) {
@@ -13939,15 +13941,15 @@ const guidedAddDatasetDescription = async (
       kombuchaEnums.Status.FAIL,
       {
         value: 1,
-        dataset_name: guidedGetDatasetName(sodaJSONObj),
-        dataset_id: guidedGetDatasetId(sodaJSONObj),
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
       }
     );
     window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
-      guidedGetDatasetId(sodaJSONObj)
+      guidedGetDatasetId(window.sodaJSONObj)
     );
 
     datasetDescriptionUploadText.innerHTML = "Failed to add a dataset description.";
@@ -14009,8 +14011,8 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
       kombuchaEnums.Status.SUCCESS,
       {
         value: bannerImageSize,
-        dataset_name: guidedGetDatasetName(sodaJSONObj),
-        dataset_id: guidedGetDatasetId(sodaJSONObj),
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
       }
     );
   } catch (error) {
@@ -14027,15 +14029,15 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
       kombuchaEnums.Status.FAIL,
       {
         value: bannerImageSize,
-        dataset_name: guidedGetDatasetName(sodaJSONObj),
-        dataset_id: guidedGetDatasetId(sodaJSONObj),
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
       }
     );
     window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
-      guidedGetDatasetId(sodaJSONObj)
+      guidedGetDatasetId(window.sodaJSONObj)
     );
 
     throw new Error(userErrorMessage(error));
@@ -14082,8 +14084,8 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
       kombuchaEnums.Status.SUCCESS,
       {
         value: 1,
-        dataset_name: guidedGetDatasetName(sodaJSONObj),
-        dataset_id: guidedGetDatasetId(sodaJSONObj),
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
       }
     );
   } catch (error) {
@@ -14100,15 +14102,15 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
       kombuchaEnums.Status.FAIL,
       {
         value: 1,
-        dataset_name: guidedGetDatasetName(sodaJSONObj),
-        dataset_id: guidedGetDatasetId(sodaJSONObj),
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
       }
     );
     window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
-      guidedGetDatasetId(sodaJSONObj)
+      guidedGetDatasetId(window.sodaJSONObj)
     );
     throw new Error(userErrorMessage(error));
   }
@@ -14153,8 +14155,8 @@ const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
       kombuchaEnums.Status.SUCCESS,
       {
         value: 1,
-        dataset_name: guidedGetDatasetName(sodaJSONObj),
-        dataset_id: guidedGetDatasetId(sodaJSONObj),
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
       }
     );
   } catch (error) {
@@ -14170,15 +14172,15 @@ const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
       kombuchaEnums.Status.FAIL,
       {
         value: 1,
-        dataset_name: guidedGetDatasetName(sodaJSONObj),
-        dataset_id: guidedGetDatasetId(sodaJSONObj),
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
       }
     );
     window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
-      guidedGetDatasetId(sodaJSONObj)
+      guidedGetDatasetId(window.sodaJSONObj)
     );
 
     throw new Error(userErrorMessage(error));
@@ -14270,8 +14272,8 @@ const guidedGrantUserPermission = async (
       kombuchaEnums.Status.SUCCESS,
       {
         value: 1,
-        dataset_name: guidedGetDatasetName(sodaJSONObj),
-        dataset_id: guidedGetDatasetId(sodaJSONObj),
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
       }
     );
   } catch (error) {
@@ -14293,15 +14295,15 @@ const guidedGrantUserPermission = async (
       kombuchaEnums.Status.FAIL,
       {
         value: 1,
-        dataset_name: guidedGetDatasetName(sodaJSONObj),
-        dataset_id: guidedGetDatasetId(sodaJSONObj),
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
       }
     );
     window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-      guidedGetDatasetId(sodaJSONObj)
+      guidedGetDatasetId(window.sodaJSONObj)
     );
     throw emessage;
   }
@@ -14412,8 +14414,8 @@ const guidedGrantTeamPermission = async (
       kombuchaEnums.Status.SUCCESS,
       {
         value: 1,
-        dataset_name: guidedGetDatasetName(sodaJSONObj),
-        dataset_id: guidedGetDatasetId(sodaJSONObj),
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
       }
     );
   } catch (error) {
@@ -14435,15 +14437,15 @@ const guidedGrantTeamPermission = async (
       kombuchaEnums.Status.FAIL,
       {
         value: 1,
-        dataset_name: guidedGetDatasetName(sodaJSONObj),
-        dataset_id: guidedGetDatasetId(sodaJSONObj),
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
       }
     );
     window.electron.ipcRenderer.send(
       "track-event",
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
-      guidedGetDatasetId(sodaJSONObj)
+      guidedGetDatasetId(window.sodaJSONObj)
     );
     throw emessage;
   }
@@ -14579,9 +14581,6 @@ window.electron.ipcRenderer.on(
 
       // Track the status of local dataset generation
       const trackLocalDatasetGenerationProgress = async () => {
-        // set a timeout for .5 seconds to allow the server to start generating the dataset
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
         // Get the number of files that need to be generated to calculate the progress
         const numberOfFilesToGenerate = countFilesInDatasetStructure(
           window.datasetStructureJSONObj
@@ -14628,13 +14627,19 @@ window.electron.ipcRenderer.on(
         }
       };
 
+      // set a timeout for .5 seconds to allow the server to start generating the dataset
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       await trackLocalDatasetGenerationProgress();
 
       setGuidedProgressBarValue("local", 100);
       updateDatasetUploadProgressTable("local", {
         "Generation status": `Generating metadata files`,
       });
-
+      console.log(
+        "Subjects path: ",
+        window.path.join(filePath, guidedDatasetName, "subjects.xlsx")
+      );
       // Generate all dataset metadata files
       await guidedGenerateSubjectsMetadata(
         window.path.join(filePath, guidedDatasetName, "subjects.xlsx")
@@ -14708,7 +14713,7 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
         filepath: generationDestination === "Pennsieve" ? "" : destination,
         selected_account: defaultBfAccount,
         selected_dataset:
-          generationDestination === "Pennsieve" ? guidedGetDatasetName(sodaJSONObj) : "",
+          generationDestination === "Pennsieve" ? guidedGetDatasetName(window.sodaJSONObj) : "",
         subjects_header_row: subjectsTableData,
       },
       {
@@ -14733,6 +14738,9 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
     );
   } catch (error) {
     const emessage = userErrorMessage(error);
+    userErrorMessage(error);
+    userErrorMessage(error);
+    userErrorMessage(error);
     // Update UI for generation failure (Pennsieve) and send failure event
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "error");
@@ -14778,7 +14786,7 @@ const guidedGenerateSamplesMetadata = async (destination) => {
         filepath: generationDestination === "Pennsieve" ? "" : destination,
         selected_account: window.defaultBfAccount,
         selected_dataset:
-          generationDestination === "Pennsieve" ? guidedGetDatasetName(sodaJSONObj) : "",
+          generationDestination === "Pennsieve" ? guidedGetDatasetName(window.sodaJSONObj) : "",
         samples_str: samplesTableData,
       },
       {
@@ -14823,17 +14831,18 @@ const guidedGenerateSamplesMetadata = async (destination) => {
 
 const guidedGenerateSubmissionMetadata = async (destination) => {
   // Build the submission metadata array
-  const guidedMilestones = sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+  const guidedMilestones =
+    window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
   const submissionMetadataArray = [];
   submissionMetadataArray.push({
     fundingConsortium: sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"],
     consortiumDataStandard:
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"],
-    award: sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"],
-    date: sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] || "N/A",
+      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"],
+    award: window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"],
+    date: window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] || "N/A",
     milestone: guidedMilestones[0] || "N/A",
   });
-  if (sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"].length > 1) {
+  if (window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"].length > 1) {
     for (let i = 1; i < guidedMilestones.length; i++) {
       submissionMetadataArray.push({
         fundingConsortium: "",
@@ -14870,7 +14879,7 @@ const guidedGenerateSubmissionMetadata = async (destination) => {
       {
         params: {
           selected_account: defaultBfAccount,
-          selected_dataset: guidedGetDatasetName(sodaJSONObj),
+          selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
         },
       }
     );
@@ -14921,7 +14930,7 @@ const guidedGetContributorInformation = () => {
   let guidedContributorInformation = {
     ...sodaJSONObj["dataset-metadata"]["description-metadata"]["contributor-information"],
   };
-  const guidedSparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+  const guidedSparcAward = window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
   if (datasetIsSparcFunded()) {
     // Move the SPARC award to the front of the funding array
     guidedContributorInformation["funding"] = guidedContributorInformation["funding"].filter(
@@ -14930,7 +14939,7 @@ const guidedGetContributorInformation = () => {
     guidedContributorInformation["funding"].unshift(guidedSparcAward);
   }
 
-  const guidedContributorsArray = sodaJSONObj["dataset-metadata"]["description-metadata"][
+  const guidedContributorsArray = window.sodaJSONObj["dataset-metadata"]["description-metadata"][
     "contributors"
   ].map((contributor) => {
     return {
@@ -14949,9 +14958,9 @@ const guidedGetContributorInformation = () => {
 
 const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
   const guidedDatasetInformation =
-    sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];
+    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];
   const guidedStudyInformation =
-    sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"];
+    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"];
 
   const guidedContributorInformation = guidedGetContributorInformation();
   const datasetLinks = guidedGetDatasetLinks();
@@ -14982,7 +14991,7 @@ const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
       `/prepare_metadata/dataset_description_file`,
       {
         selected_account: defaultBfAccount,
-        selected_dataset: guidedGetDatasetName(sodaJSONObj),
+        selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
         filepath: generationDestination === "Pennsieve" ? "" : destination,
         dataset_str: guidedDatasetInformation,
         study_str: guidedStudyInformation,
@@ -15046,7 +15055,7 @@ const guidedGenerateCodeDescriptionMetadata = async (destination) => {
     return;
   }
   const codeDescriptionFilePath =
-    sodaJSONObj["dataset-metadata"]?.["code-metadata"]?.["code_description"];
+    window.sodaJSONObj["dataset-metadata"]?.["code-metadata"]?.["code_description"];
   if (!codeDescriptionFilePath) {
     return;
   }
@@ -15073,7 +15082,7 @@ const guidedGenerateCodeDescriptionMetadata = async (destination) => {
       await client.post("/prepare_metadata/code_description_file", {
         filepath: codeDescriptionFilePath,
         selected_account: defaultBfAccount,
-        selected_dataset: guidedGetDatasetName(sodaJSONObj),
+        selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
       });
     } else {
       await fs.copyFile(codeDescriptionFilePath, destination);
@@ -15146,7 +15155,7 @@ const guidedGenerateReadmeMetadata = async (destination) => {
           params: {
             file_type: "README.txt",
             selected_account: window.defaultBfAccount,
-            selected_dataset: guidedGetDatasetName(sodaJSONObj),
+            selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
           },
         }
       );
@@ -15222,7 +15231,7 @@ const guidedGenerateChangesMetadata = async (destination) => {
           params: {
             file_type: "CHANGES.txt",
             selected_account: window.defaultBfAccount,
-            selected_dataset: guidedGetDatasetName(sodaJSONObj),
+            selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
           },
         }
       );
@@ -15291,11 +15300,11 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
     //const guidedPIOwner = window.sodaJSONObj["digital-metadata"]["pi-owner"];
     const guidedTeams = window.sodaJSONObj["digital-metadata"]["team-permissions"];
 
-    let guidedPennsieveStudyPurpose =
+    const guidedPennsieveStudyPurpose =
       window.sodaJSONObj["digital-metadata"]["description"]["study-purpose"];
-    let guidedPennsieveDataCollection =
+    const guidedPennsieveDataCollection =
       window.sodaJSONObj["digital-metadata"]["description"]["data-collection"];
-    let guidedPennsievePrimaryConclusion =
+    const guidedPennsievePrimaryConclusion =
       window.sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
     const guidedTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
     const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
