@@ -61,7 +61,7 @@ window.createValidationReport = async (sodaJSONObj) => {
 
   while (true) {
     await window.wait(15000);
-    let results = await pollForValidationResults(clientUUID);
+    let results = await window.pollForValidationResults(clientUUID);
     if (!results) {
       continue;
     }
@@ -69,7 +69,7 @@ window.createValidationReport = async (sodaJSONObj) => {
   }
 };
 
-const pollForValidationResults = async (clientUUID) => {
+window.pollForValidationResults = async (clientUUID) => {
   let validationResultsResponse;
   try {
     validationResultsResponse = await client.get(

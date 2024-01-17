@@ -22,6 +22,7 @@ import Swal from "sweetalert2";
 import Tagify from "@yaireo/tagify/dist/tagify.esm";
 // const Tagify = require("@yaireo/tagify/dist/tagify.esm");
 import tippy from "tippy.js";
+import {v4 as uuid} from "uuid";
 import doiRegex from "doi-regex";
 import validator from "validator";
 import client from "../client";
@@ -3556,7 +3557,7 @@ document
     }
 
     let validationReportStatusIncomplete = false;
-    const validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
+    const validationReportPath = window.path.join(window.homeDirectory, "SODA", "validation.txt");
 
     let file_counter = 0;
     let folder_counter = 0;
@@ -3722,7 +3723,7 @@ document
       let validationReport = undefined;
       while (validationReport === undefined) {
         await window.wait(15000);
-        validationReport = await pollForValidationResults(clientUUID);
+        validationReport = await window.pollForValidationResults(clientUUID);
       }
 
       if (validationReport.status === "Error") {
