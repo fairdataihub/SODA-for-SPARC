@@ -1997,7 +1997,7 @@ window.addCustomField = async (type, curationMode) => {
       },
     });
     if (customField) {
-      addCustomHeader("subjects", customField, curationMode);
+      window.addCustomHeader("subjects", customField, curationMode);
       if (curationMode == "guided") {
         window.subjectsTableData[0].push(customField);
         for (let i = 1; i < window.subjectsTableData.length; i++) {
@@ -2034,12 +2034,12 @@ window.addCustomField = async (type, curationMode) => {
           window.samplesTableData[i].push("");
         }
       }
-      addCustomHeader("samples", customField, curationMode);
+      window.addCustomHeader("samples", customField, curationMode);
     }
   }
 };
 
-const addCustomHeader = (type, customHeaderValue, curationMode) => {
+window.addCustomHeader = (type, customHeaderValue, curationMode) => {
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";

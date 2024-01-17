@@ -12840,7 +12840,7 @@ const renderSubjectsMetadataAsideItems = async () => {
           ) ||
           !subjectsFormNames.includes(window.subjectsTableData[0][i])
         ) {
-          addCustomHeader("subjects", window.subjectsTableData[0][i], "guided");
+          window.addCustomHeader("subjects", window.subjectsTableData[0][i], "guided");
         }
       }
     }
@@ -12984,7 +12984,7 @@ const renderSamplesMetadataAsideItems = async () => {
             window.samplesTableData[0][i].slice(1)
         )
       ) {
-        addCustomHeader("samples", window.samplesTableData[0][i], "guided");
+        window.addCustomHeader("samples", window.samplesTableData[0][i], "guided");
       }
     }
   }
