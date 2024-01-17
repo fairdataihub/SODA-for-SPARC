@@ -22,7 +22,7 @@ import Swal from "sweetalert2";
 import Tagify from "@yaireo/tagify/dist/tagify.esm";
 // const Tagify = require("@yaireo/tagify/dist/tagify.esm");
 import tippy from "tippy.js";
-import {v4 as uuid} from "uuid";
+import { v4 as uuid } from "uuid";
 import doiRegex from "doi-regex";
 import validator from "validator";
 import client from "../client";
@@ -3018,9 +3018,9 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
   }
 
   // Store global variable values to the progress file before saving
-  window.sodaJSONObj["dataset-structure"] = datasetStructureJSONObj;
-  window.sodaJSONObj["subjects-table-data"] = subjectsTableData;
-  window.sodaJSONObj["samples-table-data"] = samplesTableData;
+  window.sodaJSONObj["dataset-structure"] = window.datasetStructureJSONObj;
+  window.sodaJSONObj["subjects-table-data"] = window.subjectsTableData;
+  window.sodaJSONObj["samples-table-data"] = window.samplesTableData;
 
   window.fs.writeFileSync(guidedFilePath, JSON.stringify(window.sodaJSONObj, null, 2));
 };
@@ -7870,9 +7870,9 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     //patches the sodajsonobj if it was created in a previous version of guided mode
     await patchPreviousGuidedModeVersions();
 
-    datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-    subjectsTableData = window.sodaJSONObj["subjects-table-data"];
-    samplesTableData = window.sodaJSONObj["samples-table-data"];
+    window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
+    window.subjectsTableData = window.sodaJSONObj["subjects-table-data"];
+    window.samplesTableData = window.sodaJSONObj["samples-table-data"];
 
     // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
     const prevSessionSkikppedPages = [...window.sodaJSONObj["skipped-pages"]];
@@ -14715,7 +14715,7 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
         selected_account: defaultBfAccount,
         selected_dataset:
           generationDestination === "Pennsieve" ? guidedGetDatasetName(window.sodaJSONObj) : "",
-        subjects_header_row: subjectsTableData,
+        subjects_header_row: window.subjectsTableData,
       },
       {
         params: {
@@ -14788,7 +14788,7 @@ const guidedGenerateSamplesMetadata = async (destination) => {
         selected_account: window.defaultBfAccount,
         selected_dataset:
           generationDestination === "Pennsieve" ? guidedGetDatasetName(window.sodaJSONObj) : "",
-        samples_str: samplesTableData,
+        samples_str: window.samplesTableData,
       },
       {
         params: {
