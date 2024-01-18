@@ -2552,7 +2552,7 @@ async function switchMetadataDDQuestion() {
       $("#existing-dd-file-destination").val("");
       $("#div-check-bf-import-dd").css("display", "flex");
       $($("#div-check-bf-import-dd").children()[0]).show();
-      resetDDFields();
+      window.resetDDFields();
     }
     return continueProgressDD;
   } else {

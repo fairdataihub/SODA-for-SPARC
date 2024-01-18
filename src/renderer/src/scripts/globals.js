@@ -388,7 +388,7 @@ window.resetDD = (askToReset = true) => {
       .removeClass('disabled')
       .removeClass('non-selected')
     $('#Question-prepare-dd-1 .option-card .folder-input-check').prop('checked', false)
-    resetDDFields()
+    window.resetDDFields()
     return
   }
 
@@ -419,12 +419,12 @@ window.resetDD = (askToReset = true) => {
         .removeClass('disabled')
         .removeClass('non-selected')
       $('#Question-prepare-dd-1 .option-card .folder-input-check').prop('checked', false)
-      resetDDFields()
+      window.resetDDFields()
     }
   })
 }
 
-function resetDDFields() {
+window.resetDDFields = () => {
   // 1. empty all input, textarea, select, para-elements
   // 2. delete all rows from table Contributor
   // 3. delete all rows from table Links
