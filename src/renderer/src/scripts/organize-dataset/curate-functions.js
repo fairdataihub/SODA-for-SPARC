@@ -270,19 +270,19 @@ const checkAvailableSpace = async () => {
     return Number(parseFloat(value.toFixed(2)));
   };
 
-  let freeMemory = await window.electron.ipcRenderer.invoke("getDiskSpace", location)
-  let freeMemoryMB = roundToHundredth(freeMemory / 1024 ** 2);
-
   let location = document
     .getElementById("input-destination-generate-dataset-locally")
     .getAttribute("placeholder");
+
+  let freeMemory = await window.electron.ipcRenderer.invoke("getDiskSpace", location)
+  let freeMemoryMB = roundToHundredth(freeMemory / 1024 ** 2);
 
     let datasetSizeResponse;
     try {
       datasetSizeResponse = await client.post(
         "/curate_datasets/dataset_size",
         {
-          soda_json_structure: sodaJSONObj,
+          soda_json_structure: window.sodaJSONObj,
         },
         { timeout: 0 }
       );
