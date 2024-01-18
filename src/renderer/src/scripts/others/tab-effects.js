@@ -3,6 +3,8 @@ import Accordion from 'accordion-js';
 // TODO: Follow up that this is the way to import it
 import 'accordion-js/dist/accordion.min.css';
 import { showHideDropdownButtons } from '../globals';
+import client from "../client"
+import {clientError, userErrorMessage} from "./http-error-handler/error-handler"
 import introJs from "intro.js";
 import Swal from "sweetalert2";
 import api from '../others/api/api'
@@ -2585,8 +2587,8 @@ async function switchMetadataSubmissionQuestion() {
 
 // 5. manifest
 async function switchMetadataManifestQuestion() {
-  var userpath1 = window.path.join(homeDirectory, "SODA", "SODA Manifest Files");
-  var userpath2 = window.path.join(homeDirectory, "SODA", "manifest_files");
+  var userpath1 = window.path.join(window.homeDirectory, "SODA", "SODA Manifest Files");
+  var userpath2 = window.path.join(window.homeDirectory, "SODA", "manifest_files");
   if (
     $("#Question-prepare-manifest-2").hasClass("show") ||
     $("#Question-prepare-manifest-3").hasClass("show")
