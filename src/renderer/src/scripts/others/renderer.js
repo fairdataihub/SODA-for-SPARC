@@ -8243,14 +8243,14 @@ window.importMetadataFiles = (ev, metadataFile, extensionList, paraEle, curation
 
 window.importPennsieveMetadataFiles = (ev, metadataFile, extensionList, paraEle) => {
   extensionList.forEach((file_type) => {
-    file_name = metadataFile + file_type;
+    let file_name = metadataFile + file_type;
     if (
       file_name in window.sodaJSONObj["metadata-files"] &&
       window.sodaJSONObj["metadata-files"][file_name]["type"] != "bf"
     ) {
       delete window.sodaJSONObj["metadata-files"][file_name];
     }
-    deleted_file_name = file_name + "-DELETED";
+    let deleted_file_name = file_name + "-DELETED";
     if (
       deleted_file_name in window.sodaJSONObj["metadata-files"] &&
       window.sodaJSONObj["metadata-files"][deleted_file_name]["type"] === "bf"
