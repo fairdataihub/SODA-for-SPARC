@@ -354,12 +354,14 @@ window.validateOrganizedDataset = async () => {
     .scrollIntoView({ behavior: "smooth" });
 };
 
-document.querySelector(".validate-raw-report_btn").addEventListener("click", (e) => {
-  // open the text file stored at the raw validation report path
-  let pathToRawReport = window.path.join(window.os.homedir(), "SODA", "validation.txt");
-
-  window.electron.ipcRenderer.invoke("shell-open-path", pathToRawReport);
-});
+[...document.querySelectorAll(".validate-raw-report_btn")].forEach(viewRawReportBtn => {
+  viewRawReportBtn.addEventListener("click", async () => {
+    // open the text file stored at the raw validation report path
+    let pathToRawReport = window.path.join(window.os.homedir(), "SODA", "validation.txt");
+    console.log("Opening report at path: " + pathToRawReport)
+    window.electron.ipcRenderer.invoke("shell-open-path", pathToRawReport);
+  })
+})
 
 const displayValidationReportErrors = (validationReport, tableBody, validationErrorsContainer) => {
   // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
