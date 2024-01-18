@@ -8246,7 +8246,7 @@ window.importPennsieveMetadataFiles = (ev, metadataFile, extensionList, paraEle)
     ) {
       delete window.sodaJSONObj["metadata-files"][file_name];
     }
-    deleted_file_name = file_name + "-DELETED";
+    let deleted_file_name = file_name + "-DELETED";
     if (
       deleted_file_name in window.sodaJSONObj["metadata-files"] &&
       window.sodaJSONObj["metadata-files"][deleted_file_name]["type"] === "bf"
