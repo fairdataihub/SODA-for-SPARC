@@ -3688,8 +3688,8 @@ const withdrawReviewDataset = async (curationMode) => {
     .replace(/^\s+|\s+$/g, "");
 
   if (curationMode == "guided") {
-    currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
-    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    currentAccount = window.sodaJSONObj["bf-account-selected"]["account-name"];
+    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
   }
 
   try {
@@ -6234,7 +6234,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
       //hide samples when on the subjects page
       if (hideSampleFolders) {
         let currentSampleFolder = splitPath[0];
-        let allSamples = sodaJSONObj.getAllSamplesFromSubjects();
+        let allSamples = window.sodaJSONObj.getAllSamplesFromSubjects();
         let noPoolSamples = [];
         let poolSamples = [];
         let skipSubjectFolder = false;
@@ -6271,7 +6271,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
       if (hideSubjectFolders) {
         //hide subject folders when displaying pool page
         const currentPoolName = splitPath[0];
-        let currentSubjects = sodaJSONObj.getAllSubjects();
+        let currentSubjects = window.sodaJSONObj.getAllSubjects();
         let poolSubjects = [];
         let noPoolSubjects = [];
         let skipSubjectFolder = false;
@@ -7141,7 +7141,7 @@ window.electron.ipcRenderer.on(
 
               let root_folder_path = $("#guided-input-destination-getting-started-locally").val();
 
-              window.create_json_object(action, sodaJSONObj, root_folder_path);
+              window.create_json_object(action, window.sodaJSONObj, root_folder_path);
               window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
               window.populate_existing_folders(window.datasetStructureJSONObj);
               window.populate_existing_metadata(window.sodaJSONObj);
@@ -7150,7 +7150,7 @@ window.electron.ipcRenderer.on(
           } else {
             action = "";
             let root_folder_path = $("#guided-input-destination-getting-started-locally").val();
-            sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+            window.sodaJSONObj["starting-point"]["local-path"] = filepath[0];
             window.create_json_object(action, window.sodaJSONObj, root_folder_path);
             window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
             window.populate_existing_folders(window.datasetStructureJSONObj);
@@ -7236,10 +7236,10 @@ document.getElementById("button-generate-comeback").addEventListener("click", fu
     document.getElementById("start-over-btn").style.display = "inline-block";
     showParentTab(window.currentTab, 1);
     if (
-      sodaJSONObj["starting-point"]["type"] == "new" &&
-      "local-path" in sodaJSONObj["starting-point"]
+      window.sodaJSONObj["starting-point"]["type"] == "new" &&
+      "local-path" in window.sodaJSONObj["starting-point"]
     ) {
-      sodaJSONObj["starting-point"]["type"] = "local";
+      window.sodaJSONObj["starting-point"]["type"] = "local";
     }
   }, window.delayAnimation);
 });
@@ -7305,8 +7305,8 @@ const checkEmptyFilesAndFolders = async (sodaJSONObj) => {
 };
 
 window.setSodaJSONStartingPoint = (sodaJSONObj) => {
-  if (sodaJSONObj["starting-point"]["type"] === "local") {
-    sodaJSONObj["starting-point"]["type"] = "new";
+  if (window.sodaJSONObj["starting-point"]["type"] === "local") {
+    window.sodaJSONObj["starting-point"]["type"] = "new";
   }
 };
 

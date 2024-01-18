@@ -5,12 +5,11 @@ export const Destinations = {
   NEW: "New",
 };
 
-
 // determine if we are working with a Local, Saved, or Pennsieve dataset in the current Curation flow
 const determineDatasetLocation = () => {
   let location = "";
-  let datasetLocation = sodaJSONObj?.["starting-point"]?.["type"];
-  if ("save-progress" in sodaJSONObj) {
+  let datasetLocation = window.sodaJSONObj?.["starting-point"]?.["type"];
+  if ("save-progress" in window.sodaJSONObj) {
     return Destinations.SAVED;
   }
   if (datasetLocation === "bf") {
@@ -19,7 +18,7 @@ const determineDatasetLocation = () => {
   if (
     datasetLocation === "local" ||
     datasetLocation === "Local" ||
-    sodaJSONObj?.["starting-point"]?.["local-path"]
+    window.sodaJSONObj?.["starting-point"]?.["local-path"]
   ) {
     return Destinations.LOCAL;
   }
