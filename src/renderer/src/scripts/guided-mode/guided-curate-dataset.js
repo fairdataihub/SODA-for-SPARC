@@ -3851,7 +3851,7 @@ document
 
         if (viewReportResult.isConfirmed) {
           // open a shell to the raw validation report
-          shell.openPath(validationReportPath);
+          window.electron.ipcRenderer.invoke("shell-open-path", validationReportPath);
         }
       } else {
         await Swal.fire({

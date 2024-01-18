@@ -19,6 +19,7 @@ import "./main-process/native-ui/dialogs/open-file"
 import "./strain"
 import "./checkDiskSpace"
 import "./spreadsheet-import-gm"
+import "./shell"
 
 
 const sodaVersion = app.getVersion();

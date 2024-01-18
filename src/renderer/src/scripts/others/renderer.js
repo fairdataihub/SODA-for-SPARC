@@ -9231,13 +9231,12 @@ const gettingStarted = () => {
 
 const sodaVideo = () => {
   document.getElementById("overview-column-1").blur();
-  window.shell.openExternal("https://docs.sodaforsparc.io/docs/getting-started/user-interface");
+  window.electron.ipcRenderer.invoke("shell-open-external", "https://docs.sodaforsparc.io/docs/getting-started/user-interface")
 };
 
 const directToDocumentation = () => {
-  window.shell.openExternal(
-    "https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda"
-  );
+  window.electron.ipcRenderer.invoke("shell-open-external", "https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda")
+
   document.getElementById("overview-column-2").blur();
   // window.open('https://docs.sodaforsparc.io', '_blank');
 };

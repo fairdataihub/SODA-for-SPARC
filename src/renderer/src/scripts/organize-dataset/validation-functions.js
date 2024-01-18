@@ -307,7 +307,7 @@ window.validateOrganizedDataset = async () => {
 
     if (viewReportResult.isConfirmed) {
       // open a shell to the raw validation report
-      shell.openPath(validationReportPath);
+      window.electron.ipcRenderer.invoke("shell-open-path", validationReportPath);
     }
     return;
   }
@@ -358,7 +358,7 @@ document.querySelector(".validate-raw-report_btn").addEventListener("click", (e)
   // open the text file stored at the raw validation report path
   let pathToRawReport = window.path.join(window.os.homedir(), "SODA", "validation.txt");
 
-  shell.openPath(pathToRawReport);
+  window.electron.ipcRenderer.invoke("shell-open-path", pathToRawReport);
 });
 
 const displayValidationReportErrors = (validationReport, tableBody, validationErrorsContainer) => {
