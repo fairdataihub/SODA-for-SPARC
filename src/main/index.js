@@ -20,6 +20,7 @@ import "./strain"
 import "./checkDiskSpace"
 import "./spreadsheet-import-gm"
 import "./shell"
+import "./templates"
 
 
 const sodaVersion = app.getVersion();
