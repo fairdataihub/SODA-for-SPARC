@@ -14521,7 +14521,7 @@ window.electron.ipcRenderer.on(
       // Reset and show the progress bar
       setGuidedProgressBarValue("local", 0);
       updateDatasetUploadProgressTable("local", {
-        "Generation status": `Checking available free space on disk`,
+        "Current action": `Checking available free space on disk`,
       });
       unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
 
@@ -14568,7 +14568,7 @@ window.electron.ipcRenderer.on(
       console.log("making post request to /curate_datasets/curation");
 
       updateDatasetUploadProgressTable("local", {
-        "Generation status": `Preparing dataset for local generation`,
+        "Current action": `Preparing dataset for local generation`,
       });
 
       // Start the local dataset generation process
@@ -14635,7 +14635,7 @@ window.electron.ipcRenderer.on(
 
       setGuidedProgressBarValue("local", 100);
       updateDatasetUploadProgressTable("local", {
-        "Generation status": `Generating metadata files`,
+        "Current action": `Generating metadata files`,
       });
       console.log(
         "Subjects path: ",
@@ -14672,7 +14672,7 @@ window.electron.ipcRenderer.on(
 
       // Update UI for successful local dataset generation
       updateDatasetUploadProgressTable("local", {
-        "Generation status": `Dataset successfully generated locally`,
+        "Current action": `Dataset successfully generated locally`,
       });
       unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
     } catch (error) {
