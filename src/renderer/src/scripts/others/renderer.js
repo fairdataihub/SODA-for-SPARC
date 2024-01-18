@@ -7443,10 +7443,10 @@ document.getElementById("button-generate").addEventListener("click", async funct
   }
 });
 
-const delete_imported_manifest = () => {
-  for (let highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
-    if ("manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]) {
-      delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
+window.delete_imported_manifest = () => {
+  for (let highLevelFol in window.sodaJSONObj["dataset-structure"]["folders"]) {
+    if ("manifest.xlsx" in window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]) {
+      delete window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
     }
   }
 };
@@ -7570,10 +7570,10 @@ const initiate_generate = async () => {
       "auto-generated" in window.sodaJSONObj["manifest-files"] &&
       window.sodaJSONObj["manifest-files"]["auto-generated"] === true
     ) {
-      delete_imported_manifest();
+      window.delete_imported_manifest();
     } else if (window.sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
       manifest_files_requested = true;
-      delete_imported_manifest();
+      window.delete_imported_manifest();
     }
   }
 
@@ -8346,86 +8346,9 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 //   window.electron.ipcRenderer.send("open-folder-dialog-save-manifest-local");
 // });
 
-// const recursive_remove_deleted_files = (dataset_folder) => {
-//   if ("files" in dataset_folder) {
-//     for (let item in dataset_folder["files"]) {
-//       if (dataset_folder["files"][item]["action"].includes("deleted")) {
-//         delete dataset_folder["files"][item];
-//       }
-//     }
-//   }
 
-//   if ("folders" in dataset_folder) {
-//     for (let item in dataset_folder["folders"]) {
-//       recursive_remove_deleted_files(dataset_folder["folders"][item]);
-//       if (dataset_folder["folders"][item]["action"].includes("deleted")) {
-//         delete dataset_folder["folders"][item];
-//       }
-//     }
-//   }
-// };
 
-// window.electron.ipcRenderer.on("selected-manifest-folder", async (event, result) => {
-//   if (!result["canceled"]) {
-//     $("body").addClass("waiting");
-//     let manifest_destination = result["filePaths"][0];
-//     let manifest_state = {};
 
-//     if ("manifest-files" in sodaJSONObj) {
-//       manifest_state = sodaJSONObj["manifest-files"];
-//       sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination;
-//     } else {
-//       manifest_state = {};
-//       sodaJSONObj["manifest-files"] = {};
-//       sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination;
-//     }
-
-//     delete_imported_manifest();
-
-//     let temp_sodaJSONObj = JSON.parse(JSON.stringify(sodaJSONObj));
-//     let dataset_name = "Undetermined";
-
-//     recursive_remove_deleted_files(temp_sodaJSONObj["dataset-structure"]);
-
-//     if ("bf-dataset-selected" in sodaJSONObj) {
-//       if ("dataset-name" in sodaJSONObj) {
-//         dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-//       }
-//     }
-
-//     try {
-//       await client.post(
-//         `/curate_datasets/manifest_files`,
-//         {
-//           generate_purpose: "",
-//           soda_json_object: temp_sodaJSONObj,
-//         },
-//         { timeout: 0 }
-//       );
-
-//       $("body").removeClass("waiting");
-//       window.logCurationForAnalytics(
-//         "Success",
-//         window.PrepareDatasetsAnalyticsPrefix.CURATE,
-//         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-//         ["Step 5", "Generate", "Manifest"],
-//         determineDatasetLocation()
-//       );
-//     } catch (error) {
-//       clientError(error);
-//       $("body").removeClass("waiting");
-
-//       // log the error to analytics
-//       window.logCurationForAnalytics(
-//         "Error",
-//         window.PrepareDatasetsAnalyticsPrefix.CURATE,
-//         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-//         ["Step 5", "Generate", "Manifest"],
-//         determineDatasetLocation()
-//       );
-//     }
-//   }
-// });
 
 window.showBFAddAccountSweetalert = async (ev) => {
   let target = ev.target;
