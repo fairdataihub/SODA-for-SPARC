@@ -25,11 +25,11 @@ var allParentStepsJSON = {
 };
 
 window.currentTab = 0; // Current tab is set to be the first tab (0)
-// showParentTab(0, 1);
+// window.showParentTab(0, 1);
 
 const delay = 250;
 
-const showParentTab = async (tabNow, nextOrPrev) => {
+window.showParentTab = async (tabNow, nextOrPrev) => {
   $("#nextBtn").prop("disabled", true);
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
@@ -582,7 +582,7 @@ window.nextPrev = (pageIndex) => {
           window.highLevelFoldersDisableOptions();
         }
         // Display the correct tab:
-        showParentTab(window.currentTab, pageIndex);
+        window.showParentTab(window.currentTab, pageIndex);
       }
     });
     // check if required metadata files are included
@@ -657,7 +657,7 @@ window.nextPrev = (pageIndex) => {
           // Increase or decrease the current tab by 1:
           window.currentTab = window.currentTab + pageIndex;
           // Display the correct tab:
-          showParentTab(window.currentTab, pageIndex);
+          window.showParentTab(window.currentTab, pageIndex);
         }
       });
     } else {
@@ -666,7 +666,7 @@ window.nextPrev = (pageIndex) => {
       // Increase or decrease the current tab by 1:
       window.currentTab = window.currentTab + pageIndex;
       // Display the correct tab:
-      showParentTab(window.currentTab, pageIndex);
+      window.showParentTab(window.currentTab, pageIndex);
     }
   } else if (
     parentTabs[window.currentTab].id === "preview-dataset-tab" &&
@@ -674,7 +674,7 @@ window.nextPrev = (pageIndex) => {
   ) {
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     window.currentTab = window.currentTab - 1;
-    showParentTab(window.currentTab, pageIndex);
+    window.showParentTab(window.currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
   } else if (
     parentTabs[window.currentTab].id === "manifest-file-tab" &&
@@ -687,7 +687,7 @@ window.nextPrev = (pageIndex) => {
       $("#nextBtn").prop("disabled", false);
       fixStepDone(4);
 
-      showParentTab(window.currentTab, pageIndex);
+      window.showParentTab(window.currentTab, pageIndex);
 
       // check if skip card or the validate card have been checked
       const validationOptionSelected = document.querySelector(
@@ -705,7 +705,7 @@ window.nextPrev = (pageIndex) => {
       window.currentTab = window.currentTab - 1;
       // fixStepDone(4);
       $("#nextBtn").prop("disabled", true);
-      showParentTab(window.currentTab, pageIndex);
+      window.showParentTab(window.currentTab, pageIndex);
     }
   } else if (
     parentTabs[window.currentTab].id === "manifest-file-tab" &&
@@ -733,7 +733,7 @@ window.nextPrev = (pageIndex) => {
       $("#generate-dataset-replace-existing").children().hide();
     }
     $("#nextBtn").prop("disabled", true);
-    showParentTab(window.currentTab, pageIndex);
+    window.showParentTab(window.currentTab, pageIndex);
   } else if (
     parentTabs[window.currentTab].id === "validate-dataset-tab" &&
     window.sodaJSONObj["starting-point"]["type"] == "bf" &&
@@ -743,7 +743,7 @@ window.nextPrev = (pageIndex) => {
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     // skip step 6 ( options irrelevant for existing bf/pennsieve workflow)
     window.currentTab = window.currentTab - 2;
-    showParentTab(window.currentTab, pageIndex);
+    window.showParentTab(window.currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
   } else if (parentTabs[window.currentTab].id === "generate-dataset-tab") {
     // Hide the current tab:
@@ -755,7 +755,7 @@ window.nextPrev = (pageIndex) => {
       window.highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
-    showParentTab(window.currentTab, pageIndex);
+    window.showParentTab(window.currentTab, pageIndex);
 
     // check if skip card or the validate card have been checked
     const validationOptionSelected = document.querySelector(
@@ -779,7 +779,7 @@ window.nextPrev = (pageIndex) => {
       window.highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
-    showParentTab(window.currentTab, pageIndex);
+    window.showParentTab(window.currentTab, pageIndex);
   }
 };
 
@@ -3565,7 +3565,7 @@ const wipeOutCurateProgress = async () => {
 document.getElementById("button-section-organize-dataset").addEventListener("click", () => {
   $(".vertical-progress-bar").css("display", "flex");
   document.getElementById("generate-dataset-progress-tab").style.display = "none";
-  showParentTab(window.currentTab, 1);
+  window.showParentTab(window.currentTab, 1);
 });
 
 document.getElementById("organize_dataset_btn").addEventListener("click", () => {
@@ -3573,7 +3573,7 @@ document.getElementById("organize_dataset_btn").addEventListener("click", () => 
   document.getElementById("generate-dataset-progress-tab").style.display = "none";
   $("#save-progress-btn").css("display", "none");
   $("#start-over-btn").css("display", "none");
-  showParentTab(window.currentTab, 1);
+  window.showParentTab(window.currentTab, 1);
 });
 
 const hideNextDivs = (currentDiv) => {

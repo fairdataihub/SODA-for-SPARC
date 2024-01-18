@@ -7234,7 +7234,7 @@ document.getElementById("button-generate-comeback").addEventListener("click", fu
     document.getElementById("prevBtn").style.display = "inline";
     document.getElementById("nextBtn").style.display = "inline";
     document.getElementById("start-over-btn").style.display = "inline-block";
-    showParentTab(window.currentTab, 1);
+    window.showParentTab(window.currentTab, 1);
     if (
       window.sodaJSONObj["starting-point"]["type"] == "new" &&
       "local-path" in window.sodaJSONObj["starting-point"]
