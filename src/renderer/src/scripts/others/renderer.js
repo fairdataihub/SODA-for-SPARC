@@ -8239,7 +8239,7 @@ window.importMetadataFiles = (ev, metadataFile, extensionList, paraEle, curation
 
 window.importPennsieveMetadataFiles = (ev, metadataFile, extensionList, paraEle) => {
   extensionList.forEach((file_type) => {
-    file_name = metadataFile + file_type;
+    let file_name = metadataFile + file_type;
     if (
       file_name in window.sodaJSONObj["metadata-files"] &&
       window.sodaJSONObj["metadata-files"][file_name]["type"] != "bf"
