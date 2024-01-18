@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 console.log("Build queue changedd");
 
-var nextBtnDisabledVariable = true;
+window.nextBtnDisabledVariable = true;
 
 window.datasetStructureJSONObj = {
   folders: {},

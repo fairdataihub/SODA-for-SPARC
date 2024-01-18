@@ -513,9 +513,9 @@ window.nextPrev = (pageIndex) => {
 
     document.body.dispatchEvent(event);
     if ($("#nextBtn").prop("disabled") === true) {
-      nextBtnDisabledVariable = true;
+      window.nextBtnDisabledVariable = true;
     } else {
-      nextBtnDisabledVariable = false;
+      window.nextBtnDisabledVariable = false;
     }
     return;
   }
@@ -534,7 +534,7 @@ window.nextPrev = (pageIndex) => {
     parentTabs[window.currentTab].id === "high-level-folders-tab" ||
     parentTabs[window.currentTab].id === "metadata-files-tab"
   ) {
-    organizeLandingUIEffect();
+    window.organizeLandingUIEffect();
     // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
     if ("files" in window.datasetStructureJSONObj) {
       window.datasetStructureJSONObj["files"] = {};
@@ -552,6 +552,7 @@ window.nextPrev = (pageIndex) => {
     }
   }
 
+  // TODO: Fix comparison by reference bug in 3rd condition
   if (
     pageIndex === 1 &&
     parentTabs[window.currentTab].id === "organize-dataset-tab" &&
