@@ -7445,8 +7445,12 @@ document.getElementById("button-generate").addEventListener("click", async funct
 
 window.delete_imported_manifest = () => {
   for (let highLevelFol in window.sodaJSONObj["dataset-structure"]["folders"]) {
-    if ("manifest.xlsx" in window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]) {
-      delete window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
+    if (
+      "manifest.xlsx" in window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]
+    ) {
+      delete window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
+        "manifest.xlsx"
+      ];
     }
   }
 };
@@ -8345,10 +8349,6 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 // $("#button-generate-manifest-locally").click(() => {
 //   window.electron.ipcRenderer.send("open-folder-dialog-save-manifest-local");
 // });
-
-
-
-
 
 window.showBFAddAccountSweetalert = async (ev) => {
   let target = ev.target;
