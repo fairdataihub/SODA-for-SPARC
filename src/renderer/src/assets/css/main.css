@@ -755,10 +755,6 @@ button[data-id="guided_bf_list_users_and_teams"] {
   margin-left: 2px;
 }
 
-.copy-button:hover {
-  background: #1c687e !important;
-}
-
 .div-display-details div {
   max-width: 90%;
   margin-right: 10px;
@@ -959,13 +955,12 @@ details[open] > summary::before {
 }
 
 .copy-button:hover {
-  background: #1c687e !important;
+  /* background: #1c687e !important; TODO: FIX COPY TO CLIPBOARD POST-BUNDLE */
 }
 
 #guided-pennsieve-dataset-link {
   border-bottom: none !important;
-  width: 431px;
-  display: inline-flex;
+  max-width: 700px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;

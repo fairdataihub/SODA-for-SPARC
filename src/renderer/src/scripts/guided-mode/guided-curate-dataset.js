@@ -2617,7 +2617,7 @@ const guidedSetDOIUI = (doiInformation) => {
   $("#curate-button-reserve-doi").disabled = false;
   if (doiInformation === "locked") {
     // Show reserve DOI button and hide copy button
-    $("#guided-pennsieve-copy-doi").addClass("hidden");
+    // $("#guided-pennsieve-copy-doi").addClass("hidden");
     $("#curate-button-reserve-doi").addClass("hidden");
 
     Swal.fire({
@@ -2642,11 +2642,11 @@ const guidedSetDOIUI = (doiInformation) => {
 
   if (doiInformation === "No DOI found for this dataset" || doiInformation === false) {
     // Hide the reserve DOI button and show copy button
-    $("#guided-pennsieve-copy-doi").addClass("hidden");
+    //  $("#guided-pennsieve-copy-doi").addClass("hidden");
     $("#curate-button-reserve-doi").removeClass("hidden");
   } else {
     // Show reserve DOI button and hide copy button
-    $("#guided-pennsieve-copy-doi").removeClass("hidden");
+    // $("#guided-pennsieve-copy-doi").removeClass("hidden");
     $("#curate-button-reserve-doi").addClass("hidden");
   }
 };
@@ -6762,9 +6762,12 @@ window.openPage = async (targetPageID) => {
       pennsieveDatasetLink.href = datasetLink;
 
       if (removeEventListener) {
+        /*
+        TODO: FIX COPY TO CLIPBOARD POST-BUNDLE
         pennsieveDOICopy.removeEventListener("click", () => {
           copyLink(doiInfo), true;
         });
+        */
 
         pennsieveCopy.removeEventListener(
           "click",
@@ -6778,10 +6781,12 @@ window.openPage = async (targetPageID) => {
         pennsieveCopy.addEventListener("click", () => {
           copyLink(datasetLink);
         });
+        /*
+        TODO: FIX COPY TO CLIPBOARD POST-BUNDLE
         pennsieveDOICopy.addEventListener("click", () => {
           let doiInfo = document.getElementById("guided--para-doi-info").innerText;
           copyLink(doiInfo);
-        });
+        });*/
         addListener = false;
         removeEventListener = true;
       }

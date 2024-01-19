@@ -5895,27 +5895,17 @@
               Review dataset on Pennsieve to ensure it has been generated as requested and all the
               data and metadata are included properly
             </p>
-            <div
-              class="help-text text-center"
-              style="
-                font-size: large;
-                border: 2px solid var(--button-color);
-                padding: 0rem 0rem 0rem 0.3rem;
-                border-radius: 5px;
-                height: 44px;
-                width: 491px;
-              "
-            >
-              <a id="guided-pennsieve-dataset-link" target="_blank">
-                <i
-                  class="fas fa-link"
-                  style="margin-right: 0.4rem; margin-left: 0.4rem; writing-mode: tbd"
-                ></i>
-              </a>
-              <button id="guided-pennsieve-copy-dataset-link" class="copy-button">
-                <i id="guided-pennsieve-copy-icon" class="fas fa-copy"></i>
-              </button>
-            </div>
+
+            <a id="guided-pennsieve-dataset-link" target="_blank">
+              <i
+                class="fas fa-link"
+                style="margin-right: 0.4rem; margin-left: 0.4rem; writing-mode: tbd"
+              ></i>
+            </a>
+            <!--TODO: FIX COPY TO CLIPBOARD POST-BUNDLE -->
+            <button id="guided-pennsieve-copy-dataset-link" class="copy-button hidden">
+              <i id="guided-pennsieve-copy-icon" class="fas fa-copy"></i>
+            </button>
           </div>
           <div class="guided--section">
             <h2 class="text-sub-step-title mt-0">Editing this dataset</h2>
