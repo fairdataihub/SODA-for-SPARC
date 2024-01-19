@@ -22,7 +22,7 @@ import Swal from "sweetalert2";
 import Tagify from "@yaireo/tagify/dist/tagify.esm";
 // const Tagify = require("@yaireo/tagify/dist/tagify.esm");
 import tippy from "tippy.js";
-import {v4 as uuid} from "uuid";
+import { v4 as uuid } from "uuid";
 import doiRegex from "doi-regex";
 import validator from "validator";
 import client from "../client";
@@ -3018,9 +3018,9 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
   }
 
   // Store global variable values to the progress file before saving
-  window.sodaJSONObj["dataset-structure"] = datasetStructureJSONObj;
-  window.sodaJSONObj["subjects-table-data"] = subjectsTableData;
-  window.sodaJSONObj["samples-table-data"] = samplesTableData;
+  window.sodaJSONObj["dataset-structure"] = window.datasetStructureJSONObj;
+  window.sodaJSONObj["subjects-table-data"] = window.subjectsTableData;
+  window.sodaJSONObj["samples-table-data"] = window.samplesTableData;
 
   window.fs.writeFileSync(guidedFilePath, JSON.stringify(window.sodaJSONObj, null, 2));
 };
@@ -3851,7 +3851,7 @@ document
 
         if (viewReportResult.isConfirmed) {
           // open a shell to the raw validation report
-          shell.openPath(validationReportPath);
+          window.electron.ipcRenderer.invoke("shell-open-path", validationReportPath);
         }
       } else {
         await Swal.fire({
@@ -7870,9 +7870,9 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     //patches the sodajsonobj if it was created in a previous version of guided mode
     await patchPreviousGuidedModeVersions();
 
-    datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-    subjectsTableData = window.sodaJSONObj["subjects-table-data"];
-    samplesTableData = window.sodaJSONObj["samples-table-data"];
+    window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
+    window.subjectsTableData = window.sodaJSONObj["subjects-table-data"];
+    window.samplesTableData = window.sodaJSONObj["samples-table-data"];
 
     // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
     const prevSessionSkikppedPages = [...window.sodaJSONObj["skipped-pages"]];
@@ -9216,8 +9216,12 @@ window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
         );
       }
 
+      // If a contributor has already been marked as Principal Investigator, make sure that the
+      // current contributor is the one marked as Principal Investigator
+      // otherwise, show an error message
       if (contributorRoles.includes("PrincipalInvestigator")) {
-        if (getContributorMarkedAsPrincipalInvestigator()) {
+        const currentPIsOrcid = getContributorMarkedAsPrincipalInvestigator();
+        if (currentPIsOrcid && currentPIsOrcid !== contributorOrcid) {
           return Swal.showValidationMessage(
             "Only one contributor can be marked as Principal Investigator"
           );
@@ -9278,7 +9282,7 @@ const handleAddContributorHeaderUI = () => {
     return !existingContributorORCiDs.includes(contributor.ORCiD);
   });
 
-  // If no stored contribturs are found, use the default header
+  // If no stored contributors are found, use the default header
   if (locallyStoredContributorArray.length === 0) {
     return `
       <label class="guided--form-label centered mb-md" style="font-size: 1em !important;">
@@ -9288,9 +9292,9 @@ const handleAddContributorHeaderUI = () => {
   }
 
   const contributorOptions = locallyStoredContributorArray
-    .filter((contribturo) => {
+    .filter((contributor) => {
       // Filter out any contributors that have already been added by ORCID
-      return !existingContributorORCiDs.includes(contribturo.ORCiD);
+      return !existingContributorORCiDs.includes(contributor.ORCiD);
     })
     .map((contributor) => {
       return `
@@ -9626,15 +9630,15 @@ const switchOrderOfContributors = (draggedOrcid, targetOrcid) => {
 // Constants used for drag and drop functionality for contributors
 let draggedRow;
 let targetRow;
-const handleContributorDragStart = (event) => {
+window.handleContributorDragStart = (event) => {
   draggedRow = event.target.closest("tr");
 };
-const handleContributorDragOver = (event) => {
+window.handleContributorDragOver = (event) => {
   event.preventDefault();
   targetRow = event.target.closest("tr");
 };
 
-const handleContributorDrop = (event) => {
+window.handleContributorDrop = (event) => {
   event.preventDefault();
   if (targetRow === draggedRow) {
     return;
@@ -9658,9 +9662,9 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
     <tr 
       data-contributor-orcid=${contributorOrcid}
       draggable="true"
-      ondragstart="handleContributorDragStart(event)"
-      ondragover="handleContributorDragOver(event)"
-      ondragend="handleContributorDrop(event)"
+      ondragstart="window.handleContributorDragStart(event)"
+      ondragover="window.handleContributorDragOver(event)"
+      ondragend="window.handleContributorDrop(event)"
       style="cursor: move;"
     >
       <td class="middle aligned collapsing text-center">
@@ -14521,7 +14525,7 @@ window.electron.ipcRenderer.on(
       // Reset and show the progress bar
       setGuidedProgressBarValue("local", 0);
       updateDatasetUploadProgressTable("local", {
-        "Generation status": `Checking available free space on disk`,
+        "Current action": `Checking available free space on disk`,
       });
       unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
 
@@ -14568,7 +14572,7 @@ window.electron.ipcRenderer.on(
       console.log("making post request to /curate_datasets/curation");
 
       updateDatasetUploadProgressTable("local", {
-        "Generation status": `Preparing dataset for local generation`,
+        "Current action": `Preparing dataset for local generation`,
       });
 
       // Start the local dataset generation process
@@ -14635,7 +14639,7 @@ window.electron.ipcRenderer.on(
 
       setGuidedProgressBarValue("local", 100);
       updateDatasetUploadProgressTable("local", {
-        "Generation status": `Generating metadata files`,
+        "Current action": `Generating metadata files`,
       });
       console.log(
         "Subjects path: ",
@@ -14672,7 +14676,7 @@ window.electron.ipcRenderer.on(
 
       // Update UI for successful local dataset generation
       updateDatasetUploadProgressTable("local", {
-        "Generation status": `Dataset successfully generated locally`,
+        "Current action": `Dataset successfully generated locally`,
       });
       unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
     } catch (error) {
@@ -14715,7 +14719,7 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
         selected_account: defaultBfAccount,
         selected_dataset:
           generationDestination === "Pennsieve" ? guidedGetDatasetName(window.sodaJSONObj) : "",
-        subjects_header_row: subjectsTableData,
+        subjects_header_row: window.subjectsTableData,
       },
       {
         params: {
@@ -14788,7 +14792,7 @@ const guidedGenerateSamplesMetadata = async (destination) => {
         selected_account: window.defaultBfAccount,
         selected_dataset:
           generationDestination === "Pennsieve" ? guidedGetDatasetName(window.sodaJSONObj) : "",
-        samples_str: samplesTableData,
+        samples_str: window.samplesTableData,
       },
       {
         params: {

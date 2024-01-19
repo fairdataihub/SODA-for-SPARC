@@ -2710,7 +2710,7 @@ const logFilesForUpload = (upload_folder_path) => {
   });
 };
 
-const resetUploadLocalDataset = async () => {
+window.resetUploadLocalDataset = async () => {
   let uploadLocalDatasetParentTab = document.querySelector("#upload_local_dataset_parent-tab");
 
   const { value: result } = await Swal.fire({

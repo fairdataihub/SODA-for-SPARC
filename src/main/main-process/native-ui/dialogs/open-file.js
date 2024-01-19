@@ -430,6 +430,9 @@ ipcMain.on("open-folder-dialog-save-metadata", async (event, filename) => {
   }
 });
 
+
+
+
 // Generate submission file
 ipcMain.on("open-folder-dialog-save-submission", async (event, filename) => {
   let mainWindow = BrowserWindow.getFocusedWindow();

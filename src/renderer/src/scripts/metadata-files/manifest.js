@@ -1059,6 +1059,87 @@ window.generateManifestPreview = async (ev) => {
   window.electron.ipcRenderer.send("open-folder-dialog-save-manifest-local");
 };
 
+window.electron.ipcRenderer.on("selected-manifest-folder", async (event, result) => {
+  if (!result["canceled"]) {
+    $("body").addClass("waiting");
+    let manifest_destination = result["filePaths"][0];
+    let manifest_state = {};
+
+    if ("manifest-files" in window.sodaJSONObj) {
+      manifest_state = window.sodaJSONObj["manifest-files"];
+      window.sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination;
+    } else {
+      manifest_state = {};
+      window.sodaJSONObj["manifest-files"] = {};
+      window.sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination;
+    }
+
+    window.delete_imported_manifest();
+
+    let temp_sodaJSONObj = JSON.parse(JSON.stringify(window.sodaJSONObj));
+    let dataset_name = "Undetermined";
+
+    recursive_remove_deleted_files(temp_sodaJSONObj["dataset-structure"]);
+
+    if ("bf-dataset-selected" in window.sodaJSONObj) {
+      if ("dataset-name" in window.sodaJSONObj) {
+        dataset_name = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+      }
+    }
+
+    try {
+      await client.post(
+        `/curate_datasets/manifest_files`,
+        {
+          generate_purpose: "",
+          soda_json_object: temp_sodaJSONObj,
+        },
+        { timeout: 0 }
+      );
+
+      $("body").removeClass("waiting");
+      window.logCurationForAnalytics(
+        "Success",
+        window.PrepareDatasetsAnalyticsPrefix.CURATE,
+        window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 5", "Generate", "Manifest"],
+        determineDatasetLocation()
+      );
+    } catch (error) {
+      clientError(error);
+      $("body").removeClass("waiting");
+
+      // log the error to analytics
+      window.logCurationForAnalytics(
+        "Error",
+        window.PrepareDatasetsAnalyticsPrefix.CURATE,
+        window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+        ["Step 5", "Generate", "Manifest"],
+        determineDatasetLocation()
+      );
+    }
+  }
+});
+
+const recursive_remove_deleted_files = (dataset_folder) => {
+  if ("files" in dataset_folder) {
+    for (let item in dataset_folder["files"]) {
+      if (dataset_folder["files"][item]["action"].includes("deleted")) {
+        delete dataset_folder["files"][item];
+      }
+    }
+  }
+
+  if ("folders" in dataset_folder) {
+    for (let item in dataset_folder["folders"]) {
+      recursive_remove_deleted_files(dataset_folder["folders"][item]);
+      if (dataset_folder["folders"][item]["action"].includes("deleted")) {
+        delete dataset_folder["folders"][item];
+      }
+    }
+  }
+};
+
 /**
  *  Before a user uploads their manifest files to Pennsieve or generates them locally remove empty custom  columns.
  *  It is important that the SPARC SDS 2.0 mandated columns remain even if they are empty.

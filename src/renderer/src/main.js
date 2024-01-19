@@ -21,6 +21,8 @@ import './scripts/validator/validate'
 import './scripts/metadata-files/datasetDescription'
 import './scripts/metadata-files/readme-changes'
 import "./scripts/organize-dataset/validation-functions"
+import "./scripts/collections/collections"
+import "./scripts/metadata-files/downloadTemplates"
 
 // Application Lotties
 import './assets/lotties/activate-lotties'

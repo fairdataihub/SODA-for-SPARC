@@ -272,8 +272,10 @@ const validateLocalDataset = async () => {
   }
 
   // write the full report to the ~/SODA/validation.txt file
+  // TODO: Fix validation report to a file
   let fullReport = validationReportData.full_report;
   let validationReportPath = window.path.join(window.os.homedir(), "SODA", "validation.txt");
+  console.log(validationReportPath)
   window.fs.writeFileSync(validationReportPath, fullReport);
 
   let SODADirectory = window.path.join(window.os.homedir(), "SODA");
@@ -314,7 +316,7 @@ const validateLocalDataset = async () => {
 
     if (viewReportResult.isConfirmed) {
       // open a shell to the raw validation report
-      shell.openPath(validationReportPath);
+      window.electron.ipcRenderer.invoke("shell-open-path", validationReportPath);
     }
     return;
   }
@@ -598,7 +600,7 @@ const validatePennsieveDatasetStandAlone = async () => {
 
     if (viewReportResult.isConfirmed) {
       // open a shell to the raw validation report
-      shell.openPath(validationReportPath);
+      window.electron.ipcRenderer.invoke("shell-open-path", validationReportPath);
     }
     return;
   }

@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 console.log("Build queue changedd");
 
-var nextBtnDisabledVariable = true;
+window.nextBtnDisabledVariable = true;
 
 window.datasetStructureJSONObj = {
   folders: {},
@@ -1474,19 +1474,19 @@ window.guidedManifestFilePath = window.path.join(
   "guided_manifest_files"
 );
 // let protocolConfigPath = window.path.join(metadataPath, protocolConfigFileName);
-// let allCollectionTags = {};
-// let currentTags = {};
-// let currentCollectionTags = [];
+window.allCollectionTags = {};
+window.currentTags = {};
+window.currentCollectionTags = [];
 
-// if (process.platform === "linux") {
-//   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
-//   if (fs.existsSync(window.path.join(window.homeDirectory, "Soda"))) {
-//     //copy the folder contents of home/Soda to home/SODA
-//     fs.copySync(window.path.join(window.homeDirectory, "Soda"), window.path.join(window.homeDirectory, "SODA"));
-//     //delete the old folder
-//     fs.removeSync(window.path.join(window.homeDirectory, "Soda"));
-//   }
-// }
+if (window.process.platform() === "linux") {
+  //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
+  if (window.fs.existsSync(window.path.join(window.homeDirectory, "Soda"))) {
+    //copy the folder contents of home/Soda to home/SODA
+    window.fs.copySync(window.path.join(window.homeDirectory, "Soda"), window.path.join(window.homeDirectory, "SODA"));
+    //delete the old folder
+    window.fs.removeSync(window.path.join(window.homeDirectory, "Soda"));
+  }
+}
 
 const guidedSubmissionTagsInputManual = document.getElementById(
   "guided-tagify-submission-milestone-tags-manual"
@@ -3688,8 +3688,8 @@ const withdrawReviewDataset = async (curationMode) => {
     .replace(/^\s+|\s+$/g, "");
 
   if (curationMode == "guided") {
-    currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
-    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    currentAccount = window.sodaJSONObj["bf-account-selected"]["account-name"];
+    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
   }
 
   try {
@@ -6234,7 +6234,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
       //hide samples when on the subjects page
       if (hideSampleFolders) {
         let currentSampleFolder = splitPath[0];
-        let allSamples = sodaJSONObj.getAllSamplesFromSubjects();
+        let allSamples = window.sodaJSONObj.getAllSamplesFromSubjects();
         let noPoolSamples = [];
         let poolSamples = [];
         let skipSubjectFolder = false;
@@ -6271,7 +6271,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
       if (hideSubjectFolders) {
         //hide subject folders when displaying pool page
         const currentPoolName = splitPath[0];
-        let currentSubjects = sodaJSONObj.getAllSubjects();
+        let currentSubjects = window.sodaJSONObj.getAllSubjects();
         let poolSubjects = [];
         let noPoolSubjects = [];
         let skipSubjectFolder = false;
@@ -7141,7 +7141,7 @@ window.electron.ipcRenderer.on(
 
               let root_folder_path = $("#guided-input-destination-getting-started-locally").val();
 
-              window.create_json_object(action, sodaJSONObj, root_folder_path);
+              window.create_json_object(action, window.sodaJSONObj, root_folder_path);
               window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
               window.populate_existing_folders(window.datasetStructureJSONObj);
               window.populate_existing_metadata(window.sodaJSONObj);
@@ -7150,7 +7150,7 @@ window.electron.ipcRenderer.on(
           } else {
             action = "";
             let root_folder_path = $("#guided-input-destination-getting-started-locally").val();
-            sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+            window.sodaJSONObj["starting-point"]["local-path"] = filepath[0];
             window.create_json_object(action, window.sodaJSONObj, root_folder_path);
             window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
             window.populate_existing_folders(window.datasetStructureJSONObj);
@@ -7234,12 +7234,12 @@ document.getElementById("button-generate-comeback").addEventListener("click", fu
     document.getElementById("prevBtn").style.display = "inline";
     document.getElementById("nextBtn").style.display = "inline";
     document.getElementById("start-over-btn").style.display = "inline-block";
-    showParentTab(window.currentTab, 1);
+    window.showParentTab(window.currentTab, 1);
     if (
-      sodaJSONObj["starting-point"]["type"] == "new" &&
-      "local-path" in sodaJSONObj["starting-point"]
+      window.sodaJSONObj["starting-point"]["type"] == "new" &&
+      "local-path" in window.sodaJSONObj["starting-point"]
     ) {
-      sodaJSONObj["starting-point"]["type"] = "local";
+      window.sodaJSONObj["starting-point"]["type"] = "local";
     }
   }, window.delayAnimation);
 });
@@ -7305,8 +7305,8 @@ const checkEmptyFilesAndFolders = async (sodaJSONObj) => {
 };
 
 window.setSodaJSONStartingPoint = (sodaJSONObj) => {
-  if (sodaJSONObj["starting-point"]["type"] === "local") {
-    sodaJSONObj["starting-point"]["type"] = "new";
+  if (window.sodaJSONObj["starting-point"]["type"] === "local") {
+    window.sodaJSONObj["starting-point"]["type"] = "new";
   }
 };
 
@@ -7443,10 +7443,14 @@ document.getElementById("button-generate").addEventListener("click", async funct
   }
 });
 
-const delete_imported_manifest = () => {
-  for (let highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
-    if ("manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]) {
-      delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
+window.delete_imported_manifest = () => {
+  for (let highLevelFol in window.sodaJSONObj["dataset-structure"]["folders"]) {
+    if (
+      "manifest.xlsx" in window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]
+    ) {
+      delete window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
+        "manifest.xlsx"
+      ];
     }
   }
 };
@@ -7570,10 +7574,10 @@ const initiate_generate = async () => {
       "auto-generated" in window.sodaJSONObj["manifest-files"] &&
       window.sodaJSONObj["manifest-files"]["auto-generated"] === true
     ) {
-      delete_imported_manifest();
+      window.delete_imported_manifest();
     } else if (window.sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
       manifest_files_requested = true;
-      delete_imported_manifest();
+      window.delete_imported_manifest();
     }
   }
 
@@ -8239,14 +8243,14 @@ window.importMetadataFiles = (ev, metadataFile, extensionList, paraEle, curation
 
 window.importPennsieveMetadataFiles = (ev, metadataFile, extensionList, paraEle) => {
   extensionList.forEach((file_type) => {
-    file_name = metadataFile + file_type;
+    let file_name = metadataFile + file_type;
     if (
       file_name in window.sodaJSONObj["metadata-files"] &&
       window.sodaJSONObj["metadata-files"][file_name]["type"] != "bf"
     ) {
       delete window.sodaJSONObj["metadata-files"][file_name];
     }
-    deleted_file_name = file_name + "-DELETED";
+    let deleted_file_name = file_name + "-DELETED";
     if (
       deleted_file_name in window.sodaJSONObj["metadata-files"] &&
       window.sodaJSONObj["metadata-files"][deleted_file_name]["type"] === "bf"
@@ -8344,87 +8348,6 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 
 // $("#button-generate-manifest-locally").click(() => {
 //   window.electron.ipcRenderer.send("open-folder-dialog-save-manifest-local");
-// });
-
-// const recursive_remove_deleted_files = (dataset_folder) => {
-//   if ("files" in dataset_folder) {
-//     for (let item in dataset_folder["files"]) {
-//       if (dataset_folder["files"][item]["action"].includes("deleted")) {
-//         delete dataset_folder["files"][item];
-//       }
-//     }
-//   }
-
-//   if ("folders" in dataset_folder) {
-//     for (let item in dataset_folder["folders"]) {
-//       recursive_remove_deleted_files(dataset_folder["folders"][item]);
-//       if (dataset_folder["folders"][item]["action"].includes("deleted")) {
-//         delete dataset_folder["folders"][item];
-//       }
-//     }
-//   }
-// };
-
-// window.electron.ipcRenderer.on("selected-manifest-folder", async (event, result) => {
-//   if (!result["canceled"]) {
-//     $("body").addClass("waiting");
-//     let manifest_destination = result["filePaths"][0];
-//     let manifest_state = {};
-
-//     if ("manifest-files" in sodaJSONObj) {
-//       manifest_state = sodaJSONObj["manifest-files"];
-//       sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination;
-//     } else {
-//       manifest_state = {};
-//       sodaJSONObj["manifest-files"] = {};
-//       sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination;
-//     }
-
-//     delete_imported_manifest();
-
-//     let temp_sodaJSONObj = JSON.parse(JSON.stringify(sodaJSONObj));
-//     let dataset_name = "Undetermined";
-
-//     recursive_remove_deleted_files(temp_sodaJSONObj["dataset-structure"]);
-
-//     if ("bf-dataset-selected" in sodaJSONObj) {
-//       if ("dataset-name" in sodaJSONObj) {
-//         dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-//       }
-//     }
-
-//     try {
-//       await client.post(
-//         `/curate_datasets/manifest_files`,
-//         {
-//           generate_purpose: "",
-//           soda_json_object: temp_sodaJSONObj,
-//         },
-//         { timeout: 0 }
-//       );
-
-//       $("body").removeClass("waiting");
-//       window.logCurationForAnalytics(
-//         "Success",
-//         window.PrepareDatasetsAnalyticsPrefix.CURATE,
-//         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-//         ["Step 5", "Generate", "Manifest"],
-//         determineDatasetLocation()
-//       );
-//     } catch (error) {
-//       clientError(error);
-//       $("body").removeClass("waiting");
-
-//       // log the error to analytics
-//       window.logCurationForAnalytics(
-//         "Error",
-//         window.PrepareDatasetsAnalyticsPrefix.CURATE,
-//         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-//         ["Step 5", "Generate", "Manifest"],
-//         determineDatasetLocation()
-//       );
-//     }
-//   }
 // });
 
 window.showBFAddAccountSweetalert = async (ev) => {
@@ -9308,13 +9231,12 @@ const gettingStarted = () => {
 
 const sodaVideo = () => {
   document.getElementById("overview-column-1").blur();
-  window.shell.openExternal("https://docs.sodaforsparc.io/docs/getting-started/user-interface");
+  window.electron.ipcRenderer.invoke("shell-open-external", "https://docs.sodaforsparc.io/docs/getting-started/user-interface")
 };
 
 const directToDocumentation = () => {
-  window.shell.openExternal(
-    "https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda"
-  );
+  window.electron.ipcRenderer.invoke("shell-open-external", "https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda")
+
   document.getElementById("overview-column-2").blur();
   // window.open('https://docs.sodaforsparc.io', '_blank');
 };

@@ -261,7 +261,7 @@ const submitDatasetForPublication = async (
 };
 
 const getCurrentCollectionTags = async (account, dataset) => {
-  currentTags = {};
+  window.currentTags = {};
   try {
     let result = await client.get(`/datasets/${dataset}/collections`, {
       params: {
@@ -274,12 +274,12 @@ const getCurrentCollectionTags = async (account, dataset) => {
       let id = res[i]["id"];
       if (name.includes(",")) {
         let replaced_name = name.replace(/,/g, "，");
-        currentTags[replaced_name] = { id: id, "original-name": name };
+        window.currentTags[replaced_name] = { id: id, "original-name": name };
       } else {
-        currentTags[name] = { id: id };
+        window.currentTags[name] = { id: id };
       }
     }
-    return currentTags;
+    return window.currentTags;
   } catch (error) {
     clientError(error);
   }
@@ -287,7 +287,7 @@ const getCurrentCollectionTags = async (account, dataset) => {
 
 //Function used to get all collections that belong to the Org
 const getAllCollectionTags = async (account) => {
-  allCollectionTags = {};
+  window.allCollectionTags = {};
   try {
     result = await client.get(`/collections/`, {
       params: { selected_account: account },
@@ -298,15 +298,15 @@ const getAllCollectionTags = async (account) => {
       let id = res[i]["id"];
       if (name.includes(",")) {
         let replaced_name = res[i]["name"].replace(/,/g, "，");
-        allCollectionTags[replaced_name] = {
+        window.allCollectionTags[replaced_name] = {
           id: id,
           "original-name": name,
         };
       } else {
-        allCollectionTags[name] = { id: id };
+        window.allCollectionTags[name] = { id: id };
       }
     }
-    return allCollectionTags;
+    return window.allCollectionTags;
   } catch (error) {
     clientError(error);
   }

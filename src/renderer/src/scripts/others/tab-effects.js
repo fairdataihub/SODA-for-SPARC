@@ -3,6 +3,8 @@ import Accordion from 'accordion-js';
 // TODO: Follow up that this is the way to import it
 import 'accordion-js/dist/accordion.min.css';
 import { showHideDropdownButtons } from '../globals';
+import client from "../client"
+import {clientError, userErrorMessage} from "./http-error-handler/error-handler"
 import introJs from "intro.js";
 import Swal from "sweetalert2";
 import api from '../others/api/api'
@@ -23,11 +25,11 @@ var allParentStepsJSON = {
 };
 
 window.currentTab = 0; // Current tab is set to be the first tab (0)
-// showParentTab(0, 1);
+// window.showParentTab(0, 1);
 
 const delay = 250;
 
-const showParentTab = async (tabNow, nextOrPrev) => {
+window.showParentTab = async (tabNow, nextOrPrev) => {
   $("#nextBtn").prop("disabled", true);
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
@@ -511,9 +513,9 @@ window.nextPrev = (pageIndex) => {
 
     document.body.dispatchEvent(event);
     if ($("#nextBtn").prop("disabled") === true) {
-      nextBtnDisabledVariable = true;
+      window.nextBtnDisabledVariable = true;
     } else {
-      nextBtnDisabledVariable = false;
+      window.nextBtnDisabledVariable = false;
     }
     return;
   }
@@ -532,7 +534,7 @@ window.nextPrev = (pageIndex) => {
     parentTabs[window.currentTab].id === "high-level-folders-tab" ||
     parentTabs[window.currentTab].id === "metadata-files-tab"
   ) {
-    organizeLandingUIEffect();
+    window.organizeLandingUIEffect();
     // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
     if ("files" in window.datasetStructureJSONObj) {
       window.datasetStructureJSONObj["files"] = {};
@@ -550,6 +552,7 @@ window.nextPrev = (pageIndex) => {
     }
   }
 
+  // TODO: Fix comparison by reference bug in 3rd condition
   if (
     pageIndex === 1 &&
     parentTabs[window.currentTab].id === "organize-dataset-tab" &&
@@ -580,7 +583,7 @@ window.nextPrev = (pageIndex) => {
           window.highLevelFoldersDisableOptions();
         }
         // Display the correct tab:
-        showParentTab(window.currentTab, pageIndex);
+        window.showParentTab(window.currentTab, pageIndex);
       }
     });
     // check if required metadata files are included
@@ -655,7 +658,7 @@ window.nextPrev = (pageIndex) => {
           // Increase or decrease the current tab by 1:
           window.currentTab = window.currentTab + pageIndex;
           // Display the correct tab:
-          showParentTab(window.currentTab, pageIndex);
+          window.showParentTab(window.currentTab, pageIndex);
         }
       });
     } else {
@@ -664,7 +667,7 @@ window.nextPrev = (pageIndex) => {
       // Increase or decrease the current tab by 1:
       window.currentTab = window.currentTab + pageIndex;
       // Display the correct tab:
-      showParentTab(window.currentTab, pageIndex);
+      window.showParentTab(window.currentTab, pageIndex);
     }
   } else if (
     parentTabs[window.currentTab].id === "preview-dataset-tab" &&
@@ -672,7 +675,7 @@ window.nextPrev = (pageIndex) => {
   ) {
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     window.currentTab = window.currentTab - 1;
-    showParentTab(window.currentTab, pageIndex);
+    window.showParentTab(window.currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
   } else if (
     parentTabs[window.currentTab].id === "manifest-file-tab" &&
@@ -685,7 +688,7 @@ window.nextPrev = (pageIndex) => {
       $("#nextBtn").prop("disabled", false);
       fixStepDone(4);
 
-      showParentTab(window.currentTab, pageIndex);
+      window.showParentTab(window.currentTab, pageIndex);
 
       // check if skip card or the validate card have been checked
       const validationOptionSelected = document.querySelector(
@@ -703,7 +706,7 @@ window.nextPrev = (pageIndex) => {
       window.currentTab = window.currentTab - 1;
       // fixStepDone(4);
       $("#nextBtn").prop("disabled", true);
-      showParentTab(window.currentTab, pageIndex);
+      window.showParentTab(window.currentTab, pageIndex);
     }
   } else if (
     parentTabs[window.currentTab].id === "manifest-file-tab" &&
@@ -731,7 +734,7 @@ window.nextPrev = (pageIndex) => {
       $("#generate-dataset-replace-existing").children().hide();
     }
     $("#nextBtn").prop("disabled", true);
-    showParentTab(window.currentTab, pageIndex);
+    window.showParentTab(window.currentTab, pageIndex);
   } else if (
     parentTabs[window.currentTab].id === "validate-dataset-tab" &&
     window.sodaJSONObj["starting-point"]["type"] == "bf" &&
@@ -741,7 +744,7 @@ window.nextPrev = (pageIndex) => {
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     // skip step 6 ( options irrelevant for existing bf/pennsieve workflow)
     window.currentTab = window.currentTab - 2;
-    showParentTab(window.currentTab, pageIndex);
+    window.showParentTab(window.currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
   } else if (parentTabs[window.currentTab].id === "generate-dataset-tab") {
     // Hide the current tab:
@@ -753,7 +756,7 @@ window.nextPrev = (pageIndex) => {
       window.highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
-    showParentTab(window.currentTab, pageIndex);
+    window.showParentTab(window.currentTab, pageIndex);
 
     // check if skip card or the validate card have been checked
     const validationOptionSelected = document.querySelector(
@@ -777,7 +780,7 @@ window.nextPrev = (pageIndex) => {
       window.highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
-    showParentTab(window.currentTab, pageIndex);
+    window.showParentTab(window.currentTab, pageIndex);
   }
 };
 
@@ -2549,7 +2552,7 @@ async function switchMetadataDDQuestion() {
       $("#existing-dd-file-destination").val("");
       $("#div-check-bf-import-dd").css("display", "flex");
       $($("#div-check-bf-import-dd").children()[0]).show();
-      resetDDFields();
+      window.resetDDFields();
     }
     return continueProgressDD;
   } else {
@@ -2585,8 +2588,8 @@ async function switchMetadataSubmissionQuestion() {
 
 // 5. manifest
 async function switchMetadataManifestQuestion() {
-  var userpath1 = window.path.join(homeDirectory, "SODA", "SODA Manifest Files");
-  var userpath2 = window.path.join(homeDirectory, "SODA", "manifest_files");
+  var userpath1 = window.path.join(window.homeDirectory, "SODA", "SODA Manifest Files");
+  var userpath2 = window.path.join(window.homeDirectory, "SODA", "manifest_files");
   if (
     $("#Question-prepare-manifest-2").hasClass("show") ||
     $("#Question-prepare-manifest-3").hasClass("show")
@@ -3563,7 +3566,7 @@ const wipeOutCurateProgress = async () => {
 document.getElementById("button-section-organize-dataset").addEventListener("click", () => {
   $(".vertical-progress-bar").css("display", "flex");
   document.getElementById("generate-dataset-progress-tab").style.display = "none";
-  showParentTab(window.currentTab, 1);
+  window.showParentTab(window.currentTab, 1);
 });
 
 document.getElementById("organize_dataset_btn").addEventListener("click", () => {
@@ -3571,7 +3574,7 @@ document.getElementById("organize_dataset_btn").addEventListener("click", () => 
   document.getElementById("generate-dataset-progress-tab").style.display = "none";
   $("#save-progress-btn").css("display", "none");
   $("#start-over-btn").css("display", "none");
-  showParentTab(window.currentTab, 1);
+  window.showParentTab(window.currentTab, 1);
 });
 
 const hideNextDivs = (currentDiv) => {
