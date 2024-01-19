@@ -1478,15 +1478,15 @@ window.allCollectionTags = {};
 window.currentTags = {};
 window.currentCollectionTags = [];
 
-// if (process.platform === "linux") {
-//   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
-//   if (fs.existsSync(window.path.join(window.homeDirectory, "Soda"))) {
-//     //copy the folder contents of home/Soda to home/SODA
-//     fs.copySync(window.path.join(window.homeDirectory, "Soda"), window.path.join(window.homeDirectory, "SODA"));
-//     //delete the old folder
-//     fs.removeSync(window.path.join(window.homeDirectory, "Soda"));
-//   }
-// }
+if (window.process.platform() === "linux") {
+  //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
+  if (window.fs.existsSync(window.path.join(window.homeDirectory, "Soda"))) {
+    //copy the folder contents of home/Soda to home/SODA
+    window.fs.copySync(window.path.join(window.homeDirectory, "Soda"), window.path.join(window.homeDirectory, "SODA"));
+    //delete the old folder
+    window.fs.removeSync(window.path.join(window.homeDirectory, "Soda"));
+  }
+}
 
 const guidedSubmissionTagsInputManual = document.getElementById(
   "guided-tagify-submission-milestone-tags-manual"
