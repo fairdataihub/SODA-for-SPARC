@@ -1474,9 +1474,9 @@ window.guidedManifestFilePath = window.path.join(
   "guided_manifest_files"
 );
 // let protocolConfigPath = window.path.join(metadataPath, protocolConfigFileName);
-// let allCollectionTags = {};
-// let currentTags = {};
-// let currentCollectionTags = [];
+window.allCollectionTags = {};
+window.currentTags = {};
+window.currentCollectionTags = [];
 
 // if (process.platform === "linux") {
 //   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
