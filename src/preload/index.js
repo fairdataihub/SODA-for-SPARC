@@ -118,6 +118,9 @@ if (process.contextIsolated) {
       readFileRaw: (filepath, encoding) => {
         return fs.readFileSync(filepath, encoding);
       },
+      renameSync: (OldFilePath, newFilePath) => {
+        return fs.renameSync(OldFilePath, newFilePath);
+      },
       fileSizeSync: (filepath) => {
         // use stat library to get the size of the directory
         const fileStats = fs.statSync(filepath);
