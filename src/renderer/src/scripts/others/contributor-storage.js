@@ -1,7 +1,6 @@
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
-
 
 // Save the contributors array to the JSON file
 const saveStoredContributors = (contributors) => {
@@ -16,9 +15,11 @@ const saveStoredContributors = (contributors) => {
 // If the file doesn't exist, return an empty array
 window.loadStoredContributors = () => {
   try {
-    const contributorFileData = window.fs.readFileSync(window.storedContributorsPath);
+    const contributorFileData = window.fs.readFileSync(window.storedContributorsPath, "utf8");
     return JSON.parse(contributorFileData);
   } catch (err) {
+    window.log.info("Error loading stored contributors file: " + err);
+    window.log.info("Returning empty array instead");
     return [];
   }
 };
@@ -87,4 +88,3 @@ window.addOrUpdateStoredContributor = (
   // Write the updated array to the JSON file
   saveStoredContributors(storedContributorsArray);
 };
-
