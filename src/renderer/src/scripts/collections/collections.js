@@ -46,7 +46,7 @@ $(document).ready(function () {
         }
   
         //check if old collections tags are still there
-        for (var [key, value] of Object.entries(currentTags)) {
+        for (var [key, value] of Object.entries(window.currentTags)) {
           if (key.includes("，")) {
             //key was modified so compare with original-name
             if (!newCollectionTags.includes(value["original-name"])) {
@@ -70,12 +70,12 @@ $(document).ready(function () {
           if (newCollectionTags[i].includes(",")) {
             //need to compare with original name
             let comparison = newCollectionTags[i].replace(/,/g, "，");
-            if (comparison in allCollectionTags) {
+            if (comparison in window.allCollectionTags) {
               //modified comma name in whitelist
               //check if in old tags
-              if (!(comparison in currentTags)) {
-                //modified comma name not in currentTags and is in allcollectiontags
-                whiteListTags.push(allCollectionTags[comparison]["id"]);
+              if (!(comparison in window.currentTags)) {
+                //modified comma name not in window.currentTags and is in window.allCollectionTags
+                whiteListTags.push(window.allCollectionTags[comparison]["id"]);
               } //else is in whitelist but in current tags so do nothing
             } else {
               //not in the whitelist so either new or removed
@@ -83,11 +83,11 @@ $(document).ready(function () {
             }
           } else {
             //tag element does not have commas so just compare
-            if (newCollectionTags[i] in allCollectionTags) {
+            if (newCollectionTags[i] in window.allCollectionTags) {
               //tag is in whitelist but check if already added to dataset
-              if (!(newCollectionTags[i] in currentTags)) {
+              if (!(newCollectionTags[i] in window.currentTags)) {
                 //not in removed ts and so tag is new
-                whiteListTags.push(allCollectionTags[newCollectionTags[i]]["id"]);
+                whiteListTags.push(window.allCollectionTags[newCollectionTags[i]]["id"]);
               }
             } else {
               //not in whitelist so either new or removed tag
@@ -254,7 +254,7 @@ $(document).ready(function () {
   
       //put the gathered collection names to the tagify whitelist
       collectionDatasetTags.settings.whitelist = collectionNames;
-      currentCollectionTags = currentCollectionNames;
+      window.currentCollectionTags = currentCollectionNames;
       collectionDatasetTags.removeAllTags();
       collectionDatasetTags.addTags(currentCollectionNames);
   

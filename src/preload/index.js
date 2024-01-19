@@ -146,6 +146,12 @@ if (process.contextIsolated) {
       unlink: async (filepath) => {
         return await fs.unlink(filepath);
       },
+      copySync: (source, destination) => {
+        return fs.copySync(source, destination);
+      },
+      removeSync: (dirpath) => {
+        return fs.removeSync(dirpath);
+      }
     });
     contextBridge.exposeInMainWorld("process", {
       platform: () => {
