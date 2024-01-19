@@ -14676,7 +14676,7 @@ window.electron.ipcRenderer.on(
 
       // Update UI for successful local dataset generation
       updateDatasetUploadProgressTable("local", {
-        "Current action": `Dataset successfully generated locally`,
+        Status: `Dataset successfully generated locally`,
       });
       unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
     } catch (error) {
