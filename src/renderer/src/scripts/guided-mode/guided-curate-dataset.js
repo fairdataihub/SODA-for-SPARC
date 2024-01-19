@@ -9216,8 +9216,12 @@ window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
         );
       }
 
+      // If a contributor has already been marked as Principal Investigator, make sure that the
+      // current contributor is the one marked as Principal Investigator
+      // otherwise, show an error message
       if (contributorRoles.includes("PrincipalInvestigator")) {
-        if (getContributorMarkedAsPrincipalInvestigator()) {
+        const currentPIsOrcid = getContributorMarkedAsPrincipalInvestigator();
+        if (currentPIsOrcid && currentPIsOrcid !== contributorOrcid) {
           return Swal.showValidationMessage(
             "Only one contributor can be marked as Principal Investigator"
           );
@@ -9278,7 +9282,7 @@ const handleAddContributorHeaderUI = () => {
     return !existingContributorORCiDs.includes(contributor.ORCiD);
   });
 
-  // If no stored contribturs are found, use the default header
+  // If no stored contributors are found, use the default header
   if (locallyStoredContributorArray.length === 0) {
     return `
       <label class="guided--form-label centered mb-md" style="font-size: 1em !important;">
@@ -9288,9 +9292,9 @@ const handleAddContributorHeaderUI = () => {
   }
 
   const contributorOptions = locallyStoredContributorArray
-    .filter((contribturo) => {
+    .filter((contributor) => {
       // Filter out any contributors that have already been added by ORCID
-      return !existingContributorORCiDs.includes(contribturo.ORCiD);
+      return !existingContributorORCiDs.includes(contributor.ORCiD);
     })
     .map((contributor) => {
       return `
@@ -9626,15 +9630,15 @@ const switchOrderOfContributors = (draggedOrcid, targetOrcid) => {
 // Constants used for drag and drop functionality for contributors
 let draggedRow;
 let targetRow;
-const handleContributorDragStart = (event) => {
+window.handleContributorDragStart = (event) => {
   draggedRow = event.target.closest("tr");
 };
-const handleContributorDragOver = (event) => {
+window.handleContributorDragOver = (event) => {
   event.preventDefault();
   targetRow = event.target.closest("tr");
 };
 
-const handleContributorDrop = (event) => {
+window.handleContributorDrop = (event) => {
   event.preventDefault();
   if (targetRow === draggedRow) {
     return;
@@ -9658,9 +9662,9 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
     <tr 
       data-contributor-orcid=${contributorOrcid}
       draggable="true"
-      ondragstart="handleContributorDragStart(event)"
-      ondragover="handleContributorDragOver(event)"
-      ondragend="handleContributorDrop(event)"
+      ondragstart="window.handleContributorDragStart(event)"
+      ondragover="window.handleContributorDragOver(event)"
+      ondragend="window.handleContributorDrop(event)"
       style="cursor: move;"
     >
       <td class="middle aligned collapsing text-center">
