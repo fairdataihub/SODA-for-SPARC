@@ -6412,7 +6412,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         }
         if (sortedObj["files"][item]["type"] == "bf") {
           if (sortedObj["files"][item]["action"].includes("deleted")) {
-            original_file_name = item.substring(0, item.lastIndexOf("-"));
+            let original_file_name = item.substring(0, item.lastIndexOf("-"));
             extension = original_file_name.split(".").pop();
           } else {
             extension = item.split(".").pop();
