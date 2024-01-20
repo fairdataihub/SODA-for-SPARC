@@ -21,6 +21,7 @@ import "./checkDiskSpace"
 import "./spreadsheet-import-gm"
 import "./shell"
 import "./templates"
+import "./clipboard"
 
 
 const sodaVersion = app.getVersion();

@@ -9204,15 +9204,15 @@ window.gatherLogs = () => {
  * removed from our analytics database. For each computer/profile the user has they may have to perform this operation if they want all of their data
  * purged.
  */
-window.displayClientId = () => {
+window.displayClientId = async () => {
   // TODO: Convert to new conventions
-  const { clipboard } = require("electron");
-  clipboard.writeText("Example string", "selection");
-  let clientId = nodeStorage.getItem("userId");
+  let clientId = await window.electron.ipcRenderer.invoke("get-nodestorage-key", "userId");
+  console.log(clientId)
 
   const copyClientIdToClipboard = () => {
-    clipboard.writeText(clientId, "clipboard");
+    window.electron.ipcRenderer.invoke("clipboard-write", clientId, "clipboard")
   };
+
   copyClientIdToClipboard();
   let copyIcon = `<i class="fas fa-copy" id="copy-icon-client-id" click="${copyClientIdToClipboard()}" ></i>`;
   Swal.fire({
