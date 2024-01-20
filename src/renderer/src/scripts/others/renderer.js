@@ -9080,9 +9080,9 @@ window.gatherLogs = () => {
   let serverLogsPath = window.path.join(homedir, "SODA", "logs");
   let logFiles = ["main.log", "renderer.log", "agent.log", "api.log"];
 
-  if (os.platform() === "darwin") {
+  if (window.os.platform() === "darwin") {
     clientLogsPath = window.path.join(homedir, "/Library/Logs/SODA for SPARC/");
-  } else if (os.platform() === "win32") {
+  } else if (window.os.platform() === "win32") {
     clientLogsPath = window.path.join(homedir, "AppData", "Roaming", "SODA for SPARC", "logs");
   } else {
     clientLogsPath = window.path.join(homedir, ".config", "SODA for SPARC", "logs");

@@ -151,6 +151,9 @@ if (process.contextIsolated) {
       },
       removeSync: (dirpath) => {
         return fs.removeSync(dirpath);
+      },
+      copyFileSync: (source, destination) => {
+        return fs.copyFileSync(source, destination);
       }
     });
     contextBridge.exposeInMainWorld("process", {
