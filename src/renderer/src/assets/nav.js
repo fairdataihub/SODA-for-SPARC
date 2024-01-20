@@ -1,3 +1,5 @@
+import Swal from "sweetalert2";
+
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100))
 }
