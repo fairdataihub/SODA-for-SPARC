@@ -1132,28 +1132,28 @@ $(document).ready(function () {
 
 window.moveItems = async (ev, category) => {
   let filtered = window.getGlobalPath(window.organizeDSglobalPath);
-  let myPath = window.getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+  let myPath = window.getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
   let parentFolder = filtered[1];
   let selectedOriginalLocation = filtered[filtered.length - 1];
   let selectedItem = ev.parentElement.innerText;
 
-  if ("files" in datasetStructureJSONObj) {
-    datasetStructureJSONObj["files"] = {};
+  if ("files" in window.datasetStructureJSONObj) {
+    window.datasetStructureJSONObj["files"] = {};
   }
 
-  for (let highLevelFol in datasetStructureJSONObj["folders"]) {
+  for (let highLevelFol in window.datasetStructureJSONObj["folders"]) {
     // remove manifest files for treeview
     if (
-      "manifest.xlsx" in datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
-      datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"]["forTreeview"] ===
+      "manifest.xlsx" in window.datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+      window.datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"]["forTreeview"] ===
         true
     ) {
-      delete datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"];
+      delete window.datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"];
     }
   }
 
   jsTreeData = window.create_child_node(
-    datasetStructureJSONObj,
+    window.datasetStructureJSONObj,
     "dataset_root",
     "folder",
     "",
@@ -1266,7 +1266,7 @@ window.moveItems = async (ev, category) => {
         // action to move and delete here
         // multiple files/folders
         let splitSelectedPath = selectedPath.split("/");
-        let datasetStructureCopy = datasetStructureJSONObj;
+        let datasetStructureCopy = window.datasetStructureJSONObj;
 
         if ($("div.single-item.selected-item").toArray().length > 1) {
           // Moving multiple items
@@ -1274,7 +1274,7 @@ window.moveItems = async (ev, category) => {
             .toArray()
             .forEach((element) => {
               console.log(element);
-              datasetStructureCopy = datasetStructureJSONObj;
+              datasetStructureCopy = window.datasetStructureJSONObj;
               let itemToMove = element.textContent;
               let itemType = "";
 
