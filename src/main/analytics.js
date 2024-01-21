@@ -22,6 +22,7 @@ const kombuchaServer = axios.create({
 let userId;
 try {
   userId = nodeStorage.getItem("userId");
+  console.log("User id is: ", userId)
 } catch (e) {
   userId = null;
 }

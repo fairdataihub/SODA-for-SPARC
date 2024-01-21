@@ -67,11 +67,12 @@ ipcMain.handle("app-version", () => {
   return app.getVersion();
 })
 
-ipcMain.handle("set-nodestorage-key", (key, value) => {
+ipcMain.handle("set-nodestorage-key", (event, key, value) => {
   return nodeStorage.setItem(key, value);
 })
 
-ipcMain.handle("get-nodestorage-key", (key) => {
+ipcMain.handle("get-nodestorage-key", (event, key) => {
+  console.log("The key is: ", key)
   return nodeStorage.getItem(key);
 })
 
