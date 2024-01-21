@@ -47,7 +47,6 @@ const resetSubmissionChecklistText = () => {
  * @returns statuses - A status object that details the state of each pre-publishing checklist item for the given dataset and user
  */
 window.getPrepublishingChecklistStatuses = async (currentDataset) => {
-  console.log("Running get prepublishing checklist statuses")
   // check that a dataset name or id is provided
   if (!currentDataset || currentDataset === "") {
     throw new Error(
@@ -109,7 +108,6 @@ window.getPrepublishingChecklistStatuses = async (currentDataset) => {
   // the user has an ORCID iD if the property is defined and non-empty
   statuses.ORCID = orcidId && orcidId.length ? true : false;
 
-  console.log(statuses)
 
   return statuses;
 };
@@ -299,7 +297,6 @@ window.showPrePublishingStatus = async (inPrePublishing = false, curationMode = 
   let statuses;
   try {
     statuses = await window.getPrepublishingChecklistStatuses(currentDataset);
-    console.log(statuses)
   } catch (error) {
     clientError(error);
     if (inPrePublishing) {
@@ -436,8 +433,6 @@ window.showPrePublishingStatus = async (inPrePublishing = false, curationMode = 
 // gets the pre-publishing checklist item element by id and gives it a check or an 'x' based off the value of the pre-publishing item's status
 const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
   let addButton = $(`#${iconElementId}`).parent().siblings()[0];
-  console.log("In set prepublishing checklist item icon by status")
-  console.log(addButton)
   if (status) {
     // Change icon of iconElementId to a checkmark
     $(`#${iconElementId}`).attr("class", "check icon");
@@ -573,19 +568,15 @@ window.createPrepublishingChecklist = async (curationMode) => {
 // check if the user is the dataset owner and transition to the prepublishing checklist question if so
 // TODO: Dorian handle the freeform withdraw button and remove it
 window.beginPrepublishingFlow = async (curationMode) => {
-  console.log("We are here rn ")
   let currentDataset = window.defaultBfDataset;
   let currentAccount = window.defaultBfAccount;
 
   let curationModeID = "";
   let embargoDetails;
   if (curationMode === "guided") {
-    console.log("In guided mode now nice man")
     curationModeID = "guided--";
     currentAccount = window.sodaJSONObj["bf-account-selected"]["account-name"];
     currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    console.log(currentDataset)
-    console.log(currentAccount)
     let get_publishing_status = await client.get(
       `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
       {
@@ -594,20 +585,16 @@ window.beginPrepublishingFlow = async (curationMode) => {
         },
       }
     );
-    console.log("After the request")
     let res = get_publishing_status.data;
 
-    console.log(res)
 
     // Don't send true until pre-publishing checklist is complete
     embargoDetails = await window.submitReviewDatasetCheck(res, "guided");
-    console.log("Past submission review dataset check")
     if (embargoDetails[0] === false) {
       Swal.close();
       return false;
     }
 
-    console.log("Didnt return false")
   }
   if (curationMode === "freeform" || curationMode === undefined) {
     resetSubmissionChecklistText();
@@ -626,7 +613,6 @@ window.beginPrepublishingFlow = async (curationMode) => {
     });
   }
 
-  console.log("DOwn here now")
 
   // check if the user is the dataset owner
   let role;
