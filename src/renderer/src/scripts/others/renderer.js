@@ -9081,11 +9081,11 @@ window.gatherLogs = () => {
   let logFiles = ["main.log", "renderer.log", "agent.log", "api.log"];
 
   if (window.os.platform() === "darwin") {
-    clientLogsPath = window.path.join(homedir, "/Library/Logs/SODA for SPARC/");
+    clientLogsPath = window.path.join(homedir, "/Library/Logs/soda-for-sparc/");
   } else if (window.os.platform() === "win32") {
-    clientLogsPath = window.path.join(homedir, "AppData", "Roaming", "SODA for SPARC", "logs");
+    clientLogsPath = window.path.join(homedir, "AppData", "Roaming", "soda-for-sparc", "logs");
   } else {
-    clientLogsPath = window.path.join(homedir, ".config", "SODA for SPARC", "logs");
+    clientLogsPath = window.path.join(homedir, ".config", "soda-for-sparc", "logs");
   }
 
   Swal.fire({
