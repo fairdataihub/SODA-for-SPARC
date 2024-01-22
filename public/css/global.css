@@ -139,7 +139,7 @@ textarea {
 }
 
 .temporary-hide {
-  display: none;
+  display: none !important;
 }
 
 /* Animations */
