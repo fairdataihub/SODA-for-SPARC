@@ -16,7 +16,6 @@ const fixPath = () => {
       window.process.env.PATH,
     ].join(":");
 
-    console.log("PATH updated to: " + window.process.env.PATH)
   }
 };
 

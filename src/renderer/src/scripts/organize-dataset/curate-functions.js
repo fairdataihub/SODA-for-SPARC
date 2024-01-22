@@ -1273,7 +1273,6 @@ window.moveItems = async (ev, category) => {
           $("div.single-item.selected-item")
             .toArray()
             .forEach((element) => {
-              console.log(element);
               datasetStructureCopy = window.datasetStructureJSONObj;
               let itemToMove = element.textContent;
               let itemType = "";

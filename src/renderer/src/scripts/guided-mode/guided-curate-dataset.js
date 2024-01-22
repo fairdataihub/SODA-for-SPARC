@@ -3259,7 +3259,6 @@ const generateProgressCardElement = (progressFileJSONObj) => {
 };
 
 const guidedRenderProgressCards = async () => {
-  console.log("Loading the render progress cards func");
   const progressCardsContainer = document.getElementById("guided-container-progress-cards");
   const progressCardLoadingDiv = document.getElementById("guided-section-loading-progress-cards");
 
@@ -3429,7 +3428,6 @@ window.guidedOpenManifestEditSwal = async (highLevelFolderName) => {
 
   //upon receiving a reply of the spreadsheet, handle accordingly
   window.electron.ipcRenderer.on("spreadsheet-reply", async (event, result) => {
-    console.log("Spreadsheet reply from guided curate");
     if (!result || result === "") {
       window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
       return;
@@ -3936,7 +3934,6 @@ const setActiveProgressionTab = (targetPageID) => {
   let targetProgressionTab = $(`#${targetProgressionTabID}`);
   targetProgressionTab.addClass("selected-tab");
 };
-console.log(window.api);
 let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
@@ -4834,17 +4831,14 @@ const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
 };
 
 const guidedAddUsersAndTeamsToDropdown = (usersArray, teamsArray) => {
-  console.log("HERE?");
   const guidedUsersAndTeamsDropdown = document.getElementById("guided_bf_list_users_and_teams");
   // Reset the dropdown
   guidedUsersAndTeamsDropdown.innerHTML =
     "<option>Select individuals or teams to grant permissions to</option>";
 
-  console.log(usersArray);
 
   // Loop through the users and add them to the dropdown
   for (const userString of usersArray) {
-    console.log(userString);
     const userNameAndEmail = userString.split("!|**|!")[0].trim();
     const userID = userString.split("!|**|!")[1].trim();
     const userOption = `
@@ -5037,7 +5031,6 @@ const handleNextButtonVisibility = (targetPageID) => {
 // //If the keys exist, extract the data from the window.sodaJSONObj and populate the page
 // //If the keys do not exist, reset the page (inputs, tables etc.) to the default state
 window.openPage = async (targetPageID) => {
-  console.log("TargetPageID is: ", targetPageID);
   //NOTE: 2 Bottom back buttons (one handles sub pages, and the other handles main pages)
   //Back buttons should be disabled and the function setLoading should be (set as false?)
 
@@ -6076,10 +6069,8 @@ window.openPage = async (targetPageID) => {
             //Banner is returned as an s3 bucket url but image needs to be converted as
             //base64 to save and write to users local system
 
-            console.log(res);
 
             let img_base64 = await window.getBase64(res); // encode image to base64
-            console.log("Not failing hehjasfhjk");
             let guided_img_url = res;
             let imageType = "";
             let fullBase64Image = "";
@@ -6152,7 +6143,6 @@ window.openPage = async (targetPageID) => {
           }
           window.sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-banner-image-tab");
         } catch (error) {
-          console.log("Failure is here");
           clientError(error);
           const emessage = userErrorMessage(error);
           await guidedShowOptionalRetrySwal(emessage, "guided-banner-image-tab");
@@ -9425,7 +9415,6 @@ window.openGuidedAddContributorSwal = async () => {
     confirmButtonText: "Add contributor",
     confirmButtonColor: "#3085d6 !important",
     willOpen: () => {
-      console.log("Loading up the add contributor modal. ON wil open");
       //Create Affiliation(s) tagify for each contributor
       const contributorAffiliationInput = document.getElementById(
         "guided-contributor-affiliation-input"
@@ -9740,7 +9729,6 @@ const renderDatasetDescriptionContributorsTable = () => {
 };
 
 const addContributorField = () => {
-  console.log("Adding contributor");
   const contributorsContainer = document.getElementById("contributors-container");
   //create a new div to hold contributor fields
   const newContributorField = document.createElement("div");
@@ -10839,7 +10827,6 @@ window.specifyPool = (event, poolNameInput) => {
           setActiveSubPage("guided-organize-subjects-into-pools-page");
           return;
         } else {
-          console.log("Pools here?");
           //Add left border back to subject dropdown cell to separate pool name and subject dropdown
           poolSubjectsDropdownCell.removeClass("remove-left-border");
 
@@ -12229,7 +12216,6 @@ const createPennsievePermissionsTableRowElement = (entityType, name, permission,
   }
 };
 const renderPermissionsTable = () => {
-  console.log("Rendering permissions table?");
   // when rendering permissions we will need to check if the permission was fetched from pennsieve
   // we will then create a different table element that will behave differently
   // visually showing user that the permission will be deleted upon upload
@@ -12500,7 +12486,6 @@ const setGuidedDatasetPiOwner = (newPiOwnerObj) => {
 };
 
 const guidedAddUserPermission = (newUserPermissionObj) => {
-  console.log("Adding user permissions");
   //If an existing user with the same ID already exists, update the existing user's position
   for (userPermission of window.sodaJSONObj["digital-metadata"]["user-permissions"]) {
     if (
@@ -13076,7 +13061,6 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
   attachGuidedMethodsToSodaJSONObj();
   guidedTransitionFromHome();
 
-  console.log("About to unlock sidebar");
   guidedUnLockSideBar();
 
   guidedUnSkipPage("guided-select-starting-point-tab");
@@ -13094,7 +13078,6 @@ document.querySelector("#button-homepage-freeform-mode").addEventListener("click
 });
 
 $("#guided-button-add-permission-user-or-team").on("click", function () {
-  console.log("Here finally");
   try {
     //get the selected permission element
     const newPermissionElement = $("#guided_bf_list_users_and_teams option:selected");
@@ -13681,7 +13664,6 @@ $("#guided-input-destination-getting-started-locally").on("click", () => {
 });
 
 const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
-  console.log("That is the dataset name: ", datasetName);
   document.getElementById("guided-dataset-name-upload-tr").classList.remove("hidden");
   const datasetNameUploadText = document.getElementById("guided-dataset-name-upload-text");
 
@@ -14574,7 +14556,6 @@ window.electron.ipcRenderer.on(
       // Remove unnecessary key from sodaJSONObjCopy since we don't need to
       // check if the account details are valid during local generation
       delete sodaJSONObjCopy["bf-account-selected"];
-      console.log("making post request to /curate_datasets/curation");
 
       updateDatasetUploadProgressTable("local", {
         "Current action": `Preparing dataset for local generation`,
@@ -14601,7 +14582,6 @@ window.electron.ipcRenderer.on(
             const { data } = response;
             const main_curate_progress_message = data["main_curate_progress_message"];
             if (main_curate_progress_message === "Success: COMPLETED!") {
-              console.log("Done with generation");
               break; // Exit the loop when generation is done
             }
             const elapsed_time_formatted = data["elapsed_time_formatted"];
@@ -14646,10 +14626,7 @@ window.electron.ipcRenderer.on(
       updateDatasetUploadProgressTable("local", {
         "Current action": `Generating metadata files`,
       });
-      console.log(
-        "Subjects path: ",
-        window.path.join(filePath, guidedDatasetName, "subjects.xlsx")
-      );
+
       // Generate all dataset metadata files
       await guidedGenerateSubjectsMetadata(
         window.path.join(filePath, guidedDatasetName, "subjects.xlsx")
@@ -14992,10 +14969,7 @@ const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
     );
   }
 
-  console.log("guidedDatasetInformation", guidedDatasetInformation);
-  console.log("guidedStudyInformation", guidedStudyInformation);
-  console.log("guidedContributorInformation", guidedContributorInformation);
-  console.log("datasetLinks", datasetLinks);
+
   try {
     await client.post(
       `/prepare_metadata/dataset_description_file`,
@@ -16128,7 +16102,6 @@ $("#guided-generate-changes-file").on("click", () => {
 });
 
 $("#guided-generate-dataset-button").on("click", async function () {
-  console.log("Generating for GM");
   // Ensure that the current workspace is the workspace the user confirmed
   const currentWorkspace = guidedGetCurrentUserWorkSpace();
   const datasetWorkspace = window.sodaJSONObj["digital-metadata"]["dataset-workspace"];
@@ -16217,7 +16190,6 @@ $("#guided-generate-dataset-button").on("click", async function () {
 });
 
 const guidedSaveBannerImage = async () => {
-  console.log("Wowawhoo");
   $("#guided-para-dataset-banner-image-status").html("Please wait...");
   //Save cropped image locally and check size
   let imageFolder = path.join(homeDirectory, "SODA", "guided-banner-images");

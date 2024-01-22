@@ -17,9 +17,7 @@ fixPath();
 
 import "v8-compile-cache";
 
-console.log(log);
-console.log(log.transports);
-console.log(log.transports.file);
+
 log.initialize();
 
 // Custom APIs for renderer

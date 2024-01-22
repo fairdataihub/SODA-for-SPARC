@@ -423,7 +423,6 @@ const addNewIDToTable = (newID, secondaryID, type) => {
       keyword +
       "_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
   } else if (type === "samples") {
-    console.log("In samples ttypes");
     var row = (table.insertRow(rowIndex).outerHTML =
       "<tr id='row-current-" +
       keyword +
@@ -1107,8 +1106,7 @@ window.populateForms = (subjectID, type, curationMode) => {
     fieldArr = $(window.guidedSubjectsFormDiv).children().find(".subjects-form-entry");
   }
 
-  console.log(fieldArr);
-  console.log(window.subjectsTableData);
+
 
   if (window.subjectsTableData.length > 1) {
     for (var i = 1; i < window.subjectsTableData.length; i++) {
@@ -1119,7 +1117,6 @@ window.populateForms = (subjectID, type, curationMode) => {
     }
   }
 
-  console.log(infoJson);
 
   if (subjectID !== "clear" && subjectID.trim() !== "") {
     if (curationMode === "guided") {

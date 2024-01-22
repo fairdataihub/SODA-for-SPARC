@@ -1365,7 +1365,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
 
           let result = responseObject.data.datasets;
-          console.log("Dataset results: ", result)
           window.datasetList = [];
           window.datasetList = result;
           window.refreshDatasetList();
@@ -1701,7 +1700,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         },
       });
 
-      console.log(result)
 
       if (result) {
         await window.openDropdownPrompt(this, "bf");

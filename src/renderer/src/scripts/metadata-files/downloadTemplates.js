@@ -26,9 +26,7 @@ let templateArray = [
 const downloadTemplates = async (templateItem, destinationFolder) => {
   let currentDirectory = await window.electron.ipcRenderer.invoke("get-current-directory");
   let templatePath = window.path.join(currentDirectory, "..", "renderer", "file_templates", templateItem);
-  console.log(templatePath)
   let destinationPath = window.path.join(destinationFolder, templateItem);
-  console.log(destinationPath)
 
   if (window.fs.existsSync(destinationPath)) {
     let emessage = "File '" + templateItem + "' already exists in " + destinationFolder;

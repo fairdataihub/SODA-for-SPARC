@@ -275,7 +275,6 @@ const validateLocalDataset = async () => {
   // TODO: Fix validation report to a file
   let fullReport = validationReportData.full_report;
   let validationReportPath = window.path.join(window.os.homedir(), "SODA", "validation.txt");
-  console.log(validationReportPath)
   window.fs.writeFileSync(validationReportPath, fullReport);
 
   let SODADirectory = window.path.join(window.os.homedir(), "SODA");

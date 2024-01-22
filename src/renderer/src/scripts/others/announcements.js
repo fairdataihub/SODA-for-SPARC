@@ -39,7 +39,6 @@ const checkForAnnouncements = async (state) => {
               <label style="font-weight: 700; font-size: 17px;">Feature Additions:<br></label>
               ${features
                 .map((feature) => {
-                  console.log(feature);
                   return `<li style="margin: .5rem 0 .5rem 0;">${feature}</li>`;
                 })
                 .join("")}

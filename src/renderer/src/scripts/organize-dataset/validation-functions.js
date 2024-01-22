@@ -17,7 +17,6 @@ window.validateOrganizedDataset = async () => {
   let datasetOrigin = "";
   let datasetDestination = "";
 
-  console.log(window.sodaJSONObj)
 
   if (window.sodaJSONObj["starting-point"]["type"] == "bf") {
     datasetOrigin = "Pennsieve";
@@ -86,7 +85,6 @@ window.validateOrganizedDataset = async () => {
   }
 
 
-  console.log("After the dataeset generation")
 
   // check size before doing this
   // situations:
@@ -98,21 +96,18 @@ window.validateOrganizedDataset = async () => {
   // for now lets count then handle option 4 later
 
 
-  console.log("Before getting the number of files and folders")
 
   // get the number of files and folders in the dataset that have been added in the virutal organizer
   let file_counter = 0;
   let folder_counter = 0;
   window.get_num_files_and_folders(sodaJSONObjCopy["dataset-structure"]);
 
-  console.log("After getting the number of files and folders")
 
   // check if the virutal files will be merged with a Pennsieve dataset
   if (
     $('input[name="generate-4"]:checked')[0] &&
     $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing"
   ) {
-    console.log("Before getting the number of packages in the dataset")
     // get the package count of the PS dataset in order to see if it exceeds the maximumn size
     let packageTypeCounts;
     try {
@@ -144,7 +139,6 @@ window.validateOrganizedDataset = async () => {
     // TODO: Handle the case where a file replaces an online file
     file_counter += packageCount;
 
-    console.log("After getting the number of packages in the dataset")
   }
 
   if (file_counter >= 50000) {
@@ -162,7 +156,6 @@ window.validateOrganizedDataset = async () => {
     return;
   }
 
-  console.log("Anout to create validation report")
   let validationReport;
   try {
     validationReport = await window.createValidationReport(sodaJSONObjCopy);
@@ -250,7 +243,6 @@ window.validateOrganizedDataset = async () => {
     return;
   }
 
-  console.log("After creating the validation report")
 
   let SODADirectory = window.path.join(window.os.homedir(), "SODA");
   let validationReportPath = window.path.join(SODADirectory, "validation.txt");
@@ -358,7 +350,6 @@ window.validateOrganizedDataset = async () => {
   viewRawReportBtn.addEventListener("click", async () => {
     // open the text file stored at the raw validation report path
     let pathToRawReport = window.path.join(window.os.homedir(), "SODA", "validation.txt");
-    console.log("Opening report at path: " + pathToRawReport)
     window.electron.ipcRenderer.invoke("shell-open-path", pathToRawReport);
   })
 })
