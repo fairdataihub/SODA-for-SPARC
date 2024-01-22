@@ -281,6 +281,8 @@ const guidedResetLocalGenerationUI = () => {
   document.getElementById("guided-section-local-generation-status-table").classList.add("hidden");
   // Hide the local dataset generation success section
   document.getElementById("guided-section-post-local-generation-success").classList.add("hidden");
+  // Hide the local dataset generation retry section
+  document.getElementById("guided-section-retry-local-generation").classList.add("hidden");
 };
 
 const folderImportedFromPennsieve = (folderJSONPath) => {
@@ -2882,6 +2884,12 @@ const hideSubNavAndShowMainNav = (navButtonToClick) => {
   }
 };
 
+document.querySelectorAll(".pass-button-click-to-next-button").forEach((element) => {
+  element.addEventListener("click", () => {
+    document.getElementById("guided-next-button").click();
+  });
+});
+
 const scrollToBottomOfGuidedBody = () => {
   const elementToScrollTo = document.querySelector(".guided--body");
   elementToScrollTo.scrollTop = elementToScrollTo.scrollHeight;
@@ -4836,7 +4844,6 @@ const guidedAddUsersAndTeamsToDropdown = (usersArray, teamsArray) => {
   guidedUsersAndTeamsDropdown.innerHTML =
     "<option>Select individuals or teams to grant permissions to</option>";
 
-
   // Loop through the users and add them to the dropdown
   for (const userString of usersArray) {
     const userNameAndEmail = userString.split("!|**|!")[0].trim();
@@ -6068,7 +6075,6 @@ window.openPage = async (targetPageID) => {
           if (res != "No banner image") {
             //Banner is returned as an s3 bucket url but image needs to be converted as
             //base64 to save and write to users local system
-
 
             let img_base64 = await window.getBase64(res); // encode image to base64
             let guided_img_url = res;
@@ -14468,12 +14474,12 @@ const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsA
 
 //********************************************************************************************************
 // Add click event listener to the button triggering local dataset generation
-document
-  .getElementById("guided-button-generate-local-dataset-copy")
-  .addEventListener("click", () => {
+document.querySelectorAll(".button-starts-local-dataset-copy-generation").forEach((button) => {
+  button.addEventListener("click", () => {
     // Send an IPC message to select the local dataset generation path
     window.electron.ipcRenderer.send("guided-select-local-dataset-generation-path");
   });
+});
 
 const convertBytesToMb = (bytes) => {
   return roundToHundredth(bytes / 1024 ** 2);
@@ -14507,8 +14513,17 @@ window.electron.ipcRenderer.on(
   "selected-guided-local-dataset-generation-path",
   async (event, filePath) => {
     guidedSetNavLoadingState(true); // Lock the nav while local dataset generation is in progress
-
+    guidedResetLocalGenerationUI();
     try {
+      // Get the dataset name based on the sodaJSONObj
+      const guidedDatasetName = guidedGetDatasetName(window.sodaJSONObj);
+
+      const filePathToGenerateAt = window.path.join(filePath, guidedDatasetName);
+      if (window.fs.existsSync(filePathToGenerateAt)) {
+        throw new Error(
+          "A folder with the name of the dataset already exists at the selected path"
+        );
+      }
       // Reset and show the progress bar
       setGuidedProgressBarValue("local", 0);
       updateDatasetUploadProgressTable("local", {
@@ -14538,11 +14553,6 @@ window.electron.ipcRenderer.on(
 
       // Attach manifest files to the dataset structure before local generation
       await guidedCreateManifestFilesAndAddToDatasetStructure();
-      // Attach manifest files to the dataset structure before local generation
-      await guidedCreateManifestFilesAndAddToDatasetStructure();
-
-      // Get the dataset name based on the sodaJSONObj
-      const guidedDatasetName = guidedGetDatasetName(window.sodaJSONObj);
 
       // Create a temporary copy of sodaJSONObj for local dataset generation
       const sodaJSONObjCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
@@ -14667,6 +14677,8 @@ window.electron.ipcRenderer.on(
       console.error(errorMessage);
       guidedResetLocalGenerationUI();
       await swalShowError("Error generating dataset locally", errorMessage);
+      // Show and scroll down to the local dataset generation retry button
+      unHideAndSmoothScrollToElement("guided-section-retry-local-generation");
     }
     guidedSetNavLoadingState(false); // Unlock the nav after local dataset generation is done
   }
@@ -14968,7 +14980,6 @@ const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
       "loading"
     );
   }
-
 
   try {
     await client.post(
