@@ -1,4 +1,12 @@
 {
+  "13.0.0": {
+    "announcements": {
+      "bug-fixes": [],
+      "features": [
+        "SODA added the ability for users to generate a local copy of their datasets for review to Guided Mode. This should assist users in ensuring their dataset is organized per their criteria before commiting to uploading their dataset to Pennsieve."
+      ]
+    }
+  },
   "12.5.0": {
     "announcements": {
       "bug-fixes": [],

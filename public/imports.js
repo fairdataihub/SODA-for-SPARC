@@ -42,7 +42,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
         if (allPresentInDom) {
           clearInterval(interval)
-          console.log("Finished loading html")
           resolve()
         } else {
           console.log('Nothing in DOM yet, waiting 100ms')

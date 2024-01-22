@@ -1656,7 +1656,6 @@ const showDatasetDescription = async () => {
 };
 
 window.getBase64 = async (url) => {
-  console.log("THe url passed down will be: ", url)
   return await window.electron.ipcRenderer.invoke("get-string-representation-of-buffer", url, "binary")
 };
 
@@ -2034,7 +2033,6 @@ const uploadBannerImage = async () => {
     } else {
       //final size is greater than 5mb so compress image here (image already created and stored in temp file)
       let scaledImagePath = await window.scaleBannerImage(imagePath); //scaled image will be in temp folder
-      console.log("Scaled image path value: ", scaledImagePath)
       let image_file_size = window.fs.fileSizeSync(scaledImagePath); //update size for analytics
       try {
         let uploadBannerImage = await client.put(

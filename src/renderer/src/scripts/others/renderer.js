@@ -78,7 +78,6 @@ document.addEventListener("DOMContentLoaded", function () {
 // const { app } = remote;
 // const Clipboard = electron.clipboard;
 
-console.log("Build queue changedd");
 
 window.nextBtnDisabledVariable = true;
 
@@ -378,7 +377,6 @@ const startupServerAndApiCheck = async () => {
 
   sodaIsConnected = true;
 
-  console.log("Connected to Python back-end successfully");
   window.log.info("Connected to Python back-end successfully");
   window.electron.ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
   window.electron.ipcRenderer.send(
@@ -413,8 +411,6 @@ const startupServerAndApiCheck = async () => {
   const basepath = await window.electron.ipcRenderer.invoke("get-app-path", undefined);
   const resourcesPath = window.process.resourcesPath();
 
-  console.log(basepath);
-  console.log(resourcesPath);
 
   // set the templates path
   try {
@@ -452,7 +448,6 @@ initializeSODARenderer();
 const stopPennsieveAgent = async () => {
   try {
     let agentStopSpawn = await window.spawn.stopPennsieveAgent();
-    console.log("Agent stop spawn: ", agentStopSpawn);
   } catch (error) {
     window.log.info(error);
     throw error;
@@ -461,7 +456,6 @@ const stopPennsieveAgent = async () => {
 const startPennsieveAgent = async () => {
   try {
     let agentStartSpawn = await window.spawn.startPennsieveAgentStart();
-    console.log("Agent start spawn: ", agentStartSpawn);
     return agentStartSpawn;
   } catch (e) {
     window.log.error(e);
@@ -474,7 +468,6 @@ const getPennsieveAgentVersion = async () => {
 
   try {
     let agentVersion = await window.spawn.getPennsieveAgentVersion();
-    console.log("Agent version: ", agentVersion);
     return agentVersion;
   } catch (error) {
     clientError(error);
@@ -487,7 +480,6 @@ let preFlightCheckNotyf = null;
 const agent_installed = async () => {
   try {
     let agentStartSpawn = await window.spawn.startPennsieveAgent();
-    console.log("Agent installed spawn: ", agentStartSpawn);
     return agentStartSpawn;
   } catch (e) {
     window.log.info(e);
@@ -500,7 +492,6 @@ let userHasSelectedTheyAreOkWithOutdatedAgent = false;
 window.run_pre_flight_checks = async (check_update = true) => {
   try {
     window.log.info("Running pre flight checks");
-    console.log("Initiating pre flight checks");
 
     if (!preFlightCheckNotyf) {
       preFlightCheckNotyf = window.notyf.open({
@@ -517,11 +508,9 @@ window.run_pre_flight_checks = async (check_update = true) => {
         "It seems that you are not connected to the internet. Please check your connection and try again."
       );
     }
-    console.log("Internet connected");
 
     // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
     const account_present = await window.check_api_key();
-    console.log("THe account value is: ", account_present);
 
     // TODO: Reimplement this section to work with the new agent
     if (!account_present) {
@@ -1059,7 +1048,6 @@ const apiVersionsMatch = async () => {
   }
   checkNewAppVersion(); // Added so that version will be displayed for new users
 
-  console.log("Best stuff duh ruh buh bah");
 };
 
 const checkInternetConnection = async () => {
@@ -1149,7 +1137,6 @@ const getLatestPennsieveAgentVersion = async () => {
 
   let releases = releasesResponse.data;
 
-  console.log(releases);
   let targetRelease = undefined;
   let latestPennsieveAgentVersion = undefined;
   for (const release of releases) {
@@ -1201,7 +1188,6 @@ const getLatestPennsieveAgentVersion = async () => {
   }
 
   if (window.process.platform() == "linux") {
-    console.log("IN linucx platform path");
     window.reverseSwalButtons = false;
     targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
@@ -1788,7 +1774,6 @@ window.generateSubjectsFileHelper = async (uploadBFBoolean) => {
   }).then((result) => {});
 
   try {
-    console.log(subjectsDestinationPath);
     window.log.info(`Generating a subjects file.`);
     let save_locally = await client.post(
       `/prepare_metadata/subjects_file`,
@@ -2293,7 +2278,6 @@ window.parseJson = (path) => {
   }
   try {
     var content = window.fs.readFileSync(path, "utf8");
-    console.log(content);
     let contentJson = JSON.parse(content);
     return contentJson;
   } catch (error) {
@@ -4211,7 +4195,6 @@ organizeDSbackButton.addEventListener("click", function () {
 
 // Add folder button
 organizeDSaddNewFolder.addEventListener("click", function (event) {
-  console.log("Wow wow");
   event.preventDefault();
   let slashCount = window.organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount !== 1) {
@@ -4494,7 +4477,6 @@ var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve ac
     await window.wait(1000);
   }
 
-  console.log("Launching retrieve accounts**********");
   retrieveBFAccounts();
 })();
 
@@ -4510,7 +4492,6 @@ const retrieveBFAccounts = async () => {
       .get("manage_datasets/bf_account_list")
       .then((res) => {
         let accounts = res.data;
-        console.log(accounts);
         for (const myitem in accounts) {
           bfAccountOptions[accounts[myitem]] = accounts[myitem];
         }
@@ -4893,7 +4874,6 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   const datasetStructure = {};
   const hiddenItems = [];
 
-  console.log("Selected items: ", itemPaths);
 
   showFileImportLoadingSweetAlert(500);
 
@@ -4936,7 +4916,6 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
           })
         );
       } else if (await window.fs.isFile(pathToExplore)) {
-        console.log("Dealing with a file now");
         const fileName = window.path.basename(pathToExplore);
         const fileExtension = window.path.extname(pathToExplore);
         const relativePathToFileObject = currentStructurePath;
@@ -5402,7 +5381,6 @@ const handleFileImport = (containerID, filePath) => {
     const excelFile = excelToJson({
       sourceFile: filePath,
     });
-    console.log(excelFile);
     // log the columnn headers of the first sheet
   }
 };
@@ -5415,7 +5393,6 @@ document.querySelectorAll(".file-import-container").forEach((fileImportContainer
   const fileName = fileImportContainer.dataset.fileName;
   fileImportContainer.addEventListener("dragover", (ev) => {
     ev.preventDefault();
-    console.log(fileName);
   });
   fileImportContainer.addEventListener("drop", (ev) => {
     ev.preventDefault();
@@ -5450,7 +5427,6 @@ document.querySelectorAll(".file-import-container").forEach((fileImportContainer
 //path: array
 //curationMode: string (guided-moded) (freeform)
 window.handleSelectedBannerImage = async (path, curationMode) => {
-  console.log("Banner image here");
   let imgContainer = "";
   let imgHolder = "";
   let paraImagePath = "";
@@ -5474,10 +5450,8 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
     imgContainer = document.getElementById("div-img-container");
   }
 
-  console.log("AS");
 
   if (path.length > 0) {
-    console.log("ASHSH");
     let original_image_path = path[0];
     let image_path = original_image_path;
     let destination_image_path = window.path.join(
@@ -5489,7 +5463,6 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
     let conversion_success = true;
     window.imageExtension = path[0].split(".").pop();
 
-    console.log("comverted image file: ", converted_image_file);
 
     if (window.imageExtension.toLowerCase() == "tiff") {
       Swal.fire({
@@ -5508,11 +5481,9 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
         },
       });
 
-      console.log("About to Jimp");
 
       await window.Jimp.read(original_image_path)
         .then(async (file) => {
-          console.log("Jimping");
 
           if (!window.fs.existsSync(destination_image_path)) {
             window.fs.mkdirSync(destination_image_path, { recursive: true });
@@ -5570,9 +5541,7 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
               $(paraImagePath).html(image_path);
               viewImportedImage.src = image_path;
               window.myCropper.destroy();
-              console.log("New cropper");
               window.myCropper = new Cropper(viewImportedImage, cropperOptions);
-              console.log("New cropper created");
 
               $(paraImagePath).css("visibility", "visible");
             }
@@ -5596,13 +5565,11 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
         Swal.close();
       }
     } else {
-      console.log("Not a tiff");
       imgHolder.style.display = "none";
       imgContainer.style.display = "block";
 
       $(paraImagePath).html(image_path);
       // console.log("Image path being passed into cropper")
-      console.log(image_path);
       // prepend the file protocol to the image_path
       // TODO: Only do on dev serevrs?
       image_path = "file://" + image_path;
@@ -5845,7 +5812,6 @@ window.folderContextMenu = (event) => {
 //////// options for files
 window.fileContextMenu = (event) => {
   try {
-    console.log("FIle context menu activated");
     if ($(".div-display-details.file").hasClass("show")) {
       $(".div-display-details.file").removeClass("show");
     }
@@ -7909,7 +7875,6 @@ const initiate_generate = async () => {
     }
 
     let { data } = mainCurationProgressResponse;
-    console.log(data);
 
     main_curate_status = data["main_curate_status"];
     var start_generate = data["start_generate"];
@@ -9210,7 +9175,6 @@ window.gatherLogs = () => {
 window.displayClientId = async () => {
   // TODO: Convert to new conventions
   let clientId = await window.electron.ipcRenderer.invoke("get-nodestorage-key", "userId");
-  console.log(clientId);
 
   const copyClientIdToClipboard = () => {
     window.electron.ipcRenderer.invoke("clipboard-write", clientId, "clipboard");

@@ -268,7 +268,6 @@ $(document).ready(async function () {
 
   //Event listener for the jstree to open manifest files
   $(jstreePreviewManifest).on("select_node.jstree", async function (evt, data) {
-    console.log("Doing this?")
     // Check if pennsieve option was selected to reset localDataSetImport
     if (document.getElementById("pennsieve-option-create-manifest").classList.contains("checked")) {
       localDataSetImport = false;
@@ -529,7 +528,6 @@ $(document).ready(async function () {
 
       //upon receiving a reply of the spreadsheet, handle accordingly
       window.electron.ipcRenderer.on("spreadsheet-reply", async (event, result) => {
-        console.log("Spreadsheet reply")
         openedEdit = false;
         if (!result || result === "") {
           window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
@@ -558,8 +556,7 @@ $(document).ready(async function () {
               window.fs.closeSync(window.fs.openSync(selectedManifestFilePath, "w"));
             }
 
-            console.log("Creating the stuff here")
-            console.log(selectedManifestFilePath)
+
             jsonManifest =  await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options",{
               sourceFile: selectedManifestFilePath,
               columnToKey: {
@@ -679,7 +676,6 @@ $(document).ready(async function () {
         window.sodaJSONObj["digital-metadata"]["name"],
         parentFolderName
       );
-      console.log("Failing here?")
       var selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
       jsonManifest =  await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options",{
         sourceFile: selectedManifestFilePath,
@@ -756,7 +752,6 @@ window.generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   ).placeholder;
   pennsievePreview = false;
   const type = determineStandaloneManifestGeneratorOrigin();
-  console.log("Type is: ", type)
 
   window.exitCurate();
   window.sodaJSONObj["starting-point"] = {};
@@ -767,7 +762,6 @@ window.generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   if (type === "bf") {
     titleTerm = "on Pennsieve";
   } else if (type != "bf" && !pennsievePreview) {
-    console.log("Validating?")
     continueProgressValidateDataset = validateSPARCdataset();
 
     if (!continueProgressValidateDataset) {
@@ -780,8 +774,7 @@ window.generateManifestPrecheck = async (manifestEditBoolean, ev) => {
     localGenerationDifferentDestination = true;
   }
 
-  console.log("Local generation different destination: ", localGenerationDifferentDestination)
-  console.log("Local dataset path: ", localDatasetPath)
+
 
   await window.wait(500);
   if (!localGenerationDifferentDestination) {
@@ -904,11 +897,9 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
         localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder");
       }
       await window.create_json_object(action, window.sodaJSONObj, localDatasetFolderPath);
-      console.log("FInished create json object")
       window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
       window.populate_existing_folders(window.datasetStructureJSONObj);
       window.populate_existing_metadata(window.sodaJSONObj);
-      console.log("FInished populate methods")
       window.sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
       window.sodaJSONObj["bf-account-selected"] = {};
       window.sodaJSONObj["bf-dataset-selected"] = {};
@@ -917,7 +908,6 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
       let continueProgressEmptyFolder = await checkEmptySubFolders(
         window.sodaJSONObj["dataset-structure"]
       );
-      console.log("FInished check empty sub folders")
       if (continueProgressEmptyFolder === false) {
         Swal.fire({
           title: "Failed to generate the manifest files.",
@@ -947,7 +937,6 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
       let continueProgressNoSPARCFolders = await checkNoSparcFolders(
         window.sodaJSONObj["dataset-structure"]
       );
-      console.log("FInished check no sparc folders")
       if (continueProgressNoSPARCFolders === true) {
         Swal.fire({
           title: "Failed to generate the manifest files.",
@@ -976,7 +965,6 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
       let continueProgressInvalidFolders = await checkInvalidHighLevelFolders(
         window.sodaJSONObj["dataset-structure"]
       );
-      console.log("FInished check invalid high level folders")
       if (continueProgressInvalidFolders === true) {
         Swal.fire({
           title: "Failed to generate the manifest files.",
@@ -1001,9 +989,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
         return;
       }
       await generateManifestHelper();
-      console.log("FInished generate manifest helper")
       await initiate_generate_manifest_local(manifestEditBoolean, localDatasetFolderPath);
-      console.log("FInished initiate generate manifest local")
     }
   } else {
     // Case 2: bf dataset
@@ -1187,21 +1173,16 @@ const updateJSONStructureManifestGenerate = () => {
 
 const initiate_generate_manifest_local = async (manifestEditBoolean, originalDataset) => {
   if (manifestEditBoolean === false) {
-    console.log("Creating manifest file locally yes")
     createManifestLocally("local", false, originalDataset);
   } else {
-    console.log("Editing not creating? ")
     // SODA Manifest Files folder
     let dir = window.path.join(homeDirectory, "SODA", "manifest_files");
     // Move manifest files to the local dataset
     let moveFinishedBool;
     let generationLocation;
     if (window.finalManifestGenerationPath == originalDataset) {
-      console.log("Generating over the existing dataset and will move ")
       moveFinishedBool = await moveManifestFiles(dir, originalDataset);
-      console.log("After movefunction")
     } else {
-      console.log("Move manifest preview flow")
       [moveFinishedBool, generationLocation] = await moveManifestFilesPreview(
         dir,
         window.finalManifestGenerationPath
@@ -1215,7 +1196,6 @@ const initiate_generate_manifest_local = async (manifestEditBoolean, originalDat
     );
 
     if (moveFinishedBool) {
-      console.log("Move finished")
       window.resetManifest(false);
       // reset window.sodaJSONObj
       window.sodaJSONObj = {
@@ -2124,7 +2104,6 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
 
   // create the manifest files based off the user's edits to the manifest files
   try {
-    console.log("IN the server at curate_datasets/manifest_files")
     let generate_local_manifest = await client.post(
       `/curate_datasets/manifest_files`,
       {
@@ -2134,7 +2113,6 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
       { timeout: 0 }
     );
 
-    console.log("After the server at curate_datasets/manifest_files")
 
 
     let res = generate_local_manifest.data.success_message_or_manifest_destination;

@@ -8,7 +8,6 @@ ipcMain.handle("getStrainData", async (event, rridInfo) => {
     let data = ""; 
     let dataReady = false; 
     if (res.statusCode === 200) {
-      console.log("Status code is 200?")
       res.setEncoding("utf8");
       res.on("data", (d) => {
         data += d;
@@ -29,7 +28,6 @@ ipcMain.handle("getStrainData", async (event, rridInfo) => {
   })
 })
 
-  console.log("Data is", data)
 
 
   // let xmlSerializer = new XMLSerializer();

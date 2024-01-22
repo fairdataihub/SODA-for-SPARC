@@ -1415,7 +1415,6 @@ const recursive_structure_create = (
   root_folder_path
 ) => {
   let current_folder_path = dataset_folder["path"];
-  console.log("current_folder_path", current_folder_path);
   window.fs.readdirSync(current_folder_path).forEach((file) => {
     let manifest_object = {
       filename: "",
@@ -1440,7 +1439,6 @@ const recursive_structure_create = (
 
           let relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
           let manifestContent = window.sodaJSONObj["starting-point"][high_level_folder]["manifest"];
-          console.log(manifestContent)
           let manifestHeaders = Object.values(manifestContent[0]);
           let manifestData = Object.values(manifestContent[1]);
 
@@ -2070,7 +2068,6 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
 };
 
 window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, category) => {
-  console.log(ev)
   let continueProgressRC = true;
   let continueProgressDD = true;
 
@@ -3598,7 +3595,7 @@ const updateJSONObjectProgress = () => {
 
 const saveSODAJSONProgress = (progressFileName) => {
   try {
-    fs.mkdirSync(progressFilePath, { recursive: true });
+    window.fs.mkdirSync(progressFilePath, { recursive: true });
   } catch (error) {
     log.error(error);
     console.log(error);
@@ -3621,7 +3618,7 @@ const saveSODAJSONProgress = (progressFileName) => {
       delete window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
     }
   }
-  fs.writeFileSync(filePath, JSON.stringify(window.sodaJSONObj));
+  window.fs.writeFileSync(filePath, JSON.stringify(window.sodaJSONObj));
 
   Swal.fire({
     icon: "success",

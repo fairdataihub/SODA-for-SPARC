@@ -4,7 +4,6 @@ import Swal from "sweetalert2";
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100))
 }
-console.log("Going for it")
 
 
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
@@ -82,7 +81,6 @@ const handleSectionTrigger = async (event) => {
   }
 
   if (sectionId === "guided_mode-section") {
-    console.log("IN this section")
     // Disallow the transition if an upload is in progress
     if (document.getElementById("returnButton") !== null) {
       Swal.fire({
@@ -226,10 +224,8 @@ const handleSectionTrigger = async (event) => {
   ];
 
   if (showSidebarSections.includes(sectionId)) {
-    console.log("Here?")
     forceActionSidebar("show");
   } else {
-    console.log("In elese statement")
     forceActionSidebar("hide");
   }
 
@@ -254,7 +250,6 @@ const handleSectionTrigger = async (event) => {
 };
 
 function showMainContent() {
-  console.log(document.querySelector(".js-nav").classList)
   document.querySelector(".js-nav").classList.add("is-shown");
   document.querySelector(".js-content").classList.add("is-shown");
 }
