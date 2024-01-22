@@ -35,7 +35,7 @@ import Cropper from "cropperjs";
 import DragSort from "@yaireo/dragsort";
 import axios from "axios";
 import Swal from "sweetalert2";
-import DatePicker from "tui-date-picker"; /* CommonJS */
+import DatePicker from "tui-date-picker";
 import datasetUploadSession from "../analytics/upload-session-tracker";
 import kombuchaEnums from "../analytics/analytics-enums";
 import client from "../client";
@@ -1482,7 +1482,10 @@ if (window.process.platform() === "linux") {
   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
   if (window.fs.existsSync(window.path.join(window.homeDirectory, "Soda"))) {
     //copy the folder contents of home/Soda to home/SODA
-    window.fs.copySync(window.path.join(window.homeDirectory, "Soda"), window.path.join(window.homeDirectory, "SODA"));
+    window.fs.copySync(
+      window.path.join(window.homeDirectory, "Soda"),
+      window.path.join(window.homeDirectory, "SODA")
+    );
     //delete the old folder
     window.fs.removeSync(window.path.join(window.homeDirectory, "Soda"));
   }
@@ -9207,10 +9210,10 @@ window.gatherLogs = () => {
 window.displayClientId = async () => {
   // TODO: Convert to new conventions
   let clientId = await window.electron.ipcRenderer.invoke("get-nodestorage-key", "userId");
-  console.log(clientId)
+  console.log(clientId);
 
   const copyClientIdToClipboard = () => {
-    window.electron.ipcRenderer.invoke("clipboard-write", clientId, "clipboard")
+    window.electron.ipcRenderer.invoke("clipboard-write", clientId, "clipboard");
   };
 
   copyClientIdToClipboard();
@@ -9231,11 +9234,17 @@ const gettingStarted = () => {
 
 const sodaVideo = () => {
   document.getElementById("overview-column-1").blur();
-  window.electron.ipcRenderer.invoke("shell-open-external", "https://docs.sodaforsparc.io/docs/getting-started/user-interface")
+  window.electron.ipcRenderer.invoke(
+    "shell-open-external",
+    "https://docs.sodaforsparc.io/docs/getting-started/user-interface"
+  );
 };
 
 const directToDocumentation = () => {
-  window.electron.ipcRenderer.invoke("shell-open-external", "https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda")
+  window.electron.ipcRenderer.invoke(
+    "shell-open-external",
+    "https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda"
+  );
 
   document.getElementById("overview-column-2").blur();
   // window.open('https://docs.sodaforsparc.io', '_blank');

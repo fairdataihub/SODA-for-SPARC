@@ -370,7 +370,9 @@
 .neumorphic {
   border-radius: 10px;
   background: #ffffff;
-  box-shadow: 5px 5px 10px #b5b5b5, -5px -5px 10px #ffffff;
+  box-shadow:
+    5px 5px 10px #b5b5b5,
+    -5px -5px 10px #ffffff;
   padding: 20px;
   border: var(--color-border) 1px solid;
 }
