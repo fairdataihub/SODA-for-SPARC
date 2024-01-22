@@ -72,7 +72,6 @@ ipcMain.handle("set-nodestorage-key", (event, key, value) => {
 })
 
 ipcMain.handle("get-nodestorage-key", (event, key) => {
-  console.log("The key is: ", key)
   return nodeStorage.getItem(key);
 })
 
@@ -135,7 +134,6 @@ ipcMain.on("orcid", (event, url) => {
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits
 ipcMain.handle("spreadsheet", (event, spreadsheet) => {
-  console.log("Spreadsheet invoked")
   const windowOptions = {
     minHeight: 450,
     width: 1120,
@@ -309,7 +307,6 @@ const createPyProc = async () => {
             // console.error(stderr)
             throw error;
           }
-          console.log(stdout);
         });
         // log the stdout and stderr
         pyflaskProcess.stdout.on("data", (data) => {
@@ -371,7 +368,6 @@ const exitPyProc = async () => {
       "/t",
     ]);
   };
-  console.log("Killing the process");
   await killAllPreviousProcesses();
   // check if the platform is Windows
   if (process.platform === "win32") {
@@ -543,30 +539,26 @@ const initialize = () => {
     }
 
     // track app launch at Kombucha analytics server
-    // trackKombuchaEvent(
-    //   kombuchaEnums.Category.STARTUP,
-    //   kombuchaEnums.Action.APP_LAUNCHED,
-    //   kombuchaEnums.Label.VERSION,
-    //   kombuchaEnums.Status.SUCCESS,
-    //   {
-    //     value: app.getVersion(),
-    //   }
-    // );
+    trackKombuchaEvent(
+      kombuchaEnums.Category.STARTUP,
+      kombuchaEnums.Action.APP_LAUNCHED,
+      kombuchaEnums.Label.VERSION,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: app.getVersion(),
+      }
+    );
 
-    // trackKombuchaEvent(
-    //   kombuchaEnums.Category.STARTUP,
-    //   kombuchaEnums.Action.APP_LAUNCHED,
-    //   kombuchaEnums.Label.OS,
-    //   kombuchaEnums.Status.SUCCESS,
-    //   {
-    //     value: os.platform() + "-" + os.release(),
-    //   }
-    // );
+    trackKombuchaEvent(
+      kombuchaEnums.Category.STARTUP,
+      kombuchaEnums.Action.APP_LAUNCHED,
+      kombuchaEnums.Label.OS,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: os.platform() + "-" + os.release(),
+      }
+    );
 
-    trackEvent("Success", "App Launched - OS", os.platform() + "-" + os.release());
-    trackEvent("Success", "App Launched - SODA", app.getVersion());
-
-    console.log(__dirname)
 
 
     function createWindow() {
@@ -578,7 +570,6 @@ const initialize = () => {
         iconPath = join(__dirname, '../renderer/public/menu-icon/soda_icon.png')
       }
 
-      console.log(iconPath)
 
       // Create the browser window.
       mainWindow = new BrowserWindow({
