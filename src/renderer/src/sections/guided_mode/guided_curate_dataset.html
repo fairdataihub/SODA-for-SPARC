@@ -4726,57 +4726,84 @@
             ></div>
           </div>
           <div class="guided--section" id="guided-section-create-local-dataset-copy">
-            <h2 class="text-sub-step-title">Create a local dataset copy for review</h2>
-            <p class="help-text">
-              If you would like to create a local copy of your SDS compliant dataset on your
-              computer, click the button below.
-            </p>
-            <button
-              class="ui positive button soda-green-background"
-              id="guided-button-generate-local-dataset-copy"
-              style="width: 350px !important"
-            >
-              Generate local dataset copy
-            </button>
+            <label class="guided--form-label centered">
+              Would you like to create a local copy of the dataset for reviewing before continuing?
+            </label>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui primary button guided--radio-button"
+                data-next-element="guided-section-local-dataset-copy-generation"
+                data-button-config-value="user-chose-to-genereate-local-dataset-copy"
+                data-button-config-value-state="yes"
+              >
+                Create local copy
+              </button>
+              <button
+                class="ui primary basic button guided--radio-button"
+                data-next-element="guided-section-no-local-dataset-copy-generation"
+                data-button-config-value="user-chose-to-genereate-local-dataset-copy"
+                data-button-config-value-state="no"
+              >
+                Skip and continue
+              </button>
+            </div>
+            <div class="guided--section" id="guided-section-local-dataset-copy-generation">
+              <p class="help-text mt-3">
+                Click the button below to create a local copy of your SDS compliant dataset on your
+                computer.
+              </p>
+              <button
+                class="ui positive button soda-green-background"
+                id="guided-button-generate-local-dataset-copy"
+                style="width: 350px !important"
+              >
+                Generate local dataset copy
+              </button>
+              <div class="guided--section" id="guided-section-local-generation-status-table">
+                <table class="ui celled striped table mt-3" style="width: 100% !important">
+                  <thead>
+                    <tr>
+                      <th
+                        colspan="2"
+                        class="text-center guided--table-header"
+                        style="
+                          z-index: 2;
+                          height: 50px;
+                          position: sticky !important;
+                          top: -10px !important;
+                        "
+                      >
+                        <span>Local generation status</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="guided-tbody-local-generation-status">
+                    <tr class="guided-tr-progress-bar">
+                      <td class="middle aligned" colspan="2">
+                        <progress
+                          class="progresstrack"
+                          id="guided-progress-bar-local-generation"
+                          style="width: 100%"
+                          max="100"
+                          value="0"
+                        ></progress>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="guided--section" id="guided-section-post-local-generation-success">
+              <h2 class="guided--text-user-directions">
+                Click "<span class="next-button-span"></span>" after the local dataset copy has been
+                reviewed.
+              </h2>
+            </div>
           </div>
-          <div class="guided--section" id="guided-section-local-generation-status-table">
-            <table class="ui celled striped table mt-3" style="width: 100% !important">
-              <thead>
-                <tr>
-                  <th
-                    colspan="2"
-                    class="text-center guided--table-header"
-                    style="
-                      z-index: 2;
-                      height: 50px;
-                      position: sticky !important;
-                      top: -10px !important;
-                    "
-                  >
-                    <span>Local generation status</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody id="guided-tbody-local-generation-status">
-                <tr class="guided-tr-progress-bar">
-                  <td class="middle aligned" colspan="2">
-                    <progress
-                      class="progresstrack"
-                      id="guided-progress-bar-local-generation"
-                      style="width: 100%"
-                      max="100"
-                      value="0"
-                    ></progress>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="guided--section" id="guided-section-post-local-generation-success">
+          <div class="guided--section" id="guided-section-no-local-dataset-copy-generation">
             <h2 class="guided--text-user-directions">
-              Click "<span class="next-button-span"></span>" after the local dataset copy has been
-              reviewed.
+              Click "<span class="next-button-span"></span>" after reviewing the dataset structure
+              preview
             </h2>
           </div>
         </div>
