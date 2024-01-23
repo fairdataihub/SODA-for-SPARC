@@ -286,7 +286,11 @@ const createPyProc = async () => {
   let script = getScriptPath();
   log.info(`Path to server executable: ${script}`);
   let port = "" + selectPort();
-  // await killAllPreviousProcesses();
+  try {
+  await killAllPreviousProcesses();
+  } catch(e) {
+    console.log(e)
+  }
   if (existsSync(script)) {
     log.info("Server exists at specified location", script);
   } else {
@@ -368,7 +372,11 @@ const exitPyProc = async () => {
       "/t",
     ]);
   };
+  try {
   await killAllPreviousProcesses();
+  } catch(e) {
+    console.log(e)
+  }
   // check if the platform is Windows
   if (process.platform === "win32") {
     if (pyflaskProcess != null) {
