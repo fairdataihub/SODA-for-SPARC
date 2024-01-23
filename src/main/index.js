@@ -23,6 +23,9 @@ import "./shell"
 import "./templates"
 import "./clipboard"
 
+app.showExitPrompt = true;
+
+
 
 const sodaVersion = app.getVersion();
 // If the version includes "beta", the app will not check for updates
@@ -624,8 +627,13 @@ const initialize = () => {
                 let { response } = responseObject;
                 if (response === 0) {
                   // Runs the following if 'Yes' is clicked
-                  await exitPyProc();
-                  quit_app();
+                  try{
+                    await exitPyProc();
+                    quit_app();
+                  } catch(e) {
+                    log.info("Failed while trying to close here")
+                    quit_app()
+                  }
                 }
               });
           }
