@@ -9317,7 +9317,7 @@ const handleAddContributorHeaderUI = () => {
       If the contributor has been previously added, select them from the dropdown below.
     </label>
     <select
-      class="w-100"
+      class="w-100 SODA-select-picker"
       id="guided-stored-contributors-select"
       data-live-search="true"
       name="Dataset contributor"
