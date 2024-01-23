@@ -54,6 +54,10 @@ var mainWindow = null;
 
 // import "./appUtils"
 
+ipcMain.on("track-kombucha", (event, category, action, label, eventStatus, eventData) => {
+  trackKombuchaEvent(category, action, label, eventStatus, eventData);
+});
+
 
 // TODO: move to a separate file that handles all the ipcMain handlers
 ipcMain.handle('get-app-path', async (event, arg) => {
