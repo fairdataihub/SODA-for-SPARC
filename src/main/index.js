@@ -312,7 +312,7 @@ const createPyProc = async () => {
             console.error(error)
             log.error(error);
             // console.error(stderr)
-            throw error;
+            // throw error;
           }
         });
         // log the stdout and stderr
