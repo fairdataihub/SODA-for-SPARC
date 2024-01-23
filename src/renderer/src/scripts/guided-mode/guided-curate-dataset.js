@@ -14521,7 +14521,10 @@ window.electron.ipcRenderer.on(
       const filePathToGenerateAt = window.path.join(filePath, guidedDatasetName);
       if (window.fs.existsSync(filePathToGenerateAt)) {
         throw new Error(
-          "A folder with the name of the dataset already exists at the selected path"
+          `
+            A folder named ${guidedDatasetName} already exists at the selected location.
+            Please remove the folder at the selected location or choose a new location.
+          `
         );
       }
       // Reset and show the progress bar
