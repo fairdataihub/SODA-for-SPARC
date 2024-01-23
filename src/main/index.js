@@ -555,20 +555,20 @@ const initialize = () => {
 
     // track app launch at Kombucha analytics server
     trackKombuchaEvent(
-      kombuchaEnums.Category.STARTUP,
-      kombuchaEnums.Action.APP_LAUNCHED,
-      kombuchaEnums.Label.VERSION,
-      kombuchaEnums.Status.SUCCESS,
+      "Startup",
+      "App Launched",
+      "Version",
+      "success",
       {
         value: app.getVersion(),
       }
     );
 
     trackKombuchaEvent(
-      kombuchaEnums.Category.STARTUP,
-      kombuchaEnums.Action.APP_LAUNCHED,
-      kombuchaEnums.Label.OS,
-      kombuchaEnums.Status.SUCCESS,
+      "Startup",
+      "App Launched",
+      "OS",
+      "success",
       {
         value: os.platform() + "-" + os.release(),
       }
@@ -629,7 +629,10 @@ const initialize = () => {
                   // Runs the following if 'Yes' is clicked
                   try{
                     await exitPyProc();
-                    quit_app();
+                    // wait 1 second here 
+                    setTimeout(function () {
+                      app.exit();
+                    }, 2000);
                   } catch(e) {
                     log.info("Failed while trying to close here")
                     quit_app()
@@ -642,8 +645,16 @@ const initialize = () => {
           nodeStorage.setItem("auto_update_launch", true);
           // after an autoupdate we want to display announcements at launch
           nodeStorage.setItem("launch_announcements", true);
-          await exitPyProc();
-          app.exit();
+          try{
+            await exitPyProc();
+            // wait 1 second here 
+            setTimeout(function () {
+              app.exit();
+            }, 2000);
+          } catch(e) {
+            log.info("Failed while trying to close here")
+            quit_app()
+          }
         }
       });
 
