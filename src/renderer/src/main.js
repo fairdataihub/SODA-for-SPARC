@@ -58,6 +58,8 @@ import "@yaireo/tagify/dist/tagify.css";
 import "@tarekraafat/autocomplete.js/dist/css/autoComplete.css";
 import "@tarekraafat/autocomplete.js/dist/css/autoComplete.01.css";
 import "@tarekraafat/autocomplete.js/dist/css/autoComplete.02.css";
+import "tippy.js/dist/tippy.css";
+import "tippy.js/themes/light.css";
 
 import "select2/dist/css/select2.min.css";
 import "intro.js/minified/introjs.min.css";
