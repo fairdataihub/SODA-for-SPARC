@@ -387,9 +387,13 @@ const exitPyProc = async () => {
     return;
   }
   // kill signal to pyProc
-  if (pyflaskProcess != null) {
-    pyflaskProcess.kill();
-    pyflaskProcess = null;
+  try {
+    if (pyflaskProcess != null) {
+      pyflaskProcess.kill();
+      pyflaskProcess = null;
+    }
+  } catch(e) {
+    console.log(e)
   }
   PORT = null;
 };
