@@ -13,7 +13,7 @@ const checkForAnnouncements = async (state) => {
 
   try {
     // Retrieve the platform, app version, and request the announcement
-    let platform = String(window.os.platform);
+    let platform = String(window.os.platform());
     let appVersion = await window.electron.ipcRenderer.invoke("app-version");
     appVersion = String(appVersion);
     let result = await axiosInstance.get();
