@@ -779,13 +779,6 @@ window.addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) 
     "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 };
 
-const populateSelectSPARCAward = (object, id) => {
-  window.removeOptions(document.getElementById(id));
-  window.addOption(document.getElementById(id), "Select an award", "Select");
-  for (let award of Object.keys(object)) {
-    window.addOption(document.getElementById(id), object[award], award);
-  }
-};
 
 const changeAward = (award) => {
   Swal.fire({
