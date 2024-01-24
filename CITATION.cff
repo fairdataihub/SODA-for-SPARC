@@ -21,7 +21,7 @@ authors:
     family-names: Portillo
     given-names: Dorian
 cff-version: 1.2.0
-date-released: '2024-01-23'
+date-released: '2024-01-24'
 identifiers:
   - description: DOI for this software's record on Zenodo
     type: doi
