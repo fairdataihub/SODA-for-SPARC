@@ -72,7 +72,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Bug fixes:
 
-- Fixed an issue preventing non-SPARC users from signing in via an API key
+- Fixed an issue preventing non-SPARC users from signing in via an API key.
 
 ## v.12.2.2 - 2023-08-24
 
