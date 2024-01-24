@@ -78,7 +78,6 @@ document.addEventListener("DOMContentLoaded", function () {
 // const { app } = remote;
 // const Clipboard = electron.clipboard;
 
-
 window.nextBtnDisabledVariable = true;
 
 window.datasetStructureJSONObj = {
@@ -410,7 +409,6 @@ const startupServerAndApiCheck = async () => {
   // get apps base path
   const basepath = await window.electron.ipcRenderer.invoke("get-app-path", undefined);
   const resourcesPath = window.process.resourcesPath();
-
 
   // set the templates path
   try {
@@ -1047,7 +1045,6 @@ const apiVersionsMatch = async () => {
     }
   }
   checkNewAppVersion(); // Added so that version will be displayed for new users
-
 };
 
 const checkInternetConnection = async () => {
@@ -4874,7 +4871,6 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   const datasetStructure = {};
   const hiddenItems = [];
 
-
   showFileImportLoadingSweetAlert(500);
 
   // Function to traverse and build JSON structure
@@ -5450,7 +5446,6 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
     imgContainer = document.getElementById("div-img-container");
   }
 
-
   if (path.length > 0) {
     let original_image_path = path[0];
     let image_path = original_image_path;
@@ -5462,7 +5457,6 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
     let converted_image_file = window.path.join(destination_image_path, "converted-tiff.jpg");
     let conversion_success = true;
     window.imageExtension = path[0].split(".").pop();
-
 
     if (window.imageExtension.toLowerCase() == "tiff") {
       Swal.fire({
@@ -5481,10 +5475,8 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
         },
       });
 
-
       await window.Jimp.read(original_image_path)
         .then(async (file) => {
-
           if (!window.fs.existsSync(destination_image_path)) {
             window.fs.mkdirSync(destination_image_path, { recursive: true });
           }

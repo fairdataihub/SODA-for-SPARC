@@ -1,5 +1,5 @@
-import UserDetailsCard   from  "../../stories/UserDetailsCard" 
-import { FIELD_OPTIONS } from "../../stories/UserDetailsCardField"
+import UserDetailsCard from "../../stories/UserDetailsCard";
+import { FIELD_OPTIONS } from "../../stories/UserDetailsCardField";
 
 // add the edit subtitle card to the DOM
 
@@ -236,4 +236,4 @@ const addDatasetAndOrganizationCardComponents = () => {
     .appendChild(changeDatasetStatusCard);
 };
 
-export default addDatasetAndOrganizationCardComponents
+export default addDatasetAndOrganizationCardComponents;

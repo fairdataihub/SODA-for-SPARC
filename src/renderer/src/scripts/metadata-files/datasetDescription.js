@@ -1,20 +1,18 @@
 import Swal from "sweetalert2";
-import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
-import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
-import client from '../client'
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
+import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
+import client from "../client";
 import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
-import api from "../others/api/api"
+import api from "../others/api/api";
 import Tagify from "@yaireo/tagify/dist/tagify.esm";
 import tippy from "tippy.js";
 import doiRegex from "doi-regex";
 import validator from "validator";
 
-
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
-
 
 // opendropdown event listeners
 document.querySelectorAll(".dd-change-current-account").forEach((element) => {
@@ -53,7 +51,10 @@ var ddDestinationPath = "";
 $(document).ready(function () {
   window.electron.ipcRenderer.on("show-missing-items-ds-description", (event, index) => {
     if (index === 0) {
-      window.electron.ipcRenderer.send("open-folder-dialog-save-ds-description", "dataset_description.xlsx");
+      window.electron.ipcRenderer.send(
+        "open-folder-dialog-save-ds-description",
+        "dataset_description.xlsx"
+      );
     }
   });
 
@@ -126,7 +127,11 @@ const populateProtocolLink = (ev) => {
       $($(ev).parents()[0]).append(divElement);
       // populate dropdown with protocolResearcherList
       window.removeOptions(document.getElementById("select-misc-links"));
-      window.addOption(document.getElementById("select-misc-links"), "Select protocol title", "Select");
+      window.addOption(
+        document.getElementById("select-misc-links"),
+        "Select protocol title",
+        "Select"
+      );
       for (var key of Object.keys(protocolResearcherList)) {
         $("#select-misc-links").append(
           '<option value="' + protocolResearcherList[key] + '">' + key + "</option>"
@@ -779,7 +784,6 @@ window.addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) 
     "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 };
 
-
 const changeAward = (award) => {
   Swal.fire({
     title: "Loading your award and contributor information.",
@@ -834,9 +838,8 @@ const addContributortoTableDD = (name, contributorObject) => {
   document.getElementById("div-contributor-table-dd").style.display = "block";
   document.getElementById("contributor-table-dd").style.display = "table";
 
-  let row = (conTable.insertRow(
-    rowIndex
-  ).outerHTML = `<tr id='row-current-con' class='row-protocol'><td class='contributor-table-row'>
+  let row = (conTable.insertRow(rowIndex).outerHTML =
+    `<tr id='row-current-con' class='row-protocol'><td class='contributor-table-row'>
   ${conName}
     </td><td>
   
@@ -1265,9 +1268,8 @@ window.edit_current_con_id = (ev) => {
     if (result.isConfirmed) {
       let conName = result.value[0].conName;
       $(currentRow)[0].cells[0].innerText = conName;
-      $(
-        currentRow
-      )[0].cells[2].innerHTML = `<span class="badge badge-pill badge-success">Valid</span>`;
+      $(currentRow)[0].cells[2].innerHTML =
+        `<span class="badge badge-pill badge-success">Valid</span>`;
       $(currentRow)[0].cells[1].innerText = result.value[0].conRole;
       memorizeAffiliationInfo(affiliationSuggestions);
     }

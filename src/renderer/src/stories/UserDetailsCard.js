@@ -1,4 +1,4 @@
-import {UserDetailsCardField}  from './UserDetailsCardField'
+import { UserDetailsCardField } from "./UserDetailsCardField";
 
 const UserDetailsCard = ({
   tabName,

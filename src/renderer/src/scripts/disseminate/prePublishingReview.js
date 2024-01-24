@@ -14,7 +14,7 @@ import Swal from "sweetalert2";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
 const resetSubmissionChecklistText = () => {
@@ -66,14 +66,13 @@ window.getPrepublishingChecklistStatuses = async (currentDataset) => {
 
   // get the description - aka subtitle (unfortunate naming), tags, banner image URL, collaborators, and license
   let { description, tags, license } = dataset["content"];
-  description = description.trim()
+  description = description.trim();
 
   // set the subtitle's status
   statuses.subtitle = description && description.length ? true : false;
 
-
   let readme = await api.getDatasetReadme(window.defaultBfAccount, currentDataset);
-  readme = readme.trim()
+  readme = readme.trim();
 
   // set the readme's status
   statuses.readme = readme && readme.length >= 1 ? true : false;
@@ -107,7 +106,6 @@ window.getPrepublishingChecklistStatuses = async (currentDataset) => {
 
   // the user has an ORCID iD if the property is defined and non-empty
   statuses.ORCID = orcidId && orcidId.length ? true : false;
-
 
   return statuses;
 };
@@ -587,14 +585,12 @@ window.beginPrepublishingFlow = async (curationMode) => {
     );
     let res = get_publishing_status.data;
 
-
     // Don't send true until pre-publishing checklist is complete
     embargoDetails = await window.submitReviewDatasetCheck(res, "guided");
     if (embargoDetails[0] === false) {
       Swal.close();
       return false;
     }
-
   }
   if (curationMode === "freeform" || curationMode === undefined) {
     resetSubmissionChecklistText();
@@ -612,7 +608,6 @@ window.beginPrepublishingFlow = async (curationMode) => {
       },
     });
   }
-
 
   // check if the user is the dataset owner
   let role;

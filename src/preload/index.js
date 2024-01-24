@@ -17,7 +17,6 @@ fixPath();
 
 import "v8-compile-cache";
 
-
 log.initialize();
 
 // Custom APIs for renderer
@@ -152,7 +151,7 @@ if (process.contextIsolated) {
       },
       copyFileSync: (source, destination) => {
         return fs.copyFileSync(source, destination);
-      }
+      },
     });
     contextBridge.exposeInMainWorld("process", {
       platform: () => {

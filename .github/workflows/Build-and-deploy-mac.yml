@@ -26,7 +26,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
-          activate-environment:  env-electron-python
+          activate-environment: env-electron-python
           environment-file: tools/anaconda-env/environment-MAC.yml
           auto-update-conda: true
           auto-activate-base: false

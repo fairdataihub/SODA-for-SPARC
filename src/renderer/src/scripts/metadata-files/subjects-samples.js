@@ -1106,8 +1106,6 @@ window.populateForms = (subjectID, type, curationMode) => {
     fieldArr = $(window.guidedSubjectsFormDiv).children().find(".subjects-form-entry");
   }
 
-
-
   if (window.subjectsTableData.length > 1) {
     for (var i = 1; i < window.subjectsTableData.length; i++) {
       if (window.subjectsTableData[i][0] === subjectID) {
@@ -1116,7 +1114,6 @@ window.populateForms = (subjectID, type, curationMode) => {
       }
     }
   }
-
 
   if (subjectID !== "clear" && subjectID.trim() !== "") {
     if (curationMode === "guided") {
