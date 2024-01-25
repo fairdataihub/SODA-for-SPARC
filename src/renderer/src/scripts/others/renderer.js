@@ -11,6 +11,7 @@ import * as path from "path";
 import Editor from "@toast-ui/editor";
 // const remote = require("@electron/remote");
 import { Notyf } from "notyf";
+import { v4 as uuidv4 } from "uuid";
 import Tagify from "@yaireo/tagify/dist/tagify.esm";
 // const https = require("https");
 // const electron = require("electron");
@@ -409,13 +410,14 @@ const startupServerAndApiCheck = async () => {
 
   apiVersionChecked = true;
 };
-// TODO: Convert to new conventions
-startupServerAndApiCheck().then(() => {
+startupServerAndApiCheck().then(async () => {
   // get the current user profile name using electron
-  const { username } = os.userInfo();
+  const {username} = window.os.userInfo()
+
+  let usernameExists = await window.electron.ipcRenderer.invoke("get-nodestorage-item", username)
 
   // check if a shortened uuid exists in local storage
-  if (localStorage.getItem(username)) {
+  if (usernameExists) {
     return;
   }
 
@@ -427,9 +429,8 @@ startupServerAndApiCheck().then(() => {
 
   // store the shortened uuid in local storage
   // RATIONALE: this is used as a prefix that is unique per each client machine + profile name combination
-  localStorage.setItem(username, uuidShort);
-
-  console.log(localStorage.getItem(username));
+  await window.electron.ipcRenderer.invoke("set-nodestorage-key", username, uuidShort)
+  
 });
 
 // Check if we are connected to the Pysoda server
