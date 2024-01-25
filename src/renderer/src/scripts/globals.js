@@ -2037,7 +2037,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
           try {
             let organizationId = window.organizationNameToIdMapping[window.bfOrganization];
-            let machineUsernameSpecifier = localStorage.getItem(os.userInfo().username);
+            let machineUsernameSpecifier = await window.electron.ipcRenderer.invoke("get-nodestorage-item", window.os.userInfo().username)
             await api.setPreferredOrganization(
               login,
               password,
