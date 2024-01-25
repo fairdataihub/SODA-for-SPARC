@@ -177,8 +177,7 @@ const switchToCurrentWorkspace = async () => {
   await addBfAccount(null, true);
 };
 
-// TODO: Convert to new conventions
-module.exports = {
+export {
   clientError,
   userErrorMessage,
   authenticationError,

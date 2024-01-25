@@ -484,7 +484,7 @@ ipcRenderer.on("start_pre_flight_checks", async (event, arg) => {
   }
 
   window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
-};
+})
 
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
