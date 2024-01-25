@@ -1,5 +1,5 @@
-import requests 
-
+import requests
+from configUtils import format_agent_profile_name
 def create_unique_profile_name(token, machine_username_specifier):
     try:
         # get the users email
@@ -23,6 +23,6 @@ def create_unique_profile_name(token, machine_username_specifier):
         organization_id = user_info["preferredOrganization"]
 
         # create an updated profile name that is unqiue to the user and their workspace 
-        return f"soda-pennsieve-{machine_username_specifier}-{email_sub}-{organization_id.lower()}"
+        return format_agent_profile_name(f"soda-pennsieve-{machine_username_specifier}-{email_sub}-{organization_id.lower()}")
     except Exception as e:
         raise e

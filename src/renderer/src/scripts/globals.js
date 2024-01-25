@@ -4,7 +4,7 @@ import DragSort from '@yaireo/dragsort'
 
 
 import api from './others/api/api'
-import {clientError, userErrorMessage} from './others/http-error-handler/error-handler'
+import {clientError, userErrorMessage, defaultProfileMatchesCurrentWorkspace} from './others/http-error-handler/error-handler'
 import client from './client'
 import {swalShowError} from './utils/swal-utils'
 // import { window.clearValidationResults } from './validator/validate'
