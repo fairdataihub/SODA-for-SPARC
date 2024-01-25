@@ -806,6 +806,27 @@ $(document).ready(async function () {
   $("#guided_bf_list_users_and_teams").selectpicker("refresh");
 });
 
+// TODO: Convert to new conventions
+const create_api_key_and_secret = (login, password, machineUsernameSpecifier) => {
+  return new Promise(async (resolve) => {
+    try {
+      let bf_get_pennsieve_secret_key = await client.post(
+        `/manage_datasets/pennsieve_api_key_secret`,
+        {
+          username: login,
+          password: password,
+          machine_username_specifier: machineUsernameSpecifier,
+        }
+      );
+      let res = bf_get_pennsieve_secret_key.data;
+      resolve(res);
+    } catch (error) {
+      clientError(error);
+      resolve(["failed", userErrorMessage(error)]);
+    }
+  });
+};
+
 $("#select-permission-list-2").change((e) => {
   // updateDatasetList(window.defaultBfDataset);
   $("#div-filter-datasets-progress-2").css("display", "block");

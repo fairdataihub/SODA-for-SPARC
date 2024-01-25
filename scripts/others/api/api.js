@@ -451,13 +451,35 @@ const getNumberOfItemsInLocalDataset = async (datasetPath) => {
   return itemCountsResponse.data;
 };
 
-const setPreferredOrganization = async (email, password, organization, account) => {
+const setPreferredOrganization = async (
+  email,
+  password,
+  organization,
+  machineUsernameSpecifier
+) => {
   const response = await client.put("/user/organizations/preferred", {
     organization_id: organization,
     email,
     password,
-    account,
+    machine_username_specifier: machineUsernameSpecifier,
   });
+  return response.data;
+};
+
+const setDefaultProfile = async (targetProfile) => {
+  const response = await client.put("/user/default_profile", {
+    target_profile: targetProfile,
+  });
+  return response.data;
+};
+
+const createProfileName = async (email, password, machineUsernameSpecifier) => {
+  const response = await client.post("/user/default_profile", {
+    email: email,
+    password: password,
+    machineUsernameSpecifier: machineUsernameSpecifier,
+  });
+
   return response.data;
 };
 
@@ -498,6 +520,8 @@ const api = {
   getNumberOfItemsInLocalDataset,
   setPreferredOrganization,
   getUserPoolAccessToken,
+  setDefaultProfile,
+  createProfileName,
 };
 
 export default api;

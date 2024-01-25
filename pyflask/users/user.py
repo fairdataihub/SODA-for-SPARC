@@ -5,10 +5,14 @@ from configUtils import format_agent_profile_name
 from constants import PENNSIEVE_URL
 from utils import (
     create_request_headers,
+    connect_pennsieve_client,
+    authenticate_user_with_client,
+    get_profile_api_key_and_secret
 )
 from namespaces import NamespaceEnum, get_namespace_logger
 from flask import abort
 from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, delete_duplicate_keys, clear_cached_access_token
+from profileUtils import create_unique_profile_name
 
 logger = get_namespace_logger(NamespaceEnum.USER)
 
@@ -72,15 +76,64 @@ def get_user_information(token):
   except Exception as e:
     raise Exception(e) from e
 
+# TODO: Add formage_agent_profile_name here or where appropriate in the new flow
+def create_profile_name(machineUsernameSpecifier, email=None, password=None, token=None, organization_id=None):
+    """
+      Create a uniquely identifiable profile name for a user. This is used in the config.ini file to associate Pennsieve API Keys with a user and their selected workspace.
+      NOTE: API Keys and Secrets are associated with a workspace at time of creation. Due to this we need to create a unqiue profile for each workspace a user has access to.
+            The given organization id is used to associate the profile name with a given workspace. 
+    """
+
+    if token is None:
+       # we are not logged in as the user we want to create a profile name for so get a cognito userpool token for the user 
+       token = get_cognito_userpool_access_token(email, password)
+       user_info = get_user_information(token)
+       organization_id = user_info["preferredOrganization"]
+       email_sub = email.split("@")[0]
+
+       return f"soda-pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization_id.lower()}"
 
 
-def set_preferred_organization(organization_id, email, password, account_name):
-    # format the keyname to lowercase and replace '.' with '_'
-    formatted_account_name = format_agent_profile_name(account_name)
+    # get the users email 
+    user_info = get_user_information(token)
+    email = user_info["email"]
+
+    # create a substring of the start of the email to the @ symbol
+    email_sub = email.split("@")[0]
+
+    organizations = get_user_organizations()
+    organization = None
+    for org in organizations["organizations"]:
+        if org["organization"]["id"] == organization_id:
+            organization = org["organization"]["name"]
+
+    # create an updated profile name that is unique to the user and their workspace 
+    return f"soda-pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization.lower()}"
+             
+
+def set_default_profile(profile_name):
+    """
+      If the given profile exists and has a valid API Key and Secret set it as the default profile. 
+    """
+    # check if a valid token with this profile information already exists and use that if so rather than creating another api key and secret 
+    ps_k_s = get_profile_api_key_and_secret(profile_name.lower())
+    logger.info(f"Existing api key and secret for profile {profile_name.lower()}: {ps_k_s}")
+
+    if ps_k_s[0] is None or ps_k_s[1] is None:
+      raise Exception(f"No valid api key and secret found for profile {profile_name.lower()}")
+    
+    # verify that the keys are valid 
+    get_access_token(ps_k_s[0], ps_k_s[1])
+
+    # set the default profile to the profile name
+    update_config_account_name(profile_name.lower())
+    logger.info(f"Reused existing valid api key and secret for profile {profile_name}") 
+
+def set_preferred_organization(organization_id, email, password, machine_username_specifier):
+
+    token = get_cognito_userpool_access_token(email, password)
+
     try:
-        token = get_cognito_userpool_access_token(email, password)
-
-
         # switch to the desired organization
         url = "https://api.pennsieve.io/session/switch-organization"
         headers = {"Accept": "*/*", "Content-Type": "application/json", "Accept-Encoding": "gzip, deflate, br", "Connection": "keep-alive", "Content-Length": "0"}
@@ -89,72 +142,50 @@ def set_preferred_organization(organization_id, email, password, account_name):
         response = requests.request("PUT", url, headers=headers)
         response.raise_for_status()
 
-    except Exception as error:
-        error = "It looks like you don't have access to your desired organization. An organization is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to your desired organization and try again."
-        raise Exception(error)
+    except Exception as err:
+        new_err_msg = "It looks like you don't have access to your desired organization. An organization is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to your desired organization and try again."
+        raise Exception(new_err_msg) from err
     
 
+    profile_name = create_unique_profile_name(token, machine_username_specifier)
+
+    logger.info(f"Switched to organization {organization_id}")
+    logger.info(f"New profile name: {profile_name}") 
+
+    try: 
+      set_default_profile(profile_name)
+      return 
+    except Exception as err:
+      logger.info(f"Existing api key and secret for profile {profile_name} are invalid. Creating new api key and secret for profile {profile_name}")
+
+    # TODO: Determine where to move this and the below duplicate key deletion methods. Perhaps the bottom one stays and this one moves up before checking for existing keys. 
+    # any users coming from versions of SODA < 12.0.2 will potentially have duplicate SODA-Pennsieve API keys on their Pennsieve profile we want to clean up for them
     delete_duplicate_keys(token, "SODA-Pennsieve")
+
+    # for now remove the old api key and secret associated with this profile name if one already exists
+    delete_duplicate_keys(token, profile_name)
     
     # get an api key and secret for programmatic access to the Pennsieve API
-    try:
-        url = "https://api.pennsieve.io/token/"
+    url = "https://api.pennsieve.io/token/"
 
-        payload = {"name": "SODA-Pennsieve"}
-        headers = {
-            "Accept": "*/*",
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {token}",
-        }
+    payload = {"name": profile_name}
+    headers = {
+        "Accept": "*/*",
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {token}",
+    }
 
-        response = requests.request("POST", url, json=payload, headers=headers)
-        response.raise_for_status()
-        response = response.json()
-       
-        key =  response["key"]
-        secret = response["secret"]
-    except Exception as e:
-        raise e
+# TODO: Add cache clearing and agent profile formatting
+    response = requests.request("POST", url, json=payload, headers=headers)
+    response.raise_for_status()
+    response = response.json()
     
+    key =  response["key"]
+    secret = response["secret"]
 
-    # store the new api key for the current organization
-    # try:
-    #   # remove the current default profile if one exists 
-    #   bf_delete_default_profile()
-    # except Exception as e:
-    #   raise e
     
-    
-    try:
-      # get the users email 
-      user_info = get_user_information(token)
-      email = user_info["email"]
-
-      # create a substring of the start of the email to the @ symbol
-      email_sub = email.split("@")[0]
-
-      organizations = get_user_organizations()
-      organization = None
-      for org in organizations["organizations"]:
-          if org["organization"]["id"] == organization_id:
-              organization = org["organization"]["name"]
-
-      # create an updated profile name that is unqiue to the user and their workspace 
-      formatted_account_name = format_agent_profile_name(f"{account_name}-{email_sub}-{organization}")
-
-             
-    except Exception as e:
-       raise e 
-    
-    try:
-      # create the new profile for the user, associate the api key and secret with the profile, and set it as the default profile
-      bf_add_account_username(formatted_account_name, key, secret)
-    except Exception as e:
-      raise e
-    
-    # clear the cached access token 
-    clear_cached_access_token()
-    
+    # create the new profile for the user, associate the api key and secret with the profile, and set it as the default profile
+    bf_add_account_username(profile_name, key, secret)
 
 
 def get_user_organizations():
