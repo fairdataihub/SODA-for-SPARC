@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      - new-staging
+      - config-update-temp-branch
 
 jobs:
   deploy-on-linux:
