@@ -1,4 +1,4 @@
-const api = require("../api/api");
+import api from "../api/api"
 
 /**
  * Logs an error object to the console and SODA logs. Handles general errors and Axios errors.
@@ -95,7 +95,7 @@ const switchToCurrentWorkspace = async () => {
 
   if (workspacesMatch) {
     // obsolete/invalid api key and secret needs to be replaced
-    await addBfAccount(null, false);
+    await window.addBfAccount(null, false);
     return;
   }
 
@@ -174,7 +174,7 @@ const switchToCurrentWorkspace = async () => {
   }
 
   // if not have them log in to add a new profile/overwrite the invalid/obsolete api key and secret for the current workspace
-  await addBfAccount(null, true);
+  await window.addBfAccount(null, true);
 };
 
 export {

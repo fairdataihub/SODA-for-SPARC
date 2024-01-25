@@ -920,7 +920,7 @@ window.resetFFMUI = (ev) => {
   $('#para-review-dataset-info-disseminate').text('None')
 }
 
-const addBfAccount = async (ev, verifyingOrganization = False) => {
+window.addBfAccount = async (ev, verifyingOrganization = False) => {
   var resolveMessage = "";
   let footerMessage = "No existing accounts to load. Please add an account.";
   if (bfAccountOptionsStatus === "") {
@@ -1346,7 +1346,7 @@ var dropdownEventID = ''
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
   if (dropdown === "bf") {
-    await addBfAccount(ev, false);
+    await window.addBfAccount(ev, false);
   } else if (dropdown === "dataset") {
     dropdownEventID = ev?.id ?? "";
 

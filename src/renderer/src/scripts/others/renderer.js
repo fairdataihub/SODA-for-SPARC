@@ -409,6 +409,24 @@ const startupServerAndApiCheck = async () => {
   }
 
   apiVersionChecked = true;
+
+  // set the templates path
+  // TODO: Convert to new conventions. Still needed?
+  // try {
+  //   await client.put("prepare_metadata/template_paths", {
+  //     basepath: basepath,
+  //     resourcesPath: resourcesPath,
+  //   });
+  // } catch (error) {
+  //   clientError(error);
+
+  //   // window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");
+  //   return;
+  // }
+  
+    // window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+
+
 };
 startupServerAndApiCheck().then(async () => {
   // get the current user profile name using electron
@@ -433,59 +451,6 @@ startupServerAndApiCheck().then(async () => {
   
 });
 
-// Check if we are connected to the Pysoda server
-// Check app version on current app and display in the side bar
-// Also check the core systems to make sure they are all operational
-ipcRenderer.on("start_pre_flight_checks", async (event, arg) => {
-  // run pre flight checks once the server connection is confirmed
-  // wait until soda is connected to the backend server
-  while (!sodaIsConnected || !apiVersionChecked) {
-    await wait(1000);
-  }
-
-  log.info("Done with startup");
-
-  //Load Default/global Pennsieve account if available
-  if (hasConnectedAccountWithPennsieve()) {
-    notyf.open({
-      duration: 15000,
-      type: "info",
-      message: "Loading your account information...",
-    });
-    try {
-      await updateBfAccountList();
-    } catch (error) {
-      clientError(error);
-    }
-    // close the notification once it is completed
-    notyf.dismissAll();
-  }
-
-  // check integrity of all the core systems
-  await run_pre_flight_checks();
-
-  log.info("Running pre flight checks finished");
-
-  // get apps base path
-  const basepath = await window.electron.ipcRenderer.invoke("get-app-path", undefined);
-  const resourcesPath = window.process.resourcesPath();
-
-
-  // set the templates path
-  try {
-    await client.put("prepare_metadata/template_paths", {
-      basepath: basepath,
-      resourcesPath: resourcesPath,
-    });
-  } catch (error) {
-    clientError(error);
-
-    window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");
-    return;
-  }
-
-  window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
-})
 
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
@@ -753,7 +718,6 @@ window.run_pre_flight_checks = async (check_update = true) => {
         }
 
         // wait for the Agent to stop using the db files so they may be deleted
-        // TODO: Convert to new conventions
         await wait(1000);
         // delete any db files that exist
         if (window.fs.existsSync(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db`))
@@ -939,7 +903,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
     } catch (err) {
       clientError(err);
       if (err.response.status) {
-        await addBfAccount(null, true);
+        await window.addBfAccount(null, true);
       }
     }
 
@@ -9257,7 +9221,6 @@ window.gatherLogs = () => {
  * purged.
  */
 window.displayClientId = async () => {
-  // TODO: Convert to new conventions
   let clientId = await window.electron.ipcRenderer.invoke("get-nodestorage-key", "userId");
 
   const copyClientIdToClipboard = () => {
