@@ -331,8 +331,8 @@ def create_pennsieve_api_key_secret(email, password, machine_username_specifier)
     response = response.json()
 
 
-        # clear access token cache
-        clear_cached_access_token()
+    # clear access token cache
+    clear_cached_access_token()
 
     return { 
         "success": "success", 
