@@ -3,10 +3,10 @@ import 'bootstrap-select'
 import DragSort from '@yaireo/dragsort'
 
 
-import api from './others/api/api'
-import {clientError, userErrorMessage} from './others/http-error-handler/error-handler'
-import client from './client'
-import {swalShowError} from './utils/swal-utils'
+import api from './scripts/others/api/api'
+import {clientError, userErrorMessage} from './scripts/others/http-error-handler/error-handler'
+import client from './scripts/client'
+import {swalShowError} from './scripts/utils/swal-utils'
 // import { window.clearValidationResults } from './validator/validate'
 // // Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
 // //          needed by the renderer process in order to run.
