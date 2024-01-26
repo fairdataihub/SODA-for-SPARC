@@ -85,6 +85,7 @@ def create_profile_name(machineUsernameSpecifier, email=None, password=None, tok
     """
 
     if token is None:
+       logger.info("Email and password: " + email + " " + password)
        # we are not logged in as the user we want to create a profile name for so get a cognito userpool token for the user 
        token = get_cognito_userpool_access_token(email, password)
        user_info = get_user_information(token)
@@ -108,7 +109,7 @@ def create_profile_name(machineUsernameSpecifier, email=None, password=None, tok
             organization = org["organization"]["name"]
 
     # create an updated profile name that is unique to the user and their workspace 
-    return f"soda-pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization.lower()}"
+    return format_agent_profile_name(f"soda-pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization.lower()}")
              
 
 def set_default_profile(profile_name):
