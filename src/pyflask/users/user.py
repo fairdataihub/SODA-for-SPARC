@@ -91,7 +91,7 @@ def create_profile_name(machineUsernameSpecifier, email=None, password=None, tok
        organization_id = user_info["preferredOrganization"]
        email_sub = email.split("@")[0]
 
-       return f"soda-pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization_id.lower()}"
+       return format_agent_profile_name(f"soda-pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization_id.lower()}")
 
 
     # get the users email 
