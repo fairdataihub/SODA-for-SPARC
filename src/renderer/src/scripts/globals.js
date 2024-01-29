@@ -1847,7 +1847,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       try {
         responseObject = await client.get(`user/organizations`, {
           params: {
-            selected_account: window.defaultBfDataset,
+            selected_account: window.defaultBfAccount,
           },
         });
       } catch (error) {
