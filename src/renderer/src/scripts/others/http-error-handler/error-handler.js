@@ -108,7 +108,6 @@ const switchToCurrentWorkspace = async () => {
   )}-${emailSuffix}-${currentWorkspace.toLowerCase()}`;
   targetProfile = targetProfile.toLowerCase();
 
-
   try {
     // set the target profile as the default if it is a valid profile that exists
     await api.setDefaultProfile(targetProfile);

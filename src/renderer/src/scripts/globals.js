@@ -1148,7 +1148,6 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
     // failed to create a new profile and did not set the default profile to a previously existing one
     if (!result) return;
 
-
     titleText = "Adding account...";
     if (verifyingOrganization) {
       titleText = "Loading workspace details...";
