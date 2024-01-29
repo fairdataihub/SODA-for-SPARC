@@ -46,10 +46,7 @@ import {
 } from "../analytics/curation-analytics";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
-import {
-  clientError,
-  userErrorMessage,
-} from "./http-error-handler/error-handler";
+import { clientError, userErrorMessage } from "./http-error-handler/error-handler";
 import hasConnectedAccountWithPennsieve from "./authentication/auth";
 import api from "./api/api";
 import {

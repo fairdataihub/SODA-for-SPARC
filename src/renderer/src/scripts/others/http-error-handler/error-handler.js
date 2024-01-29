@@ -169,9 +169,4 @@ const switchToCurrentWorkspace = async () => {
   await window.addBfAccount(null, true);
 };
 
-export {
-  clientError,
-  userErrorMessage,
-  authenticationError,
-  switchToCurrentWorkspace,
-};
+export { clientError, userErrorMessage, authenticationError, switchToCurrentWorkspace };
