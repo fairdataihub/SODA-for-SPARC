@@ -1118,15 +1118,16 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
         // TODO: Update to new conventions
         let machineUsernameSpecifier = await window.electron.ipcRenderer.invoke("get-nodestorage-item", window.os.userInfo().username);
 
-        // create the profile name for the user
-        let profileResponse = await api.createProfileName(
-          login,
-          password,
-          machineUsernameSpecifier
-        );
+
 
         // attempt to set the profile name as the default profile
         try {
+          // create the profile name for the user
+          let profileResponse = await api.createProfileName(
+            login,
+            password,
+            machineUsernameSpecifier
+          );
           await api.setDefaultProfile(profileResponse);
           window.defaultBfAccount = profileResponse.toLowerCase();
           return true;
