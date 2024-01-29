@@ -46,7 +46,11 @@ import {
 } from "../analytics/curation-analytics";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
-import { clientError, userErrorMessage, defaultProfileMatchesCurrentWorkspace } from "./http-error-handler/error-handler";
+import {
+  clientError,
+  userErrorMessage,
+  defaultProfileMatchesCurrentWorkspace,
+} from "./http-error-handler/error-handler";
 import hasConnectedAccountWithPennsieve from "./authentication/auth";
 import api from "./api/api";
 import {
@@ -78,7 +82,6 @@ document.addEventListener("DOMContentLoaded", function () {
 // // const electron_app = electron.app;
 // const { app } = remote;
 // const Clipboard = electron.clipboard;
-
 
 window.nextBtnDisabledVariable = true;
 
@@ -410,29 +413,29 @@ const startupServerAndApiCheck = async () => {
 
   apiVersionChecked = true;
 
+  // get apps base path
+  const basepath = await window.electron.ipcRenderer.invoke("get-app-path", undefined);
+  const resourcesPath = window.process.resourcesPath();
   // set the templates path
-  // TODO: Convert to new conventions. Still needed?
-  // try {
-  //   await client.put("prepare_metadata/template_paths", {
-  //     basepath: basepath,
-  //     resourcesPath: resourcesPath,
-  //   });
-  // } catch (error) {
-  //   clientError(error);
+  try {
+    await client.put("prepare_metadata/template_paths", {
+      basepath: basepath,
+      resourcesPath: resourcesPath,
+    });
+  } catch (error) {
+    clientError(error);
 
-  //   // window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");
-  //   return;
-  // }
-  
-    // window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+    window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");
+    return;
+  }
 
-
+  window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 };
 startupServerAndApiCheck().then(async () => {
   // get the current user profile name using electron
-  const {username} = window.os.userInfo()
+  const { username } = window.os.userInfo();
 
-  let usernameExists = await window.electron.ipcRenderer.invoke("get-nodestorage-item", username)
+  let usernameExists = await window.electron.ipcRenderer.invoke("get-nodestorage-item", username);
 
   // check if a shortened uuid exists in local storage
   if (usernameExists) {
@@ -447,10 +450,8 @@ startupServerAndApiCheck().then(async () => {
 
   // store the shortened uuid in local storage
   // RATIONALE: this is used as a prefix that is unique per each client machine + profile name combination
-  await window.electron.ipcRenderer.invoke("set-nodestorage-key", username, uuidShort)
-  
+  await window.electron.ipcRenderer.invoke("set-nodestorage-key", username, uuidShort);
 });
-
 
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
@@ -575,15 +576,15 @@ window.run_pre_flight_checks = async (check_update = true) => {
         return false;
       }
 
-    // check that the valid api key in the default profile is for the user's current workspace
-    // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
-    //           under the default profile does not mean that key is associated with the user's current workspace.
-    let matching = await defaultProfileMatchesCurrentWorkspace();
-    if (!matching) {
-      log.info("Default api key is for a different workspace");
-      await switchToCurrentWorkspace();
-      return false;
-    }
+      // check that the valid api key in the default profile is for the user's current workspace
+      // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
+      //           under the default profile does not mean that key is associated with the user's current workspace.
+      let matching = await defaultProfileMatchesCurrentWorkspace();
+      if (!matching) {
+        log.info("Default api key is for a different workspace");
+        await switchToCurrentWorkspace();
+        return false;
+      }
     }
 
     // check if the Pennsieve agent is installed [ here ]
@@ -1083,7 +1084,6 @@ const apiVersionsMatch = async () => {
     }
   }
   checkNewAppVersion(); // Added so that version will be displayed for new users
-
 };
 
 const checkInternetConnection = async () => {
@@ -4922,7 +4922,6 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   const datasetStructure = {};
   const hiddenItems = [];
 
-
   showFileImportLoadingSweetAlert(500);
 
   // Function to traverse and build JSON structure
@@ -5498,7 +5497,6 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
     imgContainer = document.getElementById("div-img-container");
   }
 
-
   if (path.length > 0) {
     let original_image_path = path[0];
     let image_path = original_image_path;
@@ -5510,7 +5508,6 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
     let converted_image_file = window.path.join(destination_image_path, "converted-tiff.jpg");
     let conversion_success = true;
     window.imageExtension = path[0].split(".").pop();
-
 
     if (window.imageExtension.toLowerCase() == "tiff") {
       Swal.fire({
@@ -5529,10 +5526,8 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
         },
       });
 
-
       await window.Jimp.read(original_image_path)
         .then(async (file) => {
-
           if (!window.fs.existsSync(destination_image_path)) {
             window.fs.mkdirSync(destination_image_path, { recursive: true });
           }

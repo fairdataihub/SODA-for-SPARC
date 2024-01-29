@@ -8,10 +8,10 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 ******************************************************
 ******************************************************
 */
-import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
-import Swal from "sweetalert2"
-import api from "../others/api/api"
-import {clientError, userErrorMessage} from "../others/http-error-handler/error-handler"
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
+import Swal from "sweetalert2";
+import api from "../others/api/api";
+import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 
 // Helper functions
 window.disseminatePublish = async (curationMode) => {

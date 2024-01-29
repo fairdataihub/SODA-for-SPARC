@@ -5,12 +5,12 @@ body {
     Roboto,
     -apple-system,
     BlinkMacSystemFont,
-    'Helvetica Neue',
-    'Segoe UI',
-    'Oxygen',
-    'Ubuntu',
-    'Cantarell',
-    'Open Sans',
+    "Helvetica Neue",
+    "Segoe UI",
+    "Oxygen",
+    "Ubuntu",
+    "Cantarell",
+    "Open Sans",
     sans-serif;
   color: #86a5b1;
   background-color: #2f3241;
@@ -67,7 +67,7 @@ a:hover {
   float: none;
   clear: both;
   overflow: hidden;
-  font-family: 'Menlo', 'Lucida Console', monospace;
+  font-family: "Menlo", "Lucida Console", monospace;
   color: #c2f5ff;
   line-height: 1;
   transition: all 0.3s;

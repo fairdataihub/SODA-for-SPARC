@@ -1,10 +1,10 @@
 // This file is used to download the metadata templates
 // from the SODA-FOR-SPARC folder and save them to the local file system.
-import kombuchaEnums from "../analytics/analytics-enums"
-import Swal from "sweetalert2"
+import kombuchaEnums from "../analytics/analytics-enums";
+import Swal from "sweetalert2";
 
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
 // Metadata Templates //
@@ -25,7 +25,13 @@ let templateArray = [
 
 const downloadTemplates = async (templateItem, destinationFolder) => {
   let currentDirectory = await window.electron.ipcRenderer.invoke("get-current-directory");
-  let templatePath = window.path.join(currentDirectory, "..", "renderer", "file_templates", templateItem);
+  let templatePath = window.path.join(
+    currentDirectory,
+    "..",
+    "renderer",
+    "file_templates",
+    templateItem
+  );
   let destinationPath = window.path.join(destinationFolder, templateItem);
 
   if (window.fs.existsSync(destinationPath)) {
@@ -55,7 +61,7 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
       }
     );
   } else {
-    await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath) 
+    await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath);
     let emessage = `Successfully saved '${templateItem}' to ${destinationFolder}`;
 
     Swal.fire({
@@ -65,7 +71,11 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
-    window.electron.ipcRenderer.send("track-event", "Success", `Download Template - ${templateItem}`);
+    window.electron.ipcRenderer.send(
+      "track-event",
+      "Success",
+      `Download Template - ${templateItem}`
+    );
 
     let templateLabel = Object.values(kombuchaEnums.Label).find((label) => {
       return label === templateItem;
@@ -114,7 +124,10 @@ document
   .querySelectorAll(".guided-subject-sample-pool-structure-download-button")
   .forEach((button) => {
     button.addEventListener("click", (event) => {
-      window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", "subjects_pools_samples_structure.xlsx");
+      window.electron.ipcRenderer.send(
+        "open-folder-dialog-save-metadata",
+        "subjects_pools_samples_structure.xlsx"
+      );
     });
   });
 

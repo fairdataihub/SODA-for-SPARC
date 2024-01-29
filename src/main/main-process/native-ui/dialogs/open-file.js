@@ -1,6 +1,5 @@
 import { ipcMain, dialog, BrowserWindow } from "electron";
 
-
 ipcMain.on("open-file-dialog-dataset", (event) => {
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),
@@ -430,9 +429,6 @@ ipcMain.on("open-folder-dialog-save-metadata", async (event, filename) => {
   }
 });
 
-
-
-
 // Generate submission file
 ipcMain.on("open-folder-dialog-save-submission", async (event, filename) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
@@ -678,7 +674,6 @@ ipcMain.handle("open-manifest-preview-location", async () => {
 
   return result.filePaths;
 });
-
 
 ipcMain.on("guided-select-local-dataset-generation-path", (event) => {
   const mainWindow = BrowserWindow.getFocusedWindow();

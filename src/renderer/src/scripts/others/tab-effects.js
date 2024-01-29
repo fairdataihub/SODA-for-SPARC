@@ -1,16 +1,16 @@
 // event listeners for opening dataset or account selection dropdown
-import Accordion from 'accordion-js';
+import Accordion from "accordion-js";
 // TODO: Follow up that this is the way to import it
-import 'accordion-js/dist/accordion.min.css';
-import { showHideDropdownButtons } from '../globals';
-import client from "../client"
-import {clientError, userErrorMessage} from "./http-error-handler/error-handler"
+import "accordion-js/dist/accordion.min.css";
+import { showHideDropdownButtons } from "../globals";
+import client from "../client";
+import { clientError, userErrorMessage } from "./http-error-handler/error-handler";
 import introJs from "intro.js";
 import Swal from "sweetalert2";
-import api from '../others/api/api'
+import api from "../others/api/api";
 
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
 // JSON object of all the tabs
@@ -195,7 +195,14 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
 
     let dataset_name = fill_info_details();
     window.datasetStructureJSONObj["files"] = window.sodaJSONObj["metadata-files"];
-    window.showTreeViewPreview(false, false, false, dataset_name, window.jstreePreview, window.datasetStructureJSONObj);
+    window.showTreeViewPreview(
+      false,
+      false,
+      false,
+      dataset_name,
+      window.jstreePreview,
+      window.datasetStructureJSONObj
+    );
     $("#Question-preview-dataset-details").show();
     $("#Question-preview-dataset-details").children().show();
     $("#Question-generate-dataset-generate-div").show();
@@ -248,7 +255,10 @@ const fill_info_details = () => {
       }
     } else if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop") {
       if (window.sodaJSONObj["starting-point"]["type"] === "local") {
-        add_card_detail("Original dataset location", window.sodaJSONObj["starting-point"]["local-path"]);
+        add_card_detail(
+          "Original dataset location",
+          window.sodaJSONObj["starting-point"]["local-path"]
+        );
       }
       add_card_detail(
         "New dataset location",
@@ -278,7 +288,10 @@ const fill_info_details = () => {
       }
     } else if ($('input[name="generate-1"]:checked')[0].id === "generate-upload-BF") {
       if (window.sodaJSONObj["starting-point"]["type"] === "local") {
-        add_card_detail("Original dataset location", window.sodaJSONObj["starting-point"]["local-path"]);
+        add_card_detail(
+          "Original dataset location",
+          window.sodaJSONObj["starting-point"]["local-path"]
+        );
       }
 
       add_card_detail("New dataset location", "Pennsieve", 1, "Question-generate-dataset", true);
@@ -1288,7 +1301,10 @@ window.create_json_object = async (action, sodaJSONObj, root_folder_path) => {
     let temp_file_path_csv = window.path.join(root_folder_path, folder, "manifest.csv");
     if (window.fs.existsSync(temp_file_path_xlsx)) {
       sodaJSONObj["starting-point"][folder]["path"] = temp_file_path_xlsx;
-      sodaJSONObj["starting-point"][folder]["manifest"] = await window.electron.ipcRenderer.invoke("excelToJsonSheet1", sodaJSONObj["starting-point"][folder]["path"])
+      sodaJSONObj["starting-point"][folder]["manifest"] = await window.electron.ipcRenderer.invoke(
+        "excelToJsonSheet1",
+        sodaJSONObj["starting-point"][folder]["path"]
+      );
     } else if (window.fs.existsSync(temp_file_path_csv)) {
       sodaJSONObj["starting-point"][folder]["path"] = temp_file_path_csv;
       sodaJSONObj["starting-point"][folder]["manifest"] = csvToJson
@@ -1432,7 +1448,9 @@ const recursive_structure_create = (
       high_level_folder != dataset_folder
     ) {
       if (window.sodaJSONObj["starting-point"][high_level_folder]["path"] !== "") {
-        let extension = window.path.extname(window.sodaJSONObj["starting-point"][high_level_folder]["path"]);
+        let extension = window.path.extname(
+          window.sodaJSONObj["starting-point"][high_level_folder]["path"]
+        );
         if (extension == ".xlsx") {
           let temp_current_file_path = current_file_path.replace(/\\/g, "/");
           root_folder_path = root_folder_path.replace(/\\/g, "/");
@@ -1448,7 +1466,8 @@ const recursive_structure_create = (
               relative_path
             ) {
               if (
-                window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["C"] != undefined
+                window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["C"] !=
+                undefined
               ) {
                 manifest_object["description"] =
                   window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["C"];
@@ -1456,7 +1475,8 @@ const recursive_structure_create = (
                 manifest_object["description"] = "";
               }
               if (
-                window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["E"] != undefined
+                window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["E"] !=
+                undefined
               ) {
                 manifest_object["additional-metadata"] =
                   window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["E"];
@@ -1483,15 +1503,19 @@ const recursive_structure_create = (
           let relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
           for (item in window.sodaJSONObj["starting-point"][high_level_folder]["manifest"]) {
             if (
-              window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["filename"] ==
-              relative_path
+              window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
+                "filename"
+              ] == relative_path
             ) {
               if (
-                window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["description"] !=
-                undefined
+                window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
+                  "description"
+                ] != undefined
               ) {
                 manifest_object["description"] =
-                  window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["description"];
+                  window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
+                    "description"
+                  ];
               } else {
                 manifest_object["description"] = "";
               }
@@ -1597,7 +1621,9 @@ const recursive_structure_create_include_manifest = (
       high_level_folder != dataset_folder
     ) {
       if (window.sodaJSONObj["starting-point"][high_level_folder]["path"] !== "") {
-        let extension = window.path.extname(window.sodaJSONObj["starting-point"][high_level_folder]["path"]);
+        let extension = window.path.extname(
+          window.sodaJSONObj["starting-point"][high_level_folder]["path"]
+        );
         if (extension == ".xlsx") {
           let temp_current_file_path = current_file_path.replace("\\", "/");
           let relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
@@ -1607,7 +1633,8 @@ const recursive_structure_create_include_manifest = (
               relative_path
             ) {
               if (
-                window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["C"] != undefined
+                window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["C"] !=
+                undefined
               ) {
                 manifest_object["description"] =
                   window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["C"];
@@ -1615,7 +1642,8 @@ const recursive_structure_create_include_manifest = (
                 manifest_object["description"] = "";
               }
               if (
-                window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["E"] != undefined
+                window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["E"] !=
+                undefined
               ) {
                 manifest_object["additional-metadata"] =
                   window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["E"];
@@ -1629,15 +1657,19 @@ const recursive_structure_create_include_manifest = (
           let relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
           for (item in window.sodaJSONObj["starting-point"][high_level_folder]["manifest"]) {
             if (
-              window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["filename"] ==
-              relative_path
+              window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
+                "filename"
+              ] == relative_path
             ) {
               if (
-                window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["description"] !=
-                undefined
+                window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
+                  "description"
+                ] != undefined
               ) {
                 manifest_object["description"] =
-                  window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["description"];
+                  window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
+                    "description"
+                  ];
               } else {
                 manifest_object["description"] = "";
               }
@@ -2312,7 +2344,10 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
 
   // empty para elements (TODO: will convert these para elements to a swal2 alert so we don't have to clear them out)
   if (ev.getAttribute("data-next") === "div_make_pi_owner_permissions") {
-    let previous_choice = window.electron.ipcRenderer.invoke("get-nodestorage-item", "previously_selected_PI");
+    let previous_choice = window.electron.ipcRenderer.invoke(
+      "get-nodestorage-item",
+      "previously_selected_PI"
+    );
     if ($(`#bf_list_users_pi option[value='${previous_choice}']`).length > 0) {
       $("#bf_list_users_pi").val(previous_choice);
       $("#bf_list_users_pi").selectpicker("refresh");
@@ -3610,12 +3645,15 @@ const saveSODAJSONProgress = (progressFileName) => {
   // delete manifest files added for treeview
   for (var highLevelFol in window.sodaJSONObj["dataset-structure"]["folders"]) {
     if (
-      "manifest.xlsx" in window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+      "manifest.xlsx" in
+        window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
       window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
         "forTreeview"
       ] === true
     ) {
-      delete window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
+      delete window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
+        "manifest.xlsx"
+      ];
     }
   }
   window.fs.writeFileSync(filePath, JSON.stringify(window.sodaJSONObj));
@@ -3666,7 +3704,11 @@ window.saveOrganizeProgressPrompt = () => {
         if (result.value !== null && result.value !== "") {
           window.sodaJSONObj["save-progress"] = result.value.trim();
           saveSODAJSONProgress(result.value.trim());
-          window.addOption(window.progressFileDropdown, result.value.trim(), result.value.trim() + ".json");
+          window.addOption(
+            window.progressFileDropdown,
+            result.value.trim(),
+            result.value.trim() + ".json"
+          );
         }
       }
     });

@@ -1,27 +1,26 @@
-import axios from "axios"
-import Swal from "sweetalert2"
-import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
-import client from '../client'
-import lottie from 'lottie-web'
-import {licenseLottie} from '../../assets/lotties/license-lottie'
-import kombuchaEnums from "../analytics/analytics-enums"
-import { updateDatasetList } from "../globals"
-import api from '../others/api/api'
+import axios from "axios";
+import Swal from "sweetalert2";
+import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
+import client from "../client";
+import lottie from "lottie-web";
+import { licenseLottie } from "../../assets/lotties/license-lottie";
+import kombuchaEnums from "../analytics/analytics-enums";
+import { updateDatasetList } from "../globals";
+import api from "../others/api/api";
 import datasetUploadSession from "../analytics/upload-session-tracker";
 import {
   createEventData,
   logSelectedUpdateExistingDatasetOptions,
-} from "../analytics/curation-analytics"
-import Cropper from "cropperjs"
+} from "../analytics/curation-analytics";
+import Cropper from "cropperjs";
 
 // event listeners for opening dataset or account selection dropdown
-import Accordion from 'accordion-js';
+import Accordion from "accordion-js";
 // TODO: Follow up that this is the way to import it
-import 'accordion-js/dist/accordion.min.css';
-
+import "accordion-js/dist/accordion.min.css";
 
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
 // TODO: Add logic so this doesnt apply to the organization fields
@@ -540,7 +539,11 @@ $("#button-add-permission-pi").click(async () => {
           }
         );
 
-        window.electron.ipcRenderer.invoke("set-nodestorage-item", "previously_selected_PI", selectedUser);
+        window.electron.ipcRenderer.invoke(
+          "set-nodestorage-item",
+          "previously_selected_PI",
+          selectedUser
+        );
 
         window.showCurrentPermission();
         changeDatasetRolePI(selectedBfDataset);
@@ -906,7 +909,6 @@ window.bfDatasetSubtitle.addEventListener("keyup", function () {
   window.countCharacters(window.bfDatasetSubtitle, window.bfDatasetSubtitleCharCount);
 });
 
-
 // Add subtitle //
 $("#button-add-subtitle").click(async () => {
   setTimeout(async function () {
@@ -1048,7 +1050,10 @@ window.showCurrentSubtitle = async () => {
     );
     $("#bf-dataset-subtitle").val(subtitle);
     $("#ds-description").val(subtitle);
-    let result = window.countCharacters(window.bfDatasetSubtitle, window.bfDatasetSubtitleCharCount);
+    let result = window.countCharacters(
+      window.bfDatasetSubtitle,
+      window.bfDatasetSubtitleCharCount
+    );
     if (result === 0) {
       $("#button-add-subtitle > .btn_animated-inside").html("Add subtitle");
     } else {
@@ -1078,8 +1083,8 @@ const requiredSections = {
 };
 
 // open the first section of the accordion for first time user navigation to the section
-let dsAccordion = new Accordion("#dd-accordion")
-dsAccordion.open( 0);
+let dsAccordion = new Accordion("#dd-accordion");
+dsAccordion.open(0);
 
 // fires whenever a user selects a dataset, from any card
 window.showCurrentDescription = async () => {
@@ -1656,20 +1661,24 @@ const showDatasetDescription = async () => {
 };
 
 window.getBase64 = async (url) => {
-  return await window.electron.ipcRenderer.invoke("get-string-representation-of-buffer", url, "binary")
+  return await window.electron.ipcRenderer.invoke(
+    "get-string-representation-of-buffer",
+    url,
+    "binary"
+  );
 };
 
 // function for importing a banner image if one already exists
 $("#edit_banner_image_button").click(async () => {
   $("#edit_banner_image_modal").modal("show");
-  $("#edit_banner_image_modal").addClass("show")
-  let banner_img = $("#para-current-banner-img").text()
-  banner_img = banner_img.replace(/\s+/g, '')
+  $("#edit_banner_image_modal").addClass("show");
+  let banner_img = $("#para-current-banner-img").text();
+  banner_img = banner_img.replace(/\s+/g, "");
   if (banner_img === "None") {
     //Do nothing... regular import
   } else {
     let img_src = $("#current-banner-img").attr("src");
-    if(!img_src.includes("https://pennsieve")) {
+    if (!img_src.includes("https://pennsieve")) {
       img_src = "file://" + img_src;
     }
     let img_base64 = await window.getBase64(img_src); // encode image to base64
@@ -1834,7 +1843,10 @@ const displayBannerImage = async (bannerImagePath) => {
                       $("#para-path-image").html(image_path);
                       window.bfViewImportedImage.src = converted_image_file;
                       window.myCropper.destroy();
-                      window.myCropper = new Cropper(window.bfViewImportedImage, window.cropOptions);
+                      window.myCropper = new Cropper(
+                        window.bfViewImportedImage,
+                        window.cropOptions
+                      );
                       $("#save-banner-image").css("visibility", "visible");
                       $("body").removeClass("waiting");
                     });
@@ -1907,7 +1919,7 @@ $("#button-import-banner-image").click(async () => {
   let filePaths = await window.electron.ipcRenderer.invoke("open-file-dialog-import-banner-image");
   handleSelectedBannerImage(filePaths, "freeform");
   $("#edit_banner_image_modal").modal("show");
-  $("#edit_banner_image_modal").addClass("show")
+  $("#edit_banner_image_modal").addClass("show");
 });
 
 // TODO: Dorian -> Simplify the if statement, redundent code
@@ -1933,7 +1945,7 @@ const uploadBannerImage = async () => {
 
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
     //image is created here into temp folder
-    let image_file_size = window.fs.fileSizeSync(imagePath)
+    let image_file_size = window.fs.fileSizeSync(imagePath);
 
     if (image_file_size < 5 * 1024 * 1024) {
       let selectedBfAccount = window.defaultBfAccount;
@@ -2684,7 +2696,9 @@ const handleSelectedSubmitDirectory = async (filepath) => {
 };
 
 $("#selected-local-dataset-submit").click(async () => {
-  let datasetDirectory = await window.electron.ipcRenderer.invoke("open-file-dialog-submit-dataset");
+  let datasetDirectory = await window.electron.ipcRenderer.invoke(
+    "open-file-dialog-submit-dataset"
+  );
   handleSelectedSubmitDirectory(datasetDirectory);
 });
 
@@ -2810,10 +2824,16 @@ $("#button-submit-dataset").click(async () => {
           } else if (totalFileSize < window.displaySIze * window.displaySIze) {
             totalSizePrint = (totalFileSize / window.displaySIze).toFixed(2) + " KB";
           } else if (totalFileSize < window.displaySIze * window.displaySIze * window.displaySIze) {
-            totalSizePrint = (totalFileSize / window.displaySIze / window.displaySIze).toFixed(2) + " MB";
+            totalSizePrint =
+              (totalFileSize / window.displaySIze / window.displaySIze).toFixed(2) + " MB";
           } else {
             totalSizePrint =
-              (totalFileSize / window.displaySIze / window.displaySIze / window.displaySIze).toFixed(2) + " GB";
+              (
+                totalFileSize /
+                window.displaySIze /
+                window.displaySIze /
+                window.displaySIze
+              ).toFixed(2) + " GB";
           }
 
           $("#para-please-wait-manage-dataset").html("");
@@ -2861,7 +2881,8 @@ $("#button-submit-dataset").click(async () => {
         window.electron.ipcRenderer.send(
           "track-event",
           "Error",
-          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+            ` - Progress track`,
           window.defaultBfDatasetId
         );
 
@@ -2975,7 +2996,8 @@ $("#button-submit-dataset").click(async () => {
         window.electron.ipcRenderer.send(
           "track-event",
           "Success",
-          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
+          window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+            ` - Progress track`,
           window.defaultBfDatasetId
         );
       }
@@ -3397,7 +3419,8 @@ $("#bf_list_dataset_status").on("change", async () => {
 
   let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
-  let selectedStatusOption = window.bfListDatasetStatus.options[window.bfListDatasetStatus.selectedIndex].text;
+  let selectedStatusOption =
+    window.bfListDatasetStatus.options[window.bfListDatasetStatus.selectedIndex].text;
 
   window.log.info(`Changing dataset status to ${selectedStatusOption}`);
 

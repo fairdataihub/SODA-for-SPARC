@@ -1165,8 +1165,9 @@ window.moveItems = async (ev, category) => {
     // remove manifest files for treeview
     if (
       "manifest.xlsx" in window.datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
-      window.datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"]["forTreeview"] ===
-        true
+      window.datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"][
+        "forTreeview"
+      ] === true
     ) {
       delete window.datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"];
     }

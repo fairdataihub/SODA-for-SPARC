@@ -1,14 +1,13 @@
 /**
  * Check if the user has a connected account with Pennsieve by checking the ini file.
  */
-import * as ini from "ini"
-
+import * as ini from "ini";
 
 const hasConnectedAccountWithPennsieve = () => {
   window.log.info("Checking if the user has a connected account with Pennsieve...");
 
   // get the path to home directory
-  const homeDir = window.os.homedir() 
+  const homeDir = window.os.homedir();
   const configFilePath = window.path.join(homeDir, ".pennsieve", "config.ini");
 
   if (!window.fs.existsSync(configFilePath)) {
@@ -23,8 +22,6 @@ const hasConnectedAccountWithPennsieve = () => {
   if (!globalProfile) {
     return false;
   }
-
-
 
   // check if default_profile has been set
   if (!globalProfile.default_profile) {
@@ -46,4 +43,4 @@ const hasConnectedAccountWithPennsieve = () => {
   return true;
 };
 
-export default hasConnectedAccountWithPennsieve
+export default hasConnectedAccountWithPennsieve;

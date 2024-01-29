@@ -1,42 +1,36 @@
 import { ipcMain, app } from "electron";
 import excel4node from "excel4node";
 import excelToJson from "convert-excel-to-json";
-import mv from "mv"
+import mv from "mv";
 
 ipcMain.handle("mv", (event, source, destination) => {
   mv(source, destination, function (err) {
     if (err) {
       console.log(err);
-      return err
+      return err;
     } else {
-      return "success"
+      return "success";
     }
   });
-
-})
+});
 
 ipcMain.handle("excelToJsonSheet1", (event, folderPath) => {
   let sheet = excelToJson({
     sourceFile: folderPath,
   })["Sheet1"];
 
-  return sheet
-})
+  return sheet;
+});
 
 ipcMain.handle("excelToJsonSheet1Options", (event, options) => {
-  let sheet = excelToJson(
-    options
-  )["Sheet1"];
+  let sheet = excelToJson(options)["Sheet1"];
 
-  return sheet
-})
-
-
+  return sheet;
+});
 
 ipcMain.handle("convertJSONToSxlsx", async (event, jsondata, excelfile) => {
   return await convertJSONToXlsx(jsondata, excelfile);
-})
-
+});
 
 const convertJSONToXlsx = async (jsondata, excelfile) => {
   const requiredManifestHeaders = [
@@ -84,23 +78,19 @@ const convertJSONToXlsx = async (jsondata, excelfile) => {
       styleObject = greenHeaderStyle;
     }
 
-    ws.cell(1, headingColumnIndex++)
-      .string(heading)
-      .style(styleObject);
+    ws.cell(1, headingColumnIndex++).string(heading).style(styleObject);
   });
   //Write Data in Excel file
   let rowIndex = 2;
   jsondata.forEach((record) => {
     let columnIndex = 1;
     Object.keys(record).forEach((columnName) => {
-      ws.cell(rowIndex, columnIndex++)
-        .string(record[columnName])
-        .style(standardCellStyle);
+      ws.cell(rowIndex, columnIndex++).string(record[columnName]).style(standardCellStyle);
     });
     rowIndex++;
   });
   wb.write(excelfile);
-}
+};
 
 const createWorkbookStyle = (wb, color) => {
   return wb.createStyle({

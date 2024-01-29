@@ -24,8 +24,8 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@v2
         with:
-          miniconda-version: 'latest'
-          activate-environment:  env-electron-python
+          miniconda-version: "latest"
+          activate-environment: env-electron-python
           environment-file: tools/anaconda-env/environment-Windows.yml
           auto-update-conda: true
           auto-activate-base: false
@@ -36,7 +36,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: '20.8.0'
+          node-version: "20.8.0"
 
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts

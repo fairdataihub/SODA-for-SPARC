@@ -1,14 +1,13 @@
 // Purpose: Logic for Organize Dataset Step 7: Validate Dataset
 import { v4 as uuid } from "uuid";
-import api from '../others/api/api'
+import api from "../others/api/api";
 import Swal from "sweetalert2";
-import {clientError, userErrorMessage} from "../others/http-error-handler/error-handler";
+import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 import kombuchaEnums from "../analytics/analytics-enums";
 
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
-
 
 // Validate the dataset that has just been organized in Organize Dataset Step 6: Validate Dataset
 // TODO: Pennsieve vs local considerations for result parsing and error handling
@@ -16,7 +15,6 @@ window.validateOrganizedDataset = async () => {
   let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
   let datasetOrigin = "";
   let datasetDestination = "";
-
 
   if (window.sodaJSONObj["starting-point"]["type"] == "bf") {
     datasetOrigin = "Pennsieve";
@@ -84,8 +82,6 @@ window.validateOrganizedDataset = async () => {
     await api.performUserActions(sodaJSONObjCopy);
   }
 
-
-
   // check size before doing this
   // situations:
   // 1. Local dataset -> count window.sodaJSONObj
@@ -95,13 +91,10 @@ window.validateOrganizedDataset = async () => {
   // NOTE: I do have to consider deleted files since they will not be included, but can ignore moved/renamed files since they will be included in the count
   // for now lets count then handle option 4 later
 
-
-
   // get the number of files and folders in the dataset that have been added in the virutal organizer
   let file_counter = 0;
   let folder_counter = 0;
   window.get_num_files_and_folders(sodaJSONObjCopy["dataset-structure"]);
-
 
   // check if the virutal files will be merged with a Pennsieve dataset
   if (
@@ -138,7 +131,6 @@ window.validateOrganizedDataset = async () => {
     }
     // TODO: Handle the case where a file replaces an online file
     file_counter += packageCount;
-
   }
 
   if (file_counter >= 50000) {
@@ -243,7 +235,6 @@ window.validateOrganizedDataset = async () => {
     return;
   }
 
-
   let SODADirectory = window.path.join(window.os.homedir(), "SODA");
   let validationReportPath = window.path.join(SODADirectory, "validation.txt");
   let fullReport = validationReport.full_report;
@@ -346,13 +337,13 @@ window.validateOrganizedDataset = async () => {
     .scrollIntoView({ behavior: "smooth" });
 };
 
-[...document.querySelectorAll(".validate-raw-report_btn")].forEach(viewRawReportBtn => {
+[...document.querySelectorAll(".validate-raw-report_btn")].forEach((viewRawReportBtn) => {
   viewRawReportBtn.addEventListener("click", async () => {
     // open the text file stored at the raw validation report path
     let pathToRawReport = window.path.join(window.os.homedir(), "SODA", "validation.txt");
     window.electron.ipcRenderer.invoke("shell-open-path", pathToRawReport);
-  })
-})
+  });
+});
 
 const displayValidationReportErrors = (validationReport, tableBody, validationErrorsContainer) => {
   // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)

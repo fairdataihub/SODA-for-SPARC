@@ -3,23 +3,21 @@ This file contains all of the functions related to the submission.xlsx file
 */
 import Swal from "sweetalert2";
 import lottie from "lottie-web";
-import 'fomantic-ui/dist/semantic';
+import "fomantic-ui/dist/semantic";
 import introJs from "intro.js";
-import {clientError, userErrorMessage} from '../others/http-error-handler/error-handler'
-import client from '../client'
+import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
+import client from "../client";
 import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
-import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils"
-import api from "../others/api/api"
-import {successCheck} from "../../assets/lotties/lotties"
-
-
+import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
+import api from "../others/api/api";
+import { successCheck } from "../../assets/lotties/lotties";
 
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-$('.ui.accordion').accordion();
+$(".ui.accordion").accordion();
 
 // List of funding consortiums taken from the 2.1 submission file
 window.sparcFundingConsortiums = ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"];
@@ -86,14 +84,12 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
-    progressSteps: ["1", "2"]
-  })
+    progressSteps: ["1", "2"],
+  });
 
-
-  await Queue.fire(      
-    {
-      title: "Select the milestones associated with this submission:",
-      html: `
+  await Queue.fire({
+    title: "Select the milestones associated with this submission:",
+    html: `
           <div class="scrollable-swal-content-container" id="milestone-selection-table-container">
             <table
                 class="ui celled striped table"
@@ -113,22 +109,21 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
         
           </div>
       `,
-      didOpen: () => {
-        renderMilestoneSelectionTable(milestoneRes);
-      },
-      preConfirm: () => {
-        const checkedMilestoneData = getCheckedMilestones();
-        checkedMilestoneData.length === 0
-          ? Swal.showValidationMessage("Please select at least one milestone")
-          : (milestoneData = checkedMilestoneData);
-      },
-      curentProgress: 0
-    })
-
+    didOpen: () => {
+      renderMilestoneSelectionTable(milestoneRes);
+    },
+    preConfirm: () => {
+      const checkedMilestoneData = getCheckedMilestones();
+      checkedMilestoneData.length === 0
+        ? Swal.showValidationMessage("Please select at least one milestone")
+        : (milestoneData = checkedMilestoneData);
+    },
+    curentProgress: 0,
+  });
 
   await Queue.fire({
     title: "Select the completion date associated with this submission:",
-      html: `
+    html: `
           <div class="scrollable-swal-content-container">
             <div class="justify-center">
               <div class="ui form">
@@ -141,53 +136,51 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
             </div>
           </div>
         `,
-      didOpen: () => {
-        // get a unique set of completionDates from checkedMilestoneData
-        const uniqueCompletionDates = Array.from(
-          new Set(milestoneData.map((milestone) => milestone.completionDate))
+    didOpen: () => {
+      // get a unique set of completionDates from checkedMilestoneData
+      const uniqueCompletionDates = Array.from(
+        new Set(milestoneData.map((milestone) => milestone.completionDate))
+      );
+
+      if (uniqueCompletionDates.length === 1) {
+        //save the completion date into sodaJSONObj
+        completionDate = uniqueCompletionDates[0];
+        // Add a radio button for the unique completion date
+        document.getElementById("guided-completion-date-container").innerHTML =
+          createCompletionDateRadioElement("completion-date", completionDate);
+        //check the completion date
+        document.querySelector(`input[name="completion-date"][value="${completionDate}"]`).checked =
+          true;
+      }
+
+      if (uniqueCompletionDates.length > 1) {
+        //filter value 'N/A' from uniqueCompletionDates
+        const filteredUniqueCompletionDates = uniqueCompletionDates.filter(
+          (date) => date !== "N/A"
         );
 
-        if (uniqueCompletionDates.length === 1) {
-          //save the completion date into sodaJSONObj
-          completionDate = uniqueCompletionDates[0];
-          // Add a radio button for the unique completion date
-          document.getElementById("guided-completion-date-container").innerHTML =
-            createCompletionDateRadioElement("completion-date", completionDate);
-          //check the completion date
-          document.querySelector(
-            `input[name="completion-date"][value="${completionDate}"]`
-          ).checked = true;
-        }
-
-        if (uniqueCompletionDates.length > 1) {
-          //filter value 'N/A' from uniqueCompletionDates
-          const filteredUniqueCompletionDates = uniqueCompletionDates.filter(
-            (date) => date !== "N/A"
-          );
-
-          //create a radio button for each unique date
-          const completionDateCheckMarks = filteredUniqueCompletionDates
-            .map((completionDate) => {
-              return createCompletionDateRadioElement("completion-date", completionDate);
-            })
-            .join("\n");
-          document.getElementById("guided-completion-date-container").innerHTML =
-            completionDateCheckMarks;
-        }
-      },
-      preConfirm: () => {
-        const selectedCompletionDate = document.querySelector(
-          "input[name='completion-date']:checked"
-        );
-        if (!selectedCompletionDate) {
-          Swal.showValidationMessage("Please select a completion date");
-        } else {
-          completionDate = selectedCompletionDate.value;
-        }
-      },
-      currentProgressStep: 1
-  })
-
+        //create a radio button for each unique date
+        const completionDateCheckMarks = filteredUniqueCompletionDates
+          .map((completionDate) => {
+            return createCompletionDateRadioElement("completion-date", completionDate);
+          })
+          .join("\n");
+        document.getElementById("guided-completion-date-container").innerHTML =
+          completionDateCheckMarks;
+      }
+    },
+    preConfirm: () => {
+      const selectedCompletionDate = document.querySelector(
+        "input[name='completion-date']:checked"
+      );
+      if (!selectedCompletionDate) {
+        Swal.showValidationMessage("Please select a completion date");
+      } else {
+        completionDate = selectedCompletionDate.value;
+      }
+    },
+    currentProgressStep: 1,
+  });
 
   if (milestoneData && completionDate) {
     // Fill the SPARC award input with the imported SPARC award if it was found (otherwise it will be an empty string)
@@ -522,7 +515,7 @@ window.validateSubmissionFileInputs = () => {
 
   // If all the above checks pass, then return true
   return true;
-}
+};
 
 // Set the funding consortium dropdown options / set up select picker
 document.getElementById("ffm-select-sparc-funding-consortium").innerHTML = `
@@ -617,20 +610,23 @@ $(document).ready(function () {
     }
   });
   // generate submission file
-  window.electron.ipcRenderer.on("selected-destination-generate-submission-locally", (event, dirpath) => {
-    if (dirpath.length > 0) {
-      document.getElementById("input-destination-generate-submission-locally").placeholder =
-        dirpath[0];
-      var destinationPath = window.path.join(dirpath[0], "submission.xlsx");
-      submissionDestinationPath = destinationPath;
-      $("#div-confirm-destination-submission-locally").css("display", "flex");
-      $($("#div-confirm-destination-submission-locally").children()[0]).css("display", "flex");
-    } else {
-      document.getElementById("input-destination-generate-submission-locally").placeholder =
-        "Browse here";
-      $("#div-confirm-destination-submission-locally").css("display", "none");
+  window.electron.ipcRenderer.on(
+    "selected-destination-generate-submission-locally",
+    (event, dirpath) => {
+      if (dirpath.length > 0) {
+        document.getElementById("input-destination-generate-submission-locally").placeholder =
+          dirpath[0];
+        var destinationPath = window.path.join(dirpath[0], "submission.xlsx");
+        submissionDestinationPath = destinationPath;
+        $("#div-confirm-destination-submission-locally").css("display", "flex");
+        $($("#div-confirm-destination-submission-locally").children()[0]).css("display", "flex");
+      } else {
+        document.getElementById("input-destination-generate-submission-locally").placeholder =
+          "Browse here";
+        $("#div-confirm-destination-submission-locally").css("display", "none");
+      }
     }
-  });
+  );
 
   $("#bf_dataset_load_submission").on("DOMSubtreeModified", function () {
     if (
@@ -694,7 +690,7 @@ const checkStorage = async (id) => {
     // stop execution to avoid logging a success case for the storage space check
     return;
   }
-  
+
   window.electron.ipcRenderer.send(
     "track-event",
     "Success",
@@ -883,7 +879,7 @@ window.generateSubmissionHelper = async (uploadBFBoolean) => {
     }
   }
 
-  let res; 
+  let res;
   try {
     res = await client.post(
       `/prepare_metadata/submission_file`,
@@ -894,7 +890,7 @@ window.generateSubmissionHelper = async (uploadBFBoolean) => {
       },
       {
         params: {
-          selected_account: window.defaultBfAccount,
+          selected_account: window.defaultBfAccount || "",
           selected_dataset: datasetName,
         },
       }

@@ -1,17 +1,16 @@
 // Purpose: The front end logic for the Validate Dataset section
 import { v4 as uuid } from "uuid";
 import Swal from "sweetalert2";
-import { handleAxiosValidationErrors } from "./axios-validator-utility"
+import { handleAxiosValidationErrors } from "./axios-validator-utility";
 import { translatePipelineError } from "./parse-pipeline-errors";
-import client from '../client'
-import {clientError, userErrorMessage} from "../others/http-error-handler/error-handler"
-import kombuchaEnums from "../analytics/analytics-enums"
-import api from '../others/api/api'
+import client from "../client";
+import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
+import kombuchaEnums from "../analytics/analytics-enums";
+import api from "../others/api/api";
 
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  await new Promise((resolve) => setTimeout(resolve, 100));
 }
-
 
 /*
 *******************************************************************************************************************
@@ -95,9 +94,8 @@ window.pollForValidationResults = async (clientUUID) => {
 };
 
 const validateLocalDataset = async () => {
-
-  let file_counter = 0 
-  let folder_counter = 0
+  let file_counter = 0;
+  let folder_counter = 0;
   // grab the local dataset path from the input's placeholder attribute
   let datasetPath = document.querySelector("#validate-local-dataset-path").value;
 
@@ -356,8 +354,8 @@ const validatePennsieveDatasetStandAlone = async () => {
   // get the dataset name from the dataset selection card
   let datasetName = document.querySelector("#bf_dataset_load_validator").textContent;
 
-  let file_counter = 0
-  let folder_counter = 0
+  let file_counter = 0;
+  let folder_counter = 0;
 
   Swal.fire({
     title: `Validating your dataset`,
@@ -881,42 +879,45 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
   window.electron.ipcRenderer.send("open-folder-dialog-validate-local-dataset");
 
   // listen for user's folder path
-  window.electron.ipcRenderer.on("selected-validate-local-dataset", async (evtSender, folderPaths) => {
-    // check if a folder was not selected
-    if (!folderPaths.length) {
-      return;
+  window.electron.ipcRenderer.on(
+    "selected-validate-local-dataset",
+    async (evtSender, folderPaths) => {
+      // check if a folder was not selected
+      if (!folderPaths.length) {
+        return;
+      }
+
+      // remove prev from the question's class list
+      document.querySelector("#validate_dataset-question-2").classList.remove("prev");
+
+      // get the folder path
+      let folderPath = folderPaths[0];
+
+      // get the clicked input
+      let validationPathInput = evt.target;
+
+      // set the input's placeholder value to the local dataset path
+      validationPathInput.value = folderPath;
+
+      hideQuestionThreeLocal();
+
+      document.querySelector("#run_validator_btn").style.display = "flex";
+
+      window.transitionFreeFormMode(
+        document.querySelector("#validate_dataset-question-2"),
+        "validate_dataset-question-2",
+        "validate_dataset-tab",
+        "",
+        "individual-question validate_dataset"
+      );
+
+      showQuestionThreeLocal();
+
+      document.querySelector("#div-confirm-validate_dataset").scrollIntoView();
+
+      // showConfirmButton();
     }
-
-    // remove prev from the question's class list
-    document.querySelector("#validate_dataset-question-2").classList.remove("prev");
-
-    // get the folder path
-    let folderPath = folderPaths[0];
-
-    // get the clicked input
-    let validationPathInput = evt.target;
-
-    // set the input's placeholder value to the local dataset path
-    validationPathInput.value = folderPath;
-
-    hideQuestionThreeLocal();
-
-    document.querySelector("#run_validator_btn").style.display = "flex";
-
-    window.transitionFreeFormMode(
-      document.querySelector("#validate_dataset-question-2"),
-      "validate_dataset-question-2",
-      "validate_dataset-tab",
-      "",
-      "individual-question validate_dataset"
-    );
-
-    showQuestionThreeLocal();
-
-    document.querySelector("#div-confirm-validate_dataset").scrollIntoView();
-
-    // showConfirmButton();
-  });
+  );
 });
 
 // start dataset validation
