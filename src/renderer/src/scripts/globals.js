@@ -4,7 +4,7 @@ import DragSort from '@yaireo/dragsort'
 
 
 import api from './others/api/api'
-import {clientError, userErrorMessage} from './others/http-error-handler/error-handler'
+import {clientError, userErrorMessage, defaultProfileMatchesCurrentWorkspace} from './others/http-error-handler/error-handler'
 import client from './client'
 import {swalShowError} from './utils/swal-utils'
 // import { window.clearValidationResults } from './validator/validate'
@@ -920,7 +920,7 @@ window.resetFFMUI = (ev) => {
   $('#para-review-dataset-info-disseminate').text('None')
 }
 
-const addBfAccount = async (ev, verifyingOrganization = False) => {
+window.addBfAccount = async (ev, verifyingOrganization = False) => {
   var resolveMessage = "";
   let footerMessage = "No existing accounts to load. Please add an account.";
   if (bfAccountOptionsStatus === "") {
@@ -1043,7 +1043,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       confirmButtonTextValue = "Grant Access";
     }
 
-    let result = await Swal.fire({
+    let { value: result } = await Swal.fire({
       allowOutsideClick: false,
       backdrop: "rgba(0,0,0, 0.4)",
       cancelButtonText: "Cancel",
@@ -1062,9 +1062,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       hideClass: {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
-
       footer: footerText,
-
       didOpen: () => {
         $(".swal-popover").popover();
         let div_footer = document.getElementsByClassName("swal2-footer")[0];
@@ -1112,9 +1110,31 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           Swal.hideLoading();
           Swal.showValidationMessage(`Please enter email and password`);
           return;
-        } else {
-          let key_name = SODA_SPARC_API_KEY;
-          let response = await get_api_key(login, password, key_name);
+        }
+
+        // rationale: specifies the machine and the username so when creating new API Keys we can safely do so without
+        //            obsoleting (aka deleting) ones that already exist for separate machine/profile combinations in the
+        //            user's Pennsieve profile.
+        // TODO: Update to new conventions
+        let machineUsernameSpecifier = await window.electron.ipcRenderer.invoke("get-nodestorage-item", window.os.userInfo().username);
+
+        // create the profile name for the user
+        let profileResponse = await api.createProfileName(
+          login,
+          password,
+          machineUsernameSpecifier
+        );
+
+        // attempt to set the profile name as the default profile
+        try {
+          await api.setDefaultProfile(profileResponse);
+          window.defaultBfAccount = profileResponse.toLowerCase();
+          return true;
+        } catch (e) {
+          console.log("Failed to set the default profile name for the user");
+          // if it fails create a new profile key
+          let response = await window.create_api_key_and_secret(login, password, machineUsernameSpecifier);
+          console.log("Respose from api key creation: ", response);
           if (response[0] == "failed") {
             let error_message = response[1];
             if (response[1]["message"] === "exceptions must derive from BaseException") {
@@ -1137,36 +1157,117 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       },
     });
 
-    if (result.isConfirmed) {
-      let titleText = "Adding account...";
+    // failed to create a new profile and did not set the default profile to a previously existing one
+    if (!result) return;
+
+    console.log("Value from preconfirm: ", result);
+
+    titleText = "Adding account...";
+    if (verifyingOrganization) {
+      titleText = "Loading workspace details...";
+    }
+
+    console.log("Loading account...");
+    Swal.fire({
+      allowEscapeKey: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      showConfirmButton: false,
+      title: titleText,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    if (result === true) {
+      window.defaultBfDataset = "Select dataset";
+      try {
+        let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
+          params: {
+            selected_account: window.defaultBfAccount,
+          },
+        });
+        // reset the dataset field values
+        $("#current-bf-dataset").text("None");
+        $("#current-bf-dataset-generate").text("None");
+        $(".bf-dataset-span").html("None");
+        $("#para-continue-bf-dataset-getting-started").text("");
+
+        // set the workspace field values to the user's current workspace
+        let org = bf_account_details_req.data.organization;
+        $(".bf-organization-span").text(org);
+
+        showHideDropdownButtons("account", "show");
+        confirm_click_account_function();
+        updateBfAccountList();
+
+        // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
+        // then reset the guided mode page
+        if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
+          // Get the current page that the user is on in the guided mode
+          const currentPage = CURRENT_PAGE.id;
+          if (currentPage) {
+            await openPage(currentPage);
+          }
+        }
+      } catch (error) {
+        clientError(error);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          text: "Something went wrong!",
+          footer:
+            '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+        });
+        showHideDropdownButtons("account", "hide");
+        confirm_click_account_function();
+      }
+
+      datasetList = [];
+      defaultBfDataset = null;
+      clearDatasetDropdowns();
+
+      titleText = "Successfully added! <br/>Loading your account details...";
       if (verifyingOrganization) {
-        titleText = "Loading workspace details...";
+        titleText = "Workspace details loaded!";
       }
       Swal.fire({
         allowEscapeKey: false,
-        backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "success",
         showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
         title: titleText,
         didOpen: () => {
           Swal.showLoading();
         },
       });
-      let key_name = result.value.name;
-      let apiKey = result.value.key;
-      let apiSecret = result.value.secret;
+    } else {
+      let key_name = result.name;
+      let apiKey = result.key;
+      let apiSecret = result.secret;
 
       // lowercase the key_name the user provided
       // this is to prevent an issue caused by the pennsiev agent
       // wherein it fails to validate an account if it is not lowercase
       key_name = key_name.toLowerCase();
       //needs to be replaced
+      console.log("About to add the api key information to the backend config.ini");
       try {
         await client.put(`/manage_datasets/account/username`, {
           keyname: key_name,
           key: apiKey,
           secret: apiSecret,
         });
+      } catch (error) {
+        clientError(error);
+        Swal.showValidationMessage(userErrorMessage(error));
+        Swal.close();
+        return;
+      }
 
         // set the user's email to be the window.defaultBfDataset value
         bfAccountOptions[key_name] = key_name;
@@ -1216,32 +1317,27 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           confirm_click_account_function();
         }
 
-        window.datasetList = [];
-        window.defaultBfDataset = null;
-        window.clearDatasetDropdowns();
+    window.datasetList = [];
+    window.defaultBfDataset = null;
+    window.clearDatasetDropdowns();
 
-        let titleText = "Successfully added! <br/>Loading your account details...";
-        if (verifyingOrganization) {
-          titleText = "Workspace details loaded!";
-        }
-        Swal.fire({
-          allowEscapeKey: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          title: titleText,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
-      } catch (error) {
-        clientError(error);
-        Swal.showValidationMessage(userErrorMessage(error));
-        Swal.close();
+      titleText = "Successfully added! <br/>Loading your account details...";
+      if (verifyingOrganization) {
+        titleText = "Workspace details loaded!";
       }
+      Swal.fire({
+        allowEscapeKey: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        title: titleText,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
     }
   }
 };
@@ -1250,7 +1346,7 @@ var dropdownEventID = ''
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
   if (dropdown === "bf") {
-    await addBfAccount(ev, false);
+    await window.addBfAccount(ev, false);
   } else if (dropdown === "dataset") {
     dropdownEventID = ev?.id ?? "";
 
@@ -1310,7 +1406,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         accountPresent = false;
       }
 
-      if (accountPresent === false) {
+      if (!accountPresent) {
         //If there is no API key pair, warning will pop up allowing user to sign in
         await Swal.fire({
           icon: "warning",
@@ -1329,7 +1425,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           },
         }).then(async (result) => {
           if (result.isConfirmed) {
-            await window.openDropdownPrompt(this, "bf");
+            await window.openDropdownPrompt(ev, "bf");
             $(".ui.active.green.inline.loader.small").css("display", "none");
             $(".svg-change-current-account.dataset").css("display", "block");
           } else {
@@ -1345,30 +1441,39 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           1
         );
       } else {
-        //account is signed in but no datasets have been fetched or created
-        //invoke dataset request to ensure no datasets have been created
-        if (window.datasetList.length === 0) {
-          let responseObject;
-          try {
-            responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-              params: {
-                selected_account: window.defaultBfAccount,
-              },
-            });
-          } catch (error) {
-            const emessage = userErrorMessage(error);
+        // there is an account; but check check that the valid api key in the default profile is for the user's current workspace
+        // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
+        //           under the default profile does not mean that key is associated with the user's current workspace.
+        let matching = await defaultProfileMatchesCurrentWorkspace();
+        if (!matching) {
+          log.info("Default api key is for a different workspace");
+          await switchToCurrentWorkspace();
+        }
+      }
+
+      //account is signed in but no datasets have been fetched or created
+      //invoke dataset request to ensure no datasets have been created
+      if (window.datasetList.length === 0) {
+        let responseObject;
+        try {
+          responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+            params: {
+              selected_account: window.defaultBfAccount,
+            },
+          });
+        } catch (error) {
+          const emessage = userErrorMessage(error);
             await swalShowError("Failed to fetch datasets from Pennsieve", emessage);
             // Reset the dataset select UI
             $(".ui.active.green.inline.loader.small").css("display", "none");
             $(".svg-change-current-account.dataset").css("display", "block");
-            return;
-          }
-
-          let result = responseObject.data.datasets;
-          window.datasetList = [];
-          window.datasetList = result;
-          window.refreshDatasetList();
+          return;
         }
+
+        let result = responseObject.data.datasets;
+        window.datasetList = [];
+        window.datasetList = result;
+        window.refreshDatasetList();
       }
 
       //after request check length again
@@ -1932,7 +2037,13 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
           try {
             let organizationId = window.organizationNameToIdMapping[window.bfOrganization];
-            await api.setPreferredOrganization(login, password, organizationId, "soda-pennsieve");
+            let machineUsernameSpecifier = await window.electron.ipcRenderer.invoke("get-nodestorage-item", window.os.userInfo().username)
+            await api.setPreferredOrganization(
+              login,
+              password,
+              organizationId,
+              machineUsernameSpecifier
+            );
           } catch (err) {
             clientError(err);
             await Swal.fire({

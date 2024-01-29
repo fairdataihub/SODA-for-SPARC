@@ -1,7 +1,7 @@
 from flask_restx import Resource, reqparse
 from namespaces import get_namespace, NamespaceEnum
 
-from users import integrate_orcid_with_pennsieve, get_user, set_preferred_organization, get_user_organizations
+from users import integrate_orcid_with_pennsieve, get_user, set_preferred_organization, get_user_organizations, create_profile_name, set_default_profile
 
 api = get_namespace(NamespaceEnum.USER)
 
@@ -28,7 +28,15 @@ class Orcid(Resource):
               api.abort(500, str(e))
 
 
+@api.route("/profile_name")
+class ProfileName(Resource):
 
+    @api.doc(response={200: "Success", 400: "Bad Request", 500: "Internal Server Error"}, description="Create a unqiuely idenfitifable profile name for a user. This is used in the config.ini file to associate Pennsieve API Keys with a user and their selected workspace.")
+    def post(self):
+        try:
+            return create_profile_name()
+        except Exception as e:
+            api.abort(500, str(e))
 
 
 @api.route('/')
@@ -47,14 +55,54 @@ class User(Resource):
         data = self.parser.parse_args()
 
 
+
+
+
+
+@api.route('/default_profile')
+class DefaultProfile(Resource):
+    parser = reqparse.RequestParser(bundle_errors=True)
+    parser.add_argument("target_profile", type=str, required=True, help="The name of the profile to set as default", location="json")
+
+
+    def put(self):
+        data = self.parser.parse_args()
+        profile_name = data.get("target_profile")
+
+        try:
+            return set_default_profile(profile_name)
+        except Exception as e:
+            api.abort(500, str(e))
+
+
+
+    post_parser = reqparse.RequestParser(bundle_errors=True)
+    post_parser.add_argument("email", type=str, required=True, help="The name of the profile to set as default", location="json")
+    post_parser.add_argument("password", type=str, required=True, help="The name of the profile to set as default", location="json")
+    post_parser.add_argument("machineUsernameSpecifier", type=str, required=True, help="The specifier for the machine and username combination")
+    def post(self):
+        data = self.post_parser.parse_args()
+        email = data.get("email")
+        password = data.get("password")
+        machineUsernameSpecifier = data.get("machineUsernameSpecifier")
+
+        try:
+            return create_profile_name(machineUsernameSpecifier, email, password)
+        except Exception as e:
+            api.abort(500, str(e))
+
+
+
+
+
+
 @api.route('/organizations/preferred')
 class PreferredOrganization(Resource):
     parser = reqparse.RequestParser(bundle_errors=True)
     parser.add_argument("organization_id", type=str, required=True, help="The id for the users perferred organization", location="json")
     parser.add_argument("email", type=str, required=True, help="The users Pennsieve email", location="json")
     parser.add_argument("password", type=str, required=True, help="The users Pennsieve password", location="json")
-    parser.add_argument("account", type=str, required=True, help="The users account name", location="json")
-
+    parser.add_argument("machine_username_specifier", type=str, required=True, help="The users Pennsieve machine username specifier", location="json")
     
 
     def put(self):
@@ -62,13 +110,17 @@ class PreferredOrganization(Resource):
         organization = data.get("organization_id")
         email = data.get("email")
         password = data.get("password")
-        account = data.get("account")
+        machine_username_specifier = data.get("machine_username_specifier")
 
 
         try:
-            return set_preferred_organization(organization, email, password, account)
+            return set_preferred_organization(organization, email, password, machine_username_specifier)
         except Exception as e:
             api.abort(500, str(e))
+
+
+
+
 
 
 @api.route('/organizations')

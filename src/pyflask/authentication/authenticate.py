@@ -10,19 +10,30 @@ import time
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.USER)
 
+from profileUtils import create_unique_profile_name
+
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
 PENNSIEVE_URL = "https://api.pennsieve.io"
+
+# Variables for token caching
+
+cached_access_token = None
+last_fetch_time = 0
+TOKEN_CACHE_DURATION = 60 # Amount of time in seconds to cache the access token
 
 # Variables for token caching
 cached_access_token = None
 last_fetch_time = 0
 TOKEN_CACHE_DURATION = 60 # Amount of time in seconds to cache the access token
 
-def get_access_token():
+from namespaces import NamespaceEnum, get_namespace_logger
+
+
+def get_access_token(api_key=None, api_secret=None):
     """
         Creates a temporary access token for utilizing the Pennsieve API. Reads the api token and secret from the Pennsieve config.ini file.
-        get cognito config 
+        get cognito config . If no target profile name is provided the default profile is used. 
     """
     global cached_access_token, last_fetch_time, TOKEN_CACHE_DURATION # Variables used for token caching
     global namespace_logger
@@ -35,7 +46,6 @@ def get_access_token():
     r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
     r.raise_for_status()
 
-
     cognito_app_client_id = r.json()["tokenPool"]["appClientId"]
     cognito_region_name = r.json()["region"]
 
@@ -46,11 +56,18 @@ def get_access_token():
         aws_secret_access_key="",
     )
 
+    # use the default profile values for auth if no api_key or api_secret is provided
+    if api_key is None or api_secret is None:
+        api_key = get_profile_name_from_api_key("api_token")
+        api_secret = get_profile_name_from_api_key("api_secret")
+
+
+
 
     login_response = cognito_idp_client.initiate_auth(
-        AuthFlow="USER_PASSWORD_AUTH",
-        AuthParameters={"USERNAME": get_profile_name_from_api_key("api_token"), "PASSWORD": get_profile_name_from_api_key("api_secret")},
-        ClientId=cognito_app_client_id,
+    AuthFlow="USER_PASSWORD_AUTH",
+    AuthParameters={"USERNAME": api_key, "PASSWORD": api_secret},
+    ClientId=cognito_app_client_id,
     )
 
     cached_access_token = login_response["AuthenticationResult"]["AccessToken"]
@@ -146,42 +163,6 @@ def bf_delete_default_profile():
         config.write(configfile)
 
 
-def create_unique_profile_name(token, email, account_name):
-    try:
-        # get the users email
-        PENNSIEVE_URL = "https://api.pennsieve.io"
-
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {token}",
-        }
-
-
-        r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)    
-        r.raise_for_status()    
-
-        user_info = r.json()
-
-        # create a substring of the start of the email to the @ symbol
-        email_sub = email.split("@")[0]
-
-        organization_id = user_info["preferredOrganization"]
-
-        # get the organizations this user account has access to 
-        r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=headers)
-        r.raise_for_status()
-
-        organizations = r.json()
-
-        organization = None
-        for org in organizations["organizations"]:
-            if org["organization"]["id"] == organization_id:
-                organization = org["organization"]["name"]
-
-        # create an updated profile name that is unqiue to the user and their workspace 
-        return format_agent_profile_name(f"{account_name}-{email_sub}-{organization}")
-    except Exception as e:
-        raise e
 
 
 def bf_add_account_username(keyname, key, secret):
@@ -196,6 +177,7 @@ def bf_add_account_username(keyname, key, secret):
         Adds account to the Pennsieve configuration file (local machine)
     """
     global namespace_logger
+
 
     # format the keyname to lowercase and replace '.' with '_'
     formatted_account_name = format_agent_profile_name(keyname)
@@ -287,36 +269,39 @@ def delete_duplicate_keys(token, keyname):
         raise e
 
 
-def get_pennsieve_api_key_secret(email, password, keyname):
+def create_pennsieve_api_key_secret(email, password, machine_username_specifier):
 
     api_key = get_cognito_userpool_access_token(email, password)
-    
-    try:
-        delete_duplicate_keys(api_key, keyname)
 
-        url = "https://api.pennsieve.io/token/"
+    # TODO: Send in computer and profile of computer from frontend to this endpoint and use it in this function
+    profile_name = create_unique_profile_name(api_key, machine_username_specifier)
 
-        payload = {"name": f"{keyname}"}
-        headers = {
-            "Accept": "*/*",
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}",
-        }
 
-        response = requests.request("POST", url, json=payload, headers=headers)
-        response.raise_for_status()
-        response = response.json()
+    delete_duplicate_keys(api_key, "SODA-Pennsieve")
+    delete_duplicate_keys(api_key, profile_name)
 
-        profile_name = create_unique_profile_name(api_key, email, keyname)
 
-        # clear access token cache
-        clear_cached_access_token()
+    url = "https://api.pennsieve.io/token/"
 
-        return { 
-            "success": "success", 
-            "key": response["key"], 
-            "secret": response["secret"], 
-            "name": profile_name
-        }
-    except Exception as e:
-        raise e
+    payload = {"name": f"{profile_name}"}
+    headers = {
+        "Accept": "*/*",
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}",
+    }
+
+    response = requests.request("POST", url, json=payload, headers=headers)
+    response.raise_for_status()
+    response = response.json()
+
+
+    # clear access token cache
+    clear_cached_access_token()
+
+    return { 
+        "success": "success", 
+        "key": response["key"], 
+        "secret": response["secret"], 
+        "name": profile_name
+    }
+

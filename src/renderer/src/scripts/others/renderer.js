@@ -11,6 +11,7 @@ import * as path from "path";
 import Editor from "@toast-ui/editor";
 // const remote = require("@electron/remote");
 import { Notyf } from "notyf";
+import { v4 as uuidv4 } from "uuid";
 import Tagify from "@yaireo/tagify/dist/tagify.esm";
 // const https = require("https");
 // const electron = require("electron");
@@ -45,7 +46,7 @@ import {
 } from "../analytics/curation-analytics";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
-import { clientError, userErrorMessage } from "./http-error-handler/error-handler";
+import { clientError, userErrorMessage, defaultProfileMatchesCurrentWorkspace } from "./http-error-handler/error-handler";
 import hasConnectedAccountWithPennsieve from "./authentication/auth";
 import api from "./api/api";
 import {
@@ -404,29 +405,52 @@ const startupServerAndApiCheck = async () => {
   if (launchAnnouncement) {
     await checkForAnnouncements("announcements");
     launchAnnouncement = false;
-    window.electron.ipcRenderer.invoke("set-nodestorage-key", "announcements", false);
+    nodeStorage.setItem("announcements", false);
   }
 
-  // get apps base path
-  const basepath = await window.electron.ipcRenderer.invoke("get-app-path", undefined);
-  const resourcesPath = window.process.resourcesPath();
-
+  apiVersionChecked = true;
 
   // set the templates path
-  try {
-    await client.put("prepare_metadata/template_paths", {
-      basepath: basepath,
-      resourcesPath: resourcesPath,
-    });
-  } catch (error) {
-    clientError(error);
+  // TODO: Convert to new conventions. Still needed?
+  // try {
+  //   await client.put("prepare_metadata/template_paths", {
+  //     basepath: basepath,
+  //     resourcesPath: resourcesPath,
+  //   });
+  // } catch (error) {
+  //   clientError(error);
 
-    window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");
+  //   // window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");
+  //   return;
+  // }
+  
+    // window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+
+
+};
+startupServerAndApiCheck().then(async () => {
+  // get the current user profile name using electron
+  const {username} = window.os.userInfo()
+
+  let usernameExists = await window.electron.ipcRenderer.invoke("get-nodestorage-item", username)
+
+  // check if a shortened uuid exists in local storage
+  if (usernameExists) {
     return;
   }
 
-  window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
-};
+  // generate a UUID
+  const uuid = uuidv4();
+
+  // get the first 4 characters of the UUID
+  const uuidShort = uuid.substring(0, 4);
+
+  // store the shortened uuid in local storage
+  // RATIONALE: this is used as a prefix that is unique per each client machine + profile name combination
+  await window.electron.ipcRenderer.invoke("set-nodestorage-key", username, uuidShort)
+  
+});
+
 
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
@@ -497,6 +521,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
       preFlightCheckNotyf = window.notyf.open({
         duration: 25000,
         type: "info",
+        duration: "15000",
         message: "Checking SODA's connection to Pennsieve...",
       });
     }
@@ -509,10 +534,11 @@ window.run_pre_flight_checks = async (check_update = true) => {
       );
     }
 
-    // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
+    // Check for an API key pair in the default profile and ensure it is not obsolete.
+    // NOTE: Calling the agent startup command without a profile setup in the config.ini file causes it to crash.
     const account_present = await window.check_api_key();
 
-    // TODO: Reimplement this section to work with the new agent
+    // Add a new api key and secret for validating the user's account in the current workspace.
     if (!account_present) {
       // Dismiss the preflight check notification if it is still open
       if (preFlightCheckNotyf) {
@@ -544,10 +570,20 @@ window.run_pre_flight_checks = async (check_update = true) => {
 
       // If user chose to log in, open the dropdown prompt
       if (userChoseToLogIn) {
-        await window.openDropdownPrompt(null, "bf");
+        await window.addBfAccount(null, false);
       } else {
         return false;
       }
+
+    // check that the valid api key in the default profile is for the user's current workspace
+    // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
+    //           under the default profile does not mean that key is associated with the user's current workspace.
+    let matching = await defaultProfileMatchesCurrentWorkspace();
+    if (!matching) {
+      log.info("Default api key is for a different workspace");
+      await switchToCurrentWorkspace();
+      return false;
+    }
     }
 
     // check if the Pennsieve agent is installed [ here ]
@@ -682,7 +718,6 @@ window.run_pre_flight_checks = async (check_update = true) => {
         }
 
         // wait for the Agent to stop using the db files so they may be deleted
-        // TODO: Convert to new conventions
         await wait(1000);
         // delete any db files that exist
         if (window.fs.existsSync(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db`))
@@ -868,7 +903,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
     } catch (err) {
       clientError(err);
       if (err.response.status) {
-        await addBfAccount(null, true);
+        await window.addBfAccount(null, true);
       }
     }
 
@@ -893,6 +928,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
     // All pre flight checks passed, return true
     return true;
   } catch (error) {
+    clientError(error);
     // Dismiss the preflight check notification if it is still open
     if (preFlightCheckNotyf) {
       window.notyf.dismiss(preFlightCheckNotyf);
@@ -1083,6 +1119,8 @@ window.check_api_key = async () => {
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
   } catch (e) {
+    log.info("Current default profile API Key is obsolete");
+    clientError(e);
     window.notyf.dismiss(notification);
     window.notyf.open({
       type: "error",
@@ -1092,16 +1130,20 @@ window.check_api_key = async () => {
   }
 
   let res = responseObject.data["accounts"];
-  window.log.info("Found a set of valid API keys");
+
   if (res[0] === "Select" && res.length === 1) {
+    log.info("No api keys found");
     //no api key found
     window.notyf.dismiss(notification);
     window.notyf.open({
       type: "error",
       message: "No account was found",
     });
+    console.log("Failed here");
     return false;
   } else {
+    log.info("Found non obsolete api key in default profile");
+
     window.notyf.dismiss(notification);
     window.notyf.open({
       type: "success",
@@ -3974,6 +4016,7 @@ window.loadDefaultAccount = async () => {
   let accounts = responseObject.data["defaultAccounts"];
 
   if (accounts.length > 0) {
+    // TODO: Look into if this can be at times wrong?  If so this may be why they are having passing the teams authrization check but successfully retrieving the default account and user information.
     let myitemselect = accounts[0];
     // keep the window.defaultBfAccount value as the user's profile config key value for reference later
     window.defaultBfAccount = myitemselect;
@@ -3981,6 +4024,11 @@ window.loadDefaultAccount = async () => {
     // fetch the user's email and set that as the account field's value
     let userInformation = await api.getUserInformation();
     let userEmail = userInformation.email;
+
+    log.info(`Loading default account user organization: ${userInformation.preferredOrganization}`);
+    log.info(`Loading default account user default profile is: ${defaultBfAccount}`);
+
+    // remove the N:organization from the account name
 
     $("#current-bf-account").text(userEmail);
     $("#current-bf-account-generate").text(userEmail);
@@ -9173,7 +9221,6 @@ window.gatherLogs = () => {
  * purged.
  */
 window.displayClientId = async () => {
-  // TODO: Convert to new conventions
   let clientId = await window.electron.ipcRenderer.invoke("get-nodestorage-key", "userId");
 
   const copyClientIdToClipboard = () => {
