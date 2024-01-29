@@ -1,7 +1,9 @@
 {
   "13.1.0": {
     "announcements": {
-      "bug-fixes": ["Fixed an issue preventing users that are not signed in with a Pennsieve account from generating metadata files locally in Free Form Mode."],
+      "bug-fixes": [
+        "Fixed an issue preventing users that are not signed in with a Pennsieve account from generating metadata files locally in Free Form Mode."
+      ],
       "features": [
         "Users can generate datasets locally in Guided Mode without having to sign in with a Pennsieve account.",
         "Switching workspaces resets Free Form Mode UI to its default state. This eases the process of selecting a dataset from the new workspace to begin working on."
