@@ -30,13 +30,13 @@ jobs:
           auto-update-conda: true
           auto-activate-base: false
       - run: |
-          conda activate env-electron-python
+          conda activate  env-electron-python
           conda info
           conda list
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "18.14.0"
+          node-version: "18.16.0"
 
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
@@ -45,10 +45,6 @@ jobs:
         with:
           p12-file-base64: ${{ secrets.MACOS_CERTIFICATE }}
           p12-password: ${{ secrets.MACOS_CERTIFICATE_PWD }}
-
-      - name: Build the python server executable
-        run: |
-          npm run python-onefile-build-unix
 
       - name: Deploy the app to GitHub
         env:

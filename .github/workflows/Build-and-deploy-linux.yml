@@ -1,5 +1,5 @@
 name: Build-and-deploy-linux
-run-name: ${{ github.actor }} is building a linux release for SODA - should work
+run-name: ${{ github.actor }} is building a linux release for SODA
 
 on:
   push:
@@ -36,14 +36,10 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "18.14.0"
+          node-version: "20.8.0"
 
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
-
-      - name: Build the python server executable
-        run: |
-          npm run python-onefile-build-unix
 
       - name: Deploy the app to GitHub
         env:

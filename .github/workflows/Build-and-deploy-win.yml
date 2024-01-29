@@ -30,20 +30,16 @@ jobs:
           auto-update-conda: true
           auto-activate-base: false
       - run: |
-          conda activate env-electron-python
+          conda activate  env-electron-python
           conda info
           conda list
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "18.14.0"
+          node-version: "20.8.0"
 
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
-
-      - name: Build the python server executable
-        run: |
-          npm run python-onefile-build-win
 
       - name: Deploy the app to GitHub
         env:
