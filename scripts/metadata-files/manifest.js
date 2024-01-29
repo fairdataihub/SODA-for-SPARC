@@ -785,18 +785,14 @@ const convertJSONToXlsx = (jsondata, excelfile) => {
       styleObject = greenHeaderStyle;
     }
 
-    ws.cell(1, headingColumnIndex++)
-      .string(heading)
-      .style(styleObject);
+    ws.cell(1, headingColumnIndex++).string(heading).style(styleObject);
   });
   //Write Data in Excel file
   let rowIndex = 2;
   jsondata.forEach((record) => {
     let columnIndex = 1;
     Object.keys(record).forEach((columnName) => {
-      ws.cell(rowIndex, columnIndex++)
-        .string(record[columnName])
-        .style(standardCellStyle);
+      ws.cell(rowIndex, columnIndex++).string(record[columnName]).style(standardCellStyle);
     });
     rowIndex++;
   });
