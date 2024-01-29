@@ -5,6 +5,19 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.13.0.0 - 2024-01-29
+
+## Feature Additions:
+
+- Users can generate datasets on their computer/local device in Guided Mode without having to sign in with a Pennsieve account. 
+- Pennsieve API Key names are more unique to resolve myriad of issues that come from having multiple users on one computer and from having one user with acccounts across multiple computers.
+- Switching workspaces resets FFM UI to default state. 
+
+## Bug fixes:
+
+- Fixed issue preventing users from generating metadata files locally without a Pennsieve account in Free Form Mode. 
+
+
 ## v.13.0.0 - 2024-01-22
 
 ## Feature Additions:
