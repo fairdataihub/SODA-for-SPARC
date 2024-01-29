@@ -1105,8 +1105,6 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           window.os.userInfo().username
         );
 
-
-
         // attempt to set the profile name as the default profile
         try {
           // create the profile name for the user

@@ -1,4 +1,4 @@
-import api from "../api/api"
+import api from "../api/api";
 
 /**
  * Logs an error object to the console and SODA logs. Handles general errors and Axios errors.
