@@ -1750,7 +1750,6 @@ window.importPrimaryFolderSubjects = (folderPath) => {
       for (var folder of folders) {
         window.subjectsFileData = [];
         var stats = window.fs.statSync(window.path.join(folderPath, folder));
-        console.log(stats);
         if (stats.isDirectory) {
           window.subjectsFileData[0] = folder;
           for (var i = 1; i < 27; i++) {

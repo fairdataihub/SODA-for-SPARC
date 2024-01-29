@@ -1117,14 +1117,12 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           window.defaultBfAccount = profileResponse.toLowerCase();
           return true;
         } catch (e) {
-          console.log("Failed to set the default profile name for the user");
           // if it fails create a new profile key
           let response = await window.create_api_key_and_secret(
             login,
             password,
             machineUsernameSpecifier
           );
-          console.log("Respose from api key creation: ", response);
           if (response[0] == "failed") {
             let error_message = response[1];
             if (response[1]["message"] === "exceptions must derive from BaseException") {
@@ -1150,14 +1148,12 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
     // failed to create a new profile and did not set the default profile to a previously existing one
     if (!result) return;
 
-    console.log("Value from preconfirm: ", result);
 
     titleText = "Adding account...";
     if (verifyingOrganization) {
       titleText = "Loading workspace details...";
     }
 
-    console.log("Loading account...");
     Swal.fire({
       allowEscapeKey: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -1245,7 +1241,6 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
       // wherein it fails to validate an account if it is not lowercase
       key_name = key_name.toLowerCase();
       //needs to be replaced
-      console.log("About to add the api key information to the backend config.ini");
       try {
         await client.put(`/manage_datasets/account/username`, {
           keyname: key_name,

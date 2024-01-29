@@ -67,7 +67,6 @@ const userErrorMessage = (error) => {
 };
 
 const authenticationError = (error) => {
-  console.log("Is auhenticaiton error check happening");
   if (!error.response) return false;
   return error.response.status === 401;
 };
@@ -83,9 +82,6 @@ const defaultProfileMatchesCurrentWorkspace = async () => {
     defaultBfAccount.indexOf("n:organization") + 15
   );
   currentWorkspace = currentWorkspace.slice(currentWorkspace.indexOf("N:organization") + 15);
-
-  console.log(defaultProfileWorkspace);
-  console.log(currentWorkspace);
 
   return defaultProfileWorkspace === currentWorkspace;
 };
@@ -112,13 +108,11 @@ const switchToCurrentWorkspace = async () => {
   )}-${emailSuffix}-${currentWorkspace.toLowerCase()}`;
   targetProfile = targetProfile.toLowerCase();
 
-  console.log("Switching to the target profile: " + targetProfile);
 
   try {
     // set the target profile as the default if it is a valid profile that exists
     await api.setDefaultProfile(targetProfile);
     defaultBfAccount = targetProfile;
-    console.log("Switched the profile successfully");
     // // return as we have successfully set the default profile to the one that matches the current workspace
     // TODO: Reset the UI to reflect the new default profile
     try {
@@ -170,7 +164,6 @@ const switchToCurrentWorkspace = async () => {
     return;
   } catch (err) {
     clientError(err);
-    console.log("Target profile did not have a valid api key and secret for the current workspace");
   }
 
   // if not have them log in to add a new profile/overwrite the invalid/obsolete api key and secret for the current workspace
