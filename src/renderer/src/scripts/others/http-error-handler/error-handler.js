@@ -71,7 +71,7 @@ const authenticationError = (error) => {
   return error.response.status === 401;
 };
 
-const defaultProfileMatchesCurrentWorkspace = async () => {
+window.defaultProfileMatchesCurrentWorkspace = async () => {
   let userInfo = await api.getUserInformation();
   let currentWorkspace = userInfo["preferredOrganization"];
   // the default profile value, if one exists, has the current workspace id
@@ -87,7 +87,7 @@ const defaultProfileMatchesCurrentWorkspace = async () => {
 };
 
 const switchToCurrentWorkspace = async () => {
-  let workspacesMatch = await defaultProfileMatchesCurrentWorkspace();
+  let workspacesMatch = await window.defaultProfileMatchesCurrentWorkspace();
 
   if (workspacesMatch) {
     // obsolete/invalid api key and secret needs to be replaced
@@ -174,5 +174,4 @@ export {
   userErrorMessage,
   authenticationError,
   switchToCurrentWorkspace,
-  defaultProfileMatchesCurrentWorkspace,
 };
