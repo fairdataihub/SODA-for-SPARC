@@ -246,9 +246,7 @@ def bf_default_account_load():
     try:
         accountlist = []
         if exists(configpath):
-            namespace_logger.info("Config file exists")
             valid_account = bf_get_accounts()
-            namespace_logger.info("Valid account: " + valid_account)
             if valid_account != "":
                 accountlist.append(valid_account)
         return {"defaultAccounts": accountlist}
@@ -275,10 +273,8 @@ def bf_get_accounts():
             get_access_token()
             return SODA_SPARC_API_KEY.lower()
     elif "global" in sections:
-        namespace_logger.info("Default account found")
         if "default_profile" in config["global"]:
             default_profile = config["global"]["default_profile"]
-            namespace_logger.info("Default profile: " + default_profile)
             if default_profile in sections:
                 lowercase_account_names(config, default_profile, configpath)
                 try:

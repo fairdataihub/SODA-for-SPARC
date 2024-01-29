@@ -432,7 +432,6 @@ def save_ds_description_file(
     destination = join(METADATA_UPLOAD_BF_PATH, "dataset_description.xlsx") if upload_boolean else filepath
     shutil.copyfile(source, destination)
     global namespace_logger
-    namespace_logger.info(f"constributor_info_dict: {constributor_info_dict}")
 
     # write to excel file
     wb = load_workbook(destination)
@@ -840,7 +839,6 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
     ]
 
     #log the submission_data_frame
-    namespace_logger.info(f"submission_data_frame: {submission_data_frame}")
     ## normalize the entries to lowercase just for Version Exception check
     basicColumns = [x.lower() for x in basicColumns]
     submission_data_frame_lowercased = [x.lower() for x in submission_data_frame]

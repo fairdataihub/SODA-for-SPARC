@@ -87,7 +87,6 @@ class PennsieveAPIKeyAndSecret(Resource):
 
     try: 
       results = create_pennsieve_api_key_secret(username, password, machine_username_specifier)
-      api.logger.info(f'New profile name: {results["name"]} ; ending indicates which workspace we are in')
       return results
     except Exception as e:
       if notBadRequestException(e):
@@ -865,7 +864,6 @@ class BfCreateDatasetFolder(Resource):
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Add data to an existing dataset entity on the Pennsieve platform.")
   def put(self):
 
-    api.logger.info("In the route")
 
     data = self.parser_submit_dataset.parse_args()
 

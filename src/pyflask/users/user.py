@@ -85,7 +85,6 @@ def create_profile_name(machineUsernameSpecifier, email=None, password=None, tok
     """
 
     if token is None:
-       logger.info("Email and password: " + email + " " + password)
        # we are not logged in as the user we want to create a profile name for so get a cognito userpool token for the user 
        token = get_cognito_userpool_access_token(email, password)
        user_info = get_user_information(token)
@@ -118,7 +117,6 @@ def set_default_profile(profile_name):
     """
     # check if a valid token with this profile information already exists and use that if so rather than creating another api key and secret 
     ps_k_s = get_profile_api_key_and_secret(profile_name.lower())
-    logger.info(f"Existing api key and secret for profile {profile_name.lower()}: {ps_k_s}")
 
     if ps_k_s[0] is None or ps_k_s[1] is None:
       raise Exception(f"No valid api key and secret found for profile {profile_name.lower()}")
@@ -128,7 +126,6 @@ def set_default_profile(profile_name):
 
     # set the default profile to the profile name
     update_config_account_name(profile_name.lower())
-    logger.info(f"Reused existing valid api key and secret for profile {profile_name}") 
 
 def set_preferred_organization(organization_id, email, password, machine_username_specifier):
 
@@ -139,7 +136,6 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
         url = "https://api.pennsieve.io/session/switch-organization"
         headers = {"Accept": "*/*", "Content-Type": "application/json", "Accept-Encoding": "gzip, deflate, br", "Connection": "keep-alive", "Content-Length": "0"}
         url += f"?organization_id={organization_id}&api_key={token}"
-        logger.info(f"URL: {url}")
         response = requests.request("PUT", url, headers=headers)
         response.raise_for_status()
 
@@ -149,9 +145,6 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
     
 
     profile_name = create_unique_profile_name(token, machine_username_specifier)
-
-    logger.info(f"Switched to organization {organization_id}")
-    logger.info(f"New profile name: {profile_name}") 
 
     try: 
       set_default_profile(profile_name)

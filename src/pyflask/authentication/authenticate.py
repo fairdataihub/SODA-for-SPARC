@@ -201,7 +201,6 @@ def bf_add_account_username(keyname, key, secret):
             config.set(agentkey, "upload_chunk_size", "32")
 
         # Add new account if it does not already exist
-        namespace_logger.info(f"Adding account {formatted_account_name} to config file")
         if not config.has_section(formatted_account_name):
             config.add_section(formatted_account_name)
 

@@ -25,7 +25,6 @@ class BfGetDatasetFilesFolders(Resource):
     def post(self):
         data = request.get_json()
 
-        api.logger.info("Importing dataset from Pennsieve.")
 
         if "sodajsonobject" not in data:
             api.abort(400, "Missing parameter: sodajsonobject")
