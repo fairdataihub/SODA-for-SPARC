@@ -77,3 +77,4 @@ dependencies:
     - pyinstaller-hooks-contrib==2023.10
     - zope-event==5.0
     - zope-interface==6.1
+    - mfplus==1.0.0
