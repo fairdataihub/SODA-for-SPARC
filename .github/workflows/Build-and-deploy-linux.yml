@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - m7.1
 
 jobs:
   deploy-on-linux:
