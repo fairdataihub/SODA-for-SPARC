@@ -2,6 +2,7 @@ from flask_restx import Resource, fields, reqparse
 from namespaces import NamespaceEnum, get_namespace
 from flask import request
 import json
+import mfplus
 from os.path import (
     expanduser,
     join,
@@ -265,5 +266,34 @@ class DatasetSize(Resource):
 
         try:
             return check_JSON_size(soda_json_structure)
+        except Exception as e:
+            api.abort(500, str(e))
+
+
+model_derivative_microscopy_files_response = api.model(
+    "DerivativeMicroscopyFilesResponse", {
+        "derivative_microscopy_files": fields.List(
+            fields.String,
+            description="List of derivative microscopy files that will be generated"
+        ),
+    }
+)
+
+@api.route('/generate_derivative_microscopy_files')
+class GenerateDerivativeMicroscopyFiles(Resource):
+    @api.doc(responses={500: 'Internal Server Error', 400: 'Bad Request'})
+    @api.marshal_with(model_derivative_microscopy_files_response, code=200)
+    def post(self):
+        try:
+            data = request.get_json()
+            microscopy_images = data.get("microscopy_images")
+
+            # Example: Replace with the actual paths and parameters you want to use
+            source_image_path = r"C:\Users\JClark\Downloads\banner-image-SODA.jpg"
+            output_name = "converted"
+            output_directory = r"C:\Users\JClark\Downloads"
+            mfplus.convert(source_image_path, outname=output_name, outdir=output_directory, outtiff=True)
+
+            return {"derivative_microscopy_files": dir(mfplus)}, 200  # Assuming you want to return the directory of the module
         except Exception as e:
             api.abort(500, str(e))

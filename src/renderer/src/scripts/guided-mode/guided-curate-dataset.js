@@ -17544,3 +17544,18 @@ const createTestDataset = (
     );
   }
 };
+
+window.testMicroscopyImageConversion = async () => {
+  try {
+    const res = await client.post("/curate_datasets/generate_derivative_microscopy_files", {
+      microscopy_images: ["asdf", "asdf"],
+    });
+    console.log(res.data);
+  } catch (error) {
+    const emessage = userErrorMessage(error);
+    console.error("Failed to generate derivative microscopy files");
+    console.error(emessage);
+  }
+};
+
+await window.testMicroscopyImageConversion();
