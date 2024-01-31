@@ -2,10 +2,12 @@ from flask_restx import Resource, fields, reqparse
 from namespaces import NamespaceEnum, get_namespace
 from flask import request
 import json
+from mfplus import convert as mfplus_convert, mfpreqs
 import mfplus
 from os.path import (
     expanduser,
     join,
+    normpath,
 )
 
 from curate import (
@@ -287,13 +289,19 @@ class GenerateDerivativeMicroscopyFiles(Resource):
         try:
             data = request.get_json()
             microscopy_images = data.get("microscopy_images")
-
-            # Example: Replace with the actual paths and parameters you want to use
-            source_image_path = r"C:\Users\JClark\Downloads\banner-image-SODA.jpg"
-            output_name = "converted"
-            output_directory = r"C:\Users\JClark\Downloads"
-            mfplus.convert(source_image_path, outname=output_name, outdir=output_directory, outtiff=True)
+            #source_image_path = normpath("C:\Users\JClark\Downloads\banner-image-SODA.jpg")
+            #output_name = "converted"
+            #output_directory = normpath("C:\Users\JClark\Downloads")
+            #mfplus.convert(source_image_path, outname=output_name, outdir=output_directory, outtiff=True)
 
             return {"derivative_microscopy_files": dir(mfplus)}, 200  # Assuming you want to return the directory of the module
         except Exception as e:
             api.abort(500, str(e))
+
+mfplusloc = mfpreqs.findmfplus()
+print(f"mfplusloc: {mfplusloc}")
+source_image_path = normpath(r"C:\Users\JClark\Downloads\banner-image-SODA.jpg")
+output_name = "converted"
+output_directory = normpath(r"C:\Users\JClark\OneDrive - Calmi2\Pictures\Camera Roll")
+
+mfplus.convert(source_image_path, outname=output_name, outdir=output_directory, outtiff=True)
