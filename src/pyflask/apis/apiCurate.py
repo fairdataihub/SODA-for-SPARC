@@ -8,6 +8,7 @@ from os.path import (
     expanduser,
     join,
     normpath,
+    exists
 )
 
 from curate import (
@@ -289,6 +290,23 @@ class GenerateDerivativeMicroscopyFiles(Resource):
         try:
             data = request.get_json()
             microscopy_images = data.get("microscopy_images")
+            mfplusloc = mfpreqs.findmfplus()
+            if not mfplusloc:
+                raise Exception("mfplus not found")
+            source_image_path = normpath(r"C:\Users\JClark\images\test_microscopy.jpg")
+            source_image_path = normpath(r"C:\Users\JClark\images\test_microscopy.jpg")
+            output_name = "test_microscopy_converted"
+            output_directory = normpath(r"C:\Users\JClark\images")
+            # check to see if source_image_path is a valid path
+            if not exists(source_image_path):
+                raise FileNotFoundError(f"File not found: {source_image_path}")
+
+            # check to see if output_directory is a valid path
+            if not exists(output_directory):
+                raise FileNotFoundError(f"Directory not found: {output_directory}")
+            
+            mfplus.convert(source_image_path, outname=output_name, outdir=output_directory, outtiff=True)
+            
             #source_image_path = normpath("C:\Users\JClark\Downloads\banner-image-SODA.jpg")
             #output_name = "converted"
             #output_directory = normpath("C:\Users\JClark\Downloads")
@@ -300,8 +318,20 @@ class GenerateDerivativeMicroscopyFiles(Resource):
 
 mfplusloc = mfpreqs.findmfplus()
 print(f"mfplusloc: {mfplusloc}")
-source_image_path = normpath(r"C:\Users\JClark\Downloads\banner-image-SODA.jpg")
-output_name = "converted"
-output_directory = normpath(r"C:\Users\JClark\OneDrive - Calmi2\Pictures\Camera Roll")
+source_image_path = normpath(r"C:\Users\JClark\images\test_microscopy.jpg")
+output_name = "test_microscopy_converted"
+output_directory = normpath(r"C:\Users\JClark\images")
+# check to see if source_image_path is a valid path
+if not exists(source_image_path):
+    raise FileNotFoundError(f"File not found: {source_image_path}")
+else:
+    print(f"source_image_path: {source_image_path}")
+
+# check to see if output_directory is a valid path
+if not exists(output_directory):
+    raise FileNotFoundError(f"Directory not found: {output_directory}")
+else:
+    print(f"output_directory: {output_directory}")
+
 
 mfplus.convert(source_image_path, outname=output_name, outdir=output_directory, outtiff=True)
