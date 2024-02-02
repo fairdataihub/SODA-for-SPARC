@@ -289,7 +289,7 @@ const getCurrentCollectionTags = async (account, dataset) => {
 const getAllCollectionTags = async (account) => {
   window.allCollectionTags = {};
   try {
-    result = await client.get(`/collections/`, {
+    let result = await client.get(`/collections/`, {
       params: { selected_account: account },
     });
     let res = result.data;
