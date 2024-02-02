@@ -3866,10 +3866,15 @@ const refreshBfTeamsList = async (teamList) => {
 
   if (accountSelected !== "Select") {
     try {
-      const teamsReq = await client.get(
-        `manage_datasets/ps_get_teams?selected_account=${window.defaultBfAccount}`
-      );
-      const teamsThatCanBeGrantedPermissions = window.getSortedTeamStrings(teamsReq.data.teams);
+      let teamsThatCanBeGrantedPermissions = [];
+      try {
+        const teamsReq = await client.get(
+          `manage_datasets/ps_get_teams?selected_account=${window.defaultBfAccount}`
+        );
+        teamsThatCanBeGrantedPermissions = window.getSortedTeamStrings(teamsReq.data.teams);
+      } catch (error) {
+        const emessage = userErrorMessage(error);
+      }
 
       // The window.removeOptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
       $("#bf_list_teams").selectpicker("refresh");
