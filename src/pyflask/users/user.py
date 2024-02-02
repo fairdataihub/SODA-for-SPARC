@@ -115,6 +115,9 @@ def set_default_profile(profile_name):
     """
       If the given profile exists and has a valid API Key and Secret set it as the default profile. 
     """
+
+    clear_cached_access_token()
+    
     # check if a valid token with this profile information already exists and use that if so rather than creating another api key and secret 
     ps_k_s = get_profile_api_key_and_secret(profile_name.lower())
 
