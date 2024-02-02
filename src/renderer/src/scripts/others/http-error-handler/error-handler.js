@@ -75,32 +75,31 @@ window.defaultProfileMatchesCurrentWorkspace = async () => {
   // check if defaultBfAccount has soda-pennsieve as a prefix
   if (!window.defaultBfAccount.startsWith("soda-pennsieve")) {
     // Don't bother trying to validate unsupported profile formats the user can switch workspaces manually if they want
-    return true 
+    return true;
   }
 
   let userInfo = await api.getUserInformation();
   let currentWorkspace = userInfo["preferredOrganization"];
 
-  console.log(userInfo)
-  
-  // check if the defaultbfAccount is using an pre 13.1.0 API Key formatting by seeing if it has 'n:organization' in it 
+  console.log(userInfo);
+
+  // check if the defaultbfAccount is using an pre 13.1.0 API Key formatting by seeing if it has 'n:organization' in it
   if (!window.defaultBfAccount.includes("n:organization")) {
     // grab the suffix out of the defaultBfAccount where the suffix is all of the text after the final '-'
     let suffix = window.defaultBfAccount.slice(window.defaultBfAccount.lastIndexOf("-") + 1);
 
-    // get the name of the preferredOrganization to compare it to the suffix 
+    // get the name of the preferredOrganization to compare it to the suffix
     let organizations = await api.getOrganizations();
 
     for (const organization in organizations["organizations"]) {
       if (organization["organization"]["id"] === currentWorkspace) {
         // check if the suffix and the name match (lowercase both to be safe)
-        return suffix.toLowerCase() === organization["organization"]["name"].toLowerCase()
+        return suffix.toLowerCase() === organization["organization"]["name"].toLowerCase();
       }
     }
 
     // the suffix didn't match any of the organizations so the default profile is invalid and we need to switch workspaces
-    return false; 
-
+    return false;
   }
 
   // the default profile value, if one exists, has the current workspace id
