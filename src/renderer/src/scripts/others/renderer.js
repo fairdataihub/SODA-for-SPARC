@@ -7300,13 +7300,13 @@ const checkEmptyFilesAndFolders = async (sodaJSONObj) => {
   let error_folders = data["empty_folders"];
 
   if (error_files.length > 0) {
-    var error_message_files = backend_to_frontend_warning_message(error_files);
-    errorMessage += error_message_files;
+    const errorFilesHtml = generateHtmlListFromArray(error_files);
+    errorMessage += errorFilesHtml;
   }
 
   if (error_folders.length > 0) {
-    var error_message_folders = backend_to_frontend_warning_message(error_folders);
-    errorMessage += error_message_folders;
+    const errorFoldersHtml = generateHtmlListFromArray(error_folders);
+    errorMessage += errorFoldersHtml;
   }
 
   return errorMessage;
@@ -8220,18 +8220,13 @@ const determineDatasetDestination = () => {
   }
 };
 
-function backend_to_frontend_warning_message(error_array) {
-  if (error_array.length > 1) {
-    var warning_message = error_array[0] + "<ul>";
-  } else {
-    var warning_message = "<ul>";
-  }
-  for (var i = 1; i < error_array.length; i++) {
-    item = error_array[i];
-    warning_message += "<li>" + item + "</li>";
-  }
-  var final_message = warning_message + "</ul>";
-  return final_message;
+function generateHtmlListFromArray(error_array) {
+  const htmlList = `
+    <ul>
+      ${error_array.map((error) => `<li>${error}</li>`).join("")}
+    </ul>
+  `;
+  return htmlList;
 }
 
 var metadataIndividualFile = "";
