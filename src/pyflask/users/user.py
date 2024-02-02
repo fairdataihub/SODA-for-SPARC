@@ -119,6 +119,7 @@ def set_default_profile(profile_name):
     ps_k_s = get_profile_api_key_and_secret(profile_name.lower())
 
     if ps_k_s[0] is None or ps_k_s[1] is None:
+      logger.info(f"No valid api key and secret found for profile {profile_name.lower()}")
       raise Exception(f"No valid api key and secret found for profile {profile_name.lower()}")
     
     # verify that the keys are valid 
@@ -153,9 +154,9 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
       set_default_profile(profile_name)
       return 
     except Exception as err:
-      logger.info(f"Existing api key and secret for profile {profile_name} are invalid. Creating new api key and secret for profile {profile_name}")
+      logger.info(f"Existing api key and secret for profile {profile_name} are invalid or do not exist. Creating new api key and secret for profile {profile_name}")
 
-    # the access token for the new workspace is invalid and therefore the cache needs to be cleared so we can store a new one
+    # the access token for the new workspace is invalid and therefore the cache needs to be cleared so we can store a new one [ if there is no previously stored access token for this workspace nothing happens ]
     clear_cached_access_token()
 
     # TODO: Determine where to move this and the below duplicate key deletion methods. Perhaps the bottom one stays and this one moves up before checking for existing keys. 
