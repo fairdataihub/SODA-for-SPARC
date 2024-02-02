@@ -129,6 +129,9 @@ def set_default_profile(profile_name):
 
 def set_preferred_organization(organization_id, email, password, machine_username_specifier):
 
+    # clear the currently cached access token so we can switch workspaces + check if the other workspace access API Key + Secret is valid
+    clear_cached_access_token()
+
     token = get_cognito_userpool_access_token(email, password)
 
     try:
@@ -152,6 +155,9 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
     except Exception as err:
       logger.info(f"Existing api key and secret for profile {profile_name} are invalid. Creating new api key and secret for profile {profile_name}")
 
+    # the access token for the new workspace is invalid and therefore the cache needs to be cleared so we can store a new one
+    clear_cached_access_token()
+
     # TODO: Determine where to move this and the below duplicate key deletion methods. Perhaps the bottom one stays and this one moves up before checking for existing keys. 
     # any users coming from versions of SODA < 12.0.2 will potentially have duplicate SODA-Pennsieve API keys on their Pennsieve profile we want to clean up for them
     delete_duplicate_keys(token, "SODA-Pennsieve")
@@ -169,15 +175,12 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
         "Authorization": f"Bearer {token}",
     }
 
-# TODO: Add cache clearing and agent profile formatting
     response = requests.request("POST", url, json=payload, headers=headers)
     response.raise_for_status()
     response = response.json()
     
     key =  response["key"]
     secret = response["secret"]
-
-    clear_cached_access_token()
     
     # create the new profile for the user, associate the api key and secret with the profile, and set it as the default profile
     bf_add_account_username(profile_name, key, secret)
