@@ -29,7 +29,7 @@ from utils import (
     create_request_headers, 
     get_dataset_id
 )
-from authentication import get_access_token, bf_delete_account
+from authentication import get_access_token, bf_delete_account, clear_cached_access_token
 from users import get_user_information, update_config_account_name
 from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
 from configUtils import lowercase_account_names, format_agent_profile_name
@@ -278,6 +278,7 @@ def bf_get_accounts():
             if default_profile in sections:
                 lowercase_account_names(config, default_profile, configpath)
                 try:
+                    clear_cached_access_token()
                     get_access_token()
                     return format_agent_profile_name(default_profile)
                 except Exception as e:

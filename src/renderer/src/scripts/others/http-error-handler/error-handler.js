@@ -187,8 +187,8 @@ window.switchToCurrentWorkspace = async () => {
       confirm_click_account_function();
     }
 
-    datasetList = [];
-    defaultBfDataset = null;
+    window.datasetList = [];
+    window.defaultBfDataset = null;
     window.clearDatasetDropdowns();
     return;
   } catch (err) {
