@@ -1,4 +1,5 @@
-import api from "../api/api";
+import api from "../api/api"
+import { showHideDropdownButtons, confirm_click_account_function } from "../../globals";
 
 /**
  * Logs an error object to the console and SODA logs. Handles general errors and Axios errors.
@@ -81,7 +82,6 @@ window.defaultProfileMatchesCurrentWorkspace = async () => {
   let userInfo = await api.getUserInformation();
   let currentWorkspace = userInfo["preferredOrganization"];
 
-  console.log(userInfo);
 
   // check if the defaultbfAccount is using an pre 13.1.0 API Key formatting by seeing if it has 'n:organization' in it
   if (!window.defaultBfAccount.includes("n:organization")) {
@@ -91,7 +91,9 @@ window.defaultProfileMatchesCurrentWorkspace = async () => {
     // get the name of the preferredOrganization to compare it to the suffix
     let organizations = await api.getOrganizations();
 
-    for (const organization in organizations["organizations"]) {
+    organizations = organizations["organizations"]
+
+    for (const organization of organizations) {
       if (organization["organization"]["id"] === currentWorkspace) {
         // check if the suffix and the name match (lowercase both to be safe)
         return suffix.toLowerCase() === organization["organization"]["name"].toLowerCase();
@@ -114,7 +116,7 @@ window.defaultProfileMatchesCurrentWorkspace = async () => {
   return defaultProfileWorkspace === currentWorkspace;
 };
 
-const switchToCurrentWorkspace = async () => {
+window.switchToCurrentWorkspace = async () => {
   let workspacesMatch = await window.defaultProfileMatchesCurrentWorkspace();
 
   if (workspacesMatch) {
@@ -125,27 +127,27 @@ const switchToCurrentWorkspace = async () => {
 
   // we are in the wrong workspace
   // check if there is a profile with a valid api key and secret for this user for their current workspace
-  const { username } = os.userInfo();
+  const { username } = window.os.userInfo();
   let userInfo = await api.getUserInformation();
   let currentWorkspace = userInfo["preferredOrganization"];
   let emailSuffix = userInfo["email"].split("@")[0];
 
+  let userMachineID = await window.electron.ipcRenderer.invoke("get-nodestorage-key", username)
+
   // let emailSuffix = defaultBfAccount.
-  let targetProfile = `soda-pennsieve-${localStorage.getItem(
-    username
-  )}-${emailSuffix}-${currentWorkspace.toLowerCase()}`;
+  let targetProfile = `soda-pennsieve-${userMachineID}-${emailSuffix}-${currentWorkspace.toLowerCase()}`;
   targetProfile = targetProfile.toLowerCase();
 
   try {
     // set the target profile as the default if it is a valid profile that exists
     await api.setDefaultProfile(targetProfile);
-    defaultBfAccount = targetProfile;
+    window.defaultBfAccount = targetProfile;
     // // return as we have successfully set the default profile to the one that matches the current workspace
     // TODO: Reset the UI to reflect the new default profile
     try {
       let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
         params: {
-          selected_account: defaultBfAccount,
+          selected_account: window.defaultBfAccount,
         },
       });
       // reset the dataset field values
@@ -160,7 +162,7 @@ const switchToCurrentWorkspace = async () => {
 
       showHideDropdownButtons("account", "show");
       confirm_click_account_function();
-      updateBfAccountList();
+      window.updateBfAccountList();
 
       //   // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
       //   // then reset the guided mode page
@@ -187,7 +189,7 @@ const switchToCurrentWorkspace = async () => {
 
     datasetList = [];
     defaultBfDataset = null;
-    clearDatasetDropdowns();
+    window.clearDatasetDropdowns();
     return;
   } catch (err) {
     clientError(err);
@@ -197,4 +199,4 @@ const switchToCurrentWorkspace = async () => {
   await window.addBfAccount(null, true);
 };
 
-export { clientError, userErrorMessage, authenticationError, switchToCurrentWorkspace };
+export { clientError, userErrorMessage, authenticationError };

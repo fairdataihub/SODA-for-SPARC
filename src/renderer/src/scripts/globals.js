@@ -1436,7 +1436,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         let matching = await window.defaultProfileMatchesCurrentWorkspace();
         if (!matching) {
           log.info("Default api key is for a different workspace");
-          await switchToCurrentWorkspace();
+          await window.switchToCurrentWorkspace();
         }
       }
 

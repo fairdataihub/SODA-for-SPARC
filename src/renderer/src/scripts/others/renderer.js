@@ -579,7 +579,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
       let matching = await window.defaultProfileMatchesCurrentWorkspace();
       if (!matching) {
         log.info("Default api key is for a different workspace");
-        await switchToCurrentWorkspace();
+        await window.switchToCurrentWorkspace();
         return false;
       }
     }
@@ -900,7 +900,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
     let matching = await window.defaultProfileMatchesCurrentWorkspace();
     if (!matching) {
       log.info("Default api key is for a different workspace");
-      await switchToCurrentWorkspace();
+      await window.switchToCurrentWorkspace();
       return false;
     }
 
