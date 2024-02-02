@@ -1,5 +1,6 @@
 import api from "../api/api";
 import { showHideDropdownButtons, confirm_click_account_function } from "../../globals";
+import client from "../../client"
 
 /**
  * Logs an error object to the console and SODA logs. Handles general errors and Axios errors.
