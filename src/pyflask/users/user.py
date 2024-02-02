@@ -177,6 +177,7 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
     key =  response["key"]
     secret = response["secret"]
 
+    clear_cached_access_token()
     
     # create the new profile for the user, associate the api key and secret with the profile, and set it as the default profile
     bf_add_account_username(profile_name, key, secret)
