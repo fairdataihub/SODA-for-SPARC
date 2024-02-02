@@ -72,13 +72,42 @@ const authenticationError = (error) => {
 };
 
 window.defaultProfileMatchesCurrentWorkspace = async () => {
+  // check if defaultBfAccount has soda-pennsieve as a prefix
+  if (!window.defaultBfAccount.startsWith("soda-pennsieve")) {
+    // Don't bother trying to validate unsupported profile formats the user can switch workspaces manually if they want
+    return true 
+  }
+
   let userInfo = await api.getUserInformation();
   let currentWorkspace = userInfo["preferredOrganization"];
+
+  console.log(userInfo)
+  
+  // check if the defaultbfAccount is using an pre 13.1.0 API Key formatting by seeing if it has 'n:organization' in it 
+  if (!window.defaultBfAccount.includes("n:organization")) {
+    // grab the suffix out of the defaultBfAccount where the suffix is all of the text after the final '-'
+    let suffix = window.defaultBfAccount.slice(window.defaultBfAccount.lastIndexOf("-") + 1);
+
+    // get the name of the preferredOrganization to compare it to the suffix 
+    let organizations = await api.getOrganizations();
+
+    for (const organization in organizations["organizations"]) {
+      if (organization["organization"]["id"] === currentWorkspace) {
+        // check if the suffix and the name match (lowercase both to be safe)
+        return suffix.toLowerCase() === organization["organization"]["name"].toLowerCase()
+      }
+    }
+
+    // the suffix didn't match any of the organizations so the default profile is invalid and we need to switch workspaces
+    return false; 
+
+  }
+
   // the default profile value, if one exists, has the current workspace id
   // as a suffix: soda-pennsieve-51b6-cmarroquin-n:organization:f08e188e-2316-4668-ae2c-8a20dc88502f
   // get the workspace id that starts with n:organization out of the above string
   // NOTE: The 'N' is lowercased when stored in the config.ini file hence the difference in casing
-  let defaultProfileWorkspace = defaultBfAccount.slice(
+  let defaultProfileWorkspace = window.defaultBfAccount.slice(
     defaultBfAccount.indexOf("n:organization") + 15
   );
   currentWorkspace = currentWorkspace.slice(currentWorkspace.indexOf("N:organization") + 15);

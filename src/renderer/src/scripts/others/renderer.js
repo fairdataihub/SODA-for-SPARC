@@ -533,6 +533,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
 
     // Check for an API key pair in the default profile and ensure it is not obsolete.
     // NOTE: Calling the agent startup command without a profile setup in the config.ini file causes it to crash.
+    // TODO: Ensure we clear the cache here
     const account_present = await window.check_api_key();
 
     // Add a new api key and secret for validating the user's account in the current workspace.
@@ -894,14 +895,13 @@ window.run_pre_flight_checks = async (check_update = true) => {
       checkNewAppVersion();
     }
 
-    // make an api request to change to the organization members. If it fails with a 401 then ask them to go through the workspace change flow as SODA does not have access to the workspace.
-    try {
-      await client.get(`/manage_datasets/ps_get_users?selected_account=${window.defaultBfAccount}`);
-    } catch (err) {
-      clientError(err);
-      if (err.response.status) {
-        await window.addBfAccount(null, true);
-      }
+    // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
+    //           under the default profile does not mean that key is associated with the user's current workspace.
+    let matching = await window.defaultProfileMatchesCurrentWorkspace();
+    if (!matching) {
+      log.info("Default api key is for a different workspace");
+      await switchToCurrentWorkspace();
+      return false;
     }
 
     if (launchAnnouncement) {
