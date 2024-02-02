@@ -466,6 +466,11 @@ const setPreferredOrganization = async (
   return response.data;
 };
 
+const getOrganizations = async (profile) => {
+  let organizations = await client.get("/user/organizations");
+  return organizations.data
+}
+
 const setDefaultProfile = async (targetProfile) => {
   const response = await client.put("/user/default_profile", {
     target_profile: targetProfile,
@@ -522,6 +527,8 @@ const api = {
   getUserPoolAccessToken,
   setDefaultProfile,
   createProfileName,
+  getOrganizations
+  
 };
 
 export default api;
