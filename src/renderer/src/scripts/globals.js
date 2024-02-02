@@ -1210,7 +1210,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
       }
 
       datasetList = [];
-      defaultBfDataset = null;
+      window.defaultBfDataset = null;
       clearDatasetDropdowns();
 
       titleText = "Successfully added! <br/>Loading your account details...";

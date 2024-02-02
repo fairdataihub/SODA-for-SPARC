@@ -73,7 +73,7 @@ const authenticationError = (error) => {
 };
 
 window.defaultProfileMatchesCurrentWorkspace = async () => {
-  // check if defaultBfAccount has soda-pennsieve as a prefix
+  // check ifwindow.defaultBfAccount has soda-pennsieve as a prefix
   if (!window.defaultBfAccount.startsWith("soda-pennsieve")) {
     // Don't bother trying to validate unsupported profile formats the user can switch workspaces manually if they want
     return true;
@@ -84,7 +84,7 @@ window.defaultProfileMatchesCurrentWorkspace = async () => {
 
   // check if the defaultbfAccount is using an pre 13.1.0 API Key formatting by seeing if it has 'n:organization' in it
   if (!window.defaultBfAccount.includes("n:organization")) {
-    // grab the suffix out of the defaultBfAccount where the suffix is all of the text after the final '-'
+    // grab the suffix out of thewindow.defaultBfAccount where the suffix is all of the text after the final '-'
     let suffix = window.defaultBfAccount.slice(window.defaultBfAccount.lastIndexOf("-") + 1);
 
     // get the name of the preferredOrganization to compare it to the suffix
@@ -108,7 +108,7 @@ window.defaultProfileMatchesCurrentWorkspace = async () => {
   // get the workspace id that starts with n:organization out of the above string
   // NOTE: The 'N' is lowercased when stored in the config.ini file hence the difference in casing
   let defaultProfileWorkspace = window.defaultBfAccount.slice(
-    defaultBfAccount.indexOf("n:organization") + 15
+    window.defaultBfAccount.indexOf("n:organization") + 15
   );
   currentWorkspace = currentWorkspace.slice(currentWorkspace.indexOf("N:organization") + 15);
 
@@ -133,7 +133,7 @@ window.switchToCurrentWorkspace = async () => {
 
   let userMachineID = await window.electron.ipcRenderer.invoke("get-nodestorage-key", username);
 
-  // let emailSuffix = defaultBfAccount.
+  // let emailSuffix =window.defaultBfAccount.
   let targetProfile = `soda-pennsieve-${userMachineID}-${emailSuffix}-${currentWorkspace.toLowerCase()}`;
   targetProfile = targetProfile.toLowerCase();
 

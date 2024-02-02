@@ -14713,7 +14713,7 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
       `/prepare_metadata/subjects_file`,
       {
         filepath: generationDestination === "Pennsieve" ? "" : destination,
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfAccount,
         selected_dataset:
           generationDestination === "Pennsieve" ? guidedGetDatasetName(window.sodaJSONObj) : "",
         subjects_header_row: window.subjectsTableData,
@@ -14880,7 +14880,7 @@ const guidedGenerateSubmissionMetadata = async (destination) => {
       },
       {
         params: {
-          selected_account: defaultBfAccount,
+          selected_account: window.defaultBfAccount,
           selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
         },
       }
@@ -14988,7 +14988,7 @@ const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
     await client.post(
       `/prepare_metadata/dataset_description_file`,
       {
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfAccount,
         selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
         filepath: generationDestination === "Pennsieve" ? "" : destination,
         dataset_str: guidedDatasetInformation,
@@ -15079,7 +15079,7 @@ const guidedGenerateCodeDescriptionMetadata = async (destination) => {
     if (generationDestination === "Pennsieve") {
       await client.post("/prepare_metadata/code_description_file", {
         filepath: codeDescriptionFilePath,
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfAccount,
         selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
       });
     } else {
