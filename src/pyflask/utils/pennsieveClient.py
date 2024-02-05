@@ -30,7 +30,7 @@ def authenticate_user_with_client(ps, selected_account):
         abort(401, "Could not reauthenticate this account with Pennsieve.")
 
 
-def get_dataset_id(ps_or_token, selected_dataset):
+def get_dataset_id_ps(ps_or_token, selected_dataset):
     """
         Returns the dataset ID for the given dataset name.
         If the dataset ID was provided instead of the name, the ID will be returned. *Common for Guided Mode*
