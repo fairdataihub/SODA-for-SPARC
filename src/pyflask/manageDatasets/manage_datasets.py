@@ -332,7 +332,7 @@ def bf_dataset_account(accountname):
 
     datasets_list = []
     for ds in datasets:
-        datasets_list.append({"name": ds["content"]["name"], "id": ds["content"]["id"]})
+        datasets_list.append({"name": ds["content"]["name"], "id": ds["content"]["id"], "intId": ds["content"]["intId"]})
 
     def filter_dataset(datasets_list, store=None):
         if store is None:
@@ -344,7 +344,7 @@ def bf_dataset_account(accountname):
             user_role = r.json()["role"]
             if user_role not in ["viewer", "editor"]:
                 store.append(
-                    {"id": selected_dataset_id, "name": dataset['name'], "role": user_role}
+                    {"id": selected_dataset_id, "name": dataset['name'], "role": user_role, "intId": dataset["intId"]}
                 )
         return store
 

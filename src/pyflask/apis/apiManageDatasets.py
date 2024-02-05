@@ -368,6 +368,7 @@ model_account_dataset = api.model('AccountDataset', {
   'id': fields.String(required=True, description="The UUID of the dataset."),
   'name': fields.String(required=True, description="The name of the dataset for the given Pennsieve account."),
   'role': fields.String(required=True, description="The dataset account's role for the dataset"),
+  'intId': fields.Integer(required=True, description="The integer ID of the dataset. Once a dataset is published to Pennsieve this is the only ID that can be used to reference the dataset."),
 })
 
 model_account_datasets_list_response = api.model('AccountDatasetsResponse', {
