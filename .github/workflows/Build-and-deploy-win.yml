@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - log-intId
 
 jobs:
   deploy-on-windows:
