@@ -665,8 +665,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         abort(400, error_message)
 
 
-
-    selected_dataset_id = get_dataset_id(ps, bfdataset)
+    token = get_access_token()
+    selected_dataset_id = get_dataset_id(token, bfdataset)
 
         # reauthenticate the user
     try:

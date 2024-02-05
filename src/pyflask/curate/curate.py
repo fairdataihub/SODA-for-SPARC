@@ -2879,8 +2879,9 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
     error = []
     # check that the files and folders specified in the dataset are valid
     dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
-    dataset_id = get_dataset_id(get_access_token(), dataset_name)
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps))
+    token= get_access_token()
+    dataset_id = get_dataset_id(token, dataset_name)
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(token))
     r.raise_for_status()
     root_folder = r.json()["children"]
 

@@ -72,26 +72,32 @@ def get_users_dataset_list(token):
         return datasets
     except Exception as e:
         raise e
+
+
+def get_dataset_id(token, dataset_name_or_id):
+    """
+    Returns the dataset ID for the given dataset name.
+    If the dataset ID was provided instead of the name, the ID will be returned. *Common for Guided Mode*
+    
+    Input:
+        dataset_name_or_id: Pennsieve dataset name or ID to get the ID for
+    """
+    # If the input is already a dataset ID, return it
+    if dataset_name_or_id.startswith("N:dataset:"):
+        return dataset_name_or_id
     
 
-def get_dataset_id(token, selected_dataset):
-    """
-        Returns the dataset ID for the given dataset name.
-        If the dataset ID was provided instead of the name, the ID will be returned. *Common for Guided Mode*
-        Input:
-            ps_or_token: An initialized Pennsieve object or a Pennsieve access token
-            selected_dataset: Pennsieve dataset to get the ID for
-    """
-    if selected_dataset.startswith("N:dataset:"):
-        return selected_dataset
-    
     try:
+        # Attempt to retrieve the user's dataset list from Pennsieve
         dataset_list = get_users_dataset_list(token)
     except Exception as e:
         abort(500, "Error: Failed to retrieve datasets from Pennsieve. Please try again later.")
+    
+    # Iterate through the user's dataset list to find a matching dataset name
     for dataset in dataset_list:
-        if dataset["content"]["name"] == selected_dataset:
+        if dataset["content"]["name"] == dataset_name_or_id:
             return dataset["content"]["id"]
+    
+    # If no matching dataset is found, abort with a 400 status and a specific error message
     abort(400, "Please select a valid Pennsieve dataset.")
-  
     

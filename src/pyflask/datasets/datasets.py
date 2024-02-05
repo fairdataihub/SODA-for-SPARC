@@ -31,10 +31,7 @@ def get_role(dataset):
 def get_dataset_by_id(dataset_name_or_id):
     token = get_access_token()
 
-    if dataset_name_or_id.startswith("N:dataset:"):
-        selected_dataset_id = dataset_name_or_id
-    else:
-        selected_dataset_id = get_dataset_id(token, dataset_name_or_id)
+    selected_dataset_id = get_dataset_id(token, dataset_name_or_id)
 
     headers = {
         "Accept": "*/*",
