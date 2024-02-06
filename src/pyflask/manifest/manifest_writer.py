@@ -8,6 +8,7 @@ from datetime import datetime
 import pathlib
 import shutil 
 from utils import load_metadata_to_dataframe
+from authentication import get_access_token
 import time
 
 import pandas as pd
@@ -38,7 +39,8 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
     Updates old manifest files with new information from the dataset. Also creates new manifest files if they don't exist.
     Used in the standalone manifest workflow for Pennsieve datasets. 
     """
-    dataset_id = get_dataset_id(ps, soda_json_structure["bf-dataset-selected"]["dataset-name"])
+    token = get_access_token()
+    dataset_id = get_dataset_id(token, soda_json_structure["bf-dataset-selected"]["dataset-name"])
 
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/packages", headers=create_request_headers(ps))
     r.raise_for_status()

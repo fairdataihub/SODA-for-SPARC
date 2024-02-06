@@ -29,7 +29,7 @@ from utils import (
     create_request_headers, 
     get_dataset_id
 )
-from authentication import get_access_token, bf_delete_account
+from authentication import get_access_token, bf_delete_account, clear_cached_access_token
 from users import get_user_information, update_config_account_name
 from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
 from configUtils import lowercase_account_names, format_agent_profile_name
@@ -37,6 +37,8 @@ from constants import PENNSIEVE_URL
 from pysodaUtils import (
     check_forbidden_characters_ps,
 )
+from utils import (get_users_dataset_list)
+
 
 
 ### Global variables
@@ -278,6 +280,7 @@ def bf_get_accounts():
             if default_profile in sections:
                 lowercase_account_names(config, default_profile, configpath)
                 try:
+                    clear_cached_access_token()
                     get_access_token()
                     return format_agent_profile_name(default_profile)
                 except Exception as e:
@@ -320,13 +323,11 @@ def bf_dataset_account(accountname):
     PENNSIEVE_URL = "https://api.pennsieve.io"
     token = get_access_token()
 
-    # get the session token
-    headers = create_request_headers(token)
-    
-    # get the user's datasets that they have access to in their given organization
-    r = requests.get(f"{PENNSIEVE_URL}/datasets", headers=headers)
-    r.raise_for_status()
-    datasets = r.json()
+    # get the datasets the user has access to
+    try:
+        datasets = get_users_dataset_list(token)
+    except Exception as e:
+        raise e
 
 
     datasets_list = []
@@ -338,7 +339,7 @@ def bf_dataset_account(accountname):
             store = []
         for dataset in datasets_list:
             selected_dataset_id = dataset['id']
-            r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=headers)
+            r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=create_request_headers(token))
             r.raise_for_status()
             user_role = r.json()["role"]
             if user_role not in ["viewer", "editor"]:
@@ -450,12 +451,6 @@ def bf_account_details(accountname):
         raise e
 
 
-def get_datasets(token): 
-    r = requests.get("https://api.pennsieve.io/datasets", headers={"Authorization": f"Bearer {token}"})
-    r.raise_for_status()
-
-    return r.json()
-
 def create_new_dataset(datasetname, accountname):
     """
     Associated with 'Create' button in 'Create new dataset folder'
@@ -482,21 +477,24 @@ def create_new_dataset(datasetname, accountname):
             abort(400, error)
 
         token = get_access_token()
+        try:
+            datasets = get_users_dataset_list(token)
+        except Exception as e:
+            abort(500, "Error: Failed to retrieve datasets from Pennsieve. Please try again later.")
 
-        datasets = get_datasets(token)
-
+        # Check if the dataset name already exists
         for ds in datasets:
             if ds["content"]["name"] == datasetname:
                 abort(400, "Dataset name already exists")
-            else:
-                r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(token), json={"name": datasetname})
-                r.raise_for_status()
-                ds_id = r.json()['content']['id']
-                return {"id": ds_id}
+
+        namespace_logger.info("Creating new dataset")
+        r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(token), json={"name": datasetname})
+        r.raise_for_status()
+        ds_id = r.json()['content']['id']
+        return {"id": ds_id}
 
     except Exception as e:
         raise e
-
 
 def ps_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     """
@@ -531,9 +529,9 @@ def ps_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
-    dataset_list = [ds["content"]["name"] for ds in get_datasets(token)]
+    dataset_list = [ds["content"]["name"] for ds in get_users_dataset_list(token)]
     if datasetname in dataset_list:
-        abort(400, "Dataset name already exists.")
+        abort(400, "Dataset name already exists")
 
     jsonfile = {"name": renamed_dataset_name}
     try: 
@@ -542,6 +540,7 @@ def ps_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         return {"message": f"Dataset renamed to {renamed_dataset_name}"}
     except Exception as e:
         raise Exception(e) from e
+
 
 
 completed_files = []
@@ -666,8 +665,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         abort(400, error_message)
 
 
-
-    selected_dataset_id = get_dataset_id(ps, bfdataset)
+    token = get_access_token()
+    selected_dataset_id = get_dataset_id(token, bfdataset)
 
         # reauthenticate the user
     try:
