@@ -6,7 +6,6 @@ on:
     branches:
       - main
       - staging
-      - paginate-dataset-importation
 
 jobs:
   deploy-on-windows:
