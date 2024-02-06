@@ -194,7 +194,7 @@ $("#button-create-bf-new-dataset").click(async () => {
         }
       );
       let res = bf_new_dataset.data.id;
-      let intId = bf_new_dataset.data.int_id
+      let intId = bf_new_dataset.data.int_id;
 
       Swal.fire({
         title: `Dataset ${bfNewDatasetName} was created successfully`,
