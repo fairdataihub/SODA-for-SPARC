@@ -1186,6 +1186,8 @@ const getLatestPennsieveAgentVersion = async () => {
     throw new Error("Failed to retrieve the latest Pennsieve agent version");
   }
 
+  // Prepend the version with a "v" to match what the version looks like when checking
+  // the version of the Pennsieve agent installed on the user's machine
   const formattedPennsieveAgentVersion = `v${latestPennsieveAgentVersion}`;
   const usersPlatform = window.process.platform();
   let platformSpecificAgentDownloadURL;
