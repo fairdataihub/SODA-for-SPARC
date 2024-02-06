@@ -61,6 +61,7 @@ import {
   swalFileListTripleAction,
   swalFileListDoubleAction,
   swalShowError,
+  swalConfirmAction
 } from "../utils/swal-utils";
 import canSmiley from "/img/can-smiley.png";
 import canSad from "/img/can-sad.png";
