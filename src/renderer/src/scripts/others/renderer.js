@@ -64,6 +64,7 @@ import {
 } from "../utils/swal-utils";
 import canSmiley from "/img/can-smiley.png";
 import canSad from "/img/can-sad.png";
+import { swalConfirmAction } from "../utils/swal-utils";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -1160,90 +1161,58 @@ const getPlatformSpecificAgentDownloadURL = async () => {
   }
 };
 
+const findDownloadURL = (extension, assets) => {
+  for (const asset of assets) {
+    const fileName = asset.name;
+    if (window.path.extname(fileName) === extension) {
+      return asset.browser_download_url;
+    }
+  }
+  return undefined;
+};
 const getLatestPennsieveAgentVersion = async () => {
-  let platformSpecificAgentDownloadURL = undefined;
+  const res = await axios.get(
+    "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases/latest"
+  );
 
-  // let the error raise up to the caller if one occurs
-  let releasesResponse;
-  try {
-    releasesResponse = await axios.get(
-      "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases"
-    );
-  } catch (error) {
-    throw new Error("Could not find the lastest release on Pennsieve's Github");
+  const latestReleaseAssets = res.data?.assets;
+  const latestPennsieveAgentVersion = res.data?.tag_name;
+
+  if (!latestReleaseAssets) {
+    throw new Error("Failed to extract assets from the latest Pennsieve agent release");
   }
 
-  let releases = releasesResponse.data;
+  if (!latestPennsieveAgentVersion) {
+    throw new Error("Failed to retrieve the latest Pennsieve agent version");
+  }
 
-  let targetRelease = undefined;
-  let latestPennsieveAgentVersion = undefined;
-  for (const release of releases) {
-    targetRelease = release;
-    latestPennsieveAgentVersion = release.tag_name;
-    if (!release.prerelease && !release.draft) {
+  const formattedPennsieveAgentVersion = `v${latestPennsieveAgentVersion}`;
+  const usersPlatform = window.process.platform();
+  let platformSpecificAgentDownloadURL;
+
+  switch (usersPlatform) {
+    case "darwin":
+      platformSpecificAgentDownloadURL = findDownloadURL(".pkg", latestReleaseAssets);
       break;
-    }
+    case "win32":
+      platformSpecificAgentDownloadURL =
+        findDownloadURL(".msi", latestReleaseAssets) ||
+        findDownloadURL(".exe", latestReleaseAssets);
+      break;
+    case "linux":
+      platformSpecificAgentDownloadURL = findDownloadURL(".deb", latestReleaseAssets);
+      break;
+    default:
+      throw new Error(`Unsupported platform: ${usersPlatform}`);
   }
 
-  if (latestPennsieveAgentVersion == undefined) {
-    throw new Error("Could not extract the latest agent version from the release.");
+  if (!platformSpecificAgentDownloadURL) {
+    throw new Error(
+      `SODA has detected that a new version of the Pennsieve agent has been released, but could not find the ${usersPlatform} version.`
+    );
   }
 
-  if (window.process.platform() == "darwin") {
-    window.reverseSwalButtons = true;
-    targetRelease.assets.forEach((asset, index) => {
-      let file_name = asset.name;
-      if (window.path.extname(file_name) == ".pkg") {
-        platformSpecificAgentDownloadURL = asset.browser_download_url;
-      }
-    });
-    if (!platformSpecificAgentDownloadURL) {
-      throw new Error(
-        `
-          SODA has detected that a new version of the Pennsieve agent has been released, but
-          could not find the MAC version.
-        `
-      );
-    }
-  }
-
-  if (window.process.platform() == "win32") {
-    window.reverseSwalButtons = false;
-    targetRelease.assets.forEach((asset, index) => {
-      let file_name = asset.name;
-      if (window.path.extname(file_name) == ".msi" || window.path.extname(file_name) == ".exe") {
-        platformSpecificAgentDownloadURL = asset.browser_download_url;
-      }
-    });
-    if (!platformSpecificAgentDownloadURL) {
-      throw new Error(
-        `
-          SODA has detected that a new version of the Pennsieve agent has been released, but
-          could not find the Windows version.
-        `
-      );
-    }
-  }
-
-  if (window.process.platform() == "linux") {
-    window.reverseSwalButtons = false;
-    targetRelease.assets.forEach((asset, index) => {
-      let file_name = asset.name;
-      if (window.path.extname(file_name) == ".deb") {
-        platformSpecificAgentDownloadURL = asset.browser_download_url;
-      }
-    });
-    if (!platformSpecificAgentDownloadURL) {
-      throw new Error(
-        `
-          SODA has detected that a new version of the Pennsieve agent has been released, but
-          could not find the Linux version.
-        `
-      );
-    }
-  }
-
-  return [platformSpecificAgentDownloadURL, latestPennsieveAgentVersion];
+  return [platformSpecificAgentDownloadURL, formattedPennsieveAgentVersion];
 };
 
 const checkNewAppVersion = async () => {
