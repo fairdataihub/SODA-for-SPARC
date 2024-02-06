@@ -194,6 +194,7 @@ $("#button-create-bf-new-dataset").click(async () => {
         }
       );
       let res = bf_new_dataset.data.id;
+      let intId = bf_new_dataset.data.int_id
 
       Swal.fire({
         title: `Dataset ${bfNewDatasetName} was created successfully`,
@@ -225,6 +226,7 @@ $("#button-create-bf-new-dataset").click(async () => {
 
       window.defaultBfDataset = bfNewDatasetName;
       window.defaultBfDatasetId = res;
+      window.defaultBfDatasetIntId = intId;
       // log a map of datasetId to dataset name to analytics
       // this will be used to help us track private datasets which are not trackable using a datasetId alone
       window.electron.ipcRenderer.send(
@@ -248,6 +250,7 @@ $("#button-create-bf-new-dataset").click(async () => {
         {
           value: 1,
           dataset_id: window.defaultBfDatasetId,
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
 

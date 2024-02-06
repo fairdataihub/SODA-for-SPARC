@@ -493,7 +493,8 @@ def create_new_dataset(datasetname, accountname):
                 r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(token), json={"name": datasetname})
                 r.raise_for_status()
                 ds_id = r.json()['content']['id']
-                return {"id": ds_id}
+                int_id = r.json()['content']['intId']
+                return {"id": ds_id, "int_id": int_id}
 
     except Exception as e:
         raise e

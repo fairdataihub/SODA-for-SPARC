@@ -829,7 +829,8 @@ class BfAddAccountApiKey(Resource):
 
 
 model_dataset_folder_response = api.model("DatasetFolderResponse", {
-  'id': fields.String(required=True, description="The ID of the dataset that has been created.")
+  'id': fields.String(required=True, description="The ID of the dataset that has been created."),
+  "int_id": fields.Integer(required=True, description="The integer ID of the dataset. Once a dataset is published to Pennsieve this is the only ID that can be used to reference the dataset."),
 })
 
 @api.route('/datasets')

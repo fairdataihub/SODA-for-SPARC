@@ -13744,10 +13744,17 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
       }
     );
     let createdDatasetsID = bf_new_dataset.data.id;
+    let createdDatasetIntId = bf_new_dataset.data.int_id;
+
+    // set the global dataset id and dataset int id for reference in future events
+    window.defaultBfDatasetId = createdDatasetsID;
+    window.defaultBfDatasetIntId = createdDatasetIntId;
+
     datasetNameUploadText.innerHTML = `Successfully created dataset with name: ${datasetName}`;
     const kombuchaEventData = {
       value: 1,
       dataset_id: createdDatasetsID,
+      dataset_int_id: createdDatasetIntId,
     };
 
     window.electron.ipcRenderer.send(
