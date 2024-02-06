@@ -6,7 +6,6 @@ import fs from "fs";
 // import Buffer from "node:buffer"
 
 ipcMain.handle("get-string-representation-of-buffer", async (event, url, format) => {
-  console.log(url);
   let response = await axios.get(url, {
     responseType: "arraybuffer",
   });
