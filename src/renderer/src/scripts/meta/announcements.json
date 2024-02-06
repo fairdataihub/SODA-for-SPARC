@@ -1,4 +1,10 @@
 {
+  "13.1.1": {
+    "announcements": {
+      "bug-fixes": [],
+      "features": []
+    }
+  },
   "13.1.0": {
     "announcements": {
       "bug-fixes": [
