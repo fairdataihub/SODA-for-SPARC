@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Fixed issue preventing users from importing their datasets if they have access to a large amount
   of datasets on Pennsieve.
+- Fixed a stale cache issue where SODA was storing invalidated Pennsieve access tokens.
 
 ## v.13.1.0 - 2024-01-29
 
