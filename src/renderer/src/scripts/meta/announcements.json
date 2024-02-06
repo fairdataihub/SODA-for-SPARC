@@ -1,7 +1,9 @@
 {
   "13.1.1": {
     "announcements": {
-      "bug-fixes": [],
+      "bug-fixes": [
+        "Fixed issue preventing users from importing their datasets if they have access to a large amount of datasets on Pennsieve."
+      ],
       "features": []
     }
   },
