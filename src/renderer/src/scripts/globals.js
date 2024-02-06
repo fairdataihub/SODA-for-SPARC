@@ -177,6 +177,7 @@ let bfAccountOptions = [];
 window.defaultBfAccount = undefined;
 window.defaultBfDataset = "Select dataset";
 window.defaultBfDatasetId = undefined;
+window.defaultBfDataasetIntId = undefined; 
 window.reverseSwalButtons = false;
 window.SODA_SPARC_API_KEY = "SODA-Pennsieve";
 window.datasetList = [];
@@ -1703,9 +1704,10 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
         // update the gloabl dataset id
         for (const item of window.datasetList) {
-          let { name, id } = item;
+          let { name, id, intId } = item;
           if (name === bfDataset) {
             window.defaultBfDatasetId = id;
+            window.defaultBfDatasetIntId = intId;
           }
         }
 
