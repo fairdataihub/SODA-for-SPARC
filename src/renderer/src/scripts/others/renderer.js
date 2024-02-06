@@ -1186,12 +1186,9 @@ const getLatestPennsieveAgentVersion = async () => {
     throw new Error("Failed to retrieve the latest Pennsieve agent version");
   }
 
-  // Prepend the version with a "v" to match what the version looks like when checking
-  // the version of the Pennsieve agent installed on the user's machine
-  const formattedPennsieveAgentVersion = `v${latestPennsieveAgentVersion}`;
+  // Find the platform specific agent download url based on the user's platform
   const usersPlatform = window.process.platform();
   let platformSpecificAgentDownloadURL;
-
   switch (usersPlatform) {
     case "darwin":
       platformSpecificAgentDownloadURL = findDownloadURL(".pkg", latestReleaseAssets);
@@ -1208,13 +1205,14 @@ const getLatestPennsieveAgentVersion = async () => {
       throw new Error(`Unsupported platform: ${usersPlatform}`);
   }
 
+  // Throw an error if a download url for the user's platform could not be found in the latest release
   if (!platformSpecificAgentDownloadURL) {
     throw new Error(
       `SODA has detected that a new version of the Pennsieve agent has been released, but could not find the ${usersPlatform} version.`
     );
   }
 
-  return [platformSpecificAgentDownloadURL, formattedPennsieveAgentVersion];
+  return [platformSpecificAgentDownloadURL, latestPennsieveAgentVersion];
 };
 
 const checkNewAppVersion = async () => {
