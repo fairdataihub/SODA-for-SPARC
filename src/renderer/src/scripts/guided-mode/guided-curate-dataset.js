@@ -601,6 +601,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
         // Skip the changes metadata tab as new datasets do not have changes metadata
         guidedSkipPage("guided-create-changes-metadata-tab");
+        guidedSkipPage("guided-pennsieve-start-user-flow-selection-tab");
 
         // Open the first page
         const firstPage = getNonSkippedGuidedModePages(document)[0];
@@ -614,6 +615,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
+
       // This is the case where the user is resuming a Pennsieve dataset
       if (resumingPennsieveDataset) {
         if (
