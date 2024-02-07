@@ -2,7 +2,8 @@
   "13.1.1": {
     "announcements": {
       "bug-fixes": [
-        "Fixed issue preventing users from importing their datasets if they have access to a large amount of datasets on Pennsieve."
+        "Fixed issue preventing users from importing their datasets if they have access to a large amount of datasets on Pennsieve.",
+        "Fixed an issue where switching workspaces in SODA did not update the list of available datasets appropriately and did not provide the user the correct access permissions for the workspace."
       ],
       "features": []
     }
