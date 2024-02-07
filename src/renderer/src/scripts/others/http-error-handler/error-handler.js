@@ -1,4 +1,7 @@
 import api from "../api/api";
+import { showHideDropdownButtons, confirm_click_account_function } from "../../globals";
+import Swal from "sweetalert2";
+import client from "../../client";
 
 /**
  * Logs an error object to the console and SODA logs. Handles general errors and Axios errors.
@@ -72,21 +75,49 @@ const authenticationError = (error) => {
 };
 
 window.defaultProfileMatchesCurrentWorkspace = async () => {
+  // check ifwindow.defaultBfAccount has soda-pennsieve as a prefix
+  if (!window.defaultBfAccount.startsWith("soda-pennsieve")) {
+    // Don't bother trying to validate unsupported profile formats the user can switch workspaces manually if they want
+    return true;
+  }
+
   let userInfo = await api.getUserInformation();
   let currentWorkspace = userInfo["preferredOrganization"];
+
+  // check if the defaultbfAccount is using an pre 13.1.0 API Key formatting by seeing if it has 'n:organization' in it
+  if (!window.defaultBfAccount.includes("n:organization")) {
+    // grab the suffix out of thewindow.defaultBfAccount where the suffix is all of the text after the final '-'
+    let suffix = window.defaultBfAccount.slice(window.defaultBfAccount.lastIndexOf("-") + 1);
+
+    // get the name of the preferredOrganization to compare it to the suffix
+    let organizations = await api.getOrganizations();
+
+    organizations = organizations["organizations"];
+
+    for (const organization of organizations) {
+      if (organization["organization"]["id"] === currentWorkspace) {
+        // check if the suffix and the name match (lowercase both to be safe)
+        return suffix.toLowerCase() === organization["organization"]["name"].toLowerCase();
+      }
+    }
+
+    // the suffix didn't match any of the organizations so the default profile is invalid and we need to switch workspaces
+    return false;
+  }
+
   // the default profile value, if one exists, has the current workspace id
   // as a suffix: soda-pennsieve-51b6-cmarroquin-n:organization:f08e188e-2316-4668-ae2c-8a20dc88502f
   // get the workspace id that starts with n:organization out of the above string
   // NOTE: The 'N' is lowercased when stored in the config.ini file hence the difference in casing
-  let defaultProfileWorkspace = defaultBfAccount.slice(
-    defaultBfAccount.indexOf("n:organization") + 15
+  let defaultProfileWorkspace = window.defaultBfAccount.slice(
+    window.defaultBfAccount.indexOf("n:organization") + 15
   );
   currentWorkspace = currentWorkspace.slice(currentWorkspace.indexOf("N:organization") + 15);
 
   return defaultProfileWorkspace === currentWorkspace;
 };
 
-const switchToCurrentWorkspace = async () => {
+window.switchToCurrentWorkspace = async () => {
   let workspacesMatch = await window.defaultProfileMatchesCurrentWorkspace();
 
   if (workspacesMatch) {
@@ -97,27 +128,27 @@ const switchToCurrentWorkspace = async () => {
 
   // we are in the wrong workspace
   // check if there is a profile with a valid api key and secret for this user for their current workspace
-  const { username } = os.userInfo();
+  const { username } = window.os.userInfo();
   let userInfo = await api.getUserInformation();
   let currentWorkspace = userInfo["preferredOrganization"];
   let emailSuffix = userInfo["email"].split("@")[0];
 
-  // let emailSuffix = defaultBfAccount.
-  let targetProfile = `soda-pennsieve-${localStorage.getItem(
-    username
-  )}-${emailSuffix}-${currentWorkspace.toLowerCase()}`;
+  let userMachineID = await window.electron.ipcRenderer.invoke("get-nodestorage-key", username);
+
+  // let emailSuffix =window.defaultBfAccount.
+  let targetProfile = `soda-pennsieve-${userMachineID}-${emailSuffix}-${currentWorkspace.toLowerCase()}`;
   targetProfile = targetProfile.toLowerCase();
 
   try {
     // set the target profile as the default if it is a valid profile that exists
     await api.setDefaultProfile(targetProfile);
-    defaultBfAccount = targetProfile;
+    window.defaultBfAccount = targetProfile;
     // // return as we have successfully set the default profile to the one that matches the current workspace
     // TODO: Reset the UI to reflect the new default profile
     try {
       let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
         params: {
-          selected_account: defaultBfAccount,
+          selected_account: window.defaultBfAccount,
         },
       });
       // reset the dataset field values
@@ -132,7 +163,7 @@ const switchToCurrentWorkspace = async () => {
 
       showHideDropdownButtons("account", "show");
       confirm_click_account_function();
-      updateBfAccountList();
+      window.updateBfAccountList();
 
       //   // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
       //   // then reset the guided mode page
@@ -157,9 +188,9 @@ const switchToCurrentWorkspace = async () => {
       confirm_click_account_function();
     }
 
-    datasetList = [];
-    defaultBfDataset = null;
-    clearDatasetDropdowns();
+    window.datasetList = [];
+    window.defaultBfDataset = null;
+    window.clearDatasetDropdowns();
     return;
   } catch (err) {
     clientError(err);
@@ -169,4 +200,4 @@ const switchToCurrentWorkspace = async () => {
   await window.addBfAccount(null, true);
 };
 
-export { clientError, userErrorMessage, authenticationError, switchToCurrentWorkspace };
+export { clientError, userErrorMessage, authenticationError };

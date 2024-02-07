@@ -115,10 +115,14 @@ def set_default_profile(profile_name):
     """
       If the given profile exists and has a valid API Key and Secret set it as the default profile. 
     """
+
+    clear_cached_access_token()
+    
     # check if a valid token with this profile information already exists and use that if so rather than creating another api key and secret 
     ps_k_s = get_profile_api_key_and_secret(profile_name.lower())
 
     if ps_k_s[0] is None or ps_k_s[1] is None:
+      logger.info(f"No valid api key and secret found for profile {profile_name.lower()}")
       raise Exception(f"No valid api key and secret found for profile {profile_name.lower()}")
     
     # verify that the keys are valid 
@@ -128,6 +132,9 @@ def set_default_profile(profile_name):
     update_config_account_name(profile_name.lower())
 
 def set_preferred_organization(organization_id, email, password, machine_username_specifier):
+
+    # clear the currently cached access token so we can switch workspaces + check if the other workspace access API Key + Secret is valid
+    clear_cached_access_token()
 
     token = get_cognito_userpool_access_token(email, password)
 
@@ -150,7 +157,10 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
       set_default_profile(profile_name)
       return 
     except Exception as err:
-      logger.info(f"Existing api key and secret for profile {profile_name} are invalid. Creating new api key and secret for profile {profile_name}")
+      logger.info(f"Existing api key and secret for profile {profile_name} are invalid or do not exist. Creating new api key and secret for profile {profile_name}")
+
+    # the access token for the new workspace is invalid and therefore the cache needs to be cleared so we can store a new one [ if there is no previously stored access token for this workspace nothing happens ]
+    clear_cached_access_token()
 
     # TODO: Determine where to move this and the below duplicate key deletion methods. Perhaps the bottom one stays and this one moves up before checking for existing keys. 
     # any users coming from versions of SODA < 12.0.2 will potentially have duplicate SODA-Pennsieve API keys on their Pennsieve profile we want to clean up for them
@@ -169,14 +179,12 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
         "Authorization": f"Bearer {token}",
     }
 
-# TODO: Add cache clearing and agent profile formatting
     response = requests.request("POST", url, json=payload, headers=headers)
     response.raise_for_status()
     response = response.json()
     
     key =  response["key"]
     secret = response["secret"]
-
     
     # create the new profile for the user, associate the api key and secret with the profile, and set it as the default profile
     bf_add_account_username(profile_name, key, secret)

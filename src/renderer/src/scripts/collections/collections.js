@@ -12,7 +12,7 @@ $(document).ready(function () {
   //upload new collection tags or check if none
   $("#button-bf-collection").on("click", async () => {
     setTimeout(async () => {
-      let selectedDataset = defaultBfDataset;
+      let selectedDataset = window.defaultBfDataset;
       let newCollectionTags = [];
       let whiteListTags = [];
       let newTags = [];
@@ -99,8 +99,8 @@ $(document).ready(function () {
         //collection names that are already have an ID
         try {
           let uploadTagsStatus = await api.uploadCollectionTags(
-            defaultBfAccount,
-            defaultBfDataset,
+            window.defaultBfAccount,
+            window.defaultBfDataset,
             whiteListTags
           );
           if (uploadTagsStatus === false) {
@@ -118,8 +118,8 @@ $(document).ready(function () {
         //remove collection names
         try {
           let removeStatus = await api.removeCollectionTags(
-            defaultBfAccount,
-            defaultBfDataset,
+            window.defaultBfAccount,
+            window.defaultBfDataset,
             removeTags
           );
           if (removeStatus === false) {
@@ -135,7 +135,11 @@ $(document).ready(function () {
       if (newTags.length > 0) {
         //upload tags that haven't been created on pennsieve (no ID)
         try {
-          let newTagsStatus = await api.uploadNewTags(defaultBfAccount, defaultBfDataset, newTags);
+          let newTagsStatus = await api.uploadNewTags(
+            window.defaultBfAccount,
+            window.defaultBfDataset,
+            newTags
+          );
           if (newTagsStatus === false) {
             success.push(false);
           } else {
@@ -198,10 +202,10 @@ $(document).ready(function () {
   });
 
   const updateCollectionWhiteList = async () => {
-    let collection_list = await api.getAllCollectionTags(defaultBfAccount);
+    let collection_list = await api.getAllCollectionTags(window.defaultBfAccount);
     let currentCollectionList = await api.getCurrentCollectionTags(
-      defaultBfAccount,
-      defaultBfDataset
+      window.defaultBfAccount,
+      window.defaultBfDataset
     );
 
     let currentCollectionNames = Object.keys(currentCollectionList);
@@ -242,8 +246,11 @@ $(document).ready(function () {
       });
     }
 
-    let collection_list = await api.getAllCollectionTags(defaultBfAccount);
-    let current_tags = await api.getCurrentCollectionTags(defaultBfAccount, defaultBfDataset);
+    let collection_list = await api.getAllCollectionTags(window.defaultBfAccount);
+    let current_tags = await api.getCurrentCollectionTags(
+      window.defaultBfAccount,
+      window.defaultBfDataset
+    );
 
     let collectionNames = Object.keys(collection_list);
     let currentCollectionNames = Object.keys(current_tags);

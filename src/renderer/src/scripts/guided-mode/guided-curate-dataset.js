@@ -6171,16 +6171,24 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-designate-permissions-tab") {
+      // Get the users that can be granted permissions
       const usersReq = await client.get(
         `manage_datasets/ps_get_users?selected_account=${window.defaultBfAccount}`
       );
-      const teamsReq = await client.get(
-        `manage_datasets/ps_get_teams?selected_account=${window.defaultBfAccount}`
-      );
-
       const usersThatCanBeGrantedPermissions = usersReq.data.users;
 
-      const teamsThatCanBeGrantedPermissions = window.getSortedTeamStrings(teamsReq.data.teams);
+      // Get the teams that can be granted permissions
+      // Note: This is in a try catch because guest accounts do not have access to the teams endpoint
+      // so the request will fail and teamsThatCanBeGrantedPermissions will remain an empty array
+      let teamsThatCanBeGrantedPermissions = [];
+      try {
+        const teamsReq = await client.get(
+          `manage_datasets/ps_get_teams?selected_account=${window.defaultBfAccount}`
+        );
+        teamsThatCanBeGrantedPermissions = window.getSortedTeamStrings(teamsReq.data.teams);
+      } catch (error) {
+        const emessage = userErrorMessage(error);
+      }
 
       // Reset the dropdown with the new users and teams
       guidedAddUsersAndTeamsToDropdown(
@@ -14713,7 +14721,7 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
       `/prepare_metadata/subjects_file`,
       {
         filepath: generationDestination === "Pennsieve" ? "" : destination,
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfAccount,
         selected_dataset:
           generationDestination === "Pennsieve" ? guidedGetDatasetName(window.sodaJSONObj) : "",
         subjects_header_row: window.subjectsTableData,
@@ -14880,7 +14888,7 @@ const guidedGenerateSubmissionMetadata = async (destination) => {
       },
       {
         params: {
-          selected_account: defaultBfAccount,
+          selected_account: window.defaultBfAccount,
           selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
         },
       }
@@ -14988,7 +14996,7 @@ const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
     await client.post(
       `/prepare_metadata/dataset_description_file`,
       {
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfAccount,
         selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
         filepath: generationDestination === "Pennsieve" ? "" : destination,
         dataset_str: guidedDatasetInformation,
@@ -15079,7 +15087,7 @@ const guidedGenerateCodeDescriptionMetadata = async (destination) => {
     if (generationDestination === "Pennsieve") {
       await client.post("/prepare_metadata/code_description_file", {
         filepath: codeDescriptionFilePath,
-        selected_account: defaultBfAccount,
+        selected_account: window.defaultBfAccount,
         selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
       });
     } else {

@@ -42,10 +42,19 @@ const isDatasetLocked = async (account, datasetNameOrId) => {
     // get the logged in user's information which will be used to check if the user is a member of the "Publishers" team
     const currentUserInformation = await getUserInformation();
     const currentUserID = currentUserInformation.id;
-    const teamsReq = await client.get(
-      `manage_datasets/ps_get_teams?selected_account=${window.defaultBfDataset}`
-    );
-    const teamsInCurrentUsersOrganization = teamsReq.data.teams;
+
+    // Get the teams in the user's organization
+    // Note that this will fail for guest accounts, so the array will be empty, and
+    // the user will not be checked for membership in the "Publishers" team
+    let teamsInCurrentUsersOrganization = [];
+    try {
+      const teamsReq = await client.get(
+        `manage_datasets/ps_get_teams?selected_account=${window.defaultBfDataset}`
+      );
+      teamsInCurrentUsersOrganization = teamsReq.data.teams;
+    } catch (error) {
+      userErrorMessage(error);
+    }
 
     // Get the team with the name "Publishers" (if it exists)
     const publishersTeam = teamsInCurrentUsersOrganization.find(
@@ -289,7 +298,7 @@ const getCurrentCollectionTags = async (account, dataset) => {
 const getAllCollectionTags = async (account) => {
   window.allCollectionTags = {};
   try {
-    result = await client.get(`/collections/`, {
+    let result = await client.get(`/collections/`, {
       params: { selected_account: account },
     });
     let res = result.data;
@@ -466,6 +475,11 @@ const setPreferredOrganization = async (
   return response.data;
 };
 
+const getOrganizations = async (profile) => {
+  let organizations = await client.get("/user/organizations");
+  return organizations.data;
+};
+
 const setDefaultProfile = async (targetProfile) => {
   const response = await client.put("/user/default_profile", {
     target_profile: targetProfile,
@@ -522,6 +536,7 @@ const api = {
   getUserPoolAccessToken,
   setDefaultProfile,
   createProfileName,
+  getOrganizations,
 };
 
 export default api;
