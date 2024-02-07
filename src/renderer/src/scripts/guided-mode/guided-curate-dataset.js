@@ -3788,7 +3788,6 @@ document
             dataset_name: guidedGetDatasetName(window.sodaJSONObj),
             origin: guidedGetDatasetOrigin(window.sodaJSONObj),
             dataset_int_id: window.defaultBfDatasetIntId,
-
           }
         );
       }
@@ -13880,7 +13879,6 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
     window.electron.ipcRenderer.send(
@@ -13952,7 +13950,6 @@ const guidedAddDatasetDescription = async (
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
   } catch (error) {
@@ -13968,7 +13965,6 @@ const guidedAddDatasetDescription = async (
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
     window.electron.ipcRenderer.send(
@@ -14040,7 +14036,6 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
   } catch (error) {
@@ -14060,7 +14055,6 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
     window.electron.ipcRenderer.send(
@@ -14117,7 +14111,6 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
   } catch (error) {
@@ -14137,7 +14130,6 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
     window.electron.ipcRenderer.send(
@@ -14192,7 +14184,6 @@ const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
   } catch (error) {
@@ -14211,7 +14202,6 @@ const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
     window.electron.ipcRenderer.send(
@@ -14313,7 +14303,6 @@ const guidedGrantUserPermission = async (
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
   } catch (error) {
@@ -14338,7 +14327,6 @@ const guidedGrantUserPermission = async (
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
     window.electron.ipcRenderer.send(
@@ -14459,7 +14447,6 @@ const guidedGrantTeamPermission = async (
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
   } catch (error) {
@@ -14484,7 +14471,6 @@ const guidedGrantTeamPermission = async (
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
     window.electron.ipcRenderer.send(
@@ -15593,7 +15579,6 @@ const guidedUploadDatasetToPennsieve = async () => {
             destination: "Pennsieve",
             upload_session: datasetUploadSession.id,
             dataset_int_id: window.defaultBfDatasetIntId,
-
           }
         );
       }
@@ -15623,7 +15608,6 @@ const guidedUploadDatasetToPennsieve = async () => {
             destination: "Pennsieve",
             upload_session: datasetUploadSession.id,
             dataset_int_id: window.defaultBfDatasetIntId,
-
           }
         );
       }
@@ -15687,7 +15671,6 @@ const guidedUploadDatasetToPennsieve = async () => {
           origin: guidedGetDatasetOrigin(window.sodaJSONObj),
           destination: "Pennsieve",
           dataset_int_id: window.defaultBfDatasetIntId,
-
         }
       );
 
@@ -15709,7 +15692,6 @@ const guidedUploadDatasetToPennsieve = async () => {
             destination: "Pennsieve",
             upload_session: datasetUploadSession.id,
             dataset_int_id: window.defaultBfDatasetIntId,
-
           }
         );
       }
@@ -15739,7 +15721,6 @@ const guidedUploadDatasetToPennsieve = async () => {
             destination: "Pennsieve",
             upload_session: datasetUploadSession.id,
             dataset_int_id: window.defaultBfDatasetIntId,
-
           }
         );
       }
@@ -15768,7 +15749,6 @@ const guidedUploadDatasetToPennsieve = async () => {
             destination: "Pennsieve",
             upload_session: datasetUploadSession.id,
             dataset_int_id: window.defaultBfDatasetIntId,
-
           }
         );
       }
@@ -15788,7 +15768,6 @@ const guidedUploadDatasetToPennsieve = async () => {
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         }
       );
 
@@ -15927,7 +15906,6 @@ const guidedUploadDatasetToPennsieve = async () => {
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         }
       );
 
@@ -15956,7 +15934,6 @@ const guidedUploadDatasetToPennsieve = async () => {
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         }
       );
 

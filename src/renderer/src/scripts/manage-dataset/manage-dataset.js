@@ -429,7 +429,6 @@ $("#button-rename-dataset").on("click", async () => {
           value: 1,
           dataset_id: window.defaultBfDatasetId,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         }
       );
 
@@ -576,7 +575,6 @@ $("#button-add-permission-pi").click(async () => {
             value: selectedUser,
             dataset_id: window.defaultBfDatasetId,
             dataset_int_id: window.defaultBfDatasetIntId,
-
           }
         );
 
@@ -704,7 +702,6 @@ const addPermissionUser = async (
         dataset_id: window.defaultBfDatasetId,
         dataset_name: window.defaultBfDataset,
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
 
@@ -733,7 +730,6 @@ const addPermissionUser = async (
       dataset_id: window.defaultBfDatasetId,
       dataset_name: window.defaultBfDataset,
       dataset_int_id: window.defaultBfDatasetIntId,
-
     }
   );
 
@@ -863,7 +859,6 @@ $("#button-add-permission-team").click(async () => {
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         }
       );
 
@@ -900,7 +895,6 @@ $("#button-add-permission-team").click(async () => {
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         }
       );
 
@@ -992,7 +986,6 @@ $("#button-add-subtitle").click(async () => {
           value: 1,
           dataset_id: window.defaultBfDatasetId,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         }
       );
 
@@ -1037,7 +1030,6 @@ $("#button-add-subtitle").click(async () => {
           value: 1,
           dataset_id: window.defaultBfDatasetId,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         }
       );
     }
@@ -1400,7 +1392,6 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
         value: 1,
         dataset_id: window.defaultBfDatasetId,
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
 
@@ -1424,7 +1415,6 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
       value: 1,
       dataset_id: window.defaultBfDatasetId,
       dataset_int_id: window.defaultBfDatasetIntId,
-
     }
   );
 
@@ -2023,7 +2013,6 @@ const uploadBannerImage = async () => {
             value: image_file_size,
             dataset_id: window.defaultBfDatasetId,
             dataset_int_id: window.defaultBfDatasetIntId,
-
           }
         );
 
@@ -2068,7 +2057,6 @@ const uploadBannerImage = async () => {
             value: 1,
             dataset_id: window.defaultBfDatasetId,
             dataset_int_id: window.defaultBfDatasetIntId,
-
           }
         );
       }
@@ -2136,7 +2124,6 @@ const uploadBannerImage = async () => {
             value: image_file_size,
             dataset_id: window.defaultBfDatasetId,
             dataset_int_id: window.defaultBfDatasetIntId,
-
           }
         );
       } catch (error) {
@@ -2159,7 +2146,6 @@ const uploadBannerImage = async () => {
             value: 1,
             dataset_id: window.defaultBfDatasetId,
             dataset_int_id: window.defaultBfDatasetIntId,
-
           }
         );
       }
@@ -2395,7 +2381,6 @@ $("#button-add-tags").click(async () => {
         value: 1,
         dataset_id: window.defaultBfDatasetId,
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
 
@@ -2428,7 +2413,6 @@ $("#button-add-tags").click(async () => {
       value: 1,
       dataset_id: window.defaultBfDatasetId,
       dataset_int_id: window.defaultBfDatasetIntId,
-
     }
   );
 
@@ -2579,7 +2563,6 @@ $("#button-add-license").click(async () => {
           value: 1,
           dataset_id: window.defaultBfDatasetId,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         }
       );
 
@@ -2615,7 +2598,6 @@ $("#button-add-license").click(async () => {
           value: 1,
           dataset_id: window.defaultBfDatasetId,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         }
       );
     }
@@ -2910,7 +2892,6 @@ $("#button-submit-dataset").click(async () => {
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         };
 
         window.electron.ipcRenderer.send(
@@ -3002,7 +2983,6 @@ $("#button-submit-dataset").click(async () => {
             dataset_id: window.defaultBfDatasetId,
             dataset_name: window.defaultBfDataset,
             dataset_int_id: window.defaultBfDatasetIntId,
-
           };
 
           window.electron.ipcRenderer.send(
@@ -3029,7 +3009,6 @@ $("#button-submit-dataset").click(async () => {
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         };
 
         window.electron.ipcRenderer.send(
@@ -3271,7 +3250,6 @@ $("#button-submit-dataset").click(async () => {
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         };
 
         window.electron.ipcRenderer.send(
@@ -3310,7 +3288,6 @@ $("#button-submit-dataset").click(async () => {
           dataset_name: window.defaultBfDataset,
           upload_session: datasetUploadSession.id,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         }
       );
     })
@@ -3380,7 +3357,6 @@ $("#button-submit-dataset").click(async () => {
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         }
       );
 
@@ -3412,7 +3388,6 @@ $("#button-submit-dataset").click(async () => {
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         }
       );
 
@@ -3429,7 +3404,6 @@ $("#button-submit-dataset").click(async () => {
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
           dataset_int_id: window.defaultBfDatasetIntId,
-
         }
       );
 
@@ -3507,7 +3481,6 @@ $("#bf_list_dataset_status").on("change", async () => {
         value: selectedStatusOption,
         dataset_id: window.defaultBfDatasetId,
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
 
@@ -3540,7 +3513,6 @@ $("#bf_list_dataset_status").on("change", async () => {
         value: selectedStatusOption,
         dataset_id: window.defaultBfDatasetId,
         dataset_int_id: window.defaultBfDatasetIntId,
-
       }
     );
 
