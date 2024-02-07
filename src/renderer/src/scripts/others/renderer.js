@@ -3535,6 +3535,8 @@ window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       {
         value: 1,
         dataset_id: window.defaultBfDatasetId,
+        dataset_int_id: window.defaultBfDatasetIntId,
+
       }
     );
 
@@ -3572,6 +3574,8 @@ window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
     {
       value: 1,
       dataset_id: window.defaultBfDatasetId,
+      dataset_int_id: window.defaultBfDatasetIntId,
+
     }
   );
 
@@ -8603,6 +8607,8 @@ window.logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, s
       destination: destination,
       origin: uploadBFBoolean ? window.defaultBfDatasetId : "Local",
       dataset_name: window.defaultBfDataset,
+      dataset_int_id: window.defaultBfDatasetIntId,
+
     }
   );
 
