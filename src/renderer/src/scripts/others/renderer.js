@@ -122,8 +122,6 @@ window.log.info(
 const appVersion = await window.electron.ipcRenderer.invoke("app-version");
 window.log.info("Current SODA version:", appVersion);
 
-document.getElementById("guided_mode_view").click();
-
 // check for announcements on startup; if the user is in the auto update workflow do not check for announcements
 // Rationale: The auto update workflow involves refreshing the DOM which will cause a re-run of
 //            the renderer process. One potential outcome of this is the renderer reaches this code block before the refresh

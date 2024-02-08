@@ -1,4 +1,6 @@
 import "./assets/imports";
+import "@mantine/core/styles.css";
+//import "./components/gm/DatasetNameAndSubtitle";
 import "./assets/demo-btns";
 import "./assets/nav";
 import "./scripts/client";
