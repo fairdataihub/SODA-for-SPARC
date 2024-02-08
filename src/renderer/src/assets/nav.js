@@ -7,6 +7,8 @@ while (!window.htmlPagesAdded) {
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 document.body.addEventListener("click", (event) => {
   if (event.target.dataset.section) {
+    console.log("section trigger");
+
     handleSectionTrigger(event);
   } else if (event.target.dataset.modal) {
     handleModalTrigger(event);
