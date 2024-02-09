@@ -8141,7 +8141,7 @@ const show_curation_shortcut = async () => {
       $("#generate-dataset-progress-tab").css("display", "none");
 
       window.currentTab = 0;
-      await wipeOutCurateProgress();
+      window.wipeOutCurateProgress();
       $("#guided-button-start-modify-component").click();
       $("#disseminate_dataset_tab").click();
       $("#submit_prepublishing_review_btn").click();
