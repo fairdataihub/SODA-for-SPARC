@@ -1326,6 +1326,326 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
   }
 };
 
+
+/**
+ * 
+ * @param {*} workspaceIsExcluded : bool - show different prompt if current workspace is excluded from SODA; false by default
+ * @returns void if no workspace was selected or the selected workspace as a string
+ * 
+ * Prompts the user to select a workspace from the list of workspaces they have permission to access. 
+ */
+window.promptUserToSelectWorkspace = async (workspaceIsExcluded = false) => {
+
+  // get the list of the user's available organizations
+  //account is signed in but no datasets have been fetched or created
+  //invoke dataset request to ensure no datasets have been created
+  if (window.organizationList.length === 0) {
+    let responseObject;
+    try {
+      responseObject = await client.get(`user/organizations`, {
+        params: {
+          selected_account: window.defaultBfAccount,
+        },
+      });
+    } catch (error) {
+      clientError(error);
+      initializeBootstrapSelect("#curatebforganizationlist", "show");
+      return;
+    }
+
+    let orgs = responseObject.data.organizations;
+    window.organizationList = [];
+    window.organizationNameToIdMapping = {};
+
+    // deconstruct the names to the organization list
+    for (const org in orgs) {
+      window.organizationList.push(orgs[org]["organization"]["name"]);
+      window.organizationNameToIdMapping[orgs[org]["organization"]["name"]] =
+        orgs[org]["organization"]["id"];
+    }
+
+    window.refreshOrganizationList();
+  }
+
+  if (window.organizationList.length > 0) {
+    const { value: result } = await Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Confirm",
+      focusCancel: true,
+      focusConfirm: false,
+      heightAuto: false,
+      allowOutsideClick: workspaceIsExcluded ? false : true,
+      allowEscapeKey: workspaceIsExcluded ? false : true,
+      html: window.datasetPermissionDiv,
+      reverseButtons: window.reverseSwalButtons,
+      showCloseButton: workspaceIsExcluded ? false : true,
+      showCancelButton: workspaceIsExcluded ? false : true,
+      title: "<h3 style='margin-bottom:20px !important' id='workspace-title-text'>SODA does not support your current workspace</h3>",
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster animate_fastest",
+      },
+      willOpen: () => {
+        $("#curatebforganizationlist").selectpicker("hide");
+        $("#curatebforganizationlist").selectpicker("refresh");
+        // $("#bf-organization-select-header").show();
+        // TODO: How to make this unnecessary?
+        // $("#bf-dataset-select-div").hide();
+        // $("#bf-dataset-select-header").hide();
+      },
+      didOpen: () => {
+        $("#div-permission-list-2").css("display", "block");
+        $(".ui.active.green.inline.loader.small").css("display", "none");
+        window.datasetPermissionDiv.style.display = "block";
+        $("#curatebforganizationlist").attr("disabled", false);
+        $(window.datasetPermissionDiv)
+          .find("#div-filter-datasets-progress-2")
+          .css("display", "none");
+        $("#curatebforganizationlist").selectpicker("refresh");
+        $("#curatebforganizationlist").selectpicker("show");
+        $("#bf-organization-select-div").show();
+        $("#bf-dataset-select-div").hide();
+        $("#bf-dataset-select-header").hide();
+
+        window.bfOrganization = $("#curatebforganizationlist").val();
+        let sweet_al = document.getElementsByClassName("swal2-html-container")[0];
+        let sweet_alrt = document.getElementsByClassName("swal2-actions")[0];
+        sweet_alrt.style.marginTop = "1rem";
+
+        // handle the case where the user's current workspace is excluded from SODA
+        if(workspaceIsExcluded) {
+          let headerSubtext = document.createElement("p");
+          headerSubtext.innerText = "Switch to one of your other available workspaces to continue using SODA."
+          headerSubtext.classList.add("tip-content");
+          headerSubtext.style.marginTop = ".5rem";
+
+          // add to the HTML as a child of the title
+          document.querySelector("#workspace-title-text").appendChild(headerSubtext);
+        }
+      },
+      preConfirm: () => {
+        window.bfOrganization = $("#curatebforganizationlist").val();
+        if (!window.bfOrganization) {
+          Swal.showValidationMessage("Please select an organization!");
+
+          $(window.datasetPermissionDiv)
+            .find("#div-filter-datasets-progress-2")
+            .css("display", "none");
+          $("#curatebforganizationlist").selectpicker("show");
+          $("#curatebforganizationlist").selectpicker("refresh");
+          $("#bf-organization-select-div").show();
+
+          return undefined;
+        }
+
+        if (window.bfOrganization === "Select organization") {
+          Swal.showValidationMessage("Please select a workspace!");
+
+          $(window.datasetPermissionDiv)
+            .find("#div-filter-datasets-progress-2")
+            .css("display", "none");
+          $("#curatebforganizationlist").selectpicker("show");
+          $("#curatebforganizationlist").selectpicker("refresh");
+          $("#bf-organization-select-div").show();
+
+          return undefined;
+        }
+
+        $("#license-lottie-div").css("display", "none");
+        $("#license-assigned").css("display", "none");
+        return window.bfOrganization;
+      },
+    });
+
+    if (!result) {
+      $(".svg-change-current-account.organization").css("display", "block");
+      $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+      $("#license-lottie-div").css("display", "block");
+      $("#license-assigned").css("display", "block");
+      window.currentDatasetLicense.innerText = window.currentDatasetLicense.innerText;
+      initializeBootstrapSelect("#curatebforganizationlist", "show");
+      return;
+    }
+
+    /// return the workspace 
+    return result
+  }
+
+
+  return
+
+}
+
+window.switchWorkspace = async (selectedWorkspace) => {
+
+  if (dropdownEventID === "dd-select-pennsieve-organization") {
+    $("#ds-name").val(window.bfOrganization);
+    $("#ds-description").val = $("#bf-dataset-subtitle").val;
+    $("body").removeClass("waiting");
+    $(".svg-change-current-account.dataset").css("display", "block");
+    dropdownEventID = "";
+    return;
+  }
+
+  window.refreshOrganizationList();
+  $("#dataset-loaded-message").hide();
+
+  showHideDropdownButtons("organization", "show");
+  document.getElementById("div-rename-bf-dataset").children[0].style.display = "flex";
+
+  // rejoin test organiztion
+  const { value: res } = await Swal.fire({
+    allowOutsideClick: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Switch Workspace",
+    showCloseButton: false,
+    focusConfirm: false,
+    heightAuto: false,
+    reverseButtons: window.reverseSwalButtons,
+    showCancelButton: true,
+    title: `<h3 style="text-align:center">To switch your workspace please provide your email and password</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`,
+    html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
+          <input type="password" id="ps_password" class="swal2-input" placeholder="Password">
+          <p class="tip-content"> If you are using ORCID to sign in to Pennsieve view the official SODA docs <a href="https://docs.sodaforsparc.io/docs/how-to/how-to-use-workspaces" target="_blank">here</a> to learn how to change your workspace in SODA. </p>`,
+    showClass: {
+      popup: "animate__animated animate__fadeInDown animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__fadeOutUp animate__faster",
+    },
+    didOpen: () => {
+      $(".swal-popover").popover();
+      let div_footer = document.getElementsByClassName("swal2-footer")[0];
+      document.getElementsByClassName("swal2-popup")[0].style.width = "43rem";
+      div_footer.style.flexDirection = "column";
+      div_footer.style.alignItems = "center";
+    },
+    preConfirm: async () => {
+      const login = Swal.getPopup().querySelector("#ps_login").value;
+      const password = Swal.getPopup().querySelector("#ps_password").value;
+
+      // show a loading spinner in place of the confirm button HERE
+      // $(".ui.active.green.inline.loader.small.organization-loader").css("display", "block");
+      Swal.showLoading();
+
+      if (!login) {
+        Swal.showValidationMessage("Please enter your email!");
+        Swal.hideLoading();
+        return undefined;
+      }
+
+      if (!password) {
+        Swal.showValidationMessage("Please enter your password!");
+        Swal.hideLoading();
+        return undefined;
+      }
+
+      try {
+        let organizationId = window.organizationNameToIdMapping[selectedWorkspace];
+        let machineUsernameSpecifier = await window.electron.ipcRenderer.invoke(
+          "get-nodestorage-item",
+          window.os.userInfo().username
+        );
+        await api.setPreferredOrganization(
+          login,
+          password,
+          organizationId,
+          machineUsernameSpecifier
+        );
+      } catch (err) {
+        clientError(err);
+        await Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          title: "Could Not Switch Organizations",
+          text: "Please try again shortly.",
+        });
+        Swal.hideLoading();
+        // reset the UI to pre-org switch state
+        $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+        $(".svg-change-current-account.organization").css("display", "block");
+        return undefined;
+      }
+
+      // set the new organization information in the appropriate fields
+      $("#current-bf-organization").text(selectedWorkspace);
+      $("#current-bf-organization-generate").text(selectedWorkspace);
+      $(".bf-organization-span").html(selectedWorkspace);
+      // set the permissions content to an empty string
+      await window.loadDefaultAccount();
+
+      // confirm_click_function();
+
+      return true;
+    },
+  });
+
+  if (!res) {
+    $(".svg-change-current-account.organization").css("display", "block");
+    $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+    $("#license-lottie-div").css("display", "block");
+    $("#license-assigned").css("display", "block");
+    initializeBootstrapSelect("#curatebforganizationlist", "show");
+    return;
+  }
+
+  // reset the selected dataset to None
+  $(".bf-dataset-span").html("None");
+  // reset the current owner span in the manage dataset make pi owner of a dataset tab
+  $(".current-permissions").html("None");
+
+  // If the button that triggered the organization has the class
+  // guided-change-workspace (from guided mode), handle changes based on the ev id
+  // otherwise, reset the FFM UI based on the ev class
+  ev.classList.contains("guided-change-workspace")
+    ? window.handleGuidedModeOrgSwitch(ev)
+    : window.resetFFMUI(ev);
+
+  // reset the dataset list
+  window.datasetList = [];
+  window.defaultBfDataset = null;
+  window.clearDatasetDropdowns();
+
+  // checkPrevDivForConfirmButton("dataset");
+
+  $("#button-refresh-publishing-status").addClass("hidden");
+
+  // TODO: MIght need to hide if clicked twice / do similar logic as above
+  // for organization span in those locations instead of a dataset span
+  //; since the logic is there for a reason.
+  initializeBootstrapSelect("#curatebforganizationlist", "show");
+  showHideDropdownButtons("organization", "show");
+
+  $("body").removeClass("waiting");
+  $(".svg-change-current-account.organization").css("display", "block");
+  $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+}
+
+window.isWorkspaceExcluded = async () => {
+  let excludedWorkspaces = ["N:organization:9ae9659b-2311-4d75-963e-0000aa055627"]
+
+  let userInfo = await api.getUserInformation()
+
+  let currentWorkspace = userInfo.preferredOrganization;
+
+  if (excludedWorkspaces.includes(currentWorkspace)) {
+    return true
+  }
+
+  return false
+}
+
+window.userHasMultipleWorkspaces = async () => {
+  let workspaces = await api.getOrganizations()
+  workspaces = workspaces["organizations"]
+  return workspaces.length > 1
+}
+
 var dropdownEventID = "";
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
@@ -1839,284 +2159,12 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       );
     }
 
-    // get the list of the user's available organizations
-    //account is signed in but no datasets have been fetched or created
-    //invoke dataset request to ensure no datasets have been created
-    if (window.organizationList.length === 0) {
-      let responseObject;
-      try {
-        responseObject = await client.get(`user/organizations`, {
-          params: {
-            selected_account: window.defaultBfAccount,
-          },
-        });
-      } catch (error) {
-        clientError(error);
-        initializeBootstrapSelect("#curatebforganizationlist", "show");
-        return;
-      }
+    let selectedWorkspace = await window.promptUserToSelectWorkspace(ev);
 
-      let orgs = responseObject.data.organizations;
-      window.organizationList = [];
-      window.organizationNameToIdMapping = {};
+    // user does not want to switch workspaces
+    if (!selectedWorkspace) return
 
-      // deconstruct the names to the organization list
-      for (const org in orgs) {
-        window.organizationList.push(orgs[org]["organization"]["name"]);
-        window.organizationNameToIdMapping[orgs[org]["organization"]["name"]] =
-          orgs[org]["organization"]["id"];
-      }
-
-      window.refreshOrganizationList();
-    }
-
-    //datasets do exist so display popup with dataset options
-    //else datasets have been created
-    if (window.organizationList.length > 0) {
-      const { value: result } = await Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        cancelButtonText: "Cancel",
-        confirmButtonText: "Confirm",
-        focusCancel: true,
-        focusConfirm: false,
-        heightAuto: false,
-        allowOutsideClick: false,
-        allowEscapeKey: true,
-        html: window.datasetPermissionDiv,
-        reverseButtons: window.reverseSwalButtons,
-        showCloseButton: true,
-        showCancelButton: true,
-        title: "<h3 style='margin-bottom:20px !important'>Select your workspace</h3>",
-        showClass: {
-          popup: "animate__animated animate__fadeInDown animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__fadeOutUp animate__faster animate_fastest",
-        },
-        willOpen: () => {
-          $("#curatebforganizationlist").selectpicker("hide");
-          $("#curatebforganizationlist").selectpicker("refresh");
-          // $("#bf-organization-select-header").show();
-          // TODO: How to make this unnecessary?
-          // $("#bf-dataset-select-div").hide();
-          // $("#bf-dataset-select-header").hide();
-        },
-        didOpen: () => {
-          $("#div-permission-list-2").css("display", "block");
-          $(".ui.active.green.inline.loader.small").css("display", "none");
-          window.datasetPermissionDiv.style.display = "block";
-          $("#curatebforganizationlist").attr("disabled", false);
-          $(window.datasetPermissionDiv)
-            .find("#div-filter-datasets-progress-2")
-            .css("display", "none");
-          $("#curatebforganizationlist").selectpicker("refresh");
-          $("#curatebforganizationlist").selectpicker("show");
-          $("#bf-organization-select-div").show();
-          $("#bf-dataset-select-div").hide();
-          $("#bf-dataset-select-header").hide();
-
-          window.bfOrganization = $("#curatebforganizationlist").val();
-          let sweet_al = document.getElementsByClassName("swal2-html-container")[0];
-          let sweet_alrt = document.getElementsByClassName("swal2-actions")[0];
-          sweet_alrt.style.marginTop = "1rem";
-
-          let tip_container = document.createElement("div");
-          let tip_content = document.createElement("p");
-          tip_content.innerText =
-            "Only datasets where you have owner or manager permissions will be shown in the list";
-          tip_content.classList.add("tip-content");
-          tip_content.style.textAlign = "left";
-          tip_container.style.marginTop = "1rem";
-          tip_container.appendChild(tip_content);
-          sweet_al.appendChild(tip_container);
-        },
-        preConfirm: () => {
-          window.bfOrganization = $("#curatebforganizationlist").val();
-          if (!window.bfOrganization) {
-            Swal.showValidationMessage("Please select an organization!");
-
-            $(window.datasetPermissionDiv)
-              .find("#div-filter-datasets-progress-2")
-              .css("display", "none");
-            $("#curatebforganizationlist").selectpicker("show");
-            $("#curatebforganizationlist").selectpicker("refresh");
-            $("#bf-organization-select-div").show();
-
-            return undefined;
-          }
-
-          if (window.bfOrganization === "Select organization") {
-            Swal.showValidationMessage("Please select an organization!");
-
-            $(window.datasetPermissionDiv)
-              .find("#div-filter-datasets-progress-2")
-              .css("display", "none");
-            $("#curatebforganizationlist").selectpicker("show");
-            $("#curatebforganizationlist").selectpicker("refresh");
-            $("#bf-organization-select-div").show();
-
-            return undefined;
-          }
-
-          $("#license-lottie-div").css("display", "none");
-          $("#license-assigned").css("display", "none");
-          return window.bfOrganization;
-        },
-      });
-
-      if (!result) {
-        $(".svg-change-current-account.organization").css("display", "block");
-        $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
-        $("#license-lottie-div").css("display", "block");
-        $("#license-assigned").css("display", "block");
-        window.currentDatasetLicense.innerText = window.currentDatasetLicense.innerText;
-        initializeBootstrapSelect("#curatebforganizationlist", "show");
-        return;
-      }
-
-      if (dropdownEventID === "dd-select-pennsieve-organization") {
-        $("#ds-name").val(window.bfOrganization);
-        $("#ds-description").val = $("#bf-dataset-subtitle").val;
-        $("body").removeClass("waiting");
-        $(".svg-change-current-account.dataset").css("display", "block");
-        dropdownEventID = "";
-        return;
-      }
-
-      window.refreshOrganizationList();
-      $("#dataset-loaded-message").hide();
-
-      showHideDropdownButtons("organization", "show");
-      document.getElementById("div-rename-bf-dataset").children[0].style.display = "flex";
-
-      // rejoin test organiztion
-      const { value: res } = await Swal.fire({
-        allowOutsideClick: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        cancelButtonText: "Cancel",
-        confirmButtonText: "Switch Organization",
-        showCloseButton: false,
-        focusConfirm: false,
-        heightAuto: false,
-        reverseButtons: window.reverseSwalButtons,
-        showCancelButton: true,
-        title: `<h3 style="text-align:center">To switch your organization please provide your email and password</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`,
-        html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
-          <input type="password" id="ps_password" class="swal2-input" placeholder="Password">
-          <p class="tip-content"> If you are using ORCID to sign in to Pennsieve view the official SODA docs <a href="https://docs.sodaforsparc.io/docs/how-to/how-to-use-workspaces" target="_blank">here</a> to learn how to change your workspace in SODA. </p>`,
-        showClass: {
-          popup: "animate__animated animate__fadeInDown animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__fadeOutUp animate__faster",
-        },
-        didOpen: () => {
-          $(".swal-popover").popover();
-          let div_footer = document.getElementsByClassName("swal2-footer")[0];
-          document.getElementsByClassName("swal2-popup")[0].style.width = "43rem";
-          div_footer.style.flexDirection = "column";
-          div_footer.style.alignItems = "center";
-        },
-        preConfirm: async () => {
-          const login = Swal.getPopup().querySelector("#ps_login").value;
-          const password = Swal.getPopup().querySelector("#ps_password").value;
-
-          // show a loading spinner in place of the confirm button HERE
-          // $(".ui.active.green.inline.loader.small.organization-loader").css("display", "block");
-          Swal.showLoading();
-
-          if (!login) {
-            Swal.showValidationMessage("Please enter your email!");
-            Swal.hideLoading();
-            return undefined;
-          }
-
-          if (!password) {
-            Swal.showValidationMessage("Please enter your password!");
-            Swal.hideLoading();
-            return undefined;
-          }
-
-          try {
-            let organizationId = window.organizationNameToIdMapping[window.bfOrganization];
-            let machineUsernameSpecifier = await window.electron.ipcRenderer.invoke(
-              "get-nodestorage-item",
-              window.os.userInfo().username
-            );
-            await api.setPreferredOrganization(
-              login,
-              password,
-              organizationId,
-              machineUsernameSpecifier
-            );
-          } catch (err) {
-            clientError(err);
-            await Swal.fire({
-              backdrop: "rgba(0,0,0, 0.4)",
-              heightAuto: false,
-              icon: "error",
-              title: "Could Not Switch Organizations",
-              text: "Please try again shortly.",
-            });
-            Swal.hideLoading();
-            // reset the UI to pre-org switch state
-            $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
-            $(".svg-change-current-account.organization").css("display", "block");
-            return undefined;
-          }
-
-          // set the new organization information in the appropriate fields
-          $("#current-bf-organization").text(window.bfOrganization);
-          $("#current-bf-organization-generate").text(window.bfOrganization);
-          $(".bf-organization-span").html(window.bfOrganization);
-          // set the permissions content to an empty string
-          await window.loadDefaultAccount();
-
-          // confirm_click_function();
-
-          return true;
-        },
-      });
-
-      if (!res) {
-        $(".svg-change-current-account.organization").css("display", "block");
-        $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
-        $("#license-lottie-div").css("display", "block");
-        $("#license-assigned").css("display", "block");
-        initializeBootstrapSelect("#curatebforganizationlist", "show");
-        return;
-      }
-
-      // reset the selected dataset to None
-      $(".bf-dataset-span").html("None");
-      // reset the current owner span in the manage dataset make pi owner of a dataset tab
-      $(".current-permissions").html("None");
-
-      // If the button that triggered the organization has the class
-      // guided-change-workspace (from guided mode), handle changes based on the ev id
-      // otherwise, reset the FFM UI based on the ev class
-      ev.classList.contains("guided-change-workspace")
-        ? window.handleGuidedModeOrgSwitch(ev)
-        : window.resetFFMUI(ev);
-
-      // reset the dataset list
-      window.datasetList = [];
-      window.defaultBfDataset = null;
-      window.clearDatasetDropdowns();
-
-      // checkPrevDivForConfirmButton("dataset");
-    }
-    $("#button-refresh-publishing-status").addClass("hidden");
-
-    // TODO: MIght need to hide if clicked twice / do similar logic as above
-    // for organization span in those locations instead of a dataset span
-    //; since the logic is there for a reason.
-    initializeBootstrapSelect("#curatebforganizationlist", "show");
-    showHideDropdownButtons("organization", "show");
-
-    $("body").removeClass("waiting");
-    $(".svg-change-current-account.organization").css("display", "block");
-    $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+    await window.switchWorkspace(selectedWorkspace)
   }
 };
 
