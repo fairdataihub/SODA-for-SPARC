@@ -37,36 +37,41 @@ const clientError = (error) => {
 };
 
 /**
- * Given an error object, take the message out of the appropriate error property and present it in a readable format.
- * Useful for getting a useful error message out of both Axios and general errors.
- * @param {Error} error - The error object. Can be a general Error or an Axios subclass.
- * @returns {string} - The error message to display to the user
+ * Extracts a user-friendly error message from an error object, handling both Axios and general errors.
+ *
+ * @param {Error} error - The error object to extract the message from.
+ * @returns {string} - A user-readable error message.
  */
 const userErrorMessage = (error) => {
-  let errorMessage = "";
+  // Check for Axios error with a server response:
   if (error.response) {
-    console.log("userResponse");
-    // The request was made and the server responded with a status code
-    // that falls out of the range of 2xx
-    errorMessage = `${error.response.data.message}`;
-  } else if (error.request) {
-    // The request was made but no response was received
-    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-    // http.ClientRequest in node.js
-    console.error(error);
-    errorMessage =
-      "The server did not respond to the request. Please try again later or contact the soda team at help@fairdataihub.org if this issue persits.";
-  } else {
-    // Something happened in setting up the request that triggered an Error
-    errorMessage = error.message;
+    const { data, status } = error.response;
+
+    // Handle specific error cases:
+    switch (status) {
+      case 423:
+        // Dataset locked error:
+        return `Your dataset is locked. To make changes, please contact the SPARC Curation Team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science</a>.`;
+      case 401:
+        // Unauthorized error:
+        return "You are not authorized to perform this action. Please check your credentials and try again.";
+      case 404:
+        // Resource not found error:
+        return "The requested resource could not be found. Please check the URL and try again.";
+      default:
+        // Generic server error:
+        return `An error occurred while processing your request. Please try again later. (Server response: ${status})`;
+    }
   }
 
-  // If the error message contains a 423, it means the dataset is locked.
-  if (errorMessage.includes("423")) {
-    errorMessage = `Your dataset is locked. If you would like to make changes to this dataset, please reach out to the SPARC Curation Team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>`;
+  // Check for Axios error without a server response:
+  if (error.request) {
+    console.error(error); // Log the error for debugging
+    return "There was a problem connecting to the server. Please check your internet connection and try again.";
   }
 
-  return errorMessage;
+  // Generic error:
+  return "An unexpected error occurred. Please try again or contact support for assistance.";
 };
 
 const authenticationError = (error) => {
