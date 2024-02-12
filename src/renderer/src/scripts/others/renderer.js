@@ -578,7 +578,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
       // check that the valid api key in the default profile is for the user's current workspace
       // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
       //           under the default profile does not mean that key is associated with the user's current workspace.
-      // TODO: if they  need to switch maybe add a message that says if you are uploading this isnt what you want to do 
+      // TODO: if they  need to switch maybe add a message that says if you are uploading this isnt what you want to do
       let matching = await window.defaultProfileMatchesCurrentWorkspace();
       if (!matching) {
         log.info("Default api key is for a different workspace");
@@ -590,19 +590,19 @@ window.run_pre_flight_checks = async (check_update = true) => {
     // check if the user is in an excluded workspace and prompt them to switch to a workspace that is not excluded
     let excluded = await window.isWorkspaceExcluded();
 
-    // check if the user has access to more than one workspace  
+    // check if the user has access to more than one workspace
     let multipleWorkspaces = await window.userHasMultipleWorkspaces();
 
-    console.log("excluded", excluded, "multipleWorkspaces", multipleWorkspaces)
+    console.log("excluded", excluded, "multipleWorkspaces", multipleWorkspaces);
 
-    if(excluded && multipleWorkspaces) {
-      // have them switch to a new workspace 
+    if (excluded && multipleWorkspaces) {
+      // have them switch to a new workspace
       let selectedWorkspace = await window.promptUserToSelectWorkspace(excluded);
 
-      await window.switchWorkspace(selectedWorkspace)
+      await window.switchWorkspace(selectedWorkspace);
 
-      // require that they re-run pre flight checks before continuing 
-      return false 
+      // require that they re-run pre flight checks before continuing
+      return false;
     } else if (excluded && !multipleWorkspaces) {
       // tell the user to request access to a separate workspace before using SODA
       await swalShowInfo("SODA Does not Support Your Workspace", 
@@ -611,7 +611,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
                          to a workspace that is supported by SODA.
                          `)
 
-      // exit SODA 
+      // exit SODA
       await window.electron.ipcRenderer.invoke("exit-soda");
     }
 
