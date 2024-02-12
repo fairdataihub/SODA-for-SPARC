@@ -598,9 +598,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
       // have them switch to a new workspace 
       let selectedWorkspace = await window.promptUserToSelectWorkspace(excluded);
 
-      if(!selectedWorkspace) return false 
-
-
+      await window.switchWorkspace(selectedWorkspace)
 
       // require that they re-run pre flight checks before continuing 
       return false 
