@@ -61,6 +61,7 @@ import {
   swalFileListTripleAction,
   swalFileListDoubleAction,
   swalShowError,
+  swalShowInfo
 } from "../utils/swal-utils";
 import canSmiley from "/img/can-smiley.png";
 import canSad from "/img/can-sad.png";
@@ -604,7 +605,11 @@ window.run_pre_flight_checks = async (check_update = true) => {
       return false 
     } else if (excluded && !multipleWorkspaces) {
       // tell the user to request access to a separate workspace before using SODA
-      await swalConfirmAction("warning", "Workspace Access Required", "SODA does not support the only workspace you have access to. Please request access to a different workspace before using SODA.", "Okay","Okay")
+      await swalShowInfo("SODA Does not Support Your Workspace", 
+                        `Please contact the SPARC curation team before continuing at
+                         <a href="mailto:curation@sparc.science">curation@sparc.science</a> to request access 
+                         to a workspace that is supported by SODA.
+                         `)
 
       // exit SODA 
       await window.electron.ipcRenderer.invoke("exit-soda");
