@@ -1326,16 +1326,14 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
   }
 };
 
-
 /**
- * 
+ *
  * @param {*} workspaceIsExcluded : bool - show different prompt if current workspace is excluded from SODA; false by default
  * @returns void if no workspace was selected or the selected workspace as a string
- * 
- * Prompts the user to select a workspace from the list of workspaces they have permission to access. 
+ *
+ * Prompts the user to select a workspace from the list of workspaces they have permission to access.
  */
 window.promptUserToSelectWorkspace = async (workspaceIsExcluded = false) => {
-
   // get the list of the user's available organizations
   //account is signed in but no datasets have been fetched or created
   //invoke dataset request to ensure no datasets have been created
@@ -1381,7 +1379,8 @@ window.promptUserToSelectWorkspace = async (workspaceIsExcluded = false) => {
       reverseButtons: window.reverseSwalButtons,
       showCloseButton: workspaceIsExcluded ? false : true,
       showCancelButton: workspaceIsExcluded ? false : true,
-      title: "<h3 style='margin-bottom:20px !important' id='workspace-title-text'>SODA does not support your current workspace</h3>",
+      title:
+        "<h3 style='margin-bottom:20px !important' id='workspace-title-text'>SODA does not support your current workspace</h3>",
       showClass: {
         popup: "animate__animated animate__fadeInDown animate__faster",
       },
@@ -1416,9 +1415,10 @@ window.promptUserToSelectWorkspace = async (workspaceIsExcluded = false) => {
         sweet_alrt.style.marginTop = "1rem";
 
         // handle the case where the user's current workspace is excluded from SODA
-        if(workspaceIsExcluded) {
+        if (workspaceIsExcluded) {
           let headerSubtext = document.createElement("p");
-          headerSubtext.innerText = "Switch to one of your other available workspaces to continue using SODA."
+          headerSubtext.innerText =
+            "Switch to one of your other available workspaces to continue using SODA.";
           headerSubtext.classList.add("tip-content");
           headerSubtext.style.marginTop = ".5rem";
 
@@ -1470,17 +1470,14 @@ window.promptUserToSelectWorkspace = async (workspaceIsExcluded = false) => {
       return;
     }
 
-    /// return the workspace 
-    return result
+    /// return the workspace
+    return result;
   }
 
-
-  return
-
-}
+  return;
+};
 
 window.switchWorkspace = async (selectedWorkspace) => {
-
   if (dropdownEventID === "dd-select-pennsieve-organization") {
     $("#ds-name").val(window.bfOrganization);
     $("#ds-description").val = $("#bf-dataset-subtitle").val;
@@ -1624,27 +1621,27 @@ window.switchWorkspace = async (selectedWorkspace) => {
   $("body").removeClass("waiting");
   $(".svg-change-current-account.organization").css("display", "block");
   $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
-}
+};
 
 window.isWorkspaceExcluded = async () => {
-  let excludedWorkspaces = ["N:organization:9ae9659b-2311-4d75-963e-0000aa055627"]
+  let excludedWorkspaces = ["N:organization:9ae9659b-2311-4d75-963e-0000aa055627"];
 
-  let userInfo = await api.getUserInformation()
+  let userInfo = await api.getUserInformation();
 
   let currentWorkspace = userInfo.preferredOrganization;
 
   if (excludedWorkspaces.includes(currentWorkspace)) {
-    return true
+    return true;
   }
 
-  return false
-}
+  return false;
+};
 
 window.userHasMultipleWorkspaces = async () => {
-  let workspaces = await api.getOrganizations()
-  workspaces = workspaces["organizations"]
-  return workspaces.length > 1
-}
+  let workspaces = await api.getOrganizations();
+  workspaces = workspaces["organizations"];
+  return workspaces.length > 1;
+};
 
 var dropdownEventID = "";
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
@@ -2162,9 +2159,9 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     let selectedWorkspace = await window.promptUserToSelectWorkspace(ev);
 
     // user does not want to switch workspaces
-    if (!selectedWorkspace) return
+    if (!selectedWorkspace) return;
 
-    await window.switchWorkspace(selectedWorkspace)
+    await window.switchWorkspace(selectedWorkspace);
   }
 };
 
