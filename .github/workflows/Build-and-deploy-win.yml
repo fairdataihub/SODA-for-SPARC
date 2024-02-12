@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-
+      - no-welcome-workspace
 jobs:
   deploy-on-windows:
     runs-on: windows-latest
