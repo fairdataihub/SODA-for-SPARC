@@ -1,3 +1,4 @@
+import log from "electron-log";
 import api from "../api/api";
 import { showHideDropdownButtons, confirm_click_account_function } from "../../globals";
 import Swal from "sweetalert2";
@@ -46,6 +47,16 @@ const userErrorMessage = (error) => {
   // Check for Axios error with a server response:
   if (error.response) {
     const { data, status } = error.response;
+    const requestUrl = error?.config?.url;
+    const requestMethod = error?.config?.method;
+    const errorMessage = data?.message;
+
+    // Log details of the Axios error for debugging purposes:
+    log.error("\n");
+    log.error("[userErrorMessage] Axios Request Error:");
+    log.error(`Request Method: ${requestMethod}`);
+    log.error(`Request URL: ${requestUrl}`);
+    log.error(`Error Message: ${errorMessage}`);
 
     // Handle specific error cases:
     switch (status) {
@@ -60,17 +71,28 @@ const userErrorMessage = (error) => {
         return "The requested resource could not be found. Please check the URL and try again.";
       default:
         // Generic server error:
-        return `An error occurred while processing your request. Please try again later. (Server response: ${status})`;
+        return `An error occurred while processing your request. Please try again later.`;
     }
   }
 
-  // Check for Axios error without a server response:
+  // Check for error with no server response:
   if (error.request) {
-    console.error(error); // Log the error for debugging
+    const requestUrl = error?.config?.url;
+    const requestMethod = error?.config?.method;
+
+    // Log details of the no-response error for debugging purposes:
+    log.error("\n");
+    log.error("[userErrorMessage] No Response Error:");
+    log.error(`Request Method: ${requestMethod}`);
+    log.error(`Request URL: ${requestUrl}`);
+
     return "There was a problem connecting to the server. Please check your internet connection and try again.";
   }
 
-  // Generic error:
+  // Log the generic error for debugging purposes:
+  log.error("\n");
+  log.error("\n[userErrorMessage] Generic Error:");
+  log.error(JSON.stringify(error, null, 2));
   return "An unexpected error occurred. Please try again or contact support for assistance.";
 };
 

@@ -13,6 +13,7 @@ import { swalShowError } from "./utils/swal-utils";
 // // Contributors table for the dataset description editing page
 const currentConTable = document.getElementById("table-current-contributors");
 
+log.info("test");
 // // function to show dataset or account Confirm buttons
 const showHideDropdownButtons = (category, action) => {
   if (category === "dataset") {
