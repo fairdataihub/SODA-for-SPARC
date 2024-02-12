@@ -1358,8 +1358,8 @@ window.promptUserToSelectWorkspace = async (workspaceIsExcluded = false) => {
     // deconstruct the names to the organization list
     for (const org in orgs) {
       // do not add excluded workspaces to the list of selectable workspaces in SODA
-      if (window.excludedWorkspaces.includes(orgs[org]["organization"]["name"]) ) {
-        continue
+      if (window.excludedWorkspaces.includes(orgs[org]["organization"]["name"])) {
+        continue;
       }
       window.organizationList.push(orgs[org]["organization"]["name"]);
       window.organizationNameToIdMapping[orgs[org]["organization"]["name"]] =
@@ -1626,7 +1626,6 @@ window.switchWorkspace = async (selectedWorkspace) => {
   $(".svg-change-current-account.organization").css("display", "block");
   $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
 };
-
 
 window.excludedWorkspaces = ["N:organization:9ae9659b-2311-4d75-963e-0000aa055627"];
 
