@@ -45,6 +45,8 @@ const clientError = (error) => {
  */
 const userErrorMessage = (error) => {
   // Check for Axios error with a server response:
+
+  const reachOutMessage = `Please try again or reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>`;
   if (error.response) {
     const { data, status } = error.response;
     const requestUrl = error?.config?.url;
@@ -65,13 +67,10 @@ const userErrorMessage = (error) => {
         return `Your dataset is locked. To make changes, please contact the SPARC Curation Team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science</a>.`;
       case 401:
         // Unauthorized error:
-        return "You are not authorized to perform this action. Please check your credentials and try again.";
-      case 404:
-        // Resource not found error:
-        return "The requested resource could not be found. Please check the URL and try again.";
+        return `You do not have permission to perform this action. ${reachOutMessage}`;
       default:
         // Generic server error:
-        return `An error occurred while processing your request. Please try again later.`;
+        return `An error occurred while processing your request. ${reachOutMessage}`;
     }
   }
 
@@ -86,19 +85,16 @@ const userErrorMessage = (error) => {
     log.error(`Request Method: ${requestMethod}`);
     log.error(`Request URL: ${requestUrl}`);
 
-    return "There was a problem connecting to the server. Please check your internet connection and try again.";
+    return `The server did not respond to your request. ${reachOutMessage}`;
   }
 
   // Log the generic error for debugging purposes:
   log.error("\n");
   log.error("\n[userErrorMessage] Generic Error:");
   log.error(JSON.stringify(error, null, 2));
-  return "An unexpected error occurred. Please try again or contact support for assistance.";
-};
 
-const authenticationError = (error) => {
-  if (!error.response) return false;
-  return error.response.status === 401;
+  // Return a generic error
+  return error.message;
 };
 
 window.defaultProfileMatchesCurrentWorkspace = async () => {
@@ -227,4 +223,4 @@ window.switchToCurrentWorkspace = async () => {
   await window.addBfAccount(null, true);
 };
 
-export { clientError, userErrorMessage, authenticationError };
+export { clientError, userErrorMessage };
