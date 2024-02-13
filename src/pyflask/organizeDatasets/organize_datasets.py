@@ -985,7 +985,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             return file_name + ("." + extension)
 
 
-    def createFolderStructure(subfolder_json, pennsieve_client_or_token, manifest):
+    def createFolderStructure(subfolder_json, manifest):
         """
             Function for creating the Pennsieve folder structure for a given dataset as an object stored locally.
             Arguments:
@@ -998,8 +998,9 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         global create_soda_json_progress
         
         collection_id = subfolder_json["path"]
+        token = get_access_token()
 
-        headers = create_request_headers(pennsieve_client_or_token)
+        headers = create_request_headers(token)
 
         r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
         r.raise_for_status()
@@ -1023,6 +1024,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         
                     # verify timestamps
                     timestamp = items["content"]["createdAt"].replace('.', ',')
+
                     paths_list = [*subfolder_json["bfpath"]]
                     subfolder_json["files"][folder_item_name] = {
                         "action": ["existing"],
@@ -1146,7 +1148,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         if len(subfolder_json["folders"].keys()) != 0:  # there are subfolders
             for folder in subfolder_json["folders"].keys():
                 subfolder = subfolder_json["folders"][folder]
-                createFolderStructure(subfolder, pennsieve_client_or_token, manifest)
+                createFolderStructure(subfolder, manifest)
 
     # START
     start = timer()
@@ -1246,7 +1248,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
                 if item_name in manifest_dict:
                     createFolderStructure(
-                        high_lvl_folder_dict, token, manifest_dict[item_name]
+                        high_lvl_folder_dict, manifest_dict[item_name]
                     )  # passing item's json and the collection ID
 
 
