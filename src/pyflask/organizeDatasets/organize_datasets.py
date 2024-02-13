@@ -31,6 +31,7 @@ from namespaces import NamespaceEnum, get_namespace_logger
 from openpyxl.styles import PatternFill
 from openpyxl import load_workbook
 from utils import load_metadata_to_dataframe
+from manifest import ManifestWriterStandaloneAlgorithm
 
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
 from authentication import get_access_token
@@ -1268,6 +1269,14 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     end = timer()
     namespace_logger.info(f"Time to import {soda_json_structure['bf-dataset-selected']['dataset-name']} dataset: {timedelta(seconds=end - start)}")
+   
+    # todo: write it here
+    # get path to Desktop 
+
+    dkp = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop', "manifests")
+    mw = ManifestWriterStandaloneAlgorithm(soda_json_structure, dkp)
+    ManifestWriterStandaloneAlgorithm.write(soda_json_structure)
+
     return {
         "soda_object": soda_json_structure,
         "success_message": success_message,
@@ -1275,6 +1284,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "import_progress": create_soda_json_progress,
         "import_total_items": create_soda_json_total_items,
     }
+
 
 def monitor_pennsieve_json_progress():
     """

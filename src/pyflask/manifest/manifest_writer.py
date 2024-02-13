@@ -586,7 +586,7 @@ class ManifestWriterStandaloneAlgorithm(ManifestWriter):
 
         # create the manifest file
         # handle updating any existing manifest files on Pennsieve
-        update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress, self.manifest_path)
+        # update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress, self.manifest_path)
 
 
         recursive_item_path_create(soda_json_structure["dataset-structure"], [])
