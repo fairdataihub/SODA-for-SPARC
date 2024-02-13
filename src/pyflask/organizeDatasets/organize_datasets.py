@@ -1275,7 +1275,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     dkp = os.path.join(os.path.join("home", "soda", 'Desktop', "manifests"))
     mw = ManifestWriterStandaloneAlgorithm(soda_json_structure, dkp)
-    ManifestWriterStandaloneAlgorithm.write(soda_json_structure)
+    mw.write(soda_json_structure, get_access_token())
 
     return {
         "soda_object": soda_json_structure,
