@@ -867,7 +867,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
           To update your Pennsieve Agent, please visit the link below and follow the instructions.
           <br />
           <br />
-          <a href="${agentDownloadUrl}" target="_blank">Download the latest Pennsieve agent</a>
+          <a href="${agentDownloadUrl}" target="_blank" rel="noopener noreferrer">Download the latest Pennsieve agent</a>
           <br />
           <br />
           Once you have updated your Pennsieve agent, please click the button below to ensure that the Pennsieve agent was updated correctly.
