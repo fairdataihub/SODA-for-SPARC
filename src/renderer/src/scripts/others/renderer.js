@@ -569,10 +569,15 @@ window.run_pre_flight_checks = async (check_update = true) => {
 
       // If user chose to log in, open the dropdown prompt
       if (userChoseToLogIn) {
+        // TODO: The user can cancel at anytime without adding an account. We return false in that case
         await window.addBfAccount(null, false);
       } else {
         return false;
       }
+
+      // user did not add an account so return false
+      // TODO: Add notyf 
+      if(!window.defaultBfAccount) return false
 
       // check that the valid api key in the default profile is for the user's current workspace
       // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
