@@ -576,8 +576,8 @@ window.run_pre_flight_checks = async (check_update = true) => {
       }
 
       // user did not add an account so return false
-      // TODO: Add notyf 
-      if(!window.defaultBfAccount) return false
+      // TODO: Add notyf
+      if (!window.defaultBfAccount) return false;
 
       // check that the valid api key in the default profile is for the user's current workspace
       // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
