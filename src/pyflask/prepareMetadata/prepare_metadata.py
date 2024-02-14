@@ -214,15 +214,13 @@ def subscriber_metadata(ps, events_dict):
             ps.unsubscribe(10)
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
-
-    token = get_access_token()    
     # check that the Pennsieve dataset is valid
-    selected_dataset_id = get_dataset_id(token, bfdataset)
+    selected_dataset_id = get_dataset_id(bfdataset)
 
     # check that the user has permissions for uploading and modifying the dataset
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permissions to edit this dataset.")
-    headers = create_request_headers(token)
+    headers = create_request_headers(get_access_token())
     # handle duplicates on Pennsieve: first, obtain the existing file ID
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
     r.raise_for_status()
@@ -881,11 +879,9 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
 
 # import existing metadata files except Readme and Changes from Pennsieve
 def import_ps_metadata_file(file_type, ui_fields, bfdataset):
-    token = get_access_token()
+    selected_dataset_id = get_dataset_id(bfdataset)
 
-    selected_dataset_id = get_dataset_id(token, bfdataset)
-
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(token))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
 
     ds_items = r.json()["children"]
@@ -893,20 +889,20 @@ def import_ps_metadata_file(file_type, ui_fields, bfdataset):
     for i in ds_items:
         if i["content"]["name"] == file_type:
             item_id = i["content"]["id"]
-            url = returnFileURL(token, item_id)
+            url = returnFileURL(get_access_token(), item_id)
 
             if file_type == "submission.xlsx":
-                return load_existing_submission_file(url, item_id, token)
+                return load_existing_submission_file(url, item_id, get_access_token())
 
             elif file_type == "dataset_description.xlsx":
                 # bf is the old signifier for pennsieve
-                return load_existing_DD_file("bf", url, item_id, token)
+                return load_existing_DD_file("bf", url, item_id, get_access_token())
 
             elif file_type == "subjects.xlsx":
-                return convert_subjects_samples_file_to_df("subjects", url, ui_fields, item_id, token)
+                return convert_subjects_samples_file_to_df("subjects", url, ui_fields, item_id, get_access_token())
 
             elif file_type == "samples.xlsx":
-                return convert_subjects_samples_file_to_df("samples", url, ui_fields, item_id, token)
+                return convert_subjects_samples_file_to_df("samples", url, ui_fields, item_id, get_access_token())
             
             elif file_type == "code_description.xlsx":
                 # Simply return true since we don't currently have a UI for code_description
@@ -921,11 +917,9 @@ def import_ps_metadata_file(file_type, ui_fields, bfdataset):
 def import_ps_RC(bfdataset, file_type):
     file_type = file_type + ".txt"
 
-    token = get_access_token()
+    dataset_id = get_dataset_id(bfdataset)
 
-    dataset_id = get_dataset_id(token, bfdataset)
-
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(token))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
 
     items = r.json()
@@ -933,7 +927,7 @@ def import_ps_RC(bfdataset, file_type):
     for item in items["children"]:
         if item["content"]["name"] == file_type:
             item_id = item["content"]["id"]
-            url = returnFileURL(token, item_id)
+            url = returnFileURL(get_access_token(), item_id)
             r = requests.get(url)
             return {"text": r.text}
 

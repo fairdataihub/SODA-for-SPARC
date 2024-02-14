@@ -1005,8 +1005,7 @@ def ps_create_new_dataset(datasetname, ps):
             abort(400, error)
 
         try:
-            token = get_access_token()
-            dataset_list = get_users_dataset_list(token)
+            dataset_list = get_users_dataset_list()
         except Exception as e:
             abort(500, "Error: Failed to retrieve datasets from Pennsieve. Please try again later.")
 
@@ -2807,13 +2806,12 @@ def handle_duplicate_package_name_error(e, soda_json_structure):
 
     raise e
 
-def ps_check_dataset_files_validity(soda_json_structure, ps):
+def ps_check_dataset_files_validity(soda_json_structure):
     """
     Function to check that the bf data files and folders specified in the dataset are valid
 
     Args:
         dataset_structure: soda dict with information about all specified files and folders
-        ps: pennsieve http object
     Output:
         error: error message with list of non valid local data files, if any
     """
@@ -2831,7 +2829,7 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
         """
         global PENNSIEVE_URL
         # get the folder content through Pennsieve api
-        r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps))
+        r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         folder_content = r.json()["children"]
 
@@ -2846,7 +2844,7 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                     file_id = file["path"]
                     if "moved" in file_actions:
                         try:
-                            r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/view", headers=create_request_headers(ps))
+                            r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/view", headers=create_request_headers(get_access_token()))
                             r.raise_for_status()
                         except Exception as e:
                             error.append(f"{relative_path} id: {file_id}")
@@ -2863,7 +2861,7 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                     folder_action = folder["action"]
                     if "moved" in folder_action:
                         try:
-                            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps))
+                            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(get_access_token()))
                             r.raise_for_status()
                         except Exception as e:
                             error.append(f"{relative_path} id: {folder_id}")
@@ -2879,9 +2877,8 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
     error = []
     # check that the files and folders specified in the dataset are valid
     dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
-    token= get_access_token()
-    dataset_id = get_dataset_id(token, dataset_name)
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(token))
+    dataset_id = get_dataset_id(dataset_name)
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
     root_folder = r.json()["children"]
 
@@ -2896,7 +2893,7 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                     collection_actions = folder["action"]
                     if "moved" in collection_actions:
                         try:
-                            r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}/view", headers=create_request_headers(ps))
+                            r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}/view", headers=create_request_headers(get_access_token()))
                             r.raise_for_status()
                         except Exception as e:
                             error.append(f"{relative_path} id: {collection_id}")
@@ -3100,8 +3097,7 @@ def main_curate_function(soda_json_structure):
                 "Checking that the selected Pennsieve dataset is valid"
             )
             bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
-            token = get_access_token()
-            selected_dataset_id = get_dataset_id(token, bfdataset)
+            selected_dataset_id = get_dataset_id(bfdataset)
 
         except Exception as e:
             main_curate_status = "Done"
@@ -3109,7 +3105,7 @@ def main_curate_function(soda_json_structure):
 
         # check that the user has permissions for uploading and modifying the dataset
         main_curate_progress_message = "Checking that you have required permissions for modifying the selected dataset"
-        role = pennsieve_get_current_user_permissions(selected_dataset_id, token)["role"]
+        role = pennsieve_get_current_user_permissions(selected_dataset_id, get_access_token())["role"]
         if role not in ["owner", "manager", "editor"]:
             main_curate_status = "Done"
             abort(403, "Error: You don't have permissions for uploading to this Pennsieve dataset")
@@ -3158,7 +3154,7 @@ def main_curate_function(soda_json_structure):
                     "Checking that the Pennsieve files and folders are valid"
                 )
                 if soda_json_structure["generate-dataset"]["destination"] == "bf":
-                    if error := ps_check_dataset_files_validity(soda_json_structure, ps):
+                    if error := ps_check_dataset_files_validity(soda_json_structure):
                         namespace_logger.info("Failed to validate dataset files")
                         namespace_logger.info(error)
                         main_curate_status = "Done"

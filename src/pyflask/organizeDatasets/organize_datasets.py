@@ -998,11 +998,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         global create_soda_json_progress
         
         collection_id = subfolder_json["path"]
-        token = get_access_token()
 
-        headers = create_request_headers(token)
-
-        r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         subfolder = r.json()["children"]
 
@@ -1160,11 +1157,11 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     except Exception as e:
         raise e
 
-    selected_dataset_id = get_dataset_id(token, bf_dataset_name)
+    selected_dataset_id = get_dataset_id(bf_dataset_name)
 
     # check that the user has permission to edit this dataset
     try:
-        role = pennsieve_get_current_user_permissions(selected_dataset_id, token)["role"]
+        role = pennsieve_get_current_user_permissions(selected_dataset_id, get_access_token())["role"]
         if role not in ["owner", "manager", "editor"]:
             curatestatus = "Done"
             raise Exception("You don't have permissions for uploading to this Pennsieve dataset")
@@ -1180,18 +1177,14 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "folders": {},
     }
 
-
-    # headers for making requests to Pennsieve's api
-    headers = create_request_headers(token)
-
     # root of dataset is pulled here (high level folders/files are gathered here)
     # root_folder is the files and folders within root
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
     root_folder = r.json()["children"]
 
     # Get the amount of files/folders in the dataset
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=headers)
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
     packages_list = r.json()
 
@@ -1218,7 +1211,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
             manifest_dict[item_name] = {}
             # Check the content of the folder to see if a manifest file exists
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}", headers=headers)
+            r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}", headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             folder_content = r.json()["children"]
 

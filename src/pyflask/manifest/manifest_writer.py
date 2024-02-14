@@ -39,8 +39,7 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
     Updates old manifest files with new information from the dataset. Also creates new manifest files if they don't exist.
     Used in the standalone manifest workflow for Pennsieve datasets. 
     """
-    token = get_access_token()
-    dataset_id = get_dataset_id(token, soda_json_structure["bf-dataset-selected"]["dataset-name"])
+    dataset_id = get_dataset_id(soda_json_structure["bf-dataset-selected"]["dataset-name"])
 
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/packages", headers=create_request_headers(ps))
     r.raise_for_status()

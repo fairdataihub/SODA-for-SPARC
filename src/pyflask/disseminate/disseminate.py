@@ -28,15 +28,13 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
     Return:
         Current doi or "None"
     """
-    token = get_access_token()
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
-
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/doi", headers=create_request_headers(token))
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/doi", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         result = r.json()
 
@@ -57,12 +55,9 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
     Return:
         Success or error message
     """
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
-
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
     try:
@@ -73,7 +68,7 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         raise e
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/contributors", headers=create_request_headers(token))
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/contributors", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         contributors = r.json()
         creators_list = [
@@ -89,7 +84,7 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
             "creators": creators_list,
         }
         
-        r = requests.post(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/doi", headers=create_request_headers(token), json=jsonfile)
+        r = requests.post(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/doi", headers=create_request_headers(get_access_token()), json=jsonfile)
         r.raise_for_status()
 
         return {"message": "Done!"}
@@ -108,19 +103,16 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     Return:
         Current req publishing status
     """
-
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", headers=create_request_headers(token))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
     review_request_status = r.json()["publication"]["status"]
 
 
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/published", headers=create_request_headers(token))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/published", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
     publishing_status = r.json()["status"]
 
@@ -152,17 +144,15 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
         Return:
             Success or error message
     """
-    token = get_access_token()
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
-
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
         
     qs = construct_publication_qs(publication_type, embargo_release_date)
 
     try:
-        r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(token))
+        r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         return r.json()
     except Exception as e:
@@ -189,17 +179,15 @@ def get_publication_type(ps_or_token, selected_dataset_id):
 
 def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
 
-    token = get_access_token()
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
-
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
-    publication_type = get_publication_type(token, selected_dataset_id)
+    publication_type = get_publication_type(get_access_token(), selected_dataset_id)
 
     try:
-        r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/cancel?publicationType={publication_type}", headers=create_request_headers(token))
+        r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/cancel?publicationType={publication_type}", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         return {"message": "Your dataset publication has been cancelled."}
     except Exception as e:
@@ -232,12 +220,9 @@ def get_metadata_files(selected_dataset, pennsieve_account):
     Return:
         List of metadata files
     """
+    selected_dataset_id = get_dataset_id(selected_dataset)
 
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, selected_dataset)
-
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(token))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
     resp = r.json()
     if "children" not in resp:
