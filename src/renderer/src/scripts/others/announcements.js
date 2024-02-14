@@ -67,7 +67,7 @@ const checkForAnnouncements = async (state) => {
           `;
 
       await Swal.fire({
-        title: `Welcome to SODA for SPARC ${appVersion} for ${platform}`,
+        title: `What's new in SODA V${appVersion} for ${platform}`,
         html: htmlMessage,
         icon: "info",
         heightAuto: false,
