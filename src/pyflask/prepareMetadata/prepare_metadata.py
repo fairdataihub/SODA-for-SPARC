@@ -258,7 +258,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     except Exception as e:
         namespace_logger.error("Error uploading dataset files")
         namespace_logger.error(e)
-        raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
+        raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
 
     # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
@@ -696,7 +696,7 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields, item_id=None,
         if "subject id" not in list(subjects_df.columns.values):
             abort(
                 400, 
-                "The header 'subject id' is required to import an existing subjects file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/subjects.xlsx'>template</a> of the subjects file."
+                "The header 'subject id' is required to import an existing subjects file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' rel='noopener noreferrer' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/subjects.xlsx'>template</a> of the subjects file."
             )
 
         elif checkEmptyColumn(subjects_df["subject id"]):
@@ -711,7 +711,7 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields, item_id=None,
         if "subject id" not in list(subjects_df.columns.values) or "sample id" not in list(subjects_df.columns.values):
             abort(
                 400,
-                "The headers 'subject id' and 'sample id' are required to import an existing samples file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/samples.xlsx'>template</a> of the samples file."
+                "The headers 'subject id' and 'sample id' are required to import an existing samples file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' rel='noopener noreferrer' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/samples.xlsx'>template</a> of the samples file."
             )
 
         if checkEmptyColumn(subjects_df["sample id"]) or checkEmptyColumn(
@@ -846,7 +846,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
         if key not in submission_data_frame_lowercased:
             abort(
                 400,
-                "The imported file columns are not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.1.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
+                "The imported file columns are not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.1.0 <a target='_blank' rel='noopener noreferrer' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
 
     basicHeaders = [x.lower() for x in basicHeaders]
@@ -855,7 +855,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
         if header_name not in set(submissionItems):
             abort(
                 400,
-                "The imported file headers are not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.1.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
+                "The imported file headers are not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.1.0 <a target='_blank' rel='noopener noreferrer' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
 
 
@@ -1096,19 +1096,19 @@ def load_existing_DD_file(import_type, filepath, item_id=None, token=None):
     for key in ["Metadata element", "Description", "Example", "Value"]:
         if key not in DD_df:
             abort(400, 
-                "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
+                "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' rel='noopener noreferrer' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
             )
 
     if "Metadata element" not in DD_df:
         abort(400, 
-            "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
+            "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' rel='noopener noreferrer' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
         )
 
     else:
         for header_name in header_list:
             if header_name not in set(DD_df["Metadata element"]):
                 abort(400, 
-                    "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
+                    "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' rel='noopener noreferrer' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
                 )
 
     if non_empty_1st_value := checkEmptyColumn(DD_df["Value"]):

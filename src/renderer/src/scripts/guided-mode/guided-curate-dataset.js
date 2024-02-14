@@ -672,7 +672,7 @@ const savePageChanges = async (pageBeingLeftID) => {
               This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
               <br />
               <br />
-              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a  target="_blank" href="mailto:curation@sparc.science">curation@sparc.science.</a>
             `,
           });
           throw errorArray;
@@ -7823,7 +7823,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
             This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
             <br />
             <br />
-            If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+            If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a  target="_blank" rel="noopener noreferrer" href="mailto:curation@sparc.science">curation@sparc.science.</a>
           `);
         }
 
@@ -9416,7 +9416,7 @@ window.openGuidedAddContributorSwal = async () => {
             contenteditable="true"
           />
           <p class="guided--text-input-instructions mb-0 text-left">
-            Role(s) the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for a definition of the roles.
+            Role(s) the contributor played in the creation of the dataset. Visit <a  target="_blank" rel="noopener noreferrer" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for a definition of the roles.
             <br />
             <b>
               Select a role from the dropdown to add it to the list.

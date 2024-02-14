@@ -1005,7 +1005,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           icon: "error",
           html: userErrorMessage(error),
           footer:
-            "<a href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
+            "<a target='_blank' rel='noopener noreferrer' href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
         });
         showHideDropdownButtons("account", "hide");
       }
@@ -1018,7 +1018,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
       titleText = `<h3 style="text-align:center">Grant SODA access to your current workspace</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`;
     }
 
-    let footerText = `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account</a>`;
+    let footerText = `<a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account</a>`;
     if (verifyingOrganization) {
       footerText = "";
     }
@@ -1133,7 +1133,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           if (response[0] == "failed") {
             let error_message = response[1];
             if (response[1]["message"] === "exceptions must derive from BaseException") {
-              error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to your desired workspace on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
+              error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to your desired workspace on Pennsieve. See our <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
             }
             if (response[1]["message"] === "Error: Username or password was incorrect.") {
               error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">Error: Username or password was incorrect</div>`;
@@ -1214,7 +1214,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           icon: "error",
           text: "Something went wrong!",
           footer:
-            '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+            '<a target="_blank" rel="noopener noreferrer" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
         });
         showHideDropdownButtons("account", "hide");
         confirm_click_account_function();
@@ -1306,7 +1306,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           icon: "error",
           text: "Something went wrong!",
           footer:
-            '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+            '<a target="_blank" rel="noopener noreferrer" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
         });
         showHideDropdownButtons("account", "hide");
         confirm_click_account_function();
@@ -1630,7 +1630,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
                   This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
                   <br />
                   <br />
-                  If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+                  If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a  target="_blank" href="mailto:curation@sparc.science">curation@sparc.science.</a>
                 `,
                 width: 600,
                 heightAuto: false,
@@ -2014,7 +2014,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         title: `<h3 style="text-align:center">To switch your organization please provide your email and password</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`,
         html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
           <input type="password" id="ps_password" class="swal2-input" placeholder="Password">
-          <p class="tip-content"> If you are using ORCID to sign in to Pennsieve view the official SODA docs <a href="https://docs.sodaforsparc.io/docs/how-to/how-to-use-workspaces" target="_blank">here</a> to learn how to change your workspace in SODA. </p>`,
+          <p class="tip-content"> If you are using ORCID to sign in to Pennsieve view the official SODA docs <a target="_blank" rel="noopener noreferrer" href="https://docs.sodaforsparc.io/docs/how-to/how-to-use-workspaces">here</a> to learn how to change your workspace in SODA. </p>`,
         showClass: {
           popup: "animate__animated animate__fadeInDown animate__faster",
         },
