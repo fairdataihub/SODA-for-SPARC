@@ -1027,6 +1027,9 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
       confirmButtonTextValue = "Grant Access";
     }
 
+    let addingAccountViaApiKey = false;
+    let addingAccountViaApiKeyEvent = null;
+
     let { value: result } = await Swal.fire({
       allowOutsideClick: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -1078,7 +1081,11 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           api_button.appendChild(api_arrow);
           swal_actions.parentElement.insertBefore(api_button, div_footer);
           swal_actions.parentElement.insertBefore(helpText, div_footer);
-          api_button.addEventListener("click", (e) => window.showBFAddAccountSweetalert(e));
+          api_button.addEventListener("click", async (e) => {
+            addingAccountViaApiKey = true;
+            addingAccountViaApiKeyEvent = e;
+            Swal.close();
+          });
         } else {
           // hide the cancel button
           let cancel_button = document.getElementsByClassName("swal2-cancel")[0];
@@ -1144,6 +1151,10 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
         }
       },
     });
+
+    if (addingAccountViaApiKey) {
+      await window.showBFAddAccountSweetalert(addingAccountViaApiKeyEvent);
+    }
 
     // failed to create a new profile and did not set the default profile to a previously existing one
     if (!result) return;
