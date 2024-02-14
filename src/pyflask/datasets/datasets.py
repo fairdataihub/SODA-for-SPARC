@@ -89,19 +89,16 @@ def remove_collection_names(account, dataset, tags):
     @params
         tags: List of collection ids (int)
     """
-
-    token = get_access_token()
-
     if dataset.startswith("N:dataset:"):
         selected_dataset_id = dataset
     else:
         selected_dataset_id = get_dataset_id(dataset)
 
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
     for tagid in tags:
-        r = requests.delete(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/collections/{str(tagid)}", headers=create_request_headers(token))
+        r = requests.delete(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/collections/{str(tagid)}", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
 
     return dict({"collection": "Collection removed"})

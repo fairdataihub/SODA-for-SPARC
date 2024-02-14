@@ -789,14 +789,11 @@ def ps_get_users(selected_bfaccount):
         list_users : list of users (first name -- last name) associated with the organization of the
         selected Pennsieve account (list of string)
     """
-
-    token = get_access_token()
-
-    org_id = get_user_information(token)["preferredOrganization"]
+    org_id = get_user_information(get_access_token())["preferredOrganization"]
         
     try:
         global PENNSIEVE_URL
-        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/members", headers=create_request_headers(token))
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/members", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         list_users = r.json()
         list_users_first_last = []
@@ -827,12 +824,10 @@ def ps_get_teams(selected_bfaccount):
         Provides list of teams belonging to the organization of
         the given Pennsieve account
     """
-    token = get_access_token()
-
     try:
-        org_id = get_user_information(token)["preferredOrganization"]
+        org_id = get_user_information(get_access_token())["preferredOrganization"]
         global PENNSIEVE_URL
-        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/teams", headers=create_request_headers(token))
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/teams", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         list_teams = r.json()
         
@@ -858,10 +853,9 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
     selected_dataset_id = get_dataset_id(selected_bfdataset)
 
     try:
-        headers = create_request_headers(get_access_token())
         # user permissions
         r = requests.get(
-            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=headers
+            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=create_request_headers(get_access_token())
         )
         r.raise_for_status()
         list_dataset_permission = r.json()
@@ -876,7 +870,7 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
 
         # team permissions
         r = requests.get(
-            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", headers=headers
+            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", headers=create_request_headers(get_access_token())
         )
         r.raise_for_status()
         list_dataset_permission_teams = r.json()
@@ -894,7 +888,7 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
 
         # Organization permissions
         r = requests.get(
-            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/organizations", headers=headers
+            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/organizations", headers=create_request_headers(get_access_token())
         )
         r.raise_for_status()
         list_dataset_permission_organizations = r.json()
@@ -950,12 +944,10 @@ def ps_add_permission(
 
     selected_dataset_id = get_dataset_id(selected_bfdataset)
 
-    headers = create_request_headers(get_access_token())
-
     try:
         c = 0
         organization_id = get_user_information(get_access_token())["preferredOrganization"]
-        r  = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/members", headers=headers)
+        r  = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/members", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         list_users = r.json()
         for i in range(len(list_users)):
@@ -983,13 +975,13 @@ def ps_add_permission(
 
     try:
         # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
-        r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         current_user = r.json()
         first_name_current_user = current_user["firstName"]
         last_name_current_user = current_user["lastName"]
 
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         list_dataset_permission = r.json()
         c = 0
@@ -1018,7 +1010,7 @@ def ps_add_permission(
         if selected_role == "remove current permissions":
             try:
                 jsonfile = {"id": selected_user_id}
-                r = requests.delete(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", json=jsonfile, headers=headers)
+                r = requests.delete(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", json=jsonfile, headers=create_request_headers(get_access_token()))
                 r.raise_for_status()
             except Exception as e:
                 raise Exception(e) from e
@@ -1027,12 +1019,12 @@ def ps_add_permission(
             # check if currently logged in user is owner of selected dataset (only owner can change owner)
             # change owner
             jsonfile = {"id": selected_user_id}
-            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/owner", json=jsonfile, headers=headers)
+            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/owner", json=jsonfile, headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             return {"message":  "Permission " + "'" + selected_role + "' " + " added for " + selected_user}
         else:
             jsonfile = {"id": selected_user_id, "role": selected_role}
-            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", json=jsonfile, headers=headers)
+            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", json=jsonfile, headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             return {"message": "Permission " + "'" + selected_role + "' " + " added for " + selected_user}
     except Exception as e:
@@ -1069,10 +1061,8 @@ def ps_add_permission_team(
         error = error + "Please select a valid Pennsieve dataset" + "<br>"
         c += 1
 
-    headers = create_request_headers(get_access_token())
-
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/organizations/{organization_id}/teams", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{organization_id}/teams", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         list_teams = r.json()
         dict_teams = {}
@@ -1102,12 +1092,12 @@ def ps_add_permission_team(
         selected_team_id = dict_teams[selected_team]
 
         # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
-        r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         current_user = r.json()
         first_name_current_user = current_user["firstName"]
         last_name_current_user = current_user["lastName"]
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=create_request_headers(get_access_token()))
         r.raise_for_status
         list_dataset_permission = r.json()
         c = 0
@@ -1129,12 +1119,12 @@ def ps_add_permission_team(
 
         if selected_role == "remove current permissions":
             jsonfile = {"id": selected_team_id}
-            r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=headers)
+            r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             return {"message": "Permission removed for " + selected_team}
         else:
             jsonfile = {"id": selected_team_id, "role": selected_role}
-            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=headers)
+            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             return {"message": "Permission " + "'" + selected_role + "' " + " added for " + selected_team}
     except Exception as e:
@@ -1399,16 +1389,14 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
     selected_dataset_id = get_dataset_id(selected_bfdataset)
 
     try:
-        headers = create_request_headers(get_access_token())
-
         # get list of available status options
         organization_id = get_user_information(get_access_token())["preferredOrganization"]
-        r = requests.get(f"{PENNSIEVE_URL}/organizations/{organization_id}/dataset-status", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{organization_id}/dataset-status", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         list_status = r.json()
 
         # get current status of select dataset
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers) 
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token())) 
         r.raise_for_status()
         dataset_current_status = r.json()["content"]["status"]
 
@@ -1426,11 +1414,10 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
         abort(403, "You do not have permission to edit this dataset.")
 
     try:
-        headers = create_request_headers(get_access_token())
         # find name corresponding to display name or show error message
         organization_id = get_user_information(get_access_token())["preferredOrganization"]
         r = requests.get(
-            f"{PENNSIEVE_URL}/organizations/{organization_id}/dataset-status", headers=headers
+            f"{PENNSIEVE_URL}/organizations/{organization_id}/dataset-status", headers=create_request_headers(get_access_token())
         )
         r.raise_for_status()
         list_status = r.json()
@@ -1445,7 +1432,7 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
 
         # change dataset status
         jsonfile = {"status": new_status}
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=headers)
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         return { "message": "Success: Changed dataset status to '" + selected_status + "'" }
     except Exception as e:

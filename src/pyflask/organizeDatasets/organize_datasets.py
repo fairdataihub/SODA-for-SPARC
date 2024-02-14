@@ -1149,7 +1149,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # START
     start = timer()
-    token = get_access_token()
 
     # check that the Pennsieve dataset is valid
     try:
@@ -1224,10 +1223,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         package_id = package["content"]["id"]
                         try:                            
                             if package_name.lower() == "manifest.xlsx":
-                                df = load_metadata_to_dataframe(package_id, "excel", token)
+                                df = load_metadata_to_dataframe(package_id, "excel", get_access_token())
                                 df = df.fillna("")
                             else:
-                                df = load_metadata_to_dataframe(package_id, "csv", token)
+                                df = load_metadata_to_dataframe(package_id, "csv", get_access_token())
                                 df = df.fillna("")
                             manifest_dict[item_name].update(df.to_dict())
                         except Exception as e:

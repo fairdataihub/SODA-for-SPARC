@@ -951,8 +951,6 @@ def import_ps_manifest_file(soda_json_structure, bfdataset):
     manifest_progress["total_manifest_files"] = 0
     manifest_progress["manifest_files_uploaded"] = 0
 
-    token = get_access_token()
-
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
     # convert the string into a json object/dictionary
     if(str(type(soda_json_structure)) == "<class 'str'>"):
@@ -971,7 +969,7 @@ def import_ps_manifest_file(soda_json_structure, bfdataset):
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
 
     # handle updating any existing manifest files on Pennsieve
-    update_existing_pennsieve_manifest_files(token, soda_json_structure, high_level_folders, manifest_progress, manifest_folder_path)
+    update_existing_pennsieve_manifest_files(soda_json_structure, high_level_folders, manifest_progress, manifest_folder_path)
 
     # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
     create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structure, manifest_folder_path, high_level_folders, manifest_progress)
