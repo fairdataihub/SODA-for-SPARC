@@ -1676,7 +1676,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
                         folder["files"][item]["folderpath"].copy(), 0, dataset_structure
                     )
                     # move the file into the target folder on Pennsieve
-                    r = requests.post(f"{PENNSIEVE_URL}/data/move",  json={"things": [folder["files"][item]["path"]], "destination": new_folder_id}, headers=create_request_headers(ps),)
+                    r = requests.post(f"{PENNSIEVE_URL}/data/move",  json={"things": [folder["files"][item]["path"]], "destination": new_folder_id}, headers=create_request_headers(ps))
                     r.raise_for_status()
 
         for item in list(folder["folders"]):
@@ -1936,7 +1936,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
             return list_manifest_files
 
-        def gather_metadata_files(soda_json_structure, ):
+        def gather_metadata_files(soda_json_structure):
             """
             Gather the metadata files from the soda json structure.
             Output: A list of the file path of the metadata files.
