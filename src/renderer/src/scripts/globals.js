@@ -1028,7 +1028,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
     }
 
     let addingAccountViaApiKey = false;
-    let addingAccountViaApiKeyEvent = null
+    let addingAccountViaApiKeyEvent = null;
 
     let { value: result } = await Swal.fire({
       allowOutsideClick: false,
@@ -1081,11 +1081,10 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           api_button.appendChild(api_arrow);
           swal_actions.parentElement.insertBefore(api_button, div_footer);
           swal_actions.parentElement.insertBefore(helpText, div_footer);
-          api_button.addEventListener("click", async (e) =>{
+          api_button.addEventListener("click", async (e) => {
             addingAccountViaApiKey = true;
             addingAccountViaApiKeyEvent = e;
-            Swal.close()
-
+            Swal.close();
           });
         } else {
           // hide the cancel button
@@ -1153,8 +1152,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
       },
     });
 
-
-    if(addingAccountViaApiKey) {
+    if (addingAccountViaApiKey) {
       await window.showBFAddAccountSweetalert(addingAccountViaApiKeyEvent);
     }
 
