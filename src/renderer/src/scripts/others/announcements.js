@@ -72,7 +72,7 @@ const checkForAnnouncements = async (state) => {
         icon: "info",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Okay",
+        confirmButtonText: "Get Started",
         allowOutsideClick: false,
         allowEscapeKey: false,
         didOpen: () => {
