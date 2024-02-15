@@ -1727,6 +1727,8 @@ const generateFFManifestEditCard = (highLevelFolderName) => {
 
 const renderFFManifestCards = () => {
   const manifestData = window.sodaCopy["manifest-files"];
+
+  console.log("manifestData", manifestData);
   const highLevelFoldersWithManifestData = Object.keys(manifestData);
 
   const manifestCards = highLevelFoldersWithManifestData

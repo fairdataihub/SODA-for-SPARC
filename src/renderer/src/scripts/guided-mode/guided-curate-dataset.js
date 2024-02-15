@@ -3397,12 +3397,26 @@ const updateManifestJson = async (highLvlFolderName, result) => {
   };
 };
 
+window.generateManifestFilesAtPath = async (path, manifestData) => {
+  for (const [highLevelFolder, manifestData] of Object.entries(manifestData)) {
+    const manifestJSON = window.processManifestInfo(manifestData["headers"], manifestData["data"]);
+
+    const stringifiedManifestJSON = JSON.stringify(manifestJSON);
+
+    const manifestPath = window.path.join(path, highLevelFolder, "manifest.xlsx");
+
+    window.fs.mkdirSync(window.path.join(path, highLevelFolder), { recursive: true });
+
+    window.convertJSONToXlsx(JSON.parse(stringifiedManifestJSON), manifestPath);
+  }
+};
 const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
   // First, empty the guided_manifest_files so we can add the new manifest files
   window.fs.emptyDirSync(window.guidedManifestFilePath);
 
   const guidedManifestData = window.sodaJSONObj["guided-manifest-files"];
   for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
+    //
     let manifestJSON = window.processManifestInfo(
       guidedManifestData[highLevelFolder]["headers"],
       guidedManifestData[highLevelFolder]["data"]
