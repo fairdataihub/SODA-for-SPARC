@@ -985,7 +985,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             return file_name + ("." + extension)
 
 
-    def createFolderStructure(subfolder_json, pennsieve_client_or_token, manifest):
+    def createFolderStructure(subfolder_json, manifest):
         """
             Function for creating the Pennsieve folder structure for a given dataset as an object stored locally.
             Arguments:
@@ -999,9 +999,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         
         collection_id = subfolder_json["path"]
 
-        headers = create_request_headers(pennsieve_client_or_token)
-
-        r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         subfolder = r.json()["children"]
 
@@ -1023,6 +1021,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         
                     # verify timestamps
                     timestamp = items["content"]["createdAt"].replace('.', ',')
+
                     paths_list = [*subfolder_json["bfpath"]]
                     subfolder_json["files"][folder_item_name] = {
                         "action": ["existing"],
@@ -1146,11 +1145,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         if len(subfolder_json["folders"].keys()) != 0:  # there are subfolders
             for folder in subfolder_json["folders"].keys():
                 subfolder = subfolder_json["folders"][folder]
-                createFolderStructure(subfolder, pennsieve_client_or_token, manifest)
+                createFolderStructure(subfolder, manifest)
 
     # START
     start = timer()
-    token = get_access_token()
 
     # check that the Pennsieve dataset is valid
     try:
@@ -1158,11 +1156,11 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     except Exception as e:
         raise e
 
-    selected_dataset_id = get_dataset_id(token, bf_dataset_name)
+    selected_dataset_id = get_dataset_id(bf_dataset_name)
 
     # check that the user has permission to edit this dataset
     try:
-        role = pennsieve_get_current_user_permissions(selected_dataset_id, token)["role"]
+        role = pennsieve_get_current_user_permissions(selected_dataset_id, get_access_token())["role"]
         if role not in ["owner", "manager", "editor"]:
             curatestatus = "Done"
             raise Exception("You don't have permissions for uploading to this Pennsieve dataset")
@@ -1178,18 +1176,14 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "folders": {},
     }
 
-
-    # headers for making requests to Pennsieve's api
-    headers = create_request_headers(token)
-
     # root of dataset is pulled here (high level folders/files are gathered here)
     # root_folder is the files and folders within root
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
     root_folder = r.json()["children"]
 
     # Get the amount of files/folders in the dataset
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=headers)
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
     packages_list = r.json()
 
@@ -1216,7 +1210,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
             manifest_dict[item_name] = {}
             # Check the content of the folder to see if a manifest file exists
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}", headers=headers)
+            r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}", headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             folder_content = r.json()["children"]
 
@@ -1229,10 +1223,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         package_id = package["content"]["id"]
                         try:                            
                             if package_name.lower() == "manifest.xlsx":
-                                df = load_metadata_to_dataframe(package_id, "excel", token)
+                                df = load_metadata_to_dataframe(package_id, "excel", get_access_token())
                                 df = df.fillna("")
                             else:
-                                df = load_metadata_to_dataframe(package_id, "csv", token)
+                                df = load_metadata_to_dataframe(package_id, "csv", get_access_token())
                                 df = df.fillna("")
                             manifest_dict[item_name].update(df.to_dict())
                         except Exception as e:
@@ -1246,7 +1240,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
                 if item_name in manifest_dict:
                     createFolderStructure(
-                        high_lvl_folder_dict, token, manifest_dict[item_name]
+                        high_lvl_folder_dict, manifest_dict[item_name]
                     )  # passing item's json and the collection ID
 
 

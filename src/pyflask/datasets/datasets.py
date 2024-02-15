@@ -13,12 +13,10 @@ from authentication import get_access_token
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
 def get_role(dataset):
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, dataset)
+    selected_dataset_id = get_dataset_id(dataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/role", headers=create_request_headers(token))
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/role", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         role = r.json()["role"]
         return {"role": role}
@@ -29,14 +27,12 @@ def get_role(dataset):
 
 
 def get_dataset_by_id(dataset_name_or_id):
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, dataset_name_or_id)
+    selected_dataset_id = get_dataset_id(dataset_name_or_id)
 
     headers = {
         "Accept": "*/*",
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {token}"
+        "Authorization": f"Bearer {get_access_token()}"
     }
 
     r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
@@ -51,11 +47,9 @@ def get_current_collection_names(account, dataset):
     """
     Function used to get collection names of the current dataset
     """
-    token = get_access_token()
+    selected_dataset_id = get_dataset_id(dataset)
 
-    selected_dataset_id = get_dataset_id(token, dataset)
-
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collections", headers=create_request_headers(token))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collections", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
 
     return r.json()
@@ -66,17 +60,16 @@ def upload_collection_names(account, dataset, tags):
     @params
         tags: List of the collection tag id's (int)
     """
-    token = get_access_token()
 
-    selected_dataset_id = get_dataset_id(token, dataset)
+    selected_dataset_id = get_dataset_id(dataset)
 
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
     
     store = []
     for tag in tags:
         jsonfile = {"collectionId": int(tag)}
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collections", json=jsonfile, headers=create_request_headers(token))
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collections", json=jsonfile, headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         result = r.json()
         for res_object in result:
@@ -96,19 +89,16 @@ def remove_collection_names(account, dataset, tags):
     @params
         tags: List of collection ids (int)
     """
-
-    token = get_access_token()
-
     if dataset.startswith("N:dataset:"):
         selected_dataset_id = dataset
     else:
-        selected_dataset_id = get_dataset_id(token, dataset)
+        selected_dataset_id = get_dataset_id(dataset)
 
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
     for tagid in tags:
-        r = requests.delete(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/collections/{str(tagid)}", headers=create_request_headers(token))
+        r = requests.delete(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/collections/{str(tagid)}", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
 
     return dict({"collection": "Collection removed"})
@@ -131,12 +121,10 @@ def reserve_dataset_doi(dataset):  # sourcery skip: extract-method
         state: State of the dataset (draft, published, etc.) (string)
         creators: List of creators of the dataset (list)
     """
-    token = get_access_token()
-
-    dataset_id = get_dataset_id(token, dataset)
+    dataset_id = get_dataset_id(dataset)
 
     try:
-        doi_request = requests.post(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(token))
+        doi_request = requests.post(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(get_access_token()))
         doi_request.raise_for_status()
         return {"doi": doi_request.json()["doi"]}
     except Exception as e:
@@ -161,11 +149,9 @@ def get_dataset_doi(dataset):
         state: State of the dataset (draft, published, etc.) (string)
         creators: List of creators of the dataset (list)
     """
-    token = get_access_token()
-
-    dataset_id = get_dataset_id(token, dataset)
+    dataset_id = get_dataset_id(dataset)
     try:
-        doi_request = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(token))
+        doi_request = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers( get_access_token()))
         if doi_request.status_code == 404:
             return {"doi": "No DOI found for this dataset"}
         doi_request.raise_for_status()
@@ -180,11 +166,9 @@ def get_package_type_counts(dataset_name):
     """
     Function used to get the package type counts of a dataset (package type counts are the amount of files in a dataset)
     """
-    token = get_access_token()
+    dataset_id = get_dataset_id(dataset_name)
 
-    dataset_id = get_dataset_id(token, dataset_name)
-
-    r = requests.get(f"https://api.pennsieve.io/datasets/{dataset_id}/packageTypeCounts", headers=create_request_headers(token))
+    r = requests.get(f"https://api.pennsieve.io/datasets/{dataset_id}/packageTypeCounts", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
 
     return r.json()
