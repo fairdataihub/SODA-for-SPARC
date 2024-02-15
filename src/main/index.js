@@ -134,6 +134,16 @@ ipcMain.on("orcid", (event, url) => {
   });
 });
 
+ipcMain.handle("open-folder-path-select", (event, type) => {
+  console.log("event", event, "type", type);
+  const path = dialog.showOpenDialogSync(mainWindow, {
+    properties: ["openDirectory"],
+    title: "Select a folder to copy the dataset to",
+  });
+  console.log(path);
+  return path;
+});
+
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits
 ipcMain.handle("spreadsheet", (event, spreadsheet) => {

@@ -469,6 +469,7 @@ ipcMain.on("restart_app", async () => {
   log.info("quitAndInstall");
   autoUpdater.quitAndInstall();
 });
+
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits
 ipcMain.handle("spreadsheet", (event, spreadsheet) => {
@@ -518,6 +519,8 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
     }
   });
 });
+
+ipcMain.handle("");
 const wait = async (delay) => {
   return new Promise((resolve) => setTimeout(resolve, delay));
 };
