@@ -5,6 +5,13 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.13.1.2 - 2024-02-15
+
+## Bug fixes:
+
+- Fixed issue that caused an error message to appear when a user tried to connect their Pennsieve API Key and Secret to SODA during the startup flow.
+- Fixed an issue preventing SODA from importing large datasets from Pennsieve due to the cached API token becoming stale before the import was complete.
+
 ## v.13.1.1 - 2024-02-06
 
 ## Bug fixes:

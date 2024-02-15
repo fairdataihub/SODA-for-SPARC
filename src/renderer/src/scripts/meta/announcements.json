@@ -1,4 +1,13 @@
 {
+  "13.1.2": {
+    "announcements": {
+      "bug-fixes": [
+        "Fixed an issue that caused an error message to appear when a user tried to connect their Pennsieve API Key and Secret to SODA during the startup flow.",
+        "Fixed an issue that caused dataset imports to fail if the import time exceeded a certain threshold."
+      ],
+      "features": []
+    }
+  },
   "13.1.1": {
     "announcements": {
       "bug-fixes": [
