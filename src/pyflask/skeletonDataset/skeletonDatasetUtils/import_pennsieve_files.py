@@ -88,16 +88,14 @@ def import_ps_metadata_files_skeleton(bfdataset, metadata_files):
 
     if not os.path.exists(path):
         os.makedirs(path)
-
-    token = get_access_token()
         
     try: 
-        selected_dataset_id = get_dataset_id(token, bfdataset)
+        selected_dataset_id = get_dataset_id(bfdataset)
     except Exception as e:
         raise Exception("Please select a valid Pennsieve dataset.") from e
 
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(token))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
 
     dataset = r.json()
@@ -107,11 +105,11 @@ def import_ps_metadata_files_skeleton(bfdataset, metadata_files):
                 item_id = child["content"]["id"]
                 if child["content"]["name"] in ["README.txt", "CHANGES.txt"]:
                     # make a request to the zipit service directly
-                    url = returnFileURL(token, item_id)
+                    url = returnFileURL(get_access_token(), item_id)
                     r = requests.get(url)
                     metadata_files[child["content"]["name"]] = r.text
                 else:
-                    dataframe = load_metadata_to_dataframe(item_id, "xlsx", token)
+                    dataframe = load_metadata_to_dataframe(item_id, "xlsx", get_access_token())
                     metadata_json = dataframe.to_json()
                     metadata_files[child["content"]["name"]] = metadata_json
 

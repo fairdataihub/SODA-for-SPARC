@@ -31,7 +31,7 @@ def upload_new_names(account, dataset, tags):
 
     token = get_access_token()
 
-    selected_dataset_id = get_dataset_id(token, dataset)
+    selected_dataset_id = get_dataset_id(dataset)
 
     if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
