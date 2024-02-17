@@ -24,6 +24,8 @@ ipcMain.handle("getStrainData", async (event, rridInfo) => {
       } else {
         reject("Could not load strain");
       }
+    }).on("error", (e) => {
+      reject(`Got error: ${e.message}`);
     });
   });
 
