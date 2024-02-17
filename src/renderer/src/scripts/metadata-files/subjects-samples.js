@@ -704,14 +704,14 @@ window.populateRRID = async (strain, type, curationMode) => {
   }
 
   let rridHostname = "scicrunch.io";
-  const index = "RIN_Organism_pr"
+  const index = "RIN_Organism_pr";
   // this is to handle spaces and other special characters in strain name
   let encodedStrain = encodeURIComponent(strain);
   let rridInfo = {
     hostname: rridHostname,
     port: 443,
     path: `/elastic/v1/${index}/_search?q=${encodedStrain}&apiKey=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
-    headers: { accept: "text/xml"},
+    headers: { accept: "text/xml" },
   };
 
   try {
