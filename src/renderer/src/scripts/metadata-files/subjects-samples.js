@@ -703,19 +703,9 @@ window.populateRRID = async (strain, type, curationMode) => {
     curationModeSelectorPrefix = "guided-";
   }
 
-  let rridHostname = "scicrunch.io";
-  const index = "RIN_Organism_pr";
-  // this is to handle spaces and other special characters in strain name
-  let encodedStrain = encodeURIComponent(strain);
-  let rridInfo = {
-    hostname: rridHostname,
-    port: 443,
-    path: `/elastic/v1/${index}/_search?q=${encodedStrain}&apiKey=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
-    headers: { accept: "text/xml" },
-  };
-
   try {
-    let data = await window.electron.ipcRenderer.invoke("getStrainData", rridInfo);
+    let data = await window.electron.ipcRenderer.invoke("getStrainData");
+    console.log("THe returned data is: ", data);
     var returnRes = readXMLScicrunch(data, type, curationMode);
     if (!returnRes) {
       Swal.fire({
@@ -760,7 +750,7 @@ window.populateRRID = async (strain, type, curationMode) => {
       });
     }
   } catch (err) {
-    console.log(err);
+    clientError(err)
     $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
     $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
     Swal.fire({
