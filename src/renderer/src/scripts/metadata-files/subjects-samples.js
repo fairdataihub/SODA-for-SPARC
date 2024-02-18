@@ -750,7 +750,7 @@ window.populateRRID = async (strain, type, curationMode) => {
       });
     }
   } catch (err) {
-    clientError(err)
+    clientError(err);
     $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
     $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
     Swal.fire({
