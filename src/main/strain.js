@@ -1,37 +1,15 @@
-import https from "https";
 import { ipcMain } from "electron";
+import axios from "axios";
 
-ipcMain.handle("getStrainData", async (event, rridInfo) => {
-  let data = await new Promise((resolve, reject) => {
-    https
-      .get(rridInfo, async (res) => {
-        let data = "";
-        let dataReady = false;
-        if (res.statusCode === 200) {
-          res.setEncoding("utf8");
-          res.on("data", (d) => {
-            data += d;
-          });
-          res.on("end", () => {
-            dataReady = true;
-          });
+ipcMain.handle("getStrainData", async (event) => {
 
-          while (!dataReady) {
-            // wait for 1 second
-            await new Promise((r) => setTimeout(r, 1000));
-          }
+  let organismResponse = await axios.get("https://api.scicrunch.io/elastic/v1/RIN_Organism_pr/_search?q=Yucatan", {
+    headers: {
+      "Content-Type": "application/json",
+      "apiKey": "2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD"
+    }
+  })
 
-          resolve(data);
-        } else {
-          reject("Could not load strain");
-        }
-      })
-      .on("error", (e) => {
-        reject(`Got error: ${e.message}`);
-      });
-  });
+  return organismResponse.data
 
-  // let xmlSerializer = new XMLSerializer();
-  // let serialized =  xmlSerializer.serializeToString(data)
-  return data;
 });
