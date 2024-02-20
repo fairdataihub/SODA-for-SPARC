@@ -597,6 +597,8 @@ window.run_pre_flight_checks = async (check_update = true) => {
 
     if (excluded && multipleWorkspaces) {
       // have them switch to a new workspace
+      // TODO: Add link to documentation on how to switch workspaces in the prompt + 
+      //       Add a button that allows the user to use the workspace switch modal 
       let selectedWorkspace = await window.promptUserToSelectWorkspace(excluded);
 
       await window.switchWorkspace(selectedWorkspace);
@@ -605,16 +607,17 @@ window.run_pre_flight_checks = async (check_update = true) => {
       return false;
     } else if (excluded && !multipleWorkspaces) {
       // tell the user to request access to a separate workspace before using SODA
+      // TODO: Is this the correct message? 
       await swalShowInfo(
         "SODA Does not Support Your Workspace",
-        `Please contact the SPARC curation team before continuing at
-                         <a href="mailto:curation@sparc.science">curation@sparc.science</a> to request access 
-                         to a workspace that is supported by SODA.
-                         `
+        `Please contact the SPARC curation team before using SODA if you wish to upload data to Pennsieve. You can reach them at
+        <a href="mailto:curation@sparc.science">curation@sparc.science</a> to request access 
+        to a Pennsieve workspace that is supported by SODA.
+        `
       );
 
       // exit SODA
-      await window.electron.ipcRenderer.invoke("exit-soda");
+      return false;
     }
 
     // check if the Pennsieve agent is installed [ here ]
