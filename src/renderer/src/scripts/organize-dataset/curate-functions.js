@@ -1725,21 +1725,73 @@ const generateFFManifestEditCard = (highLevelFolderName) => {
 `;
 };
 
+const handleOrganizeDsGenerateLocalManifestCopyButtonClick = async () => {
+  // Prompt the user to select a folder to save the dataset
+  const savePath = await window.electron.ipcRenderer.invoke(
+    "open-folder-path-select",
+    "Select a folder to save your dataset"
+  );
+
+  // Check if a save path was selected
+  if (!savePath) {
+    console.log("No save path selected");
+    return;
+  }
+
+  // Extract manifest file data from the sodaCopy object
+  const manifestFileData = window.sodaCopy["manifest-files"];
+
+  // Iterate over folders with manifest data
+  const foldersWithManifestData = Object.keys(manifestFileData);
+  for (const folder of foldersWithManifestData) {
+    // Process manifest data and convert it to JSON
+    const manifestJSON = window.processManifestInfo(
+      manifestFileData[folder]["headers"],
+      manifestFileData[folder]["data"]
+    );
+
+    // Convert JSON manifest to a string
+    const jsonManifest = JSON.stringify(manifestJSON);
+
+    // Define the path for the manifest file
+    const manifestPath = window.path.join(savePath, "SODA Manifest Files", folder, "manifest.xlsx");
+
+    // Create necessary directories
+    window.fs.mkdirSync(window.path.join(savePath, "SODA Manifest Files", folder), {
+      recursive: true,
+    });
+
+    // Convert JSON manifest to an Excel file and save it
+    window.convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
+  }
+};
+
 const renderFFManifestCards = () => {
+  // Retrieve manifest data from the sodaCopy object
   const manifestData = window.sodaCopy["manifest-files"];
 
-  console.log("manifestData", manifestData);
+  // Extract high-level folders with manifest data
   const highLevelFoldersWithManifestData = Object.keys(manifestData);
 
+  // Generate manifest cards for each high-level folder
   const manifestCards = highLevelFoldersWithManifestData
-    .map((highLevelFolder) => {
-      return generateFFManifestEditCard(highLevelFolder);
-    })
+    .map((highLevelFolder) => generateFFManifestEditCard(highLevelFolder))
     .join("\n");
 
+  // Get the container for manifest file cards
   const manifestFilesCardsContainer = document.getElementById("ffm-container-manifest-file-cards");
+
+  // Set the inner HTML of the container with the generated manifest cards
   manifestFilesCardsContainer.innerHTML = manifestCards;
 
+  // Attach a click listener to the manifest file generation button
+  document
+    .getElementById("ffm-button-generate-manifest-files-locally")
+    .addEventListener("click", async () => {
+      await handleOrganizeDsGenerateLocalManifestCopyButtonClick();
+    });
+
+  // Scroll to the manifest file cards container
   window.smoothScrollToElement(manifestFilesCardsContainer);
 };
 

@@ -140,8 +140,8 @@ ipcMain.handle("open-folder-path-select", (event, type) => {
     properties: ["openDirectory"],
     title: "Select a folder to copy the dataset to",
   });
-  console.log(path);
-  return path;
+
+  return path[0];
 });
 
 // passing in the spreadsheet data to pass to a modal
