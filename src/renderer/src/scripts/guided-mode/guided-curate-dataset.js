@@ -2572,14 +2572,6 @@ const guidedLockSideBar = (boolShowNavBar) => {
   }
 };
 
-window.getSavePath = async () => {
-  const savePath = await window.electron.ipcRenderer.invoke(
-    "open-folder-path-select",
-    "Select a folder to save your dataset"
-  );
-  console.log(savePath);
-};
-
 // This function reads the innerText of the textSharedWithCurationTeamStatus element
 // and hides or shows the share and unshare buttons accordingly
 window.guidedSetCurationTeamUI = () => {
