@@ -1371,9 +1371,11 @@ window.promptUserToSelectWorkspace = async (workspaceIsExcluded = false) => {
   }
 
   if (window.organizationList.length > 0) {
-    let title = workspaceIsExcluded ? "SODA does not support your current workspace" : "Select a workspace";
-    console.log(workspaceIsExcluded)
-    console.log(title)
+    let title = workspaceIsExcluded
+      ? "SODA does not support your current workspace"
+      : "Select a workspace";
+    console.log(workspaceIsExcluded);
+    console.log(title);
     const { value: result } = await Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       cancelButtonText: "Cancel",
@@ -1387,8 +1389,7 @@ window.promptUserToSelectWorkspace = async (workspaceIsExcluded = false) => {
       reverseButtons: window.reverseSwalButtons,
       showCloseButton: workspaceIsExcluded ? false : true,
       showCancelButton: workspaceIsExcluded ? false : true,
-      title:
-        `<h3 style='margin-bottom:20px !important' id='workspace-title-text'>${title}</h3>`,
+      title: `<h3 style='margin-bottom:20px !important' id='workspace-title-text'>${title}</h3>`,
       showClass: {
         popup: "animate__animated animate__fadeInDown animate__faster",
       },
@@ -1485,7 +1486,6 @@ window.promptUserToSelectWorkspace = async (workspaceIsExcluded = false) => {
   return;
 };
 
-
 /**
  *
  * @param {*} selectedWorkspace : string - the workspace a user wants to swith to
@@ -1494,7 +1494,7 @@ window.promptUserToSelectWorkspace = async (workspaceIsExcluded = false) => {
  *
  * Change workspace to the selected workspace from the list of workspaces the user has permission to access.
  */
-window.switchWorkspace = async (selectedWorkspace, ev=null) => {
+window.switchWorkspace = async (selectedWorkspace, ev = null) => {
   if (dropdownEventID === "dd-select-pennsieve-organization") {
     $("#ds-name").val(window.bfOrganization);
     $("#ds-description").val = $("#bf-dataset-subtitle").val;
