@@ -1329,6 +1329,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
 /**
  *
  * @param {*} workspaceIsExcluded : bool - show different prompt if current workspace is excluded from SODA; false by default
+ * @param {*} ev : event - event that triggered the prompt; useful within workspace selection from opendropdown prompt flows
  * @returns void if no workspace was selected or the selected workspace as a string
  *
  * Prompts the user to select a workspace from the list of workspaces they have permission to access.
@@ -1370,6 +1371,9 @@ window.promptUserToSelectWorkspace = async (workspaceIsExcluded = false) => {
   }
 
   if (window.organizationList.length > 0) {
+    let title = workspaceIsExcluded ? "SODA does not support your current workspace" : "Select a workspace";
+    console.log(workspaceIsExcluded)
+    console.log(title)
     const { value: result } = await Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       cancelButtonText: "Cancel",
@@ -1384,7 +1388,7 @@ window.promptUserToSelectWorkspace = async (workspaceIsExcluded = false) => {
       showCloseButton: workspaceIsExcluded ? false : true,
       showCancelButton: workspaceIsExcluded ? false : true,
       title:
-        "<h3 style='margin-bottom:20px !important' id='workspace-title-text'>SODA does not support your current workspace</h3>",
+        `<h3 style='margin-bottom:20px !important' id='workspace-title-text'>${title}</h3>`,
       showClass: {
         popup: "animate__animated animate__fadeInDown animate__faster",
       },
@@ -1481,7 +1485,16 @@ window.promptUserToSelectWorkspace = async (workspaceIsExcluded = false) => {
   return;
 };
 
-window.switchWorkspace = async (selectedWorkspace) => {
+
+/**
+ *
+ * @param {*} selectedWorkspace : string - the workspace a user wants to swith to
+ * @param {*} ev : event - event that triggered the prompt; useful within workspace selection from opendropdown prompt flows
+ * @returns void if no workspace was selected or the selected workspace as a string
+ *
+ * Change workspace to the selected workspace from the list of workspaces the user has permission to access.
+ */
+window.switchWorkspace = async (selectedWorkspace, ev=null) => {
   if (dropdownEventID === "dd-select-pennsieve-organization") {
     $("#ds-name").val(window.bfOrganization);
     $("#ds-description").val = $("#bf-dataset-subtitle").val;
@@ -1603,7 +1616,7 @@ window.switchWorkspace = async (selectedWorkspace) => {
   // If the button that triggered the organization has the class
   // guided-change-workspace (from guided mode), handle changes based on the ev id
   // otherwise, reset the FFM UI based on the ev class
-  ev.classList.contains("guided-change-workspace")
+  ev?.classList.contains("guided-change-workspace")
     ? window.handleGuidedModeOrgSwitch(ev)
     : window.resetFFMUI(ev);
 
@@ -2160,12 +2173,12 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       );
     }
 
-    let selectedWorkspace = await window.promptUserToSelectWorkspace(ev);
+    let selectedWorkspace = await window.promptUserToSelectWorkspace();
 
     // user does not want to switch workspaces
     if (!selectedWorkspace) return;
 
-    await window.switchWorkspace(selectedWorkspace);
+    await window.switchWorkspace(selectedWorkspace, ev);
   }
 };
 
