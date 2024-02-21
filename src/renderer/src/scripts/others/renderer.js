@@ -575,18 +575,6 @@ window.run_pre_flight_checks = async (check_update = true) => {
         return false;
       }
 
-      // check that the valid api key in the default profile is for the user's current workspace
-      // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
-      //           under the default profile does not mean that key is associated with the user's current workspace.
-      // TODO: if they  need to switch maybe add a message that says if you are uploading this isnt what you want to do
-      let matching = await window.defaultProfileMatchesCurrentWorkspace();
-      if (!matching) {
-        log.info("Default api key is for a different workspace");
-        await window.switchToCurrentWorkspace();
-        return false;
-      }
-    }
-
     // check if the user is in an excluded workspace and prompt them to switch to a workspace that is not excluded
     let excluded = await window.isWorkspaceExcluded();
 
@@ -619,6 +607,20 @@ window.run_pre_flight_checks = async (check_update = true) => {
       // exit SODA
       return false;
     }
+
+      // check that the valid api key in the default profile is for the user's current workspace
+      // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
+      //           under the default profile does not mean that key is associated with the user's current workspace.
+      // TODO: if they  need to switch maybe add a message that says if you are uploading this isnt what you want to do
+      let matching = await window.defaultProfileMatchesCurrentWorkspace();
+      if (!matching) {
+        log.info("Default api key is for a different workspace");
+        await window.switchToCurrentWorkspace();
+        return false;
+      }
+    }
+
+
 
     // check if the Pennsieve agent is installed [ here ]
     try {
