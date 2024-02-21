@@ -609,7 +609,6 @@ window.run_pre_flight_checks = async (check_update = true) => {
       }
     }
 
-
     // check that the valid api key in the default profile is for the user's current workspace
     // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
     //           under the default profile does not mean that key is associated with the user's current workspace.
@@ -620,7 +619,6 @@ window.run_pre_flight_checks = async (check_update = true) => {
       await window.switchToCurrentWorkspace();
       return false;
     }
-
 
     // check if the Pennsieve agent is installed [ here ]
     try {
@@ -932,7 +930,6 @@ window.run_pre_flight_checks = async (check_update = true) => {
     if (check_update) {
       checkNewAppVersion();
     }
-
 
     if (launchAnnouncement) {
       await checkForAnnouncements("announcements");
@@ -1707,7 +1704,7 @@ window.electron.ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             window.generateSubjectsFileHelper(false);
           }
         });
@@ -1723,7 +1720,7 @@ window.electron.ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         window.generateSubjectsFileHelper(false);
       }
     }
@@ -1807,7 +1804,7 @@ window.generateSubjectsFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   try {
     window.log.info(`Generating a subjects file.`);
@@ -1917,7 +1914,7 @@ window.electron.ipcRenderer.on("selected-generate-metadata-samples", (event, dir
             didOpen: () => {
               Swal.showLoading();
             },
-          }).then((result) => { });
+          }).then((result) => {});
           window.generateSamplesFileHelper(uploadBFBoolean);
         }
       });
@@ -1933,7 +1930,7 @@ window.electron.ipcRenderer.on("selected-generate-metadata-samples", (event, dir
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       window.generateSamplesFileHelper(uploadBFBoolean);
     }
   }
@@ -2015,7 +2012,7 @@ window.generateSamplesFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   try {
     let samplesFileResponse = await client.post(
@@ -2538,7 +2535,7 @@ window.loadTaxonomySpecies = async (commonName, destinationInput, curationMode) 
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
@@ -6634,8 +6631,9 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
           ${dragDropInstructionsText}
         </p>
         <p class="text-center">
-          You may also <b>add</b> or <b>import</b> ${folderType === undefined ? "folders or files" : folderType + " data"
-      } using the buttons in the upper right corner
+          You may also <b>add</b> or <b>import</b> ${
+            folderType === undefined ? "folders or files" : folderType + " data"
+          } using the buttons in the upper right corner
         </p>
       </div>`
     );
@@ -7354,7 +7352,7 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
     if (
       "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
       sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
-      "forTreeview"
+        "forTreeview"
       ]
     ) {
       delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
@@ -8083,7 +8081,7 @@ const initiate_generate = async () => {
         "track-event",
         "Success",
         window.PrepareDatasetsAnalyticsPrefix.CURATE +
-        "- Step 7 - Generate - Dataset - Number of Files",
+          "- Step 7 - Generate - Dataset - Number of Files",
         `${datasetUploadSession.id}`,
         500
       );
