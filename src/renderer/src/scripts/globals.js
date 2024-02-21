@@ -1486,9 +1486,6 @@ window.promptUserToSelectWorkspace = async (workspaceIsExcluded = false) => {
   return;
 };
 
-
-
-
 var dropdownEventID = "";
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account

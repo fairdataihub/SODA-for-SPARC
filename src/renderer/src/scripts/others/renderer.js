@@ -607,7 +607,6 @@ window.run_pre_flight_checks = async (check_update = true) => {
         // exit SODA
         return false;
       }
-
     }
 
 
