@@ -575,51 +575,52 @@ window.run_pre_flight_checks = async (check_update = true) => {
         return false;
       }
 
-    // check if the user is in an excluded workspace and prompt them to switch to a workspace that is not excluded
-    let excluded = await window.isWorkspaceExcluded();
+      // check if the user is in an excluded workspace and prompt them to switch to a workspace that is not excluded
+      let excluded = await window.isWorkspaceExcluded();
 
-    // check if the user has access to more than one workspace
-    let multipleWorkspaces = await window.userHasMultipleWorkspaces();
+      // check if the user has access to more than one workspace
+      let multipleWorkspaces = await window.userHasMultipleWorkspaces();
 
-    console.log("excluded", excluded, "multipleWorkspaces", multipleWorkspaces);
+      console.log("excluded", excluded, "multipleWorkspaces", multipleWorkspaces);
 
-    if (excluded && multipleWorkspaces) {
-      // have them switch to a new workspace
-      // TODO: Add link to documentation on how to switch workspaces in the prompt +
-      //       Add a button that allows the user to use the workspace switch modal
-      let selectedWorkspace = await window.promptUserToSelectWorkspace(excluded);
+      if (excluded && multipleWorkspaces) {
+        // have them switch to a new workspace
+        // TODO: Add link to documentation on how to switch workspaces in the prompt +
+        //       Add a button that allows the user to use the workspace switch modal
+        let selectedWorkspace = await window.promptUserToSelectWorkspace(excluded);
 
-      await window.switchWorkspace(selectedWorkspace);
+        await window.switchWorkspace(selectedWorkspace);
 
-      // require that they re-run pre flight checks before continuing
-      return false;
-    } else if (excluded && !multipleWorkspaces) {
-      // tell the user to request access to a separate workspace before using SODA
-      // TODO: Is this the correct message?
-      await swalShowInfo(
-        "SODA Does not Support Your Workspace",
-        `Please contact the SPARC curation team before using SODA if you wish to upload data to Pennsieve. You can reach them at
+        // require that they re-run pre flight checks before continuing
+        return false;
+      } else if (excluded && !multipleWorkspaces) {
+        // tell the user to request access to a separate workspace before using SODA
+        // TODO: Is this the correct message?
+        await swalShowInfo(
+          "SODA Does not Support Your Workspace",
+          `Please contact the SPARC curation team before using SODA if you wish to upload data to Pennsieve. You can reach them at
         <a href="mailto:curation@sparc.science">curation@sparc.science</a> to request access 
         to a Pennsieve workspace that is supported by SODA.
         `
-      );
+        );
 
-      // exit SODA
-      return false;
-    }
-
-      // check that the valid api key in the default profile is for the user's current workspace
-      // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
-      //           under the default profile does not mean that key is associated with the user's current workspace.
-      // TODO: if they  need to switch maybe add a message that says if you are uploading this isnt what you want to do
-      let matching = await window.defaultProfileMatchesCurrentWorkspace();
-      if (!matching) {
-        log.info("Default api key is for a different workspace");
-        await window.switchToCurrentWorkspace();
+        // exit SODA
         return false;
       }
+
     }
 
+
+    // check that the valid api key in the default profile is for the user's current workspace
+    // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
+    //           under the default profile does not mean that key is associated with the user's current workspace.
+    // TODO: if they  need to switch maybe add a message that says if you are uploading this isnt what you want to do
+    let matching = await window.defaultProfileMatchesCurrentWorkspace();
+    if (!matching) {
+      log.info("Default api key is for a different workspace");
+      await window.switchToCurrentWorkspace();
+      return false;
+    }
 
 
     // check if the Pennsieve agent is installed [ here ]
@@ -933,14 +934,6 @@ window.run_pre_flight_checks = async (check_update = true) => {
       checkNewAppVersion();
     }
 
-    // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
-    //           under the default profile does not mean that key is associated with the user's current workspace.
-    let matching = await window.defaultProfileMatchesCurrentWorkspace();
-    if (!matching) {
-      log.info("Default api key is for a different workspace");
-      await window.switchToCurrentWorkspace();
-      return false;
-    }
 
     if (launchAnnouncement) {
       await checkForAnnouncements("announcements");
@@ -1715,7 +1708,7 @@ window.electron.ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then((result) => { });
             window.generateSubjectsFileHelper(false);
           }
         });
@@ -1731,7 +1724,7 @@ window.electron.ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => {});
+        }).then((result) => { });
         window.generateSubjectsFileHelper(false);
       }
     }
@@ -1815,7 +1808,7 @@ window.generateSubjectsFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   try {
     window.log.info(`Generating a subjects file.`);
@@ -1925,7 +1918,7 @@ window.electron.ipcRenderer.on("selected-generate-metadata-samples", (event, dir
             didOpen: () => {
               Swal.showLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           window.generateSamplesFileHelper(uploadBFBoolean);
         }
       });
@@ -1941,7 +1934,7 @@ window.electron.ipcRenderer.on("selected-generate-metadata-samples", (event, dir
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       window.generateSamplesFileHelper(uploadBFBoolean);
     }
   }
@@ -2023,7 +2016,7 @@ window.generateSamplesFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   try {
     let samplesFileResponse = await client.post(
@@ -2546,7 +2539,7 @@ window.loadTaxonomySpecies = async (commonName, destinationInput, curationMode) 
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
@@ -6642,9 +6635,8 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
           ${dragDropInstructionsText}
         </p>
         <p class="text-center">
-          You may also <b>add</b> or <b>import</b> ${
-            folderType === undefined ? "folders or files" : folderType + " data"
-          } using the buttons in the upper right corner
+          You may also <b>add</b> or <b>import</b> ${folderType === undefined ? "folders or files" : folderType + " data"
+      } using the buttons in the upper right corner
         </p>
       </div>`
     );
@@ -7363,7 +7355,7 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
     if (
       "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
       sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
-        "forTreeview"
+      "forTreeview"
       ]
     ) {
       delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
@@ -8092,7 +8084,7 @@ const initiate_generate = async () => {
         "track-event",
         "Success",
         window.PrepareDatasetsAnalyticsPrefix.CURATE +
-          "- Step 7 - Generate - Dataset - Number of Files",
+        "- Step 7 - Generate - Dataset - Number of Files",
         `${datasetUploadSession.id}`,
         500
       );
