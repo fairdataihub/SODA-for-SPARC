@@ -1744,66 +1744,84 @@ const renderFFManifestCards = () => {
   // Set the inner HTML of the container with the generated manifest cards
   manifestFilesCardsContainer.innerHTML = manifestCards;
 
+  // Unhide the generate manifest files button
+  document
+    .getElementById("ffm-container-local-manifest-file-generation")
+    .classList.remove("hidden");
+
   // Scroll to the manifest file cards container
   window.smoothScrollToElement(manifestFilesCardsContainer);
 };
 
 const handleOrganizeDsGenerateLocalManifestCopyButtonClick = async () => {
-  // Prompt the user to select a folder to save the dataset
+  // Step 1: Prompt the user to select a folder to save the dataset
   const savePath = await window.electron.ipcRenderer.invoke(
     "open-folder-path-select",
     "Select a folder to save the manifest files to"
   );
 
-  // Check if a save path was selected
+  // Step 2: Check if a save path was selected
   if (!savePath) {
+    // If no path selected, exit the function
     return;
   }
 
-  // Check if the selected save path already contains a "SODA Manifest Files" directory
-  if (window.fs.existsSync(window.path.join(savePath, "SODA Manifest Files"))) {
-    const overWriteExistingManifestFiles = await swalConfirmAction(
-      null,
-      "The selected path already contains manifest files",
-      "Would you like to overwrite the existing manifest files?",
-      "Yes",
-      "No"
-    );
-    if (!overWriteExistingManifestFiles) {
-      return;
+  // Step 3: Define the base folder name for the manifest files
+  let manifestFolderName = "SODA Manifest Files";
+
+  // Step 4: Function to generate a unique folder path for the manifest files
+  const generateManifestFolderSavePath = () => {
+    // If the selected save path already contains a "SODA Manifest Files" directory, append a number to the folder name
+    // Otherwise, return the selected save path as is
+
+    // Step 4.1: Check if the "SODA Manifest Files" directory already exists at the selected save path
+    if (window.fs.existsSync(window.path.join(savePath, manifestFolderName))) {
+      let i = 1;
+
+      // Step 4.2: If the directory with the original name already exists, increment the number until a unique name is found
+      while (window.fs.existsSync(window.path.join(savePath, `${manifestFolderName} (${i})`))) {
+        i++;
+      }
+
+      // Step 4.3: Return the path with the incremented folder name
+      return window.path.join(savePath, `${manifestFolderName} (${i})`);
+    } else {
+      // Step 4.4: If the original directory does not exist, return the selected save path with the original folder name
+      return window.path.join(savePath, manifestFolderName);
     }
-    // remove existing mannifest file folder at the selected path
-    window.fs.rmdirSync(window.path.join(savePath, "SODA Manifest Files"), {
-      recursive: true,
-    });
-  }
-  // Extract manifest file data from the sodaCopy object
+  };
+
+  // Step 5: Generate the unique folder path for the manifest files
+  const manifestFolderSavePath = generateManifestFolderSavePath();
+
+  // Step 6: Extract manifest file data from the sodaCopy object
   const manifestFileData = window.sodaCopy["manifest-files"];
 
-  // Iterate over folders with manifest data
+  // Step 7: Iterate over folders with manifest data
   const foldersWithManifestData = Object.keys(manifestFileData);
   for (const folder of foldersWithManifestData) {
-    // Process manifest data and convert it to JSON
+    // Step 7.1: Process manifest data and convert it to JSON
     const manifestJSON = window.processManifestInfo(
       manifestFileData[folder]["headers"],
       manifestFileData[folder]["data"]
     );
 
-    // Convert JSON manifest to a string
+    // Step 7.2: Convert JSON manifest to a string
     const jsonManifest = JSON.stringify(manifestJSON);
 
-    // Define the path for the manifest file
-    const manifestPath = window.path.join(savePath, "SODA Manifest Files", folder, "manifest.xlsx");
+    // Step 7.3: Define the path for the manifest file
+    const manifestPath = window.path.join(manifestFolderSavePath, folder, "manifest.xlsx");
 
-    // Create necessary directories
-    window.fs.mkdirSync(window.path.join(savePath, "SODA Manifest Files", folder), {
+    // Step 7.4: Create necessary directories
+    window.fs.mkdirSync(window.path.join(manifestFolderSavePath, folder), {
       recursive: true,
     });
 
-    // Convert JSON manifest to an Excel file and save it
+    // Step 7.5: Convert JSON manifest to an Excel file and save it
     window.convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
   }
 
+  // Step 8: Display a success notification
   window.notyf.open({
     duration: "5000",
     type: "success",
@@ -1956,21 +1974,8 @@ window.ffmCreateManifest = async (sodaJson) => {
       { soda_json_structure: window.sodaCopy },
       { timeout: 0 }
     );
-
     let response = cleanJson.data.soda_json_structure;
-    // response does not format in JSON format so need to format ' with "
-    // and replace T with t (happens because of how the bool true is formatted in python (True) vs javascript (true))
-    // let regex = /'/gm;
-    // let formattedResponse = JSON.stringify(response).replace(regex, '"');
-    // let capitalTPosition = formattedResponse.search("T");
-    // while (capitalTPosition != -1) {
-    //   capitalTPosition = formattedResponse.search("T");
-    //   formattedResponse = formattedResponse.replace("T", "t");
-    // }
-
-    // let json_structure = JSON.parse(formattedResponse);
     window.sodaCopy = response;
-    let datasetStructCopy = window.sodaCopy["dataset-structure"];
   } catch (e) {
     clientError(e);
   }
@@ -2071,7 +2076,6 @@ $("#generate-manifest-curate").change(async function () {
 
     await window.ffmCreateManifest(sodaJSONObj);
     $("#ffm-manifest-generator").show();
-    $("#button-generate-manifest-locally").show();
     // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>
     window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
     $("#manifest-creating-loading").addClass("hidden");
@@ -2079,7 +2083,6 @@ $("#generate-manifest-curate").change(async function () {
       .getElementById("ffm-container-local-manifest-file-generation")
       .classList.remove("hidden");
   } else {
-    $("#button-generate-manifest-locally").hide();
     $("#ffm-manifest-generator").hide();
     $("#manifest-creating-loading").addClass("hidden");
     document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
