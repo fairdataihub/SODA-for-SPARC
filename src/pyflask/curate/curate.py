@@ -3201,23 +3201,23 @@ def main_curate_function(soda_json_structure):
                         selected_dataset_id = ds["content"]["id"]
 
 
-                    # create a basic timer 
-                    start = timer()
-                    namespace_logger.info(f"Starting timer for creating new dataset")
-                    while(True):
+                    # check that dataset was created with a limited retry (for some users the dataset isn't automatically accessible)
+                    attempts = 0
+                    while(attempts < 3):
                         try: 
                             # whether we are generating a new dataset or merging, we want the dataset information for later steps
                             r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
                             r.raise_for_status()
                             myds = r.json()
-                            # log the timer now that the dataset was successfully imported 
-                            end = timer()
-                            namespace_logger.info(f"Time for ps_create_new_dataset function: {timedelta(seconds=end - start)}")
                             break
                         except Exception as e:
-                            namespace_logger.error(f"Error getting dataset information for dataset {selected_dataset_id} current timer: {timedelta(seconds=timer() - start)}")
-                            time.sleep(5)
-                            continue
+                            attempts += 1 
+                            # check if final attempt
+                            if attempts >= 2:
+                                # raise the error to the user
+                                raise e
+                            time.sleep(10)
+                            
 
                     ps_upload_to_dataset(soda_json_structure, ps, myds)
         except Exception as e:
