@@ -1,6 +1,6 @@
 import axios from "axios";
 import Swal from "sweetalert2";
-import lottie from "lottie-web"
+import lottie from "lottie-web";
 import { announcement_lottie } from "../../assets/lotties/announcement-lottie";
 import { announcement_laptop } from "../../assets/lotties/announcement-laptop";
 
@@ -91,9 +91,8 @@ const checkForAnnouncements = async (state) => {
           swal_icon.style.border = "none";
           swal_icon.style.width = "10rem";
           swal_icon.style.height = "9rem";
-          swal_icon.style.marginTop = "0"
-          swal_icon.style.marginBottom = "0"
-
+          swal_icon.style.marginTop = "0";
+          swal_icon.style.marginBottom = "0";
 
           lottie.loadAnimation({
             rendererSettings: {
