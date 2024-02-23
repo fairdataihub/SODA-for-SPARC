@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import Swal from "sweetalert2";
 import lottie from "lottie-web";
@@ -84,6 +85,9 @@ const checkForAnnouncements = async (state) => {
           console.log("did open");
 
           let html_container = document.getElementById("swal2-html-container");
+          let html_child = html_container.children[0];
+          html_child.style.border = "2px solid #13716d";
+          html_child.style.padding = "1rem";
           html_container.style.marginTop = "0";
           // Create lottie animation for the title
           let swal_icon = document.getElementsByClassName("swal2-icon")[0];
