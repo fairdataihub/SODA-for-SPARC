@@ -5,6 +5,12 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v13.1.3 - 2024-02-26
+
+## Bug fixes:
+
+- Fixed an issue in the `Organize datasets` feature when creating a new Pennsieve dataset that prevented SODA from finding the dataset in some cases.
+
 ## v.13.1.2 - 2024-02-15
 
 ## Bug fixes:
