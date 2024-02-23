@@ -403,6 +403,8 @@ const startupServerAndApiCheck = async () => {
   }
 
   if (launchAnnouncement) {
+    console.log("Checking for announcements");
+    await Swal.close();
     await checkForAnnouncements("announcements");
     launchAnnouncement = false;
     window.electron.ipcRenderer.invoke("set-nodestorage-key", "announcements", false);
@@ -911,6 +913,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
     }
 
     if (launchAnnouncement) {
+      console.log("checking for announcements");
       await checkForAnnouncements("announcements");
       launchAnnouncement = false;
     }
