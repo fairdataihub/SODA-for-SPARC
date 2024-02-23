@@ -730,7 +730,24 @@ window.populateRRID = async (strain, type, curationMode) => {
 };
 
 const askForRRID = async () => {
-  const { value: rrid } = await Swal.fire({
+  let subjectStrain = "";
+
+  const { value: rrid } = await showRRIDInput();
+
+  if (rrid) {
+    try {
+      const res = await window.electron.ipcRenderer.invoke("getStrainData", rrid);
+      console.log("Res:", res);
+      const subjectStrain = res.hits.hits[0]["_source"].item.name;
+      console.log("Subject Strain:", subjectStrain);
+    } catch (error) {
+      showErrorMessage(error.message);
+    }
+  }
+};
+
+const showRRIDInput = async () => {
+  return await Swal.fire({
     title: "Enter RRID",
     input: "text",
     inputPlaceholder: "e.g., RRID:AB_123456",
@@ -743,32 +760,15 @@ const askForRRID = async () => {
         return "Please enter an RRID";
       }
     },
-    preConfirm: async (rrid) => {
-      const scicrunchApiUrl = `https://example.com/scicrunch-api/${rrid}`;
-
-      try {
-        const response = await fetch(scicrunchApiUrl);
-        const data = await response.json();
-
-        if (!data.isValid) {
-          throw new Error("Invalid RRID. Please check and try again.");
-        }
-
-        return true; // If the RRID is valid, close the Swal
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        Swal.showValidationMessage(`Error: ${error.message}`);
-      }
-    },
   });
+};
 
-  if (rrid) {
-    Swal.fire({
-      title: "RRID Valid!",
-      text: "This RRID is valid in the Scicrunch database.",
-      icon: "success",
-    });
-  }
+const showErrorMessage = (errorMessage) => {
+  Swal.fire({
+    title: "Error",
+    text: errorMessage,
+    icon: "error",
+  });
 };
 
 document.querySelectorAll(".opens-rrid-modal-on-click").forEach((element) => {
