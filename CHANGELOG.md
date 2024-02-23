@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## v13.1.3 - 2024-02-26
 
+## Feature Addditions:
+
+- Announcements have been redesigned to convey updates and fixes clearly.
+- Added the ability to generate a copy of a dataset's manifest files locally within the organize datasets feature.
+
 ## Bug fixes:
 
 - Fixed an issue in the `Organize datasets` feature when creating a new Pennsieve dataset that prevented SODA from finding the dataset in some cases.
+- Banner image selection popup has been patched to overlay above entire app.
 
 ## v.13.1.2 - 2024-02-15
 
