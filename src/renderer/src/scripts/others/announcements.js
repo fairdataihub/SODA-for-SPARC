@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import Swal from "sweetalert2";
 import lottie from "lottie-web";
