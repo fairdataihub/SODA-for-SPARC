@@ -633,53 +633,10 @@ const guidedSetStrainRRID = (RRID) => {
     rridLabel.classList.add("hidden");
     rridInput.classList.add("hidden");
     rridInput.value = "";
-    return;
-  }
-
-  rridLabel.classList.remove("hidden");
-  rridInput.classList.remove("hidden");
-  rridInput.value = RRID;
-};
-
-window.addStrain = async (ev, type, curationMode) => {
-  let curationModeSelectorPrefix = "";
-  if (curationMode == "guided") {
-    curationModeSelectorPrefix = "guided-";
-  }
-
-  $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
-  if (curationMode == "guided") {
-    guidedSetStrainRRID("");
-  }
-
-  const { value: value } = await Swal.fire({
-    title: "Add/Edit a strain",
-    html: `<input type="text" id="sweetalert-${type}-strain" placeholder="Search for strain..." style="font-size: 14px;"/>`,
-    focusConfirm: false,
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    customClass: {
-      confirmButton: "confirm-disabled",
-    },
-    didOpen: () => {
-      $(".swal2-confirm").attr("id", "btn-confirm-strain");
-      window.createStrain("sweetalert-" + type + "-strain", type, curationMode);
-    },
-    preConfirm: () => {
-      if (document.getElementById("sweetalert-" + type + "-strain").value === "") {
-        Swal.showValidationMessage("Please enter a strain.");
-      }
-      return document.getElementById("sweetalert-" + type + "-strain").value;
-    },
-  });
-  if (value) {
-    if (value !== "") {
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(value);
-      window.switchSpeciesStrainInput("strain", "edit", curationMode);
-    }
   } else {
-    window.switchSpeciesStrainInput("strain", "add", curationMode);
+    rridLabel.classList.remove("hidden");
+    rridInput.classList.remove("hidden");
+    rridInput.value = RRID;
   }
 };
 
@@ -769,6 +726,106 @@ window.populateRRID = async (strain, type, curationMode) => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
     });
+  }
+};
+
+const askForRRID = async () => {
+  const { value: rrid } = await Swal.fire({
+    title: "Enter RRID",
+    input: "text",
+    inputPlaceholder: "e.g., RRID:AB_123456",
+    showCancelButton: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Search",
+    allowOutsideClick: false,
+    inputValidator: (value) => {
+      if (!value) {
+        return "Please enter an RRID";
+      }
+    },
+    preConfirm: async (rrid) => {
+      const scicrunchApiUrl = `https://example.com/scicrunch-api/${rrid}`;
+
+      try {
+        const response = await fetch(scicrunchApiUrl);
+        const data = await response.json();
+
+        if (!data.isValid) {
+          throw new Error("Invalid RRID. Please check and try again.");
+        }
+
+        return true; // If the RRID is valid, close the Swal
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        Swal.showValidationMessage(`Error: ${error.message}`);
+      }
+    },
+  });
+
+  if (rrid) {
+    Swal.fire({
+      title: "RRID Valid!",
+      text: "This RRID is valid in the Scicrunch database.",
+      icon: "success",
+    });
+  }
+};
+
+document.querySelectorAll(".opens-rrid-modal-on-click").forEach((element) => {
+  element.addEventListener("click", async () => {
+    // Function to show SweetAlert with input for RRID
+    await askForRRID();
+  });
+});
+// Function to handle adding/editing a strain using SweetAlert
+window.addStrain = async (ev, type, curationMode) => {
+  // Determine the prefix based on the curation mode
+  const curationModeSelectorPrefix = curationMode === "guided" ? "guided-" : "";
+
+  // Clear the value of the input field
+  $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
+
+  if (curationMode === "guided") {
+    guidedSetStrainRRID("");
+  }
+
+  // SweetAlert configuration for the input dialog
+  const inputId = `sweetalert-${type}-strain`;
+  const inputElement = document.getElementById(inputId);
+  const { value } = await Swal.fire({
+    title: "Add/Edit a strain",
+    html: `<input type="text" id="${inputId}" placeholder="Search for strain..." style="font-size: 14px;"/>`,
+    focusConfirm: false,
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    customClass: {
+      confirmButton: "confirm-disabled",
+    },
+    didOpen: () => {
+      // Set a specific ID for the confirm button
+      $(".swal2-confirm").attr("id", "btn-confirm-strain");
+      // Add strain autocomplete to the SweetAlert input
+      window.createStrain(inputId, type, curationMode);
+    },
+    preConfirm: () => {
+      // Validation: Check if the input field is empty
+      if (inputElement.value === "") {
+        Swal.showValidationMessage("Please enter a strain.");
+      }
+      return inputElement.value;
+    },
+  });
+
+  // Handle the value returned by SweetAlert
+  if (value && value !== "") {
+    // Update the corresponding input field with the selected value
+    $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(value);
+    // Trigger the appropriate action based on curation mode
+    window.switchSpeciesStrainInput("strain", "edit", curationMode);
+  } else {
+    // If no value was selected, trigger the 'add' action
+    window.switchSpeciesStrainInput("strain", "add", curationMode);
   }
 };
 
