@@ -3201,10 +3201,23 @@ def main_curate_function(soda_json_structure):
                         selected_dataset_id = ds["content"]["id"]
 
 
-                    # whether we are generating a new dataset or merging, we want the dataset information for later steps
-                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
-                    r.raise_for_status()
-                    myds = r.json()
+                    # check that dataset was created with a limited retry (for some users the dataset isn't automatically accessible)
+                    attempts = 0
+                    while(attempts < 3):
+                        try: 
+                            # whether we are generating a new dataset or merging, we want the dataset information for later steps
+                            r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
+                            r.raise_for_status()
+                            myds = r.json()
+                            break
+                        except Exception as e:
+                            attempts += 1 
+                            # check if final attempt
+                            if attempts >= 2:
+                                # raise the error to the user
+                                raise e
+                            time.sleep(10)
+                            
 
                     ps_upload_to_dataset(soda_json_structure, ps, myds)
         except Exception as e:
