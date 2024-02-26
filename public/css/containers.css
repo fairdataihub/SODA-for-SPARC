@@ -291,6 +291,10 @@
   height: 5rem;
 }
 
+div[data-portal="true"][aria-hidden="true"] {
+  z-index: 99999;
+}
+
 .guided--progress-container {
   display: flex;
   flex-direction: row;
