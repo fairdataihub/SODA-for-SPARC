@@ -697,7 +697,8 @@ window.run_pre_flight_checks = async (check_update = true) => {
       // if so then we prompt the user to allow us to remove the pennsieve Agent DB files and try again
       if (
         emessage.includes("UNIQUE constraint failed:") ||
-        emessage.includes("NotAuthorizedException: Incorrect username or password.")
+        emessage.includes("NotAuthorizedException: Incorrect username or password.") ||
+        emessage.includes("401 Error Creating new UserSettings")
       ) {
         const { value: deleteFilesRerunChecks } = await Swal.fire({
           icon: "error",
