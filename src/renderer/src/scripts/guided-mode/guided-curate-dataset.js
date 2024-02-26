@@ -13665,6 +13665,7 @@ document
 // function for importing a banner image if one already exists
 $("#guided-button-add-banner-image").click(async () => {
   $("#guided-banner-image-modal").modal("show");
+  $("#guided-banner-image-modal").parents()[0].style.zIndex = "1002";
   $("#guided-banner-image-modal").addClass("show");
   window.myCropper.destroy();
   window.myCropper = new Cropper(window.guidedBfViewImportedImage, window.guidedCropOptions);
