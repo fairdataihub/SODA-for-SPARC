@@ -8,6 +8,7 @@ import { clientError, userErrorMessage } from "../others/http-error-handler/erro
 import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 import client from "../client";
+import { swalConfirmAction } from "../utils/swal-utils";
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -746,19 +747,107 @@ const askForRRID = async () => {
   }
 };
 
+const commonlyUsedStrainData = [
+  "Wistar",
+  "Yucatan",
+  "C57/B6J",
+  "C57 BL/6J",
+  "mixed background",
+  "Sprague-Dawley",
+];
+
 const showRRIDInput = async () => {
   return await Swal.fire({
     title: "Enter RRID",
-    input: "text",
-    inputPlaceholder: "e.g., RRID:AB_123456",
+    html: `
+      <b>Search the dropdown below for commonly used strains</b>
+      <select
+        id="common-strain-rrid-dropdown"
+        class="w-100 SODA-select-picker"
+        data-live-search="true"
+      >
+        <option value="Select">Select</option>
+      </select>
+      <p class="help-text mt-5">
+        If you can not find the strain in the dropdown, please enter the RRID manually.
+      </p>
+      <input
+        id="rrid-input"
+        class="swal2-input"
+        placeholder="Enter RRID"
+        style="border-radius: 7px; padding: 8px"
+      />
+    `,
+    width: 800,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
     showCancelButton: true,
     cancelButtonText: "Cancel",
     confirmButtonText: "Search",
-    allowOutsideClick: false,
-    inputValidator: (value) => {
-      if (!value) {
-        return "Please enter an RRID";
+    allowOutsideClick: true,
+
+    didRender: () => {
+      // Add commonly used strains to the dropdown
+      commonlyUsedStrainData.forEach((strain) => {
+        document.getElementById("common-strain-rrid-dropdown").innerHTML += `
+          <option value="${strain}">${strain}</option>
+        `;
+      });
+      // use selectPicker to style the dropdown
+      $("#common-strain-rrid-dropdown").selectpicker();
+      $("#common-strain-rrid-dropdown").selectpicker("refresh");
+    },
+
+    preConfirm: async () => {
+      const selectedStrain = document.getElementById("common-strain-rrid-dropdown").value;
+      if (selectedStrain === "Select") {
+        const manuallyEnteredRRID = document.getElementById("rrid-input").value;
+        if (manuallyEnteredRRID === "") {
+          Swal.showValidationMessage(
+            "Please enter an RRID to search for or select a commonly used strain in the dropdown."
+          );
+        }
+        try {
+          const response = await fetch(
+            `https://scicrunch.org/resolver/${manuallyEnteredRRID}.json`
+          );
+          if (!response.ok) {
+            console.error("Response fail:", response);
+            Swal.showValidationMessage("No data found for the entered RRID.");
+          } else {
+            const data = await response.json();
+            const subjectStrainData = data.hits.hits[0]["_source"];
+            console.log("subjectStrainData:", subjectStrainData);
+            const subjectStrain = subjectStrainData.item.name;
+            const subjectStrainRRID = subjectStrainData.rrid.curie;
+            console.log("Subject Strain:", subjectStrain);
+            console.log("Subject Strain RRID:", subjectStrainRRID);
+            const userConfirmedCorrectStrain = await swalConfirmAction(
+              null,
+              "Do you want to use the retrieved strain?",
+              `
+                <br />
+                <b>Subject strain</b>${subjectStrain}
+                <br />
+                <b>RRID:</b> ${subjectStrainRRID}
+                Would you like to retry or continue with the currently installed version of the Pennsieve agent?
+              `,
+              "Yes, use the retrieved strain",
+              "Pick a different one"
+            );
+            if (userConfirmedCorrectStrain) {
+              return subjectStrainRRID;
+            } else {
+              return askForRRID();
+            }
+          }
+        } catch (error) {
+          console.log("Error:", error);
+          Swal.showValidationMessage(error.message);
+        }
       }
+
+      return selectedStrain;
     },
   });
 };
