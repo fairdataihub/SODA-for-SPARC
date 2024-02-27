@@ -745,33 +745,41 @@ const showRRIDInput = async (curationModePrefix) => {
     {
       strain: "Wistar",
       rrid: "MGI:MGI_5607850", // Replace with actual Rrid for Wistar rat
+      species: "Rattus norvegicus",
     },
     {
       strain: "Yucatan",
       rrid: "MGI:MGI_5607856", // Replace with actual Rrid for Yucatan rat
+      species: "Rattus norvegicus",
     },
     {
       strain: "C57/B6J",
       rrid: "MGI:MGI_5558217", // Replace with actual Rrid for C57BL/6J mouse
+      species: "Mus musculus",
     },
     {
       strain: "C57 BL/6J",
       rrid: "MGI:MGI_5558217", // Replace with actual Rrid for C57BL/6J mouse
+      species: "Mus musculus",
     },
     {
       strain: "mixed background",
       rrid: "None", // Mixed background doesn't have a specific Rrid
+      species: "Mus musculus",
     },
     {
       strain: "Sprague-Dawley",
       rrid: "RGD:2206237", // Replace with actual Rrid for Sprague-Dawley rat
+      species: "Rattus norvegicus",
     },
   ];
 
   const result = await Swal.fire({
-    title: "Enter RRID",
+    title: "Species and Strain specification",
     html: `
-      <b>Search the dropdown below for commonly used strains</b>
+      <label class="guided--form-label centered mb-2" style="font-size: 1em !important;">
+        Select the species and strain of this subject
+      </label>
       <select
         id="common-strain-rrid-dropdown"
         class="w-100 SODA-select-picker"
@@ -779,18 +787,30 @@ const showRRIDInput = async (curationModePrefix) => {
       >
         <option value="Select">Select</option>
         ${commonlyUsedStrainData
-          .map((strain) => `<option value="${strain.rrid}">${strain.strain}</option>`)
+          .map((strain) => `<option value="${strain.strain}">${strain.strain}</option>`)
           .join("")}
+        <option value="Other">Other</option>
       </select>
-      <p class="help-text mt-5">
-        If you can not find the strain in the dropdown, please enter the RRID manually.
+      <p class="help-text mb-1 mt-2">
+        If your strain is not in the dropdown, search for it using its RRID below.
       </p>
-      <input
-        id="rrid-input"
-        class="swal2-input"
-        placeholder="Enter RRID"
-        style="border-radius: 7px; padding: 8px"
-      />
+      <div class="d-flex justify-center" id="section-rrid-search">
+        <label class="guided--form-label centered mt-5" style="font-size: 1em !important;">
+          Search for a strain using its RRID
+        </label>
+        <p class="help-text">
+          To find the RRID for a strain, you can search for the strain on <a target="_blank" href="https://scicrunch.org/resources/data/source/nlx_154697-1/search">Scicrunch.org</a>.
+          Once you have the RRID, enter it in the input field below and click "Search".
+        </p>
+        <div class="d-flex justify-content-center w-100">
+          <input
+            id="rrid-input"
+            class="guided--input"
+            placeholder="Enter RRID to search for..."
+          />
+          <button id="button-searc-rrid">Search</button>
+        </div>
+      </div>
     `,
     width: 800,
     heightAuto: false,
@@ -804,53 +824,77 @@ const showRRIDInput = async (curationModePrefix) => {
       // use selectPicker to style the dropdown
       $("#common-strain-rrid-dropdown").selectpicker();
       $("#common-strain-rrid-dropdown").selectpicker("refresh");
+      // Add a change listener to the dropdown to show/hide the input field
+      document.getElementById("common-strain-rrid-dropdown").addEventListener("change", (ev) => {
+        const selectedStrainRRID = ev.target.value;
+        const customSearchSection = document.getElementById("section-rrid-search");
+        if (selectedStrainRRID === "Other") {
+          customSearchSection.classList.remove("hidden");
+        } else {
+          customSearchSection.classList.add("hidden");
+        }
+      });
+
+      // Add the click listener to the search button
+      document.getElementById("button-searc-rrid").addEventListener("click", async () => {
+        const manuallyEnteredRRID = document.getElementById("rrid-input").value;
+        try {
+          const response = await fetch(
+            `https://scicrunch.org/resolver/${manuallyEnteredRRID}.json`
+          );
+          if (!response.ok) {
+            console.error("Response fail:", response);
+            Swal.showValidationMessage("No data found for the entered RRID.");
+          } else {
+            const data = await response.json();
+            const subjectStrainData = data.hits.hits[0]["_source"];
+            console.log("subjectStrainData:", subjectStrainData);
+            const subjectStrain = subjectStrainData.item.name;
+            const subjectStrainRRID = subjectStrainData.rrid.curie;
+            const subjectSpecies = subjectStrainData?.organisms?.primary[0]?.species?.name || "";
+            console.log("subjectStrain:", subjectStrain);
+            console.log("subjectStrainRRID:", subjectStrainRRID);
+            console.log("subjectSpecies:", subjectSpecies);
+            const userConfirmedCorrectStrain = await swalConfirmAction(
+              null,
+              "Is this the strain you are looking for?",
+              `
+                <br />
+                <b>Subject strain</b>${subjectStrain}
+                <br />
+                <b>RRID:</b> ${subjectStrainRRID}
+                <br />
+                <b>Species:</b> ${subjectSpecies}
+              `,
+              "Yes",
+              "Search again"
+            );
+            if (userConfirmedCorrectStrain) {
+              return [subjectStrain, subjectStrainRRID];
+            } else {
+              return await showRRIDInput(curationModePrefix);
+            }
+          }
+        } catch (error) {
+          console.log("Error:", error);
+          Swal.showValidationMessage(error.message);
+        }
+      });
     },
 
     preConfirm: async () => {
       const selectedStrainRRID = document.getElementById("common-strain-rrid-dropdown").value;
       if (selectedStrainRRID !== "Select") {
         const selectedStrain = commonlyUsedStrainData.find(
-          (strain) => strain.rrid === selectedStrainRRID
-        ).strain;
-        return [selectedStrain, selectedStrainRRID];
+          (strain) => strain.strain === selectedStrainRRID
+        );
+        return [selectedStrain.strain, selectedStrain.rrid, selectedStrain.species];
       }
       const manuallyEnteredRRID = document.getElementById("rrid-input").value;
       if (manuallyEnteredRRID === "") {
         Swal.showValidationMessage(
           "Please enter an RRID to search for or select a commonly used strain in the dropdown."
         );
-      }
-      try {
-        const response = await fetch(`https://scicrunch.org/resolver/${manuallyEnteredRRID}.json`);
-        if (!response.ok) {
-          console.error("Response fail:", response);
-          Swal.showValidationMessage("No data found for the entered RRID.");
-        } else {
-          const data = await response.json();
-          const subjectStrainData = data.hits.hits[0]["_source"];
-          const subjectStrain = subjectStrainData.item.name;
-          const subjectStrainRRID = subjectStrainData.rrid.curie;
-          const userConfirmedCorrectStrain = await swalConfirmAction(
-            null,
-            "Do you want to use the retrieved strain?",
-            `
-              <br />
-              <b>Subject strain</b>${subjectStrain}
-              <br />
-              <b>RRID:</b> ${subjectStrainRRID}
-            `,
-            "Yes, use the retrieved strain",
-            "Pick a different one"
-          );
-          if (userConfirmedCorrectStrain) {
-            return [subjectStrain, subjectStrainRRID];
-          } else {
-            return await showRRIDInput(curationModePrefix);
-          }
-        }
-      } catch (error) {
-        console.log("Error:", error);
-        Swal.showValidationMessage(error.message);
       }
     },
   });
