@@ -731,20 +731,7 @@ window.populateRRID = async (strain, type, curationMode) => {
 };
 
 const askForRRID = async () => {
-  let subjectStrain = "";
-
-  const { value: rrid } = await showRRIDInput();
-
-  if (rrid) {
-    try {
-      const res = await window.electron.ipcRenderer.invoke("getStrainData", rrid);
-      console.log("Res:", res);
-      const subjectStrain = res.hits.hits[0]["_source"].item.name;
-      console.log("Subject Strain:", subjectStrain);
-    } catch (error) {
-      showErrorMessage(error.message);
-    }
-  }
+  await showRRIDInput();
 };
 
 const commonlyUsedStrainData = [
@@ -756,7 +743,10 @@ const commonlyUsedStrainData = [
   "Sprague-Dawley",
 ];
 
-const showRRIDInput = async () => {
+const showRRIDInput = async (curationModePrefix) => {
+  if (curationModePrefix === "guided-") {
+    guidedSetStrainRRID("");
+  }
   return await Swal.fire({
     title: "Enter RRID",
     html: `
@@ -838,7 +828,7 @@ const showRRIDInput = async () => {
             if (userConfirmedCorrectStrain) {
               return subjectStrainRRID;
             } else {
-              return askForRRID();
+              return showRRIDInput(curationModePrefix);
             }
           }
         } catch (error) {
@@ -852,18 +842,13 @@ const showRRIDInput = async () => {
   });
 };
 
-const showErrorMessage = (errorMessage) => {
-  Swal.fire({
-    title: "Error",
-    text: errorMessage,
-    icon: "error",
-  });
-};
-
 document.querySelectorAll(".opens-rrid-modal-on-click").forEach((element) => {
   element.addEventListener("click", async () => {
-    // Function to show SweetAlert with input for RRID
-    await askForRRID();
+    const clickedButtonId = element.id;
+    const curationModePrefix =
+      clickedButtonId === "guided-button-add-strain-subject" ? "guided-" : "";
+    console.log("clickedButtonId:", clickedButtonId);
+    await showRRIDInput(curationModePrefix);
   });
 });
 // Function to handle adding/editing a strain using SweetAlert
