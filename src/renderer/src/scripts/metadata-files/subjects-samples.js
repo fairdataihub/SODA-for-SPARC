@@ -564,47 +564,6 @@ const addSubjectIDToJSON = (subjectID) => {
   }
 };
 
-/// function to add Species - subjects + samples
-window.addSpecies = async (ev, type, curationMode) => {
-  let curationModeSelectorPrefix = "";
-  if (curationMode == "guided") {
-    curationModeSelectorPrefix = "guided-";
-  }
-
-  if (curationMode == "guided") {
-    guidedSetStrainRRID("");
-  }
-  const { value: value } = await Swal.fire({
-    title: "Add/Edit a species",
-    html: `<input type="text" id="sweetalert-${type}-species" placeholder="Search for species..." style="font-size: 14px;"/>`,
-    focusConfirm: false,
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    customClass: {
-      confirmButton: "confirm-disabled",
-    },
-    didOpen: () => {
-      $(".swal2-confirm").attr("id", "btn-confirm-species");
-      window.createSpeciesAutocomplete(`sweetalert-${type}-species`, curationMode);
-    },
-    preConfirm: () => {
-      if (document.getElementById(`sweetalert-${type}-species`).value === "") {
-        Swal.showValidationMessage("Please enter a species.");
-      }
-      return document.getElementById(`sweetalert-${type}-species`).value;
-    },
-  });
-  if (value) {
-    if (value !== "") {
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-species`).val(value);
-      window.switchSpeciesStrainInput("species", "edit", curationMode);
-    }
-  } else {
-    window.switchSpeciesStrainInput("species", "add", curationMode);
-  }
-};
-
 window.switchSpeciesStrainInput = (type, mode, curationMode) => {
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
@@ -638,95 +597,6 @@ const guidedSetStrainRRID = (RRID) => {
     rridLabel.classList.remove("hidden");
     rridInput.classList.remove("hidden");
     rridInput.value = RRID;
-  }
-};
-
-// populate RRID
-window.populateRRID = async (strain, type, curationMode) => {
-  Swal.fire({
-    title: `Retrieving RRID for ${strain}...`,
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    html: "Please wait...",
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: true,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
-
-  let curationModeSelectorPrefix = "";
-  if (curationMode == "guided") {
-    curationModeSelectorPrefix = "guided-";
-  }
-
-  let rridHostname = "scicrunch.org";
-  // this is to handle spaces and other special characters in strain name
-  let encodedStrain = encodeURIComponent(strain);
-  let rridInfo = {
-    hostname: rridHostname,
-    port: 443,
-    path: `/api/1/dataservices/federation/data/nlx_154697-1?q=${encodedStrain}&key=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
-    headers: { accept: "text/xml" },
-  };
-
-  try {
-    let data = await window.electron.ipcRenderer.invoke("getStrainData", rridInfo);
-    var returnRes = readXMLScicrunch(data, type, curationMode);
-    if (!returnRes) {
-      Swal.fire({
-        title: `Failed to retrieve the RRID for ${strain} from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
-        text: "Please make sure you enter the correct strain.",
-        showCancelButton: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("display", "none");
-      if (type.includes("subject")) {
-        $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
-          `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-        );
-      } else {
-        $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
-          `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-        );
-      }
-    } else {
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(strain);
-      $("#btn-confirm-strain").removeClass("confirm-disabled");
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("display", "block");
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).attr("readonly", true);
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("background", "#f5f5f5");
-      if (type.includes("subject")) {
-        $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
-          "<i class='pen icon'></i>Edit"
-        );
-      } else {
-        $(`#${curationModeSelectorPrefix}button-add-strain-sample`).html(
-          "<i class='pen icon'></i>Edit"
-        );
-      }
-      Swal.fire({
-        title: `Successfully retrieved the RRID for "${strain}".`,
-        icon: "success",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
-    }
-  } catch (err) {
-    console.log(err);
-    $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
-    $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
-    Swal.fire({
-      title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
-      text: "Please check your Internet Connection or contact us at help@fairdataihub.org",
-      showCancelButton: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    });
   }
 };
 
@@ -817,7 +687,7 @@ const showRRIDInput = async (curationModePrefix) => {
     backdrop: "rgba(0,0,0, 0.4)",
     showCancelButton: true,
     cancelButtonText: "Cancel",
-    confirmButtonText: "Search",
+    confirmButtonText: "OK",
     allowOutsideClick: true,
 
     didRender: () => {
@@ -903,58 +773,6 @@ const showRRIDInput = async (curationModePrefix) => {
     return result.value;
   } else {
     console.log("result", result);
-  }
-};
-
-// Function to handle adding/editing a strain using SweetAlert
-window.addStrain = async (ev, type, curationMode) => {
-  // Determine the prefix based on the curation mode
-  const curationModeSelectorPrefix = curationMode === "guided" ? "guided-" : "";
-
-  // Clear the value of the input field
-  $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
-
-  if (curationMode === "guided") {
-    guidedSetStrainRRID("");
-  }
-
-  // SweetAlert configuration for the input dialog
-  const inputId = `sweetalert-${type}-strain`;
-  const inputElement = document.getElementById(inputId);
-  const { value } = await Swal.fire({
-    title: "Add/Edit a strain",
-    html: `<input type="text" id="${inputId}" placeholder="Search for strain..." style="font-size: 14px;"/>`,
-    focusConfirm: false,
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    customClass: {
-      confirmButton: "confirm-disabled",
-    },
-    didOpen: () => {
-      // Set a specific ID for the confirm button
-      $(".swal2-confirm").attr("id", "btn-confirm-strain");
-      // Add strain autocomplete to the SweetAlert input
-      window.createStrain(inputId, type, curationMode);
-    },
-    preConfirm: () => {
-      // Validation: Check if the input field is empty
-      if (inputElement.value === "") {
-        Swal.showValidationMessage("Please enter a strain.");
-      }
-      return inputElement.value;
-    },
-  });
-
-  // Handle the value returned by SweetAlert
-  if (value && value !== "") {
-    // Update the corresponding input field with the selected value
-    $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(value);
-    // Trigger the appropriate action based on curation mode
-    window.switchSpeciesStrainInput("strain", "edit", curationMode);
-  } else {
-    // If no value was selected, trigger the 'add' action
-    window.switchSpeciesStrainInput("strain", "add", curationMode);
   }
 };
 
@@ -1345,7 +1163,7 @@ window.populateForms = (subjectID, type, curationMode) => {
           } else if (field.name === "Strain" && infoJson[i] !== "") {
             $(`#${curationModeSelectorPrefix}bootbox-subject-strain`).val(infoJson[i]);
             window.switchSpeciesStrainInput("strain", "edit", curationMode);
-          } else if (curationMode === "guided" && field.name === "RRID for strain") {
+          } else if (field.name === "RRID for strain" && curationMode === "guided") {
             guidedSetStrainRRID(infoJson[i]);
           } else if (curationMode == "guided" && field.name === "protocol url or doi") {
             //If the selected sample derived from
@@ -3055,49 +2873,4 @@ const showAgeSection = (ev, div, type) => {
   for (var divEle of allDivsArr) {
     $("#" + divEle).addClass("hidden");
   }
-};
-
-const readXMLScicrunch = (xml, type, curationMode) => {
-  var parser = new DOMParser();
-  var xmlDoc = parser.parseFromString(xml, "text/xml");
-  var resultList = xmlDoc.getElementsByTagName("name"); // THE XML TAG NAME.
-  var rrid = "";
-  var res;
-
-  for (var i = 0; i < resultList.length; i++) {
-    if (resultList[i].childNodes[0].nodeValue === "Proper Citation") {
-      rrid = resultList[i].nextSibling.childNodes[0].nodeValue;
-      break;
-    }
-  }
-  if (type === "subject") {
-    if (rrid.trim() !== "") {
-      if (curationMode == "free-form") {
-        $("bootbox-subject-strain-RRID").val(rrid.trim());
-      }
-
-      if (curationMode == "guided") {
-        guidedSetStrainRRID(rrid.trim());
-      }
-      res = true;
-    } else {
-      if (curationMode == "free-form") {
-        $("bootbox-subject-strain-RRID").val("");
-      }
-
-      if (curationMode === "guided") {
-        guidedSetStrainRRID("");
-      }
-      res = false;
-    }
-  } else {
-    if (rrid.trim() !== "") {
-      $("#bootbox-sample-strain-RRID").val(rrid.trim());
-      res = true;
-    } else {
-      $("#bootbox-sample-strain-RRID").val("");
-      res = false;
-    }
-  }
-  return res;
 };

@@ -3402,7 +3402,7 @@
                   <b>Example:</b> Male
                 </p>
 
-                <label class="guided--form-label mt-xl">Species:</label>
+                <label class="guided--form-label mt-xl">Species and strain:</label>
                 <div class="demo-controls-body w-100">
                   <div class="ui input modified">
                     <input
@@ -3412,48 +3412,6 @@
                       class="subjects-form-entry"
                       style="font-size: 14px; display: none"
                     />
-                    <button
-                      class="button-add-species ml-0"
-                      onclick="window.addSpecies(this, 'subject', 'guided')"
-                      id="guided-button-add-species-subject"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        style="vertical-align: middle"
-                        width="14"
-                        height="14"
-                        fill="currentColor"
-                        class="bi bi-plus"
-                        viewbox="0 0 16 16"
-                      >
-                        <path
-                          d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
-                        />
-                      </svg>
-                      Add species
-                    </button>
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Type to get suggestions from the commonly used species. Must use terminology from
-                  the
-                  <a target="_blank" href="https://www.ncbi.nlm.nih.gov/taxonomy"
-                    >NCBI Taxonomy database</a
-                  >.
-                  <br />
-                  <b>Example:</b> Rattus
-                </p>
-                <div style="display: flex; flex-wrap: nowrap; width: 100%">
-                  <label class="guided--form-label mt-xl">Strain:</label>
-                  <label
-                    class="guided--form-label mt-xl"
-                    id="guided-strain-rrid-label"
-                    style="margin-right: 90px"
-                    >Strain RRID:</label
-                  >
-                </div>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
                     <input
                       type="text"
                       id="guided-bootbox-subject-strain"
@@ -3469,6 +3427,23 @@
                       style="font-size: 13px"
                       readonly
                     />
+                    <button class="button-add-species ml-0 opens-rrid-modal-on-click">
+                      Specify species and strain
+                    </button>
+                  </div>
+                </div>
+                <p class="guided--text-input-instructions mb-0">This needs update</p>
+                <div style="display: flex; flex-wrap: nowrap; width: 100%">
+                  <label class="guided--form-label mt-xl">Strain:</label>
+                  <label
+                    class="guided--form-label mt-xl"
+                    id="guided-strain-rrid-label"
+                    style="margin-right: 90px"
+                    >Strain RRID:</label
+                  >
+                </div>
+                <div class="demo-controls-body w-100">
+                  <div class="ui input modified">
                     <button
                       class="button-add-species ml-0 opens-rrid-modal-on-click"
                       id="guided-button-add-strain-subject"
