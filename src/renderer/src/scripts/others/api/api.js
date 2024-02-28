@@ -509,7 +509,7 @@ const getUserPoolAccessToken = async (email, password) => {
 const getDatasetFileCount = async (datasetId) => {
   const response = await client.get(`/datasets/${datasetId}/file_count`);
   return response.data;
-}
+};
 
 const api = {
   getUserInformation,
@@ -542,7 +542,7 @@ const api = {
   setDefaultProfile,
   createProfileName,
   getOrganizations,
-  getDatasetFileCount
+  getDatasetFileCount,
 };
 
 export default api;
