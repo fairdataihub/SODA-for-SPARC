@@ -545,7 +545,11 @@ window.clearAllSubjectFormFields = (form) => {
     $(`#${curationModeSelectorPrefix}bootbox-${keyword}-strain`).css("display", "none");
 
     if (form === window.guidedSubjectsFormDiv) {
-      guidedSetStrainRRID("");
+      setSubjectSpeciesAndStrainValues({
+        species: "",
+        strain: "",
+        rrid: "",
+      });
     }
 
     $(`#${curationModeSelectorPrefix}button-add-species-${keyword}`).html(
@@ -564,24 +568,40 @@ const addSubjectIDToJSON = (subjectID) => {
   }
 };
 
-window.switchSpeciesStrainInput = (type, mode, curationMode) => {
-  let curationModeSelectorPrefix = "";
-  if (curationMode == "guided") {
-    curationModeSelectorPrefix = "guided-";
+const setSubjectSpeciesAndStrainValues = (speciesAndStrainObject) => {
+  const subjectSpeciesElements = document.querySelectorAll(".subject-species");
+  const subjectStrainElements = document.querySelectorAll(".subject-strain");
+  const subjectStrainRRIDElements = document.querySelectorAll(".subject-strain-rrid");
+
+  if (speciesAndStrainObject.species) {
+    subjectSpeciesElements.forEach((element) => {
+      element.classList.remove("hidden");
+    });
+  } else {
+    subjectSpeciesElements.forEach((element) => {
+      element.classList.add("hidden");
+    });
   }
-  if (mode === "add") {
-    $(`#${curationModeSelectorPrefix}button-add-${type}-subject`).html(
-      `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add ${type}`
-    );
-    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css("display", "none");
-    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).val("");
-  } else if (mode === "edit") {
-    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css("display", "block");
-    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).attr("readonly", true);
-    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css("background", "#f5f5f5");
-    $(`#${curationModeSelectorPrefix}button-add-${type}-subject`).html(
-      "<i class='pen icon'></i>Edit"
-    );
+
+  if (speciesAndStrainObject.strain) {
+    subjectStrainElements.forEach((element) => {
+      element.classList.remove("hidden");
+    });
+  } else {
+    subjectStrainElements.forEach((element) => {
+      element.classList.add("hidden");
+    });
+  }
+
+  if (speciesAndStrainObject.rrid) {
+    subjectStrainRRIDElements.forEach((element) => {
+      element.classList.remove("hidden");
+    });
+  }
+  if (!speciesAndStrainObject.rrid) {
+    subjectStrainRRIDElements.forEach((element) => {
+      element.classList.add("hidden");
+    });
   }
 };
 
@@ -1132,6 +1152,12 @@ window.populateForms = (subjectID, type, curationMode) => {
       protocolURLDropdown.value = "";
     }
 
+    const subjectSpeciesStrainValues = {
+      species: "",
+      strain: "",
+      rrid: "",
+    };
+
     // populate form
     var emptyEntries = ["nan", "nat"];
     var c = fieldArr.map(function (i, field) {
@@ -1156,15 +1182,12 @@ window.populateForms = (subjectID, type, curationMode) => {
                 $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val("N/A");
               }
             }
-          } else if (field.name === "Species" && infoJson[i] !== "") {
-            $(`#${curationModeSelectorPrefix}bootbox-subject-species`).val(infoJson[i]);
-            // manipulate the Add Strains/Species UI accordingly
-            window.switchSpeciesStrainInput("species", "edit", curationMode);
-          } else if (field.name === "Strain" && infoJson[i] !== "") {
-            $(`#${curationModeSelectorPrefix}bootbox-subject-strain`).val(infoJson[i]);
-            window.switchSpeciesStrainInput("strain", "edit", curationMode);
-          } else if (field.name === "RRID for strain" && curationMode === "guided") {
-            guidedSetStrainRRID(infoJson[i]);
+          } else if (field.name === "Species") {
+            subjectSpeciesStrainValues["species"] = "a"; /*infoJson[i];*/
+          } else if (field.name === "Strain") {
+            subjectSpeciesStrainValues["strain"] = "a"; /*infoJson[i];*/
+          } else if (field.name === "RRID for strain") {
+            subjectSpeciesStrainValues["rrid"] = "a"; /*infoJson[i];*/
           } else if (curationMode == "guided" && field.name === "protocol url or doi") {
             //If the selected sample derived from
             const previouslySavedProtocolURL = infoJson[i];
@@ -1197,6 +1220,8 @@ window.populateForms = (subjectID, type, curationMode) => {
         }
       }
     });
+    console.log("subjectSpeciesStrainValues:", subjectSpeciesStrainValues);
+    setSubjectSpeciesAndStrainValues(subjectSpeciesStrainValues);
   }
 };
 
