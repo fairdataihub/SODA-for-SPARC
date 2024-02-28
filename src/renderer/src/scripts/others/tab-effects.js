@@ -1070,6 +1070,21 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     }
   }
 
+  // Step 6 - The Merge/Skip/Replace options for selecting how to upload data to an existing Pennsieve dataset
+  if(ev.getAttribute("data-next") === "Question-generate-dataset-existing-folders-options") {
+    console.log("Logged here")
+
+    // get the amount of files in the existing dataset and skip the Merge/Skip/Replace step if there are no files in the existing dataset
+    let hasFiles = await api.getDatasetFileCount(window.defaultBfDatasetId);
+    if(!hasFiles) {
+      // skip the Merge/Skip/Replace step
+      window.nextPrev(1);
+      return;
+    }
+
+    // continue as usual otherwise
+  }
+
   // If Confirm dataset btn was hidden, show it again here
   // under Step 6
   let step6 = document.getElementById("generate-dataset-tab");
