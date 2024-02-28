@@ -543,7 +543,13 @@ window.clearAllSubjectFormFields = (form) => {
     var keyword = "subject";
 
     if (form === window.guidedSubjectsFormDiv) {
-      setSubjectSpeciesAndStrainValues({
+      setSubjectSpeciesAndStrainValues("guided-", {
+        ["Species"]: "",
+        ["Strain"]: "",
+        ["RRID for strain"]: "",
+      });
+    } else {
+      setSubjectSpeciesAndStrainValues("", {
         ["Species"]: "",
         ["Strain"]: "",
         ["RRID for strain"]: "",
@@ -559,48 +565,20 @@ const addSubjectIDToJSON = (subjectID) => {
   }
 };
 
-const setSubjectSpeciesAndStrainValues = (speciesAndStrainObject) => {
+const setSubjectSpeciesAndStrainValues = (curationModePrefix, speciesAndStrainObject) => {
   console.log("Object used to set species and strain:", speciesAndStrainObject);
-  const subjectSpeciesElements = document.querySelectorAll(".subject-species");
-  const subjectStrainElements = document.querySelectorAll(".subject-strain");
-  const subjectStrainRRIDElements = document.querySelectorAll(".subject-strain-rrid");
-  const speciesInput = document.getElementById("guided-bootbox-subject-species");
-  const strainInput = document.getElementById("guided-bootbox-subject-strain");
-  const strainRRIDInput = document.getElementById("guided-bootbox-subject-strain-RRID");
+
+  const speciesAndStrainObjectValues = Object.values(speciesAndStrainObject);
+  console.log("speciesAndStrainObjectValues:", speciesAndStrainObjectValues);
+
+  const speciesInput = document.getElementById(`${curationModePrefix}bootbox-subject-species`);
+  const strainInput = document.getElementById(`${curationModePrefix}bootbox-subject-strain`);
+  const strainRRIDInput = document.getElementById(
+    `${curationModePrefix}bootbox-subject-strain-RRID`
+  );
   speciesInput.value = speciesAndStrainObject["Species"];
   strainInput.value = speciesAndStrainObject["Strain"];
   strainRRIDInput.value = speciesAndStrainObject["RRID for strain"];
-
-  if (speciesAndStrainObject.species) {
-    subjectSpeciesElements.forEach((element) => {
-      element.classList.remove("hidden");
-    });
-  } else {
-    subjectSpeciesElements.forEach((element) => {
-      element.classList.add("hidden");
-    });
-  }
-
-  if (speciesAndStrainObject.strain) {
-    subjectStrainElements.forEach((element) => {
-      element.classList.remove("hidden");
-    });
-  } else {
-    subjectStrainElements.forEach((element) => {
-      element.classList.add("hidden");
-    });
-  }
-
-  if (speciesAndStrainObject.rrid) {
-    subjectStrainRRIDElements.forEach((element) => {
-      element.classList.remove("hidden");
-    });
-  }
-  if (!speciesAndStrainObject.rrid) {
-    subjectStrainRRIDElements.forEach((element) => {
-      element.classList.add("hidden");
-    });
-  }
 };
 
 const guidedSetStrainRRID = (RRID) => {
@@ -627,6 +605,11 @@ document.querySelectorAll(".opens-rrid-modal-on-click").forEach((element) => {
     const res = await showRRIDInput(curationModePrefix);
     await swalShowInfo("res", res);
     console.log("res from click:", res);
+    setSubjectSpeciesAndStrainValues(curationModePrefix, {
+      ["Species"]: res[0],
+      ["Strain"]: res[1],
+      ["RRID for strain"]: res[2],
+    });
   });
 });
 const showRRIDInput = async (curationModePrefix) => {
@@ -1230,7 +1213,7 @@ window.populateForms = (subjectID, type, curationMode) => {
       }
     });
 
-    setSubjectSpeciesAndStrainValues(subjectSpeciesStrainValues);
+    setSubjectSpeciesAndStrainValues(curationModeSelectorPrefix, subjectSpeciesStrainValues);
   }
 };
 
