@@ -12895,7 +12895,10 @@ const renderSubjectsMetadataAsideItems = async () => {
       let previousSubject = document.getElementById("guided-bootbox-subject-id").value;
       //check to see if previousSubject is empty
       if (previousSubject) {
+        console.log(window.subjectsTableData[1]);
         window.addSubject("guided");
+        console.log(window.subjectsTableData[1]);
+
         await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
       }
 

@@ -541,23 +541,14 @@ window.clearAllSubjectFormFields = (form) => {
     }
 
     var keyword = "subject";
-    $(`#${curationModeSelectorPrefix}bootbox-${keyword}-species`).css("display", "none");
-    $(`#${curationModeSelectorPrefix}bootbox-${keyword}-strain`).css("display", "none");
 
     if (form === window.guidedSubjectsFormDiv) {
       setSubjectSpeciesAndStrainValues({
-        species: "",
-        strain: "",
-        rrid: "",
+        ["Species"]: "",
+        ["Strain"]: "",
+        ["RRID for strain"]: "",
       });
     }
-
-    $(`#${curationModeSelectorPrefix}button-add-species-${keyword}`).html(
-      `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
-    );
-    $(`#${curationModeSelectorPrefix}button-add-strain-${keyword}`).html(
-      `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-    );
   }
 };
 
@@ -569,9 +560,16 @@ const addSubjectIDToJSON = (subjectID) => {
 };
 
 const setSubjectSpeciesAndStrainValues = (speciesAndStrainObject) => {
+  console.log("Object used to set species and strain:", speciesAndStrainObject);
   const subjectSpeciesElements = document.querySelectorAll(".subject-species");
   const subjectStrainElements = document.querySelectorAll(".subject-strain");
   const subjectStrainRRIDElements = document.querySelectorAll(".subject-strain-rrid");
+  const speciesInput = document.getElementById("guided-bootbox-subject-species");
+  const strainInput = document.getElementById("guided-bootbox-subject-strain");
+  const strainRRIDInput = document.getElementById("guided-bootbox-subject-strain-RRID");
+  speciesInput.value = speciesAndStrainObject["Species"];
+  strainInput.value = speciesAndStrainObject["Strain"];
+  strainRRIDInput.value = speciesAndStrainObject["RRID for strain"];
 
   if (speciesAndStrainObject.species) {
     subjectSpeciesElements.forEach((element) => {
@@ -759,8 +757,9 @@ const showRRIDInput = async (curationModePrefix) => {
               "Yes",
               "Search again"
             );
+            console.log("userConfirmedCorrectStrain:", userConfirmedCorrectStrain);
             if (userConfirmedCorrectStrain) {
-              return [subjectStrain, subjectStrainRRID];
+              return [subjectSpecies, subjectStrain, subjectStrainRRID];
             } else {
               return await showRRIDInput(curationModePrefix);
             }
@@ -796,74 +795,102 @@ const showRRIDInput = async (curationModePrefix) => {
   }
 };
 
-const addSubjectMetadataEntriesIntoJSON = (curationMode) => {
-  let curationModeSelectorPrefix;
+function addSubjectMetadataEntriesIntoJSON(curationMode) {
+  // Initialize variables
+  let curationModeSelectorPrefix = "";
   let dataLength = window.subjectsTableData.length;
 
-  if (curationMode === "free-form") {
-    curationModeSelectorPrefix = "";
-  }
+  // Set curationModeSelectorPrefix based on curationMode
   if (curationMode === "guided") {
     curationModeSelectorPrefix = "guided-";
   }
-  var valuesArr = [];
-  headersArrSubjects = [];
-  for (var field of $(`#${curationModeSelectorPrefix}form-add-a-subject`)
-    .children()
-    .find(".subjects-form-entry")) {
-    if (field.value === "" || field.value === undefined || field.value === "Select") {
-      field.value = null;
-    } else {
-    }
-    headersArrSubjects.push(field.name);
-    // if it's age, then add age info input (day/week/month/year)
-    if (field.name === "Age") {
+
+  // Initialize arrays to store values and headers
+  const valuesArr = [];
+  const headersArrSubjects = [];
+
+  // Iterate over subject form entries
+  document
+    .getElementById(`${curationModeSelectorPrefix}form-add-a-subject`)
+    .querySelectorAll(".subjects-form-entry")
+    .forEach((field) => {
+      // Check for empty or undefined values and set to null
+      if (field.value === "" || field.value === undefined || field.value === "Select") {
+        field.value = null;
+      }
+
+      // Collect field names for headers
+      headersArrSubjects.push(field.name);
+
+      // Append age info to Age field if applicable
       if (
-        $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !== "Select" &&
-        $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !== "N/A"
+        field.name === "Age" &&
+        document.getElementById(`${curationModeSelectorPrefix}bootbox-subject-age-info`).value !==
+          "Select" &&
+        document.getElementById(`${curationModeSelectorPrefix}bootbox-subject-age-info`).value !==
+          "N/A"
       ) {
-        field.value =
-          field.value + " " + $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val();
-      } else {
-        field.value = field.value;
+        field.value += ` ${
+          document.getElementById(`${curationModeSelectorPrefix}bootbox-subject-age-info`).value
+        }`;
       }
-    }
-    if (field.name === "Sex") {
-      if ($(`#${curationModeSelectorPrefix}bootbox-subject-sex`).val() === "Unknown") {
+
+      // Handle Sex field for "Unknown" case
+      if (
+        field.name === "Sex" &&
+        document.getElementById(`${curationModeSelectorPrefix}bootbox-subject-sex`).value ===
+          "Unknown"
+      ) {
         field.value = "";
-      } else {
-        field.value = field.value;
       }
-    }
-    valuesArr.push(field.value);
-  }
+
+      // Collect field values for subjects
+      valuesArr.push(field.value);
+    });
+
+  // Set headers in subjectsTableData
   window.subjectsTableData[0] = headersArrSubjects;
 
-  if (valuesArr !== undefined && valuesArr.length !== 0) {
+  // Update subjectsTableData based on curationMode
+  if (valuesArr.length > 0) {
     if (curationMode === "free-form") {
-      if (window.subjectsTableData[dataLength] !== undefined) {
-        window.subjectsTableData[dataLength + 1] = valuesArr;
-      } else {
-        window.subjectsTableData[dataLength] = valuesArr;
-      }
+      const dataIndex =
+        window.subjectsTableData[dataLength] !== undefined ? dataLength + 1 : dataLength;
+      window.subjectsTableData[dataIndex] = valuesArr;
     }
+
     if (curationMode === "guided") {
-      let subjectID = document.getElementById("guided-bootbox-subject-id").value;
-      //Overwrite existing subject data with new subject data
-      for (let i = 1; i < window.subjectsTableData.length; i++) {
-        if (window.subjectsTableData[i][0] === subjectID) {
-          window.subjectsTableData[i] = valuesArr;
-        }
+      const subjectID = document.getElementById("guided-bootbox-subject-id").value;
+      const subjectIndex = findSubjectIndexById(subjectID);
+
+      // Update subject data if found
+      if (subjectIndex !== -1) {
+        window.subjectsTableData[subjectIndex] = valuesArr;
       }
     }
   }
+
+  // Perform additional actions for free-form mode
   if (curationMode === "free-form") {
-    $("#table-subjects").css("display", "block");
-    $("#button-generate-subjects").css("display", "block");
-    window.clearAllSubjectFormFields(subjectsFormDiv);
+    // Display table and button
+    document.getElementById("table-subjects").style.display = "block";
+    document.getElementById("button-generate-subjects").style.display = "block";
+
+    // Clear form fields and hide the form
+    clearAllSubjectFormFields(subjectsFormDiv);
     hideForm("subject");
   }
-};
+}
+
+// Function to find subject index by ID
+function findSubjectIndexById(subjectID) {
+  for (let i = 1; i < window.subjectsTableData.length; i++) {
+    if (window.subjectsTableData[i][0] === subjectID) {
+      return i;
+    }
+  }
+  return -1; // Return -1 if subject ID not found
+}
 
 const addSampleMetadataEntriesIntoJSON = (curationMode) => {
   let curationModeSelectorPrefix = "";
@@ -1115,12 +1142,13 @@ const loadSubjectInformation = (ev, subjectID) => {
 };
 
 window.populateForms = (subjectID, type, curationMode) => {
-  //Initialize variables shared between different curation modes and set them
-  //based on curationMode passed in as parameter
+  // Initialize variables shared between different curation modes and set them
+  // based on curationMode passed in as parameter
   let fieldArr;
   let curationModeSelectorPrefix;
   let infoJson;
 
+  // Set variables based on curationMode
   if (curationMode === "free-form") {
     curationModeSelectorPrefix = "";
     fieldArr = $(subjectsFormDiv).children().find(".subjects-form-entry");
@@ -1130,8 +1158,9 @@ window.populateForms = (subjectID, type, curationMode) => {
     fieldArr = $(window.guidedSubjectsFormDiv).children().find(".subjects-form-entry");
   }
 
+  // Retrieve information for the given subjectID from subjectsTableData
   if (window.subjectsTableData.length > 1) {
-    for (var i = 1; i < window.subjectsTableData.length; i++) {
+    for (let i = 1; i < window.subjectsTableData.length; i++) {
       if (window.subjectsTableData[i][0] === subjectID) {
         infoJson = window.subjectsTableData[i];
         break;
@@ -1139,9 +1168,10 @@ window.populateForms = (subjectID, type, curationMode) => {
     }
   }
 
+  // Proceed only if subjectID is not "clear" or empty
   if (subjectID !== "clear" && subjectID.trim() !== "") {
+    // Reset protocol title dropdowns for guided mode
     if (curationMode === "guided") {
-      //Reset protocol title dropdowns to the default ("No protocols associated with this sample")
       const protocolTitleDropdown = document.getElementById(
         "guided-bootbox-subject-protocol-title"
       );
@@ -1153,47 +1183,51 @@ window.populateForms = (subjectID, type, curationMode) => {
     }
 
     const subjectSpeciesStrainValues = {
-      species: "",
-      strain: "",
-      rrid: "",
+      ["Species"]: "",
+      ["Strain"]: "",
+      ["RRID for strain"]: "",
     };
 
-    // populate form
-    var emptyEntries = ["nan", "nat"];
-    var c = fieldArr.map(function (i, field) {
+    // Populate form fields
+    const emptyEntries = ["nan", "nat"];
+    fieldArr.each(function (i, field) {
       if (infoJson[i]) {
         if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
           if (field.name === "Age") {
-            var fullAge = infoJson[i].split(" ");
-            var unitArr = ["hours", "days", "weeks", "months", "years"];
-            var breakBoolean = false;
+            // Handle Age field and corresponding unit selection
+            const fullAge = infoJson[i].split(" ");
+            const unitArr = ["hours", "days", "weeks", "months", "years"];
             field.value = fullAge[0];
-            for (var unit of unitArr) {
+            let breakBoolean = false;
+
+            for (const unit of unitArr) {
               if (fullAge[1]) {
                 if (unit.includes(fullAge[1].toLowerCase())) {
                   $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val(unit);
                   breakBoolean = true;
                   break;
                 }
-                if (!breakBoolean) {
-                  $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val("N/A");
-                }
-              } else {
-                $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val("N/A");
               }
             }
-          } else if (field.name === "Species") {
-            subjectSpeciesStrainValues["species"] = "a"; /*infoJson[i];*/
-          } else if (field.name === "Strain") {
-            subjectSpeciesStrainValues["strain"] = "a"; /*infoJson[i];*/
-          } else if (field.name === "RRID for strain") {
-            subjectSpeciesStrainValues["rrid"] = "a"; /*infoJson[i];*/
-          } else if (curationMode == "guided" && field.name === "protocol url or doi") {
-            //If the selected sample derived from
-            const previouslySavedProtocolURL = infoJson[i];
 
+            // Set unit to "N/A" if not found
+            if (!breakBoolean) {
+              $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val("N/A");
+            }
+          } else if (
+            field.name === "Species" ||
+            field.name === "Strain" ||
+            field.name === "RRID for strain"
+          ) {
+            // Handle Species, Strain, and RRID for strain fields
+            console.log(`Setting ${field.name} value (species/strain/rrid):`, infoJson[i]);
+            subjectSpeciesStrainValues[field.name] = infoJson[i];
+          } else if (curationMode === "guided" && field.name === "protocol url or doi") {
+            // Handle protocol URL or DOI field in guided mode
+            const previouslySavedProtocolURL = infoJson[i];
             const protocols =
               window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+
             for (const protocol of protocols) {
               if (protocol.link === previouslySavedProtocolURL) {
                 protocolTitleDropdown.value = protocol.description;
@@ -1201,26 +1235,21 @@ window.populateForms = (subjectID, type, curationMode) => {
               }
             }
           } else {
+            // Handle other fields
             if (type === "import") {
-              if (field.name === "subject id") {
-                field.value = "";
-              } else {
-                field.value = infoJson[i];
-              }
+              // Clear subject id field if importing
+              field.value = field.name === "subject id" ? "" : infoJson[i];
             } else {
               field.value = infoJson[i];
             }
           }
         } else {
+          // Set field value to empty if it is in emptyEntries
           field.value = "";
-        }
-      } else {
-        if (field.name === "Sex" && infoJson[i] === "") {
-          $("#bootbox-subject-sex").val("Unknown");
         }
       }
     });
-    console.log("subjectSpeciesStrainValues:", subjectSpeciesStrainValues);
+
     setSubjectSpeciesAndStrainValues(subjectSpeciesStrainValues);
   }
 };
