@@ -517,13 +517,14 @@ window.nextPrev = (pageIndex) => {
   let parentTabs = document.getElementsByClassName("parent-tabs");
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
-    let event = new CustomEvent("custom-back", {
-      detail: {
-        target: { dataset: { section: "main_tabs" }, classList: ["someclass"] },
-      },
-    });
+    // let event = new CustomEvent("custom-back", {
+    //   detail: {
+    //     target: { dataset: { section: "guided_mode-section" }, classList: ["someclass"] },
+    //   },
+    // });
 
-    document.body.dispatchEvent(event);
+    // document.body.dispatchEvent(event);
+    window.returnToGuided();
     if ($("#nextBtn").prop("disabled") === true) {
       window.nextBtnDisabledVariable = true;
     } else {
