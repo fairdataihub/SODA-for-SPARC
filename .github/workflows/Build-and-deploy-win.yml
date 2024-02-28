@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      - ds-does-not-exist
+      - ui-update
 
 jobs:
   deploy-on-windows:
