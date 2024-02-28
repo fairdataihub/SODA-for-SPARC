@@ -8,7 +8,7 @@ import { clientError, userErrorMessage } from "../others/http-error-handler/erro
 import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 import client from "../client";
-import { swalConfirmAction } from "../utils/swal-utils";
+import { swalConfirmAction, swalShowInfo } from "../utils/swal-utils";
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -625,10 +625,12 @@ document.querySelectorAll(".opens-rrid-modal-on-click").forEach((element) => {
       clickedButtonId === "guided-button-add-strain-subject" ? "guided-" : "";
     console.log("clickedButtonId:", clickedButtonId);
     const res = await showRRIDInput(curationModePrefix);
+    await swalShowInfo("res", res);
     console.log("res from click:", res);
   });
 });
 const showRRIDInput = async (curationModePrefix) => {
+  let a = "";
   const commonlyUsedStrainData = [
     {
       strain: "Wistar",
@@ -662,7 +664,7 @@ const showRRIDInput = async (curationModePrefix) => {
     },
   ];
 
-  const result = await Swal.fire({
+  await Swal.fire({
     title: "Species and Strain specification",
     html: `
       <label class="guided--form-label centered mb-2" style="font-size: 1em !important;">
@@ -743,26 +745,8 @@ const showRRIDInput = async (curationModePrefix) => {
             console.log("subjectStrain:", subjectStrain);
             console.log("subjectStrainRRID:", subjectStrainRRID);
             console.log("subjectSpecies:", subjectSpecies);
-            const userConfirmedCorrectStrain = await swalConfirmAction(
-              null,
-              "Is this the strain you are looking for?",
-              `
-                <br />
-                <b>Subject strain</b>${subjectStrain}
-                <br />
-                <b>RRID:</b> ${subjectStrainRRID}
-                <br />
-                <b>Species:</b> ${subjectSpecies}
-              `,
-              "Yes",
-              "Search again"
-            );
-            console.log("userConfirmedCorrectStrain:", userConfirmedCorrectStrain);
-            if (userConfirmedCorrectStrain) {
-              return [subjectSpecies, subjectStrain, subjectStrainRRID];
-            } else {
-              return await showRRIDInput(curationModePrefix);
-            }
+            a = [subjectSpecies, subjectStrain, subjectStrainRRID];
+            Swal.close();
           }
         } catch (error) {
           console.log("Error:", error);
@@ -777,22 +761,18 @@ const showRRIDInput = async (curationModePrefix) => {
         const selectedStrain = commonlyUsedStrainData.find(
           (strain) => strain.strain === selectedStrainRRID
         );
-        return [selectedStrain.strain, selectedStrain.rrid, selectedStrain.species];
-      }
-      const manuallyEnteredRRID = document.getElementById("rrid-input").value;
-      if (manuallyEnteredRRID === "") {
-        Swal.showValidationMessage(
-          "Please enter an RRID to search for or select a commonly used strain in the dropdown."
-        );
+        a = [selectedStrain.strain, selectedStrain.rrid, selectedStrain.species];
+      } else {
+        const manuallyEnteredRRID = document.getElementById("rrid-input").value;
+        if (manuallyEnteredRRID === "") {
+          Swal.showValidationMessage(
+            "Please enter an RRID to search for or select a commonly used strain in the dropdown."
+          );
+        }
       }
     },
   });
-
-  if (result.isConfirmed) {
-    return result.value;
-  } else {
-    console.log("result", result);
-  }
+  return a;
 };
 
 function addSubjectMetadataEntriesIntoJSON(curationMode) {
