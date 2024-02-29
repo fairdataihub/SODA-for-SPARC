@@ -35,7 +35,7 @@ window.transitionToAdvancedFeature = (event) => {
   if (button_id === "validate_dataset_btn") {
     // Transition to the validate dataset page
   }
-}
+};
 
 const transitionToAdvancedPage = () => {
   //Hide the home screen
@@ -57,10 +57,10 @@ const transitionToAdvancedPage = () => {
   document.getElementById("edit-dataset-component-lottie").innerHTML = "";
 
   current_advanced_page = "advanced-features-selection-page";
-}
+};
 
 // Advanced features event listener
-$("#direct-to-advanced-features").on("click", (() => {
+$("#direct-to-advanced-features").on("click", () => {
   // Reset the DS global path as it is not needed in advanced features
   window.organizeDSglobalPath.value = "";
 
@@ -69,10 +69,10 @@ $("#direct-to-advanced-features").on("click", (() => {
 
   //Transition to advanced features page
   transitionToAdvancedPage();
-}));
+});
 
 // Back button event listener
-$("#advanced-back-button").on("click", (() => {
+$("#advanced-back-button").on("click", () => {
   // Transition back depending on what current page is being displayed
   console.log("Back button clicked");
   if (current_advanced_page === "advanced-features-selection-page") {
@@ -95,7 +95,7 @@ $("#advanced-back-button").on("click", (() => {
       loop: true,
       autoplay: true,
     });
-  
+
     lottie.loadAnimation({
       container: document.getElementById("edit-dataset-component-lottie"),
       animationData: modifyDataset,
@@ -105,8 +105,12 @@ $("#advanced-back-button").on("click", (() => {
     });
   }
 
-  console.log("Current advanced page: ", current_advanced_page)
-  if (current_advanced_page === "create_manifest_btn" || current_advanced_page === "upload_banner_image_btn" || current_advanced_page === "validate_dataset_btn") {
+  console.log("Current advanced page: ", current_advanced_page);
+  if (
+    current_advanced_page === "create_manifest_btn" ||
+    current_advanced_page === "upload_banner_image_btn" ||
+    current_advanced_page === "validate_dataset_btn"
+  ) {
     // Transition back to the advanced features selection page
     document.getElementById("banner-image-feature").classList.add("hidden");
     document.getElementById("banner-image-feature").classList.remove("is-shown");
@@ -117,4 +121,4 @@ $("#advanced-back-button").on("click", (() => {
 
     current_advanced_page = "advanced-features-selection-page";
   }
-}));
+});
