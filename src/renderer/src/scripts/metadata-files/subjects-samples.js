@@ -566,56 +566,43 @@ const addSubjectIDToJSON = (subjectID) => {
 };
 
 const setSubjectSpeciesAndStrainValues = (curationModePrefix, speciesAndStrainObject) => {
-  console.log("curationModePrefix:", curationModePrefix);
-  console.log("Object used to set species and strain:", speciesAndStrainObject);
-
+  // Check if all values in speciesAndStrainObject are empty
   const allValuesAreEmpty = Object.values(speciesAndStrainObject).every((value) => value === "");
 
+  // Get all elements with class "species-strain-rrid-element"
   const speciesStrainRRIDFields = document.querySelectorAll(".species-strain-rrid-element");
-  if (allValuesAreEmpty) {
-    speciesStrainRRIDFields.forEach((field) => {
-      field.classList.add("hidden");
-    });
-  } else {
-    speciesStrainRRIDFields.forEach((field) => {
-      field.classList.remove("hidden");
-    });
-  }
 
+  // Hide or show the elements based on whether all values are empty or not
+  speciesStrainRRIDFields.forEach((field) => {
+    if (allValuesAreEmpty) {
+      field.classList.add("hidden");
+    } else {
+      field.classList.remove("hidden");
+    }
+  });
+
+  // Update the innerHTML of the specified button based on whether all values are empty or not
   const buttonSpeciesStrainRRID = document.getElementById(
     `${curationModePrefix}button-specify-subject-species-strain-rrid`
   );
-  if (allValuesAreEmpty) {
-    buttonSpeciesStrainRRID.innerHTML = "Specify species and strain";
-  } else {
-    buttonSpeciesStrainRRID.innerHTML = "Edit species and strain";
-  }
+  buttonSpeciesStrainRRID.innerHTML = allValuesAreEmpty
+    ? "Specify species and strain"
+    : "Edit species and strain";
 
-  console.log("allValuesAreEmpty:", allValuesAreEmpty);
-
+  // Get input elements by their IDs
   const speciesInput = document.getElementById(`${curationModePrefix}bootbox-subject-species`);
   const strainInput = document.getElementById(`${curationModePrefix}bootbox-subject-strain`);
   const strainRRIDInput = document.getElementById(
     `${curationModePrefix}bootbox-subject-strain-RRID`
   );
+
+  // Set input values and readonly attributes based on the values in speciesAndStrainObject
   speciesInput.value = speciesAndStrainObject["Species"];
+  speciesInput.readonly = !!speciesInput.value;
   strainInput.value = speciesAndStrainObject["Strain"];
+  strainInput.readonly = !!strainInput.value;
   strainRRIDInput.value = speciesAndStrainObject["RRID for strain"];
-};
-
-const guidedSetStrainRRID = (RRID) => {
-  const rridLabel = document.getElementById("guided-strain-rrid-label");
-  const rridInput = document.getElementById("guided-bootbox-subject-strain-RRID");
-
-  if (!RRID) {
-    rridLabel.classList.add("hidden");
-    rridInput.classList.add("hidden");
-    rridInput.value = "";
-  } else {
-    rridLabel.classList.remove("hidden");
-    rridInput.classList.remove("hidden");
-    rridInput.value = RRID;
-  }
+  strainRRIDInput.readonly = !!strainRRIDInput.value;
 };
 
 document.querySelectorAll(".opens-rrid-modal-on-click").forEach((element) => {
@@ -623,58 +610,51 @@ document.querySelectorAll(".opens-rrid-modal-on-click").forEach((element) => {
     const clickedButtonId = element.id;
     const curationModePrefix =
       clickedButtonId === "guided-button-specify-subject-species-strain-rrid" ? "guided-" : "";
-    const { subjectArray, subjectDataRetrievedFromScicrunch } =
-      await showRRIDInput(curationModePrefix);
-    console.log("res from click:", subjectArray);
-
-    if (subjectDataRetrievedFromScicrunch) {
+    const subjectSpeciesStrainRRIDArray = await promptSpeciesAndStrainSelection(curationModePrefix);
+    // Check if all values in subjectSpeciesStrainRRIDArray are empty (case when user cancels the modal)
+    const allValuesAreEmpty = subjectSpeciesStrainRRIDArray.every((value) => value === "");
+    if (subjectSpeciesStrainRRIDArray && !allValuesAreEmpty) {
       setSubjectSpeciesAndStrainValues(curationModePrefix, {
-        ["Species"]: subjectArray[0],
-        ["Strain"]: subjectArray[1],
-        ["RRID for strain"]: subjectArray[2],
+        ["Species"]: subjectSpeciesStrainRRIDArray[0],
+        ["Strain"]: subjectSpeciesStrainRRIDArray[1],
+        ["RRID for strain"]: subjectSpeciesStrainRRIDArray[2],
       });
     }
   });
 });
 
-const showRRIDInput = async (curationModePrefix) => {
-  let subjectArray = null;
-  let subjectDataRetrievedFromScicrunch = false;
+const promptSpeciesAndStrainSelection = async () => {
+  let subjectArray = ["", "", ""];
 
+  // Commonly used strain data to prepopulate the dropdown
   const commonlyUsedStrainData = [
     {
+      userString: "Swiss Wistar (RRID:MGI:5657554) (laboratory mouse)",
       strain: "Swiss Wistar",
-      rrid: " RRID:MGI:5657554 ",
+      rrid: "RRID:MGI:5657554 ",
       species: "laboratory mouse ",
     },
     {
+      userString: "Yucatan (RRID:NSRRC_0012) (Sus scrofa)",
       strain: "Yucatan",
       rrid: "RRID:NSRRC_0012",
       species: "Sus scrofa",
     },
     {
+      userString: "Sprague-Dawley rat (RRID:MGI:5651135) (laboratory rat)",
       strain: "Sprague-Dawley rat",
       rrid: "RRID:MGI:5651135",
       species: "Mus musculus",
-    } /*Anything after this line is not real data, just for testing purposes*/,
-    {
-      strain: "C57/B6J",
-      rrid: "MGI:MGI_5558217",
-      species: "Mus musculus",
     },
     {
-      strain: "C57 BL/6J",
-      rrid: "MGI:MGI_5558217",
-      species: "Mus musculus",
-    },
-    {
-      strain: "mixed background",
-      rrid: "None",
-      species: "Mus musculus",
+      userString: "C57B/6J x DBA/2J F1 x FVB/N (RRID:MGI:5818271) (laboratory mouse)",
+      strain: "(C57B/6J x DBA/2J)F1 x FVB/N",
+      rrid: "RRID:MGI:5818271",
+      species: "laboratory mouse ",
     },
   ];
-
-  const SwalOptions = {
+  // Show a Swal (SweetAlert) modal for species and strain specification
+  await Swal.fire({
     title: "Species and Strain specification",
     html: `
       <label class="guided--form-label centered mb-2" style="font-size: 1em !important;">
@@ -687,7 +667,7 @@ const showRRIDInput = async (curationModePrefix) => {
       >
         <option value="Select">Select</option>
         ${commonlyUsedStrainData
-          .map((strain) => `<option value="${strain.strain}">${strain.strain}</option>`)
+          .map((strain) => `<option value="${strain.userString}">${strain.userString}</option>`)
           .join("")}
         <option value="Other">Other</option>
       </select>
@@ -709,7 +689,13 @@ const showRRIDInput = async (curationModePrefix) => {
             class="guided--input"
             placeholder="Enter RRID to search for..."
           />
-          <button id="button-search-rrid">Search</button>
+          <button
+            class="ui positive button soda-green-background"
+            id="button-search-rrid"
+            style="margin-left: 4px; width: 110px;"
+          >
+            Search
+          </button>
         </div>
       </div>
     `,
@@ -722,8 +708,11 @@ const showRRIDInput = async (curationModePrefix) => {
     allowOutsideClick: true,
 
     didRender: () => {
+      // Initialize and refresh the Bootstrap SelectPicker for dropdown
       $("#common-strain-rrid-dropdown").selectpicker();
       $("#common-strain-rrid-dropdown").selectpicker("refresh");
+
+      // Add event listener for dropdown change to show/hide custom search section
       document.getElementById("common-strain-rrid-dropdown").addEventListener("change", (ev) => {
         const selectedStrainRRID = ev.target.value;
         const customSearchSection = document.getElementById("section-rrid-search");
@@ -734,69 +723,68 @@ const showRRIDInput = async (curationModePrefix) => {
         }
       });
 
-      document.getElementById("button-search-rrid").addEventListener("click", async () => {
+      // Add event listener for RRID search button
+      const searchButton = document.getElementById("button-search-rrid");
+      searchButton.addEventListener("click", async () => {
+        // Add loading class to the search button
+        searchButton.classList.add("loading");
         const manuallyEnteredRRID = document.getElementById("rrid-input").value;
         try {
+          // Fetch data from Scicrunch.org based on the entered RRID
           const response = await fetch(
             `https://scicrunch.org/resolver/${manuallyEnteredRRID}.json`
           );
+          // Remove loading class from the search button
+          searchButton.classList.remove("loading");
           if (!response.ok) {
-            console.error("Response fail:", response);
             Swal.showValidationMessage("No data found for the entered RRID.");
           } else {
             const data = await response.json();
-            const subjectStrainData = data.hits.hits[0]["_source"];
-            console.log("subjectStrainData:", subjectStrainData);
-            const subjectStrain = subjectStrainData.item.name;
-            const subjectStrainRRID = subjectStrainData.rrid.curie;
-            const subjectSpecies = subjectStrainData?.organisms?.primary[0]?.species?.name || "";
-            console.log("subjectStrain:", subjectStrain);
-            console.log("subjectStrainRRID:", subjectStrainRRID);
-            console.log("subjectSpecies:", subjectSpecies);
-
+            const subjectStrainData = data?.hits?.hits?.[0]?.["_source"];
+            // Extract relevant information from the fetched data
+            const subjectStrain = subjectStrainData.item?.name;
+            const subjectStrainRRID = subjectStrainData.rrid?.curie || "";
+            const subjectSpecies = subjectStrainData.organisms?.primary?.[0]?.species?.name || "";
+            // Update subjectArray with the fetched data
             subjectArray = [subjectSpecies, subjectStrain, subjectStrainRRID];
-            subjectDataRetrievedFromScicrunch = true;
-
+            // Close the Swal modal
             Swal.close();
           }
         } catch (error) {
-          console.log("Error:", error);
+          // Remove loading class from the search button
+          searchButton.classList.remove("loading");
           Swal.showValidationMessage(error.message);
         }
       });
     },
 
     preConfirm: async () => {
-      const selectedStrainRRID = document.getElementById("common-strain-rrid-dropdown").value;
-      if (selectedStrainRRID !== "Select") {
-        const selectedStrain = commonlyUsedStrainData.find(
-          (strain) => strain.strain === selectedStrainRRID
-        );
-        subjectArray = [selectedStrain.strain, selectedStrain.rrid, selectedStrain.species];
-      } else {
-        const manuallyEnteredRRID = document.getElementById("rrid-input").value;
-        if (manuallyEnteredRRID === "") {
-          Swal.showValidationMessage(
-            "Please enter an RRID to search for or select a commonly used strain in the dropdown."
-          );
-        }
+      const selectedUserString = document.getElementById("common-strain-rrid-dropdown").value;
+
+      if (selectedUserString === "Select") {
+        Swal.showValidationMessage("Please select a strain from the dropdown.");
+        return false; // Prevent the modal from closing
       }
+
+      if (selectedUserString === "Other") {
+        Swal.showValidationMessage(
+          "Please search for the species and strain info using the RRID or select a commonly used strain."
+        );
+        return false; // Prevent the modal from closing
+      }
+
+      // If a commonly used strain is selected, update subjectArray with its data
+      const selectedStrain = commonlyUsedStrainData.find(
+        (strain) => strain.userString === selectedUserString
+      );
+      subjectArray = [selectedStrain.strain, selectedStrain.rrid, selectedStrain.species];
+      return true; // Allow the modal to close
     },
-  };
+  });
 
-  await Swal.fire(SwalOptions);
-
-  if (subjectArray) {
-    return {
-      subjectArray: subjectArray,
-      subjectDataRetrievedFromScicrunch: true,
-    };
-  }
-
-  return {
-    subjectArray: subjectArray,
-    subjectDataRetrievedFromScicrunch: false,
-  };
+  // Log the final subjectArray and return it
+  console.log("subjectArray:", subjectArray);
+  return subjectArray;
 };
 
 function addSubjectMetadataEntriesIntoJSON(curationMode) {

@@ -109,8 +109,6 @@
                 style="margin-top: -20px"
               ></div>
             </div>
-
-            <button class="opens-rrid-modal-on-click">test</button>
           </div>
         </div>
       </div>
@@ -3402,9 +3400,7 @@
                   <b>Example:</b> Male
                 </p>
 
-                <label class="guided--form-label mt-xl mb-md text-center"
-                  >Species and strain:</label
-                >
+                <label class="guided--form-label mt-xl mb-md text-center">Species and strain</label>
                 <label class="guided--form-label species-strain-rrid-element mt-3 mb-0"
                   >Species:</label
                 >
@@ -3415,6 +3411,7 @@
                       id="guided-bootbox-subject-species"
                       name="Species"
                       class="subjects-form-entry"
+                      readonly
                     />
                   </div>
                 </div>
@@ -3428,6 +3425,7 @@
                       id="guided-bootbox-subject-strain"
                       name="Strain"
                       class="subjects-form-entry"
+                      readonly
                     />
                   </div>
                 </div>
@@ -3441,11 +3439,12 @@
                       id="guided-bootbox-subject-strain-RRID"
                       name="RRID for strain"
                       class="subjects-form-entry"
+                      readonly
                     />
                   </div>
                 </div>
                 <button
-                  class="button-add-species ml-0 opens-rrid-modal-on-click mb-3"
+                  class="button-add-species ml-0 opens-rrid-modal-on-click mb-3 mt-3"
                   id="guided-button-specify-subject-species-strain-rrid"
                   style="width: 250px"
                 >
