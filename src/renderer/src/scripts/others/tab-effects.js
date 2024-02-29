@@ -2024,10 +2024,10 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     console.log("Has files is: ", hasFiles);
 
     if (Object.keys(hasFiles).length === 0) {
-      // select the Merge option for Folders 
-      document.getElementById("existing-folders-merge").checked = true; 
+      // select the Merge option for Folders
+      document.getElementById("existing-folders-merge").checked = true;
 
-      // select the Skip option for Files 
+      // select the Skip option for Files
       document.getElementById("existing-files-replace").checked = true;
 
       // skip the Merge/Skip/Replace step
