@@ -777,7 +777,7 @@ const promptSpeciesAndStrainSelection = async () => {
       const selectedStrain = commonlyUsedStrainData.find(
         (strain) => strain.userString === selectedUserString
       );
-      subjectArray = [selectedStrain.strain, selectedStrain.rrid, selectedStrain.species];
+      subjectArray = [selectedStrain.species, selectedStrain.strain, selectedStrain.rrid];
       return true; // Allow the modal to close
     },
   });
