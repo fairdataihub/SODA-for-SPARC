@@ -236,10 +236,7 @@
     </div> -->
       </header>
 
-      <div
-        id="add_edit_banner_parent-tab"
-        style="overflow-y: auto; height: calc(100% - 150px); margin-left: -70px"
-      >
+      <div id="add_edit_banner_parent-tab" style="overflow-y: auto; margin-left: -70px">
         <div
           class="individual-question manage-dataset show"
           id="add_edit_banner_tab"
@@ -482,6 +479,20 @@
       id="create_manifest-tab"
       style="overflow-y: auto; display: flex; flex-direction: column; margin-left: -70px"
     >
+      <header class="section-header">
+        <div class="container-tab-information-header">
+          <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
+            <div class="need-help-div">
+              <h2>Prepare Metadata - Create manifest.xlsx</h2>
+              <a
+                target="_blank"
+                href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-metadata/create-manifest-files"
+                >Need help?</a
+              >
+            </div>
+          </div>
+        </div>
+      </header>
       <div class="individual-question prepare-manifest show" id="Question-prepare-manifest-1">
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
@@ -1090,7 +1101,7 @@
           </div>
         </div>
       </div>
-      <!--END of question 6-->=
+      <!--END of question 6-->
     </div>
   </div>
   <div
@@ -1098,7 +1109,7 @@
     class="hidden"
     style="width: 100%; display: flex; flex-direction: column; height: calc(100% - 5rem)"
   >
-    <div class="main-tabs show" style="display: flex; height: 100%; overflow-y: hidden">
+    <div class="main-tabs show" style="display: flex; overflow-y: hidden">
       <header class="section-header">
         <div class="container-tab-information-header">
           <div class="need-help-div">
@@ -1112,7 +1123,7 @@
         </div>
       </header>
 
-      <div id="validate_dataset-tab" style="overflow-y: auto; height: 70%">
+      <div id="validate_dataset-tab" style="overflow-y: auto">
         <div
           class="individual-question validate_dataset show"
           id="validate_dataset-question-1"
@@ -1477,24 +1488,20 @@
           </div>
         </div>
       </div>
-
-      <!-- <div class="footer-div">
-        <div style="display: flex; flex-direction: row; width: 120px">
-          <button type="button" class="transition-btn prev" data-section="main_tabs">
-            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
-          </button>
-        </div>
-      </div> -->
     </div>
   </div>
-  <footer class="footer-container hidden" id="advanced-footer">
-    <div class="guided--container-footer-buttons" style="margin-left: 1rem">
+  <footer class="footer-container hidden" id="advanced-footer" style="width: calc(100% - 1.5rem)">
+    <div class="guided--container-footer-buttons" style="margin-left: 1rem; width: 100%">
       <button
         class="ui secondary basic button"
         id="advanced-back-button"
         style="width: 200px !important; font-family: Poppins"
       >
         <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+      </button>
+      <button id="advanced-start-over-button" class="start-over hidden" style="margin-right: 1rem">
+        <i class="fas fa-sync-alt" style="margin-right: 10px; font-size: inherit"></i>
+        Start over
       </button>
     </div>
   </footer>

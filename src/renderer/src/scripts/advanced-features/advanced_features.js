@@ -39,6 +39,9 @@ window.transitionToAdvancedFeature = (event) => {
     document.getElementById("validate-dataset-feature").classList.remove("hidden");
     document.getElementById("validate-dataset-feature").classList.add("is-shown");
   }
+
+  // Reveal the start over button
+  document.getElementById("advanced-start-over-button").classList.remove("hidden");
 };
 
 const transitionToAdvancedPage = () => {
@@ -143,6 +146,46 @@ $("#advanced-back-button").on("click", () => {
     document.getElementById("advanced-features-selection-page").classList.add("is-shown");
     document.getElementById("advanced-features-selection-page").classList.remove("hidden");
 
+    // Hide the start over button
+    document.getElementById("advanced-start-over-button").classList.add("hidden");
+
     current_advanced_page = "advanced-features-selection-page";
+
   }
 });
+
+
+$("#advanced-start-over-button").on("click", (() => {
+  // Depending on the current page we will reset the advanced feature's page
+  if (current_advanced_page === "create_manifest_btn") {
+    // Reset the create manifest page
+    console.log("Resetting create manifest page");
+  }
+  if (current_advanced_page === "upload_banner_image_btn") {
+    // Reset the upload banner image page
+    console.log("Resetting upload banner image page");
+  }
+  if (current_advanced_page === "validate_dataset_btn") {
+    // Reset the validate dataset page
+    console.log("Resetting the validate dataset page");
+  }
+}));
+
+const textObserver = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    console.log(mutation);
+    console.log(mutation.value);
+    console.log(mutation.target);
+    console.log(mutation.target.value);
+    console.log(mutation.oldValue);
+    if (mutation.target.value != "None") {
+      // Test
+      console.log("TEXT CHANGED");
+    }
+  })
+})
+
+console.log(document.getElementById("bf_dataset_create_manifest"));
+textObserver.observe(document.getElementById("bf_dataset_create_manifest"), { characterData: true });
+textObserver.observe(document.getElementById("bf_dataset_load_validator"), {characterData: true});
+// textObserver.observe(document.getElementById("bf_dataset_upload_banner_image"));
