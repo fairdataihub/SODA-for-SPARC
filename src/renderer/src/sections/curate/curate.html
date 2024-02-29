@@ -2429,26 +2429,28 @@
                 <div class="grouped fields">
                   <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center">How would you like to
                     handle existing folders?
-                    <div class="tooltipnew">
-                      <img class="info" src="./img/info.png" />
-                      <span class="tooltiptext" style="font-size: 12px">
-                        Tell SODA how to handle folders specified during Step 3 that are already
-                        existing (same name, same relative location) on your Pennsieve dataset
-                        <ul>
-                          <li>
-                            Replace: Delete existing folders on Pennsieve then upload new ones
-                          </li>
-                          <li>
-                            Merge: Upload new files into the existing folders. Existing files will
-                            be handles as intructed in the next step.
-                          </li>
-                          <li>Skip: Existing folders will not be uploaded.</li>
-                        </ul>
-                      </span>
-                    </div>
-
                     <br /><span style="color: #898989; font-size: 12px">Please select one:</span>
                   </label>
+                  <div class="info-dropdown">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p class="info-dropdown-text" data-dropdown-type="warning">I don't know what these options mean</p>
+                  </div>
+                  <div class="info-container container-open">
+                    <p class="help-text">
+                      Tell SODA how to handle folders specified during Step 3 that are already
+                      existing (same name, same relative location) on your Pennsieve dataset
+                      <ul>
+                        <li>
+                          Replace: Delete existing folders on Pennsieve then upload new ones
+                        </li>
+                        <li>
+                          Merge: Upload new files into the existing folders. Existing files will
+                          be handles as intructed in the next step.
+                        </li>
+                        <li>Skip: Existing folders will not be uploaded.</li>
+                      </ul>
+                    </p>
+                  </div>
                   <div style="display: flex; flex-direction: row; justify-content: center">
                     <div style="margin: 15px 0">
                       <!-- <button> -->
@@ -2523,7 +2525,6 @@
                     <div class="info-dropdown">
                       <i class="fas fa-exclamation-triangle"></i>
                       <p class="info-dropdown-text" data-dropdown-type="warning">I don't know what these options mean</p>
-                      <i class="fas fa-chevron-right" style="transform: rotate(90deg);"></i>
                     </div>
                     <div class="info-container container-open">
                       <p class="help-text">
@@ -2536,18 +2537,6 @@
                         </ul>
                       </p>
                     </div>
-                    <!-- <div class="tooltipnew">
-                      <img class="info" src="./img/info.png" />
-                      <span class="tooltiptext" style="font-size: 12px">
-                        Tell SODA how to handle files specified during Step 3 and metadata files
-                        specified during Step 4 that are already existing (same name, same relative
-                        location) on your Pennsieve dataset
-                        <ul>
-                          <li>Replace: Delete existing files on Pennsieve then upload new ones</li>
-                          <li>Skip: Existing files will not be uploaded.</li>
-                        </ul>
-                      </span>
-                    </div> -->
                     <br /><span style="color: #898989; font-size: 12px">Please select one:</span>
                   </label>
                   <div style="display: flex; flex-direction: row; justify-content: center">
