@@ -1032,7 +1032,7 @@
               </div>
             </div>
 
-            <div class="div-dd-info subjects">
+            <div class="div-dd-info subjects species-strain-rrid-element">
               <div class="demo-controls-head">
                 <div style="width: 100%">
                   <font color="black"> Species: </font>
@@ -1045,28 +1045,9 @@
                     id="bootbox-subject-species"
                     name="Species"
                     class="subjects-form-entry"
-                    style="font-size: 14px; display: none"
+                    style="font-size: 14px"
+                    readonly
                   />
-                  <button
-                    class="button-add-species"
-                    onclick="window.addSpecies(this, 'subject', 'ffm')"
-                    id="button-add-species-subject"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      style="vertical-align: middle"
-                      width="14"
-                      height="14"
-                      fill="currentColor"
-                      class="bi bi-plus"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
-                      />
-                    </svg>
-                    Add species
-                  </button>
                 </div>
               </div>
               <div class="tooltipnew demo-controls-end">
@@ -1088,7 +1069,7 @@
               </div>
             </div>
 
-            <div class="div-dd-info subjects">
+            <div class="div-dd-info subjects species-strain-rrid-element">
               <div class="demo-controls-head">
                 <div style="width: 100%">
                   <font color="black"> Strain: </font>
@@ -1101,28 +1082,8 @@
                     id="bootbox-subject-strain"
                     name="Strain"
                     class="subjects-form-entry"
-                    style="font-size: 13px; display: none"
+                    style="font-size: 13px"
                   />
-                  <button
-                    class="button-add-species"
-                    onclick="window.addStrain(this, 'subject')"
-                    id="button-add-strain-subject"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      style="vertical-align: middle"
-                      width="14"
-                      height="14"
-                      fill="currentColor"
-                      class="bi bi-plus"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
-                      />
-                    </svg>
-                    Add strain
-                  </button>
                 </div>
               </div>
               <div class="tooltipnew demo-controls-end">
@@ -1137,6 +1098,44 @@
                   data-trigger="hover"
                 ></i>
               </div>
+            </div>
+
+            <div class="div-dd-info subjects species-strain-rrid-element">
+              <div class="demo-controls-head">
+                <div style="width: 100%">
+                  <font color="black">RRID for Strain</font>
+                </div>
+              </div>
+              <div class="demo-controls-body">
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-subject-strain-RRID"
+                    name="RRID for strain"
+                    class="subjects-form-entry"
+                    style="font-size: 13px"
+                  />
+                </div>
+              </div>
+              <div class="tooltipnew demo-controls-end">
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Research Resource Identifier Identification (RRID) for the strain For this field."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
+              </div>
+            </div>
+            <div class="d-flex justify-center mt-2 mb-2">
+              <button
+                class="button-add-species ml-0 opens-rrid-modal-on-click mb-3 mt-3"
+                id="button-specify-subject-species-strain-rrid"
+                style="width: 250px"
+              >
+                Specify species and strain
+              </button>
             </div>
 
             <div class="div-dd-info subjects">
@@ -1240,27 +1239,6 @@
                   data-html="true"
                   data-trigger="hover"
                 ></i>
-              </div>
-            </div>
-
-            <div class="div-dd-info subjects" style="display: none">
-              <div class="demo-controls-head">
-                <div style="width: 100%">
-                  <font color="black"> RRID for strain: </font>
-                </div>
-              </div>
-              <div class="demo-controls-body">
-                <input
-                  class="form-container-input-bf subjects-form-entry"
-                  id="bootbox-subject-strain-RRID"
-                  name="RRID for strain"
-                />
-              </div>
-              <div class="tooltipnew demo-controls-end">
-                <img class="info" src="./img/info.png" style="margin-top: -2px" />
-                <span class="tooltiptext">
-                  Research Resource Identifier Identification (RRID) for the strain For this field.
-                </span>
               </div>
             </div>
           </div>

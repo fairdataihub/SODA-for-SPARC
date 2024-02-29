@@ -177,7 +177,8 @@ button[data-id="bf_list_roles_team"] {
 button[data-id="guided-select-pennsieve-dataset-to-resume"],
 button[data-id="bf_list_users_pi"],
 button[data-id="guided_bf_list_users_pi"],
-button[data-id="guided_bf_list_users_and_teams"] {
+button[data-id="guided_bf_list_users_and_teams"],
+button[data-id="common-strain-rrid-dropdown"] {
   border: 1px solid rgba(34, 36, 38, 0.15);
   border-radius: 7px;
   height: 35px;

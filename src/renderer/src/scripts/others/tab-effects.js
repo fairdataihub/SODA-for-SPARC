@@ -115,7 +115,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       await window.ffmCreateManifest(window.sodaJSONObj);
       $("#manifest-items-container").removeClass("hidden");
       $("#manifest-creating-loading").addClass("hidden");
-      $("button-generate-manifest-locally").show();
     } else {
       document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
     }
@@ -3479,7 +3478,7 @@ window.resetCuration = () => {
   $(".para-metadata-file-status").text("");
 
   // hide the generate manifest locally button
-  $("#button-generate-manifest-locally").hide();
+  document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
 
   // set back Please continue para element
   $("#para-continue-prepare-new-getting-started").text("");
@@ -3573,7 +3572,7 @@ window.wipeOutCurateProgress = () => {
   $(".para-metadata-file-status").text("");
 
   // hide the generate manifest locally button
-  $("#button-generate-manifest-locally").hide();
+  document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
 
   // set back Please continue para element
   $("#para-continue-prepare-new-getting-started").text("");

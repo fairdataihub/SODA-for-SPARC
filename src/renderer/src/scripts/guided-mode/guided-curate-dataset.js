@@ -2572,9 +2572,6 @@ const guidedLockSideBar = (boolShowNavBar) => {
   }
 };
 
-// guidedHideSidebar = () => {};
-// guidedUnHideSidebar = () => {};
-
 // This function reads the innerText of the textSharedWithCurationTeamStatus element
 // and hides or shows the share and unshare buttons accordingly
 window.guidedSetCurationTeamUI = () => {
@@ -3397,12 +3394,26 @@ const updateManifestJson = async (highLvlFolderName, result) => {
   };
 };
 
+window.generateManifestFilesAtPath = async (path, manifestData) => {
+  for (const [highLevelFolder, manifestData] of Object.entries(manifestData)) {
+    const manifestJSON = window.processManifestInfo(manifestData["headers"], manifestData["data"]);
+
+    const stringifiedManifestJSON = JSON.stringify(manifestJSON);
+
+    const manifestPath = window.path.join(path, highLevelFolder, "manifest.xlsx");
+
+    window.fs.mkdirSync(window.path.join(path, highLevelFolder), { recursive: true });
+
+    window.convertJSONToXlsx(JSON.parse(stringifiedManifestJSON), manifestPath);
+  }
+};
 const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
   // First, empty the guided_manifest_files so we can add the new manifest files
   window.fs.emptyDirSync(window.guidedManifestFilePath);
 
   const guidedManifestData = window.sodaJSONObj["guided-manifest-files"];
   for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
+    //
     let manifestJSON = window.processManifestInfo(
       guidedManifestData[highLevelFolder]["headers"],
       guidedManifestData[highLevelFolder]["data"]
@@ -12884,7 +12895,10 @@ const renderSubjectsMetadataAsideItems = async () => {
       let previousSubject = document.getElementById("guided-bootbox-subject-id").value;
       //check to see if previousSubject is empty
       if (previousSubject) {
+        console.log(window.subjectsTableData[1]);
         window.addSubject("guided");
+        console.log(window.subjectsTableData[1]);
+
         await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
       }
 
@@ -13654,6 +13668,7 @@ document
 // function for importing a banner image if one already exists
 $("#guided-button-add-banner-image").click(async () => {
   $("#guided-banner-image-modal").modal("show");
+  $("#guided-banner-image-modal").parents()[0].style.zIndex = "1002";
   $("#guided-banner-image-modal").addClass("show");
   window.myCropper.destroy();
   window.myCropper = new Cropper(window.guidedBfViewImportedImage, window.guidedCropOptions);

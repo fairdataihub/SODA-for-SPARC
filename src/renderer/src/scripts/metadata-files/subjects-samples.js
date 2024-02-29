@@ -8,6 +8,7 @@ import { clientError, userErrorMessage } from "../others/http-error-handler/erro
 import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 import client from "../client";
+import { swalConfirmAction } from "../utils/swal-utils";
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -540,19 +541,20 @@ window.clearAllSubjectFormFields = (form) => {
     }
 
     var keyword = "subject";
-    $(`#${curationModeSelectorPrefix}bootbox-${keyword}-species`).css("display", "none");
-    $(`#${curationModeSelectorPrefix}bootbox-${keyword}-strain`).css("display", "none");
 
     if (form === window.guidedSubjectsFormDiv) {
-      guidedSetStrainRRID("");
+      setSubjectSpeciesAndStrainValues("guided-", {
+        ["Species"]: "",
+        ["Strain"]: "",
+        ["RRID for strain"]: "",
+      });
+    } else {
+      setSubjectSpeciesAndStrainValues("", {
+        ["Species"]: "",
+        ["Strain"]: "",
+        ["RRID for strain"]: "",
+      });
     }
-
-    $(`#${curationModeSelectorPrefix}button-add-species-${keyword}`).html(
-      `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
-    );
-    $(`#${curationModeSelectorPrefix}button-add-strain-${keyword}`).html(
-      `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-    );
   }
 };
 
@@ -563,283 +565,324 @@ const addSubjectIDToJSON = (subjectID) => {
   }
 };
 
-/// function to add Species - subjects + samples
-window.addSpecies = async (ev, type, curationMode) => {
-  let curationModeSelectorPrefix = "";
-  if (curationMode == "guided") {
-    curationModeSelectorPrefix = "guided-";
-  }
+const setSubjectSpeciesAndStrainValues = (curationModePrefix, speciesAndStrainObject) => {
+  // Check if all values in speciesAndStrainObject are empty
+  const allValuesAreEmpty = Object.values(speciesAndStrainObject).every((value) => value === "");
 
-  if (curationMode == "guided") {
-    guidedSetStrainRRID("");
-  }
-  const { value: value } = await Swal.fire({
-    title: "Add/Edit a species",
-    html: `<input type="text" id="sweetalert-${type}-species" placeholder="Search for species..." style="font-size: 14px;"/>`,
-    focusConfirm: false,
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    customClass: {
-      confirmButton: "confirm-disabled",
-    },
-    didOpen: () => {
-      $(".swal2-confirm").attr("id", "btn-confirm-species");
-      window.createSpeciesAutocomplete(`sweetalert-${type}-species`, curationMode);
-    },
-    preConfirm: () => {
-      if (document.getElementById(`sweetalert-${type}-species`).value === "") {
-        Swal.showValidationMessage("Please enter a species.");
-      }
-      return document.getElementById(`sweetalert-${type}-species`).value;
-    },
-  });
-  if (value) {
-    if (value !== "") {
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-species`).val(value);
-      window.switchSpeciesStrainInput("species", "edit", curationMode);
-    }
-  } else {
-    window.switchSpeciesStrainInput("species", "add", curationMode);
-  }
-};
+  // Get all elements with class "species-strain-rrid-element"
+  const speciesStrainRRIDFields = document.querySelectorAll(".species-strain-rrid-element");
 
-window.switchSpeciesStrainInput = (type, mode, curationMode) => {
-  let curationModeSelectorPrefix = "";
-  if (curationMode == "guided") {
-    curationModeSelectorPrefix = "guided-";
-  }
-  if (mode === "add") {
-    $(`#${curationModeSelectorPrefix}button-add-${type}-subject`).html(
-      `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add ${type}`
-    );
-    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css("display", "none");
-    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).val("");
-  } else if (mode === "edit") {
-    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css("display", "block");
-    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).attr("readonly", true);
-    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css("background", "#f5f5f5");
-    $(`#${curationModeSelectorPrefix}button-add-${type}-subject`).html(
-      "<i class='pen icon'></i>Edit"
-    );
-  }
-};
-
-const guidedSetStrainRRID = (RRID) => {
-  const rridLabel = document.getElementById("guided-strain-rrid-label");
-  const rridInput = document.getElementById("guided-bootbox-subject-strain-RRID");
-
-  if (!RRID) {
-    rridLabel.classList.add("hidden");
-    rridInput.classList.add("hidden");
-    rridInput.value = "";
-    return;
-  }
-
-  rridLabel.classList.remove("hidden");
-  rridInput.classList.remove("hidden");
-  rridInput.value = RRID;
-};
-
-window.addStrain = async (ev, type, curationMode) => {
-  let curationModeSelectorPrefix = "";
-  if (curationMode == "guided") {
-    curationModeSelectorPrefix = "guided-";
-  }
-
-  $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
-  if (curationMode == "guided") {
-    guidedSetStrainRRID("");
-  }
-
-  const { value: value } = await Swal.fire({
-    title: "Add/Edit a strain",
-    html: `<input type="text" id="sweetalert-${type}-strain" placeholder="Search for strain..." style="font-size: 14px;"/>`,
-    focusConfirm: false,
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    customClass: {
-      confirmButton: "confirm-disabled",
-    },
-    didOpen: () => {
-      $(".swal2-confirm").attr("id", "btn-confirm-strain");
-      window.createStrain("sweetalert-" + type + "-strain", type, curationMode);
-    },
-    preConfirm: () => {
-      if (document.getElementById("sweetalert-" + type + "-strain").value === "") {
-        Swal.showValidationMessage("Please enter a strain.");
-      }
-      return document.getElementById("sweetalert-" + type + "-strain").value;
-    },
-  });
-  if (value) {
-    if (value !== "") {
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(value);
-      window.switchSpeciesStrainInput("strain", "edit", curationMode);
-    }
-  } else {
-    window.switchSpeciesStrainInput("strain", "add", curationMode);
-  }
-};
-
-// populate RRID
-window.populateRRID = async (strain, type, curationMode) => {
-  Swal.fire({
-    title: `Retrieving RRID for ${strain}...`,
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    html: "Please wait...",
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: true,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
-
-  let curationModeSelectorPrefix = "";
-  if (curationMode == "guided") {
-    curationModeSelectorPrefix = "guided-";
-  }
-
-  let rridHostname = "scicrunch.org";
-  // this is to handle spaces and other special characters in strain name
-  let encodedStrain = encodeURIComponent(strain);
-  let rridInfo = {
-    hostname: rridHostname,
-    port: 443,
-    path: `/api/1/dataservices/federation/data/nlx_154697-1?q=${encodedStrain}&key=2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD`,
-    headers: { accept: "text/xml" },
-  };
-
-  try {
-    let data = await window.electron.ipcRenderer.invoke("getStrainData", rridInfo);
-    var returnRes = readXMLScicrunch(data, type, curationMode);
-    if (!returnRes) {
-      Swal.fire({
-        title: `Failed to retrieve the RRID for ${strain} from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
-        text: "Please make sure you enter the correct strain.",
-        showCancelButton: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("display", "none");
-      if (type.includes("subject")) {
-        $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
-          `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-        );
-      } else {
-        $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
-          `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
-        );
-      }
+  // Hide or show the elements based on whether all values are empty or not
+  speciesStrainRRIDFields.forEach((field) => {
+    if (allValuesAreEmpty) {
+      field.classList.add("hidden");
     } else {
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(strain);
-      $("#btn-confirm-strain").removeClass("confirm-disabled");
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("display", "block");
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).attr("readonly", true);
-      $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("background", "#f5f5f5");
-      if (type.includes("subject")) {
-        $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
-          "<i class='pen icon'></i>Edit"
-        );
-      } else {
-        $(`#${curationModeSelectorPrefix}button-add-strain-sample`).html(
-          "<i class='pen icon'></i>Edit"
-        );
-      }
-      Swal.fire({
-        title: `Successfully retrieved the RRID for "${strain}".`,
-        icon: "success",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
+      field.classList.remove("hidden");
     }
-  } catch (err) {
-    console.log(err);
-    $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
-    $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
-    Swal.fire({
-      title: `Failed to retrieve the RRID for "${strain}" from <a target="_blank" href="https://scicrunch.org/resources/Organisms/search">Scicrunch.org</a>.`,
-      text: "Please check your Internet Connection or contact us at help@fairdataihub.org",
-      showCancelButton: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    });
-  }
+  });
+
+  // Update the innerHTML of the specified button based on whether all values are empty or not
+  const buttonSpeciesStrainRRID = document.getElementById(
+    `${curationModePrefix}button-specify-subject-species-strain-rrid`
+  );
+  buttonSpeciesStrainRRID.innerHTML = allValuesAreEmpty
+    ? "Specify species and strain"
+    : "Edit species and strain";
+
+  // Get input elements by their IDs
+  const speciesInput = document.getElementById(`${curationModePrefix}bootbox-subject-species`);
+  const strainInput = document.getElementById(`${curationModePrefix}bootbox-subject-strain`);
+  const strainRRIDInput = document.getElementById(
+    `${curationModePrefix}bootbox-subject-strain-RRID`
+  );
+
+  // Set input values and readonly attributes based on the values in speciesAndStrainObject
+  speciesInput.value = speciesAndStrainObject["Species"];
+  speciesInput.readOnly = speciesInput.value.trim() !== "";
+  strainInput.value = speciesAndStrainObject["Strain"];
+  strainInput.readOnly = strainInput.value.trim() !== "";
+  strainRRIDInput.value = speciesAndStrainObject["RRID for strain"];
+  strainRRIDInput.readOnly = strainRRIDInput.value.trim() !== "";
 };
 
-const addSubjectMetadataEntriesIntoJSON = (curationMode) => {
-  let curationModeSelectorPrefix;
+document.querySelectorAll(".opens-rrid-modal-on-click").forEach((element) => {
+  element.addEventListener("click", async () => {
+    const clickedButtonId = element.id;
+    const curationModePrefix =
+      clickedButtonId === "guided-button-specify-subject-species-strain-rrid" ? "guided-" : "";
+    const subjectSpeciesStrainRRIDArray = await promptSpeciesAndStrainSelection(curationModePrefix);
+    // Check if all values in subjectSpeciesStrainRRIDArray are empty (case when user cancels the modal)
+    const allValuesAreEmpty = subjectSpeciesStrainRRIDArray.every((value) => value === "");
+    if (subjectSpeciesStrainRRIDArray && !allValuesAreEmpty) {
+      setSubjectSpeciesAndStrainValues(curationModePrefix, {
+        ["Species"]: subjectSpeciesStrainRRIDArray[0],
+        ["Strain"]: subjectSpeciesStrainRRIDArray[1],
+        ["RRID for strain"]: subjectSpeciesStrainRRIDArray[2],
+      });
+    }
+  });
+});
+
+const promptSpeciesAndStrainSelection = async () => {
+  let subjectArray = ["", "", ""];
+
+  // Commonly used strain data to prepopulate the dropdown
+  const commonlyUsedStrainData = [
+    {
+      userString: "Swiss Wistar (RRID:MGI:5657554) (laboratory mouse)",
+      strain: "Swiss Wistar",
+      rrid: "RRID:MGI:5657554 ",
+      species: "laboratory mouse ",
+    },
+    {
+      userString: "Yucatan (RRID:NSRRC_0012) (Sus scrofa)",
+      strain: "Yucatan",
+      rrid: "RRID:NSRRC_0012",
+      species: "Sus scrofa",
+    },
+    {
+      userString: "Sprague-Dawley rat (RRID:MGI:5651135) (laboratory rat)",
+      strain: "Sprague-Dawley rat",
+      rrid: "RRID:MGI:5651135",
+      species: "Mus musculus",
+    },
+    {
+      userString: "C57B/6J x DBA/2J F1 x FVB/N (RRID:MGI:5818271) (laboratory mouse)",
+      strain: "(C57B/6J x DBA/2J)F1 x FVB/N",
+      rrid: "RRID:MGI:5818271",
+      species: "laboratory mouse ",
+    },
+  ];
+  // Show a Swal (SweetAlert) modal for species and strain specification
+  await Swal.fire({
+    title: "Species and Strain specification",
+    html: `
+      <label class="guided--form-label centered mb-2" style="font-size: 1em !important;">
+        Select the species and strain of this subject
+      </label>
+      <select
+        id="common-strain-rrid-dropdown"
+        class="w-100 SODA-select-picker"
+        data-live-search="true"
+      >
+        <option value="Select">Select</option>
+        ${commonlyUsedStrainData
+          .map((strain) => `<option value="${strain.userString}">${strain.userString}</option>`)
+          .join("")}
+        <option value="Other">Other</option>
+      </select>
+      <p class="help-text mb-1 mt-2">
+        If your species and strain are not in the dropdown, select other.
+      </p>
+      <div class="d-flex justify-center hidden" id="section-rrid-search">
+        <label class="guided--form-label centered mt-5" style="font-size: 1em !important;">
+          Search for a strain using its RRID
+        </label>
+        <p class="help-text">
+          To find the RRID for a strain, you can search for the strain on 
+          <a target="_blank" href="https://scicrunch.org/resources/data/source/nlx_154697-1/search">Scicrunch.org</a>.
+          Once you have the RRID, enter it in the input field below and click "Search".
+        </p>
+        <div class="d-flex justify-content-center w-100">
+          <input
+            id="rrid-input"
+            class="guided--input"
+            placeholder="Enter RRID to search for..."
+          />
+          <button
+            class="ui positive button soda-green-background"
+            id="button-search-rrid"
+            style="margin-left: 4px; width: 110px;"
+          >
+            Search
+          </button>
+        </div>
+      </div>
+    `,
+    width: 800,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showCancelButton: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Specify species and strain",
+    allowOutsideClick: true,
+
+    didRender: () => {
+      // Initialize and refresh the Bootstrap SelectPicker for dropdown
+      $("#common-strain-rrid-dropdown").selectpicker();
+      $("#common-strain-rrid-dropdown").selectpicker("refresh");
+
+      // Add event listener for dropdown change to show/hide custom search section
+      document.getElementById("common-strain-rrid-dropdown").addEventListener("change", (ev) => {
+        const selectedStrainRRID = ev.target.value;
+        const customSearchSection = document.getElementById("section-rrid-search");
+        if (selectedStrainRRID === "Other") {
+          customSearchSection.classList.remove("hidden");
+        } else {
+          customSearchSection.classList.add("hidden");
+        }
+      });
+
+      // Add event listener for RRID search button
+      const searchButton = document.getElementById("button-search-rrid");
+      searchButton.addEventListener("click", async () => {
+        // Add loading class to the search button
+        searchButton.classList.add("loading");
+        const manuallyEnteredRRID = document.getElementById("rrid-input").value;
+        try {
+          // Fetch data from Scicrunch.org based on the entered RRID
+          const response = await fetch(
+            `https://scicrunch.org/resolver/${manuallyEnteredRRID}.json`
+          );
+          // Remove loading class from the search button
+          searchButton.classList.remove("loading");
+          if (!response.ok) {
+            Swal.showValidationMessage("No data found for the entered RRID.");
+          } else {
+            const data = await response.json();
+            const subjectStrainData = data?.hits?.hits?.[0]?.["_source"];
+            // Extract relevant information from the fetched data
+            const subjectStrain = subjectStrainData.item?.name;
+            const subjectStrainRRID = subjectStrainData.rrid?.curie || "";
+            const subjectSpecies = subjectStrainData.organisms?.primary?.[0]?.species?.name || "";
+            // Update subjectArray with the fetched data
+            subjectArray = [subjectSpecies, subjectStrain, subjectStrainRRID];
+            // Close the Swal modal
+            Swal.close();
+          }
+        } catch (error) {
+          // Remove loading class from the search button
+          searchButton.classList.remove("loading");
+          Swal.showValidationMessage(error.message);
+        }
+      });
+    },
+
+    preConfirm: async () => {
+      const selectedUserString = document.getElementById("common-strain-rrid-dropdown").value;
+
+      if (selectedUserString === "Select") {
+        Swal.showValidationMessage("Please select a strain from the dropdown.");
+        return false; // Prevent the modal from closing
+      }
+
+      if (selectedUserString === "Other") {
+        Swal.showValidationMessage(
+          "Please search for the species and strain info using the RRID or select a commonly used strain."
+        );
+        return false; // Prevent the modal from closing
+      }
+
+      // If a commonly used strain is selected, update subjectArray with its data
+      const selectedStrain = commonlyUsedStrainData.find(
+        (strain) => strain.userString === selectedUserString
+      );
+      subjectArray = [selectedStrain.species, selectedStrain.strain, selectedStrain.rrid];
+      return true; // Allow the modal to close
+    },
+  });
+
+  // Log the final subjectArray and return it
+  console.log("subjectArray:", subjectArray);
+  return subjectArray;
+};
+
+function addSubjectMetadataEntriesIntoJSON(curationMode) {
+  // Initialize variables
+  let curationModeSelectorPrefix = "";
   let dataLength = window.subjectsTableData.length;
 
-  if (curationMode === "free-form") {
-    curationModeSelectorPrefix = "";
-  }
+  // Set curationModeSelectorPrefix based on curationMode
   if (curationMode === "guided") {
     curationModeSelectorPrefix = "guided-";
   }
-  var valuesArr = [];
-  headersArrSubjects = [];
-  for (var field of $(`#${curationModeSelectorPrefix}form-add-a-subject`)
-    .children()
-    .find(".subjects-form-entry")) {
-    if (field.value === "" || field.value === undefined || field.value === "Select") {
-      field.value = null;
-    } else {
-    }
-    headersArrSubjects.push(field.name);
-    // if it's age, then add age info input (day/week/month/year)
-    if (field.name === "Age") {
+
+  // Initialize arrays to store values and headers
+  const valuesArr = [];
+  const headersArrSubjects = [];
+
+  // Iterate over subject form entries
+  document
+    .getElementById(`${curationModeSelectorPrefix}form-add-a-subject`)
+    .querySelectorAll(".subjects-form-entry")
+    .forEach((field) => {
+      // Check for empty or undefined values and set to null
+      if (field.value === "" || field.value === undefined || field.value === "Select") {
+        field.value = null;
+      }
+
+      // Collect field names for headers
+      headersArrSubjects.push(field.name);
+
+      // Append age info to Age field if applicable
       if (
-        $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !== "Select" &&
-        $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !== "N/A"
+        field.name === "Age" &&
+        document.getElementById(`${curationModeSelectorPrefix}bootbox-subject-age-info`).value !==
+          "Select" &&
+        document.getElementById(`${curationModeSelectorPrefix}bootbox-subject-age-info`).value !==
+          "N/A"
       ) {
-        field.value =
-          field.value + " " + $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val();
-      } else {
-        field.value = field.value;
+        field.value += ` ${
+          document.getElementById(`${curationModeSelectorPrefix}bootbox-subject-age-info`).value
+        }`;
       }
-    }
-    if (field.name === "Sex") {
-      if ($(`#${curationModeSelectorPrefix}bootbox-subject-sex`).val() === "Unknown") {
+
+      // Handle Sex field for "Unknown" case
+      if (
+        field.name === "Sex" &&
+        document.getElementById(`${curationModeSelectorPrefix}bootbox-subject-sex`).value ===
+          "Unknown"
+      ) {
         field.value = "";
-      } else {
-        field.value = field.value;
       }
-    }
-    valuesArr.push(field.value);
-  }
+
+      // Collect field values for subjects
+      valuesArr.push(field.value);
+    });
+
+  // Set headers in subjectsTableData
   window.subjectsTableData[0] = headersArrSubjects;
 
-  if (valuesArr !== undefined && valuesArr.length !== 0) {
+  // Update subjectsTableData based on curationMode
+  if (valuesArr.length > 0) {
     if (curationMode === "free-form") {
-      if (window.subjectsTableData[dataLength] !== undefined) {
-        window.subjectsTableData[dataLength + 1] = valuesArr;
-      } else {
-        window.subjectsTableData[dataLength] = valuesArr;
-      }
+      const dataIndex =
+        window.subjectsTableData[dataLength] !== undefined ? dataLength + 1 : dataLength;
+      window.subjectsTableData[dataIndex] = valuesArr;
     }
+
     if (curationMode === "guided") {
-      let subjectID = document.getElementById("guided-bootbox-subject-id").value;
-      //Overwrite existing subject data with new subject data
-      for (let i = 1; i < window.subjectsTableData.length; i++) {
-        if (window.subjectsTableData[i][0] === subjectID) {
-          window.subjectsTableData[i] = valuesArr;
-        }
+      const subjectID = document.getElementById("guided-bootbox-subject-id").value;
+      const subjectIndex = findSubjectIndexById(subjectID);
+
+      // Update subject data if found
+      if (subjectIndex !== -1) {
+        window.subjectsTableData[subjectIndex] = valuesArr;
       }
     }
   }
+
+  // Perform additional actions for free-form mode
   if (curationMode === "free-form") {
-    $("#table-subjects").css("display", "block");
-    $("#button-generate-subjects").css("display", "block");
-    window.clearAllSubjectFormFields(subjectsFormDiv);
+    // Display table and button
+    document.getElementById("table-subjects").style.display = "block";
+    document.getElementById("button-generate-subjects").style.display = "block";
+
+    // Clear form fields and hide the form
+    clearAllSubjectFormFields(subjectsFormDiv);
     hideForm("subject");
   }
-};
+}
+
+// Function to find subject index by ID
+function findSubjectIndexById(subjectID) {
+  for (let i = 1; i < window.subjectsTableData.length; i++) {
+    if (window.subjectsTableData[i][0] === subjectID) {
+      return i;
+    }
+  }
+  return -1; // Return -1 if subject ID not found
+}
 
 const addSampleMetadataEntriesIntoJSON = (curationMode) => {
   let curationModeSelectorPrefix = "";
@@ -1091,12 +1134,13 @@ const loadSubjectInformation = (ev, subjectID) => {
 };
 
 window.populateForms = (subjectID, type, curationMode) => {
-  //Initialize variables shared between different curation modes and set them
-  //based on curationMode passed in as parameter
+  // Initialize variables shared between different curation modes and set them
+  // based on curationMode passed in as parameter
   let fieldArr;
   let curationModeSelectorPrefix;
   let infoJson;
 
+  // Set variables based on curationMode
   if (curationMode === "free-form") {
     curationModeSelectorPrefix = "";
     fieldArr = $(subjectsFormDiv).children().find(".subjects-form-entry");
@@ -1106,8 +1150,9 @@ window.populateForms = (subjectID, type, curationMode) => {
     fieldArr = $(window.guidedSubjectsFormDiv).children().find(".subjects-form-entry");
   }
 
+  // Retrieve information for the given subjectID from subjectsTableData
   if (window.subjectsTableData.length > 1) {
-    for (var i = 1; i < window.subjectsTableData.length; i++) {
+    for (let i = 1; i < window.subjectsTableData.length; i++) {
       if (window.subjectsTableData[i][0] === subjectID) {
         infoJson = window.subjectsTableData[i];
         break;
@@ -1115,9 +1160,10 @@ window.populateForms = (subjectID, type, curationMode) => {
     }
   }
 
+  // Proceed only if subjectID is not "clear" or empty
   if (subjectID !== "clear" && subjectID.trim() !== "") {
+    // Reset protocol title dropdowns for guided mode
     if (curationMode === "guided") {
-      //Reset protocol title dropdowns to the default ("No protocols associated with this sample")
       const protocolTitleDropdown = document.getElementById(
         "guided-bootbox-subject-protocol-title"
       );
@@ -1128,45 +1174,52 @@ window.populateForms = (subjectID, type, curationMode) => {
       protocolURLDropdown.value = "";
     }
 
-    // populate form
-    var emptyEntries = ["nan", "nat"];
-    var c = fieldArr.map(function (i, field) {
+    const subjectSpeciesStrainValues = {
+      ["Species"]: "",
+      ["Strain"]: "",
+      ["RRID for strain"]: "",
+    };
+
+    // Populate form fields
+    const emptyEntries = ["nan", "nat"];
+    fieldArr.each(function (i, field) {
       if (infoJson[i]) {
         if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
           if (field.name === "Age") {
-            var fullAge = infoJson[i].split(" ");
-            var unitArr = ["hours", "days", "weeks", "months", "years"];
-            var breakBoolean = false;
+            // Handle Age field and corresponding unit selection
+            const fullAge = infoJson[i].split(" ");
+            const unitArr = ["hours", "days", "weeks", "months", "years"];
             field.value = fullAge[0];
-            for (var unit of unitArr) {
+            let breakBoolean = false;
+
+            for (const unit of unitArr) {
               if (fullAge[1]) {
                 if (unit.includes(fullAge[1].toLowerCase())) {
                   $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val(unit);
                   breakBoolean = true;
                   break;
                 }
-                if (!breakBoolean) {
-                  $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val("N/A");
-                }
-              } else {
-                $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val("N/A");
               }
             }
-          } else if (field.name === "Species" && infoJson[i] !== "") {
-            $(`#${curationModeSelectorPrefix}bootbox-subject-species`).val(infoJson[i]);
-            // manipulate the Add Strains/Species UI accordingly
-            window.switchSpeciesStrainInput("species", "edit", curationMode);
-          } else if (field.name === "Strain" && infoJson[i] !== "") {
-            $(`#${curationModeSelectorPrefix}bootbox-subject-strain`).val(infoJson[i]);
-            window.switchSpeciesStrainInput("strain", "edit", curationMode);
-          } else if (curationMode === "guided" && field.name === "RRID for strain") {
-            guidedSetStrainRRID(infoJson[i]);
-          } else if (curationMode == "guided" && field.name === "protocol url or doi") {
-            //If the selected sample derived from
-            const previouslySavedProtocolURL = infoJson[i];
 
+            // Set unit to "N/A" if not found
+            if (!breakBoolean) {
+              $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val("N/A");
+            }
+          } else if (
+            field.name === "Species" ||
+            field.name === "Strain" ||
+            field.name === "RRID for strain"
+          ) {
+            // Handle Species, Strain, and RRID for strain fields
+            console.log(`Setting ${field.name} value (species/strain/rrid):`, infoJson[i]);
+            subjectSpeciesStrainValues[field.name] = infoJson[i];
+          } else if (curationMode === "guided" && field.name === "protocol url or doi") {
+            // Handle protocol URL or DOI field in guided mode
+            const previouslySavedProtocolURL = infoJson[i];
             const protocols =
               window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+
             for (const protocol of protocols) {
               if (protocol.link === previouslySavedProtocolURL) {
                 protocolTitleDropdown.value = protocol.description;
@@ -1174,25 +1227,22 @@ window.populateForms = (subjectID, type, curationMode) => {
               }
             }
           } else {
+            // Handle other fields
             if (type === "import") {
-              if (field.name === "subject id") {
-                field.value = "";
-              } else {
-                field.value = infoJson[i];
-              }
+              // Clear subject id field if importing
+              field.value = field.name === "subject id" ? "" : infoJson[i];
             } else {
               field.value = infoJson[i];
             }
           }
         } else {
+          // Set field value to empty if it is in emptyEntries
           field.value = "";
-        }
-      } else {
-        if (field.name === "Sex" && infoJson[i] === "") {
-          $("#bootbox-subject-sex").val("Unknown");
         }
       }
     });
+
+    setSubjectSpeciesAndStrainValues(curationModeSelectorPrefix, subjectSpeciesStrainValues);
   }
 };
 
@@ -2869,49 +2919,4 @@ const showAgeSection = (ev, div, type) => {
   for (var divEle of allDivsArr) {
     $("#" + divEle).addClass("hidden");
   }
-};
-
-const readXMLScicrunch = (xml, type, curationMode) => {
-  var parser = new DOMParser();
-  var xmlDoc = parser.parseFromString(xml, "text/xml");
-  var resultList = xmlDoc.getElementsByTagName("name"); // THE XML TAG NAME.
-  var rrid = "";
-  var res;
-
-  for (var i = 0; i < resultList.length; i++) {
-    if (resultList[i].childNodes[0].nodeValue === "Proper Citation") {
-      rrid = resultList[i].nextSibling.childNodes[0].nodeValue;
-      break;
-    }
-  }
-  if (type === "subject") {
-    if (rrid.trim() !== "") {
-      if (curationMode == "free-form") {
-        $("bootbox-subject-strain-RRID").val(rrid.trim());
-      }
-
-      if (curationMode == "guided") {
-        guidedSetStrainRRID(rrid.trim());
-      }
-      res = true;
-    } else {
-      if (curationMode == "free-form") {
-        $("bootbox-subject-strain-RRID").val("");
-      }
-
-      if (curationMode === "guided") {
-        guidedSetStrainRRID("");
-      }
-      res = false;
-    }
-  } else {
-    if (rrid.trim() !== "") {
-      $("#bootbox-sample-strain-RRID").val(rrid.trim());
-      res = true;
-    } else {
-      $("#bootbox-sample-strain-RRID").val("");
-      res = false;
-    }
-  }
-  return res;
 };

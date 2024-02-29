@@ -1959,18 +1959,42 @@
                 </div>
                 <div id="manifest-items-container"
                   style="display: flex; flex-direction: column; justify-content: center">
-                  <!-- Temporarily hide local copy generation in organize ds for v12.2.1 release -->
-                  <a id="button-generate-manifest-locally" class="hidden"
-                    data-content="Use this button to generate and view the manifest file locally" rel="popover"
-                    data-placement="right" data-trigger="hover" style="text-decoration: underline; display: none">
-                    Create a copy of the Manifest files locally to review.
-                  </a>
+                  
                   <div id="ffm-container-manifest-file-cards" style="
                       display: flex;
                       flex-direction: column;
                       justify-content: center;
                       align-items: center;
                     "></div>
+                  <div 
+                    id="ffm-container-local-manifest-file-generation"
+                    class="hidden"
+                    style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                  ">
+                    <h5
+                      style="
+                        text-align: center;
+                        color: var(--color);
+                        font-size: 16px;
+                        margin-top: 20px;
+                      ">
+                      To create a local copy of the manifest files, click the button below.
+                    </h5>
+                    <button
+                      class="ui primary button dataset-card-button-confirm"
+                      id="ffm-button-generate-manifest-files-locally"
+                      style="
+                        width: 295px !important;
+                        height: 3rem;
+                      "
+                    >
+                      Generate manifest files locally
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

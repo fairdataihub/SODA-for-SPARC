@@ -3400,107 +3400,56 @@
                   <b>Example:</b> Male
                 </p>
 
-                <label class="guided--form-label mt-xl">Species:</label>
-                <div class="demo-controls-body w-100">
+                <label class="guided--form-label mt-xl mb-md text-center">Species and strain</label>
+                <label class="guided--form-label species-strain-rrid-element mt-3 mb-0"
+                  >Species:</label
+                >
+                <div class="demo-controls-body w-100 species-strain-rrid-element">
                   <div class="ui input modified">
                     <input
                       type="text"
                       id="guided-bootbox-subject-species"
                       name="Species"
                       class="subjects-form-entry"
-                      style="font-size: 14px; display: none"
+                      readonly
                     />
-                    <button
-                      class="button-add-species ml-0"
-                      onclick="window.addSpecies(this, 'subject', 'guided')"
-                      id="guided-button-add-species-subject"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        style="vertical-align: middle"
-                        width="14"
-                        height="14"
-                        fill="currentColor"
-                        class="bi bi-plus"
-                        viewbox="0 0 16 16"
-                      >
-                        <path
-                          d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
-                        />
-                      </svg>
-                      Add species
-                    </button>
                   </div>
                 </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Type to get suggestions from the commonly used species. Must use terminology from
-                  the
-                  <a target="_blank" href="https://www.ncbi.nlm.nih.gov/taxonomy"
-                    >NCBI Taxonomy database</a
-                  >.
-                  <br />
-                  <b>Example:</b> Rattus
-                </p>
-                <div style="display: flex; flex-wrap: nowrap; width: 100%">
-                  <label class="guided--form-label mt-xl">Strain:</label>
-                  <label
-                    class="guided--form-label mt-xl"
-                    id="guided-strain-rrid-label"
-                    style="margin-right: 90px"
-                    >Strain RRID:</label
-                  >
-                </div>
-                <div class="demo-controls-body w-100">
+                <label class="guided--form-label species-strain-rrid-element mt-3 mb-0"
+                  >Strain:</label
+                >
+                <div class="demo-controls-body w-100 species-strain-rrid-element">
                   <div class="ui input modified">
                     <input
                       type="text"
                       id="guided-bootbox-subject-strain"
                       name="Strain"
                       class="subjects-form-entry"
-                      style="font-size: 13px; display: none; flex-grow: 1"
+                      readonly
                     />
+                  </div>
+                </div>
+                <label class="guided--form-label species-strain-rrid-element mt-3 mb-0"
+                  >Strain RRID:</label
+                >
+                <div class="demo-controls-body w-100 species-strain-rrid-element">
+                  <div class="ui input modified">
                     <input
                       type="text"
                       id="guided-bootbox-subject-strain-RRID"
                       name="RRID for strain"
-                      class="subjects-form-entry hidden"
-                      style="font-size: 13px"
+                      class="subjects-form-entry"
                       readonly
                     />
-                    <button
-                      class="button-add-species ml-0"
-                      onclick="window.addStrain(this, 'subject', 'guided')"
-                      id="guided-button-add-strain-subject"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        style="vertical-align: middle"
-                        width="14"
-                        height="14"
-                        fill="currentColor"
-                        class="bi bi-plus"
-                        viewbox="0 0 16 16"
-                      >
-                        <path
-                          d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
-                        />
-                      </svg>
-                      Add strain
-                    </button>
                   </div>
                 </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Type to get suggestions from the most commonly used organism strain of the
-                  subject.<br />
-                  To search for a standard strain name and learn more about RRIDs, please visit:
-                  <a
-                    target="_blank"
-                    href="https://scicrunch.org/resources/data/source/nlx_154697-1/search"
-                    >Scicrunch.org</a
-                  >
-                  <br />
-                  <b>Example:</b> Sprague-Dawley
-                </p>
+                <button
+                  class="button-add-species ml-0 opens-rrid-modal-on-click mb-3 mt-3"
+                  id="guided-button-specify-subject-species-strain-rrid"
+                  style="width: 250px"
+                >
+                  Specify species and strain
+                </button>
 
                 <label class="guided--form-label mt-xl"
                   >Exact age at the start of experiment:</label
