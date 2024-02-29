@@ -25,7 +25,9 @@ window.transitionToAdvancedFeature = (event) => {
 
   // Transition to the selected advanced feature
   if (button_id === "create_manifest_btn") {
-    // Transition to the create manifest page
+    // Transition to the create manifest page\
+    document.getElementById("manifest-creation-feature").classList.remove("hidden");
+    document.getElementById("manifest-creation-feature").classList.add("is-shown");
   }
   if (button_id === "upload_banner_image_btn") {
     // Transition to the upload banner image page
@@ -34,6 +36,8 @@ window.transitionToAdvancedFeature = (event) => {
   }
   if (button_id === "validate_dataset_btn") {
     // Transition to the validate dataset page
+    document.getElementById("validate-dataset-feature").classList.remove("hidden");
+    document.getElementById("validate-dataset-feature").classList.add("is-shown");
   }
 };
 
@@ -105,17 +109,37 @@ $("#advanced-back-button").on("click", () => {
     });
   }
 
-  console.log("Current advanced page: ", current_advanced_page);
   if (
     current_advanced_page === "create_manifest_btn" ||
     current_advanced_page === "upload_banner_image_btn" ||
     current_advanced_page === "validate_dataset_btn"
   ) {
-    // Transition back to the advanced features selection page
+    // Hide the advanced features to return to the selection page
     document.getElementById("banner-image-feature").classList.add("hidden");
     document.getElementById("banner-image-feature").classList.remove("is-shown");
 
-    // Hide the advanced features selection page
+    document.getElementById("validate-dataset-feature").classList.add("hidden");
+    document.getElementById("validate-dataset-feature").classList.remove("is-shown");
+
+    document.getElementById("manifest-creation-feature").classList.add("hidden");
+    document.getElementById("manifest-creation-feature").classList.remove("is-shown");
+
+    let localDatasetButton = document.getElementById("validate_dataset-1-local");
+    let pennsieveDatasetButton = document.getElementById("validate_dataset-1-pennsieve");
+
+    if (
+      !localDatasetButton.classList.contains("checked") &&
+      !localDatasetButton.classList.contains("non-selected") &&
+      !pennsieveDatasetButton.classList.contains("checked") &&
+      !pennsieveDatasetButton.classList.contains("non-selected")
+    ) {
+      $("#validate_dataset-question-2").removeClass("show");
+      $("#validate_dataset-question-1").removeClass("prev");
+      $("#validate_dataset-question-2").removeClass("prev");
+      $("#validate_dataset-question-3").removeClass("show");
+    }
+
+    // Display the advanced features selection page
     document.getElementById("advanced-features-selection-page").classList.add("is-shown");
     document.getElementById("advanced-features-selection-page").classList.remove("hidden");
 
