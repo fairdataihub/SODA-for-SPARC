@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - gm-rrid-update
 
 jobs:
   deploy-on-windows:
