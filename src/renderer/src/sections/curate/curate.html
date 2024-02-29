@@ -2520,7 +2520,23 @@
                 <div class="grouped fields">
                   <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center">How would you like to
                     handle existing files?
-                    <div class="tooltipnew">
+                    <div class="info-dropdown">
+                      <i class="fas fa-exclamation-triangle"></i>
+                      <p class="info-dropdown-text" data-dropdown-type="warning">I don't know what these options mean</p>
+                      <i class="fas fa-chevron-right" style="transform: rotate(90deg);"></i>
+                    </div>
+                    <div class="info-container container-open">
+                      <p class="help-text">
+                        Tell SODA how to handle files specified during Step 3 and metadata files
+                        specified during Step 4 that are already existing (same name, same relative
+                        location) on your Pennsieve dataset
+                        <ul>
+                          <li>Replace: Delete existing files on Pennsieve then upload new ones</li>
+                          <li>Skip: Existing files will not be uploaded.</li>
+                        </ul>
+                      </p>
+                    </div>
+                    <!-- <div class="tooltipnew">
                       <img class="info" src="./img/info.png" />
                       <span class="tooltiptext" style="font-size: 12px">
                         Tell SODA how to handle files specified during Step 3 and metadata files
@@ -2531,7 +2547,7 @@
                           <li>Skip: Existing files will not be uploaded.</li>
                         </ul>
                       </span>
-                    </div>
+                    </div> -->
                     <br /><span style="color: #898989; font-size: 12px">Please select one:</span>
                   </label>
                   <div style="display: flex; flex-direction: row; justify-content: center">
