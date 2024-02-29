@@ -20,22 +20,42 @@
   pointer-events: none;
   visibility: hidden;
   opacity: 0;
-  transform: translateX(-20px);
+  transform: translateX(-20px) !important;
   transition:
     visibility 0s 0.12s linear,
     opacity 0.12s ease-in,
-    transform 0.12s ease-in-out;
+    transform 0.12s ease-in-out !important;
 }
 .section.is-shown {
   pointer-events: auto;
   visibility: visible;
   opacity: 1;
   z-index: 1000;
+  transform: translateX(20px) !important;
+  transition:
+    visibility 0s 0s linear,
+    opacity 0.36s ease-out,
+    transform 0.36s ease-out !important;
+}
+
+.advanced-section {
   transform: translateX(20px);
   transition:
     visibility 0s 0s linear,
     opacity 0.36s ease-out,
     transform 0.36s ease-out;
+}
+
+.advanced-section.is-shown {
+  transform: translateX(-20px);
+  transition:
+    visibility 0s 0.12s linear,
+    opacity 0.12s ease-in,
+    transform 0.12s ease-in-out;
+}
+
+.advanced-section.full-shown {
+  transition: all 0.25s linear;
 }
 
 .section.fullShown {

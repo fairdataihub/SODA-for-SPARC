@@ -195,6 +195,11 @@ const handleSectionTrigger = async (event) => {
       document.querySelector("#guided-folder-structure-container").appendChild(folderElement);
     });
 
+    let guidedModeSection = document.getElementById("guided_mode-section");
+    if (!guidedModeSection.classList.contains("is-shown")) {
+      guidedModeSection.classList.add("is-shown");
+    }
+
     guidedUnLockSideBar();
   }
 
@@ -317,4 +322,4 @@ $(document).ready(() => {
   });
 });
 
-export { resetLazyLoading, guidedUnLockSideBar };
+export { resetLazyLoading, guidedUnLockSideBar, hideAllSectionsAndDeselectButtons };

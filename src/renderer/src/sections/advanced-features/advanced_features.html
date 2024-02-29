@@ -1,0 +1,498 @@
+<section
+  id="advanced_mode-section"
+  class="section js-section u-category-windows hidden"
+  style="left: 186px; top: -5px; padding-left: 0 !important; padding-top: 0 !important"
+>
+  <div
+    id="advanced-features-selection-page"
+    class="advanced-section hidden"
+    style="width: 100%; display: flex; flex-direction: column; height: calc(100% - 5rem)"
+  >
+    <header style="margin-top: 1rem; margin-bottom: 2rem">
+      <div
+        class="container-tab-information-header"
+        style="margin-bottom: 0 !important; width: 100%"
+      >
+        <div class="need-help-div" style="text-align-last: center">
+          <h2 style="font-size: 20px; width: 100%">Advanced features</h2>
+        </div>
+      </div>
+    </header>
+    <div style="display: flex; align-items: center; height: calc(100% - 5rem)">
+      <div class="d-flex justify-center" style="gap: 5rem">
+        <button
+          class="content-button"
+          id="create_manifest_btn"
+          data-original-title=""
+          title=""
+          data-tippy-content="Prepare manifest files for all high-level folders"
+          rel="popover"
+          data-trigger="hover"
+          data-placement="bottom"
+          onclick="window.transitionToAdvancedFeature(event)"
+        >
+          <svg height="48" width="48" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80.48 98.35">
+            <defs>
+              <style>
+                .cls-1,
+                .cls-2 {
+                  fill: none;
+                }
+
+                .cls-1,
+                .cls-2,
+                .cls-3 {
+                  stroke-miterlimit: 10;
+                }
+
+                .cls-1 {
+                  stroke-width: 6px;
+                }
+
+                .cls-2 {
+                  stroke-width: 8px;
+                }
+              </style>
+            </defs>
+            <g id="Layer_2" data-name="Layer 2">
+              <g id="Layer_2-2" data-name="Layer 2">
+                <rect
+                  class="cls-1"
+                  x="65.2"
+                  y="70.64"
+                  width="0.17"
+                  height="25.22"
+                  stroke="#B80D49"
+                ></rect>
+                <rect
+                  class="cls-1"
+                  x="65.29"
+                  y="70.64"
+                  width="0.17"
+                  height="25.22"
+                  transform="translate(148.62 17.88) rotate(90)"
+                  stroke="#B80D49"
+                ></rect>
+                <path
+                  class="cls-2"
+                  d="M43.72,83.16l-32.67.09a7.83,7.83,0,0,1-8-7.58V10.58A7.82,7.82,0,0,1,11.05,3H48.81L65.54,17.54V64.8"
+                  stroke="#565E6B"
+                ></path>
+                <path
+                  class="cls-3"
+                  d="M65.54,17.54v3.23H52.61a7.31,7.31,0,0,1-7.52-7.09V3h3.72Z"
+                  stroke="#565E6B"
+                  fill="#565E6B"
+                ></path>
+                <line
+                  class="cls-1"
+                  x1="4.4"
+                  y1="46.35"
+                  x2="63.26"
+                  y2="46.35"
+                  stroke="#13716D"
+                ></line>
+                <line
+                  class="cls-1"
+                  x1="4.4"
+                  y1="62.64"
+                  x2="63.26"
+                  y2="62.64"
+                  stroke="#13716D"
+                ></line>
+                <line
+                  class="cls-1"
+                  x1="22.4"
+                  y1="46.35"
+                  x2="22.4"
+                  y2="80.5"
+                  stroke="#13716D"
+                ></line>
+                <line
+                  class="cls-1"
+                  x1="40.4"
+                  y1="46.35"
+                  x2="40.4"
+                  y2="80.5"
+                  stroke="#13716D"
+                ></line>
+              </g>
+            </g>
+          </svg>
+          <h2>Create manifest.xlsx</h2>
+        </button>
+        <button
+          class="content-button tippy-content-main"
+          id="upload_banner_image_btn"
+          data-tippy-content="Provide an image that will be used as the thumbnail for your dataset"
+          rel="popover"
+          data-placement="bottom"
+          data-trigger="hover"
+          onclick="window.transitionToAdvancedFeature(event)"
+        >
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 43 42"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M4.3 4.42105H32.25V19.8947H36.55V4.42105C36.55 1.98284 34.6214 0 32.25 0H4.3C1.92855 0 0 1.98284 0 4.42105V30.9474C0 33.3856 1.92855 35.3684 4.3 35.3684H21.5V30.9474H4.3V4.42105Z"
+              fill="#565E6B"
+            />
+            <path
+              d="M12.9002 17.6838L6.4502 26.5259H30.1002L21.5002 13.2627L15.0502 22.1048L12.9002 17.6838Z"
+              fill="#13716D"
+            />
+            <path
+              d="M36.5498 24.3154H32.2498V30.947H25.7998V35.3681H32.2498V41.9996H36.5498V35.3681H42.9998V30.947H36.5498V24.3154Z"
+              fill="#13716D"
+            />
+          </svg>
+          <h2>Upload a banner image</h2>
+        </button>
+        <button
+          class="content-button tippy-content-main"
+          id="validate_dataset_btn"
+          style="width: 150px; height: 150px"
+          data-tippy-content="Validate your SPARC dataset on Pennsieve."
+          rel="popover"
+          data-placement="bottom"
+          data-trigger="hover"
+          onclick="window.transitionToAdvancedFeature(event)"
+        >
+          <svg
+            width="48px"
+            height="48px"
+            viewBox="0 0 16 16"
+            class="bi bi-clipboard-check"
+            fill="#585858"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              fill="#13716D"
+              d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"
+            />
+            <path
+              fill-rule="evenodd"
+              fill="#B80D49"
+              d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3zm4.354 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"
+            />
+          </svg>
+          <h2>Validate dataset</h2>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    id="banner-image-feature"
+    class="hidden"
+    style="width: 100%; display: flex; flex-direction: column"
+  >
+    <div
+      class="main-tabs show"
+      id="add_edit_banner_parent-tabc"
+      style="display: flex; height: 100%; overflow-y: hidden"
+    >
+      <header class="section-header">
+        <div class="container-tab-information-header">
+          <!-- <svg
+        width="40"
+        height="40"
+        viewBox="0 0 43 42"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M4.3 4.42105H32.25V19.8947H36.55V4.42105C36.55 1.98284 34.6214 0 32.25 0H4.3C1.92855 0 0 1.98284 0 4.42105V30.9474C0 33.3856 1.92855 35.3684 4.3 35.3684H21.5V30.9474H4.3V4.42105Z"
+          fill="black"
+        />
+        <path
+          d="M12.9002 17.6838L6.4502 26.5259H30.1002L21.5002 13.2627L15.0502 22.1048L12.9002 17.6838Z"
+          fill="black"
+        />
+        <path
+          d="M36.5498 24.3154H32.2498V30.947H25.7998V35.3681H32.2498V41.9996H36.5498V35.3681H42.9998V30.947H36.5498V24.3154Z"
+          fill="black"
+        />
+      </svg> -->
+          <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
+            <div class="need-help-div">
+              <h2>Manage Datasets - Upload a banner image</h2>
+              <a
+                target="_blank"
+                href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/manage-dataset/upload-a-banner-image"
+                >Need help?</a
+              >
+            </div>
+          </div>
+        </div>
+        <!-- <div class="tab-info">
+      <p class="tab-info-p" style="margin-bottom: 2em">
+        Some helpful text here
+      </p>
+    </div> -->
+      </header>
+
+      <div
+        id="add_edit_banner_parent-tab"
+        style="overflow-y: auto; height: calc(100% - 150px); margin-left: -70px"
+      >
+        <div
+          class="individual-question manage-dataset show"
+          id="add_edit_banner_tab"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <div class="about-container">
+                <label class="about-title" style="color: var(--color-bg-plum) !important"
+                  >About</label
+                >
+                <p class="about-text">
+                  Use this feature to add a banner image to your dataset on Pennsieve. This image
+                  will be used as a thumbnail once the dataset is published on the SPARC data
+                  portal.
+                </p>
+              </div>
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Which Pennsieve dataset would you like to work on?
+              </label>
+
+              <div
+                id="top-level-card-container--add-edit-banner"
+                class="top-level-card-container"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question manage-dataset"
+          id="div_add_edit_banner"
+          style="height: auto"
+        >
+          <div class="ui form" style="min-width: 450px">
+            <div class="grouped fields" style="display: flex; justify-content: center">
+              <label
+                id="add_edit_banner_label"
+                style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
+                "
+                >Current banner image of selected dataset:
+              </label>
+              <div class="field" style="display: flex; justify-content: center; margin: auto">
+                <div
+                  style="
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                    min-width: 450px;
+                  "
+                >
+                  <div id="div-current-banner-img" style="color: black">
+                    <p
+                      style="text-align: center; height: 2em; margin: auto"
+                      id="para-current-banner-img"
+                    >
+                      None
+                    </p>
+                    <div
+                      id="banner_image_loader"
+                      class="ui active green inline loader medium"
+                      style="display: none; margin-left: 46%"
+                    ></div>
+                    <img id="current-banner-img" />
+                  </div>
+                </div>
+              </div>
+              <div
+                id="div-button-edit-banner-image"
+                style="flex-direction: row; justify-content: center; margin: 0 auto"
+              >
+                <button
+                  id="edit_banner_image_button"
+                  class="ui positive button soda-green-background"
+                  style="
+                    margin: 20px 10px 30px 0;
+                    font-size: 15px;
+                    width: 200px;
+                    height: 40px;
+                    margin-top: 2.5rem;
+                    padding-left: 28px;
+                  "
+                >
+                  Edit banner image
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="footer-div">
+        <div style="display: flex; flex-direction: row; width: 120px">
+          <button type="button" class="transition-btn prev" data-section="main_tabs">
+            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+          </button>
+        </div>
+        <button
+          type="button"
+          class="transition-btn prev"
+          data-section="add_license"
+          style="width: auto"
+        >
+          Assign a license to the dataset<i
+            class="fas fa-arrow-right"
+            style="margin-left: 10px"
+          ></i>
+        </button>
+      </div> -->
+
+      <!-- Modal -->
+      <div
+        class="modal fade"
+        id="edit_banner_image_modal"
+        tabindex="-1"
+        role="dialog"
+        data-backdrop="false"
+        style="background-color: rgba(0, 0, 0, 0.5); width: 100%; height: 100%"
+      >
+        <div
+          class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"
+          role="document"
+        >
+          <div id="banner-modal" class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="edit_banner_image_title">
+                Update banner image
+                <i
+                  class="fas fa-info-circle popover-tooltip"
+                  data-content="This image will be associated with the dataset and used as a thumbnail once the dataset is published.
+                <br/><br/>
+                This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly recommended. The final image size must not exceed 5MB as per Pennsieve's restriction."
+                  rel="popover"
+                  data-html="true"
+                  data-placement="bottom"
+                  data-trigger="hover"
+                ></i>
+              </h4>
+              <button type="button" class="close" data-dismiss="modal">
+                <i style="color: red; font-size: 25px" class="far fa-window-close"></i>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div id="div-editbanner-img" style="display: flex; flex-direction: row">
+                <div id="div-img-container-holder" class="img-container">
+                  Imported image will be shown here. <br />You will be able to crop it before
+                  uploading.
+                </div>
+
+                <div
+                  id="div-img-container"
+                  class="img-container"
+                  style="display: none; flex-direction: column"
+                >
+                  <img id="image-banner" class="banner-img" width="100%" />
+                  <p
+                    id="para-path-image"
+                    style="margin-top: 0.5em; text-align: center; display: none"
+                  ></p>
+                </div>
+              </div>
+              <p
+                id="para-dataset-banner-image-status"
+                style="
+                  text-align: center;
+                  font-weight: 400;
+                  color: var(--color-light-green);
+                  font-size: 15px;
+                "
+              ></p>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between">
+              <div style="display: flex; flex-direction: row; justify-content: center">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    width: 100%;
+                  "
+                >
+                  <button
+                    id="button-import-banner-image"
+                    type="button"
+                    class="btn btn-primary"
+                    style="border-radius: 4px"
+                  >
+                    Import image
+                  </button>
+                </div>
+              </div>
+
+              <div class="container-cropped-image">
+                <div class="banner-image-size" style="width: 380px; text-align: right">
+                  <span class="crop-image-text" style="margin-right: 2rem"
+                    >Cropped dimensions (must be greater than 512px):
+                  </span>
+                </div>
+                <input
+                  class="banner-image-size input"
+                  style="width: 70px; text-align: center; pointer-events: none"
+                  id="form-banner-height"
+                  type="text"
+                  readonly="readonly"
+                  size="7"
+                />
+                <div class="banner-image-size" style="width: 30px; text-align: center">
+                  <span class="crop-image-text">px</span>
+                </div>
+              </div>
+
+              <button
+                id="save-banner-image"
+                type="button"
+                class="btn btn-primary"
+                style="border-radius: 4px; visibility: hidden"
+              >
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    id="manifest-creation-feature"
+    class="hidden"
+    style="width: 100%; display: flex; flex-direction: column"
+  >
+  </div>
+  <div
+    id="validate-dataset-feature"
+    class="hidden"
+    style="width: 100%; display: flex; flex-direction: column"
+  >
+  </div>
+  <footer class="footer-container hidden" id="advanced-footer">
+    <div class="guided--container-footer-buttons" style="margin-left: 1rem">
+      <button
+        class="ui secondary basic button"
+        id="advanced-back-button"
+        style="width: 200px !important; font-family: Poppins"
+      >
+        <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+      </button>
+    </div>
+  </footer>
+</section>
