@@ -1454,7 +1454,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       //account is signed in but no datasets have been fetched or created
       //invoke dataset request to ensure no datasets have been created
       console.log(window.datasetList.length);
-      console.log(window.datasetList)
+      console.log(window.datasetList);
       if (window.datasetList.length === 0) {
         let responseObject;
         try {
@@ -1481,7 +1481,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       //after request check length again
       //if 0 then no datasets have been created
       console.log(window.datasetList.length);
-      console.log(window.datasetList)
+      console.log(window.datasetList);
       if (window.datasetList.length === 0) {
         Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
