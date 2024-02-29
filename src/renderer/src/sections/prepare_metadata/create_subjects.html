@@ -1103,31 +1103,40 @@
             <div class="div-dd-info subjects species-strain-rrid-element">
               <div class="demo-controls-head">
                 <div style="width: 100%">
-                  <font color="black"> RRID for strain: </font>
+                  <font color="black">RRID for Strain</font>
                 </div>
               </div>
               <div class="demo-controls-body">
-                <input
-                  class="form-container-input-bf subjects-form-entry"
-                  id="bootbox-subject-strain-RRID"
-                  name="RRID for strain"
-                />
+                <div class="ui input modified">
+                  <input
+                    type="text"
+                    id="bootbox-subject-strain-RRID"
+                    name="RRID for strain"
+                    class="subjects-form-entry"
+                    style="font-size: 13px"
+                  />
+                </div>
               </div>
               <div class="tooltipnew demo-controls-end">
-                <img class="info" src="./img/info.png" style="margin-top: -2px" />
-                <span class="tooltiptext">
-                  Research Resource Identifier Identification (RRID) for the strain For this field.
-                </span>
+                <i
+                  class="fas fa-info-circle popover-tooltip subjects-form"
+                  data-content="Research Resource Identifier Identification (RRID) for the strain For this field."
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                ></i>
               </div>
             </div>
-
-            <button
-              class="button-add-species ml-0 opens-rrid-modal-on-click mb-3 mt-3"
-              id="button-specify-subject-species-strain-rrid"
-              style="width: 250px"
-            >
-              Specify species and strain
-            </button>
+            <div class="d-flex justify-center mt-2 mb-2">
+              <button
+                class="button-add-species ml-0 opens-rrid-modal-on-click mb-3 mt-3"
+                id="button-specify-subject-species-strain-rrid"
+                style="width: 250px"
+              >
+                Specify species and strain
+              </button>
+            </div>
 
             <div class="div-dd-info subjects">
               <div class="demo-controls-head" style="text-align: center">
