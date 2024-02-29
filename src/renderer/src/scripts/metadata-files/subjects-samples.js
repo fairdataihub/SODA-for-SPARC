@@ -678,10 +678,14 @@ const promptSpeciesAndStrainSelection = async () => {
         <label class="guided--form-label centered mt-5" style="font-size: 1em !important;">
           Search for a strain using its RRID
         </label>
-        <p class="help-text">
-          To find the RRID for a strain, you can search for the strain on 
-          <a target="_blank" href="https://scicrunch.org/resources/data/source/nlx_154697-1/search">Scicrunch.org</a>.
-          Once you have the RRID, enter it in the input field below and click "Search".
+        <p class="help-text w-100">
+          If you don't have the RRID for the strain, follow these steps on <a target="_blank" href="https://scicrunch.org/resources/data/source/nlx_154697-1/search">Scicrunch.org</a>:
+          <br />
+          1. Enter the strain name in the search bar (e.g., "Yucatan pig").
+          <br />
+          2. Copy the RRID (e.g., "RRID:NSRRC_0012") from the relevant search result on SciCrunch.
+          <br />
+          3. Paste the RRID in the input field below and click "Search".
         </p>
         <div class="d-flex justify-content-center w-100">
           <input
