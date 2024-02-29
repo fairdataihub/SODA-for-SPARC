@@ -1,7 +1,6 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 import lottie from "lottie-web";
-import { announcement_lottie } from "../../assets/lotties/announcement-lottie";
 import { announcement_laptop } from "../../assets/lotties/announcement-laptop";
 
 // To change what branch the announcements.json is fetched from, enter branch name between "SODA-for-SPARC/" and "/scripts" in the url below
