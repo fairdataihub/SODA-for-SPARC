@@ -2022,7 +2022,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     console.log("Logged here");
 
     // get the amount of files in the existing dataset and skip the Merge/Skip/Replace step if there are no files in the existing dataset
-    let hasFiles = await api.getDatasetFileCount(window.defaultBfDatasetId);
+    let hasFiles = await api.getNumberOfPackagesInDataset(window.defaultBfDataset);
     if (!hasFiles) {
       // skip the Merge/Skip/Replace step
       window.nextPrev(1);
