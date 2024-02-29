@@ -8,7 +8,7 @@ import { clientError, userErrorMessage } from "../others/http-error-handler/erro
 import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 import client from "../client";
-import { swalConfirmAction, swalShowInfo } from "../utils/swal-utils";
+import { swalConfirmAction } from "../utils/swal-utils";
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -566,10 +566,32 @@ const addSubjectIDToJSON = (subjectID) => {
 };
 
 const setSubjectSpeciesAndStrainValues = (curationModePrefix, speciesAndStrainObject) => {
+  console.log("curationModePrefix:", curationModePrefix);
   console.log("Object used to set species and strain:", speciesAndStrainObject);
 
-  const speciesAndStrainObjectValues = Object.values(speciesAndStrainObject);
-  console.log("speciesAndStrainObjectValues:", speciesAndStrainObjectValues);
+  const allValuesAreEmpty = Object.values(speciesAndStrainObject).every((value) => value === "");
+
+  const speciesStrainRRIDFields = document.querySelectorAll(".species-strain-rrid-element");
+  if (allValuesAreEmpty) {
+    speciesStrainRRIDFields.forEach((field) => {
+      field.classList.add("hidden");
+    });
+  } else {
+    speciesStrainRRIDFields.forEach((field) => {
+      field.classList.remove("hidden");
+    });
+  }
+
+  const buttonSpeciesStrainRRID = document.getElementById(
+    `${curationModePrefix}button-specify-subject-species-strain-rrid`
+  );
+  if (allValuesAreEmpty) {
+    buttonSpeciesStrainRRID.innerHTML = "Specify species and strain";
+  } else {
+    buttonSpeciesStrainRRID.innerHTML = "Edit species and strain";
+  }
+
+  console.log("allValuesAreEmpty:", allValuesAreEmpty);
 
   const speciesInput = document.getElementById(`${curationModePrefix}bootbox-subject-species`);
   const strainInput = document.getElementById(`${curationModePrefix}bootbox-subject-strain`);
@@ -600,54 +622,59 @@ document.querySelectorAll(".opens-rrid-modal-on-click").forEach((element) => {
   element.addEventListener("click", async () => {
     const clickedButtonId = element.id;
     const curationModePrefix =
-      clickedButtonId === "guided-button-add-strain-subject" ? "guided-" : "";
-    console.log("clickedButtonId:", clickedButtonId);
-    const res = await showRRIDInput(curationModePrefix);
-    await swalShowInfo("res", res);
-    console.log("res from click:", res);
-    setSubjectSpeciesAndStrainValues(curationModePrefix, {
-      ["Species"]: res[0],
-      ["Strain"]: res[1],
-      ["RRID for strain"]: res[2],
-    });
+      clickedButtonId === "guided-button-specify-subject-species-strain-rrid" ? "guided-" : "";
+    const { subjectArray, subjectDataRetrievedFromScicrunch } =
+      await showRRIDInput(curationModePrefix);
+    console.log("res from click:", subjectArray);
+
+    if (subjectDataRetrievedFromScicrunch) {
+      setSubjectSpeciesAndStrainValues(curationModePrefix, {
+        ["Species"]: subjectArray[0],
+        ["Strain"]: subjectArray[1],
+        ["RRID for strain"]: subjectArray[2],
+      });
+    }
   });
 });
+
 const showRRIDInput = async (curationModePrefix) => {
-  let a = "";
+  let subjectArray = null;
+  let subjectDataRetrievedFromScicrunch = false;
+
   const commonlyUsedStrainData = [
     {
-      strain: "Wistar",
-      rrid: "MGI:MGI_5607850", // Replace with actual Rrid for Wistar rat
-      species: "Rattus norvegicus",
+      strain: "Swiss Wistar",
+      rrid: " RRID:MGI:5657554 ",
+      species: "laboratory mouse ",
     },
     {
       strain: "Yucatan",
-      rrid: "MGI:MGI_5607856", // Replace with actual Rrid for Yucatan rat
-      species: "Rattus norvegicus",
+      rrid: "RRID:NSRRC_0012",
+      species: "Sus scrofa",
     },
     {
+      strain: "Sprague-Dawley rat",
+      rrid: "RRID:MGI:5651135",
+      species: "Mus musculus",
+    } /*Anything after this line is not real data, just for testing purposes*/,
+    {
       strain: "C57/B6J",
-      rrid: "MGI:MGI_5558217", // Replace with actual Rrid for C57BL/6J mouse
+      rrid: "MGI:MGI_5558217",
       species: "Mus musculus",
     },
     {
       strain: "C57 BL/6J",
-      rrid: "MGI:MGI_5558217", // Replace with actual Rrid for C57BL/6J mouse
+      rrid: "MGI:MGI_5558217",
       species: "Mus musculus",
     },
     {
       strain: "mixed background",
-      rrid: "None", // Mixed background doesn't have a specific Rrid
+      rrid: "None",
       species: "Mus musculus",
-    },
-    {
-      strain: "Sprague-Dawley",
-      rrid: "RGD:2206237", // Replace with actual Rrid for Sprague-Dawley rat
-      species: "Rattus norvegicus",
     },
   ];
 
-  await Swal.fire({
+  const SwalOptions = {
     title: "Species and Strain specification",
     html: `
       <label class="guided--form-label centered mb-2" style="font-size: 1em !important;">
@@ -665,14 +692,15 @@ const showRRIDInput = async (curationModePrefix) => {
         <option value="Other">Other</option>
       </select>
       <p class="help-text mb-1 mt-2">
-        If your strain is not in the dropdown, search for it using its RRID below.
+        If your species and strain are not in the dropdown, select other.
       </p>
-      <div class="d-flex justify-center" id="section-rrid-search">
+      <div class="d-flex justify-center hidden" id="section-rrid-search">
         <label class="guided--form-label centered mt-5" style="font-size: 1em !important;">
           Search for a strain using its RRID
         </label>
         <p class="help-text">
-          To find the RRID for a strain, you can search for the strain on <a target="_blank" href="https://scicrunch.org/resources/data/source/nlx_154697-1/search">Scicrunch.org</a>.
+          To find the RRID for a strain, you can search for the strain on 
+          <a target="_blank" href="https://scicrunch.org/resources/data/source/nlx_154697-1/search">Scicrunch.org</a>.
           Once you have the RRID, enter it in the input field below and click "Search".
         </p>
         <div class="d-flex justify-content-center w-100">
@@ -681,7 +709,7 @@ const showRRIDInput = async (curationModePrefix) => {
             class="guided--input"
             placeholder="Enter RRID to search for..."
           />
-          <button id="button-searc-rrid">Search</button>
+          <button id="button-search-rrid">Search</button>
         </div>
       </div>
     `,
@@ -690,14 +718,12 @@ const showRRIDInput = async (curationModePrefix) => {
     backdrop: "rgba(0,0,0, 0.4)",
     showCancelButton: true,
     cancelButtonText: "Cancel",
-    confirmButtonText: "OK",
+    confirmButtonText: "Specify species and strain",
     allowOutsideClick: true,
 
     didRender: () => {
-      // use selectPicker to style the dropdown
       $("#common-strain-rrid-dropdown").selectpicker();
       $("#common-strain-rrid-dropdown").selectpicker("refresh");
-      // Add a change listener to the dropdown to show/hide the input field
       document.getElementById("common-strain-rrid-dropdown").addEventListener("change", (ev) => {
         const selectedStrainRRID = ev.target.value;
         const customSearchSection = document.getElementById("section-rrid-search");
@@ -708,8 +734,7 @@ const showRRIDInput = async (curationModePrefix) => {
         }
       });
 
-      // Add the click listener to the search button
-      document.getElementById("button-searc-rrid").addEventListener("click", async () => {
+      document.getElementById("button-search-rrid").addEventListener("click", async () => {
         const manuallyEnteredRRID = document.getElementById("rrid-input").value;
         try {
           const response = await fetch(
@@ -728,7 +753,10 @@ const showRRIDInput = async (curationModePrefix) => {
             console.log("subjectStrain:", subjectStrain);
             console.log("subjectStrainRRID:", subjectStrainRRID);
             console.log("subjectSpecies:", subjectSpecies);
-            a = [subjectSpecies, subjectStrain, subjectStrainRRID];
+
+            subjectArray = [subjectSpecies, subjectStrain, subjectStrainRRID];
+            subjectDataRetrievedFromScicrunch = true;
+
             Swal.close();
           }
         } catch (error) {
@@ -744,7 +772,7 @@ const showRRIDInput = async (curationModePrefix) => {
         const selectedStrain = commonlyUsedStrainData.find(
           (strain) => strain.strain === selectedStrainRRID
         );
-        a = [selectedStrain.strain, selectedStrain.rrid, selectedStrain.species];
+        subjectArray = [selectedStrain.strain, selectedStrain.rrid, selectedStrain.species];
       } else {
         const manuallyEnteredRRID = document.getElementById("rrid-input").value;
         if (manuallyEnteredRRID === "") {
@@ -754,8 +782,21 @@ const showRRIDInput = async (curationModePrefix) => {
         }
       }
     },
-  });
-  return a;
+  };
+
+  await Swal.fire(SwalOptions);
+
+  if (subjectArray) {
+    return {
+      subjectArray: subjectArray,
+      subjectDataRetrievedFromScicrunch: true,
+    };
+  }
+
+  return {
+    subjectArray: subjectArray,
+    subjectDataRetrievedFromScicrunch: false,
+  };
 };
 
 function addSubjectMetadataEntriesIntoJSON(curationMode) {
