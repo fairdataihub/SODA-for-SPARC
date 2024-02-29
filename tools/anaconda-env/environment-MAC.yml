@@ -17,7 +17,7 @@ dependencies:
   - xlrd == 2.0.1
   - biopython == 1.79
   - gevent == 21.12.0
-  - certifi==2022.12.7
+  - certifi
   - flask == 2.0.2
   - flask_restx
   - flask-cors == 4.0.0

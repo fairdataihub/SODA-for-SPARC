@@ -164,8 +164,8 @@ const handleSectionTrigger = async (event) => {
         $("#Question-getting-started-1").addClass("show");
         $("#generate-dataset-progress-tab").css("display", "none");
         window.currentTab = 0;
-        wipeOutCurateProgress();
-        globalGettingStarted1stQuestionBool = false;
+        window.wipeOutCurateProgress();
+        window.globalGettingStarted1stQuestionBool = false;
         document.getElementById("nextBtn").disabled = true;
       } else {
         //Stay in Organize datasets section

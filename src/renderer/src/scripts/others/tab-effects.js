@@ -115,7 +115,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       await window.ffmCreateManifest(window.sodaJSONObj);
       $("#manifest-items-container").removeClass("hidden");
       $("#manifest-creating-loading").addClass("hidden");
-      $("button-generate-manifest-locally").show();
     } else {
       document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
     }
@@ -822,7 +821,7 @@ $(".option-card.high-level-folders").click(function () {
   checkHighLevelFoldersInput();
 });
 
-var globalGettingStarted1stQuestionBool = false;
+window.globalGettingStarted1stQuestionBool = false;
 
 $(".parent-tabs.folder-input-check").click(function () {
   var parentCard = $(this).parents()[2];
@@ -948,17 +947,17 @@ const raiseWarningGettingStarted = (ev) => {
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          globalGettingStarted1stQuestionBool = true;
-          wipeOutCurateProgress();
-          resolve(globalGettingStarted1stQuestionBool);
+          window.globalGettingStarted1stQuestionBool = true;
+          window.wipeOutCurateProgress();
+          resolve(window.globalGettingStarted1stQuestionBool);
         } else {
-          globalGettingStarted1stQuestionBool = false;
-          resolve(globalGettingStarted1stQuestionBool);
+          window.globalGettingStarted1stQuestionBool = false;
+          resolve(window.globalGettingStarted1stQuestionBool);
         }
       });
     } else {
-      globalGettingStarted1stQuestionBool = true;
-      resolve(globalGettingStarted1stQuestionBool);
+      window.globalGettingStarted1stQuestionBool = true;
+      resolve(window.globalGettingStarted1stQuestionBool);
     }
   });
 };
@@ -998,15 +997,15 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     //   "Local",
     //   true
     // );
-    globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
-    if (globalGettingStarted1stQuestionBool) {
+    window.globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
+    if (window.globalGettingStarted1stQuestionBool) {
       $("#progress-files-dropdown").val("Select");
       $("#para-progress-file-status").text("");
       $("#nextBtn").prop("disabled", true);
       window.exitCurate(false);
-      globalGettingStarted1stQuestionBool = false;
+      window.globalGettingStarted1stQuestionBool = false;
     } else {
-      globalGettingStarted1stQuestionBool = false;
+      window.globalGettingStarted1stQuestionBool = false;
       return;
     }
   }
@@ -3479,7 +3478,7 @@ window.resetCuration = () => {
   $(".para-metadata-file-status").text("");
 
   // hide the generate manifest locally button
-  $("#button-generate-manifest-locally").hide();
+  document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
 
   // set back Please continue para element
   $("#para-continue-prepare-new-getting-started").text("");
@@ -3495,7 +3494,7 @@ window.resetCuration = () => {
   $("#generate-manifest-curate").prop("checked", false);
 
   // $("#main_tabs_view")[0].click();
-  globalGettingStarted1stQuestionBool = false;
+  window.globalGettingStarted1stQuestionBool = false;
 };
 
 window.exitCurate = async (resetProgressTabs, start_over = false) => {
@@ -3523,24 +3522,24 @@ window.exitCurate = async (resetProgressTabs, start_over = false) => {
       $("#generate-dataset-progress-tab").css("display", "none");
 
       window.currentTab = 0;
-      wipeOutCurateProgress();
+      window.wipeOutCurateProgress();
       $("#main_tabs_view")[0].click();
-      globalGettingStarted1stQuestionBool = false;
+      window.globalGettingStarted1stQuestionBool = false;
       if (start_over) {
         $("#organize_dataset_btn").click();
       } else {
         // forceActionSidebar("show");
       }
     } else {
-      globalGettingStarted1stQuestionBool = false;
+      window.globalGettingStarted1stQuestionBool = false;
       return;
     }
   } else {
-    wipeOutCurateProgress();
+    window.wipeOutCurateProgress();
   }
 };
 
-const wipeOutCurateProgress = async () => {
+window.wipeOutCurateProgress = () => {
   // set SODA json object back
   window.sodaJSONObj = {
     "starting-point": { type: "" },
@@ -3573,7 +3572,7 @@ const wipeOutCurateProgress = async () => {
   $(".para-metadata-file-status").text("");
 
   // hide the generate manifest locally button
-  $("#button-generate-manifest-locally").hide();
+  document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
 
   // set back Please continue para element
   $("#para-continue-prepare-new-getting-started").text("");

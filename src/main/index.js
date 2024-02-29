@@ -134,6 +134,15 @@ ipcMain.on("orcid", (event, url) => {
   });
 });
 
+ipcMain.handle("open-folder-path-select", (event, pathSelectDialogText) => {
+  const path = dialog.showOpenDialogSync(mainWindow, {
+    properties: ["openDirectory"],
+    title: pathSelectDialogText,
+  });
+  let returnPath = path[0] ? path[0] : null;
+  return returnPath;
+});
+
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits
 ipcMain.handle("spreadsheet", (event, spreadsheet) => {

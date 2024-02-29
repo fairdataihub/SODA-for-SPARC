@@ -364,7 +364,7 @@ const startupServerAndApiCheck = async () => {
 
     await Swal.fire({
       icon: "error",
-      html: `Something went wrong while initializing SODA's background services. Please restart SODA and try again. If this issue occurs multiple times, please email <a href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
+      html: `Something went wrong while initializing SODA's background services. Please restart SODA and try again. If this issue occurs multiple times, please email <a target="_blank" href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Restart now",
@@ -403,6 +403,8 @@ const startupServerAndApiCheck = async () => {
   }
 
   if (launchAnnouncement) {
+    console.log("Checking for announcements");
+    await Swal.close();
     await checkForAnnouncements("announcements");
     launchAnnouncement = false;
     window.electron.ipcRenderer.invoke("set-nodestorage-key", "announcements", false);
@@ -569,10 +571,15 @@ window.run_pre_flight_checks = async (check_update = true) => {
 
       // If user chose to log in, open the dropdown prompt
       if (userChoseToLogIn) {
+        // TODO: The user can cancel at anytime without adding an account. We return false in that case
         await window.addBfAccount(null, false);
       } else {
         return false;
       }
+
+      // user did not add an account so return false
+      // TODO: Add notyf
+      if (!window.defaultBfAccount) return false;
 
       // check that the valid api key in the default profile is for the user's current workspace
       // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
@@ -690,7 +697,8 @@ window.run_pre_flight_checks = async (check_update = true) => {
       // if so then we prompt the user to allow us to remove the pennsieve Agent DB files and try again
       if (
         emessage.includes("UNIQUE constraint failed:") ||
-        emessage.includes("NotAuthorizedException: Incorrect username or password.")
+        emessage.includes("NotAuthorizedException: Incorrect username or password.") ||
+        emessage.includes("401 Error Creating new UserSettings")
       ) {
         const { value: deleteFilesRerunChecks } = await Swal.fire({
           icon: "error",
@@ -862,7 +870,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
           To update your Pennsieve Agent, please visit the link below and follow the instructions.
           <br />
           <br />
-          <a href="${agentDownloadUrl}" target="_blank">Download the latest Pennsieve agent</a>
+          <a href="${agentDownloadUrl}" target="_blank" rel="noopener noreferrer">Download the latest Pennsieve agent</a>
           <br />
           <br />
           Once you have updated your Pennsieve agent, please click the button below to ensure that the Pennsieve agent was updated correctly.
@@ -906,6 +914,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
     }
 
     if (launchAnnouncement) {
+      console.log("checking for announcements");
       await checkForAnnouncements("announcements");
       launchAnnouncement = false;
     }
@@ -1003,7 +1012,7 @@ const apiVersionsMatch = async () => {
 
     await Swal.fire({
       icon: "error",
-      html: `Something went wrong while initializing SODA's background services. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
+      html: `Something went wrong while initializing SODA's background services. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a target="_blank" href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Close now",
@@ -2348,241 +2357,6 @@ function createSpecimenTypeAutocomplete(id) {
     },
   });
 }
-
-window.createSpeciesAutocomplete = (id, curationMode) => {
-  // var listID = "autocomplete" + id;
-  var autoCompleteJS2 = new autoComplete({
-    selector: "#" + id,
-    data: {
-      src: [
-        {
-          "Canis lupus familiaris": "dogs, beagle dogs",
-          "Mustela putorius furo": "ferrets, black ferrets",
-          "Mus sp.": "mice",
-          "Mus musculus": "mouse, house mouse",
-          "Rattus norvegicus": "Norway rats",
-          Rattus: "rats",
-          "Sus scrofa": "pigs, swine, wild boar",
-          "Sus scrofa domesticus": "domestic pigs",
-          "Homo sapiens": "humans",
-          "Felis catus": "domestic cat",
-        },
-      ],
-      keys: [
-        "Canis lupus familiaris",
-        "Mustela putorius furo",
-        "Mus sp.",
-        "Mus musculus",
-        "Sus scrofa",
-        "Sus scrofa domesticus",
-        "Homo sapiens",
-        "Rattus",
-        "Felis catus",
-        "Rattus norvegicus",
-      ],
-    },
-    resultItem: {
-      element: (item, data) => {
-        // Modify Results Item Style
-        item.style = "display: flex; justify-content: space-between;";
-        // Modify Results Item Content
-        item.innerHTML = `
-        <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
-          ${data.match}
-        </span>
-        <span style="display: flex; align-items: center; font-size: 13px; font-weight: 100; text-transform: uppercase; color: rgba(0,0,0,.2);">
-          ${data.key}
-        </span>`;
-      },
-      highlight: true,
-    },
-    events: {
-      input: {
-        focus: () => {
-          autoCompleteJS2.start();
-        },
-      },
-    },
-    threshold: 0,
-    resultsList: {
-      element: (list, data) => {
-        const info = document.createElement("div");
-
-        if (data.results.length === 0) {
-          info.setAttribute("class", "no_results_species");
-          info.setAttribute(
-            "onclick",
-            "window.loadTaxonomySpecies('" + data.query + "', '" + id + "', '" + curationMode + "')"
-          );
-          info.innerHTML = `Find the scientific name for <strong>"${data.query}"</strong>`;
-        }
-        list.prepend(info);
-      },
-      noResults: true,
-      maxResults: 5,
-      tabSelect: true,
-    },
-  });
-
-  autoCompleteJS2.input.addEventListener("selection", function (event) {
-    var feedback = event.detail;
-    var selection = feedback.selection.key;
-    // Render selected choice to selection div
-    document.getElementById(id).value = selection;
-    // Replace Input value with the selected value
-    autoCompleteJS2.input.value = selection;
-    $("#btn-confirm-species").removeClass("confirm-disabled");
-  });
-};
-
-window.createStrain = (id, type, curationMode) => {
-  var autoCompleteJS4 = new autoComplete({
-    selector: "#" + id,
-    data: {
-      src: ["Wistar", "Yucatan", "C57/B6J", "C57 BL/6J", "mixed background", "Sprague-Dawley"],
-    },
-    events: {
-      input: {
-        focus: () => {
-          autoCompleteJS4.start();
-        },
-      },
-    },
-    resultItem: {
-      element: (item, data) => {
-        // Modify Results Item Style
-        item.style = "display: flex; justify-content: space-between;";
-        // Modify Results Item Content
-        item.innerHTML = `
-        <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
-          ${data.match}
-        </span>`;
-      },
-      highlight: true,
-    },
-    threshold: 0,
-    resultsList: {
-      element: (list, data) => {
-        const info = document.createElement("div");
-
-        if (data.results.length === 0) {
-          info.setAttribute("class", "no_results_species");
-          info.setAttribute(
-            "onclick",
-            "window.populateRRID('" + data.query + "', '" + type + "', '" + curationMode + "')"
-          );
-          info.innerHTML = `Click here to check <strong>"${data.query}"</strong>`;
-        }
-        list.prepend(info);
-      },
-      noResults: true,
-      maxResults: 5,
-      tabSelect: true,
-    },
-  });
-
-  autoCompleteJS4.input.addEventListener("selection", function (event) {
-    var feedback = event.detail;
-    var selection = feedback.selection.value;
-    document.querySelector("#" + id).value = selection;
-    var strain = $("#sweetalert-" + type + "-strain").val();
-    if (strain !== "") {
-      window.populateRRID(strain, type, curationMode);
-    }
-    autoCompleteJS4.input.value = selection;
-  });
-};
-
-window.loadTaxonomySpecies = async (commonName, destinationInput, curationMode) => {
-  let curationModeSelectorPrefix = "";
-  if (curationMode === "guided") {
-    curationModeSelectorPrefix = "guided-";
-  }
-
-  Swal.fire({
-    title: "Finding the scientific name for " + commonName + "...",
-    html: "Please wait...",
-    heightAuto: false,
-    allowOutsideClick: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  }).then((result) => {});
-  try {
-    let load_taxonomy_species = await client.get(`/taxonomy/species`, {
-      params: {
-        animals_list: commonName,
-      },
-    });
-    let res = load_taxonomy_species.data;
-
-    if (Object.keys(res).length === 0) {
-      Swal.close();
-      Swal.fire({
-        title: "Cannot find a scientific name for '" + commonName + "'",
-        text: "Make sure you enter a correct species name.",
-        icon: "error",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
-      if (!$("#btn-confirm-species").hasClass("confirm-disabled")) {
-        $("#btn-confirm-species").addClass("confirm-disabled");
-      }
-      if (destinationInput.includes("subject")) {
-        if ($(`#${curationModeSelectorPrefix}bootbox-subject-species`).val() === "") {
-          $(`#${curationModeSelectorPrefix}bootbox-subject-species`).css("display", "none");
-        }
-        // set the Edit species button back to "+ Add species"
-        $("#button-add-species-subject").html(
-          `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
-        );
-      }
-      if (destinationInput.includes("sample")) {
-        if ($(`#${curationModeSelectorPrefix}bootbox-sample-species`).val() === "") {
-          $(`#${curationModeSelectorPrefix}bootbox-sample-species`).css("display", "none");
-        }
-        // set the Edit species button back to "+ Add species"
-
-        $("#button-add-species-sample").html(
-          `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add species`
-        );
-      }
-    } else {
-      Swal.close();
-
-      if (destinationInput.includes("subject")) {
-        $(`#${curationModeSelectorPrefix}bootbox-subject-species`).val(
-          res[commonName]["ScientificName"]
-        );
-        // $("#bootbox-subject-species").css("display", "inline-block");
-        window.switchSpeciesStrainInput("species", "edit", curationMode);
-      }
-
-      if (destinationInput.includes("subject")) {
-        $(`#${curationModeSelectorPrefix}bootbox-sample-species`).val(
-          res[commonName]["ScientificName"]
-        );
-        // $(`#${curationModeSelectorPrefix}bootbox-subject-species`).css("display", "inline-block");
-        window.switchSpeciesStrainInput("species", "edit", curationMode);
-      }
-
-      $("#" + destinationInput).val(res[commonName]["ScientificName"]);
-      $("#btn-confirm-species").removeClass("confirm-disabled");
-    }
-  } catch (error) {
-    Swal.close();
-    Swal.fire({
-      title: "An error occurred while requesting the scientific name for '" + commonName + "'",
-      text: userErrorMessage(error),
-      icon: "error",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    });
-    clientError(error);
-  }
-};
 
 //////////////// Dataset description file ///////////////////////
 //////////////// //////////////// //////////////// ////////////////
@@ -8141,7 +7915,7 @@ const show_curation_shortcut = async () => {
       $("#generate-dataset-progress-tab").css("display", "none");
 
       window.currentTab = 0;
-      await wipeOutCurateProgress();
+      window.wipeOutCurateProgress();
       $("#guided-button-start-modify-component").click();
       $("#disseminate_dataset_tab").click();
       $("#submit_prepublishing_review_btn").click();
@@ -8321,10 +8095,6 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
     }
   }
 });
-
-// $("#button-generate-manifest-locally").click(() => {
-//   window.electron.ipcRenderer.send("open-folder-dialog-save-manifest-local");
-// });
 
 window.showBFAddAccountSweetalert = async (ev) => {
   let target = ev.target;

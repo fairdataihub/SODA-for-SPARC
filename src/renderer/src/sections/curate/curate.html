@@ -178,7 +178,7 @@
                 font-weight: 600;
               ">
               Step 1: Getting started
-              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link"
+              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link" target="_blank"
                 href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/step-1">
               </a>
             </h3>
@@ -533,7 +533,7 @@
                 margin-top: 20px;
               ">
               Step 2: Specify high-level folders
-              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link"
+              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link" target="_blank"
                 href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/step-2">
                 <!-- <img
                     class="nav-video"
@@ -658,7 +658,7 @@
                 margin-left: 5rem;
               ">
               Step 3: Structure dataset files
-              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link"
+              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link" target="_blank"
                 href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/step-3">
               </a>
               <br /><br />
@@ -690,10 +690,6 @@
               <div style="width: 100%; display: flex; flex-direction: row; margin-right: 1rem">
                 <div class="container-fluid freeform-file-explorer" id="free-form-folder-structure-container">
                   <div id="organize-path-and-back-button-div" class="freeform-file-explorer-buttons">
-                    <!-- <div> -->
-                    <!-- <h5 style="cursor: pointer;float:left;font-size:15px;color:var(--tagify-dd-color-primary)">
-          <a style="text-decoration:underline" id="globa-path-folder-1">My dataset </a><i class="fas fa-chevron-right" style="margin-left:5px;margin-right:5px;font-size:12px;"></i>
-        </h5> -->
                     <button id="button-back" class="button-back" style="float: left">
                       <i class="fas fa-arrow-left fa-fw"></i>
                     </button>
@@ -835,7 +831,7 @@
                 margin-top: 20px;
               ">
               Step 4: Specify high-level metadata files
-              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link"
+              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link" target="_blank"
                 href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/step-4">
               </a>
               <br />
@@ -1924,7 +1920,7 @@
                 padding-bottom: 0;
               ">
               Step 5: Request manifest files
-              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link"
+              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link" target="_blank"
                 href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/step-5">
               </a>
               <br /><br />
@@ -1963,18 +1959,42 @@
                 </div>
                 <div id="manifest-items-container"
                   style="display: flex; flex-direction: column; justify-content: center">
-                  <!-- Temporarily hide local copy generation in organize ds for v12.2.1 release -->
-                  <a id="button-generate-manifest-locally" class="hidden"
-                    data-content="Use this button to generate and view the manifest file locally" rel="popover"
-                    data-placement="right" data-trigger="hover" style="text-decoration: underline; display: none">
-                    Create a copy of the Manifest files locally to review.
-                  </a>
+                  
                   <div id="ffm-container-manifest-file-cards" style="
                       display: flex;
                       flex-direction: column;
                       justify-content: center;
                       align-items: center;
                     "></div>
+                  <div 
+                    id="ffm-container-local-manifest-file-generation"
+                    class="hidden"
+                    style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                  ">
+                    <h5
+                      style="
+                        text-align: center;
+                        color: var(--color);
+                        font-size: 16px;
+                        margin-top: 20px;
+                      ">
+                      To create a local copy of the manifest files, click the button below.
+                    </h5>
+                    <button
+                      class="ui primary button dataset-card-button-confirm"
+                      id="ffm-button-generate-manifest-files-locally"
+                      style="
+                        width: 295px !important;
+                        height: 3rem;
+                      "
+                    >
+                      Generate manifest files locally
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1990,7 +2010,7 @@
                 margin-top: 20px;
               ">
               Step 6: Generate dataset options
-              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link"
+              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link" target="_blank"
                 href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/step-6">
               </a>
               <br /><br />
@@ -2332,7 +2352,7 @@
                                       for which you have permissions.
                                       <br /><br />
                                       See our
-                                      <a href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/manage-dataset/add-edit-permissions"
+                                      <a target="_blank" href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/manage-dataset/add-edit-permissions"
                                         style="color: white">
                                         documentation</a>
                                       on Pennsieve permissions for more information.
@@ -2635,7 +2655,7 @@
                 padding-bottom: 0px !important;
               ">
               Step 7 (optional): Validate Dataset
-              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link"
+              <a target="_blank" style="padding: 0px 0px 0px 5px" class="github-wiki-link"
                 href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/step-5">
               </a>
               <br /><br />
@@ -2854,7 +2874,7 @@
                 padding-bottom: 0px;
               ">
               Step 8: Preview dataset
-              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link"
+              <a target="_blank" style="padding: 0px 0px 0px 5px" class="github-wiki-link"
                 href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/step-7">
               </a>
               <br /><br />
