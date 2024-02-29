@@ -6,7 +6,7 @@
         "The Pennsieve banner image selection and cropping window will no longer be hidden by other SODA interface elements."
       ],
       "features": [
-        "Improved the flow for importintg a subject's species, strain, and RRID from SciCrunch while filling out a subject's metadata.",
+        "Improved the flow for importing a subject's species, strain, and RRID from SciCrunch while filling out a subject's metadata.",
         "Users can now generate a local copy of a dataset's manifest files in the `Organize dataset` feature. This is ideal for users that want to preview the manifest file results before uploading them to Pennsieve."
       ]
     }
