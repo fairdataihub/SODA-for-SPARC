@@ -150,12 +150,10 @@ $("#advanced-back-button").on("click", () => {
     document.getElementById("advanced-start-over-button").classList.add("hidden");
 
     current_advanced_page = "advanced-features-selection-page";
-
   }
 });
 
-
-$("#advanced-start-over-button").on("click", (() => {
+$("#advanced-start-over-button").on("click", () => {
   // Depending on the current page we will reset the advanced feature's page
   if (current_advanced_page === "create_manifest_btn") {
     // Reset the create manifest page
@@ -169,7 +167,7 @@ $("#advanced-start-over-button").on("click", (() => {
     // Reset the validate dataset page
     console.log("Resetting the validate dataset page");
   }
-}));
+});
 
 const textObserver = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
@@ -182,10 +180,12 @@ const textObserver = new MutationObserver((mutations) => {
       // Test
       console.log("TEXT CHANGED");
     }
-  })
-})
+  });
+});
 
 console.log(document.getElementById("bf_dataset_create_manifest"));
-textObserver.observe(document.getElementById("bf_dataset_create_manifest"), { characterData: true });
-textObserver.observe(document.getElementById("bf_dataset_load_validator"), {characterData: true});
+textObserver.observe(document.getElementById("bf_dataset_create_manifest"), {
+  characterData: true,
+});
+textObserver.observe(document.getElementById("bf_dataset_load_validator"), { characterData: true });
 // textObserver.observe(document.getElementById("bf_dataset_upload_banner_image"));
