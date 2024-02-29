@@ -598,11 +598,11 @@ const setSubjectSpeciesAndStrainValues = (curationModePrefix, speciesAndStrainOb
 
   // Set input values and readonly attributes based on the values in speciesAndStrainObject
   speciesInput.value = speciesAndStrainObject["Species"];
-  speciesInput.readonly = !!speciesInput.value;
+  speciesInput.readOnly = speciesInput.value.trim() !== "";
   strainInput.value = speciesAndStrainObject["Strain"];
-  strainInput.readonly = !!strainInput.value;
+  strainInput.readOnly = strainInput.value.trim() !== "";
   strainRRIDInput.value = speciesAndStrainObject["RRID for strain"];
-  strainRRIDInput.readonly = !!strainRRIDInput.value;
+  strainRRIDInput.readOnly = strainRRIDInput.value.trim() !== "";
 };
 
 document.querySelectorAll(".opens-rrid-modal-on-click").forEach((element) => {
