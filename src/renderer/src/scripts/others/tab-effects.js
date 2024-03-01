@@ -1091,6 +1091,10 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     if (step6.classList.contains("tab-active")) {
       $("#nextBtn").prop("disabled", true);
     }
+
+    // hide the para para-continue-empty-ds-selected
+    $("#para-continue-empty-ds-selected").hide();
+
     if ($("#current-bf-dataset-generate").text() !== "None") {
       $($("#button-confirm-bf-dataset").parents()[0]).css("display", "flex");
       $("#button-confirm-bf-dataset").show();
