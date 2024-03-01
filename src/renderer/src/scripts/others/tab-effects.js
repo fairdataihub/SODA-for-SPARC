@@ -2035,7 +2035,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     if (!window.hasFiles) {
       // select the Merge option for Folders
       document.getElementById("existing-folders-merge").checked = true;
-
+      $("#existing-folders-merge").hide();
       // select the Skip option for Files
       document.getElementById("existing-files-replace").checked = true;
 
