@@ -1451,7 +1451,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         }
       }
 
-
       //account is signed in but no datasets have been fetched or created
       //invoke dataset request to ensure no datasets have been created
       if (window.datasetList.length === 0) {
@@ -1619,7 +1618,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               },
             });
 
-
             // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
             // Ensure the dataset is not locked before proceeding
             const datasetIsLocked = await api.isDatasetLocked(window.defaultBfDataset, bfDataset);
@@ -1654,9 +1652,9 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               let packages = await api.getNumberOfPackagesInDataset(bfDataset);
 
               if (Object.keys(packages).length === 0) {
-                window.hasFiles = false
+                window.hasFiles = false;
               } else {
-                window.hasFiles = true
+                window.hasFiles = true;
               }
             }
 
