@@ -8,6 +8,7 @@ import { clientError, userErrorMessage } from "./http-error-handler/error-handle
 import introJs from "intro.js";
 import Swal from "sweetalert2";
 import api from "../others/api/api";
+import { swalShowInfo } from "../utils/swal-utils";
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -2050,6 +2051,9 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
 
       return;
     }
+
+    // alert the user that manifest files will not be uploaded
+    await swalShowInfo("info", "Manifest files will not be uploaded to Pennsieve.");
     // continue as usual otherwise
   }
 
