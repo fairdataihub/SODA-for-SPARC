@@ -2043,6 +2043,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
       $("#nextBtn").prop("disabled", false);
 
       $("#para-continue-empty-ds-selected").text("Please continue below.");
+      $("#para-continue-empty-ds-selected").show();
 
       // hide the confirm button
       $("#button-confirm-bf-dataset").hide();
