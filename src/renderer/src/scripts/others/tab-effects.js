@@ -245,7 +245,9 @@ const fill_info_details = () => {
         true
       );
       new_dataset_name = window.path.basename(window.sodaJSONObj["starting-point"]["local-path"]);
-      if (window.manifestFileCheck.checked) {
+      // generate manifest files only when user has checked manifest file generation and they are not starting from new/local and merging
+      // into an existing dataset that already has files
+      if (window.manifestFileCheck.checked && !window.hasFiles) {
         add_card_detail(
           "Manifest files",
           "Requested from SODA",
