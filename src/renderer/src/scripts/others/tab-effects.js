@@ -2024,8 +2024,13 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
       // select the Skip option for Files
       document.getElementById("existing-files-replace").checked = true;
 
+      // enable the continue button
+      $("#nextBtn").prop("disabled", false);
+
+      $("#para-continue-empty-ds-selected").text("Please continue below.");
+
       // skip the Merge/Skip/Replace step
-      window.nextPrev(1);
+      // window.nextPrev(1);
       return;
     }
     // continue as usual otherwise
