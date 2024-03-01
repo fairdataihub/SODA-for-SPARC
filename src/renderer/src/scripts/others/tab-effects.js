@@ -2029,8 +2029,9 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
 
       $("#para-continue-empty-ds-selected").text("Please continue below.");
 
-      // skip the Merge/Skip/Replace step
-      // window.nextPrev(1);
+      // hide the confirm button
+      $("#button-confirm-bf-dataset").hide();
+
       return;
     }
     // continue as usual otherwise
