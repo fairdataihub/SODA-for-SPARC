@@ -123,6 +123,8 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   if (tabNow == 5) {
     // Disable the continue button if a destination has not been selected
     // Used when traversing back and forth between tabs
+    // TODO: Update code to show Continue if the para for empty dataset is showing
+    console.log("We are going to show the continue bttn here?");
     if (
       $("#inputNewNameDataset").val() !== "" ||
       ($("#Question-generate-dataset-existing-files-options")
@@ -132,7 +134,8 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
           .find(".option-card")
           .hasClass("checked")) ||
       $("#generate-dataset-replace-existing").find(".option-card").hasClass("checked") ||
-      $("#input-destination-generate-dataset-locally")[0].placeholder !== "Browse here"
+      $("#input-destination-generate-dataset-locally")[0].placeholder !== "Browse here" ||
+      $("#para-continue-empty-ds-selected").is(":visible")
     ) {
       $("#nextBtn").prop("disabled", false);
     } else {
@@ -515,6 +518,8 @@ const checkHighLevelFoldersInput = () => {
 window.nextPrev = (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
   let parentTabs = document.getElementsByClassName("parent-tabs");
+  console.log("Current tab: ", window.currentTab);
+  console.log("Current parent tabs: ", parentTabs[window.currentTab].id);
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
     // let event = new CustomEvent("custom-back", {
@@ -753,6 +758,7 @@ window.nextPrev = (pageIndex) => {
     window.sodaJSONObj["starting-point"]["type"] == "bf" &&
     pageIndex === -1
   ) {
+    console.log("In validate tab?");
     // if moving backwards fron the validate step
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     // skip step 6 ( options irrelevant for existing bf/pennsieve workflow)
@@ -760,6 +766,7 @@ window.nextPrev = (pageIndex) => {
     window.showParentTab(window.currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
   } else if (parentTabs[window.currentTab].id === "generate-dataset-tab") {
+    console.log("We are in the generate dataset tab?");
     // Hide the current tab:
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
@@ -783,6 +790,10 @@ window.nextPrev = (pageIndex) => {
       // disable the continue button
       $("#nextBtn").prop("disabled", true);
     }
+  } else if (window.currentTab === 4) {
+    console.log("We are in the generate dataset tab");
+    window.showParentTab(window.currentTab, pageIndex);
+    // generate dataset tab
   } else {
     // Hide the current tab:
     $(parentTabs[window.currentTab]).removeClass("tab-active");
