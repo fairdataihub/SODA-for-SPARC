@@ -7555,7 +7555,7 @@ const initiate_generate = async () => {
     document.getElementById("sidebarCollapse").click();
   }
 
-  if ($("#generate-manifest-curate")[0].checked) {
+  if ($("#generate-manifest-curate")[0].checked && !window.hasFiles) {
     window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
   }
 
