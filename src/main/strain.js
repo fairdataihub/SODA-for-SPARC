@@ -1,33 +1,12 @@
-import https from "https";
 import { ipcMain } from "electron";
+import axios from "axios";
 
-ipcMain.handle("getStrainData", async (event, rridInfo) => {
-  let data = await new Promise((resolve, reject) => {
-    https.get(rridInfo, async (res) => {
-      let data = "";
-      let dataReady = false;
-      if (res.statusCode === 200) {
-        res.setEncoding("utf8");
-        res.on("data", (d) => {
-          data += d;
-        });
-        res.on("end", () => {
-          dataReady = true;
-        });
-
-        while (!dataReady) {
-          // wait for 1 second
-          await new Promise((r) => setTimeout(r, 1000));
-        }
-
-        resolve(data);
-      } else {
-        reject("Could not load strain");
-      }
-    });
+ipcMain.handle("getStrainData", async (event, rrid) => {
+  let organismResponse = await axios.get(`https://scicrunch.org/resolver/${rrid}.json`, {
+    headers: {
+      "Content-Type": "application/json",
+      apiKey: "2YOfdcQRDVN6QZ1V6x3ZuIAsuypusxHD",
+    },
   });
-
-  // let xmlSerializer = new XMLSerializer();
-  // let serialized =  xmlSerializer.serializeToString(data)
-  return data;
+  return organismResponse.data;
 });
