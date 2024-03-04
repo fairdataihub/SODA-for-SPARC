@@ -161,7 +161,7 @@ $("#advanced-start-over-button").on("click", () => {
 
     document.getElementById("pennsieve-option-create-manifest").classList.remove("checked");
     document.getElementById("local-option-create-manifest").classList.remove("checked");
-    
+
     // Hide the all sub-questions for generating manifest
     document.getElementById("Question-prepare-manifest-2").classList.remove("show");
     document.getElementById("Question-prepare-manifest-2").classList.remove("prev");
