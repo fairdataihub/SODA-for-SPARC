@@ -188,6 +188,7 @@ $("#advanced-start-over-button").on("click", async () => {
   if (current_advanced_page === "upload_banner_image_btn") {
     // Reset the upload banner image page
     console.log("Resetting upload banner image page");
+    document.getElementById("div_add_edit_banner").classList.remove("show");
   }
   if (current_advanced_page === "validate_dataset_btn") {
     // Reset the validate dataset page
@@ -225,7 +226,9 @@ $("#advanced-start-over-button").on("click", async () => {
 
     // Reset the validate button options
     document.getElementById("validate_dataset-1-pennsieve").classList.remove("checked");
+    document.getElementById("validate_dataset-1-pennsieve").classList.remove("non-selected");
     document.getElementById("validate_dataset-1-local").classList.remove("checked");
+    document.getElementById("validate_dataset-1-local").classList.remove("non-selected");
 
     // Uncheck the radio buttons
     document.getElementById("validate-1-Pennsieve").checked = false;
