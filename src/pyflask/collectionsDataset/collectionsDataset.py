@@ -7,7 +7,13 @@ import os
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
-path_to_cert = os.path.join(os.path.dirname(__file__), '..', 'cacert.pem')
+import sys
+if getattr(sys, 'frozen', False):
+    application_path = sys._MEIPASS
+else:
+    application_path = os.path.dirname(os.path.abspath(__file__))
+
+path_to_cert = os.path.join(application_path, "cacert.pem")
 
 
 def get_all_collections(account):

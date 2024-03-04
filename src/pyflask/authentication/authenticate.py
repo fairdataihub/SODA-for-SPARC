@@ -30,7 +30,13 @@ TOKEN_CACHE_DURATION = 60 # Amount of time in seconds to cache the access token
 
 from namespaces import NamespaceEnum, get_namespace_logger
 
-path_to_cert = os.path.join(os.path.dirname(__file__), '..', 'cacert.pem')
+import sys
+if getattr(sys, 'frozen', False):
+    application_path = sys._MEIPASS
+else:
+    application_path = os.path.dirname(os.path.abspath(__file__))
+
+path_to_cert = os.path.join(application_path, "cacert.pem")
 
 
 

@@ -19,7 +19,13 @@ from utils import get_dataset_id, create_request_headers, load_metadata_to_dataf
 
 
 path = os.path.join(expanduser("~"), "SODA", "skeleton")
-path_to_cert = os.path.join(os.path.dirname(__file__), '..', 'cacert.pem')
+import sys
+if getattr(sys, 'frozen', False):
+    application_path = sys._MEIPASS
+else:
+    application_path = os.path.dirname(os.path.abspath(__file__))
+
+path_to_cert = os.path.join(application_path, "cacert.pem")
 
 
 #import the namespace_logger 
