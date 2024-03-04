@@ -153,7 +153,7 @@ $("#advanced-back-button").on("click", () => {
   }
 });
 
-$("#advanced-start-over-button").on("click", () => {
+$("#advanced-start-over-button").on("click", async () => {
   // Depending on the current page we will reset the advanced feature's page
   if (current_advanced_page === "create_manifest_btn") {
     // Reset the create manifest page
@@ -192,6 +192,36 @@ $("#advanced-start-over-button").on("click", () => {
   if (current_advanced_page === "validate_dataset_btn") {
     // Reset the validate dataset page
     console.log("Resetting the validate dataset page");
+    let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+
+    if (validationErrorsTable.childElementCount > 0) {
+      // ask the user to confirm they want to reset their validation progress
+      let resetValidationResult = await Swal.fire({
+        icon: "warning",
+        text: "This will reset your current validation results. Do you wish to continue?",
+        heightAuto: false,
+        showCancelButton: true,
+        cancelButtonText: "No",
+        focusCancel: true,
+        confirmButtonText: "Yes",
+        backdrop: "rgba(0,0,0, 0.4)",
+        reverseButtons: window.reverseSwalButtons,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+  
+      // user does not want to reset
+      if (!resetValidationResult.isConfirmed) {
+        return;
+      }
+  
+      // get validation table body
+      window.clearValidationResults(validationErrorsTable);
+    }
 
     // Reset the validate button options
     document.getElementById("validate_dataset-1-pennsieve").classList.remove("checked");
@@ -207,7 +237,9 @@ $("#advanced-start-over-button").on("click", () => {
 
     // Hide all the sub-questions for validating datasets
     document.getElementById("validate_dataset-question-2").classList.remove("show");
+    document.getElementById("validate_dataset-question-2").classList.remove("prev");
     document.getElementById("validate_dataset-question-4").classList.remove("show");
+    $("#validate_dataset-question-3").hide();
   }
 });
 
