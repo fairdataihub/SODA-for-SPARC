@@ -16,7 +16,7 @@ def get_role(dataset):
     selected_dataset_id = get_dataset_id(dataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/role", headers=create_request_headers(get_access_token()))
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/role", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
         r.raise_for_status()
         role = r.json()["role"]
         return {"role": role}
@@ -35,7 +35,7 @@ def get_dataset_by_id(dataset_name_or_id):
         "Authorization": f"Bearer {get_access_token()}"
     }
 
-    r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
+    r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers, verify="../cacert.pem")
 
     r.raise_for_status()
 
@@ -49,7 +49,7 @@ def get_current_collection_names(account, dataset):
     """
     selected_dataset_id = get_dataset_id(dataset)
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collections", headers=create_request_headers(get_access_token()))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collections", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
     r.raise_for_status()
 
     return r.json()
@@ -69,7 +69,7 @@ def upload_collection_names(account, dataset, tags):
     store = []
     for tag in tags:
         jsonfile = {"collectionId": int(tag)}
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collections", json=jsonfile, headers=create_request_headers(get_access_token()))
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collections", json=jsonfile, headers=create_request_headers(get_access_token()), verify="../cacert.pem")
         r.raise_for_status()
         result = r.json()
         for res_object in result:
@@ -98,7 +98,7 @@ def remove_collection_names(account, dataset, tags):
         abort(403, "You do not have permission to edit this dataset.")
 
     for tagid in tags:
-        r = requests.delete(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/collections/{str(tagid)}", headers=create_request_headers(get_access_token()))
+        r = requests.delete(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/collections/{str(tagid)}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
         r.raise_for_status()
 
     return dict({"collection": "Collection removed"})
@@ -124,7 +124,7 @@ def reserve_dataset_doi(dataset):  # sourcery skip: extract-method
     dataset_id = get_dataset_id(dataset)
 
     try:
-        doi_request = requests.post(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(get_access_token()))
+        doi_request = requests.post(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
         doi_request.raise_for_status()
         return {"doi": doi_request.json()["doi"]}
     except Exception as e:
@@ -151,7 +151,7 @@ def get_dataset_doi(dataset):
     """
     dataset_id = get_dataset_id(dataset)
     try:
-        doi_request = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers( get_access_token()))
+        doi_request = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers( get_access_token()), verify="../cacert.pem")
         if doi_request.status_code == 404:
             return {"doi": "No DOI found for this dataset"}
         doi_request.raise_for_status()
@@ -168,7 +168,7 @@ def get_package_type_counts(dataset_name):
     """
     dataset_id = get_dataset_id(dataset_name)
 
-    r = requests.get(f"https://api.pennsieve.io/datasets/{dataset_id}/packageTypeCounts", headers=create_request_headers(get_access_token()))
+    r = requests.get(f"https://api.pennsieve.io/datasets/{dataset_id}/packageTypeCounts", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
     r.raise_for_status()
 
     return r.json()

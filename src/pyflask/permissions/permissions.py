@@ -9,7 +9,7 @@ def pennsieve_get_current_user_permissions(dataset_id, ps_or_token):
     else:
         access_token = ps_or_token.get_user().session_token
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/role", headers={"Authorization": f"Bearer {access_token}"})
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/role", headers={"Authorization": f"Bearer {access_token}"}, verify="../cacert.pem")
     r.raise_for_status()
 
     return r.json()

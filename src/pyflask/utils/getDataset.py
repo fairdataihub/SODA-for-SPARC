@@ -25,7 +25,7 @@ def get_dataset_http(selected_dataset, access_token):
     """
     Function to get the dataset via HTTP using a Pennsieve aws cognito access token.
     """
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset}", headers={"Authorization": f"Bearer {access_token}"})
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset}", headers={"Authorization": f"Bearer {access_token}"}, verify="../cacert.pem")
     r.raise_for_status()
 
     return r.json()
@@ -50,7 +50,7 @@ def get_users_dataset_list():
 
     try:
         # Get the first chunk of datasets as well as the total number of datasets the user has access to
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/paginated", headers=create_request_headers(get_access_token()), params={"offset": current_offset, "limit": NUMBER_OF_DATASETS_PER_CHUNK})
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/paginated", headers=create_request_headers(get_access_token()), params={"offset": current_offset, "limit": NUMBER_OF_DATASETS_PER_CHUNK}, verify="../cacert.pem")
         r.raise_for_status()
         responseJSON = r.json()
         datasets.extend(responseJSON["datasets"])
@@ -65,7 +65,7 @@ def get_users_dataset_list():
         while len(datasets) < NUMBER_OF_DATASETS_USER_HAS_ACCESS_TO:
             # Increase the offset by the number of datasets per chunk (e.g. if 200 datasets per chunk, then increase the offset by 200)
             current_offset += NUMBER_OF_DATASETS_PER_CHUNK
-            r = requests.get(f"{PENNSIEVE_URL}/datasets/paginated", headers=create_request_headers(get_access_token()), params={"offset": current_offset, "limit": NUMBER_OF_DATASETS_PER_CHUNK})
+            r = requests.get(f"{PENNSIEVE_URL}/datasets/paginated", headers=create_request_headers(get_access_token()), params={"offset": current_offset, "limit": NUMBER_OF_DATASETS_PER_CHUNK}, verify="../cacert.pem")
             r.raise_for_status()
             responseJSON = r.json()
             datasets.extend(responseJSON["datasets"])

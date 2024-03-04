@@ -85,7 +85,7 @@ def get_manifests(soda_json_structure):
 
       # root of dataset is pulled here
       # root_children is the files and folders within root
-      r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
+      r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
       r.raise_for_status()
       root_folder = r.json()
       root_children = root_folder["children"]
@@ -96,7 +96,7 @@ def get_manifests(soda_json_structure):
         item_id = items["content"]["id"]
         item_name = items["content"]["name"]
         if items["content"]["packageType"] == "Collection" and item_name in high_level_sparc_folders:
-          r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}", headers=create_request_headers(get_access_token()))
+          r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
           r.raise_for_status()
           subfolder = r.json()
 

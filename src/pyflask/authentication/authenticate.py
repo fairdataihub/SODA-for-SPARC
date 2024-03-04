@@ -43,7 +43,7 @@ def get_access_token(api_key=None, api_secret=None):
     if cached_access_token and current_time - last_fetch_time < TOKEN_CACHE_DURATION:
         return cached_access_token
     
-    r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
+    r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config", verify="../cacert.pem")
     r.raise_for_status()
 
     cognito_app_client_id = r.json()["tokenPool"]["appClientId"]
@@ -89,7 +89,7 @@ def get_cognito_userpool_access_token(email, password):
     PENNSIEVE_URL = "https://api.pennsieve.io"
 
     try:
-        response = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
+        response = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config", verify="../cacert.pem")
         response.raise_for_status()
         cognito_app_client_id = response.json()["userPool"]["appClientId"]
         cognito_region = response.json()["userPool"]["region"]
@@ -114,7 +114,7 @@ def get_cognito_userpool_access_token(email, password):
     try:
         access_token = login_response["AuthenticationResult"]["AccessToken"]
         response = requests.get(
-            f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {access_token}"}
+            f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {access_token}"}, verify="../cacert.pem"
         )
         response.raise_for_status()
     except Exception as e:
@@ -255,14 +255,14 @@ def delete_duplicate_keys(token, keyname):
             "Authorization": f"Bearer {token}",
         }
 
-        r = requests.get(f"{PENNSIEVE_URL}/token", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/token", headers=headers, verify="../cacert.pem")
         r.raise_for_status()
 
         tokens = r.json()
 
         for token in tokens:
             if token["name"] == keyname:
-                r = requests.delete(f"{PENNSIEVE_URL}/token/{token['key']}", headers=headers)
+                r = requests.delete(f"{PENNSIEVE_URL}/token/{token['key']}", headers=headers, verify="../cacert.pem")
                 r.raise_for_status()
     except Exception as e:
         raise e
@@ -289,7 +289,7 @@ def create_pennsieve_api_key_secret(email, password, machine_username_specifier)
         "Authorization": f"Bearer {api_key}",
     }
 
-    response = requests.request("POST", url, json=payload, headers=headers)
+    response = requests.request("POST", url, json=payload, headers=headers, verify="../cacert.pem")
     response.raise_for_status()
     response = response.json()
 

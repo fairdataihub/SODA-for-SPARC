@@ -17,10 +17,10 @@ def load_metadata_to_dataframe(node_id, file_type, ps_or_token, usecols=None, he
     headers = { "Content-Type" : "application/json" }
     # headers = create_request_headers(ps_or_token)
     if type(ps_or_token) == str:
-        r = requests.post(f"https://api.pennsieve.io/zipit/?api_key={ps_or_token}", json=payload, headers=headers)
+        r = requests.post(f"https://api.pennsieve.io/zipit/?api_key={ps_or_token}", json=payload, headers=headers, verify="../cacert.pem")
     else:
         token = ps_or_token.get_user().session_token
-        r = requests.post(f"https://api.pennsieve.io/zipit/?api_key={token}", json=payload, headers=headers)
+        r = requests.post(f"https://api.pennsieve.io/zipit/?api_key={token}", json=payload, headers=headers, verify="../cacert.pem")
 
     if file_type == "csv":
         return pd.read_csv(r.content, engine="openpyxl")

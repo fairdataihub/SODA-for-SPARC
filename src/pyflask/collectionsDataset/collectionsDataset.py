@@ -13,7 +13,7 @@ def get_all_collections(account):
 
     token = get_access_token()
 
-    r = requests.get(f"{PENNSIEVE_URL}/collections", headers=create_request_headers(token))
+    r = requests.get(f"{PENNSIEVE_URL}/collections", headers=create_request_headers(token), verify="../cacert.pem")
     r.raise_for_status()
 
     return r.json()
@@ -39,7 +39,7 @@ def upload_new_names(account, dataset, tags):
 
     for tag in tags:
         jsonfile = {"name": tag}
-        r = requests.post(f"{PENNSIEVE_URL}/collections", headers=create_request_headers(token) ,json=jsonfile)
+        r = requests.post(f"{PENNSIEVE_URL}/collections", headers=create_request_headers(token) ,json=jsonfile, verify="../cacert.pem")
         r.raise_for_status()
         result = r.json()
         statusResponses.append(result)

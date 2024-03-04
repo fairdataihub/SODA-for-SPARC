@@ -31,7 +31,7 @@ def integrate_orcid_with_pennsieve(access_code):
     
   try:
     jsonfile = {"authorizationCode": access_code}
-    r = requests.post(f"{PENNSIEVE_URL}/user/orcid", json=jsonfile, headers=create_request_headers(token))
+    r = requests.post(f"{PENNSIEVE_URL}/user/orcid", json=jsonfile, headers=create_request_headers(token), verify="../cacert.pem")
     r.raise_for_status()
 
     return r.json()
@@ -48,7 +48,7 @@ def get_user():
   """
   token = get_access_token()
   try:
-    r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(token))
+    r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(token), verify="../cacert.pem")
     r.raise_for_status()
 
     return r.json()
@@ -70,7 +70,7 @@ def get_user_information(token):
   }
 
   try:
-    r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)    
+    r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers, verify="../cacert.pem")    
     r.raise_for_status()    
     return r.json()
   except Exception as e:
@@ -143,7 +143,7 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
         url = "https://api.pennsieve.io/session/switch-organization"
         headers = {"Accept": "*/*", "Content-Type": "application/json", "Accept-Encoding": "gzip, deflate, br", "Connection": "keep-alive", "Content-Length": "0"}
         url += f"?organization_id={organization_id}&api_key={token}"
-        response = requests.request("PUT", url, headers=headers)
+        response = requests.request("PUT", url, headers=headers, verify="../cacert.pem")
         response.raise_for_status()
 
     except Exception as err:
@@ -179,7 +179,7 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
         "Authorization": f"Bearer {token}",
     }
 
-    response = requests.request("POST", url, json=payload, headers=headers)
+    response = requests.request("POST", url, json=payload, headers=headers, verify="../cacert.pem")
     response.raise_for_status()
     response = response.json()
     
@@ -200,7 +200,7 @@ def get_user_organizations():
      abort(400, "Please select a valid Pennsieve account")
 
 
-  r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token))
+  r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token), verify="../cacert.pem")
   r.raise_for_status()
 
   organizations_list = r.json()["organizations"]

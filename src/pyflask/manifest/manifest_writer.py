@@ -41,7 +41,7 @@ def update_existing_pennsieve_manifest_files(soda_json_structure, high_level_fol
     """
     dataset_id = get_dataset_id(soda_json_structure["bf-dataset-selected"]["dataset-name"])
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/packages", headers=create_request_headers(get_access_token()))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/packages", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
     r.raise_for_status()
 
     ds_items = r.json()["packages"]
@@ -61,7 +61,7 @@ def update_existing_pennsieve_manifest_files(soda_json_structure, high_level_fol
             # request the packages of that folder
             folder_name = i["content"]["name"]
             folder_collection_id = i["content"]["nodeId"]
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_collection_id}", headers=create_request_headers(get_access_token()))
+            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_collection_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
             r.raise_for_status()
 
             packageItems = r.json()["children"]

@@ -222,7 +222,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
         abort(403, "You do not have permissions to edit this dataset.")
     headers = create_request_headers(get_access_token())
     # handle duplicates on Pennsieve: first, obtain the existing file ID
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers, verify="../cacert.pem")
     r.raise_for_status()
     ds_items = r.json()
     # go through the content in the dataset and find the file ID of the file to be uploaded
@@ -233,7 +233,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
                 "things": [item_id]
             }
             # then, delete it using Pennsieve method delete(id)\vf = Pennsieve()
-            r = requests.post(f"{PENNSIEVE_URL}/data/delete",json=jsonfile, headers=headers)
+            r = requests.post(f"{PENNSIEVE_URL}/data/delete",json=jsonfile, headers=headers, verify="../cacert.pem")
             r.raise_for_status()
     try:
         ps = connect_pennsieve_client(bfaccount)
@@ -881,7 +881,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
 def import_ps_metadata_file(file_type, ui_fields, bfdataset):
     selected_dataset_id = get_dataset_id(bfdataset)
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
     r.raise_for_status()
 
     ds_items = r.json()["children"]
@@ -919,7 +919,7 @@ def import_ps_RC(bfdataset, file_type):
 
     dataset_id = get_dataset_id(bfdataset)
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(get_access_token()))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
     r.raise_for_status()
 
     items = r.json()
@@ -928,7 +928,7 @@ def import_ps_RC(bfdataset, file_type):
         if item["content"]["name"] == file_type:
             item_id = item["content"]["id"]
             url = returnFileURL(get_access_token(), item_id)
-            r = requests.get(url)
+            r = requests.get(url, verify="../cacert.pem")
             return {"text": r.text}
 
     abort (400, f"No {file_type} file was found at the root of the dataset provided.")

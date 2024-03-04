@@ -11,7 +11,7 @@ def create_unique_profile_name(token, machine_username_specifier):
         }
 
 
-        r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)    
+        r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers, verify="../cacert.pem")    
         r.raise_for_status()    
 
         user_info = r.json()

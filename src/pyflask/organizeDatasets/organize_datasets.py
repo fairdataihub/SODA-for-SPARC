@@ -999,7 +999,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         
         collection_id = subfolder_json["path"]
 
-        r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=create_request_headers(get_access_token()))
+        r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
         r.raise_for_status()
         subfolder = r.json()["children"]
 
@@ -1178,12 +1178,12 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # root of dataset is pulled here (high level folders/files are gathered here)
     # root_folder is the files and folders within root
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
     r.raise_for_status()
     root_folder = r.json()["children"]
 
     # Get the amount of files/folders in the dataset
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=create_request_headers(get_access_token()))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
     r.raise_for_status()
     packages_list = r.json()
 
@@ -1210,7 +1210,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
             manifest_dict[item_name] = {}
             # Check the content of the folder to see if a manifest file exists
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}", headers=create_request_headers(get_access_token()))
+            r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
             r.raise_for_status()
             folder_content = r.json()["children"]
 
