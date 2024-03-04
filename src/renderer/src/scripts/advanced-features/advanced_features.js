@@ -159,8 +159,19 @@ $("#advanced-start-over-button").on("click", () => {
     // Reset the create manifest page
     console.log("Resetting create manifest page");
 
+    // Remove checked class from buttons
     document.getElementById("pennsieve-option-create-manifest").classList.remove("checked");
     document.getElementById("local-option-create-manifest").classList.remove("checked");
+    
+    // Remove checked from the radio buttons
+    document.getElementById("generate-manifest-from-local").checked = false;
+    document.getElementById("generate-manifest-from-Penn").checked = false;
+
+    // Reset sub-question fields
+    $("#div-confirm-manifest-local-folder-dataset").hide();
+    // We reset the display of this child element since it is being set to none somewhere
+    document.getElementById("div-confirm-manifest-local-folder-dataset").children[0].children[0].style.display = "block";
+    document.getElementById("input-manifest-local-folder-dataset").placeholder = "Browse here";
 
     // Hide the all sub-questions for generating manifest
     document.getElementById("Question-prepare-manifest-2").classList.remove("show");
@@ -183,6 +194,10 @@ $("#advanced-start-over-button").on("click", () => {
     // Reset the validate button options
     document.getElementById("validate_dataset-1-pennsieve").classList.remove("checked");
     document.getElementById("validate_dataset-1-local").classList.remove("checked");
+
+    // Uncheck the radio buttons
+    document.getElementById("validate-1-Pennsieve").checked = false;
+    document.getElementById("validate-1-Local").checked = false;
 
     // Hide all the sub-questions for validating datasets
     document.getElementById("validate_dataset-question-2").classList.remove("show");
