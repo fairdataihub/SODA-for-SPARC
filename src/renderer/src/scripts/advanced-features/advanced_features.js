@@ -201,8 +201,13 @@ $("#advanced-start-over-button").on("click", () => {
     document.getElementById("validate-1-Pennsieve").checked = false;
     document.getElementById("validate-1-Local").checked = false;
 
+    // Reset the sub-question fields
+    document.getElementById("validate-local-dataset-path").placeholder = "Browse here";
+
+
     // Hide all the sub-questions for validating datasets
     document.getElementById("validate_dataset-question-2").classList.remove("show");
+    document.getElementById("validate_dataset-question-4").classList.remove("show");
   }
 });
 
