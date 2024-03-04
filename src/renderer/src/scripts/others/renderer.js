@@ -7557,6 +7557,8 @@ const initiate_generate = async () => {
 
   if ($("#generate-manifest-curate")[0].checked && !window.hasFiles) {
     window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
+  } else {
+    delete window.sodaJSONObj["manifest-files"];
   }
 
   if ("manifest-files" in window.sodaJSONObj) {
