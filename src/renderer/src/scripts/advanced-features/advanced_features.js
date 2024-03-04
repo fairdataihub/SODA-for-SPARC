@@ -192,7 +192,7 @@ $("#advanced-start-over-button").on("click", async () => {
   if (current_advanced_page === "validate_dataset_btn") {
     // Reset the validate dataset page
     console.log("Resetting the validate dataset page");
-    let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+    let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
 
     if (validationErrorsTable.childElementCount > 0) {
       // ask the user to confirm they want to reset their validation progress
