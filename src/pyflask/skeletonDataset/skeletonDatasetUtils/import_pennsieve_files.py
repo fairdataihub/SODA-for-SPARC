@@ -4,6 +4,9 @@ import requests
 from utils import create_request_headers, load_metadata_to_dataframe, get_dataset_id
 from authentication import get_access_token
 
+path_to_cert = os.path.join(os.path.dirname(__file__), '..', 'cacert.pem')
+
+
 
 #from utils import create_request_headers
 
@@ -17,7 +20,7 @@ path = os.path.join(os.path.expanduser("~"), "SODA", "skeleton")
 # obtain Pennsieve S3 URL for an existing metadata file
 def returnFileURL(token, item_id):
 
-    r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}/view", headers=create_request_headers(token), verify="../cacert.pem")
+    r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}/view", headers=create_request_headers(token), verify=path_to_cert)
     r.raise_for_status()
 
     file_details = r.json()
@@ -26,7 +29,7 @@ def returnFileURL(token, item_id):
     r = requests.get(
         f"{PENNSIEVE_URL}/packages/{item_id}/files/{file_id}",
         headers=create_request_headers(token),
-        verify="../cacert.pem"
+        verify=path_to_cert
     )
     r.raise_for_status()
 
@@ -55,7 +58,7 @@ def import_RC_metadata(url, filename):
     global path 
 
     # import the file text from Pennsieve 
-    r = requests.get(url, verify="../cacert.pem")
+    r = requests.get(url, verify=path_to_cert)
     r.raise_for_status()
 
     # copy the text into a file in the root of the skeleton directory
@@ -96,7 +99,7 @@ def import_ps_metadata_files_skeleton(bfdataset, metadata_files):
         raise Exception("Please select a valid Pennsieve dataset.") from e
 
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify=path_to_cert)
     r.raise_for_status()
 
     dataset = r.json()
@@ -107,7 +110,7 @@ def import_ps_metadata_files_skeleton(bfdataset, metadata_files):
                 if child["content"]["name"] in ["README.txt", "CHANGES.txt"]:
                     # make a request to the zipit service directly
                     url = returnFileURL(get_access_token(), item_id)
-                    r = requests.get(url, verify="../cacert.pem")
+                    r = requests.get(url, verify=path_to_cert)
                     metadata_files[child["content"]["name"]] = r.text
                 else:
                     dataframe = load_metadata_to_dataframe(item_id, "xlsx", get_access_token())

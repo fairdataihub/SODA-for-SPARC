@@ -46,6 +46,9 @@ from namespaces import NamespaceEnum, get_namespace_logger
 
 namespace_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
 
+path_to_cert = os.path.join(os.path.dirname(__file__), '..', 'cacert.pem')
+
+
 
 ### Global variables
 curateprogress = " "
@@ -1014,7 +1017,7 @@ def ps_create_new_dataset(datasetname, ps):
                 abort(400, "Dataset name already exists")
         
         # Create the dataset on Pennsieve
-        r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps), json={"name": datasetname}, verify="../cacert.pem")
+        r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps), json={"name": datasetname}, verify=path_to_cert)
         r.raise_for_status()
 
         return r.json()
@@ -1077,7 +1080,7 @@ def create_high_lvl_manifest_files_existing_ps(
         """
 
         if len(folder['children']) == 0:
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"}, verify="../cacert.pem")
+            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"}, verify=path_to_cert)
             r.raise_for_status()
             ps_folder = r.json()
             normalize_tracking_folder(ps_folder)
@@ -1094,7 +1097,7 @@ def create_high_lvl_manifest_files_existing_ps(
         for _, file in folder["children"]["files"].items():
             if file['content']['name'] != "manifest":
                 file_id = file['content']['id']
-                r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/view", headers=create_request_headers(ps), verify="../cacert.pem")
+                r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/view", headers=create_request_headers(ps), verify=path_to_cert)
                 r.raise_for_status()
                 file_details = r.json()
                 file_name = file_details[0]["content"]["name"]
@@ -1325,13 +1328,13 @@ def create_high_lvl_manifest_files_existing_ps(
                 manifest_df = pd.DataFrame()
                 for file_key, file in high_level_folder['children']['files'].items():
                     file_id = file['content']['id']
-                    r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/view", headers=create_request_headers(ps), verify="../cacert.pem")
+                    r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/view", headers=create_request_headers(ps), verify=path_to_cert)
                     r.raise_for_status()
                     file_details = r.json()
                     file_name_with_extension = file_details[0]["content"]["name"]
                     if file_name_with_extension in manifest_sparc:
                         file_id_2 = file_details[0]["content"]["id"]
-                        r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/files/{file_id_2}", headers=create_request_headers(ps), verify="../cacert.pem")
+                        r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/files/{file_id_2}", headers=create_request_headers(ps), verify=path_to_cert)
                         r.raise_for_status()
                         file_url_info = r.json()
                         file_url = file_url_info["url"]
@@ -1495,7 +1498,7 @@ def ps_get_existing_files_details(ps_folder, ps):
     # determine if we are at the root of the dataset
     content = ps_folder["content"]
     if (str(content['id'])[2:9]) == "dataset":
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{content['id']}", headers=create_request_headers(get_access_token()), verify="../cacert.pem") 
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{content['id']}", headers=create_request_headers(get_access_token()), verify=path_to_cert) 
         r.raise_for_status()
         root_folder = r.json()
         root_children = root_folder["children"]
@@ -1576,7 +1579,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
                 if "deleted" in folder["files"][item]["action"]:
                     file_path = folder["files"][item]["path"]
                     # remove the file from the dataset
-                    r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [file_path]}, verify="../cacert.pem")
+                    r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [file_path]}, verify=path_to_cert)
                     r.raise_for_status()
                     # remove the file from the soda json structure
                     del folder["files"][item]
@@ -1591,7 +1594,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
             folder = soda_json_structure["metadata-files"]
             for item in list(folder):
                 if "deleted" in folder[item]["action"]:
-                    r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [folder[item]["path"]]}, verify="../cacert.pem")
+                    r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [folder[item]["path"]]}, verify=path_to_cert)
                     r.raise_for_status()
                     del folder[item]
 
@@ -1631,11 +1634,11 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
 
         if folder not in current_folder_structure["folders"]:
             if index == 0:
-                r = requests.post(f"{PENNSIEVE_URL}/packages", json={"name": folder, "parent": f"{current_folder_structure['path']}", "packageType": "collection", "dataset": ds['content']['id']},  headers=create_request_headers(ps), verify="../cacert.pem")
+                r = requests.post(f"{PENNSIEVE_URL}/packages", json={"name": folder, "parent": f"{current_folder_structure['path']}", "packageType": "collection", "dataset": ds['content']['id']},  headers=create_request_headers(ps), verify=path_to_cert)
                 r.raise_for_status()
                 new_folder = r.json()
             else:
-                r = requests.post(f"{PENNSIEVE_URL}/packages", json={"name": folder, "parent": f"{current_folder_structure['path']}", "packageType": "collection", "dataset": ds['content']['id']},  headers=create_request_headers(ps), verify="../cacert.pem")
+                r = requests.post(f"{PENNSIEVE_URL}/packages", json={"name": folder, "parent": f"{current_folder_structure['path']}", "packageType": "collection", "dataset": ds['content']['id']},  headers=create_request_headers(ps), verify=path_to_cert)
                 r.raise_for_status()
                 new_folder = r.json()
             
@@ -1650,7 +1653,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
         index += 1
         # check if path exists for folder, if not then folder has not been created on Pennsieve yet, so create it and add it to the path key
         if "path" not in current_folder_structure["folders"][folder].keys() or current_folder_structure["folders"][folder]["type"] != "bf":
-            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder, current_folder_structure["path"], ds['content']['id']), verify="../cacert.pem")
+            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder, current_folder_structure["path"], ds['content']['id']), verify=path_to_cert)
             r.raise_for_status()
             new_folder_id = r.json()["content"]["id"]
             current_folder_structure["folders"][folder]["path"] = new_folder_id
@@ -1676,7 +1679,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
                         folder["files"][item]["folderpath"].copy(), 0, dataset_structure
                     )
                     # move the file into the target folder on Pennsieve
-                    r = requests.post(f"{PENNSIEVE_URL}/data/move",  json={"things": [folder["files"][item]["path"]], "destination": new_folder_id}, headers=create_request_headers(ps), verify="../cacert.pem")
+                    r = requests.post(f"{PENNSIEVE_URL}/data/move",  json={"things": [folder["files"][item]["path"]], "destination": new_folder_id}, headers=create_request_headers(ps), verify=path_to_cert)
                     r.raise_for_status()
 
         for item in list(folder["folders"]):
@@ -1693,7 +1696,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
                     and folder["files"][item]["type"] == "bf"
                 ):
                     # rename the file on Pennsieve
-                    r = requests.put(f"{PENNSIEVE_URL}/packages/{folder['files'][item]['path']}?updateStorage=true", json={"name": item}, headers=create_request_headers(ps), verify="../cacert.pem")
+                    r = requests.put(f"{PENNSIEVE_URL}/packages/{folder['files'][item]['path']}?updateStorage=true", json={"name": item}, headers=create_request_headers(ps), verify=path_to_cert)
                     r.raise_for_status()
 
         for item in list(folder["folders"]):
@@ -1712,12 +1715,12 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
                 if "moved" in folder["folders"][item]["action"]:
                     file_path = folder["folders"][item]["path"]
                     # remove the file from the dataset
-                    r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [file_path]}, verify="../cacert.pem")
+                    r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [file_path]}, verify=path_to_cert)
                     r.raise_for_status()
                 if "deleted" in folder["folders"][item]["action"]:
                     file_path = folder["folders"][item]["path"]
                     # remove the file from the dataset
-                    r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [file_path]}, verify="../cacert.pem")
+                    r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [file_path]}, verify=path_to_cert)
                     r.raise_for_status()
                     del folder["folders"][item]
                 else:
@@ -1736,7 +1739,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
                 and mode in folder["folders"][item]["action"]
             ):
                 folder_id = folder["folders"][item]["path"]
-                r = requests.put(f"{PENNSIEVE_URL}/packages/{folder_id}?updateStorage=true", headers=create_request_headers(ps), json={"name": item}, verify="../cacert.pem")
+                r = requests.put(f"{PENNSIEVE_URL}/packages/{folder_id}?updateStorage=true", headers=create_request_headers(ps), json={"name": item}, verify=path_to_cert)
                 r.raise_for_status()
             recursive_folder_rename(folder["folders"][item], mode)
 
@@ -2040,7 +2043,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
             # Check if the current folder has any subfolders that already exist on Pennsieve. Important step to appropriately handle replacing and merging folders.
             if len(my_tracking_folder["children"]["folders"]) == 0 and my_tracking_folder["content"]["id"].find("N:dataset") == -1:
-                r = requests.get(f"{PENNSIEVE_URL}/packages/{my_tracking_folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"}, verify="../cacert.pem")
+                r = requests.get(f"{PENNSIEVE_URL}/packages/{my_tracking_folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"}, verify=path_to_cert)
                 r.raise_for_status()
                 ps_folder = r.json()
                 normalize_tracking_folder(ps_folder)
@@ -2051,7 +2054,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 for folder_key, folder in my_folder["folders"].items():
                     if existing_folder_option == "skip":
                         if folder_key not in my_tracking_folder["children"]["folders"]:
-                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']), verify="../cacert.pem")
+                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']), verify=path_to_cert)
                             r.raise_for_status()
                             ps_folder = r.json()
                             normalize_tracking_folder(ps_folder)
@@ -2060,7 +2063,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                             normalize_tracking_folder(ps_folder)
 
                     elif existing_folder_option == "create-duplicate":
-                        r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']), verify="../cacert.pem")
+                        r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']), verify=path_to_cert)
                         r.raise_for_status()
                         ps_folder = r.json()
                         normalize_tracking_folder(ps_folder)
@@ -2070,13 +2073,13 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                         if folder_key in my_tracking_folder["children"]["folders"]:
                             ps_folder = my_tracking_folder["children"]["folders"][folder_key]
 
-                            r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [ps_folder["content"]["id"]]}, verify="../cacert.pem")
+                            r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [ps_folder["content"]["id"]]}, verify=path_to_cert)
                             r.raise_for_status()
 
                             # remove from ps_folder 
                             del my_tracking_folder["children"]["folders"][folder_key]
 
-                        r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']), verify="../cacert.pem")
+                        r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']), verify=path_to_cert)
                         r.raise_for_status()
                         ps_folder = r.json()
                         normalize_tracking_folder(ps_folder)
@@ -2087,7 +2090,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                             normalize_tracking_folder(ps_folder)
                         else:
                             # We are merging but this is a new folder - not one that already exists in the current dataset - so we create it.
-                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']), verify="../cacert.pem")
+                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']), verify=path_to_cert)
                             r.raise_for_status()
                             ps_folder = r.json()
                             normalize_tracking_folder(ps_folder)
@@ -2149,7 +2152,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                         if isfile(file_path) and existing_file_option == "replace" and file_key in ps_folder_children["files"]:
                             my_file = ps_folder_children["files"][file_key]
                             # delete the package ( aka file ) from the dataset 
-                            r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [f"{my_file['content']['id']}"]}, verify="../cacert.pem")
+                            r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [f"{my_file['content']['id']}"]}, verify=path_to_cert)
                             r.raise_for_status()
                             del ps_folder_children["files"][file_key]
 
@@ -2396,7 +2399,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                             ):
                                 my_file = ds['children']['files'][file_key]
                                 # delete the file from Pennsieve
-                                r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [my_file['content']['id']]}, headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+                                r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [my_file['content']['id']]}, headers=create_request_headers(get_access_token()), verify=path_to_cert)
                                 r.raise_for_status()
                             if (
                                 existing_file_option == "skip"
@@ -2429,7 +2432,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                             file_name_no_ext = os.path.splitext(folder['children']['files'][child_key]['content']['name'])[0]
                             if file_name_no_ext.lower() == "manifest":
                                 # delete the manifest file from the given folder 
-                                r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [folder['children']['files'][child_key]['content']['id']]}, headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+                                r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [folder['children']['files'][child_key]['content']['id']]}, headers=create_request_headers(get_access_token()), verify=path_to_cert)
                                 r.raise_for_status()
 
                         # upload new manifest files
@@ -2614,14 +2617,14 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             dataset_id = ds["content"]["id"]
             collection_ids = {}
             # gets the high level folders in the dataset
-            r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps), verify="../cacert.pem")
+            r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps), verify=path_to_cert)
             r.raise_for_status()
             dataset_content = r.json()["children"]
 
             if dataset_content == []:
                 while dataset_content == []:
                     time.sleep(3)
-                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps), verify="../cacert.pem")
+                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps), verify=path_to_cert)
                     r.raise_for_status()
                     dataset_content = r.json()["children"]
 
@@ -2637,7 +2640,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 if not collections_found:
                     # No collections were found, metadata files were processed but not the high level folders
                     time.sleep(3)
-                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps), verify="../cacert.pem")
+                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps), verify=path_to_cert)
                     r.raise_for_status()
                     dataset_content = r.json()["children"]
 
@@ -2653,7 +2656,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     # subfolder_amount will be the amount of subfolders we need to call until we can get the file ID to rename
 
                     high_lvl_folder_id = collection_ids[high_lvl_folder_name]["id"]
-                    r = requests.get(f"{PENNSIEVE_URL}/packages/{high_lvl_folder_id}", headers=create_request_headers(ps), verify="../cacert.pem")
+                    r = requests.get(f"{PENNSIEVE_URL}/packages/{high_lvl_folder_id}", headers=create_request_headers(ps), verify=path_to_cert)
                     r.raise_for_status()
                     dataset_content = r.json()["children"]
 
@@ -2661,7 +2664,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                         # request until there is no children content, (folder is empty so files have not been processed yet)
                         while dataset_content == []:
                             time.sleep(3)
-                            r = requests.get(f"{PENNSIEVE_URL}/packages/{high_lvl_folder_id}", headers=create_request_headers(ps), verify="../cacert.pem")
+                            r = requests.get(f"{PENNSIEVE_URL}/packages/{high_lvl_folder_id}", headers=create_request_headers(ps), verify=path_to_cert)
                             r.raise_for_status()
                             dataset_content = r.json()["children"]
 
@@ -2689,7 +2692,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                 # subfolder has no content so request again
                                 while dataset_content == []:
                                     time.sleep(3)
-                                    r = requests.get(f"{PENNSIEVE_URL}/packages/{subfolder_id}", headers=create_request_headers(ps), verify="../cacert.pem")
+                                    r = requests.get(f"{PENNSIEVE_URL}/packages/{subfolder_id}", headers=create_request_headers(ps), verify=path_to_cert)
                                     r.raise_for_status()
                                     dataset_content = r.json()["children"]
 
@@ -2701,7 +2704,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                     if folder_name in relative_path:
                                         # we have found the folder we need to iterate through
                                         subfolder_level += 1
-                                        r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps), verify="../cacert.pem")
+                                        r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps), verify=path_to_cert)
                                         r.raise_for_status()
 
                                         if subfolder_level != subfolder_amount:
@@ -2710,7 +2713,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                                 while dataset_content == []:
                                                     # subfolder has no content so request again
                                                     time.sleep(3)
-                                                    r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps), verify="../cacert.pem")
+                                                    r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps), verify=path_to_cert)
                                                     r.raise_for_status()
                                                     dataset_content = r.json()["children"]
                                             subfolder_id = folder_id
@@ -2746,7 +2749,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     if file_id != "":
                         # id was found so make api call to rename with final file name
                         try:
-                            r = requests.put(f"{PENNSIEVE_URL}/packages/{file_id}?updateStorage=true", json={"name": new_name}, headers=create_request_headers(ps), verify="../cacert.pem")
+                            r = requests.put(f"{PENNSIEVE_URL}/packages/{file_id}?updateStorage=true", json={"name": new_name}, headers=create_request_headers(ps), verify=path_to_cert)
                             r.raise_for_status()
                         except Exception as e:
                             if r.status_code == 500:
@@ -2760,7 +2763,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                             if file == "id":
                                 continue
 
-                            r = requests.put(f"{PENNSIEVE_URL}/packages/{collection_id}?updateStorage=true", headers=create_request_headers(ps), verify="../cacert.pem")
+                            r = requests.put(f"{PENNSIEVE_URL}/packages/{collection_id}?updateStorage=true", headers=create_request_headers(ps), verify=path_to_cert)
                             r.raise_for_status()
                             dataset_content = r.json()["children"]
                             for item in dataset_content:
@@ -2771,7 +2774,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                     if file_name == file:
                                         # id was found so make api call to rename with file file name
                                         try:
-                                            r = requests.put(f"{PENNSIEVE_URL}/packages/{file_id}", json={"name": new_name}, headers=create_request_headers(ps), verify="../cacert.pem")
+                                            r = requests.put(f"{PENNSIEVE_URL}/packages/{file_id}", json={"name": new_name}, headers=create_request_headers(ps), verify=path_to_cert)
                                             r.raise_for_status()
                                         except Exception as e:
                                             if r.status_code == 500:
@@ -2829,7 +2832,7 @@ def ps_check_dataset_files_validity(soda_json_structure):
         """
         global PENNSIEVE_URL
         # get the folder content through Pennsieve api
-        r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         folder_content = r.json()["children"]
 
@@ -2844,7 +2847,7 @@ def ps_check_dataset_files_validity(soda_json_structure):
                     file_id = file["path"]
                     if "moved" in file_actions:
                         try:
-                            r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/view", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+                            r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/view", headers=create_request_headers(get_access_token()), verify=path_to_cert)
                             r.raise_for_status()
                         except Exception as e:
                             error.append(f"{relative_path} id: {file_id}")
@@ -2861,7 +2864,7 @@ def ps_check_dataset_files_validity(soda_json_structure):
                     folder_action = folder["action"]
                     if "moved" in folder_action:
                         try:
-                            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+                            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(get_access_token()), verify=path_to_cert)
                             r.raise_for_status()
                         except Exception as e:
                             error.append(f"{relative_path} id: {folder_id}")
@@ -2878,7 +2881,7 @@ def ps_check_dataset_files_validity(soda_json_structure):
     # check that the files and folders specified in the dataset are valid
     dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
     dataset_id = get_dataset_id(dataset_name)
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(get_access_token()), verify=path_to_cert)
     r.raise_for_status()
     root_folder = r.json()["children"]
 
@@ -2893,7 +2896,7 @@ def ps_check_dataset_files_validity(soda_json_structure):
                     collection_actions = folder["action"]
                     if "moved" in collection_actions:
                         try:
-                            r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}/view", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+                            r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}/view", headers=create_request_headers(get_access_token()), verify=path_to_cert)
                             r.raise_for_status()
                         except Exception as e:
                             error.append(f"{relative_path} id: {collection_id}")
@@ -3186,7 +3189,7 @@ def main_curate_function(soda_json_structure):
                 ]
                 if generate_option == "existing-bf":
                     # make an api request to pennsieve to get the dataset details
-                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify=path_to_cert)
                     r.raise_for_status()
                     myds = r.json()
                     ps_update_existing_dataset(soda_json_structure, myds, ps)
@@ -3206,7 +3209,7 @@ def main_curate_function(soda_json_structure):
                     while(attempts < 3):
                         try: 
                             # whether we are generating a new dataset or merging, we want the dataset information for later steps
-                            r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+                            r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify=path_to_cert)
                             r.raise_for_status()
                             myds = r.json()
                             break

@@ -9,7 +9,7 @@ import pathlib
 import shutil 
 from utils import load_metadata_to_dataframe
 from authentication import get_access_token
-import time
+import os
 
 import pandas as pd
 import requests 
@@ -17,6 +17,9 @@ import requests
 from utils import create_request_headers, column_check, returnFileURL, remove_high_level_folder_from_path, get_name_extension, get_dataset_id, TZLOCAL
 
 userpath = expanduser("~")
+
+path_to_cert = os.path.join(os.path.dirname(__file__), '..', 'cacert.pem')
+
 
 
 
@@ -41,7 +44,7 @@ def update_existing_pennsieve_manifest_files(soda_json_structure, high_level_fol
     """
     dataset_id = get_dataset_id(soda_json_structure["bf-dataset-selected"]["dataset-name"])
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/packages", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/packages", headers=create_request_headers(get_access_token()), verify=path_to_cert)
     r.raise_for_status()
 
     ds_items = r.json()["packages"]
@@ -61,7 +64,7 @@ def update_existing_pennsieve_manifest_files(soda_json_structure, high_level_fol
             # request the packages of that folder
             folder_name = i["content"]["name"]
             folder_collection_id = i["content"]["nodeId"]
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_collection_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_collection_id}", headers=create_request_headers(get_access_token()), verify=path_to_cert)
             r.raise_for_status()
 
             packageItems = r.json()["children"]

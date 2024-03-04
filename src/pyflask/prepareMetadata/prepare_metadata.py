@@ -42,6 +42,9 @@ from manifest import update_existing_pennsieve_manifest_files, create_high_lvl_m
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
 
+path_to_cert = os.path.join(os.path.dirname(__file__), '..', 'cacert.pem')
+
+
 userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
 TEMPLATE_PATH = ""
@@ -222,7 +225,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
         abort(403, "You do not have permissions to edit this dataset.")
     headers = create_request_headers(get_access_token())
     # handle duplicates on Pennsieve: first, obtain the existing file ID
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers, verify="../cacert.pem")
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers, verify=path_to_cert)
     r.raise_for_status()
     ds_items = r.json()
     # go through the content in the dataset and find the file ID of the file to be uploaded
@@ -233,7 +236,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
                 "things": [item_id]
             }
             # then, delete it using Pennsieve method delete(id)\vf = Pennsieve()
-            r = requests.post(f"{PENNSIEVE_URL}/data/delete",json=jsonfile, headers=headers, verify="../cacert.pem")
+            r = requests.post(f"{PENNSIEVE_URL}/data/delete",json=jsonfile, headers=headers, verify=path_to_cert)
             r.raise_for_status()
     try:
         ps = connect_pennsieve_client(bfaccount)
@@ -881,7 +884,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
 def import_ps_metadata_file(file_type, ui_fields, bfdataset):
     selected_dataset_id = get_dataset_id(bfdataset)
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify=path_to_cert)
     r.raise_for_status()
 
     ds_items = r.json()["children"]
@@ -919,7 +922,7 @@ def import_ps_RC(bfdataset, file_type):
 
     dataset_id = get_dataset_id(bfdataset)
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(get_access_token()), verify=path_to_cert)
     r.raise_for_status()
 
     items = r.json()
@@ -928,7 +931,7 @@ def import_ps_RC(bfdataset, file_type):
         if item["content"]["name"] == file_type:
             item_id = item["content"]["id"]
             url = returnFileURL(get_access_token(), item_id)
-            r = requests.get(url, verify="../cacert.pem")
+            r = requests.get(url, verify=path_to_cert)
             return {"text": r.text}
 
     abort (400, f"No {file_type} file was found at the root of the dataset provided.")

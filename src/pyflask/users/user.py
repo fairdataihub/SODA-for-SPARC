@@ -9,12 +9,16 @@ from utils import (
     authenticate_user_with_client,
     get_profile_api_key_and_secret
 )
+import os
 from namespaces import NamespaceEnum, get_namespace_logger
 from flask import abort
 from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, delete_duplicate_keys, clear_cached_access_token
 from profileUtils import create_unique_profile_name
 
 logger = get_namespace_logger(NamespaceEnum.USER)
+
+path_to_cert = os.path.join(os.path.dirname(__file__), '..', 'cacert.pem')
+
 
 
 
@@ -31,7 +35,7 @@ def integrate_orcid_with_pennsieve(access_code):
     
   try:
     jsonfile = {"authorizationCode": access_code}
-    r = requests.post(f"{PENNSIEVE_URL}/user/orcid", json=jsonfile, headers=create_request_headers(token), verify="../cacert.pem")
+    r = requests.post(f"{PENNSIEVE_URL}/user/orcid", json=jsonfile, headers=create_request_headers(token), verify=path_to_cert)
     r.raise_for_status()
 
     return r.json()
@@ -48,7 +52,7 @@ def get_user():
   """
   token = get_access_token()
   try:
-    r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(token), verify="../cacert.pem")
+    r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(token), verify=path_to_cert)
     r.raise_for_status()
 
     return r.json()
@@ -70,7 +74,7 @@ def get_user_information(token):
   }
 
   try:
-    r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers, verify="../cacert.pem")    
+    r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers, verify=path_to_cert)    
     r.raise_for_status()    
     return r.json()
   except Exception as e:
@@ -143,7 +147,7 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
         url = "https://api.pennsieve.io/session/switch-organization"
         headers = {"Accept": "*/*", "Content-Type": "application/json", "Accept-Encoding": "gzip, deflate, br", "Connection": "keep-alive", "Content-Length": "0"}
         url += f"?organization_id={organization_id}&api_key={token}"
-        response = requests.request("PUT", url, headers=headers, verify="../cacert.pem")
+        response = requests.request("PUT", url, headers=headers, verify=path_to_cert)
         response.raise_for_status()
 
     except Exception as err:
@@ -179,7 +183,7 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
         "Authorization": f"Bearer {token}",
     }
 
-    response = requests.request("POST", url, json=payload, headers=headers, verify="../cacert.pem")
+    response = requests.request("POST", url, json=payload, headers=headers, verify=path_to_cert)
     response.raise_for_status()
     response = response.json()
     
@@ -200,7 +204,7 @@ def get_user_organizations():
      abort(400, "Please select a valid Pennsieve account")
 
 
-  r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token), verify="../cacert.pem")
+  r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token), verify=path_to_cert)
   r.raise_for_status()
 
   organizations_list = r.json()["organizations"]

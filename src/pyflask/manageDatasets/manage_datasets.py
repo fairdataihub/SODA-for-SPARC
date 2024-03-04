@@ -40,9 +40,13 @@ from pysodaUtils import (
 from utils import (get_users_dataset_list)
 
 
+path_to_cert = os.path.join(os.path.dirname(__file__), '..', 'cacert.pem')
+
+
 
 ### Global variables
 namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
+namespace_logger.info("Path to cert: ", path_to_cert)
 curateprogress = " "
 curatestatus = " "
 curateprintstatus = " "
@@ -96,7 +100,7 @@ def bf_dataset_size(ps, dataset_id):
 
     try: 
         # get the 
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(dataset_id)}", headers=create_request_headers(ps), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(dataset_id)}", headers=create_request_headers(ps), verify=path_to_cert)
         r.raise_for_status()
 
         dataset_obj = r.json()
@@ -338,7 +342,7 @@ def bf_dataset_account(accountname):
             store = []
         for dataset in datasets_list:
             selected_dataset_id = dataset['id']
-            r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+            r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=create_request_headers(get_access_token()), verify=path_to_cert)
             r.raise_for_status()
             user_role = r.json()["role"]
             if user_role not in ["viewer", "editor"]:
@@ -391,7 +395,7 @@ def get_username(accountname):
 
 def in_sparc_organization(token):
     # get the organizations this user account has access to 
-    r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token), verify="../cacert.pem")
+    r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token), verify=path_to_cert)
     r.raise_for_status()
 
     # add the sparc consortium as the organization name if the user is a member of the consortium
@@ -429,7 +433,7 @@ def bf_account_details(accountname):
 
 
     # get the organizations this user account has access to 
-    r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token), verify="../cacert.pem")
+    r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token), verify=path_to_cert)
     r.raise_for_status()
 
     organizations = r.json()
@@ -486,7 +490,7 @@ def create_new_dataset(datasetname, accountname):
                 abort(400, "Dataset name already exists")
 
         namespace_logger.info("Creating new dataset")
-        r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(get_access_token()), json={"name": datasetname}, verify="../cacert.pem")
+        r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(get_access_token()), json={"name": datasetname}, verify=path_to_cert)
         r.raise_for_status()
         ds_id = r.json()['content']['id']
         return {"id": ds_id}
@@ -531,7 +535,7 @@ def ps_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
 
     jsonfile = {"name": renamed_dataset_name}
     try: 
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}", json=jsonfile, headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}", json=jsonfile, headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         return {"message": f"Dataset renamed to {renamed_dataset_name}"}
     except Exception as e:
@@ -793,7 +797,7 @@ def ps_get_users(selected_bfaccount):
         
     try:
         global PENNSIEVE_URL
-        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/members", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/members", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         list_users = r.json()
         list_users_first_last = []
@@ -827,7 +831,7 @@ def ps_get_teams(selected_bfaccount):
     try:
         org_id = get_user_information(get_access_token())["preferredOrganization"]
         global PENNSIEVE_URL
-        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/teams", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/teams", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         list_teams = r.json()
         
@@ -855,7 +859,7 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
     try:
         # user permissions
         r = requests.get(
-            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=create_request_headers(get_access_token()), verify="../cacert.pem"
+            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=create_request_headers(get_access_token()), verify=path_to_cert
         )
         r.raise_for_status()
         list_dataset_permission = r.json()
@@ -870,7 +874,7 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
 
         # team permissions
         r = requests.get(
-            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", headers=create_request_headers(get_access_token()), verify="../cacert.pem"
+            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", headers=create_request_headers(get_access_token()), verify=path_to_cert
         )
         r.raise_for_status()
         list_dataset_permission_teams = r.json()
@@ -888,7 +892,7 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
 
         # Organization permissions
         r = requests.get(
-            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/organizations", headers=create_request_headers(get_access_token()), verify="../cacert.pem"
+            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/organizations", headers=create_request_headers(get_access_token()), verify=path_to_cert
         )
         r.raise_for_status()
         list_dataset_permission_organizations = r.json()
@@ -947,7 +951,7 @@ def ps_add_permission(
     try:
         c = 0
         organization_id = get_user_information(get_access_token())["preferredOrganization"]
-        r  = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/members", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r  = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/members", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         list_users = r.json()
         for i in range(len(list_users)):
@@ -975,13 +979,13 @@ def ps_add_permission(
 
     try:
         # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
-        r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         current_user = r.json()
         first_name_current_user = current_user["firstName"]
         last_name_current_user = current_user["lastName"]
 
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         list_dataset_permission = r.json()
         c = 0
@@ -1010,7 +1014,7 @@ def ps_add_permission(
         if selected_role == "remove current permissions":
             try:
                 jsonfile = {"id": selected_user_id}
-                r = requests.delete(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", json=jsonfile, headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+                r = requests.delete(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", json=jsonfile, headers=create_request_headers(get_access_token()), verify=path_to_cert)
                 r.raise_for_status()
             except Exception as e:
                 raise Exception(e) from e
@@ -1019,12 +1023,12 @@ def ps_add_permission(
             # check if currently logged in user is owner of selected dataset (only owner can change owner)
             # change owner
             jsonfile = {"id": selected_user_id}
-            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/owner", json=jsonfile, headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/owner", json=jsonfile, headers=create_request_headers(get_access_token()), verify=path_to_cert)
             r.raise_for_status()
             return {"message":  "Permission " + "'" + selected_role + "' " + " added for " + selected_user}
         else:
             jsonfile = {"id": selected_user_id, "role": selected_role}
-            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", json=jsonfile, headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", json=jsonfile, headers=create_request_headers(get_access_token()), verify=path_to_cert)
             r.raise_for_status()
             return {"message": "Permission " + "'" + selected_role + "' " + " added for " + selected_user}
     except Exception as e:
@@ -1062,7 +1066,7 @@ def ps_add_permission_team(
         c += 1
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/organizations/{organization_id}/teams", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{organization_id}/teams", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         list_teams = r.json()
         dict_teams = {}
@@ -1092,12 +1096,12 @@ def ps_add_permission_team(
         selected_team_id = dict_teams[selected_team]
 
         # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
-        r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         current_user = r.json()
         first_name_current_user = current_user["firstName"]
         last_name_current_user = current_user["lastName"]
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status
         list_dataset_permission = r.json()
         c = 0
@@ -1119,12 +1123,12 @@ def ps_add_permission_team(
 
         if selected_role == "remove current permissions":
             jsonfile = {"id": selected_team_id}
-            r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+            r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=create_request_headers(get_access_token()), verify=path_to_cert)
             r.raise_for_status()
             return {"message": "Permission removed for " + selected_team}
         else:
             jsonfile = {"id": selected_team_id, "role": selected_role}
-            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=create_request_headers(get_access_token()), verify=path_to_cert)
             r.raise_for_status()
             return {"message": "Permission " + "'" + selected_role + "' " + " added for " + selected_team}
     except Exception as e:
@@ -1144,7 +1148,7 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
     selected_dataset_id = get_dataset_id(selected_bfdataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
 
         dataset_info = r.json()
@@ -1176,7 +1180,7 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
 
     try:
         jsonfile = {"description": input_subtitle}
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         return{ "message": "Subtitle added!"}
     except Exception as e:
@@ -1197,7 +1201,7 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
     selected_dataset_id = get_dataset_id(selected_bfdataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
 
         dataset_readme_info = r.json()
@@ -1225,7 +1229,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
 
     try:
         jsonfile = {"readme": markdown_input}
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(get_access_token()), json=jsonfile, verify="../cacert.pem")
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(get_access_token()), json=jsonfile, verify=path_to_cert)
         r.raise_for_status()
         return{ "message": "Description added!"}
     except Exception as e:
@@ -1247,7 +1251,7 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
     selected_dataset_id = get_dataset_id(selected_bfdataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
 
         dataset_banner_info = r.json()
@@ -1286,7 +1290,7 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
     try:
         def upload_image():
             with open(banner_image_path, "rb") as f:
-                return requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", files={"banner": f}, headers=headers, verify="../cacert.pem")
+                return requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", files={"banner": f}, headers=headers, verify=path_to_cert)
 
         # delete banner image folder if it is located in SODA
         r = upload_image()
@@ -1318,7 +1322,7 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
     selected_dataset_id = get_dataset_id(selected_bfdataset)
 
     try:
-        r  = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r  = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         dataset_info = r.json()
         list_keys = dataset_info["content"].keys()
@@ -1366,7 +1370,7 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
         abort(403, "Please select a valid license.")
     jsonfile = {"license": selected_license}
     try: 
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
     except Exception as e:
         raise Exception(e) from e
@@ -1391,12 +1395,12 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
     try:
         # get list of available status options
         organization_id = get_user_information(get_access_token())["preferredOrganization"]
-        r = requests.get(f"{PENNSIEVE_URL}/organizations/{organization_id}/dataset-status", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{organization_id}/dataset-status", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         list_status = r.json()
 
         # get current status of select dataset
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem") 
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify=path_to_cert) 
         r.raise_for_status()
         dataset_current_status = r.json()["content"]["status"]
 
@@ -1417,7 +1421,7 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
         # find name corresponding to display name or show error message
         organization_id = get_user_information(get_access_token())["preferredOrganization"]
         r = requests.get(
-            f"{PENNSIEVE_URL}/organizations/{organization_id}/dataset-status", headers=create_request_headers(get_access_token()), verify="../cacert.pem"
+            f"{PENNSIEVE_URL}/organizations/{organization_id}/dataset-status", headers=create_request_headers(get_access_token()), verify=path_to_cert
         )
         r.raise_for_status()
         list_status = r.json()
@@ -1432,7 +1436,7 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
 
         # change dataset status
         jsonfile = {"status": new_status}
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         return { "message": "Success: Changed dataset status to '" + selected_status + "'" }
     except Exception as e:
@@ -1476,7 +1480,7 @@ def get_dataset_readme(selected_account, selected_dataset):
     selected_dataset_id = get_dataset_id(selected_dataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
 
         readme = r.json()
@@ -1496,7 +1500,7 @@ def update_dataset_readme(selected_account, selected_dataset, updated_readme):
         abort(403, "You do not have permission to edit this dataset.")
 
     try:
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", json={"readme": updated_readme}, headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", json={"readme": updated_readme}, headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
     except Exception as e:
         raise Exception(e) from e
@@ -1516,7 +1520,7 @@ def get_dataset_tags(selected_account, selected_dataset):
     selected_dataset_id = get_dataset_id(selected_dataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
 
         dataset_info = r.json()
@@ -1536,7 +1540,7 @@ def update_dataset_tags(selected_account, selected_dataset, updated_tags):
 
     try:
         jsonfile = {"tags": updated_tags}
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), json=jsonfile, verify="../cacert.pem")
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), json=jsonfile, verify=path_to_cert)
         r.raise_for_status()
         return {"message": "Tags updated"}
     except Exception as e:

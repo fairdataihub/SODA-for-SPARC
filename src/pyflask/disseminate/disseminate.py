@@ -9,13 +9,15 @@ from utils import connect_pennsieve_client, get_dataset_id, authenticate_user_wi
 from errorHandlers import handle_http_error
 from authentication import get_access_token
 from namespaces import NamespaceEnum, get_namespace_logger
-
+import os
 namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
 
 
 
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
+path_to_cert = os.path.join(os.path.dirname(__file__), '..', 'cacert.pem')
+
 
 
 def bf_get_doi(selected_bfaccount, selected_bfdataset):
@@ -34,7 +36,7 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
         abort(403, "You do not have permission to edit this dataset.")
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/doi", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/doi", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         result = r.json()
 
@@ -68,7 +70,7 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         raise e
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/contributors", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/contributors", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         contributors = r.json()
         creators_list = [
@@ -84,7 +86,7 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
             "creators": creators_list,
         }
         
-        r = requests.post(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/doi", headers=create_request_headers(get_access_token()), json=jsonfile, verify="../cacert.pem")
+        r = requests.post(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/doi", headers=create_request_headers(get_access_token()), json=jsonfile, verify=path_to_cert)
         r.raise_for_status()
 
         return {"message": "Done!"}
@@ -106,13 +108,13 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     selected_dataset_id = get_dataset_id(selected_bfdataset)
 
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", headers=create_request_headers(get_access_token()),verify="../cacert.pem")
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", headers=create_request_headers(get_access_token()),verify=path_to_cert)
     r.raise_for_status()
     review_request_status = r.json()["publication"]["status"]
 
 
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/published", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/published", headers=create_request_headers(get_access_token()), verify=path_to_cert)
     r.raise_for_status()
     publishing_status = r.json()["status"]
 
@@ -152,7 +154,7 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
     qs = construct_publication_qs(publication_type, embargo_release_date)
 
     try:
-        r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         return r.json()
     except Exception as e:
@@ -164,7 +166,7 @@ def get_publication_type(ps_or_token, selected_dataset_id):
     """
     Function to get the publication type of a dataset
     """
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", headers=create_request_headers(ps_or_token), verify="../cacert.pem")
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", headers=create_request_headers(ps_or_token), verify=path_to_cert)
     r.raise_for_status()
     ds = r.json()
 
@@ -187,7 +189,7 @@ def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
     publication_type = get_publication_type(get_access_token(), selected_dataset_id)
 
     try:
-        r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/cancel?publicationType={publication_type}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+        r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/cancel?publicationType={publication_type}", headers=create_request_headers(get_access_token()), verify=path_to_cert)
         r.raise_for_status()
         return {"message": "Your dataset publication has been cancelled."}
     except Exception as e:
@@ -222,7 +224,7 @@ def get_metadata_files(selected_dataset, pennsieve_account):
     """
     selected_dataset_id = get_dataset_id(selected_dataset)
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify="../cacert.pem")
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), verify=path_to_cert)
     r.raise_for_status()
     resp = r.json()
     if "children" not in resp:

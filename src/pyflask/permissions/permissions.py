@@ -1,5 +1,8 @@
 import requests
 from flask import abort
+import os
+path_to_cert = os.path.join(os.path.dirname(__file__), '..', 'cacert.pem')
+
 
 def pennsieve_get_current_user_permissions(dataset_id, ps_or_token):
     PENNSIEVE_URL = "https://api.pennsieve.io"
@@ -9,7 +12,7 @@ def pennsieve_get_current_user_permissions(dataset_id, ps_or_token):
     else:
         access_token = ps_or_token.get_user().session_token
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/role", headers={"Authorization": f"Bearer {access_token}"}, verify="../cacert.pem")
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/role", headers={"Authorization": f"Bearer {access_token}"}, verify=path_to_cert)
     r.raise_for_status()
 
     return r.json()

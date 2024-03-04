@@ -1,5 +1,8 @@
 import requests
 from configUtils import format_agent_profile_name
+import os 
+path_to_cert = os.path.join(os.path.dirname(__file__), '..', 'cacert.pem')
+
 def create_unique_profile_name(token, machine_username_specifier):
     try:
         # get the users email
@@ -11,7 +14,7 @@ def create_unique_profile_name(token, machine_username_specifier):
         }
 
 
-        r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers, verify="../cacert.pem")    
+        r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers, verify=path_to_cert)    
         r.raise_for_status()    
 
         user_info = r.json()
