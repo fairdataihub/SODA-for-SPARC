@@ -158,6 +158,19 @@ $("#advanced-start-over-button").on("click", () => {
   if (current_advanced_page === "create_manifest_btn") {
     // Reset the create manifest page
     console.log("Resetting create manifest page");
+
+    document.getElementById("pennsieve-option-create-manifest").classList.remove("checked");
+    document.getElementById("local-option-create-manifest").classList.remove("checked");
+    
+    // Hide the all sub-questions for generating manifest
+    document.getElementById("Question-prepare-manifest-2").classList.remove("show");
+    document.getElementById("Question-prepare-manifest-2").classList.remove("prev");
+    document.getElementById("Question-prepare-manifest-3").classList.remove("show");
+    document.getElementById("Question-prepare-manifest-3").classList.remove("prev");
+    document.getElementById("Question-prepare-manifest-5").classList.remove("show");
+    document.getElementById("Question-prepare-manifest-5").classList.remove("prev");
+    document.getElementById("Question-prepare-manifest-6").classList.remove("show");
+    document.getElementById("Question-prepare-manifest-6").classList.remove("prev");
   }
   if (current_advanced_page === "upload_banner_image_btn") {
     // Reset the upload banner image page
@@ -166,6 +179,13 @@ $("#advanced-start-over-button").on("click", () => {
   if (current_advanced_page === "validate_dataset_btn") {
     // Reset the validate dataset page
     console.log("Resetting the validate dataset page");
+
+    // Reset the validate button options
+    document.getElementById("validate_dataset-1-pennsieve").classList.remove("checked");
+    document.getElementById("validate_dataset-1-local").classList.remove("checked");
+
+    // Hide all the sub-questions for validating datasets
+    document.getElementById("validate_dataset-question-2").classList.remove("show");
   }
 });
 
