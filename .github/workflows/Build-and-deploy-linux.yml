@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - cert-fix
 
 jobs:
   deploy-on-linux:
