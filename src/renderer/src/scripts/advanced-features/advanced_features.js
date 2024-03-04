@@ -162,7 +162,7 @@ $("#advanced-start-over-button").on("click", () => {
     // Remove checked class from buttons
     document.getElementById("pennsieve-option-create-manifest").classList.remove("checked");
     document.getElementById("local-option-create-manifest").classList.remove("checked");
-    
+
     // Remove checked from the radio buttons
     document.getElementById("generate-manifest-from-local").checked = false;
     document.getElementById("generate-manifest-from-Penn").checked = false;
@@ -170,7 +170,9 @@ $("#advanced-start-over-button").on("click", () => {
     // Reset sub-question fields
     $("#div-confirm-manifest-local-folder-dataset").hide();
     // We reset the display of this child element since it is being set to none somewhere
-    document.getElementById("div-confirm-manifest-local-folder-dataset").children[0].children[0].style.display = "block";
+    document.getElementById(
+      "div-confirm-manifest-local-folder-dataset"
+    ).children[0].children[0].style.display = "block";
     document.getElementById("input-manifest-local-folder-dataset").placeholder = "Browse here";
 
     // Hide the all sub-questions for generating manifest
