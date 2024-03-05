@@ -12,7 +12,7 @@ const transitionToValidateQuestionTwo = async () => {
   pennsieveSection.style = "display: none !important;";
 
   let localSection = document.querySelector("#validate_dataset-question-1-local-container");
-  localSection.style = "display: none !important";
+  localSection.style = "display: none !important; margin-bottom: -2rem";
 
   // allow time for the check box to get checked
   await window.wait(300);
@@ -24,7 +24,7 @@ const transitionToValidateQuestionTwo = async () => {
   // perform the transition for a local dataset
   if (validatingLocalDataset) {
     // show local section
-    localSection.style = "display: flex;";
+    localSection.style = "display: flex; margin-bottom: -2rem;";
 
     // show the confirm button if it was hidden
     let confirmDatasetBtn = document.querySelector("#validator-confirm-local-dataset-btn");
@@ -40,7 +40,7 @@ const transitionToValidateQuestionTwo = async () => {
     input.value = "";
   } else {
     // hide the local dataset section
-    localSection.style = "display: none !important;";
+    localSection.style = "display: none !important; margin-bottom: -2rem;";
 
     // transition for pennsieve dataset
     pennsieveSection.style = "display: flex;";

@@ -716,7 +716,7 @@ window.transitionToValidateQuestionTwo = async () => {
   pennsieveSection.style = "display: none !important;";
 
   let localSection = document.querySelector("#validate_dataset-question-1-local-container");
-  localSection.style = "display: none !important";
+  localSection.style = "display: none !important; margin-bottom: -2rem;";
 
   // allow time for the check box to get checked
   await window.wait(300);
@@ -728,7 +728,7 @@ window.transitionToValidateQuestionTwo = async () => {
   // perform the transition for a local dataset
   if (validatingLocalDataset) {
     // show local section
-    localSection.style = "display: flex;";
+    localSection.style = "display: flex; margin-bottom: -2rem";
 
     // confirm that the input holding the local dataset path's placeholder is reset
     let input = document.querySelector("#validate-local-dataset-path");
@@ -736,7 +736,7 @@ window.transitionToValidateQuestionTwo = async () => {
     input.value = "";
   } else {
     // hide the local dataset section
-    localSection.style = "display: none !important;";
+    localSection.style = "display: none !important; margin-bottom: -2rem;";
 
     // transition for pennsieve dataset
     pennsieveSection.style = "display: flex;";
