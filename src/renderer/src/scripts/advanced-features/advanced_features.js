@@ -4,6 +4,7 @@ import { resetLazyLoading } from "../../assets/nav";
 import { hideAllSectionsAndDeselectButtons } from "../../assets/nav";
 import { existingDataset, modifyDataset } from "../../assets/lotties/lotties";
 import lottie from "lottie-web";
+import { Swal } from "sweetalert2"
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -161,8 +162,10 @@ $("#advanced-start-over-button").on("click", async () => {
 
     // Remove checked class from buttons
     document.getElementById("pennsieve-option-create-manifest").classList.remove("checked");
+    document.getElementById("pennsieve-option-create-manifest").classList.remove("non-selected");
     document.getElementById("local-option-create-manifest").classList.remove("checked");
-
+    document.getElementById("local-option-create-manifest").classList.remove("non-selected");
+    
     // Remove checked from the radio buttons
     document.getElementById("generate-manifest-from-local").checked = false;
     document.getElementById("generate-manifest-from-Penn").checked = false;
