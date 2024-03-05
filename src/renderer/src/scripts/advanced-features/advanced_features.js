@@ -34,6 +34,10 @@ window.transitionToAdvancedFeature = (event) => {
     // Transition to the upload banner image page
     document.getElementById("banner-image-feature").classList.remove("hidden");
     document.getElementById("banner-image-feature").classList.add("is-shown");
+
+    // Reset the dataset to None
+    let bannerDatasetCard = document.getElementById("top-level-card-container--add-edit-banner").children[0].children[2].children[0].children[0].children[1].children[0];
+    bannerDatasetCard.value = "None";
   }
   if (button_id === "validate_dataset_btn") {
     // Transition to the validate dataset page

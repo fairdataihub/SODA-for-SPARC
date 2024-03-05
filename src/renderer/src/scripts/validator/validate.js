@@ -97,7 +97,7 @@ const validateLocalDataset = async () => {
   let file_counter = 0;
   let folder_counter = 0;
   // grab the local dataset path from the input's placeholder attribute
-  let datasetPath = document.querySelector("#validate-local-dataset-path").value;
+  let datasetPath = document.querySelector("#validate-local-dataset-path").placeholder;
 
   Swal.fire({
     title: `Validating your dataset`,
@@ -898,7 +898,7 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
       let validationPathInput = evt.target;
 
       // set the input's placeholder value to the local dataset path
-      validationPathInput.value = folderPath;
+      validationPathInput.placeholder = folderPath;
 
       hideQuestionThreeLocal();
 
