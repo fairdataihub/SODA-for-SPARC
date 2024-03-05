@@ -4,7 +4,7 @@ import { resetLazyLoading } from "../../assets/nav";
 import { hideAllSectionsAndDeselectButtons } from "../../assets/nav";
 import { existingDataset, modifyDataset } from "../../assets/lotties/lotties";
 import lottie from "lottie-web";
-import { Swal } from "sweetalert2"
+import Swal from "sweetalert2"
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
