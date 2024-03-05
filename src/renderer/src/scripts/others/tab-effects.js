@@ -3572,9 +3572,10 @@ window.exitCurate = async (resetProgressTabs, start_over = false) => {
       $("#Question-getting-started-1").addClass("show");
       $("#generate-dataset-progress-tab").css("display", "none");
 
+      window.hasFiles = false;
       window.currentTab = 0;
       window.wipeOutCurateProgress();
-      $("#main_tabs_view")[0].click();
+      window.showParentTab(0, 1);
       window.globalGettingStarted1stQuestionBool = false;
       if (start_over) {
         $("#organize_dataset_btn").click();
