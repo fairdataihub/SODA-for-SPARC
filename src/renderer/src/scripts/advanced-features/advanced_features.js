@@ -36,7 +36,8 @@ window.transitionToAdvancedFeature = (event) => {
     document.getElementById("banner-image-feature").classList.add("is-shown");
 
     // Reset the dataset to None
-    let bannerDatasetCard = document.getElementById("top-level-card-container--add-edit-banner").children[0].children[2].children[0].children[0].children[1].children[0];
+    let bannerDatasetCard = document.getElementById("top-level-card-container--add-edit-banner")
+      .children[0].children[2].children[0].children[0].children[1].children[0];
     bannerDatasetCard.value = "None";
   }
   if (button_id === "validate_dataset_btn") {
