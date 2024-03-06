@@ -302,6 +302,7 @@ document.querySelector("#button-homepage-freeform-mode").addEventListener("click
 
   window.directToFreeFormMode();
   document.getElementById("guided_mode_view").classList.add("is-selected");
+  console.log("HERE")
 });
 
 $(document).ready(() => {

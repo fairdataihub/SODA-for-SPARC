@@ -19,6 +19,7 @@ window.transitionToAdvancedFeature = (event) => {
 
   // Hide the advanced features selection page
   document.getElementById("advanced-features-selection-page").classList.remove("is-shown");
+  document.getElementById("advanced-features-selection-page").classList.remove("full-shown");
   document.getElementById("advanced-features-selection-page").classList.add("hidden");
 
   console.log("Button clicked: ", button_id);
@@ -96,7 +97,9 @@ $("#advanced-back-button").on("click", () => {
 
     // Remove hidden class from the advanced features page to display it
     document.getElementById("advanced-features-selection-page").classList.add("hidden");
+    document.getElementById("advanced-features-selection-page").classList.remove("is-shown");
     document.getElementById("advanced_mode-section").classList.remove("is-shown");
+    document.getElementById("advanced_mode-section").classList.remove("fullShown");
     document.getElementById("advanced_mode-section").classList.add("hidden");
     document.getElementById("advanced-footer").classList.add("hidden");
 
