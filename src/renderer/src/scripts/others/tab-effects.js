@@ -3652,8 +3652,8 @@ window.wipeOutCurateProgress = () => {
   // reset dataset selection options
   $("#current-bf-dataset").text("None"); // step 1
   $("#current-bf-dataset-generate").text("None"); // step 6 for when merging a new dataset into an existing dataset
-  $("#button-confirm-bf-dataset").hide() // hide step 6 confirm button until the user selects the dataset again
-  // 
+  $("#button-confirm-bf-dataset").hide(); // hide step 6 confirm button until the user selects the dataset again
+  //
 };
 
 // once users click on option card: Organize dataset
