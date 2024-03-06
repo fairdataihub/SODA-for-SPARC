@@ -97,7 +97,7 @@ const validateLocalDataset = async () => {
   let file_counter = 0;
   let folder_counter = 0;
   // grab the local dataset path from the input's placeholder attribute
-  let datasetPath = document.querySelector("#validate-local-dataset-path").value;
+  let datasetPath = document.querySelector("#validate-local-dataset-path").placeholder;
 
   Swal.fire({
     title: `Validating your dataset`,
@@ -716,7 +716,7 @@ window.transitionToValidateQuestionTwo = async () => {
   pennsieveSection.style = "display: none !important;";
 
   let localSection = document.querySelector("#validate_dataset-question-1-local-container");
-  localSection.style = "display: none !important";
+  localSection.style = "display: none !important; margin-bottom: -2rem;";
 
   // allow time for the check box to get checked
   await window.wait(300);
@@ -728,7 +728,7 @@ window.transitionToValidateQuestionTwo = async () => {
   // perform the transition for a local dataset
   if (validatingLocalDataset) {
     // show local section
-    localSection.style = "display: flex;";
+    localSection.style = "display: flex; margin-bottom: -2rem";
 
     // confirm that the input holding the local dataset path's placeholder is reset
     let input = document.querySelector("#validate-local-dataset-path");
@@ -736,7 +736,7 @@ window.transitionToValidateQuestionTwo = async () => {
     input.value = "";
   } else {
     // hide the local dataset section
-    localSection.style = "display: none !important;";
+    localSection.style = "display: none !important; margin-bottom: -2rem;";
 
     // transition for pennsieve dataset
     pennsieveSection.style = "display: flex;";
@@ -808,6 +808,7 @@ document.querySelector("#validate_dataset-1-local").addEventListener("click", as
 document
   .querySelector("#validate_dataset-1-pennsieve")
   .addEventListener("click", async function () {
+    console.log("button clicked");
     // if there is validation work done check if the user wants to reset progress
     let userWantsToReset = await userWantsToResetValidation();
     if (!userWantsToReset) {
@@ -897,7 +898,7 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
       let validationPathInput = evt.target;
 
       // set the input's placeholder value to the local dataset path
-      validationPathInput.value = folderPath;
+      validationPathInput.placeholder = folderPath;
 
       hideQuestionThreeLocal();
 

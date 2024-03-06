@@ -1,4 +1,6 @@
 import Swal from "sweetalert2";
+import lottie from "lottie-web";
+import { existingDataset, modifyDataset } from "../assets/lotties/lotties";
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -198,6 +200,41 @@ const handleSectionTrigger = async (event) => {
     let guidedModeSection = document.getElementById("guided_mode-section");
     if (!guidedModeSection.classList.contains("is-shown")) {
       guidedModeSection.classList.add("is-shown");
+    }
+
+    // Transition back to the home screen
+    document.getElementById("guided-home").classList.remove("hidden");
+    document.getElementById("guided_mode-section").classList.add("is-shown");
+    document.getElementById("guided_curate_dataset-tab").classList.add("show");
+
+    // Remove hidden class from the advanced features page to display it
+    document.getElementById("advanced-features-selection-page").classList.add("hidden");
+    document.getElementById("advanced-features-selection-page").classList.remove("is-shown");
+    document.getElementById("advanced_mode-section").classList.remove("is-shown");
+    document.getElementById("advanced_mode-section").classList.remove("fullShown");
+    document.getElementById("advanced_mode-section").classList.add("hidden");
+    document.getElementById("advanced-footer").classList.add("hidden");
+
+    // Remove lotties from the home screen to prevent double lotties
+    if (document.getElementById("existing-dataset-lottie").innerHTML == "") {
+      // Add the lotties back to the home screen
+      lottie.loadAnimation({
+        container: document.getElementById("existing-dataset-lottie"),
+        animationData: existingDataset,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+    }
+
+    if (document.getElementById("edit-dataset-component-lottie").innerHTML == "") {
+      lottie.loadAnimation({
+        container: document.getElementById("edit-dataset-component-lottie"),
+        animationData: modifyDataset,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
     }
 
     guidedUnLockSideBar();
