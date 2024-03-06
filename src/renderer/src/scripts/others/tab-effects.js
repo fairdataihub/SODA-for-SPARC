@@ -125,7 +125,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     // Disable the continue button if a destination has not been selected
     // Used when traversing back and forth between tabs
     // TODO: Update code to show Continue if the para for empty dataset is showing
-    console.log("We are going to show the continue bttn here?");
     if (
       $("#inputNewNameDataset").val() !== "" ||
       ($("#Question-generate-dataset-existing-files-options")
