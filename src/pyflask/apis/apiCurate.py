@@ -288,54 +288,34 @@ class GenerateDerivativeMicroscopyFiles(Resource):
     @api.marshal_with(model_derivative_microscopy_files_response, code=200)
     def post(self):
         try:
+            api.logger.info("/generate_derivative_microscopy_files POST request started")
             # Get the location of 'mfplus' (used to check if mfplus is installed on the user's machine)
             mfplusloc = mfpreqs.findmfplus()
             if not mfplusloc:
+                api.logger.error("mfplus was not found")
                 raise Exception("mfplus not found")
 
             # Get data from the request
             data = request.get_json()
             microscopy_images = data.get("microscopy_images")
+            api.logger.info(f"microscopy_images: {microscopy_images}")
 
-            # Set source image path and other parameters
-            source_image_path = normpath(r"C:\Users\JClark\images\test_microscopy.jpg")
-            output_name = "test_microscopy_converted"
-            output_directory = normpath(r"C:\Users\JClark\images")
+            # Loop through the microscopy images and convert them using 'mfplus'
+            derivative_microscopy_files = []
 
-            # Check if source_image_path is a valid path
-            if not exists(source_image_path):
-                raise FileNotFoundError(f"File not found: {source_image_path}")
+            for microscopy_image_path in microscopy_images:
+                # Check if microscopy_image_path is a valid path
+                if not exists(microscopy_image_path):
+                    raise FileNotFoundError(f"File not found: {microscopy_image_path}")
 
-            # Check if output_directory is a valid path
-            if not exists(output_directory):
-                raise FileNotFoundError(f"Directory not found: {output_directory}")
-
-            # Convert the microscopy image using 'mfplus'
-            mfplus_return = mfplus.convert(source_image_path, outname=output_name, outdir=output_directory, outtiff=True)
+                # Convert the microscopy image using 'mfplus'
+                mfplus_return = mfplus_convert(microscopy_image_path, outtiff=True)
+                
+                derivative_microscopy_files.append(mfplus_return)
 
             # Return a response
-            return {"derivative_microscopy_files": mfplus_return}
+            return {"derivative_microscopy_files": derivative_microscopy_files}
 
         except Exception as e:
             # Handle exceptions and return appropriate response
             api.abort(500, str(e))
-
-mfplusloc = mfpreqs.findmfplus()
-print(f"mfplusloc: {mfplusloc}")
-source_image_path = normpath(r"C:\Users\JClark\images\test_microscopy.jpg")
-output_name = "test_microscopy_converted"
-output_directory = normpath(r"C:\Users\JClark\images")
-# check to see if source_image_path is a valid path
-if not exists(source_image_path):
-    raise FileNotFoundError(f"File not found: {source_image_path}")
-else:
-    print(f"source_image_path: {source_image_path}")
-
-# check to see if output_directory is a valid path
-if not exists(output_directory):
-    raise FileNotFoundError(f"Directory not found: {output_directory}")
-else:
-    print(f"output_directory: {output_directory}")
-
-
-mfplus.convert(source_image_path, outname=output_name, outdir=output_directory, outtiff=True)

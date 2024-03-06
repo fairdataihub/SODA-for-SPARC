@@ -384,6 +384,21 @@ ipcMain.handle("open-file-dialog-submit-dataset", async (event) => {
   return [];
 });
 
+ipcMain.handle("open-multi-file-select", async (event, title) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(mainWindow, {
+    properties: ["openFile", "multiSelections"],
+    title: title,
+  });
+
+  if (files) {
+    return files.filePaths;
+  }
+
+  return [];
+});
+
 // Pennsieve metadata
 ipcMain.handle("open-file-dialog-import-banner-image", async (event) => {
   let mainWindow = BrowserWindow.getFocusedWindow();

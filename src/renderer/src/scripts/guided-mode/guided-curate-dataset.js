@@ -17581,4 +17581,19 @@ window.testMicroscopyImageConversion = async () => {
   }
 };
 
-await window.testMicroscopyImageConversion();
+document.getElementById("test-microfile-conversion").addEventListener("click", async () => {
+  const fileList = await window.electron.ipcRenderer.invoke(
+    "open-multi-file-select",
+    "Open Folder"
+  );
+  try {
+    const res = await client.post("/curate_datasets/generate_derivative_microscopy_files", {
+      microscopy_images: fileList,
+    });
+    console.log(res.data);
+  } catch (error) {
+    const emessage = userErrorMessage(error);
+    console.error("Failed to generate derivative microscopy files");
+    console.error(emessage);
+  }
+});
