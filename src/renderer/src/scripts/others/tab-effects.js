@@ -3648,6 +3648,10 @@ window.wipeOutCurateProgress = () => {
 
   // uncheck auto-generated manifest checkbox
   $("#generate-manifest-curate").prop("checked", false);
+
+  // reset dataset selection options
+  $("#current-bf-dataset").text("None") // step 1 
+  $("#current-bf-dataset-generate").text("None"); // step 6 for when merging a new dataset into an existing dataset
 };
 
 // once users click on option card: Organize dataset
