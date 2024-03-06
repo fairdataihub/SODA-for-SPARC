@@ -6,7 +6,7 @@ while (!window.htmlPagesAdded) {
 
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 document.body.addEventListener("click", (event) => {
-  console.log("Firing here")
+  console.log("Firing here");
   // console.log(event.target)
   if (event.target.dataset.section) {
     handleSectionTrigger(event);
@@ -18,7 +18,7 @@ document.body.addEventListener("click", (event) => {
 });
 
 document.body.addEventListener("custom-back", (e) => {
-  console.log("Firing here")
+  console.log("Firing here");
   handleSectionTrigger(e);
 });
 // Variable used to determine the disabled status of the organize datasets next button
@@ -60,9 +60,12 @@ const guidedUnLockSideBar = () => {
   guidedNav.style.display = "none";
 };
 
-const handleSectionTriggerOrganize = async (event, sectionId, freeFormItemsContainer, freeFormButtons) => {
-
-}
+const handleSectionTriggerOrganize = async (
+  event,
+  sectionId,
+  freeFormItemsContainer,
+  freeFormButtons
+) => {};
 
 const handleSectionTrigger = async (event) => {
   // Display the current section
@@ -71,8 +74,6 @@ const handleSectionTrigger = async (event) => {
   const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
   const sectionRenderFileExplorer = event.target.dataset.render;
-
-
 
   // In Free Form Mode -> Organize dataset, the sodaJSONObj has
   // keys if the user has started the first step. The user must
@@ -102,11 +103,13 @@ const handleSectionTrigger = async (event) => {
     const transitionWarningMessage = `
           Going back home will wipe out the progress you have made organizing your dataset.
           <br><br>
-          ${buttonContinueExistingPennsieve.classList.contains("checked")
-        ? `To continue making modifications to your existing Pennsieve dataset, press Cancel.`
-        : `To save your progress, press Cancel${window.currentTab < 2 ? ", progress to the third step," : ""
-        } and press "Save Progress" in the Organize Dataset tab.`
-      }
+          ${
+            buttonContinueExistingPennsieve.classList.contains("checked")
+              ? `To continue making modifications to your existing Pennsieve dataset, press Cancel.`
+              : `To save your progress, press Cancel${
+                  window.currentTab < 2 ? ", progress to the third step," : ""
+                } and press "Save Progress" in the Organize Dataset tab.`
+          }
         `;
 
     const warnBeforeExitCurate = await Swal.fire({
@@ -126,7 +129,6 @@ const handleSectionTrigger = async (event) => {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-
 
     if (warnBeforeExitCurate.isConfirmed) {
       // Wipe out organize dataset progress before entering Guided Mode
@@ -162,7 +164,6 @@ const handleSectionTrigger = async (event) => {
     window.dataset_path = document.getElementById("input-global-path");
     document.getElementById("nextBtn").disabled = boolNextButtonDisabled;
   }
-
 
   if (sectionId === "guided_mode-section") {
     // Disallow the transition if an upload is in progress
@@ -213,11 +214,13 @@ const handleSectionTrigger = async (event) => {
       const transitionWarningMessage = `
           Going back home will wipe out the progress you have made organizing your dataset.
           <br><br>
-          ${buttonContinueExistingPennsieve.classList.contains("checked")
-          ? `To continue making modifications to your existing Pennsieve dataset, press Cancel.`
-          : `To save your progress, press Cancel${window.currentTab < 2 ? ", progress to the third step," : ""
-          } and press "Save Progress" in the Organize Dataset tab.`
-        }
+          ${
+            buttonContinueExistingPennsieve.classList.contains("checked")
+              ? `To continue making modifications to your existing Pennsieve dataset, press Cancel.`
+              : `To save your progress, press Cancel${
+                  window.currentTab < 2 ? ", progress to the third step," : ""
+                } and press "Save Progress" in the Organize Dataset tab.`
+          }
         `;
 
       const warnBeforeExitCurate = await Swal.fire({
