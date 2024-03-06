@@ -44,9 +44,9 @@
 
 .advanced-section.is-shown {
   opacity: 1;
-  transition: all 0.25s linear
+  transition: all 0.25s linear;
 }
-  
+
 .advanced-section.full-shown {
   transition: all 0.25s linear;
 }

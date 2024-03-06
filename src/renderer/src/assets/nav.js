@@ -228,7 +228,6 @@ const handleSectionTrigger = async (event) => {
     }
 
     if (document.getElementById("edit-dataset-component-lottie").innerHTML == "") {
-
       lottie.loadAnimation({
         container: document.getElementById("edit-dataset-component-lottie"),
         animationData: modifyDataset,
