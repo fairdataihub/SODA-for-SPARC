@@ -3580,7 +3580,13 @@ window.exitCurate = async (resetProgressTabs, start_over = false) => {
       if (start_over) {
         $("#organize_dataset_btn").click();
       } else {
-        // forceActionSidebar("show");
+        window.returnToGuided();
+        if ($("#nextBtn").prop("disabled") === true) {
+          window.nextBtnDisabledVariable = true;
+        } else {
+          window.nextBtnDisabledVariable = false;
+        }
+        // $("#guided_mode_view").click();
       }
     } else {
       window.globalGettingStarted1stQuestionBool = false;
