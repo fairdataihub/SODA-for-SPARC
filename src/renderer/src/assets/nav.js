@@ -152,6 +152,7 @@ const handleSectionTrigger = async (event) => {
   if (sectionId === "organize-section") {
     //reset lazyloading values
     resetLazyLoading();
+    window.hasFiles = false; 
     //Transition file explorer elements to freeform mode
     window.scroll_box = document.querySelector("#organize-dataset-tab");
     $(".shared-folder-structure-element").appendTo($("#free-form-folder-structure-container"));
