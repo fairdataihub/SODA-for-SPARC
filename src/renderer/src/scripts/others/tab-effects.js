@@ -2060,7 +2060,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     // alert the user that manifest files will not be uploaded
     await swalShowInfo(
       "Manifest files will not be uploaded to Pennsieve",
-      "This workflow will not create complete manifest files when the selected dataset has data files on Pennsieve. To create complete manifest files please upload your data first then use the `Create manifest.xlsx` feature in the `Advanced features` page."
+      "This is because the selected dataset already has data files on Pennsieve. Please upload your local data files to the selected Pennsieve dataset first. Then use the `Create manifest.xlsx` feature in the `Advanced features` page to create and upload manifest files for this dataset."
     );
     // continue as usual otherwise
   }
