@@ -30,6 +30,8 @@ window.transitionToAdvancedFeature = (event) => {
     // Transition to the create manifest page\
     document.getElementById("manifest-creation-feature").classList.remove("hidden");
     document.getElementById("manifest-creation-feature").classList.add("is-shown");
+    // Reveal the start over button
+    document.getElementById("advanced-start-over-button").classList.remove("hidden");
   }
   if (button_id === "upload_banner_image_btn") {
     // Transition to the upload banner image page
@@ -45,10 +47,9 @@ window.transitionToAdvancedFeature = (event) => {
     // Transition to the validate dataset page
     document.getElementById("validate-dataset-feature").classList.remove("hidden");
     document.getElementById("validate-dataset-feature").classList.add("is-shown");
+    // Reveal the start over button
+    document.getElementById("advanced-start-over-button").classList.remove("hidden");
   }
-
-  // Reveal the start over button
-  document.getElementById("advanced-start-over-button").classList.remove("hidden");
 };
 
 const transitionToAdvancedPage = () => {
@@ -196,11 +197,6 @@ $("#advanced-start-over-button").on("click", async () => {
     document.getElementById("Question-prepare-manifest-6").classList.remove("show");
     document.getElementById("Question-prepare-manifest-6").classList.remove("prev");
   }
-  if (current_advanced_page === "upload_banner_image_btn") {
-    // Reset the upload banner image page
-    console.log("Resetting upload banner image page");
-    document.getElementById("div_add_edit_banner").classList.remove("show");
-  }
   if (current_advanced_page === "validate_dataset_btn") {
     // Reset the validate dataset page
     console.log("Resetting the validate dataset page");
@@ -255,24 +251,3 @@ $("#advanced-start-over-button").on("click", async () => {
     $("#validate_dataset-question-3").hide();
   }
 });
-
-const textObserver = new MutationObserver((mutations) => {
-  mutations.forEach((mutation) => {
-    console.log(mutation);
-    console.log(mutation.value);
-    console.log(mutation.target);
-    console.log(mutation.target.value);
-    console.log(mutation.oldValue);
-    if (mutation.target.value != "None") {
-      // Test
-      console.log("TEXT CHANGED");
-    }
-  });
-});
-
-console.log(document.getElementById("bf_dataset_create_manifest"));
-textObserver.observe(document.getElementById("bf_dataset_create_manifest"), {
-  characterData: true,
-});
-textObserver.observe(document.getElementById("bf_dataset_load_validator"), { characterData: true });
-// textObserver.observe(document.getElementById("bf_dataset_upload_banner_image"));
