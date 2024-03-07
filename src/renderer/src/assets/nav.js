@@ -8,7 +8,6 @@ while (!window.htmlPagesAdded) {
 
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 document.body.addEventListener("click", (event) => {
-  console.log("Firing here");
   // console.log(event.target)
   if (event.target.dataset.section) {
     handleSectionTrigger(event);
@@ -20,7 +19,6 @@ document.body.addEventListener("click", (event) => {
 });
 
 document.body.addEventListener("custom-back", (e) => {
-  console.log("Firing here");
   handleSectionTrigger(e);
 });
 // Variable used to determine the disabled status of the organize datasets next button
