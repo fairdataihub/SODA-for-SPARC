@@ -109,15 +109,15 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       return;
     }
 
-    // if the user has files already on their dataset when starting from new/local and merging to existing pennsieve then 
+    // if the user has files already on their dataset when starting from new/local and merging to existing pennsieve then
     // show them a message detailing why they cannot create manifest files
-    if(window.hasFiles) {
+    if (window.hasFiles) {
       console.log("User has files already in their dataset");
-      $("#manifest-creation-prohibited").show()
+      $("#manifest-creation-prohibited").show();
       // disable the manifest file checkbox
-      $("#generate-manifest-curate").prop("disabled", true)
+      $("#generate-manifest-curate").prop("disabled", true);
     } else {
-      $("#manifest-creation-prohibited").hide()
+      $("#manifest-creation-prohibited").hide();
     }
 
     if (document.getElementById("generate-manifest-curate").checked) {
