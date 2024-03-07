@@ -2059,8 +2059,8 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
 
     // alert the user that manifest files will not be uploaded
     await swalShowInfo(
-      "Manifest files will not be uploaded to Pennsieve.",
-      "This is because there are already files in your selected dataset and this workflow will not merge your Pennsieve and local files to create a complete manifest file for you. After you have uploaded your data please create a manifest file by using the Advanced Features standalone manifest generator."
+      "Manifest files will not be uploaded to Pennsieve",
+      "SODA has detected that there are already files in your selected dataset. This workflow will not merge the Pennsieve files with the local files to create a complete manifest file for you. You can create a complete manifest after uploading your data by using the `Create manifest.xlsx` feature in the `Advanced features` page."
     );
     // continue as usual otherwise
   }
