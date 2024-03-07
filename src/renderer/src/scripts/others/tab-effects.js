@@ -537,7 +537,12 @@ window.nextPrev = (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
   let parentTabs = document.getElementsByClassName("parent-tabs");
   console.log("Current tab: ", window.currentTab);
-  console.log("Current parent tabs: ", parentTabs[window.currentTab].id);
+  console.log("Page index shift: ", pageIndex)
+  console.log("Tab name of current tab: ", parentTabs[window.currentTab].id);
+
+  if(window.currentTab !== 0) {
+    window.currentTab += pageIndex;
+  }
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
     // let event = new CustomEvent("custom-back", {
@@ -749,6 +754,8 @@ window.nextPrev = (pageIndex) => {
     (window.sodaJSONObj["starting-point"]["type"] === "new" ||
       window.sodaJSONObj["starting-point"]["type"] === "local")
   ) {
+    console.log("Current tab: ", window.currentTab);
+    console.log("Page index shift: ", pageIndex)
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     window.currentTab = window.currentTab + pageIndex;
     $("#Question-generate-dataset").show();
