@@ -7,6 +7,10 @@ while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
+window.downloadTemplate = (template) => {
+  console.log("Downloading template: ", template);
+}
+
 const transitionToSDSPage = () => {
   //Hide the home screen
   document.getElementById("guided-home").classList.add("hidden");
