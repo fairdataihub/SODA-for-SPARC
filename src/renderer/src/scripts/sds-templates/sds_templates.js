@@ -1,7 +1,7 @@
 import { hideAllSectionsAndDeselectButtons } from "../../assets/nav";
 import { resetLazyLoading } from "../../assets/nav";
 import lottie from "lottie-web";
-import { existingDataset, modifyDataset} from "../../assets/lotties/lotties";
+import { existingDataset, modifyDataset } from "../../assets/lotties/lotties";
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
