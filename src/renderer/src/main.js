@@ -23,6 +23,7 @@ import "./scripts/metadata-files/readme-changes";
 import "./scripts/organize-dataset/validation-functions";
 import "./scripts/collections/collections";
 import "./scripts/metadata-files/downloadTemplates";
+import "./scripts/advanced-features/advanced_features";
 
 // Application Lotties
 import "./assets/lotties/activate-lotties";

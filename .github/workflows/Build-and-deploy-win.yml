@@ -8,6 +8,7 @@ on:
       - staging
       - ui-update
 
+
 jobs:
   deploy-on-windows:
     runs-on: windows-latest
