@@ -2321,7 +2321,7 @@
                                   Current dataset:
                                 </h5>
                               </div>
-                              <div class="change-current-account" style="flex: auto">
+                              <div class="change-current-account" style="flex: auto" id="organize-ds-step-6-ds-select">
                                 <span style="
                                     color: #000;
                                     font-weight: 600;
@@ -2399,7 +2399,7 @@
                           </div>
                           <div style="
                               display: none;
-                              flex-direction: row;
+                              flex-direction: column;
                               justify-content: center;
                               margin: 10px auto;
                             ">
@@ -2413,6 +2413,7 @@
                               ">
                               Confirm
                             </button>
+                            <p id="para-continue-empty-ds-selected" style="text-align: center; font-weight: 600; color: var(--color-light-green)"></p>
                           </div>
                         </div>
                       </div>
@@ -2429,45 +2430,29 @@
                 <div class="grouped fields">
                   <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center">How would you like to
                     handle existing folders?
-                    <div class="tooltipnew">
-                      <img class="info" src="./img/info.png" />
-                      <span class="tooltiptext" style="font-size: 12px">
-                        Tell SODA how to handle folders specified during Step 3 that are already
-                        existing (same name, same relative location) on your Pennsieve dataset
-                        <ul>
-                          <li>Create duplicate: Create another copy of existing folders.</li>
-                          <li>
-                            Replace: Delete existing folders on Pennsieve then upload new ones
-                          </li>
-                          <li>
-                            Merge: Upload new files into the existing folders. Existing files will
-                            be handles as intructed in the next step.
-                          </li>
-                          <li>Skip: Existing folders will not be uploaded.</li>
-                        </ul>
-                      </span>
-                    </div>
-
                     <br /><span style="color: #898989; font-size: 12px">Please select one:</span>
                   </label>
+                  <div class="info-dropdown mt-lg" style="margin:auto;">
+                    <p class="info-dropdown-text" data-dropdown-type="info">What do these options do?</p>
+                    <i class="fas fa-chevron-right"></i>
+                  </div>
+                  <div class="info-container">
+                    <p class="help-text mb-0">
+                      Tell SODA how to handle folders specified during Step 3 that already
+                      exist (same name, same relative location) on your Pennsieve dataset:
+                    </p>
+                      <ul>
+                        <li>
+                          Replace: Delete existing folders on Pennsieve then upload new ones
+                        </li>
+                        <li>
+                          Merge: Upload new files into the existing folders. Existing files will
+                          be handled as intructed in the next step.
+                        </li>
+                        <li>Skip: Existing folders will not be uploaded.</li>
+                      </ul>
+                  </div>
                   <div style="display: flex; flex-direction: row; justify-content: center">
-                    <div style="margin: 15px 0">
-                      <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options"
-                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" name="generate-5" id="existing-folders-duplicate"
-                              type="radio" />
-                            <label for="existing-folders-duplicate"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <i class="far fa-copy" style="color: #13716d"></i>
-                          <h2>Create a duplicate</h2>
-                        </div>
-                      </div>
-                    </div>
-
                     <div style="margin: 15px 0">
                       <!-- <button> -->
                       <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options"
@@ -2538,39 +2523,24 @@
                 <div class="grouped fields">
                   <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center">How would you like to
                     handle existing files?
-                    <div class="tooltipnew">
-                      <img class="info" src="./img/info.png" />
-                      <span class="tooltiptext" style="font-size: 12px">
+                    <br /><span style="color: #898989; font-size: 12px">Please select one:</span>
+                  </label>
+                    <div class="info-dropdown mt-lg" style="margin:auto;">
+                      <p class="info-dropdown-text" data-dropdown-type="info">What do these options do?</p>
+                      <i class="fas fa-chevron-right"></i>
+                    </div>
+                    <div class="info-container">
+                      <p class="help-text mb-0">
                         Tell SODA how to handle files specified during Step 3 and metadata files
-                        specified during Step 4 that are already existing (same name, same relative
-                        location) on your Pennsieve dataset
+                        specified during Step 4 that already exist (same name, same relative
+                        location) on your Pennsieve dataset:
+                      </p>
                         <ul>
-                          <li>Create duplicate: Create another copy of existing files.</li>
                           <li>Replace: Delete existing files on Pennsieve then upload new ones</li>
                           <li>Skip: Existing files will not be uploaded.</li>
                         </ul>
-                      </span>
                     </div>
-                    <br /><span style="color: #898989; font-size: 12px">Please select one:</span>
-                  </label>
                   <div style="display: flex; flex-direction: row; justify-content: center">
-                    <div style="margin: 15px 0">
-                      <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div-old"
-                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" name="generate-6" id="existing-files-duplicate"
-                              type="radio" />
-                            <label for="existing-files-duplicate"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <i class="far fa-copy" style="color: #13716d; font-size: 43px"></i>
-                          <h2>Create a duplicate</h2>
-                        </div>
-                      </div>
-                    </div>
-
                     <div style="margin: 15px 0">
                       <!-- <button> -->
                       <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div-old"

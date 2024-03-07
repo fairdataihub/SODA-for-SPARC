@@ -13076,7 +13076,7 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
   window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
   window.organizeDSglobalPath.value = "";
   window.dataset_path = document.getElementById("guided-input-global-path");
-  let scroll_box = document.querySelector("#guided-body");
+  window.scroll_box = document.querySelector("#guided-body");
   itemsContainer.innerHTML = "";
   resetLazyLoading();
   freeFormItemsContainer.classList.remove("freeform-file-explorer");

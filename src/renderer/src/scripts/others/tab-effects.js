@@ -8,6 +8,7 @@ import { clientError, userErrorMessage } from "./http-error-handler/error-handle
 import introJs from "intro.js";
 import Swal from "sweetalert2";
 import api from "../others/api/api";
+import { swalShowInfo } from "../utils/swal-utils";
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -123,6 +124,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   if (tabNow == 5) {
     // Disable the continue button if a destination has not been selected
     // Used when traversing back and forth between tabs
+    // TODO: Update code to show Continue if the para for empty dataset is showing
     if (
       $("#inputNewNameDataset").val() !== "" ||
       ($("#Question-generate-dataset-existing-files-options")
@@ -132,7 +134,8 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
           .find(".option-card")
           .hasClass("checked")) ||
       $("#generate-dataset-replace-existing").find(".option-card").hasClass("checked") ||
-      $("#input-destination-generate-dataset-locally")[0].placeholder !== "Browse here"
+      $("#input-destination-generate-dataset-locally")[0].placeholder !== "Browse here" ||
+      $("#para-continue-empty-ds-selected").is(":visible")
     ) {
       $("#nextBtn").prop("disabled", false);
     } else {
@@ -386,7 +389,13 @@ const fill_info_details = () => {
         );
         new_dataset_name = $("#inputNewNameDataset").val().trim();
       }
-      if (window.manifestFileCheck.checked) {
+      // generate manifest files only when user has checked manifest file generation and they are not starting from new/local and merging
+      // into an existing dataset that already has files
+      console.log(
+        "Manifest cards checked information: ",
+        window.manifestFileCheck.checked + window.hasFiles
+      );
+      if (window.manifestFileCheck.checked && !window.hasFiles) {
         add_card_detail(
           "Manifest files",
           "Requested from SODA",
@@ -515,6 +524,8 @@ const checkHighLevelFoldersInput = () => {
 window.nextPrev = (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
   let parentTabs = document.getElementsByClassName("parent-tabs");
+  console.log("Current tab: ", window.currentTab);
+  console.log("Current parent tabs: ", parentTabs[window.currentTab].id);
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
     // let event = new CustomEvent("custom-back", {
@@ -753,6 +764,7 @@ window.nextPrev = (pageIndex) => {
     window.sodaJSONObj["starting-point"]["type"] == "bf" &&
     pageIndex === -1
   ) {
+    console.log("In validate tab?");
     // if moving backwards fron the validate step
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     // skip step 6 ( options irrelevant for existing bf/pennsieve workflow)
@@ -760,6 +772,7 @@ window.nextPrev = (pageIndex) => {
     window.showParentTab(window.currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
   } else if (parentTabs[window.currentTab].id === "generate-dataset-tab") {
+    console.log("We are in the generate dataset tab?");
     // Hide the current tab:
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
@@ -783,6 +796,10 @@ window.nextPrev = (pageIndex) => {
       // disable the continue button
       $("#nextBtn").prop("disabled", true);
     }
+  } else if (window.currentTab === 4) {
+    console.log("We are in the generate dataset tab");
+    window.showParentTab(window.currentTab, pageIndex);
+    // generate dataset tab
   } else {
     // Hide the current tab:
     $(parentTabs[window.currentTab]).removeClass("tab-active");
@@ -1070,6 +1087,8 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     }
   }
 
+  console.log("Wooooow");
+
   // If Confirm dataset btn was hidden, show it again here
   // under Step 6
   let step6 = document.getElementById("generate-dataset-tab");
@@ -1078,6 +1097,10 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     if (step6.classList.contains("tab-active")) {
       $("#nextBtn").prop("disabled", true);
     }
+
+    // hide the para para-continue-empty-ds-selected
+    $("#para-continue-empty-ds-selected").hide();
+
     if ($("#current-bf-dataset-generate").text() !== "None") {
       $($("#button-confirm-bf-dataset").parents()[0]).css("display", "flex");
       $("#button-confirm-bf-dataset").show();
@@ -2011,6 +2034,35 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
   // display the target tab (data-next tab)
   if (!target.classList.contains("show")) {
     target.classList.add("show");
+  }
+
+  // Step 6 - The Merge/Skip/Replace options for selecting how to upload data to an existing Pennsieve dataset
+  if (ev.getAttribute("data-next") === "Question-generate-dataset-existing-folders-options") {
+    if (!window.hasFiles) {
+      // select the Merge option for Folders
+      document.getElementById("existing-folders-merge").checked = true;
+      $("#existing-folders-merge").hide();
+      // select the Skip option for Files
+      document.getElementById("existing-files-replace").checked = true;
+
+      // enable the continue button
+      $("#nextBtn").prop("disabled", false);
+
+      $("#para-continue-empty-ds-selected").text("Please continue below.");
+      $("#para-continue-empty-ds-selected").show();
+
+      // hide the confirm button
+      $("#button-confirm-bf-dataset").hide();
+
+      return;
+    }
+
+    // alert the user that manifest files will not be uploaded
+    await swalShowInfo(
+      "Manifest files will not be uploaded to Pennsieve.",
+      "This is because there are already files in your selected dataset and this workflow will not merge your Pennsieve and local files to create a complete manifest file for you. After you have uploaded your data please create a manifest file by using the Advanced Features standalone manifest generator."
+    );
+    // continue as usual otherwise
   }
 
   // here, handling existing folders and files tabs are independent of each other
@@ -3522,14 +3574,21 @@ window.exitCurate = async (resetProgressTabs, start_over = false) => {
       $("#Question-getting-started-1").addClass("show");
       $("#generate-dataset-progress-tab").css("display", "none");
 
+      window.hasFiles = false;
       window.currentTab = 0;
       window.wipeOutCurateProgress();
-      $("#main_tabs_view")[0].click();
+      window.showParentTab(0, 1);
       window.globalGettingStarted1stQuestionBool = false;
       if (start_over) {
         $("#organize_dataset_btn").click();
       } else {
-        // forceActionSidebar("show");
+        window.returnToGuided();
+        if ($("#nextBtn").prop("disabled") === true) {
+          window.nextBtnDisabledVariable = true;
+        } else {
+          window.nextBtnDisabledVariable = false;
+        }
+        // $("#guided_mode_view").click();
       }
     } else {
       window.globalGettingStarted1stQuestionBool = false;
@@ -3592,6 +3651,12 @@ window.wipeOutCurateProgress = () => {
 
   // uncheck auto-generated manifest checkbox
   $("#generate-manifest-curate").prop("checked", false);
+
+  // reset dataset selection options
+  $("#current-bf-dataset").text("None"); // step 1
+  $("#current-bf-dataset-generate").text("None"); // step 6 for when merging a new dataset into an existing dataset
+  $("#button-confirm-bf-dataset").hide(); // hide step 6 confirm button until the user selects the dataset again
+  //
 };
 
 // once users click on option card: Organize dataset

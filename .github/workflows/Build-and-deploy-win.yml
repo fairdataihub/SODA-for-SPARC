@@ -6,8 +6,8 @@ on:
     branches:
       - main
       - staging
-      - ds-does-not-exist
-      - advanced-features
+      - ui-update
+
 
 jobs:
   deploy-on-windows:

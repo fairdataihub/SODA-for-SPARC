@@ -1649,6 +1649,19 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               return;
             }
 
+            console.log("The event target is: ", dropdownEventID);
+
+            if (dropdownEventID === "organize-ds-step-6-ds-select") {
+              // get the amount of files in the existing dataset and skip the Merge/Skip/Replace step if there are no files in the existing dataset
+              let packages = await api.getNumberOfPackagesInDataset(bfDataset);
+
+              if (Object.keys(packages).length === 0) {
+                window.hasFiles = false;
+              } else {
+                window.hasFiles = true;
+              }
+            }
+
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
               $("#ds-name").val(bfDataset);
               $("#ds-description").val = $("#bf-dataset-subtitle").val;
