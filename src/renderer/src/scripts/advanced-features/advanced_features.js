@@ -165,6 +165,30 @@ $("#advanced-start-over-button").on("click", async () => {
   // Depending on the current page we will reset the advanced feature's page
   if (current_advanced_page === "create_manifest_btn") {
     // Reset the create manifest page
+    if (document.getElementById("pennsieve-option-create-manifest").classList.contains("checked") || document.getElementById("local-option-create-manifest").classList.contains("checked")) {
+      let resetManifestResult = await Swal.fire({
+        icon: "warning",
+        text: "This will reset your current manifest creation progress. Do you wish to continue?",
+        heightAuto: false,
+        showCancelButton: true,
+        cancelButtonText: "No",
+        focusCancel: true,
+        confirmButtonText: "Yes",
+        backdrop: "rgba(0,0,0, 0.4)",
+        reverseButtons: window.reverseSwalButtons,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+
+      // user does not want to reset
+      if (!resetManifestResult.isConfirmed) {
+        return;
+      }
+    }
 
     // Remove checked class from buttons
     document.getElementById("pennsieve-option-create-manifest").classList.remove("checked");
