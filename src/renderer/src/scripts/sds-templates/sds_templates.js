@@ -12,11 +12,11 @@ while (!window.htmlPagesAdded) {
 window.downloadTemplate = (template) => {
   console.log("Downloading template: ", template);
 
-  const metadataFilesPath = path.join(__dirname, '../../../public/file_templates');
+  const metadataFilesPath = path.join(__dirname, "../../../public/file_templates");
 
   fs.readdir(metadataFilesPath, (err, files) => {
     if (err) {
-      console.error('Error reading metadata files:', err);
+      console.error("Error reading metadata files:", err);
       return;
     }
 
@@ -24,10 +24,9 @@ window.downloadTemplate = (template) => {
     files.forEach((file) => {
       const filePath = path.join(metadataFilesPath, file);
       // Do something with the metadata file
-      console.log('Processing metadata file:', filePath);
+      console.log("Processing metadata file:", filePath);
     });
   });
-  
 
   if (template === "manifest-only") {
     // Create a zip file with the metadata files only
@@ -37,7 +36,7 @@ window.downloadTemplate = (template) => {
     // Create a zip file with the high level folders and the metadata files
     console.log("High level folders");
   }
-}
+};
 
 const transitionToSDSPage = () => {
   //Hide the home screen
