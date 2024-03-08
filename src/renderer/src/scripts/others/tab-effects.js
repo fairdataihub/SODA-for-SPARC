@@ -2095,11 +2095,13 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
       $("#button-confirm-bf-dataset").hide();
 
       return;
-    } else {
-      $("#Question-generate-dataset-existing-folders-options").show()
+    } 
+      
+    $("#Question-generate-dataset-existing-folders-options").show()
+    document.getElementById("existing-folders-merge").checked = false;
+    document.getElementById("existing-files-replace").checked = false;
 
-    }
-
+    
     // alert the user that manifest files will not be uploaded
     await swalShowInfo(
       "Manifest files will not be uploaded to Pennsieve",
