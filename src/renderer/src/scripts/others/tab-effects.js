@@ -108,6 +108,21 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       return;
     }
 
+    // if the user has files already on their dataset when starting from new/local and merging to existing pennsieve then
+    // show them a message detailing why they cannot create manifest files
+    if (window.hasFiles) {
+      $("#manifest-creation-prohibited").show();
+      if ($("#generate-manifest-curate").prop("checked")) {
+        $("#generate-manifest-curate").click();
+      }
+      $("#generate-manifest-curate").prop("disabled", true);
+      $("#nextBtn").prop("disabled", false);
+      // disable the manifest file checkbox
+      $("#generate-manifest-curate").prop("disabled", true);
+    } else {
+      $("#manifest-creation-prohibited").hide();
+    }
+
     if (document.getElementById("generate-manifest-curate").checked) {
       // need to run manifest creation
       //Hide the UI until the manifest card are created
@@ -391,10 +406,6 @@ const fill_info_details = () => {
       }
       // generate manifest files only when user has checked manifest file generation and they are not starting from new/local and merging
       // into an existing dataset that already has files
-      console.log(
-        "Manifest cards checked information: ",
-        window.manifestFileCheck.checked + window.hasFiles
-      );
       if (window.manifestFileCheck.checked && !window.hasFiles) {
         add_card_detail(
           "Manifest files",
@@ -524,8 +535,6 @@ const checkHighLevelFoldersInput = () => {
 window.nextPrev = (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
   let parentTabs = document.getElementsByClassName("parent-tabs");
-  console.log("Current tab: ", window.currentTab);
-  console.log("Current parent tabs: ", parentTabs[window.currentTab].id);
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
     // let event = new CustomEvent("custom-back", {
@@ -764,7 +773,6 @@ window.nextPrev = (pageIndex) => {
     window.sodaJSONObj["starting-point"]["type"] == "bf" &&
     pageIndex === -1
   ) {
-    console.log("In validate tab?");
     // if moving backwards fron the validate step
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     // skip step 6 ( options irrelevant for existing bf/pennsieve workflow)
@@ -772,7 +780,6 @@ window.nextPrev = (pageIndex) => {
     window.showParentTab(window.currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
   } else if (parentTabs[window.currentTab].id === "generate-dataset-tab") {
-    console.log("We are in the generate dataset tab?");
     // Hide the current tab:
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
@@ -796,8 +803,27 @@ window.nextPrev = (pageIndex) => {
       // disable the continue button
       $("#nextBtn").prop("disabled", true);
     }
+
+    // check if we are moving to the previous tab from the current tab and if we are starting local or new
+    if (
+      (window.sodaJSONObj["starting-point"]["type"] === "new" ||
+        window.sodaJSONObj["starting-point"]["type"] === "local") &&
+      pageIndex === -1
+    ) {
+      if (window.hasFiles) {
+        $("#manifest-creation-prohibited").show();
+        // uncheck the manifest file checkbox if it is currently checked
+        if ($("#generate-manifest-curate").prop("checked")) {
+          $("#generate-manifest-curate").click();
+        }
+        $("#generate-manifest-curate").prop("disabled", true);
+        $("#nextBtn").prop("disabled", false);
+      } else {
+        $("#manifest-creation-prohibited").hide();
+        $("#generate-manifest-curate").prop("disabled", false);
+      }
+    }
   } else if (window.currentTab === 4) {
-    console.log("We are in the generate dataset tab");
     window.showParentTab(window.currentTab, pageIndex);
     // generate dataset tab
   } else {
@@ -1086,8 +1112,6 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
       $("#div-bf-account-btns-getting-started button").show();
     }
   }
-
-  console.log("Wooooow");
 
   // If Confirm dataset btn was hidden, show it again here
   // under Step 6
@@ -2042,6 +2066,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
       // select the Merge option for Folders
       document.getElementById("existing-folders-merge").checked = true;
       $("#existing-folders-merge").hide();
+      $("#Question-generate-dataset-existing-folders-options").hide();
       // select the Skip option for Files
       document.getElementById("existing-files-replace").checked = true;
 
@@ -2057,10 +2082,14 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
       return;
     }
 
+    $("#Question-generate-dataset-existing-folders-options").show();
+    document.getElementById("existing-folders-merge").checked = false;
+    document.getElementById("existing-files-replace").checked = false;
+
     // alert the user that manifest files will not be uploaded
     await swalShowInfo(
-      "Manifest files will not be uploaded to Pennsieve.",
-      "This is because there are already files in your selected dataset and this workflow will not merge your Pennsieve and local files to create a complete manifest file for you. After you have uploaded your data please create a manifest file by using the Advanced Features standalone manifest generator."
+      "Manifest files will not be uploaded to Pennsieve",
+      'The selected Pennsieve dataset already includes data files. To prevent conflicts, SODA will not generate manifest files. You can generate manifest files after the upload is complete by navigating to the home page, selecting "Advanced features", and then selecting the "Create manifest files" option.'
     );
     // continue as usual otherwise
   }

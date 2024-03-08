@@ -403,7 +403,6 @@ const startupServerAndApiCheck = async () => {
   }
 
   if (launchAnnouncement) {
-    console.log("Checking for announcements");
     await Swal.close();
     await checkForAnnouncements("announcements");
     launchAnnouncement = false;
@@ -913,7 +912,6 @@ window.run_pre_flight_checks = async (check_update = true) => {
     }
 
     if (launchAnnouncement) {
-      console.log("checking for announcements");
       await checkForAnnouncements("announcements");
       launchAnnouncement = false;
     }
@@ -1144,7 +1142,6 @@ window.check_api_key = async () => {
       type: "error",
       message: "No account was found",
     });
-    console.log("Failed here");
     return false;
   } else {
     log.info("Found non obsolete api key in default profile");

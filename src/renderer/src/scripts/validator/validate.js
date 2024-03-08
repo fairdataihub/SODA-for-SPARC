@@ -808,7 +808,6 @@ document.querySelector("#validate_dataset-1-local").addEventListener("click", as
 document
   .querySelector("#validate_dataset-1-pennsieve")
   .addEventListener("click", async function () {
-    console.log("button clicked");
     // if there is validation work done check if the user wants to reset progress
     let userWantsToReset = await userWantsToResetValidation();
     if (!userWantsToReset) {
