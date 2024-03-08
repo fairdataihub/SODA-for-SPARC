@@ -8,7 +8,6 @@ while (!window.htmlPagesAdded) {
 
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 document.body.addEventListener("click", (event) => {
-  // console.log(event.target)
   if (event.target.dataset.section) {
     handleSectionTrigger(event);
   } else if (event.target.dataset.modal) {
@@ -89,7 +88,6 @@ const handleSectionTrigger = async (event) => {
 
   organizeDatasetRadioButtons.forEach((radioButton) => {
     if (radioButton.classList.contains("checked")) {
-      console.log("Here we are govenor");
       boolRadioButtonsSelected = true;
     }
   });

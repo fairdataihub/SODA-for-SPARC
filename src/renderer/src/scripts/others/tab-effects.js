@@ -104,7 +104,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     $("#nextBtn").prop("disabled", false);
   }
   if (tabNow == 4) {
-    console.log("Manifest page");
     if (nextOrPrev === -1) {
       return;
     }
@@ -112,7 +111,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     // if the user has files already on their dataset when starting from new/local and merging to existing pennsieve then
     // show them a message detailing why they cannot create manifest files
     if (window.hasFiles) {
-      console.log("User has files already in their dataset");
       $("#manifest-creation-prohibited").show();
       if ($("#generate-manifest-curate").prop("checked")) {
         $("#generate-manifest-curate").click();
@@ -408,10 +406,6 @@ const fill_info_details = () => {
       }
       // generate manifest files only when user has checked manifest file generation and they are not starting from new/local and merging
       // into an existing dataset that already has files
-      console.log(
-        "Manifest cards checked information: ",
-        window.manifestFileCheck.checked + window.hasFiles
-      );
       if (window.manifestFileCheck.checked && !window.hasFiles) {
         add_card_detail(
           "Manifest files",
@@ -541,9 +535,6 @@ const checkHighLevelFoldersInput = () => {
 window.nextPrev = (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
   let parentTabs = document.getElementsByClassName("parent-tabs");
-  console.log("Current tab: ", window.currentTab);
-  console.log("Page index shift: ", pageIndex);
-  console.log("Tab name of current tab: ", parentTabs[window.currentTab].id);
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
     // let event = new CustomEvent("custom-back", {
@@ -755,8 +746,6 @@ window.nextPrev = (pageIndex) => {
     (window.sodaJSONObj["starting-point"]["type"] === "new" ||
       window.sodaJSONObj["starting-point"]["type"] === "local")
   ) {
-    console.log("Current tab: ", window.currentTab);
-    console.log("Page index shift: ", pageIndex);
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     window.currentTab = window.currentTab + pageIndex;
     $("#Question-generate-dataset").show();
@@ -784,7 +773,6 @@ window.nextPrev = (pageIndex) => {
     window.sodaJSONObj["starting-point"]["type"] == "bf" &&
     pageIndex === -1
   ) {
-    console.log("In validate tab?");
     // if moving backwards fron the validate step
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     // skip step 6 ( options irrelevant for existing bf/pennsieve workflow)
@@ -836,7 +824,6 @@ window.nextPrev = (pageIndex) => {
       }
     }
   } else if (window.currentTab === 4) {
-    console.log("We are in the generate dataset tab");
     window.showParentTab(window.currentTab, pageIndex);
     // generate dataset tab
   } else {
@@ -1125,8 +1112,6 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
       $("#div-bf-account-btns-getting-started button").show();
     }
   }
-
-  console.log("Wooooow");
 
   // If Confirm dataset btn was hidden, show it again here
   // under Step 6

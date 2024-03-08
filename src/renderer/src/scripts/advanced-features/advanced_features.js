@@ -22,7 +22,6 @@ window.transitionToAdvancedFeature = (event) => {
   document.getElementById("advanced-features-selection-page").classList.remove("full-shown");
   document.getElementById("advanced-features-selection-page").classList.add("hidden");
 
-  console.log("Button clicked: ", button_id);
   current_advanced_page = button_id;
 
   // Transition to the selected advanced feature
@@ -88,7 +87,6 @@ $("#direct-to-advanced-features").on("click", () => {
 // Back button event listener
 $("#advanced-back-button").on("click", () => {
   // Transition back depending on what current page is being displayed
-  console.log("Back button clicked");
   if (current_advanced_page === "advanced-features-selection-page") {
     // Transition back to the home screen
     document.getElementById("guided-home").classList.remove("hidden");
@@ -166,7 +164,6 @@ $("#advanced-start-over-button").on("click", async () => {
   // Depending on the current page we will reset the advanced feature's page
   if (current_advanced_page === "create_manifest_btn") {
     // Reset the create manifest page
-    console.log("Resetting create manifest page");
 
     // Remove checked class from buttons
     document.getElementById("pennsieve-option-create-manifest").classList.remove("checked");
@@ -198,12 +195,10 @@ $("#advanced-start-over-button").on("click", async () => {
   }
   if (current_advanced_page === "upload_banner_image_btn") {
     // Reset the upload banner image page
-    console.log("Resetting upload banner image page");
     document.getElementById("div_add_edit_banner").classList.remove("show");
   }
   if (current_advanced_page === "validate_dataset_btn") {
     // Reset the validate dataset page
-    console.log("Resetting the validate dataset page");
     let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
 
     if (validationErrorsTable.childElementCount > 0) {
@@ -258,19 +253,11 @@ $("#advanced-start-over-button").on("click", async () => {
 
 const textObserver = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
-    console.log(mutation);
-    console.log(mutation.value);
-    console.log(mutation.target);
-    console.log(mutation.target.value);
-    console.log(mutation.oldValue);
     if (mutation.target.value != "None") {
-      // Test
-      console.log("TEXT CHANGED");
     }
   });
 });
 
-console.log(document.getElementById("bf_dataset_create_manifest"));
 textObserver.observe(document.getElementById("bf_dataset_create_manifest"), {
   characterData: true,
 });
