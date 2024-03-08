@@ -248,11 +248,6 @@ const handleSectionTrigger = async (event) => {
     guidedUnLockSideBar();
   }
 
-  if (sectionId === "create_new_bf_dataset-section") {
-    $("#dataset-success-container").addClass("hidden");
-    $("dataset-created-success-lottie").empty();
-  }
-
   hideAllSectionsAndDeselectButtons();
   if (event.detail.target) {
     let previous_section = `${event.detail.target.dataset.section}-section`;
