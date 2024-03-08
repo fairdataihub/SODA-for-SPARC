@@ -7,7 +7,6 @@ on:
       - main
       - staging
       - ui-update
-      - sds-templates
 
 
 jobs:
