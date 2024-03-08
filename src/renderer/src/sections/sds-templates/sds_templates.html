@@ -1,0 +1,142 @@
+<section
+  id="sds_templates-section"
+  class="section js-section u-category-windows hidden"
+  style="left: 186px; top: -5px; padding-left: 0 !important; padding-top: 0 !important"
+>
+  <div
+    id="sds_templates-selection-page"
+    class="hidden"
+    style="width: 100%; display: flex; flex-direction: column; height: calc(100% - 5rem)"
+  >
+    <header style="margin-top: 1rem; margin-bottom: 2rem">
+      <div
+        class="container-tab-information-header"
+        style="margin-bottom: 0 !important; width: 100%; margin-left: 0"
+      >
+        <div class="need-help-div" style="text-align-last: center">
+          <h2 style="font-size: 20px; width: 100%; margin-bottom: 0.5rem; margin-top: -1rem">
+            SDS-Templates
+          </h2>
+        </div>
+      </div>
+    </header>
+    <div style="display: flex; align-items: center; height: calc(100% - 5rem)">
+      <div class="d-flex justify-center" style="gap: 5rem">
+        <button
+          class="content-button tippy-content-main"
+          id="download-high-level-folders-btn"
+          data-tippy-content="This will download a template folder structure and templates for all the high-level metadata fiels prescribed in the SPARC Data Structure (SDS)"
+          rel="popover"
+          data-tippy-placement="bottom"
+          data-trigger="hover"
+          onclick="window.downloadTemplate('high-level-folders')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
+            <path
+              fill="none"
+              stroke="#408080"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 10v6m0 0l3-2m-3 2l-3-2M3 6v10.8c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h11.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874C21 18.48 21 17.92 21 16.8V9.2c0-1.12 0-1.68-.218-2.108a2 2 0 0 0-.874-.874C19.48 6 18.92 6 17.8 6H12M3 6h9M3 6a2 2 0 0 1 2-2h3.675c.489 0 .734 0 .964.055c.204.05.399.13.578.24c.202.124.375.297.72.643L12 6"
+            />
+          </svg>
+          <svg
+            class="hidden"
+            xmlns="http://www.w3.org/2000/svg"
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+          >
+            <g fill="none" stroke="#408080" stroke-linecap="round" stroke-width="2">
+              <path
+                stroke-dasharray="2 4"
+                stroke-dashoffset="6"
+                d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21"
+              >
+                <animate
+                  attributeName="stroke-dashoffset"
+                  dur="0.6s"
+                  repeatCount="indefinite"
+                  values="6;0"
+                />
+              </path>
+              <path
+                stroke-dasharray="30"
+                stroke-dashoffset="30"
+                d="M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3"
+              >
+                <animate
+                  fill="freeze"
+                  attributeName="stroke-dashoffset"
+                  begin="0.1s"
+                  dur="0.3s"
+                  values="30;0"
+                />
+              </path>
+              <path stroke-dasharray="10" stroke-dashoffset="10" d="M12 8v7.5">
+                <animate
+                  fill="freeze"
+                  attributeName="stroke-dashoffset"
+                  begin="0.5s"
+                  dur="0.2s"
+                  values="10;0"
+                />
+              </path>
+              <path
+                stroke-dasharray="6"
+                stroke-dashoffset="6"
+                d="M12 15.5l3.5 -3.5M12 15.5l-3.5 -3.5"
+              >
+                <animate
+                  fill="freeze"
+                  attributeName="stroke-dashoffset"
+                  begin="0.7s"
+                  dur="0.2s"
+                  values="6;0"
+                />
+              </path>
+            </g>
+          </svg>
+          <h2>Download folder structure and metadata files</h2>
+        </button>
+        <button
+          class="content-button"
+          id="download-manifest-only-btn"
+          data-original-title=""
+          title=""
+          data-tippy-content="This will download the templates for all the high-levevl metadata files prescribed in the SPARC Data Structure (SDS)"
+          rel="popover"
+          data-trigger="hover"
+          data-tippy-placement="bottom"
+          onclick="window.downloadTemplate('manifest-only')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="48px" height="48px" viewBox="0 0 14 14">
+            <g fill="none" stroke="#408080" stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M12.5 12.5a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1v-11a1 1 0 0 1 1-1H9L12.5 4z"
+              ></path>
+              <path fill="none" d="m9 8l-2 2l-2-2m2 2V4.5" stroke="#b80d49"></path>
+            </g>
+          </svg>
+          <h2>Download metadata files</h2>
+        </button>
+      </div>
+    </div>
+  </div>
+  <footer
+    class="footer-container hidden"
+    id="sds-templates-footer"
+    style="width: calc(100% - 1.5rem)"
+  >
+    <div class="guided--container-footer-buttons" style="margin-left: 1rem; width: 100%">
+      <button
+        class="ui secondary basic button"
+        id="sds-templates-back-button"
+        style="width: 200px !important; font-family: Poppins"
+      >
+        <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+      </button>
+    </div>
+  </footer>
+</section>

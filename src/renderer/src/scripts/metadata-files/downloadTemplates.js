@@ -8,11 +8,8 @@ while (!window.htmlPagesAdded) {
 }
 
 // Metadata Templates //
-const downloadSubmission = document.getElementById("a-submission");
-const downloadSamples = document.getElementById("a-samples");
-const downloadSubjects = document.getElementById("a-subjects");
-const downloadDescription = document.getElementById("a-description");
-const downloadManifest = document.getElementById("a-manifest");
+const downloadHighLvlFolders = document.getElementById("download-high-level-folders-btn");
+const downloadMetadataFiles = document.getElementById("download-manifest-only-btn");
 
 let templateArray = [
   "submission.xlsx",
@@ -21,49 +18,74 @@ let templateArray = [
   "samples.xlsx",
   "manifest.xlsx",
   "DataDeliverablesDocument-template.docx",
+  "code_description.xlsx",
+  "resources.xlsx",
+  "performances.xlsx",
+  "code_description.xlsx",
+  "code_parameters.xlsx",
 ];
+
+let templateHighLvlFolders = ["code/", "derivative/", "docs/", "primary/", "protocol/", "source/"];
 
 const downloadTemplates = async (templateItem, destinationFolder) => {
   let currentDirectory = await window.electron.ipcRenderer.invoke("get-current-directory");
-  let templatePath = window.path.join(
-    currentDirectory,
-    "..",
-    "renderer",
-    "file_templates",
-    templateItem
-  );
-  let destinationPath = window.path.join(destinationFolder, templateItem);
 
-  if (window.fs.existsSync(destinationPath)) {
-    let emessage = "File '" + templateItem + "' already exists in " + destinationFolder;
-    Swal.fire({
-      icon: "error",
-      title: "Metadata file already exists",
-      text: `${emessage}`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    });
+  if (Array.isArray(templateItem)) {
+    for (let i = 0; i < templateItem.length; i++) {
+      // Create a path for each template index
 
-    window.electron.ipcRenderer.send("track-event", "Error", `Download Template - ${templateItem}`);
+      let templatePath = window.path.join(
+        currentDirectory,
+        "..",
+        "renderer",
+        "file_templates",
+        templateItem[i]
+      );
 
-    let templateLabel = Object.values(kombuchaEnums.Label).find((label) => {
-      return label === templateItem;
-    });
-
-    window.electron.ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.PREPARE_METADATA,
-      kombuchaEnums.Action.DOWNLOAD_TEMPLATES,
-      templateLabel,
-      kombuchaEnums.Status.SUCCESS,
-      {
-        value: 1,
+      let templatesFolderPath = window.path.join(destinationFolder, "SODA templates");
+      if (!fs.existsSync(templatesFolderPath)) {
+        fs.mkdirSync(templatesFolderPath);
       }
-    );
-  } else {
-    await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath);
-    let emessage = `Successfully saved '${templateItem}' to ${destinationFolder}`;
+      if (templateHighLvlFolders.includes(templateItem[i])) {
+        // Create the folder in the templatesFolderPath
+        let destinationPath = window.path.join(templatesFolderPath, templateItem[i]);
+        if (!fs.existsSync(destinationPath)) {
+          fs.mkdirSync(destinationPath);
+        }
+        // The create a .gitkeep file in the destinationPath
+        fs.writeFileSync(window.path.join(destinationPath, ".gitkeep"), "");
+        continue;
+      }
+      let destinationPath = window.path.join(destinationFolder, "SODA templates", templateItem[i]);
 
+      if (window.fs.existsSync(destinationPath)) {
+        // let emessage = "File '" + templateItem + "' already exists in " + destinationFolder;
+        // Swal.fire({
+        //   icon: "error",
+        //   title: "Metadata file already exists",
+        //   text: `${emessage}`,
+        //   heightAuto: false,
+        //   backdrop: "rgba(0,0,0, 0.4)",
+        // });
+        // window.electron.ipcRenderer.send("track-event", "Error", `Download Template - ${templateItem}`);
+        // let templateLabel = Object.values(kombuchaEnums.Label).find((label) => {
+        //   return label === templateItem;
+        // });
+        // window.electron.ipcRenderer.send(
+        //   "track-kombucha",
+        //   kombuchaEnums.Category.PREPARE_METADATA,
+        //   kombuchaEnums.Action.DOWNLOAD_TEMPLATES,
+        //   templateLabel,
+        //   kombuchaEnums.Status.SUCCESS,
+        //   {
+        //     value: 1,
+        //   }
+        // );
+      } else {
+        await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath);
+      }
+    }
+    let emessage = `Successfully saved to ${destinationFolder}`;
     Swal.fire({
       icon: "success",
       title: "Download successful",
@@ -77,47 +99,105 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
       `Download Template - ${templateItem}`
     );
 
-    let templateLabel = Object.values(kombuchaEnums.Label).find((label) => {
-      return label === templateItem;
-    });
+    // let templateLabel = Object.values(kombuchaEnums.Label).find((label) => {
+    //   return label === templateItem;
+    // });
 
     window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_METADATA,
       kombuchaEnums.Action.DOWNLOAD_TEMPLATES,
-      templateLabel,
+      templateItem,
       kombuchaEnums.Status.SUCCESS,
       {
         value: 1,
       }
     );
+  } else {
+    let templatePath = window.path.join(
+      currentDirectory,
+      "..",
+      "renderer",
+      "file_templates",
+      templateItem
+    );
+
+    if (window.fs.existsSync(destinationPath)) {
+      let emessage = "File '" + templateItem + "' already exists in " + destinationFolder;
+      Swal.fire({
+        icon: "error",
+        title: "Metadata file already exists",
+        text: `${emessage}`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+
+      window.electron.ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Download Template - ${templateItem}`
+      );
+
+      let templateLabel = Object.values(kombuchaEnums.Label).find((label) => {
+        return label === templateItem;
+      });
+
+      window.electron.ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_METADATA,
+        kombuchaEnums.Action.DOWNLOAD_TEMPLATES,
+        templateLabel,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+        }
+      );
+    } else {
+      await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath);
+      let emessage = `Successfully saved '${templateItem}' to ${destinationFolder}`;
+
+      Swal.fire({
+        icon: "success",
+        title: "Download successful",
+        text: `${emessage}`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+      window.electron.ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Download Template - ${templateItem}`
+      );
+
+      let templateLabel = Object.values(kombuchaEnums.Label).find((label) => {
+        return label === templateItem;
+      });
+
+      window.electron.ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_METADATA,
+        kombuchaEnums.Action.DOWNLOAD_TEMPLATES,
+        templateLabel,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+        }
+      );
+    }
   }
 };
 
-downloadSubmission.addEventListener("click", (event) => {
-  window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", templateArray[0]);
+downloadHighLvlFolders.addEventListener("click", (event) => {
+  const combinedArray = [...templateHighLvlFolders, ...templateArray];
+  console.log("Downloading high level folders");
+  console.log(combinedArray);
+  window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", combinedArray);
 });
 
-downloadDescription.addEventListener("click", (event) => {
-  window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", templateArray[1]);
-});
+// Rest of the code...
 
-downloadSubjects.addEventListener("click", (event) => {
-  window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", templateArray[2]);
-});
-
-downloadSamples.addEventListener("click", (event) => {
-  window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", templateArray[3]);
-});
-
-downloadManifest.addEventListener("click", (event) => {
-  window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", templateArray[4]);
-});
-
-document.querySelectorAll(".guided-data-deliverables-download-button").forEach((button) => {
-  button.addEventListener("click", (event) => {
-    window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", "code_description.xlsx");
-  });
+downloadMetadataFiles.addEventListener("click", (event) => {
+  window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", templateArray);
 });
 
 document
