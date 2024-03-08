@@ -121,6 +121,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       $("#generate-manifest-curate").prop("disabled", true);
     } else {
       $("#manifest-creation-prohibited").hide();
+      $("#generate-manifest-curate").prop("disabled", false);
     }
 
     if (document.getElementById("generate-manifest-curate").checked) {
