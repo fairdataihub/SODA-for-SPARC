@@ -2,6 +2,8 @@ import { hideAllSectionsAndDeselectButtons } from "../../assets/nav";
 import { resetLazyLoading } from "../../assets/nav";
 import lottie from "lottie-web";
 import { existingDataset, modifyDataset } from "../../assets/lotties/lotties";
+import fs from "fs";
+import path from "path";
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -9,6 +11,32 @@ while (!window.htmlPagesAdded) {
 
 window.downloadTemplate = (template) => {
   console.log("Downloading template: ", template);
+
+  const metadataFilesPath = path.join(__dirname, '../../../public/file_templates');
+
+  fs.readdir(metadataFilesPath, (err, files) => {
+    if (err) {
+      console.error('Error reading metadata files:', err);
+      return;
+    }
+
+    // Process each metadata file
+    files.forEach((file) => {
+      const filePath = path.join(metadataFilesPath, file);
+      // Do something with the metadata file
+      console.log('Processing metadata file:', filePath);
+    });
+  });
+  
+
+  if (template === "manifest-only") {
+    // Create a zip file with the metadata files only
+    console.log("Metadata files only");
+  }
+  if (template === "high-level-folders") {
+    // Create a zip file with the high level folders and the metadata files
+    console.log("High level folders");
+  }
 }
 
 const transitionToSDSPage = () => {
