@@ -85,11 +85,15 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
           j++;
         }
         destinationPath = window.path.join(templatesFolderPath, templateItem[i] + "(" + j + ")");
+        // Create the file before writing to it
+        fs.writeFileSync(destinationPath, "");
         console.log(destinationPath);
         await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath);
       } else {
         console.log("doesn't exist");
         console.log(destinationPath);
+        // Create the file before writing to it
+        fs.writeFileSync(destinationPath, "");
         await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath);
       }
     }
