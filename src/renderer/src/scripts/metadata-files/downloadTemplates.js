@@ -107,15 +107,11 @@ const downloadTemplates = async (templateItem, destinationFolder, zip) => {
   }
 };
 
-
 downloadHighLvlFolders.addEventListener("click", (event) => {
   const combinedArray = [...templateHighLvlFolders, ...templateArray];
   console.log("Downloading high level folders");
   console.log(combinedArray);
-  window.electron.ipcRenderer.send(
-    "open-folder-dialog-save-metadata",
-    combinedArray
-  );
+  window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", combinedArray);
 });
 
 // Rest of the code...
