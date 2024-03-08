@@ -2095,6 +2095,9 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
       $("#button-confirm-bf-dataset").hide();
 
       return;
+    } else {
+      $("#Question-generate-dataset-existing-folders-options").show()
+
     }
 
     // alert the user that manifest files will not be uploaded
