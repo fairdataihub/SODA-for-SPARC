@@ -25,7 +25,7 @@ let templateArray = [
   "code_parameters.xlsx",
 ];
 
-let templateHighLvlFolders = ["code/", "derivative/", "docs/", "primary/", "protocol/", "source/"];
+let templateHighLvlFolders = ["code", "derivative", "docs", "primary", "protocol", "source"];
 
 const downloadTemplates = async (templateItem, destinationFolder) => {
   let currentDirectory = await window.electron.ipcRenderer.invoke("get-current-directory");
@@ -42,46 +42,54 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
         templateItem[i]
       );
 
-      let templatesFolderPath = window.path.join(destinationFolder, "SODA templates");
+      // Verify if SDS Templates folder exists
+      let templatesFolderPath = window.path.join(destinationFolder, "SDS Templates");
       if (!fs.existsSync(templatesFolderPath)) {
         fs.mkdirSync(templatesFolderPath);
       }
+
+      // Verify if templateItem[i] is a high level folder
       if (templateHighLvlFolders.includes(templateItem[i])) {
-        // Create the folder in the templatesFolderPath
         let destinationPath = window.path.join(templatesFolderPath, templateItem[i]);
+
         if (!fs.existsSync(destinationPath)) {
+          // Create the folder if it does not exist
+          fs.mkdirSync(destinationPath);
+        } else {
+          // Create a duplicate folder with a number appended to the end
+          let j = 1;
+          while (
+            fs.existsSync(window.path.join(templatesFolderPath, templateItem[i] + "(" + j + ")"))
+          ) {
+            j++;
+          }
+          destinationPath = window.path.join(templatesFolderPath, templateItem[i] + "(" + j + ")");
+          console.log(destinationPath);
           fs.mkdirSync(destinationPath);
         }
         // The create a .gitkeep file in the destinationPath
+        console.log(destinationPath);
         fs.writeFileSync(window.path.join(destinationPath, ".gitkeep"), "");
         continue;
       }
       let destinationPath = window.path.join(destinationFolder, "SODA templates", templateItem[i]);
 
       if (window.fs.existsSync(destinationPath)) {
-        // let emessage = "File '" + templateItem + "' already exists in " + destinationFolder;
-        // Swal.fire({
-        //   icon: "error",
-        //   title: "Metadata file already exists",
-        //   text: `${emessage}`,
-        //   heightAuto: false,
-        //   backdrop: "rgba(0,0,0, 0.4)",
-        // });
-        // window.electron.ipcRenderer.send("track-event", "Error", `Download Template - ${templateItem}`);
-        // let templateLabel = Object.values(kombuchaEnums.Label).find((label) => {
-        //   return label === templateItem;
-        // });
-        // window.electron.ipcRenderer.send(
-        //   "track-kombucha",
-        //   kombuchaEnums.Category.PREPARE_METADATA,
-        //   kombuchaEnums.Action.DOWNLOAD_TEMPLATES,
-        //   templateLabel,
-        //   kombuchaEnums.Status.SUCCESS,
-        //   {
-        //     value: 1,
-        //   }
-        // );
+        // Create a duplicate file with a number appended to the end
+        let j = 1;
+        while (
+          window.fs.existsSync(
+            window.path.join(templatesFolderPath, templateItem[i] + "(" + j + ")")
+          )
+        ) {
+          j++;
+        }
+        destinationPath = window.path.join(templatesFolderPath, templateItem[i] + "(" + j + ")");
+        console.log(destinationPath);
+        await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath);
       } else {
+        console.log("doesn't exist");
+        console.log(destinationPath);
         await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath);
       }
     }
