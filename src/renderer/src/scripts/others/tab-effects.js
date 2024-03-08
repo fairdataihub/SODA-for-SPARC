@@ -122,7 +122,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     } else {
       $("#manifest-creation-prohibited").hide();
       $("#generate-manifest-curate").prop("disabled", false);
-
     }
 
     if (document.getElementById("generate-manifest-curate").checked) {
