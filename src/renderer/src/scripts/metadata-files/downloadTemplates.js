@@ -72,7 +72,7 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
         fs.writeFileSync(window.path.join(destinationPath, ".gitkeep"), "");
         continue;
       }
-      let destinationPath = window.path.join(destinationFolder, "SODA templates", templateItem[i]);
+      let destinationPath = window.path.join(destinationFolder, "SDS Templates", templateItem[i]);
 
       if (window.fs.existsSync(destinationPath)) {
         // Create a duplicate file with a number appended to the end
@@ -86,14 +86,14 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
         }
         destinationPath = window.path.join(templatesFolderPath, templateItem[i] + "(" + j + ")");
         // Create the file before writing to it
-        fs.writeFileSync(destinationPath, "");
-        console.log(destinationPath);
+        // fs.appendFile(destinationPath, "");
+        // console.log(destinationPath);
         await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath);
       } else {
-        console.log("doesn't exist");
-        console.log(destinationPath);
+        // console.log("doesn't exist");
+        // console.log(destinationPath);
         // Create the file before writing to it
-        fs.writeFileSync(destinationPath, "");
+        // fs.appendFile(destinationPath, "");
         await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath);
       }
     }
