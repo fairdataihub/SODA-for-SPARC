@@ -46,7 +46,6 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
         window.path.join(destinationFolder, sds_folder + "(" + j + ")")
       );
       sds_folder = sds_folder + "(" + j + ")";
-      console.log(templatesFolderPath);
       fs.mkdirSync(templatesFolderPath);
     }
     for (let i = 0; i < templateItem.length; i++) {
@@ -68,7 +67,6 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
           fs.mkdirSync(destinationPath);
         }
         // The create a .gitkeep file in the destinationPath
-        console.log(destinationPath);
         fs.writeFileSync(window.path.join(destinationPath, ".gitkeep"), "");
         continue;
       }
@@ -182,8 +180,6 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
 
 downloadHighLvlFolders.addEventListener("click", (event) => {
   const combinedArray = [...templateHighLvlFolders, ...templateArray];
-  console.log("Downloading high level folders");
-  console.log(combinedArray);
   window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", combinedArray);
 });
 
