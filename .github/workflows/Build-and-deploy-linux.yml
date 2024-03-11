@@ -6,6 +6,8 @@ on:
     branches:
       - main
       - staging
+      - ui-update
+      - ui-update-organize-changes
 
 jobs:
   deploy-on-linux:

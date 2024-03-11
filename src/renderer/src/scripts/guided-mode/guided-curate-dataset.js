@@ -13073,12 +13073,13 @@ const itemsContainer = document.getElementById("items");
 const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
 const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
 
+// Guided mode event listener (from curate and share page)
 document.getElementById("button-homepage-guided-mode").addEventListener("click", async () => {
   //Transition file explorer elements to guided mode
   window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
   window.organizeDSglobalPath.value = "";
   window.dataset_path = document.getElementById("guided-input-global-path");
-  let scroll_box = document.querySelector("#guided-body");
+  window.scroll_box = document.querySelector("#guided-body");
   itemsContainer.innerHTML = "";
   resetLazyLoading();
   freeFormItemsContainer.classList.remove("freeform-file-explorer");
@@ -13095,6 +13096,7 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
   await window.openPage("guided-select-starting-point-tab");
 });
 
+// Free form mode event listener (from curate and share page)
 document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
   //Free form mode will open through here
   window.guidedPrepareHomeScreen();

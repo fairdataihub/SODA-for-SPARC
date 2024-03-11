@@ -403,7 +403,6 @@ const startupServerAndApiCheck = async () => {
   }
 
   if (launchAnnouncement) {
-    console.log("Checking for announcements");
     await Swal.close();
     await checkForAnnouncements("announcements");
     launchAnnouncement = false;
@@ -914,7 +913,6 @@ window.run_pre_flight_checks = async (check_update = true) => {
     }
 
     if (launchAnnouncement) {
-      console.log("checking for announcements");
       await checkForAnnouncements("announcements");
       launchAnnouncement = false;
     }
@@ -1145,7 +1143,6 @@ window.check_api_key = async () => {
       type: "error",
       message: "No account was found",
     });
-    console.log("Failed here");
     return false;
   } else {
     log.info("Found non obsolete api key in default profile");
@@ -7321,8 +7318,10 @@ const initiate_generate = async () => {
     document.getElementById("sidebarCollapse").click();
   }
 
-  if ($("#generate-manifest-curate")[0].checked) {
+  if ($("#generate-manifest-curate")[0].checked && !window.hasFiles) {
     window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
+  } else {
+    delete window.sodaJSONObj["manifest-files"];
   }
 
   if ("manifest-files" in window.sodaJSONObj) {
@@ -8996,7 +8995,9 @@ const directToGuidedMode = () => {
 };
 window.directToFreeFormMode = () => {
   const freeFormModeLinkButton = document.getElementById("main_tabs_view");
-  freeFormModeLinkButton.click();
+  const directToOrganize = document.getElementById("organize_dataset_btn");
+  directToOrganize.click();
+  // freeFormModeLinkButton.click();
 };
 document.getElementById("doc-btn").addEventListener("click", directToDocumentation);
 document

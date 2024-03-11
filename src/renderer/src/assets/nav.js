@@ -1,4 +1,6 @@
 import Swal from "sweetalert2";
+import lottie from "lottie-web";
+import { existingDataset, modifyDataset } from "../assets/lotties/lotties";
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -57,6 +59,13 @@ const guidedUnLockSideBar = () => {
   guidedNav.style.display = "none";
 };
 
+const handleSectionTriggerOrganize = async (
+  event,
+  sectionId,
+  freeFormItemsContainer,
+  freeFormButtons
+) => {};
+
 const handleSectionTrigger = async (event) => {
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
@@ -65,16 +74,92 @@ const handleSectionTrigger = async (event) => {
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
   const sectionRenderFileExplorer = event.target.dataset.render;
 
+  // In Free Form Mode -> Organize dataset, the sodaJSONObj has
+  // keys if the user has started the first step. The user must
+  // be warned because Guided Mode uses shared variables and FF progress
+  // must be wiped out.
+  //Update: Swal will only pop up if user is on organize datasets page only
+  // Update 2: If user has not selected any of the radio buttons in step 1, then swal
+  // will not pop up
+  let boolRadioButtonsSelected = false;
+  let organizeDatasetRadioButtons = Array.from(
+    document.querySelectorAll(".getting-started-1st-question")
+  );
+
+  organizeDatasetRadioButtons.forEach((radioButton) => {
+    if (radioButton.classList.contains("checked")) {
+      boolRadioButtonsSelected = true;
+    }
+  });
+
+  // check if we are leaving the organize datasets section
+  if (window.sodaJSONObj != undefined && boolRadioButtonsSelected === true) {
+    //get the element with data-next="Question-getting-started-BF-account"
+    const buttonContinueExistingPennsieve = document.querySelector(
+      '[data-next="Question-getting-started-BF-account"]'
+    );
+    const transitionWarningMessage = `
+          Going back home will wipe out the progress you have made organizing your dataset.
+          <br><br>
+          ${
+            buttonContinueExistingPennsieve.classList.contains("checked")
+              ? `To continue making modifications to your existing Pennsieve dataset, press Cancel.`
+              : `To save your progress, press Cancel${
+                  window.currentTab < 2 ? ", progress to the third step," : ""
+                } and press "Save Progress" in the Organize Dataset tab.`
+          }
+        `;
+
+    const warnBeforeExitCurate = await Swal.fire({
+      icon: "warning",
+      html: transitionWarningMessage,
+      showCancelButton: true,
+      focusCancel: true,
+      cancelButtonText: "Cancel",
+      confirmButtonText: "Go back Home",
+      reverseButtons: window.reverseSwalButtons,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    if (warnBeforeExitCurate.isConfirmed) {
+      // Wipe out organize dataset progress before entering Guided Mode
+      $("#dataset-loaded-message").hide();
+      $(".vertical-progress-bar-step").removeClass("is-current");
+      $(".vertical-progress-bar-step").removeClass("done");
+      $(".getting-started").removeClass("prev");
+      $(".getting-started").removeClass("show");
+      $(".getting-started").removeClass("test2");
+      $("#Question-getting-started-1").addClass("show");
+      $("#generate-dataset-progress-tab").css("display", "none");
+      window.currentTab = 0;
+      window.wipeOutCurateProgress();
+      window.globalGettingStarted1stQuestionBool = false;
+      document.getElementById("nextBtn").disabled = true;
+    } else {
+      //Stay in Organize datasets section
+      return;
+    }
+  }
+
+  // check if we are entering the organize datasets section
   if (sectionId === "organize-section") {
     //reset lazyloading values
     resetLazyLoading();
+    window.hasFiles = false;
     //Transition file explorer elements to freeform mode
-    scroll_box = document.querySelector("#organize-dataset-tab");
+    window.scroll_box = document.querySelector("#organize-dataset-tab");
     $(".shared-folder-structure-element").appendTo($("#free-form-folder-structure-container"));
     freeFormItemsContainer.classList.add("freeform-file-explorer"); //add styling for free form mode
     freeFormButtons.classList.add("freeform-file-explorer-buttons");
-    organizeDSglobalPath = document.getElementById("input-global-path");
-    dataset_path = document.getElementById("input-global-path");
+    window.organizeDSglobalPath = document.getElementById("input-global-path");
+    window.dataset_path = document.getElementById("input-global-path");
     document.getElementById("nextBtn").disabled = boolNextButtonDisabled;
   }
 
@@ -98,83 +183,6 @@ const handleSectionTrigger = async (event) => {
       document.getElementById("organize_dataset_btn").click();
     }
 
-    // In Free Form Mode -> Organize dataset, the sodaJSONObj has
-    // keys if the user has started the first step. The user must
-    // be warned because Guided Mode uses shared variables and FF progress
-    // must be wiped out.
-    //Update: Swal will only pop up if user is on organize datasets page only
-    // Update 2: If user has not selected any of the radio buttons in step 1, then swal
-    // will not pop up
-    let boolRadioButtonsSelected = false;
-    let organizeDatasetRadioButtons = Array.from(
-      document.querySelectorAll(".getting-started-1st-question")
-    );
-
-    // Remove first two as they are not radio buttons
-    organizeDatasetRadioButtons = organizeDatasetRadioButtons.splice(2);
-
-    organizeDatasetRadioButtons.forEach((radioButton) => {
-      if (radioButton.classList.contains("checked")) {
-        boolRadioButtonsSelected = true;
-      }
-    });
-
-    if (window.sodaJSONObj != undefined && boolRadioButtonsSelected === true) {
-      //get the element with data-next="Question-getting-started-BF-account"
-      const buttonContinueExistingPennsieve = document.querySelector(
-        '[data-next="Question-getting-started-BF-account"]'
-      );
-      const transitionWarningMessage = `
-          Going back home will wipe out the progress you have made organizing your dataset.
-          <br><br>
-          ${
-            buttonContinueExistingPennsieve.classList.contains("checked")
-              ? `To continue making modifications to your existing Pennsieve dataset, press Cancel.`
-              : `To save your progress, press Cancel${
-                  window.currentTab < 2 ? ", progress to the third step," : ""
-                } and press "Save Progress" in the Organize Dataset tab.`
-          }
-        `;
-
-      const warnBeforeExitCurate = await Swal.fire({
-        icon: "warning",
-        html: transitionWarningMessage,
-        showCancelButton: true,
-        focusCancel: true,
-        cancelButtonText: "Cancel",
-        confirmButtonText: "Go back Home",
-        reverseButtons: window.reverseSwalButtons,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-      if (warnBeforeExitCurate.isConfirmed) {
-        // Wipe out organize dataset progress before entering Guided Mode
-        $("#dataset-loaded-message").hide();
-        $(".vertical-progress-bar-step").removeClass("is-current");
-        $(".vertical-progress-bar-step").removeClass("done");
-        $(".getting-started").removeClass("prev");
-        $(".getting-started").removeClass("show");
-        $(".getting-started").removeClass("test2");
-        $("#Question-getting-started-1").addClass("show");
-        $("#generate-dataset-progress-tab").css("display", "none");
-        window.currentTab = 0;
-        window.wipeOutCurateProgress();
-        window.globalGettingStarted1stQuestionBool = false;
-        document.getElementById("nextBtn").disabled = true;
-      } else {
-        //Stay in Organize datasets section
-        document.getElementById("main_tabs_view").click();
-        document.getElementById("organize_dataset_btn").click();
-        return;
-      }
-    }
-
     if (sectionRenderFileExplorer != "file-explorer") {
       window.sodaJSONObj = {};
       window.datasetStructureJSONObj = {};
@@ -195,12 +203,47 @@ const handleSectionTrigger = async (event) => {
       document.querySelector("#guided-folder-structure-container").appendChild(folderElement);
     });
 
-    guidedUnLockSideBar();
-  }
+    let guidedModeSection = document.getElementById("guided_mode-section");
+    if (!guidedModeSection.classList.contains("is-shown")) {
+      guidedModeSection.classList.add("is-shown");
+    }
 
-  if (sectionId === "create_new_bf_dataset-section") {
-    $("#dataset-success-container").addClass("hidden");
-    $("dataset-created-success-lottie").empty();
+    // Transition back to the home screen
+    document.getElementById("guided-home").classList.remove("hidden");
+    document.getElementById("guided_mode-section").classList.add("is-shown");
+    document.getElementById("guided_curate_dataset-tab").classList.add("show");
+
+    // Remove hidden class from the advanced features page to display it
+    document.getElementById("advanced-features-selection-page").classList.add("hidden");
+    document.getElementById("advanced-features-selection-page").classList.remove("is-shown");
+    document.getElementById("advanced_mode-section").classList.remove("is-shown");
+    document.getElementById("advanced_mode-section").classList.remove("fullShown");
+    document.getElementById("advanced_mode-section").classList.add("hidden");
+    document.getElementById("advanced-footer").classList.add("hidden");
+
+    // Remove lotties from the home screen to prevent double lotties
+    if (document.getElementById("existing-dataset-lottie").innerHTML == "") {
+      // Add the lotties back to the home screen
+      lottie.loadAnimation({
+        container: document.getElementById("existing-dataset-lottie"),
+        animationData: existingDataset,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+    }
+
+    if (document.getElementById("edit-dataset-component-lottie").innerHTML == "") {
+      lottie.loadAnimation({
+        container: document.getElementById("edit-dataset-component-lottie"),
+        animationData: modifyDataset,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+    }
+
+    guidedUnLockSideBar();
   }
 
   hideAllSectionsAndDeselectButtons();
@@ -317,4 +360,4 @@ $(document).ready(() => {
   });
 });
 
-export { resetLazyLoading, guidedUnLockSideBar };
+export { resetLazyLoading, guidedUnLockSideBar, hideAllSectionsAndDeselectButtons };
