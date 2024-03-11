@@ -31,9 +31,26 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
   let currentDirectory = await window.electron.ipcRenderer.invoke("get-current-directory");
 
   if (Array.isArray(templateItem)) {
+    // Verify if SDS Templates folder exists
+    let sds_folder = "SDS Templates";
+    let templatesFolderPath = window.path.join(destinationFolder, sds_folder);
+    if (!fs.existsSync(templatesFolderPath)) {
+      fs.mkdirSync(templatesFolderPath);
+    } else {
+      // Create a duplicate folder with a number appended to the end
+      let j = 1;
+      while (fs.existsSync(window.path.join(destinationFolder, sds_folder + "(" + j + ")"))) {
+        j++;
+      }
+      templatesFolderPath = window.path.join(
+        window.path.join(destinationFolder, sds_folder + "(" + j + ")")
+      );
+      sds_folder = sds_folder + "(" + j + ")";
+      console.log(templatesFolderPath);
+      fs.mkdirSync(templatesFolderPath);
+    }
     for (let i = 0; i < templateItem.length; i++) {
       // Create a path for each template index
-
       let templatePath = window.path.join(
         currentDirectory,
         "..",
@@ -41,25 +58,6 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
         "file_templates",
         templateItem[i]
       );
-
-      // Verify if SDS Templates folder exists
-      let sds_folder = "SDS Templates";
-      let templatesFolderPath = window.path.join(destinationFolder, sds_folder);
-      if (!fs.existsSync(templatesFolderPath)) {
-        fs.mkdirSync(templatesFolderPath);
-      } else {
-        // Create a duplicate folder with a number appended to the end
-        let j = 1;
-        while (
-          fs.existsSync(window.path.join(destinationFolder, sds_folder + "(" + j + ")"))
-        ) {
-          j++;
-        }
-        templatesFolderPath = window.path.join(window.path.join(destinationFolder, sds_folder + "(" + j + ")"));
-        sds_folder = sds_folder + "(" + j + ")";
-        console.log(templatesFolderPath);
-        fs.mkdirSync(templatesFolderPath);
-      }
 
       // Verify if templateItem[i] is a high level folder
       if (templateHighLvlFolders.includes(templateItem[i])) {
@@ -78,7 +76,6 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
 
       if (!window.fs.existsSync(destinationPath)) {
         await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath);
-
       }
     }
     let emessage = `Successfully saved to ${destinationFolder}`;
