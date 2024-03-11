@@ -43,8 +43,21 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
       );
 
       // Verify if SDS Templates folder exists
-      let templatesFolderPath = window.path.join(destinationFolder, "SDS Templates");
+      let sds_folder = "SDS Templates";
+      let templatesFolderPath = window.path.join(destinationFolder, sds_folder);
       if (!fs.existsSync(templatesFolderPath)) {
+        fs.mkdirSync(templatesFolderPath);
+      } else {
+        // Create a duplicate folder with a number appended to the end
+        let j = 1;
+        while (
+          fs.existsSync(window.path.join(destinationFolder, sds_folder + "(" + j + ")"))
+        ) {
+          j++;
+        }
+        templatesFolderPath = window.path.join(window.path.join(destinationFolder, sds_folder + "(" + j + ")"));
+        sds_folder = sds_folder + "(" + j + ")";
+        console.log(templatesFolderPath);
         fs.mkdirSync(templatesFolderPath);
       }
 
@@ -55,46 +68,17 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
         if (!fs.existsSync(destinationPath)) {
           // Create the folder if it does not exist
           fs.mkdirSync(destinationPath);
-        } else {
-          // Create a duplicate folder with a number appended to the end
-          let j = 1;
-          while (
-            fs.existsSync(window.path.join(templatesFolderPath, templateItem[i] + "(" + j + ")"))
-          ) {
-            j++;
-          }
-          destinationPath = window.path.join(templatesFolderPath, templateItem[i] + "(" + j + ")");
-          console.log(destinationPath);
-          fs.mkdirSync(destinationPath);
         }
         // The create a .gitkeep file in the destinationPath
         console.log(destinationPath);
         fs.writeFileSync(window.path.join(destinationPath, ".gitkeep"), "");
         continue;
       }
-      let destinationPath = window.path.join(destinationFolder, "SDS Templates", templateItem[i]);
+      let destinationPath = window.path.join(destinationFolder, sds_folder, templateItem[i]);
 
-      if (window.fs.existsSync(destinationPath)) {
-        // Create a duplicate file with a number appended to the end
-        let j = 1;
-        while (
-          window.fs.existsSync(
-            window.path.join(templatesFolderPath, templateItem[i] + "(" + j + ")")
-          )
-        ) {
-          j++;
-        }
-        destinationPath = window.path.join(templatesFolderPath, templateItem[i] + "(" + j + ")");
-        // Create the file before writing to it
-        // fs.appendFile(destinationPath, "");
-        // console.log(destinationPath);
+      if (!window.fs.existsSync(destinationPath)) {
         await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath);
-      } else {
-        // console.log("doesn't exist");
-        // console.log(destinationPath);
-        // Create the file before writing to it
-        // fs.appendFile(destinationPath, "");
-        await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath);
+
       }
     }
     let emessage = `Successfully saved to ${destinationFolder}`;
