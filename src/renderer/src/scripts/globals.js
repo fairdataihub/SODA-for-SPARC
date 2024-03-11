@@ -1646,12 +1646,13 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             }
 
             if (dropdownEventID === "organize-ds-step-6-ds-select") {
-              // get the amount of files in the existing dataset and skip the Merge/Skip/Replace step if there are no files in the existing dataset
-              let packages = await api.getNumberOfPackagesInDataset(bfDataset);
+              try {
+                // get the amount of files in the existing dataset and skip the Merge/Skip/Replace step if there are no files in the existing dataset
+                let packages = await api.getNumberOfPackagesInDataset(bfDataset);
 
-              if (Object.keys(packages).length === 0) {
-                window.hasFiles = false;
-              } else {
+                window.hasFiles = Object.keys(packages).length > 0;
+              } catch (e) {
+                clientError(e);
                 window.hasFiles = true;
               }
             }
