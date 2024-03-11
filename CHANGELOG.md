@@ -11,12 +11,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - The SODA user interface has been updated to be more intuitive for new and existing users.
 
-## v13.1.3 - 2024-02-26
+## v13.1.3 - 2024-02-29
 
 ## Feature Addditions:
 
 - Announcements have been redesigned to convey updates and fixes clearly.
 - Added the ability to generate a copy of a dataset's manifest files locally within the organize datasets feature.
+- Updated the UI for GM/FFM subject metadata Species, Strain, and RRID selection, and changed the API endpoint to use SciCrunch's public API to search for RRIDs.
 
 ## Bug fixes:
 
