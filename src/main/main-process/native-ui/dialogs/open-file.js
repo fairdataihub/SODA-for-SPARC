@@ -424,8 +424,6 @@ ipcMain.on("open-folder-dialog-save-metadata", async (event, filename) => {
     title: "Select a directory",
   });
 
-  console.log("files", files.filePaths);
-  console.log("filename", filename);
   if (files) {
     mainWindow.webContents.send("selected-metadata-download-folder", files.filePaths, filename);
   }

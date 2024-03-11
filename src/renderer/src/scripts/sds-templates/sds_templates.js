@@ -10,15 +10,11 @@ while (!window.htmlPagesAdded) {
 }
 
 window.downloadTemplate = (template) => {
-  console.log("Downloading template: ", template);
-
   if (template === "manifest-only") {
     // Create a zip file with the metadata files only
-    console.log("Metadata files only");
   }
   if (template === "high-level-folders") {
     // Create a zip file with the high level folders and the metadata files
-    console.log("High level folders");
   }
 };
 

@@ -81,7 +81,6 @@ const checkForAnnouncements = async (state) => {
         didOpen: () => {
           let swal_alert = document.getElementsByClassName("swal2-popup")[0];
           swal_alert.style.width = "60rem";
-          console.log("did open");
 
           let html_container = document.getElementById("swal2-html-container");
           let html_child = html_container.children[0];
