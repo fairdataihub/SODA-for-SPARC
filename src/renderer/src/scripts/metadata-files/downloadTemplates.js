@@ -11,6 +11,7 @@ while (!window.htmlPagesAdded) {
 const downloadHighLvlFolders = document.getElementById("download-high-level-folders-btn");
 const downloadMetadataFiles = document.getElementById("download-manifest-only-btn");
 
+// If files are added or removed from the file_templates folder, update the templateArray and templateHighLvlFolders
 let templateArray = [
   "submission.xlsx",
   "dataset_description.xlsx",
