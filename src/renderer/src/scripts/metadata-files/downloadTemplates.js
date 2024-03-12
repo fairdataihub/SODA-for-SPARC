@@ -23,6 +23,8 @@ let templateArray = [
   "performances.xlsx",
   "code_description.xlsx",
   "code_parameters.xlsx",
+  "CHANGES",
+  "README.md",
 ];
 
 let templateHighLvlFolders = ["code", "derivative", "docs", "primary", "protocol", "source"];
