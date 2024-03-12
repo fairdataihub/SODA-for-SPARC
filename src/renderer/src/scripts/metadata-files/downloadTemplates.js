@@ -18,7 +18,6 @@ let templateArray = [
   "subjects.xlsx",
   "samples.xlsx",
   "manifest.xlsx",
-  "DataDeliverablesDocument-template.docx",
   "code_description.xlsx",
   "resources.xlsx",
   "performances.xlsx",
