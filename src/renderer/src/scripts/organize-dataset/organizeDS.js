@@ -2169,7 +2169,7 @@ const addFilesfunction = async (
 };
 
 //create intersection observ
-let scroll_box = document.querySelector("#organize-dataset-tab");
+window.scroll_box = document.querySelector("#organize-dataset-tab");
 let item_box = document.querySelector("#items");
 let dataset_path = document.getElementById("input-global-path");
 

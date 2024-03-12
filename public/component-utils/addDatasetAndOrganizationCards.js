@@ -159,7 +159,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     .appendChild(addEditDescriptionCard);
 
   let addEditBanner = UserDetailsCard({
-    tabName: "manage-dataset",
+    tabName: "advanced-features",
     buttonId: "button_add_edit_banner_confirm",
     currentTab: "add_edit_banner_tab",
     currentParentTab: "add_edit_banner_parent-tab",

@@ -69,7 +69,7 @@ const handleSectionTrigger = async (event) => {
     //reset lazyloading values
     resetLazyLoading();
     //Transition file explorer elements to freeform mode
-    scroll_box = document.querySelector("#organize-dataset-tab");
+    window.scroll_box = document.querySelector("#organize-dataset-tab");
     $(".shared-folder-structure-element").appendTo($("#free-form-folder-structure-container"));
     freeFormItemsContainer.classList.add("freeform-file-explorer"); //add styling for free form mode
     freeFormButtons.classList.add("freeform-file-explorer-buttons");
