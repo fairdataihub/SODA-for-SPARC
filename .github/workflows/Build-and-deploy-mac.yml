@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - base-react
 
 jobs:
   deploy-on-mac:
