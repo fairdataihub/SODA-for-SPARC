@@ -5,10 +5,6 @@ import Swal from "sweetalert2";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 import kombuchaEnums from "../analytics/analytics-enums";
 
-while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-}
-
 // Validate the dataset that has just been organized in Organize Dataset Step 6: Validate Dataset
 // TODO: Pennsieve vs local considerations for result parsing and error handling
 window.validateOrganizedDataset = async () => {

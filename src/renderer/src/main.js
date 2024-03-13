@@ -1,4 +1,7 @@
 import "./assets/imports";
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 500000));
+}
 import "./assets/demo-btns";
 import "./assets/nav";
 import "./scripts/client";
@@ -30,6 +33,7 @@ import "./scripts/sds-templates/sds_templates";
 import "./assets/lotties/activate-lotties";
 
 // Application CSS
+import "@mantine/core/styles.css";
 import "cropperjs/dist/cropper.css";
 import "fomantic-ui/dist/semantic.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";

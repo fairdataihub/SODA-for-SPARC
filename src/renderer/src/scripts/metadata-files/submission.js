@@ -13,10 +13,6 @@ import determineDatasetLocation, { Destinations } from "../analytics/analytics-u
 import api from "../others/api/api";
 import { successCheck } from "../../assets/lotties/lotties";
 
-while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-}
-
 $(".ui.accordion").accordion();
 
 // List of funding consortiums taken from the 2.1 submission file

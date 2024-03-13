@@ -54,18 +54,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   window.htmlPagesAdded = true;
 });
 
-const includeJavaScriptFile = async (filePath) => {
-  return new Promise((resolve, reject) => {
-    let script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = filePath;
-    script.async = false;
-    script.onload = () => {
-      resolve();
-    };
-    script.onerror = () => {
-      reject("cannot load script " + filePath);
-    };
-    document.body.appendChild(script);
-  });
-};
+// Wait for the HTML pages to be added to the DOM
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}

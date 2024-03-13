@@ -13,11 +13,6 @@ import fileDoc from "/img/doc-file.png";
 import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
-import { swalConfirmAction } from "../utils/swal-utils";
-
-while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-}
 
 var metadataFile = "";
 window.jstreePreview = document.getElementById("div-dataset-tree-preview");

@@ -5,10 +5,6 @@ import { existingDataset, modifyDataset } from "../../assets/lotties/lotties";
 import fs from "fs";
 import path from "path";
 
-while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-}
-
 window.downloadTemplate = (template) => {
   if (template === "manifest-only") {
     // Create a zip file with the metadata files only
