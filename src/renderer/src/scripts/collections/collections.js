@@ -3,10 +3,6 @@ import { clientError } from "../others/http-error-handler/error-handler";
 import api from "../others/api/api";
 import kombuchaEnums from "../analytics/analytics-enums";
 
-while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-}
-
 // this function runs when the DOM is ready, i.e. when the document has been parsed
 $(document).ready(function () {
   //upload new collection tags or check if none

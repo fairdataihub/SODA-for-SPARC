@@ -1,9 +1,5 @@
 import Swal from "sweetalert2";
 
-while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-}
-
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 document.body.addEventListener("click", (event) => {
   if (event.target.dataset.section) {

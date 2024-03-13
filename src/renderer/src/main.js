@@ -1,7 +1,6 @@
+// Slot the html pages into the DOM and wait for them
 import "./assets/imports";
-while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 500000));
-}
+
 import "./assets/demo-btns";
 import "./assets/nav";
 import "./scripts/client";
