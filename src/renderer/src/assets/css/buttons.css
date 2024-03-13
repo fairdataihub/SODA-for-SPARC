@@ -77,6 +77,39 @@
   text-align: center;
 }
 
+.additional-home-buttons:hover {
+  /* text-decoration: underline; */
+}
+
+.additonal-container:hover > .additional-home-buttons > i {
+  margin-left: 0px;
+  transition: all 0.75s linear;
+  -webkit-transition: all 0.25s linear;
+  animation-name: example;
+  animation-duration: 1s;
+  animation-timing-function: ease;
+  animation-delay: 0s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+@keyframes example {
+  from {
+    transform: translateX(0px);
+  }
+  to {
+    transform: translateX(5px);
+  }
+}
+
+.additonal-container:hover {
+  border: 2px solid var(--color-light-green);
+}
+
+.additonal-container {
+  border: 2px solid var(--color-sidebar);
+}
+
 .prepare-metadata-confirm-dataset-button {
   border-radius: 4px;
   margin: 1.2rem auto;

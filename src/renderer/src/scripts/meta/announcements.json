@@ -1,4 +1,12 @@
 {
+  "14.0.0": {
+    "announcements": {
+      "bug-fixes": [],
+      "features": [
+        "SODA's user interface has been updated to be more intuitive for new and existing users."
+      ]
+    }
+  },
   "13.1.3": {
     "announcements": {
       "bug-fixes": [

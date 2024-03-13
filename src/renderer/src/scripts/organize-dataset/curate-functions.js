@@ -38,8 +38,8 @@ document
 
 document
   .querySelector("#Question-generate-dataset-BF-dataset .change-current-account:not(.organization)")
-  .addEventListener("click", function () {
-    window.openDropdownPrompt(this, "dataset", false);
+  .addEventListener("click", function (event) {
+    window.openDropdownPrompt(event.target, "dataset", false);
   });
 
 document
