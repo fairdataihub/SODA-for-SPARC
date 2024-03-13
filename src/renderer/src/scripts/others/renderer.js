@@ -8990,12 +8990,13 @@ const directToGuidedMode = () => {
   guidedModeLinkButton.click();
 };
 window.directToFreeFormMode = () => {
-  const freeFormModeLinkButton = document.getElementById("main_tabs_view");
   const directToOrganize = document.getElementById("organize_dataset_btn");
   directToOrganize.click();
   // freeFormModeLinkButton.click();
 };
+
 document.getElementById("doc-btn").addEventListener("click", directToDocumentation);
+
 document
   .getElementById("home-button-interface-instructions-link")
   .addEventListener("click", sodaVideo);

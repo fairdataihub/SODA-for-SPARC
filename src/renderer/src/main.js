@@ -27,6 +27,7 @@ import "./scripts/collections/collections";
 import "./scripts/metadata-files/downloadTemplates";
 import "./scripts/advanced-features/advanced_features";
 import "./scripts/sds-templates/sds_templates";
+import "./components/buttons/ExternalLink/ExternalLinkRenderer";
 
 // Application Lotties
 import "./assets/lotties/activate-lotties";
