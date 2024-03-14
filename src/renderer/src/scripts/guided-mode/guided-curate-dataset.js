@@ -26,9 +26,7 @@ import { v4 as uuid } from "uuid";
 import doiRegex from "doi-regex";
 import validator from "validator";
 import client from "../client";
-import jQuery from "jquery";
-import bootstrap from "bootstrap";
-import * as select2 from "select2"; // TODO: select2()
+
 // select2()
 import {
   swalConfirmAction,
@@ -37,7 +35,27 @@ import {
   swalFileListDoubleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
-import * as xlsx from "xlsx";
+
+// Import state management stores
+import useGuidedModeStore from "../../stores/guidedModeStore";
+
+console.log("Guided Mode Store State:", useGuidedModeStore.getState());
+
+// Set the dataset name and description
+useGuidedModeStore.setState({ datasetName: "My Dataset Name" });
+useGuidedModeStore.setState({ datasetDescription: "My Dataset Description" });
+
+// Get the dataset name and description
+console.log("Dataset Name:", useGuidedModeStore.getState().datasetName);
+console.log("Dataset Description:", useGuidedModeStore.getState().datasetDescription);
+
+// Set the dataset name and description
+useGuidedModeStore.setState({ datasetName: "My New Dataset Name" });
+useGuidedModeStore.setState({ datasetDescription: "My New Dataset Description" });
+
+// Get the dataset name and description
+console.log("Dataset Name:", useGuidedModeStore.getState().datasetName);
+console.log("Dataset Description:", useGuidedModeStore.getState().datasetDescription);
 
 import "bootstrap-select";
 // import DragSort from '@yaireo/dragsort'
@@ -5186,15 +5204,8 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-name-subtitle-tab") {
-      const datasetNameInput = document.getElementById("guided-dataset-name-input");
-      const datasetSubtitleInput = document.getElementById("guided-dataset-subtitle-input");
-      datasetNameInput.value = "";
-      datasetSubtitleInput.value = "";
-
       const datasetName = getGuidedDatasetName();
-      if (datasetName) {
-        datasetNameInput.value = datasetName;
-      }
+      useGuidedModeStore.setState({ datasetName: datasetName });
 
       if (pageNeedsUpdateFromPennsieve("guided-name-subtitle-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
@@ -5209,7 +5220,7 @@ window.openPage = async (targetPageID) => {
 
           // Save the subtitle to the JSON and add it to the input
           window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
-          datasetSubtitleInput.value = datasetSubtitle;
+          useGuidedModeStore.setState({ datasetSubtitle: datasetSubtitle });
 
           window.sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
         } catch (error) {
@@ -5223,9 +5234,7 @@ window.openPage = async (targetPageID) => {
       } else {
         //Update subtitle from JSON
         const datasetSubtitle = getGuidedDatasetSubtitle();
-        if (datasetSubtitle) {
-          datasetSubtitleInput.value = datasetSubtitle;
-        }
+        useGuidedModeStore.setState({ datasetSubtitle: datasetSubtitle });
       }
 
       //Set the characters remaining counter
@@ -12443,14 +12452,14 @@ $("#guided-submission-completion-date-manual").change(function () {
 /////////////////////////////////////////////////////////
 
 const getGuidedDatasetName = () => {
-  return window.sodaJSONObj["digital-metadata"]["name"];
+  return window.sodaJSONObj["digital-metadata"]["name"] || "";
 };
 
 const setGuidedDatasetSubtitle = (datasetSubtitle) => {
   window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
 };
 const getGuidedDatasetSubtitle = () => {
-  return window.sodaJSONObj["digital-metadata"]["subtitle"];
+  return window.sodaJSONObj["digital-metadata"]["subtitle"] || "";
 };
 
 const guidedShowBannerImagePreview = (imagePath, imported) => {
