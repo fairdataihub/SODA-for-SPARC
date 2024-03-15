@@ -1,5 +1,5 @@
 import addDatasetAndOrganizationCardComponents from "../assets/component-utils/addDatasetAndOrganizationCards";
-
+window.allSectionsInserted = false;
 const loadSections = async () => {
   const links = document.querySelectorAll('link[rel="import"]');
   let contentIndex = document.querySelector("#content");
@@ -46,7 +46,7 @@ const loadSections = async () => {
 
   await waitForHtmlSectionsToInsertIntoDOM();
   addDatasetAndOrganizationCardComponents();
-  window.htmlPagesAdded = true;
+  window.allSectionsInserted = true;
 
   // Return a promise that resolves once all operations are completed
   return new Promise((resolve) => {

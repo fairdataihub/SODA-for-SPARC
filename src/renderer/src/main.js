@@ -1,8 +1,3 @@
-// Wait for the HTML pages to be added to the DOM
-while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-}
-
 import "./assets/demo-btns";
 import "./assets/nav";
 import "./scripts/client";
