@@ -1,5 +1,7 @@
-// Slot the html pages into the DOM and wait for them
-import "./assets/imports";
+// Wait for the HTML pages to be added to the DOM
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
 
 import "./assets/demo-btns";
 import "./assets/nav";
@@ -27,7 +29,10 @@ import "./scripts/collections/collections";
 import "./scripts/metadata-files/downloadTemplates";
 import "./scripts/advanced-features/advanced_features";
 import "./scripts/sds-templates/sds_templates";
-import "./components/buttons/ExternalLink/ExternalLinkRenderer";
+
+// Render React Components into the DOM
+import "./components/renderers/ExternalLinkRenderer";
+import "./components/renderers/GuidedModePageRenderer";
 
 // Application Lotties
 import "./assets/lotties/activate-lotties";

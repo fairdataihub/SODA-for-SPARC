@@ -5236,12 +5236,6 @@ window.openPage = async (targetPageID) => {
         const datasetSubtitle = getGuidedDatasetSubtitle();
         useGuidedModeStore.setState({ datasetSubtitle: datasetSubtitle });
       }
-
-      //Set the characters remaining counter
-      window.countCharacters(
-        document.getElementById("guided-dataset-subtitle-input"),
-        document.getElementById("guided-subtitle-char-count")
-      );
     }
 
     if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {

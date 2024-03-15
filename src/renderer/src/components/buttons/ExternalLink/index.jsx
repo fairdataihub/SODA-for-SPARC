@@ -1,4 +1,5 @@
 import { Button } from "@mantine/core";
+import { IconArrowRight } from "@tabler/icons-react";
 import SodaComponentWrapper from "../../utils/SodaComponentWrapper";
 
 const ExternalLink = ({ href, buttonText }) => {
@@ -11,6 +12,8 @@ const ExternalLink = ({ href, buttonText }) => {
         rel="noopener noreferrer"
         size="lg"
         radius="md"
+        variant="light"
+        rightSection={<IconArrowRight size={14} />}
       >
         {buttonText}
       </Button>

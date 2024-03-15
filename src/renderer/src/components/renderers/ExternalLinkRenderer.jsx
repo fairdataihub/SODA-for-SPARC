@@ -1,11 +1,12 @@
 import ReactDom from "react-dom";
 
-import ExternalLink from "./index";
+import ExternalLink from "../buttons/ExternalLink";
 
 const divsToRenderOver = document.querySelectorAll(".react-external-link");
 divsToRenderOver.forEach((div) => {
-  console.log("div id: ", div.id);
   const url = div.getAttribute("data-url");
   const buttonText = div.getAttribute("data-button-text");
+  console.log("url: ", url);
+  console.log("buttonText: ", buttonText);
   ReactDom.render(<ExternalLink href={url} buttonText={buttonText} />, div);
 });

@@ -1,10 +1,10 @@
 import React from "react";
-import { MantineProvider } from "@mantine/core";
+import { MantineProvider, createTheme } from "@mantine/core";
 
-const SodaComponentWrapper = ({ childrenComponents }) => {
-  const theme = {};
+const theme = createTheme({});
 
-  return <MantineProvider theme={theme}>{childrenComponents}</MantineProvider>;
+const SodaComponentWrapper = ({ children }) => {
+  return <MantineProvider theme={theme}>{children}</MantineProvider>;
 };
 
 export default SodaComponentWrapper;

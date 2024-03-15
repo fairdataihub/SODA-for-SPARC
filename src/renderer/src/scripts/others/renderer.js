@@ -8976,15 +8976,6 @@ const sodaVideo = () => {
   );
 };
 
-const directToDocumentation = () => {
-  window.electron.ipcRenderer.invoke(
-    "shell-open-external",
-    "https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda"
-  );
-
-  document.getElementById("overview-column-2").blur();
-  // window.open('https://docs.sodaforsparc.io', '_blank');
-};
 const directToGuidedMode = () => {
   const guidedModeLinkButton = document.getElementById("guided_mode_view");
   guidedModeLinkButton.click();
@@ -8994,8 +8985,6 @@ window.directToFreeFormMode = () => {
   directToOrganize.click();
   // freeFormModeLinkButton.click();
 };
-
-document.getElementById("doc-btn").addEventListener("click", directToDocumentation);
 
 document
   .getElementById("home-button-interface-instructions-link")
