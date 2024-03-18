@@ -1,16 +1,18 @@
-import { Container } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { Container, Text } from "@mantine/core";
 import SodaComponentWrapper from "../utils/SodaComponentWrapper";
-// import DatasetNameAndSubtitlePage from "../pages/gm/DatasetNameAndSubtitlePage";
 import classes from "./GuidedModePageContainer.module.css";
+import NameAndSubtitle from "../forms/NameAndSubtitle";
 
 const pageIdToPageComponentMap = {
-  "guided--page--1": "GuidedModePage1",
+  "guided-name-subtitle-tab": NameAndSubtitle,
 };
+
 const GuidedModePageContainer = ({ pageId, pageHeader }) => {
   console.log("Rendering Page component for pageId: ", pageId);
   console.log("Page header: ", pageHeader);
+
   const PageComponent = pageIdToPageComponentMap[pageId];
+
   return (
     <SodaComponentWrapper>
       <Container className={classes.guidedModePageContainer} bg="teal">
@@ -18,7 +20,7 @@ const GuidedModePageContainer = ({ pageId, pageHeader }) => {
           {pageHeader}
         </Text>
         {PageComponent ? (
-          PageComponent
+          <PageComponent key={pageId} />
         ) : (
           <Text size="md" ta="center">
             PAGE NOT FOUND
