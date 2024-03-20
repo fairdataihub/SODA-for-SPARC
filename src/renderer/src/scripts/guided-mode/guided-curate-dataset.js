@@ -1071,10 +1071,8 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-name-subtitle-tab") {
-      let datasetNameInput = document.getElementById("guided-dataset-name-input").value.trim();
-      let datasetSubtitleInput = document
-        .getElementById("guided-dataset-subtitle-input")
-        .value.trim();
+      const datasetNameInput = useGuidedModeStore.getState().datasetName.trim();
+      const datasetSubtitleInput = useGuidedModeStore.getState().datasetSubtitle.trim();
 
       //Throw error if no dataset name or subtitle were added
       if (!datasetNameInput) {
@@ -1096,6 +1094,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           message: "Please enter a dataset subtitle.",
         });
       }
+
       if (errorArray.length > 0) {
         throw errorArray;
       }
