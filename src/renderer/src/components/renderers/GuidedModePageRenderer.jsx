@@ -1,5 +1,7 @@
 import ReactDom from "react-dom";
+import SodaComponentWrapper from "../utils/SodaComponentWrapper";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
+
 const pageIdToPageComponentMap = {
   "guided-name-subtitle-tab": <NameAndSubtitlePage />,
 };
@@ -11,5 +13,5 @@ divs.forEach((targetDiv) => {
   const pageComponent = pageIdToPageComponentMap[pageId];
   console.log("pageHeader: ", pageHeader);
   console.log("pageId: ", pageId);
-  ReactDom.render(pageComponent, targetDiv);
+  ReactDom.render(<SodaComponentWrapper>{pageComponent}</SodaComponentWrapper>, targetDiv);
 });

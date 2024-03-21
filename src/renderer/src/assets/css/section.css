@@ -14,7 +14,6 @@
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto;
-  color: var(--color-accent);
   background-color: var(--color-section);
   /* Hide */
   pointer-events: none;
@@ -60,14 +59,6 @@
 .section h3,
 .section p {
   color: var(--color);
-}
-.section h1 {
-  font-size: 20px;
-}
-
-.section h3 {
-  padding-bottom: 30px;
-  font-size: 16px;
 }
 
 .section-wrapper {

@@ -1,26 +1,63 @@
 import useGuidedModeStore from "../../../stores/guidedModeStore";
-import GuidedModePageContainer from "../../containers/GuidedModePageContainer";
-import { TextInput, Textarea } from "@mantine/core";
+import GuidedModePage from "../../containers/GuidedModePage";
+import GuidedModeSection from "../../containers/GuidedModeSection";
+import DropDownNote from "../../utils/DropDownNote";
+import { TextInput, Textarea, Text } from "@mantine/core";
+import ExternalLink from "../../buttons/ExternalLink";
 
 const NameAndSubtitlePage = () => {
   const { datasetName, setDatasetName, datasetSubtitle, setDatasetSubtitle } = useGuidedModeStore();
 
   return (
-    <GuidedModePageContainer>
-      <TextInput
-        label="Dataset Name"
-        placeholder="Enter dataset name"
-        description="This is the name of your dataset"
-        value={datasetName}
-        onChange={(event) => setDatasetName(event.target.value)}
-      />
-      <Textarea
-        label="Dataset Subtitle"
-        placeholder="Enter dataset subtitle"
-        value={datasetSubtitle}
-        onChange={(event) => setDatasetSubtitle(event.target.value)}
-      />
-    </GuidedModePageContainer>
+    <GuidedModePage pageHeader="Dataset name and subtitle">
+      <GuidedModeSection>
+        <TextInput
+          label="Dataset Name:"
+          placeholder="Enter dataset name"
+          value={datasetName}
+          onChange={(event) => setDatasetName(event.target.value)}
+        />
+        <DropDownNote
+          dropDownIcon="info"
+          dropDownButtonText="What is the dataset name used for?"
+          dropDownNote={
+            <Text>
+              This field will be displayed in public as the title of the dataset once it is
+              published on the
+              <ExternalLink
+                href="https://sparc.science/"
+                buttonText="SPARC Data Portal"
+                buttonType="anchor"
+              />
+              . Please make sure that your dataset name is unique and relatively informative.
+            </Text>
+          }
+        />
+      </GuidedModeSection>
+      <GuidedModeSection>
+        <Textarea
+          label="Dataset Subtitle"
+          placeholder="Enter dataset subtitle"
+          value={datasetSubtitle}
+          onChange={(event) => setDatasetSubtitle(event.target.value)}
+        />
+        <DropDownNote
+          dropDownIcon="info"
+          dropDownButtonText="What is the dataset subtitle used for?"
+          dropDownNote={
+            <Text>
+              This field will become the short description visible immediately under the title of
+              your dataset once it is published on the
+              <ExternalLink
+                href="https://sparc.science/"
+                buttonText="SPARC Data Portal"
+                buttonType="anchor"
+              />
+            </Text>
+          }
+        />
+      </GuidedModeSection>
+    </GuidedModePage>
   );
 };
 
