@@ -10,6 +10,10 @@ import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analyt
 import client from "../client";
 import { swalConfirmAction } from "../utils/swal-utils";
 
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
 // event listeners for open dropdown prompt
 document.querySelectorAll(".subjects-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {

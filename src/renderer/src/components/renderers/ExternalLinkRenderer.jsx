@@ -2,6 +2,10 @@ import ReactDom from "react-dom";
 import SodaComponentWrapper from "../utils/SodaComponentWrapper";
 import ExternalLink from "../buttons/ExternalLink";
 
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
 const divsToRenderOver = document.querySelectorAll(".react-external-link");
 divsToRenderOver.forEach((div) => {
   const url = div.getAttribute("data-url");

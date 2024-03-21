@@ -10,6 +10,10 @@ import Swal from "sweetalert2";
 import api from "../others/api/api";
 import { swalShowInfo } from "../utils/swal-utils";
 
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
 // JSON object of all the tabs
 var allParentStepsJSON = {
   "getting-started": "getting-started-tab",

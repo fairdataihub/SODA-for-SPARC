@@ -4,6 +4,10 @@ import { heartLottie } from "./overview-lotties";
 import { existingDataset, modifyDataset } from "./lotties";
 import { docu_lottie } from "./documentation-lotties";
 
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
 let contact_lottie_container = document.getElementById("contact-us-lottie");
 let contact_lottie_animation = lottie.loadAnimation({
   container: contact_lottie_container,

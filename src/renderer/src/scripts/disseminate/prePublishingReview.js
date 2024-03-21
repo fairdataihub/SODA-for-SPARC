@@ -13,6 +13,10 @@ import api from "../others/api/api";
 import Swal from "sweetalert2";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
 const resetSubmissionChecklistText = () => {
   let subtitleText = $(`#prepublishing-checklist-icon-subtitle`).parent().siblings()[0];
   let tagsText = $(`#prepublishing-checklist-icon-tags`).parent().siblings()[0];

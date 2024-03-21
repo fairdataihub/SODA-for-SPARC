@@ -8,6 +8,10 @@ import { clientError, userErrorMessage } from "../others/http-error-handler/erro
 import kombuchaEnums from "../analytics/analytics-enums";
 import api from "../others/api/api";
 
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
 /*
 *******************************************************************************************************************
 // Logic for talking to the validator

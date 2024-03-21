@@ -6,6 +6,10 @@ import { clientError, userErrorMessage } from "../others/http-error-handler/erro
 import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
 // event listeners for changes open dropdown prompts
 document.querySelectorAll(".changes-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {

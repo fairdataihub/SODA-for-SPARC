@@ -1,8 +1,13 @@
 import addDatasetAndOrganizationCardComponents from "../assets/component-utils/addDatasetAndOrganizationCards";
-window.allSectionsInserted = false;
-const loadSections = async () => {
+
+// adds the apps HTML pages to the DOM
+window.htmlPagesAdded = false;
+document.addEventListener("DOMContentLoaded", async function () {
   const links = document.querySelectorAll('link[rel="import"]');
   let contentIndex = document.querySelector("#content");
+
+  // Array that will contain all of the sectionIDs that are to be
+  // inserted into contentIndex
   let sectionIds = [];
 
   // Import and add each page to the DOM
@@ -22,8 +27,8 @@ const loadSections = async () => {
     contentIndex.innerHTML += content;
   }
 
-  // Check to see if the links have been added to the DOM
-  // If not, try again in 100ms
+  //Check to see if the links have been added to the DOM
+  //If not, try again in 100ms
   const waitForHtmlSectionsToInsertIntoDOM = () => {
     return new Promise((resolve) => {
       let interval = setInterval(() => {
@@ -46,18 +51,5 @@ const loadSections = async () => {
 
   await waitForHtmlSectionsToInsertIntoDOM();
   addDatasetAndOrganizationCardComponents();
-  window.allSectionsInserted = true;
-
-  // Return a promise that resolves once all operations are completed
-  return new Promise((resolve) => {
-    const interval = setInterval(() => {
-      if (window.htmlPagesAdded) {
-        clearInterval(interval);
-        resolve();
-      }
-    }, 100);
-  });
-};
-
-// Call loadSections and wait for it to finish
-await loadSections();
+  window.htmlPagesAdded = true;
+});

@@ -2,6 +2,10 @@ import ReactDom from "react-dom";
 import SodaComponentWrapper from "../utils/SodaComponentWrapper";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
 const pageIdToPageComponentMap = {
   "guided-name-subtitle-tab": <NameAndSubtitlePage />,
 };

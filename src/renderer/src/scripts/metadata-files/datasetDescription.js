@@ -10,6 +10,10 @@ import tippy from "tippy.js";
 import doiRegex from "doi-regex";
 import validator from "validator";
 
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
 // opendropdown event listeners
 document.querySelectorAll(".dd-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {

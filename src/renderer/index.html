@@ -246,21 +246,6 @@
     <div class="dash-app" style="background: #fff; border-top: 1px solid #c3c3c3">
       <main id="content" class="content js-content"></main>
     </div>
-    <script type="module" src="/src/assets/imports.js"></script>
-    <script>
-      function checkSectionsLoaded() {
-        if (window.allSectionsInserted) {
-          const script = document.createElement("script");
-          script.type = "module";
-          script.src = "/src/main.js";
-          document.body.appendChild(script);
-        } else {
-          setTimeout(checkSectionsLoaded, 10); // Check again after 100 milliseconds
-        }
-      }
-
-      // Start checking if allSectionsLoaded is true
-      checkSectionsLoaded();
-    </script>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>

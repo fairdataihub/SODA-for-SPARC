@@ -3,6 +3,10 @@
 import kombuchaEnums from "../analytics/analytics-enums";
 import Swal from "sweetalert2";
 
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
 // Metadata Templates //
 const downloadHighLvlFolders = document.getElementById("download-high-level-folders-btn");
 const downloadMetadataFiles = document.getElementById("download-manifest-only-btn");

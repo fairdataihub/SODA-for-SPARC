@@ -19,6 +19,9 @@ import Accordion from "accordion-js";
 // TODO: Follow up that this is the way to import it
 import "accordion-js/dist/accordion.min.css";
 
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
 // TODO: Add logic so this doesnt apply to the organization fields
 document.querySelectorAll(".ds-dd:not(.organization)").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {

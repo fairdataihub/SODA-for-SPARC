@@ -6,6 +6,10 @@ import { existingDataset, modifyDataset } from "../../assets/lotties/lotties";
 import lottie from "lottie-web";
 import Swal from "sweetalert2";
 
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
 let current_advanced_page = "";
 
 // Function to transition between the advanced feature options

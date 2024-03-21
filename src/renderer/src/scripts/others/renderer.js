@@ -2,6 +2,10 @@
 // // Import required modules
 // //////////////////////////////////
 
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
 import * as os from "os";
 import * as path from "path";
 import Editor from "@toast-ui/editor";

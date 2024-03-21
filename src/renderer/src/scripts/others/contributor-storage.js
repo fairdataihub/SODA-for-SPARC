@@ -1,3 +1,6 @@
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
 // Save the contributors array to the JSON file
 const saveStoredContributors = (contributors) => {
   try {
