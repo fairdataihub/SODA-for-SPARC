@@ -36,11 +36,17 @@ const NameAndSubtitlePage = () => {
       </GuidedModeSection>
       <GuidedModeSection>
         <Textarea
-          label="Dataset Subtitle"
+          label="Dataset Subtitle:"
           placeholder="Enter dataset subtitle"
+          autosize
+          minRows={5}
           value={datasetSubtitle}
           onChange={(event) => setDatasetSubtitle(event.target.value)}
+          maxLength={255}
         />
+        <Text align="right" style={{ marginTop: "-35px", zIndex: "10", marginRight: "10px" }}>
+          {255 - datasetSubtitle.length} characters remaining
+        </Text>
         <DropDownNote
           dropDownIcon="info"
           dropDownButtonText="What is the dataset subtitle used for?"

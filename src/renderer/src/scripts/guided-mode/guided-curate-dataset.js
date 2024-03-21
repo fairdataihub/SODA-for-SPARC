@@ -41,22 +41,6 @@ import useGuidedModeStore from "../../stores/guidedModeStore";
 
 console.log("Guided Mode Store State:", useGuidedModeStore.getState());
 
-// Set the dataset name and description
-useGuidedModeStore.setState({ datasetName: "My Dataset Name" });
-useGuidedModeStore.setState({ datasetDescription: "My Dataset Description" });
-
-// Get the dataset name and description
-console.log("Dataset Name:", useGuidedModeStore.getState().datasetName);
-console.log("Dataset Description:", useGuidedModeStore.getState().datasetDescription);
-
-// Set the dataset name and description
-useGuidedModeStore.setState({ datasetName: "My New Dataset Name" });
-useGuidedModeStore.setState({ datasetDescription: "My New Dataset Description" });
-
-// Get the dataset name and description
-console.log("Dataset Name:", useGuidedModeStore.getState().datasetName);
-console.log("Dataset Description:", useGuidedModeStore.getState().datasetDescription);
-
 import "bootstrap-select";
 // import DragSort from '@yaireo/dragsort'
 import Cropper from "cropperjs";
