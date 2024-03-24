@@ -36,10 +36,15 @@ import {
   swalShowInfo,
 } from "../utils/swal-utils";
 
+import { useStore } from "zustand";
+
 // Import state management stores
 import useGuidedModeStore from "../../stores/guidedModeStore";
 
-console.log("Guided Mode Store State:", useGuidedModeStore.getState());
+// Get non-reactive fresh state
+const initialGuidedModeStore = useGuidedModeStore.getState();
+console.log("Initial Guided Mode Store State:", initialGuidedModeStore);
+
 
 import "bootstrap-select";
 // import DragSort from '@yaireo/dragsort'
@@ -1086,7 +1091,9 @@ const savePageChanges = async (pageBeingLeftID) => {
       if (errorArray.length > 0) {
         throw errorArray;
       }
-      const currentDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
+
+
+                  const currentDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
       if (currentDatasetName) {
         // Update the progress file path name and banner image path if needed
         if (datasetNameInput !== currentDatasetName) {
@@ -1847,6 +1854,13 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
       const selectedLicense = selectedLicenseButton.dataset.value;
       window.sodaJSONObj["digital-metadata"]["license"] = selectedLicense;
+    }
+    console.log("Page being left", pageBeingLeftID)
+    if (pageBeingLeftID === "guided-biolucida-image-selection-tab") {
+      console.log("WEEEEEEE")
+      const selectedBioLucidaImages = useGuidedModeStore.getState().selectedBioLucidaImages
+      
+      console.log("Images on page leave", selectedBioLucidaImages)
     }
 
     if (pageBeingLeftID === "guided-dataset-structure-review-tab") {
@@ -6414,6 +6428,9 @@ window.openPage = async (targetPageID) => {
           selectedLicenseRadioButton.click();
         }
       }
+    }
+    if (targetPageID === "guided-biolucida-image-selection-tab") {
+      useGuidedModeStore.setState({ selectedBioLucidaImages: ["a","b"] });
     }
 
     if (targetPageID === "guided-create-subjects-metadata-tab") {
