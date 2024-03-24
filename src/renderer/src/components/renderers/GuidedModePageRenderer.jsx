@@ -7,7 +7,6 @@ while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-
 const pageIdToPageComponentMap = {
   "guided-name-subtitle-tab": <NameAndSubtitlePage />,
   "guided-biolucida-image-selection-tab": <BioLucidaImageListSelectPage />,

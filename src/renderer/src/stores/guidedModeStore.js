@@ -8,11 +8,8 @@ const useGuidedModeStore = create((set) => ({
   setDatasetSubtitle: (datasetSubtitle) => set(() => ({ datasetSubtitle: datasetSubtitle })),
 
   selectedBioLucidaImages: [],
-  setSelectedBioLucidaImages: (selectedBioLucidaImages) => set(() => ({ selectedBioLucidaImages: selectedBioLucidaImages })),
-
+  setSelectedBioLucidaImages: (selectedBioLucidaImages) =>
+    set(() => ({ selectedBioLucidaImages: selectedBioLucidaImages })),
 }));
-
-
-
 
 export default useGuidedModeStore;

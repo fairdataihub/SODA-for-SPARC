@@ -45,7 +45,6 @@ import useGuidedModeStore from "../../stores/guidedModeStore";
 const initialGuidedModeStore = useGuidedModeStore.getState();
 console.log("Initial Guided Mode Store State:", initialGuidedModeStore);
 
-
 import "bootstrap-select";
 // import DragSort from '@yaireo/dragsort'
 import Cropper from "cropperjs";
@@ -1092,8 +1091,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-
-                  const currentDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
+      const currentDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
       if (currentDatasetName) {
         // Update the progress file path name and banner image path if needed
         if (datasetNameInput !== currentDatasetName) {
@@ -1855,12 +1853,12 @@ const savePageChanges = async (pageBeingLeftID) => {
       const selectedLicense = selectedLicenseButton.dataset.value;
       window.sodaJSONObj["digital-metadata"]["license"] = selectedLicense;
     }
-    console.log("Page being left", pageBeingLeftID)
+    console.log("Page being left", pageBeingLeftID);
     if (pageBeingLeftID === "guided-biolucida-image-selection-tab") {
-      console.log("WEEEEEEE")
-      const selectedBioLucidaImages = useGuidedModeStore.getState().selectedBioLucidaImages
-      
-      console.log("Images on page leave", selectedBioLucidaImages)
+      console.log("WEEEEEEE");
+      const selectedBioLucidaImages = useGuidedModeStore.getState().selectedBioLucidaImages;
+
+      console.log("Images on page leave", selectedBioLucidaImages);
     }
 
     if (pageBeingLeftID === "guided-dataset-structure-review-tab") {
@@ -6430,7 +6428,7 @@ window.openPage = async (targetPageID) => {
       }
     }
     if (targetPageID === "guided-biolucida-image-selection-tab") {
-      useGuidedModeStore.setState({ selectedBioLucidaImages: ["a","b"] });
+      useGuidedModeStore.setState({ selectedBioLucidaImages: ["a", "b"] });
     }
 
     if (targetPageID === "guided-create-subjects-metadata-tab") {
