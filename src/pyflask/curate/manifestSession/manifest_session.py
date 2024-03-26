@@ -1,3 +1,10 @@
+from pennsieve2 import Pennsieve
+
+ps = Pennsieve()
+
+# fs = ps.list_manifests()
+# print(fs)
+
 class UploadManifestSession:
 
     # properties 
@@ -28,4 +35,18 @@ class UploadManifestSession:
     def get_mff_mid(self):
         return self.mff_mid
     
+    def has_stored_mids(self):
+        return self.df_mid is not None or self.mdf_mid is not None or self.mff_mid is not None
     
+
+    def df_mid_has_progress(self):
+        mfs = ps.list_manifests()
+        for mf in mfs:
+            if mf.id == self.df_mid:
+                if mf.status == "Initiated":
+                    return True      
+        return False
+            
+    
+# ums = UploadManifestSession()
+# print(ums.df_mid_has_progress())
