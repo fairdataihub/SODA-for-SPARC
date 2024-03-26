@@ -1285,6 +1285,7 @@ const initiate_generate_manifest_bf = async () => {
       `/curate_datasets/curation`,
       {
         soda_json_structure: window.sodaJSONObj,
+        resume: false
       },
       {
         timeout: 0,

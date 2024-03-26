@@ -7363,6 +7363,7 @@ const initiate_generate = async () => {
       `/curate_datasets/curation`,
       {
         soda_json_structure: window.sodaJSONObj,
+        resume: false
       },
       { timeout: 0 }
     )

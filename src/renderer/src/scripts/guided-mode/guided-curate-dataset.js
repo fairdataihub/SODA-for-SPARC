@@ -14602,7 +14602,7 @@ window.electron.ipcRenderer.on(
       // Start the local dataset generation process
       client.post(
         `/curate_datasets/curation`,
-        { soda_json_structure: sodaJSONObjCopy },
+        { soda_json_structure: sodaJSONObjCopy, resume: false },
         { timeout: 0 }
       );
 
@@ -15527,6 +15527,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       `/curate_datasets/curation`,
       {
         soda_json_structure: window.sodaJSONObj,
+        resume: false
       },
       { timeout: 0 }
     )
