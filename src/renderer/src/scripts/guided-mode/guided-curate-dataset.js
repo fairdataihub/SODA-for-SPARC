@@ -6428,7 +6428,32 @@ window.openPage = async (targetPageID) => {
       }
     }
     if (targetPageID === "guided-biolucida-image-selection-tab") {
-      useGuidedModeStore.setState({ selectedBioLucidaImages: ["a", "b"] });
+      // Create a random array of 5 letters and set as state
+      const randomLetters = Array.from({ length: 5 }, () => Math.floor(Math.random() * 26) + 97);
+      try {
+        // Create a directory to store the guided image thumbnails if it doesn't exist
+        const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
+        if (!window.fs.existsSync(guidedThumbnailsPath)) {
+          window.fs.mkdirSync(guidedThumbnailsPath, { recursive: true });
+        }
+
+        const res = await client.get(`/image_processing/create_image_thumbnails`, {
+          params: {
+            raw_image_paths: [
+              "C:\\Users\\jacob\\Downloads\\soskar-smethurst-B1GtwanCbiw-unsplash.jpg",
+              "C:\\Users\\jacob\\Downloads\\fedor-PtW4RywQV4s-unsplash.jpg",
+            ],
+            output_path: guidedThumbnailsPath,
+          },
+        });
+
+        console.log(res.data);
+
+        useGuidedModeStore.setState({ selectedBioLucidaImages: randomLetters });
+      } catch (error) {
+        const emessage = userErrorMessage(error);
+        await swalShowError("Error fetching images", emessage);
+      }
     }
 
     if (targetPageID === "guided-create-subjects-metadata-tab") {

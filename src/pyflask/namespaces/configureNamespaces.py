@@ -18,6 +18,7 @@ class NamespaceEnum(Enum):
     SKELETON_DATASET = "skeleton_dataset"
     PYSODA_UTILS = "pysoda_utils"
     AUTHENTICATE = "authenticate"
+    IMAGE_PROCESSING = "image_processing"
 
 
 # namespaces dictionary that is given a namespace name as a key and returns the corresponding namespace object as a value
@@ -63,6 +64,10 @@ def configure_namespaces():
 
     pysoda_utils_namespace = Namespace(NamespaceEnum.PYSODA_UTILS.value, description='Utility functions for pysoda')
     namespaces[NamespaceEnum.PYSODA_UTILS] = pysoda_utils_namespace
+
+    image_processing_namespace = Namespace(NamespaceEnum.IMAGE_PROCESSING.value, description='Routes for handling image processing')
+    namespaces[NamespaceEnum.IMAGE_PROCESSING] = image_processing_namespace
+
 
 
 
