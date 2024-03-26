@@ -1,4 +1,5 @@
 from pennsieve2 import Pennsieve
+import re
 
 ps = Pennsieve()
 
@@ -38,7 +39,6 @@ class UploadManifestSession:
     def has_stored_mids(self):
         return self.df_mid is not None or self.mdf_mid is not None or self.mff_mid is not None
     
-
     def df_mid_has_progress(self):
         return self.manifest_has_progress(self.df_mid)
     
@@ -51,7 +51,34 @@ class UploadManifestSession:
     def manifest_has_progress(self, mid):
         mfs = ps.list_manifests()
         for mf in mfs:
+            print(mf)
             if mf.id == mid:
                 if mf.status == "Initiated":
                     return True      
         return False
+    
+    def get_remaining_df_file_count(self):
+        return self.get_remaining_file_count(self.df_mid)
+    
+    def get_remaining_mdf_file_count(self):
+        return self.get_remaining_file_count(self.mdf_mid)
+    
+    def get_remaining_mff_file_count(self):
+        return self.get_remaining_file_count(self.mff_mid)
+    
+    def get_remaining_file_count(self, mid):
+        file_string = ps.manifest.list_files(mid)
+        print(str(file_string))
+
+        # if there is no node_id then an upload hasn't started yet - all files are remaining 
+        # TODO: Add logic for getting the file count from the json object rather than the manifest string
+
+        # regular expression that searches and counts for every string that has "status: LOCAL" or "status: REGISTERED" in the string
+        return len(re.findall(r'status: LOCAL | status: REGISTERED' , str(file_string)))
+
+
+
+ums = UploadManifestSession()
+ums.set_df_mid(3)
+
+print(ums.df_mid_has_progress())
