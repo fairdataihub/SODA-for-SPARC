@@ -3014,7 +3014,7 @@ def clean_json_structure(soda_json_structure):
     return {"soda_json_structure": soda_json_structure}
 
 
-def main_curate_function(soda_json_structure):
+def main_curate_function(soda_json_structure, resume):
     global namespace_logger
 
     namespace_logger.info("Starting main_curate_function")
