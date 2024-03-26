@@ -34,6 +34,7 @@ from openpyxl.styles import PatternFill
 from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL, get_users_dataset_list
 from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
 from authentication import get_access_token
+from .manifestSession import UploadManifestSession
 
 from pysodaUtils import (
     check_forbidden_characters_ps,
@@ -250,6 +251,9 @@ TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLAT
 
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
+
+ums = UploadManifestSession()
+
 
 
 
@@ -2477,6 +2481,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             manifest_data = ps.manifest.create(first_file_local_path, folder_name)
             manifest_id = manifest_data.manifest_id
 
+            ums.set_mdf_mid(manifest_id)
+
             # remove the item just added to the manifest 
             list_upload_files[0][0].pop(0)
 
@@ -2546,6 +2552,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             manifest_data = ps.manifest.create(list_upload_metadata_files[0])
             manifest_id = manifest_data.manifest_id
 
+            ums.set_mdf_mid(manifest_id)
+
             loc = get_agent_installation_location()
 
             # add the files to the manifest
@@ -2576,6 +2584,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             ps_folder = list_upload_manifest_files[0][1]
             manifest_data = ps.manifest.create(list_upload_manifest_files[0][0], ps_folder)
             manifest_id = manifest_data.manifest_id
+
+            ums.set_mff_mid(manifest_id)
 
             loc = get_agent_installation_location()
 
@@ -2779,6 +2789,11 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                         main_generated_dataset_size += 1
                                         all_ids_found = True
                                         break
+
+        # reset the manifests used for the upload session                                 
+        ums.set_df_mid(None)
+        ums.set_mdf_mid(None)
+        ums.set_mff_mid(None)
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
         end = timer()
