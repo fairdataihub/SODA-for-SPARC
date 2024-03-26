@@ -40,13 +40,18 @@ class UploadManifestSession:
     
 
     def df_mid_has_progress(self):
+        return self.manifest_has_progress(self.df_mid)
+    
+    def mdf_mid_has_progress(self):
+        return self.manifest_has_progress(self.mdf_mid)
+    
+    def mff_mid_has_progress(self):
+        return self.manifest_has_progress(self.mff_mid)
+    
+    def manifest_has_progress(self, mid):
         mfs = ps.list_manifests()
         for mf in mfs:
-            if mf.id == self.df_mid:
+            if mf.id == mid:
                 if mf.status == "Initiated":
                     return True      
         return False
-            
-    
-# ums = UploadManifestSession()
-# print(ums.df_mid_has_progress())
