@@ -3,9 +3,6 @@ import re
 
 ps = Pennsieve()
 
-# fs = ps.list_manifests()
-# print(fs)
-
 class UploadManifestSession:
 
     # properties 
@@ -75,10 +72,3 @@ class UploadManifestSession:
 
         # regular expression that searches and counts for every string that has "status: LOCAL" or "status: REGISTERED" in the string
         return len(re.findall(r'status: LOCAL | status: REGISTERED' , str(file_string)))
-
-
-
-ums = UploadManifestSession()
-ums.set_df_mid(3)
-
-print(ums.df_mid_has_progress())
