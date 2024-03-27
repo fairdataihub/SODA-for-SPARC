@@ -34,6 +34,7 @@ from openpyxl.styles import PatternFill
 from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL, get_users_dataset_list
 from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
 from authentication import get_access_token
+from .manifestSession import UploadManifestSession
 
 from pysodaUtils import (
     check_forbidden_characters_ps,
@@ -250,6 +251,9 @@ TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLAT
 
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
+
+ums = UploadManifestSession()
+
 
 
 
@@ -1877,7 +1881,7 @@ bytes_uploaded_per_file = {}
 total_bytes_uploaded = {"value": 0}
 current_files_in_subscriber_session = 0
 
-def ps_upload_to_dataset(soda_json_structure, ps, ds):
+def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
     global namespace_logger
 
     # Progress tracking variables that are used for the frontend progress bar.
@@ -2351,12 +2355,21 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
         ]
 
         main_curate_progress_message = "Preparing a list of files to upload"
+        namespace_logger.info("The resume option value is: ", resume)
+        namespace_logger.info("The starting point is: ", starting_point)
+        namespace_logger.info("The generate option is: ", generate_option)
         # 1. Scan the dataset structure and create a list of files/folders to be uploaded with the desired renaming
         if generate_option == "new" and starting_point == "new":
-            # we can assume no files/folders exist in the dataset since the generate option is new and starting point is also new
-            # therefore, we can assume the dataset structure is the same as the tracking structure
-            brand_new_dataset = True
-            list_upload_files = recursive_dataset_scan_for_new_upload(dataset_structure, list_upload_files, relative_path)
+            namespace_logger.info("We are going to check if we should resume")
+            vs = ums.df_mid_has_progress()
+            namespace_logger.info("THe df manifest id is: ", ums.get_df_mid())
+            namespace_logger.info(f"Should we resume? {vs}")
+            if resume == False or resume and not vs:
+                namespace_logger.info("Decided not to resume")
+                # we can assume no files/folders exist in the dataset since the generate option is new and starting point is also new
+                # therefore, we can assume the dataset structure is the same as the tracking structure
+                brand_new_dataset = True
+                list_upload_files = recursive_dataset_scan_for_new_upload(dataset_structure, list_upload_files, relative_path)
 
             if "metadata-files" in soda_json_structure.keys():
                 list_upload_metadata_files = gather_metadata_files(soda_json_structure)
@@ -2441,17 +2454,37 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
 
         # 2. Count how many files will be uploaded to inform frontend
-        for folderInformation in list_upload_files:
-            file_paths_count = len(folderInformation[0])
-            total_files += file_paths_count
-            total_dataset_files += file_paths_count
+        if resume and ums.df_mid_has_progress():
+            total_files += ums.get_remaining_df_file_count()
+            total_dataset_files += ums.get_remaining_df_file_count()
+        else:
+            for folderInformation in list_upload_files:
+                file_paths_count = len(folderInformation[0])
+                total_files += file_paths_count
+                total_dataset_files += file_paths_count
 
         # 3. Upload files and add to tracking list
         start_generate = 1
         main_curate_progress_message = ("Queuing dataset files for upload with the Pennsieve Agent..." + "<br>" + "This may take some time.")
 
+        
+        if resume and ums.df_mid_has_progress():
+            namespace_logger.info("Will resume an upload using prior manifest")
+            # get the current manifest id for data files
+            manifest_id = ums.get_df_mid()
+            namespace_logger.info(f"Resuming upload with manifest id: {manifest_id}")
+            # upload the manifest files
+            try: 
+                ps.manifest.upload(manifest_id)
+                main_curate_progress_message = ("Uploading data files...")
+                # subscribe to the manifest upload so we wait until it has finished uploading before moving on
+                ps.subscribe(10, False, monitor_subscriber_progress)
+            except Exception as e:
+                namespace_logger.error("Error uploading dataset files")
+                namespace_logger.error(e)
+                raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
         # create a manifest for files - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
-        if len(list_upload_files) > 0:
+        elif len(list_upload_files) > 0:
             first_file_local_path = list_upload_files[0][0][0]
 
             if brand_new_dataset:
@@ -2476,6 +2509,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
             manifest_data = ps.manifest.create(first_file_local_path, folder_name)
             manifest_id = manifest_data.manifest_id
+
+            ums.set_mdf_mid(manifest_id)
 
             # remove the item just added to the manifest 
             list_upload_files[0][0].pop(0)
@@ -2546,6 +2581,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             manifest_data = ps.manifest.create(list_upload_metadata_files[0])
             manifest_id = manifest_data.manifest_id
 
+            ums.set_mdf_mid(manifest_id)
+
             loc = get_agent_installation_location()
 
             # add the files to the manifest
@@ -2576,6 +2613,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             ps_folder = list_upload_manifest_files[0][1]
             manifest_data = ps.manifest.create(list_upload_manifest_files[0][0], ps_folder)
             manifest_id = manifest_data.manifest_id
+
+            ums.set_mff_mid(manifest_id)
 
             loc = get_agent_installation_location()
 
@@ -2779,6 +2818,11 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                         main_generated_dataset_size += 1
                                         all_ids_found = True
                                         break
+
+        # reset the manifests used for the upload session                                 
+        ums.set_df_mid(None)
+        ums.set_mdf_mid(None)
+        ums.set_mff_mid(None)
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
         end = timer()
@@ -3013,8 +3057,9 @@ def clean_json_structure(soda_json_structure):
     # here will be clean up the soda json object before creating the manifest file cards
     return {"soda_json_structure": soda_json_structure}
 
+    
 
-def main_curate_function(soda_json_structure):
+def main_curate_function(soda_json_structure, resume):
     global namespace_logger
 
     namespace_logger.info("Starting main_curate_function")
@@ -3193,12 +3238,15 @@ def main_curate_function(soda_json_structure):
 
                 elif generate_option == "new":
                     # if dataset name is in the generate-dataset section, we are generating a new dataset
-                    if "dataset-name" in soda_json_structure["generate-dataset"]:
+                    if "dataset-name" in soda_json_structure["generate-dataset"] and resume == False:
                         dataset_name = soda_json_structure["generate-dataset"][
                             "dataset-name"
                         ]
                         ds = ps_create_new_dataset(dataset_name, ps)
                         selected_dataset_id = ds["content"]["id"]
+                    else:
+                        # get the dataset id by the name 
+                        selected_dataset_id = get_dataset_id(soda_json_structure["generate-dataset"]["dataset-name"])
 
 
                     # check that dataset was created with a limited retry (for some users the dataset isn't automatically accessible)
@@ -3219,7 +3267,7 @@ def main_curate_function(soda_json_structure):
                             time.sleep(10)
                             
 
-                    ps_upload_to_dataset(soda_json_structure, ps, myds)
+                    ps_upload_to_dataset(soda_json_structure, ps, myds, resume)
         except Exception as e:
             main_curate_status = "Done"
             raise e
