@@ -59,6 +59,7 @@ import fileDoc from "/img/doc-file.png";
 import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
+import { map } from "jquery";
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -1856,9 +1857,10 @@ const savePageChanges = async (pageBeingLeftID) => {
     console.log("Page being left", pageBeingLeftID);
     if (pageBeingLeftID === "guided-biolucida-image-selection-tab") {
       console.log("WEEEEEEE");
-      const selectedBioLucidaImages = useGuidedModeStore.getState().selectedBioLucidaImages;
+      const microscopyImagesUploadableToBioLucida =
+        useGuidedModeStore.getState().microscopyImagesUploadableToBioLucida;
 
-      console.log("Images on page leave", selectedBioLucidaImages);
+      console.log("Images on page leave", microscopyImagesUploadableToBioLucida);
     }
 
     if (pageBeingLeftID === "guided-dataset-structure-review-tab") {
@@ -6430,7 +6432,54 @@ window.openPage = async (targetPageID) => {
     if (targetPageID === "guided-biolucida-image-selection-tab") {
       // Create a random array of 5 letters and set as state
       const randomLetters = Array.from({ length: 5 }, () => Math.floor(Math.random() * 26) + 97);
-      try {
+
+      const getMicroscopyImagesFromDatasetStructure = (datasetStructureObj) => {
+        const microscopyImageFileTypes = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp"];
+        const checkIfFileTypeIsMicroscopyImage = (fileType) => {
+          return microscopyImageFileTypes.includes(fileType.toLowerCase());
+        };
+        const microscopyImages = [];
+        const getMicroscopyImagesFromDatasetStructureHelper = (
+          datasetStructureObj,
+          currentRelativePath
+        ) => {
+          const files = Object.keys(datasetStructureObj["files"]);
+          const folders = Object.keys(datasetStructureObj["folders"]);
+          console.log("Files");
+          console.log(files);
+          for (const file of files) {
+            const fileObj = datasetStructureObj["files"][file];
+            const fileExtension = fileObj?.["extension"];
+            if (checkIfFileTypeIsMicroscopyImage(fileExtension)) {
+              microscopyImages.push({
+                filePath: fileObj["path"],
+                relativePath: `${currentRelativePath}${file}`,
+              });
+            }
+          }
+          for (const folder of folders) {
+            getMicroscopyImagesFromDatasetStructureHelper(
+              datasetStructureObj["folders"][folder],
+              `${currentRelativePath}${folder}/`
+            );
+          }
+        };
+
+        getMicroscopyImagesFromDatasetStructureHelper(datasetStructureObj, "");
+        return microscopyImages;
+      };
+
+      const microscopyImages = getMicroscopyImagesFromDatasetStructure(
+        window.datasetStructureJSONObj
+      );
+      console.log("Microscopy Images");
+      console.log(microscopyImages);
+
+      useGuidedModeStore.setState({
+        microscopyImagesUploadableToBioLucida: microscopyImages,
+      });
+
+      /*try {
         // Create a directory to store the guided image thumbnails if it doesn't exist
         const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
         if (!window.fs.existsSync(guidedThumbnailsPath)) {
@@ -6446,14 +6495,10 @@ window.openPage = async (targetPageID) => {
             output_path: guidedThumbnailsPath,
           },
         });
-
-        console.log(res.data);
-
-        useGuidedModeStore.setState({ selectedBioLucidaImages: randomLetters });
       } catch (error) {
         const emessage = userErrorMessage(error);
         await swalShowError("Error fetching images", emessage);
-      }
+      }*/
     }
 
     if (targetPageID === "guided-create-subjects-metadata-tab") {
