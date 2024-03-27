@@ -7194,17 +7194,15 @@ const preGenerateSetup = async (e) => {
   } else {
     initiate_generate(e);
   }
-
-
-}
+};
 
 document.getElementById("button-generate").addEventListener("click", async function (e) {
-  preGenerateSetup(e)
+  preGenerateSetup(e);
 });
 
 document.getElementById("button-retry").addEventListener("click", async function (e) {
-  preGenerateSetup(e)
-})
+  preGenerateSetup(e);
+});
 
 window.delete_imported_manifest = () => {
   for (let highLevelFol in window.sodaJSONObj["dataset-structure"]["folders"]) {
@@ -7367,10 +7365,10 @@ const initiate_generate = async (e) => {
     datasetUploadSession.startSession();
   }
 
-  console.log(e.target)
-  console.log(e.target.textContent.trim())
+  console.log(e.target);
+  console.log(e.target.textContent.trim());
   let resume = e.target.textContent.trim() == "Retry" ? true : false;
-  console.log(resume)
+  console.log(resume);
 
   let start = performance.now();
   client
