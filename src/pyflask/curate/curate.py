@@ -2355,9 +2355,17 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
         ]
 
         main_curate_progress_message = "Preparing a list of files to upload"
+        namespace_logger.info("The resume option value is: ", resume)
+        namespace_logger.info("The starting point is: ", starting_point)
+        namespace_logger.info("The generate option is: ", generate_option)
         # 1. Scan the dataset structure and create a list of files/folders to be uploaded with the desired renaming
         if generate_option == "new" and starting_point == "new":
-            if resume == False or resume and not ums.df_mid_has_progress():
+            namespace_logger.info("We are going to check if we should resume")
+            vs = ums.df_mid_has_progress()
+            namespace_logger.info("THe df manifest id is: ", ums.get_df_mid())
+            namespace_logger.info(f"Should we resume? {vs}")
+            if resume == False or resume and not vs:
+                namespace_logger.info("Decided not to resume")
                 # we can assume no files/folders exist in the dataset since the generate option is new and starting point is also new
                 # therefore, we can assume the dataset structure is the same as the tracking structure
                 brand_new_dataset = True
@@ -2461,8 +2469,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
 
         
         if resume and ums.df_mid_has_progress():
+            namespace_logger.info("Will resume an upload using prior manifest")
             # get the current manifest id for data files
             manifest_id = ums.get_df_mid()
+            namespace_logger.info(f"Resuming upload with manifest id: {manifest_id}")
             # upload the manifest files
             try: 
                 ps.manifest.upload(manifest_id)
@@ -3234,6 +3244,9 @@ def main_curate_function(soda_json_structure, resume):
                         ]
                         ds = ps_create_new_dataset(dataset_name, ps)
                         selected_dataset_id = ds["content"]["id"]
+                    else:
+                        # get the dataset id by the name 
+                        selected_dataset_id = get_dataset_id(soda_json_structure["generate-dataset"]["dataset-name"])
 
 
                     # check that dataset was created with a limited retry (for some users the dataset isn't automatically accessible)
