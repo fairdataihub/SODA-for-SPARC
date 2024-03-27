@@ -7105,7 +7105,7 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
   }
 };
 
-document.getElementById("button-generate").addEventListener("click", async function () {
+const preGenerateSetup = async (e) => {
   $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
@@ -7184,7 +7184,7 @@ document.getElementById("button-generate").addEventListener("click", async funct
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        initiate_generate();
+        initiate_generate(e);
       } else {
         $("#sidebarCollapse").prop("disabled", false);
         document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
@@ -7192,9 +7192,19 @@ document.getElementById("button-generate").addEventListener("click", async funct
       }
     });
   } else {
-    initiate_generate();
+    initiate_generate(e);
   }
+
+
+}
+
+document.getElementById("button-generate").addEventListener("click", async function (e) {
+  preGenerateSetup(e)
 });
+
+document.getElementById("button-retry").addEventListener("click", async function (e) {
+  preGenerateSetup(e)
+})
 
 window.delete_imported_manifest = () => {
   for (let highLevelFol in window.sodaJSONObj["dataset-structure"]["folders"]) {
@@ -7234,7 +7244,7 @@ window.uploadComplete = new Notyf({
 });
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
-const initiate_generate = async () => {
+const initiate_generate = async (e) => {
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
   document.getElementById("guided_mode_view").style.pointerEvents = "none";
 
@@ -7357,13 +7367,18 @@ const initiate_generate = async () => {
     datasetUploadSession.startSession();
   }
 
+  console.log(e.target)
+  console.log(e.target.textContent.trim())
+  let resume = e.target.textContent.trim() == "Retry" ? true : false;
+  console.log(resume)
+
   let start = performance.now();
   client
     .post(
       `/curate_datasets/curation`,
       {
         soda_json_structure: window.sodaJSONObj,
-        resume: false,
+        resume,
       },
       { timeout: 0 }
     )
