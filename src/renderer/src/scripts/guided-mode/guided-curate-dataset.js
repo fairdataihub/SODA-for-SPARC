@@ -4864,6 +4864,41 @@ const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
   }
 };
 
+const getPotentialMicroscopyImagesFromDatasetStructure = (datasetStructureObj) => {
+  const microscopyImageFileTypes = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp"];
+  const checkIfFileTypeIsMicroscopyImage = (fileType) => {
+    return microscopyImageFileTypes.includes(fileType.toLowerCase());
+  };
+  const microscopyImages = [];
+  const getPotentialMicroscopyImagesFromDatasetStructureHelper = (
+    datasetStructureObj,
+    currentRelativePath
+  ) => {
+    const files = Object.keys(datasetStructureObj["files"]);
+    const folders = Object.keys(datasetStructureObj["folders"]);
+
+    for (const file of files) {
+      const fileObj = datasetStructureObj["files"][file];
+      const fileExtension = fileObj?.["extension"];
+      if (checkIfFileTypeIsMicroscopyImage(fileExtension)) {
+        microscopyImages.push({
+          filePath: fileObj["path"],
+          relativePath: `${currentRelativePath}${file}`,
+        });
+      }
+    }
+    for (const folder of folders) {
+      getPotentialMicroscopyImagesFromDatasetStructureHelper(
+        datasetStructureObj["folders"][folder],
+        `${currentRelativePath}${folder}/`
+      );
+    }
+  };
+
+  getPotentialMicroscopyImagesFromDatasetStructureHelper(datasetStructureObj, "");
+  return microscopyImages;
+};
+
 const guidedAddUsersAndTeamsToDropdown = (usersArray, teamsArray) => {
   const guidedUsersAndTeamsDropdown = document.getElementById("guided_bf_list_users_and_teams");
   // Reset the dropdown
@@ -5063,6 +5098,7 @@ const handleNextButtonVisibility = (targetPageID) => {
 // //The general flow is to check if there is values for the keys relevant to the page
 // //If the keys exist, extract the data from the window.sodaJSONObj and populate the page
 // //If the keys do not exist, reset the page (inputs, tables etc.) to the default state
+window.currentGuidedModePage = null;
 window.openPage = async (targetPageID) => {
   //NOTE: 2 Bottom back buttons (one handles sub pages, and the other handles main pages)
   //Back buttons should be disabled and the function setLoading should be (set as false?)
@@ -5365,6 +5401,15 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-primary-data-organization-tab") {
       openSubPageNavigation(targetPageID);
+    }
+    if (targetPageID === "guided-microscopy-image-confirmation-tab") {
+      const potentialMicroscopyImages = getPotentialMicroscopyImagesFromDatasetStructure(
+        window.datasetStructureJSONObj
+      );
+
+      useGuidedModeStore.setState({
+        potentialMicroscopyImages,
+      });
     }
 
     if (targetPageID === "guided-source-data-organization-tab") {
@@ -6430,46 +6475,7 @@ window.openPage = async (targetPageID) => {
       }
     }
     if (targetPageID === "guided-biolucida-image-selection-tab") {
-      // Create a random array of 5 letters and set as state
-      const randomLetters = Array.from({ length: 5 }, () => Math.floor(Math.random() * 26) + 97);
-
-      const getMicroscopyImagesFromDatasetStructure = (datasetStructureObj) => {
-        const microscopyImageFileTypes = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp"];
-        const checkIfFileTypeIsMicroscopyImage = (fileType) => {
-          return microscopyImageFileTypes.includes(fileType.toLowerCase());
-        };
-        const microscopyImages = [];
-        const getMicroscopyImagesFromDatasetStructureHelper = (
-          datasetStructureObj,
-          currentRelativePath
-        ) => {
-          const files = Object.keys(datasetStructureObj["files"]);
-          const folders = Object.keys(datasetStructureObj["folders"]);
-          console.log("Files");
-          console.log(files);
-          for (const file of files) {
-            const fileObj = datasetStructureObj["files"][file];
-            const fileExtension = fileObj?.["extension"];
-            if (checkIfFileTypeIsMicroscopyImage(fileExtension)) {
-              microscopyImages.push({
-                filePath: fileObj["path"],
-                relativePath: `${currentRelativePath}${file}`,
-              });
-            }
-          }
-          for (const folder of folders) {
-            getMicroscopyImagesFromDatasetStructureHelper(
-              datasetStructureObj["folders"][folder],
-              `${currentRelativePath}${folder}/`
-            );
-          }
-        };
-
-        getMicroscopyImagesFromDatasetStructureHelper(datasetStructureObj, "");
-        return microscopyImages;
-      };
-
-      const microscopyImages = getMicroscopyImagesFromDatasetStructure(
+      const microscopyImages = getPotentialMicroscopyImagesFromDatasetStructure(
         window.datasetStructureJSONObj
       );
       console.log("Microscopy Images");
@@ -6922,6 +6928,10 @@ window.openPage = async (targetPageID) => {
 
     // Set the last opened page and save it
     window.sodaJSONObj["page-before-exit"] = targetPageID;
+    window.currentGuidedModePage = targetPageID;
+    // Set the state of the curreng page in the guided mode store to rerender the React Components subscribing
+    // to the currentGuidedModePage store state
+    useGuidedModeStore.setState({ currentGuidedModePage: targetPageID });
     await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
     const eMessage = userErrorMessage(error);

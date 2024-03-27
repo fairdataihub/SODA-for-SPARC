@@ -1,7 +1,7 @@
 import useGuidedModeStore from "../../../stores/guidedModeStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
-import DropDownNote from "../../utils/DropDownNote";
+import DropDownNote from "../../utils/ui/DropDownNote";
 import { TextInput, Textarea, Text } from "@mantine/core";
 import ExternalLink from "../../buttons/ExternalLink";
 

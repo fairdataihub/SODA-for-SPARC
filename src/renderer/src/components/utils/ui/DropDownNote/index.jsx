@@ -3,6 +3,8 @@ import { useState } from "react";
 import { IconChevronRight, IconChevronDown, IconInfoCircle } from "@tabler/icons-react";
 import classes from "./DropDownNote.module.css";
 
+import SodaGreenPaper from "../SodaGreenPaper";
+
 const DropDownNote = ({ dropDownIcon, dropDownButtonText, dropDownNote }) => {
   const dropDownIcons = {
     info: <IconInfoCircle color="black" className={classes.dropDownIcon} />,
@@ -29,19 +31,7 @@ const DropDownNote = ({ dropDownIcon, dropDownButtonText, dropDownNote }) => {
           <IconChevronRight color="black" className={classes.dropDownIcon} />
         )}
       </Button>
-      {dropDownOpen && (
-        <Paper
-          p="sm"
-          shadow="sm"
-          withBorder
-          style={{
-            backgroundColor: "var(--color-transparent-soda-green)",
-            border: "1px solid var(--color-light-green)",
-          }}
-        >
-          {dropDownNote}
-        </Paper>
-      )}
+      {dropDownOpen && <SodaGreenPaper>{dropDownNote}</SodaGreenPaper>}
       <Space />
     </Stack>
   );

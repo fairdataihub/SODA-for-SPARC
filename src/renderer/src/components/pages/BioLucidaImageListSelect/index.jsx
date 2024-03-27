@@ -1,12 +1,25 @@
 import useGuidedModeStore from "../../../stores/guidedModeStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
-import { SimpleGrid, Card, Image, Text, Badge, Button, Group, HoverCard } from "@mantine/core";
+import {
+  SimpleGrid,
+  Card,
+  Image,
+  Text,
+  Badge,
+  Button,
+  Group,
+  HoverCard,
+  Affix,
+  Transition,
+  Paper,
+} from "@mantine/core";
 
 import ExternalLink from "../../buttons/ExternalLink";
 
 const BioLucidaImageListSelectPage = () => {
   const {
+    currentGuidedModePage,
     microscopyImagesUploadableToBioLucida,
     microscopyImagesSelectedToBeUploadedToBioLucida,
     addMicroscopyImageToBeUploadedToBioLucida,
@@ -17,6 +30,7 @@ const BioLucidaImageListSelectPage = () => {
     "microscopyImagesSelectedToBeUploadedToBioLucida",
     microscopyImagesSelectedToBeUploadedToBioLucida
   );
+
   return (
     <GuidedModePage
       pageHeader="BioLucida Image Selection"
@@ -45,12 +59,24 @@ const BioLucidaImageListSelectPage = () => {
                 mt="sm"
                 onClick={() => addMicroscopyImageToBeUploadedToBioLucida(image.filePath)}
               >
-                Add
+                Select
               </Button>
             )}
           </Card>
         ))}
       </SimpleGrid>
+      {currentGuidedModePage === "guided-biolucida-image-selection-tab" && (
+        <Affix
+          position={{ top: 150, right: 20 }}
+          style={{
+            zIndex: 1000,
+          }}
+        >
+          <Paper p="md" shadow="xs" radius="md">
+            <Text>Images selected: {microscopyImagesSelectedToBeUploadedToBioLucida.length}</Text>
+          </Paper>
+        </Affix>
+      )}
     </GuidedModePage>
   );
 };
