@@ -115,10 +115,11 @@ class Curation(Resource):
         try:
             return main_curate_function(soda_json_structure)
         except Exception as e:
+            api.logger.error(e)
             if notBadRequestException(e):
                 # general exception that was unexpected and caused by our code
                 api.abort(500, str(e))
-            if e.response:
+            if e.response is not None:
                 # requests exeption
                 api.abort(e.response.status_code, e.response.json().get('message'))
             else:
