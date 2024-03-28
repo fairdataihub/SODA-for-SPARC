@@ -7555,7 +7555,7 @@ const initiate_generate = async () => {
         statusBarClone.remove();
         sparc_container.style.display = "inline";
         if (result.isConfirmed) {
-          organizeDataset.click();
+          // organizeDataset.click();
           let button = document.getElementById("button-generate");
           $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
           document.getElementById("prevBtn").style.display = "none";
@@ -7632,7 +7632,7 @@ const initiate_generate = async () => {
       }).then((result) => {
         //statusBarClone.remove();
         if (result.isConfirmed) {
-          organizeDataset.click();
+          // organizeDataset.click();
           let button = document.getElementById("button-generate");
           $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
           document.getElementById("prevBtn").style.display = "none";
