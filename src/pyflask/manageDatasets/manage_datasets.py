@@ -331,7 +331,7 @@ def bf_dataset_account(accountname):
 
     datasets_list = []
     for ds in datasets:
-        datasets_list.append({"name": ds["content"]["name"], "id": ds["content"]["id"]})
+        datasets_list.append({"name": ds["content"]["name"], "id": ds["content"]["id"], "intId": ds["content"]["intId"]})
 
     def filter_dataset(datasets_list, store=None):
         if store is None:
@@ -343,7 +343,7 @@ def bf_dataset_account(accountname):
             user_role = r.json()["role"]
             if user_role not in ["viewer", "editor"]:
                 store.append(
-                    {"id": selected_dataset_id, "name": dataset['name'], "role": user_role}
+                    {"id": selected_dataset_id, "name": dataset['name'], "role": user_role, "intId": dataset["intId"]}
                 )
         return store
 
@@ -489,7 +489,9 @@ def create_new_dataset(datasetname, accountname):
         r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(get_access_token()), json={"name": datasetname})
         r.raise_for_status()
         ds_id = r.json()['content']['id']
-        return {"id": ds_id}
+        int_id = r.json()['content']['intId']
+        return {"id": ds_id, "int_id": int_id}
+
 
     except Exception as e:
         raise e

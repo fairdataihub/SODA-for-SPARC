@@ -485,6 +485,7 @@ const validatePennsieveDatasetStandAlone = async () => {
         value: file_counter,
         dataset_name: datasetName,
         dataset_id: datasetPopulationResponse.dataset_id,
+        dataset_int_id: window.defaultBfDatasetIntId,
         origin: "Pennsieve",
       }
     );
@@ -569,6 +570,7 @@ const validatePennsieveDatasetStandAlone = async () => {
       value: file_counter,
       dataset_name: datasetName,
       dataset_id: datasetPopulationResponse.dataset_id,
+      dataset_int_id: window.defaultBfDatasetIntId,
       origin: "Pennsieve",
     }
   );

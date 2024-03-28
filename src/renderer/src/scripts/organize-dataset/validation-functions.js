@@ -227,6 +227,7 @@ window.validateOrganizedDataset = async () => {
       {
         value: file_counter,
         dataset_id: window.defaultBfDatasetId,
+        dataset_int_id: window.defaultBfDatasetIntId,
         origin: datasetOrigin,
         destination: datasetDestination,
       }
@@ -261,6 +262,7 @@ window.validateOrganizedDataset = async () => {
     {
       value: file_counter,
       dataset_id: window.defaultBfDatasetId,
+      dataset_int_id: window.defaultBfDatasetIntId,
       origin: datasetOrigin,
       destination: datasetDestination,
     }
