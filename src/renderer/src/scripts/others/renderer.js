@@ -7181,8 +7181,8 @@ document.getElementById("button-generate").addEventListener("click", async funct
         popup: "animate__animated animate__zoomOut animate__faster",
       },
       didOpen: () => {
-        document.getElementById("swal2-content").style.maxHeight = "19rem";
-        document.getElementById("swal2-content").style.overflowY = "auto";
+        document.getElementById("swal2-html-container").style.maxHeight = "19rem";
+        document.getElementById("swal2-html-container").style.overflowY = "auto";
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -7548,8 +7548,8 @@ const initiate_generate = async () => {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
         didOpen: () => {
-          document.getElementById("swal2-content").style.maxHeight = "19rem";
-          document.getElementById("swal2-content").style.overflowY = "auto";
+          document.getElementById("swal2-html-container").style.maxHeight = "19rem";
+          document.getElementById("swal2-html-container").style.overflowY = "auto";
         },
       }).then((result) => {
         statusBarClone.remove();
