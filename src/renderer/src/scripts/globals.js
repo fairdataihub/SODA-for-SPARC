@@ -1621,7 +1621,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
             // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
             // Ensure the dataset is not locked before proceeding
-            const datasetIsLocked = await api.isDatasetLocked(window.defaultBfDataset, bfDataset);
+            const datasetIsLocked = await api.isDatasetLocked(window.defaultBfAccount, bfDataset);
             if (datasetIsLocked) {
               // Show the locked swal and return
               await Swal.fire({
