@@ -8,6 +8,7 @@ import { clientError, userErrorMessage } from "./http-error-handler/error-handle
 import introJs from "intro.js";
 import Swal from "sweetalert2";
 import api from "../others/api/api";
+import { swalShowInfo } from "../utils/swal-utils";
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -107,6 +108,22 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       return;
     }
 
+    // if the user has files already on their dataset when starting from new/local and merging to existing pennsieve then
+    // show them a message detailing why they cannot create manifest files
+    if (window.hasFiles) {
+      $("#manifest-creation-prohibited").show();
+      if ($("#generate-manifest-curate").prop("checked")) {
+        $("#generate-manifest-curate").click();
+      }
+      $("#generate-manifest-curate").prop("disabled", true);
+      $("#nextBtn").prop("disabled", false);
+      // disable the manifest file checkbox
+      $("#generate-manifest-curate").prop("disabled", true);
+    } else {
+      $("#manifest-creation-prohibited").hide();
+      $("#generate-manifest-curate").prop("disabled", false);
+    }
+
     if (document.getElementById("generate-manifest-curate").checked) {
       // need to run manifest creation
       //Hide the UI until the manifest card are created
@@ -115,7 +132,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       await window.ffmCreateManifest(window.sodaJSONObj);
       $("#manifest-items-container").removeClass("hidden");
       $("#manifest-creating-loading").addClass("hidden");
-      $("button-generate-manifest-locally").show();
     } else {
       document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
     }
@@ -124,6 +140,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   if (tabNow == 5) {
     // Disable the continue button if a destination has not been selected
     // Used when traversing back and forth between tabs
+    // TODO: Update code to show Continue if the para for empty dataset is showing
     if (
       $("#inputNewNameDataset").val() !== "" ||
       ($("#Question-generate-dataset-existing-files-options")
@@ -133,7 +150,8 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
           .find(".option-card")
           .hasClass("checked")) ||
       $("#generate-dataset-replace-existing").find(".option-card").hasClass("checked") ||
-      $("#input-destination-generate-dataset-locally")[0].placeholder !== "Browse here"
+      $("#input-destination-generate-dataset-locally")[0].placeholder !== "Browse here" ||
+      $("#para-continue-empty-ds-selected").is(":visible")
     ) {
       $("#nextBtn").prop("disabled", false);
     } else {
@@ -387,7 +405,9 @@ const fill_info_details = () => {
         );
         new_dataset_name = $("#inputNewNameDataset").val().trim();
       }
-      if (window.manifestFileCheck.checked) {
+      // generate manifest files only when user has checked manifest file generation and they are not starting from new/local and merging
+      // into an existing dataset that already has files
+      if (window.manifestFileCheck.checked && !window.hasFiles) {
         add_card_detail(
           "Manifest files",
           "Requested from SODA",
@@ -518,13 +538,14 @@ window.nextPrev = (pageIndex) => {
   let parentTabs = document.getElementsByClassName("parent-tabs");
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
-    let event = new CustomEvent("custom-back", {
-      detail: {
-        target: { dataset: { section: "main_tabs" }, classList: ["someclass"] },
-      },
-    });
+    // let event = new CustomEvent("custom-back", {
+    //   detail: {
+    //     target: { dataset: { section: "guided_mode-section" }, classList: ["someclass"] },
+    //   },
+    // });
 
-    document.body.dispatchEvent(event);
+    // document.body.dispatchEvent(event);
+    window.returnToGuided();
     if ($("#nextBtn").prop("disabled") === true) {
       window.nextBtnDisabledVariable = true;
     } else {
@@ -783,6 +804,29 @@ window.nextPrev = (pageIndex) => {
       // disable the continue button
       $("#nextBtn").prop("disabled", true);
     }
+
+    // check if we are moving to the previous tab from the current tab and if we are starting local or new
+    if (
+      (window.sodaJSONObj["starting-point"]["type"] === "new" ||
+        window.sodaJSONObj["starting-point"]["type"] === "local") &&
+      pageIndex === -1
+    ) {
+      if (window.hasFiles) {
+        $("#manifest-creation-prohibited").show();
+        // uncheck the manifest file checkbox if it is currently checked
+        if ($("#generate-manifest-curate").prop("checked")) {
+          $("#generate-manifest-curate").click();
+        }
+        $("#generate-manifest-curate").prop("disabled", true);
+        $("#nextBtn").prop("disabled", false);
+      } else {
+        $("#manifest-creation-prohibited").hide();
+        $("#generate-manifest-curate").prop("disabled", false);
+      }
+    }
+  } else if (window.currentTab === 4) {
+    window.showParentTab(window.currentTab, pageIndex);
+    // generate dataset tab
   } else {
     // Hide the current tab:
     $(parentTabs[window.currentTab]).removeClass("tab-active");
@@ -822,7 +866,7 @@ $(".option-card.high-level-folders").click(function () {
   checkHighLevelFoldersInput();
 });
 
-var globalGettingStarted1stQuestionBool = false;
+window.globalGettingStarted1stQuestionBool = false;
 
 $(".parent-tabs.folder-input-check").click(function () {
   var parentCard = $(this).parents()[2];
@@ -948,17 +992,17 @@ const raiseWarningGettingStarted = (ev) => {
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          globalGettingStarted1stQuestionBool = true;
-          wipeOutCurateProgress();
-          resolve(globalGettingStarted1stQuestionBool);
+          window.globalGettingStarted1stQuestionBool = true;
+          window.wipeOutCurateProgress();
+          resolve(window.globalGettingStarted1stQuestionBool);
         } else {
-          globalGettingStarted1stQuestionBool = false;
-          resolve(globalGettingStarted1stQuestionBool);
+          window.globalGettingStarted1stQuestionBool = false;
+          resolve(window.globalGettingStarted1stQuestionBool);
         }
       });
     } else {
-      globalGettingStarted1stQuestionBool = true;
-      resolve(globalGettingStarted1stQuestionBool);
+      window.globalGettingStarted1stQuestionBool = true;
+      resolve(window.globalGettingStarted1stQuestionBool);
     }
   });
 };
@@ -998,15 +1042,15 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     //   "Local",
     //   true
     // );
-    globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
-    if (globalGettingStarted1stQuestionBool) {
+    window.globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
+    if (window.globalGettingStarted1stQuestionBool) {
       $("#progress-files-dropdown").val("Select");
       $("#para-progress-file-status").text("");
       $("#nextBtn").prop("disabled", true);
       window.exitCurate(false);
-      globalGettingStarted1stQuestionBool = false;
+      window.globalGettingStarted1stQuestionBool = false;
     } else {
-      globalGettingStarted1stQuestionBool = false;
+      window.globalGettingStarted1stQuestionBool = false;
       return;
     }
   }
@@ -1078,6 +1122,10 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     if (step6.classList.contains("tab-active")) {
       $("#nextBtn").prop("disabled", true);
     }
+
+    // hide the para para-continue-empty-ds-selected
+    $("#para-continue-empty-ds-selected").hide();
+
     if ($("#current-bf-dataset-generate").text() !== "None") {
       $($("#button-confirm-bf-dataset").parents()[0]).css("display", "flex");
       $("#button-confirm-bf-dataset").show();
@@ -2011,6 +2059,40 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
   // display the target tab (data-next tab)
   if (!target.classList.contains("show")) {
     target.classList.add("show");
+  }
+
+  // Step 6 - The Merge/Skip/Replace options for selecting how to upload data to an existing Pennsieve dataset
+  if (ev.getAttribute("data-next") === "Question-generate-dataset-existing-folders-options") {
+    if (!window.hasFiles) {
+      // select the Merge option for Folders
+      document.getElementById("existing-folders-merge").checked = true;
+      $("#existing-folders-merge").hide();
+      $("#Question-generate-dataset-existing-folders-options").hide();
+      // select the Skip option for Files
+      document.getElementById("existing-files-replace").checked = true;
+
+      // enable the continue button
+      $("#nextBtn").prop("disabled", false);
+
+      $("#para-continue-empty-ds-selected").text("Please continue below.");
+      $("#para-continue-empty-ds-selected").show();
+
+      // hide the confirm button
+      $("#button-confirm-bf-dataset").hide();
+
+      return;
+    }
+
+    $("#Question-generate-dataset-existing-folders-options").show();
+    document.getElementById("existing-folders-merge").checked = false;
+    document.getElementById("existing-files-replace").checked = false;
+
+    // alert the user that manifest files will not be uploaded
+    await swalShowInfo(
+      "Manifest files will not be uploaded to Pennsieve",
+      'The selected Pennsieve dataset already includes data files. To prevent conflicts, SODA will not generate manifest files. You can generate manifest files after the upload is complete by navigating to the home page, selecting "Advanced features", and then selecting the "Create manifest files" option.'
+    );
+    // continue as usual otherwise
   }
 
   // here, handling existing folders and files tabs are independent of each other
@@ -3479,7 +3561,7 @@ window.resetCuration = () => {
   $(".para-metadata-file-status").text("");
 
   // hide the generate manifest locally button
-  $("#button-generate-manifest-locally").hide();
+  document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
 
   // set back Please continue para element
   $("#para-continue-prepare-new-getting-started").text("");
@@ -3495,7 +3577,7 @@ window.resetCuration = () => {
   $("#generate-manifest-curate").prop("checked", false);
 
   // $("#main_tabs_view")[0].click();
-  globalGettingStarted1stQuestionBool = false;
+  window.globalGettingStarted1stQuestionBool = false;
 };
 
 window.exitCurate = async (resetProgressTabs, start_over = false) => {
@@ -3522,25 +3604,32 @@ window.exitCurate = async (resetProgressTabs, start_over = false) => {
       $("#Question-getting-started-1").addClass("show");
       $("#generate-dataset-progress-tab").css("display", "none");
 
+      window.hasFiles = false;
       window.currentTab = 0;
-      wipeOutCurateProgress();
-      $("#main_tabs_view")[0].click();
-      globalGettingStarted1stQuestionBool = false;
+      window.wipeOutCurateProgress();
+      window.showParentTab(0, 1);
+      window.globalGettingStarted1stQuestionBool = false;
       if (start_over) {
         $("#organize_dataset_btn").click();
       } else {
-        // forceActionSidebar("show");
+        window.returnToGuided();
+        if ($("#nextBtn").prop("disabled") === true) {
+          window.nextBtnDisabledVariable = true;
+        } else {
+          window.nextBtnDisabledVariable = false;
+        }
+        // $("#guided_mode_view").click();
       }
     } else {
-      globalGettingStarted1stQuestionBool = false;
+      window.globalGettingStarted1stQuestionBool = false;
       return;
     }
   } else {
-    wipeOutCurateProgress();
+    window.wipeOutCurateProgress();
   }
 };
 
-const wipeOutCurateProgress = async () => {
+window.wipeOutCurateProgress = () => {
   // set SODA json object back
   window.sodaJSONObj = {
     "starting-point": { type: "" },
@@ -3573,7 +3662,7 @@ const wipeOutCurateProgress = async () => {
   $(".para-metadata-file-status").text("");
 
   // hide the generate manifest locally button
-  $("#button-generate-manifest-locally").hide();
+  document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
 
   // set back Please continue para element
   $("#para-continue-prepare-new-getting-started").text("");
@@ -3592,6 +3681,12 @@ const wipeOutCurateProgress = async () => {
 
   // uncheck auto-generated manifest checkbox
   $("#generate-manifest-curate").prop("checked", false);
+
+  // reset dataset selection options
+  $("#current-bf-dataset").text("None"); // step 1
+  $("#current-bf-dataset-generate").text("None"); // step 6 for when merging a new dataset into an existing dataset
+  $("#button-confirm-bf-dataset").hide(); // hide step 6 confirm button until the user selects the dataset again
+  //
 };
 
 // once users click on option card: Organize dataset

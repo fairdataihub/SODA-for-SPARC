@@ -8,6 +8,7 @@ from datetime import datetime
 import pathlib
 import shutil 
 from utils import load_metadata_to_dataframe
+from authentication import get_access_token
 import time
 
 import pandas as pd
@@ -33,14 +34,14 @@ def get_auto_generated_manifest_files(soda_json_structure):
             manifest_folder_structure[folder] = manifestFilePath
     return manifest_folder_structure
 
-def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress, manifest_path):
+def update_existing_pennsieve_manifest_files(soda_json_structure, high_level_folders, manifest_progress, manifest_path):
     """
     Updates old manifest files with new information from the dataset. Also creates new manifest files if they don't exist.
     Used in the standalone manifest workflow for Pennsieve datasets. 
     """
-    dataset_id = get_dataset_id(ps, soda_json_structure["bf-dataset-selected"]["dataset-name"])
+    dataset_id = get_dataset_id(soda_json_structure["bf-dataset-selected"]["dataset-name"])
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/packages", headers=create_request_headers(ps))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/packages", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
 
     ds_items = r.json()["packages"]
@@ -60,7 +61,7 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
             # request the packages of that folder
             folder_name = i["content"]["name"]
             folder_collection_id = i["content"]["nodeId"]
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_collection_id}", headers=create_request_headers(ps))
+            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_collection_id}", headers=create_request_headers(get_access_token()))
             r.raise_for_status()
 
             packageItems = r.json()["children"]
@@ -75,9 +76,8 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
                         remove(join(manifest_folder, "manifest.xlsx"))
 
                     item_id = j["content"]["nodeId"]
-                    # url = returnFileURL(ps, item_id)
 
-                    manifest_df = load_metadata_to_dataframe(item_id, "excel", ps, column_check, 0)
+                    manifest_df = load_metadata_to_dataframe(item_id, "excel", get_access_token(), column_check, 0)
 
                     filepath = join(
                         manifest_path, folder_name, "manifest.xlsx"
@@ -584,7 +584,7 @@ class ManifestWriterStandaloneAlgorithm(ManifestWriter):
 
         # create the manifest file
         # handle updating any existing manifest files on Pennsieve
-        update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress, self.manifest_path)
+        update_existing_pennsieve_manifest_files(soda_json_structure, high_level_folders, manifest_progress, self.manifest_path)
 
 
         recursive_item_path_create(soda_json_structure["dataset-structure"], [])

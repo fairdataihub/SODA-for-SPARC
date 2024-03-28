@@ -5,7 +5,41 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v.13.0.0 - 2024-01-29
+## v14.0.0 - 2024-03-11
+
+## Feature Additions:
+
+- The SODA user interface has been updated to be more intuitive for new and existing users.
+
+## v13.1.3 - 2024-02-29
+
+## Feature Addditions:
+
+- Announcements have been redesigned to convey updates and fixes clearly.
+- Added the ability to generate a copy of a dataset's manifest files locally within the organize datasets feature.
+- Updated the UI for GM/FFM subject metadata Species, Strain, and RRID selection, and changed the API endpoint to use SciCrunch's public API to search for RRIDs.
+
+## Bug fixes:
+
+- Fixed an issue in the `Organize datasets` feature when creating a new Pennsieve dataset that prevented SODA from finding the dataset in some cases.
+- Banner image selection popup has been patched to overlay above entire app.
+
+## v.13.1.2 - 2024-02-15
+
+## Bug fixes:
+
+- Fixed issue that caused an error message to appear when a user tried to connect their Pennsieve API Key and Secret to SODA during the startup flow.
+- Fixed an issue preventing SODA from importing large datasets from Pennsieve due to the cached API token becoming stale before the import was complete.
+
+## v.13.1.1 - 2024-02-06
+
+## Bug fixes:
+
+- Fixed issue preventing users from importing their datasets if they have access to a large amount
+  of datasets on Pennsieve.
+- Fixed a stale cache issue where SODA was storing invalidated Pennsieve access tokens.
+
+## v.13.1.0 - 2024-01-29
 
 ## Feature Additions:
 

@@ -13,6 +13,7 @@ import fileDoc from "/img/doc-file.png";
 import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
+import { swalConfirmAction } from "../utils/swal-utils";
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -37,8 +38,8 @@ document
 
 document
   .querySelector("#Question-generate-dataset-BF-dataset .change-current-account:not(.organization)")
-  .addEventListener("click", function () {
-    window.openDropdownPrompt(this, "dataset", false);
+  .addEventListener("click", function (event) {
+    window.openDropdownPrompt(event.target, "dataset", false);
   });
 
 document
@@ -1726,20 +1727,114 @@ const generateFFManifestEditCard = (highLevelFolderName) => {
 };
 
 const renderFFManifestCards = () => {
+  // Retrieve manifest data from the sodaCopy object
   const manifestData = window.sodaCopy["manifest-files"];
+
+  // Extract high-level folders with manifest data
   const highLevelFoldersWithManifestData = Object.keys(manifestData);
 
+  // Generate manifest cards for each high-level folder
   const manifestCards = highLevelFoldersWithManifestData
-    .map((highLevelFolder) => {
-      return generateFFManifestEditCard(highLevelFolder);
-    })
+    .map((highLevelFolder) => generateFFManifestEditCard(highLevelFolder))
     .join("\n");
 
+  // Get the container for manifest file cards
   const manifestFilesCardsContainer = document.getElementById("ffm-container-manifest-file-cards");
+
+  // Set the inner HTML of the container with the generated manifest cards
   manifestFilesCardsContainer.innerHTML = manifestCards;
 
+  // Unhide the generate manifest files button
+  document
+    .getElementById("ffm-container-local-manifest-file-generation")
+    .classList.remove("hidden");
+
+  // Scroll to the manifest file cards container
   window.smoothScrollToElement(manifestFilesCardsContainer);
 };
+
+const handleOrganizeDsGenerateLocalManifestCopyButtonClick = async () => {
+  // Step 1: Prompt the user to select a folder to save the dataset
+  const savePath = await window.electron.ipcRenderer.invoke(
+    "open-folder-path-select",
+    "Select a folder to save the manifest files to"
+  );
+
+  // Step 2: Check if a save path was selected
+  if (!savePath) {
+    // If no path selected, exit the function
+    return;
+  }
+
+  // Step 3: Define the base folder name for the manifest files
+  let manifestFolderName = "SODA Manifest Files";
+
+  // Step 4: Function to generate a unique folder path for the manifest files
+  const generateManifestFolderSavePath = () => {
+    // If the selected save path already contains a "SODA Manifest Files" directory, append a number to the folder name
+    // Otherwise, return the selected save path as is
+
+    // Step 4.1: Check if the "SODA Manifest Files" directory already exists at the selected save path
+    if (window.fs.existsSync(window.path.join(savePath, manifestFolderName))) {
+      let i = 1;
+
+      // Step 4.2: If the directory with the original name already exists, increment the number until a unique name is found
+      while (window.fs.existsSync(window.path.join(savePath, `${manifestFolderName} (${i})`))) {
+        i++;
+      }
+
+      // Step 4.3: Return the path with the incremented folder name
+      return window.path.join(savePath, `${manifestFolderName} (${i})`);
+    } else {
+      // Step 4.4: If the original directory does not exist, return the selected save path with the original folder name
+      return window.path.join(savePath, manifestFolderName);
+    }
+  };
+
+  // Step 5: Generate the unique folder path for the manifest files
+  const manifestFolderSavePath = generateManifestFolderSavePath();
+
+  // Step 6: Extract manifest file data from the sodaCopy object
+  const manifestFileData = window.sodaCopy["manifest-files"];
+
+  // Step 7: Iterate over folders with manifest data
+  const foldersWithManifestData = Object.keys(manifestFileData);
+  for (const folder of foldersWithManifestData) {
+    // Step 7.1: Process manifest data and convert it to JSON
+    const manifestJSON = window.processManifestInfo(
+      manifestFileData[folder]["headers"],
+      manifestFileData[folder]["data"]
+    );
+
+    // Step 7.2: Convert JSON manifest to a string
+    const jsonManifest = JSON.stringify(manifestJSON);
+
+    // Step 7.3: Define the path for the manifest file
+    const manifestPath = window.path.join(manifestFolderSavePath, folder, "manifest.xlsx");
+
+    // Step 7.4: Create necessary directories
+    window.fs.mkdirSync(window.path.join(manifestFolderSavePath, folder), {
+      recursive: true,
+    });
+
+    // Step 7.5: Convert JSON manifest to an Excel file and save it
+    window.convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
+  }
+
+  // Step 8: Display a success notification
+  window.notyf.open({
+    duration: "5000",
+    type: "success",
+    message: "Manifest files successfully generated",
+  });
+};
+
+// Attach a click listener to the manifest file generation button
+document
+  .getElementById("ffm-button-generate-manifest-files-locally")
+  .addEventListener("click", async () => {
+    await handleOrganizeDsGenerateLocalManifestCopyButtonClick();
+  });
 
 window.ffOpenManifestEditSwal = async (highlevelFolderName) => {
   let saveManifestFiles = false;
@@ -1879,21 +1974,8 @@ window.ffmCreateManifest = async (sodaJson) => {
       { soda_json_structure: window.sodaCopy },
       { timeout: 0 }
     );
-
     let response = cleanJson.data.soda_json_structure;
-    // response does not format in JSON format so need to format ' with "
-    // and replace T with t (happens because of how the bool true is formatted in python (True) vs javascript (true))
-    // let regex = /'/gm;
-    // let formattedResponse = JSON.stringify(response).replace(regex, '"');
-    // let capitalTPosition = formattedResponse.search("T");
-    // while (capitalTPosition != -1) {
-    //   capitalTPosition = formattedResponse.search("T");
-    //   formattedResponse = formattedResponse.replace("T", "t");
-    // }
-
-    // let json_structure = JSON.parse(formattedResponse);
     window.sodaCopy = response;
-    let datasetStructCopy = window.sodaCopy["dataset-structure"];
   } catch (e) {
     clientError(e);
   }
@@ -1994,12 +2076,13 @@ $("#generate-manifest-curate").change(async function () {
 
     await window.ffmCreateManifest(sodaJSONObj);
     $("#ffm-manifest-generator").show();
-    $("#button-generate-manifest-locally").show();
     // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>
     window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
     $("#manifest-creating-loading").addClass("hidden");
+    document
+      .getElementById("ffm-container-local-manifest-file-generation")
+      .classList.remove("hidden");
   } else {
-    $("#button-generate-manifest-locally").hide();
     $("#ffm-manifest-generator").hide();
     $("#manifest-creating-loading").addClass("hidden");
     document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
@@ -2009,5 +2092,6 @@ $("#generate-manifest-curate").change(async function () {
     if (window.sodaJSONObj["manifest-files"]?.["auto-generated"]) {
       delete window.sodaJSONObj["manifest-files"]["auto-generated"];
     }
+    document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
   }
 });

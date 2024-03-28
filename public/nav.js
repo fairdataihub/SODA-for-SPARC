@@ -69,7 +69,7 @@ const handleSectionTrigger = async (event) => {
     //reset lazyloading values
     resetLazyLoading();
     //Transition file explorer elements to freeform mode
-    scroll_box = document.querySelector("#organize-dataset-tab");
+    window.scroll_box = document.querySelector("#organize-dataset-tab");
     $(".shared-folder-structure-element").appendTo($("#free-form-folder-structure-container"));
     freeFormItemsContainer.classList.add("freeform-file-explorer"); //add styling for free form mode
     freeFormButtons.classList.add("freeform-file-explorer-buttons");
@@ -164,8 +164,8 @@ const handleSectionTrigger = async (event) => {
         $("#Question-getting-started-1").addClass("show");
         $("#generate-dataset-progress-tab").css("display", "none");
         window.currentTab = 0;
-        wipeOutCurateProgress();
-        globalGettingStarted1stQuestionBool = false;
+        window.wipeOutCurateProgress();
+        window.globalGettingStarted1stQuestionBool = false;
         document.getElementById("nextBtn").disabled = true;
       } else {
         //Stay in Organize datasets section

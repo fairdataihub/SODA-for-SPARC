@@ -65,17 +65,11 @@ def get_manifests(soda_json_structure):
     elif "starting-point" in soda_json_structure and "type" in soda_json_structure["starting-point"] and soda_json_structure["starting-point"]["type"] == "bf":
       # check if the user has manifest files in their dataset's primary folders
       # if they do, add them to the manifests dict
-      token = get_access_token()
 
       # get the dataset name
       dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
       
-      selected_dataset_id = get_dataset_id(token, dataset_name)
-
-      
-      # get the dataset id
-      # headers for making requests to Pennsieve's api
-      headers = create_request_headers(token)
+      selected_dataset_id = get_dataset_id(dataset_name)
       
       high_level_sparc_folders = [
         "code",
@@ -91,7 +85,7 @@ def get_manifests(soda_json_structure):
 
       # root of dataset is pulled here
       # root_children is the files and folders within root
-      r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
+      r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
       r.raise_for_status()
       root_folder = r.json()
       root_children = root_folder["children"]
@@ -102,7 +96,7 @@ def get_manifests(soda_json_structure):
         item_id = items["content"]["id"]
         item_name = items["content"]["name"]
         if items["content"]["packageType"] == "Collection" and item_name in high_level_sparc_folders:
-          r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}", headers=headers)
+          r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}", headers=create_request_headers(get_access_token()))
           r.raise_for_status()
           subfolder = r.json()
 
@@ -111,7 +105,7 @@ def get_manifests(soda_json_structure):
               if subfolder_item["content"]["name"] == "manifest.xlsx":
                 # get the manifest file
                 man_id = subfolder_item["content"]["id"]
-                df = load_metadata_to_dataframe(man_id, "xlsx", token)
+                df = load_metadata_to_dataframe(man_id, "xlsx", get_access_token())
                 # convert to json
                 manifests[item_name] = df.to_json()
 

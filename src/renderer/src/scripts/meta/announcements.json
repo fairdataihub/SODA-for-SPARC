@@ -1,4 +1,42 @@
 {
+  "14.0.0": {
+    "announcements": {
+      "bug-fixes": [],
+      "features": [
+        "SODA's user interface has been updated to be more intuitive for new and existing users."
+      ]
+    }
+  },
+  "13.1.3": {
+    "announcements": {
+      "bug-fixes": [
+        "Fixed an issue in the `Organize dataset` feature where creating a new Pennsieve dataset then initiating an upload would fail due to the dataset not being found.",
+        "The Pennsieve banner image selection and cropping window will no longer be hidden by other SODA interface elements."
+      ],
+      "features": [
+        "Improved the flow for importing a subject's species, strain, and RRID from SciCrunch while filling out a subject's metadata.",
+        "Users can now generate a local copy of a dataset's manifest files in the `Organize dataset` feature. This is ideal for users that want to preview the manifest file results before uploading them to Pennsieve."
+      ]
+    }
+  },
+  "13.1.2": {
+    "announcements": {
+      "bug-fixes": [
+        "Fixed an issue that caused an error message to appear when a user tried to connect their Pennsieve API Key and Secret to SODA during the startup flow.",
+        "Fixed an issue that caused dataset imports to fail if the import time exceeded a certain threshold."
+      ],
+      "features": []
+    }
+  },
+  "13.1.1": {
+    "announcements": {
+      "bug-fixes": [
+        "Fixed issue preventing users from importing their datasets if they have access to a large amount of datasets on Pennsieve.",
+        "Fixed an issue where switching workspaces in SODA did not update the list of available datasets appropriately and did not provide the user the correct access permissions for the workspace."
+      ],
+      "features": []
+    }
+  },
   "13.1.0": {
     "announcements": {
       "bug-fixes": [

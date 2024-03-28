@@ -214,15 +214,13 @@ def subscriber_metadata(ps, events_dict):
             ps.unsubscribe(10)
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
-
-    token = get_access_token()    
     # check that the Pennsieve dataset is valid
-    selected_dataset_id = get_dataset_id(token, bfdataset)
+    selected_dataset_id = get_dataset_id(bfdataset)
 
     # check that the user has permissions for uploading and modifying the dataset
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permissions to edit this dataset.")
-    headers = create_request_headers(token)
+    headers = create_request_headers(get_access_token())
     # handle duplicates on Pennsieve: first, obtain the existing file ID
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
     r.raise_for_status()
@@ -258,7 +256,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     except Exception as e:
         namespace_logger.error("Error uploading dataset files")
         namespace_logger.error(e)
-        raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
+        raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
 
     # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
@@ -696,7 +694,7 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields, item_id=None,
         if "subject id" not in list(subjects_df.columns.values):
             abort(
                 400, 
-                "The header 'subject id' is required to import an existing subjects file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/subjects.xlsx'>template</a> of the subjects file."
+                "The header 'subject id' is required to import an existing subjects file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' rel='noopener noreferrer' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/subjects.xlsx'>template</a> of the subjects file."
             )
 
         elif checkEmptyColumn(subjects_df["subject id"]):
@@ -711,7 +709,7 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields, item_id=None,
         if "subject id" not in list(subjects_df.columns.values) or "sample id" not in list(subjects_df.columns.values):
             abort(
                 400,
-                "The headers 'subject id' and 'sample id' are required to import an existing samples file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/samples.xlsx'>template</a> of the samples file."
+                "The headers 'subject id' and 'sample id' are required to import an existing samples file. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' rel='noopener noreferrer' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/samples.xlsx'>template</a> of the samples file."
             )
 
         if checkEmptyColumn(subjects_df["sample id"]) or checkEmptyColumn(
@@ -846,7 +844,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
         if key not in submission_data_frame_lowercased:
             abort(
                 400,
-                "The imported file columns are not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.1.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
+                "The imported file columns are not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.1.0 <a target='_blank' rel='noopener noreferrer' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
 
     basicHeaders = [x.lower() for x in basicHeaders]
@@ -855,7 +853,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
         if header_name not in set(submissionItems):
             abort(
                 400,
-                "The imported file headers are not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.1.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
+                "The imported file headers are not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.1.0 <a target='_blank' rel='noopener noreferrer' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/submission.xlsx'>template</a> of the submission."
             )
 
 
@@ -881,11 +879,9 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
 
 # import existing metadata files except Readme and Changes from Pennsieve
 def import_ps_metadata_file(file_type, ui_fields, bfdataset):
-    token = get_access_token()
+    selected_dataset_id = get_dataset_id(bfdataset)
 
-    selected_dataset_id = get_dataset_id(token, bfdataset)
-
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(token))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
 
     ds_items = r.json()["children"]
@@ -893,20 +889,20 @@ def import_ps_metadata_file(file_type, ui_fields, bfdataset):
     for i in ds_items:
         if i["content"]["name"] == file_type:
             item_id = i["content"]["id"]
-            url = returnFileURL(token, item_id)
+            url = returnFileURL(get_access_token(), item_id)
 
             if file_type == "submission.xlsx":
-                return load_existing_submission_file(url, item_id, token)
+                return load_existing_submission_file(url, item_id, get_access_token())
 
             elif file_type == "dataset_description.xlsx":
                 # bf is the old signifier for pennsieve
-                return load_existing_DD_file("bf", url, item_id, token)
+                return load_existing_DD_file("bf", url, item_id, get_access_token())
 
             elif file_type == "subjects.xlsx":
-                return convert_subjects_samples_file_to_df("subjects", url, ui_fields, item_id, token)
+                return convert_subjects_samples_file_to_df("subjects", url, ui_fields, item_id, get_access_token())
 
             elif file_type == "samples.xlsx":
-                return convert_subjects_samples_file_to_df("samples", url, ui_fields, item_id, token)
+                return convert_subjects_samples_file_to_df("samples", url, ui_fields, item_id, get_access_token())
             
             elif file_type == "code_description.xlsx":
                 # Simply return true since we don't currently have a UI for code_description
@@ -921,11 +917,9 @@ def import_ps_metadata_file(file_type, ui_fields, bfdataset):
 def import_ps_RC(bfdataset, file_type):
     file_type = file_type + ".txt"
 
-    token = get_access_token()
+    dataset_id = get_dataset_id(bfdataset)
 
-    dataset_id = get_dataset_id(token, bfdataset)
-
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(token))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
 
     items = r.json()
@@ -933,7 +927,7 @@ def import_ps_RC(bfdataset, file_type):
     for item in items["children"]:
         if item["content"]["name"] == file_type:
             item_id = item["content"]["id"]
-            url = returnFileURL(token, item_id)
+            url = returnFileURL(get_access_token(), item_id)
             r = requests.get(url)
             return {"text": r.text}
 
@@ -957,8 +951,6 @@ def import_ps_manifest_file(soda_json_structure, bfdataset):
     manifest_progress["total_manifest_files"] = 0
     manifest_progress["manifest_files_uploaded"] = 0
 
-    token = get_access_token()
-
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
     # convert the string into a json object/dictionary
     if(str(type(soda_json_structure)) == "<class 'str'>"):
@@ -977,7 +969,7 @@ def import_ps_manifest_file(soda_json_structure, bfdataset):
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
 
     # handle updating any existing manifest files on Pennsieve
-    update_existing_pennsieve_manifest_files(token, soda_json_structure, high_level_folders, manifest_progress, manifest_folder_path)
+    update_existing_pennsieve_manifest_files(soda_json_structure, high_level_folders, manifest_progress, manifest_folder_path)
 
     # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
     create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structure, manifest_folder_path, high_level_folders, manifest_progress)
@@ -1096,19 +1088,19 @@ def load_existing_DD_file(import_type, filepath, item_id=None, token=None):
     for key in ["Metadata element", "Description", "Example", "Value"]:
         if key not in DD_df:
             abort(400, 
-                "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
+                "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' rel='noopener noreferrer' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
             )
 
     if "Metadata element" not in DD_df:
         abort(400, 
-            "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
+            "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' rel='noopener noreferrer' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
         )
 
     else:
         for header_name in header_list:
             if header_name not in set(DD_df["Metadata element"]):
                 abort(400, 
-                    "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
+                    "The imported file is not in the correct format. Please refer to the new SPARC Dataset Structure (SDS) 2.0.0 <a target='_blank' rel='noopener noreferrer' href='https://github.com/SciCrunch/sparc-curation/blob/master/resources/DatasetTemplate/dataset_description.xlsx'>template</a> of the dataset_description."
                 )
 
     if non_empty_1st_value := checkEmptyColumn(DD_df["Value"]):

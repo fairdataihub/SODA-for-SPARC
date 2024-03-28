@@ -673,7 +673,7 @@ const savePageChanges = async (pageBeingLeftID) => {
               This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
               <br />
               <br />
-              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a  target="_blank" href="mailto:curation@sparc.science">curation@sparc.science.</a>
             `,
           });
           throw errorArray;
@@ -2573,9 +2573,6 @@ const guidedLockSideBar = (boolShowNavBar) => {
   }
 };
 
-// guidedHideSidebar = () => {};
-// guidedUnHideSidebar = () => {};
-
 // This function reads the innerText of the textSharedWithCurationTeamStatus element
 // and hides or shows the share and unshare buttons accordingly
 window.guidedSetCurationTeamUI = () => {
@@ -3398,12 +3395,26 @@ const updateManifestJson = async (highLvlFolderName, result) => {
   };
 };
 
+window.generateManifestFilesAtPath = async (path, manifestData) => {
+  for (const [highLevelFolder, manifestData] of Object.entries(manifestData)) {
+    const manifestJSON = window.processManifestInfo(manifestData["headers"], manifestData["data"]);
+
+    const stringifiedManifestJSON = JSON.stringify(manifestJSON);
+
+    const manifestPath = window.path.join(path, highLevelFolder, "manifest.xlsx");
+
+    window.fs.mkdirSync(window.path.join(path, highLevelFolder), { recursive: true });
+
+    window.convertJSONToXlsx(JSON.parse(stringifiedManifestJSON), manifestPath);
+  }
+};
 const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
   // First, empty the guided_manifest_files so we can add the new manifest files
   window.fs.emptyDirSync(window.guidedManifestFilePath);
 
   const guidedManifestData = window.sodaJSONObj["guided-manifest-files"];
   for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
+    //
     let manifestJSON = window.processManifestInfo(
       guidedManifestData[highLevelFolder]["headers"],
       guidedManifestData[highLevelFolder]["data"]
@@ -7827,7 +7838,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
             This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
             <br />
             <br />
-            If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+            If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a  target="_blank" rel="noopener noreferrer" href="mailto:curation@sparc.science">curation@sparc.science.</a>
           `);
         }
 
@@ -9420,7 +9431,7 @@ window.openGuidedAddContributorSwal = async () => {
             contenteditable="true"
           />
           <p class="guided--text-input-instructions mb-0 text-left">
-            Role(s) the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for a definition of the roles.
+            Role(s) the contributor played in the creation of the dataset. Visit <a  target="_blank" rel="noopener noreferrer" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for a definition of the roles.
             <br />
             <b>
               Select a role from the dropdown to add it to the list.
@@ -12888,7 +12899,10 @@ const renderSubjectsMetadataAsideItems = async () => {
       let previousSubject = document.getElementById("guided-bootbox-subject-id").value;
       //check to see if previousSubject is empty
       if (previousSubject) {
+        console.log(window.subjectsTableData[1]);
         window.addSubject("guided");
+        console.log(window.subjectsTableData[1]);
+
         await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
       }
 
@@ -13063,12 +13077,13 @@ const itemsContainer = document.getElementById("items");
 const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
 const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
 
+// Guided mode event listener (from curate and share page)
 document.getElementById("button-homepage-guided-mode").addEventListener("click", async () => {
   //Transition file explorer elements to guided mode
   window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
   window.organizeDSglobalPath.value = "";
   window.dataset_path = document.getElementById("guided-input-global-path");
-  let scroll_box = document.querySelector("#guided-body");
+  window.scroll_box = document.querySelector("#guided-body");
   itemsContainer.innerHTML = "";
   resetLazyLoading();
   freeFormItemsContainer.classList.remove("freeform-file-explorer");
@@ -13085,6 +13100,7 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
   await window.openPage("guided-select-starting-point-tab");
 });
 
+// Free form mode event listener (from curate and share page)
 document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
   //Free form mode will open through here
   window.guidedPrepareHomeScreen();
@@ -13658,6 +13674,7 @@ document
 // function for importing a banner image if one already exists
 $("#guided-button-add-banner-image").click(async () => {
   $("#guided-banner-image-modal").modal("show");
+  $("#guided-banner-image-modal").parents()[0].style.zIndex = "1002";
   $("#guided-banner-image-modal").addClass("show");
   window.myCropper.destroy();
   window.myCropper = new Cropper(window.guidedBfViewImportedImage, window.guidedCropOptions);

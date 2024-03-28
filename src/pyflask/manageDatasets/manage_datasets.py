@@ -37,6 +37,8 @@ from constants import PENNSIEVE_URL
 from pysodaUtils import (
     check_forbidden_characters_ps,
 )
+from utils import (get_users_dataset_list)
+
 
 
 ### Global variables
@@ -319,15 +321,12 @@ def bf_dataset_account(accountname):
     """
     global namespace_logger
     PENNSIEVE_URL = "https://api.pennsieve.io"
-    token = get_access_token()
 
-    # get the session token
-    headers = create_request_headers(token)
-    
-    # get the user's datasets that they have access to in their given organization
-    r = requests.get(f"{PENNSIEVE_URL}/datasets", headers=headers)
-    r.raise_for_status()
-    datasets = r.json()
+    # get the datasets the user has access to
+    try:
+        datasets = get_users_dataset_list()
+    except Exception as e:
+        raise e
 
 
     datasets_list = []
@@ -339,7 +338,7 @@ def bf_dataset_account(accountname):
             store = []
         for dataset in datasets_list:
             selected_dataset_id = dataset['id']
-            r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=headers)
+            r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             user_role = r.json()["role"]
             if user_role not in ["viewer", "editor"]:
@@ -451,12 +450,6 @@ def bf_account_details(accountname):
         raise e
 
 
-def get_datasets(token): 
-    r = requests.get("https://api.pennsieve.io/datasets", headers={"Authorization": f"Bearer {token}"})
-    r.raise_for_status()
-
-    return r.json()
-
 def create_new_dataset(datasetname, accountname):
     """
     Associated with 'Create' button in 'Create new dataset folder'
@@ -482,23 +475,26 @@ def create_new_dataset(datasetname, accountname):
             error = "Please enter valid dataset name."
             abort(400, error)
 
-        token = get_access_token()
+        try:
+            datasets = get_users_dataset_list()
+        except Exception as e:
+            abort(500, "Error: Failed to retrieve datasets from Pennsieve. Please try again later.")
 
-        datasets = get_datasets(token)
-
+        # Check if the dataset name already exists
         for ds in datasets:
             if ds["content"]["name"] == datasetname:
                 abort(400, "Dataset name already exists")
-            else:
-                r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(token), json={"name": datasetname})
-                r.raise_for_status()
-                ds_id = r.json()['content']['id']
-                int_id = r.json()['content']['intId']
-                return {"id": ds_id, "int_id": int_id}
+
+        namespace_logger.info("Creating new dataset")
+        r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(get_access_token()), json={"name": datasetname})
+        r.raise_for_status()
+        ds_id = r.json()['content']['id']
+        int_id = r.json()['content']['intId']
+        return {"id": ds_id, "int_id": int_id}
+
 
     except Exception as e:
         raise e
-
 
 def ps_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     """
@@ -526,24 +522,23 @@ def ps_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         error = f"{error}Please enter valid new dataset name<br>"
         c += 1
 
-    token = get_access_token()
+    selected_dataset_id = get_dataset_id(current_dataset_name)
 
-    selected_dataset_id = get_dataset_id(token, current_dataset_name)
-
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
-    dataset_list = [ds["content"]["name"] for ds in get_datasets(token)]
+    dataset_list = [ds["content"]["name"] for ds in get_users_dataset_list()]
     if datasetname in dataset_list:
-        abort(400, "Dataset name already exists.")
+        abort(400, "Dataset name already exists")
 
     jsonfile = {"name": renamed_dataset_name}
     try: 
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}", json=jsonfile, headers=create_request_headers(token))
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}", json=jsonfile, headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         return {"message": f"Dataset renamed to {renamed_dataset_name}"}
     except Exception as e:
         raise Exception(e) from e
+
 
 
 completed_files = []
@@ -667,9 +662,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error_message = "Please select a valid Pennsieve account"
         abort(400, error_message)
 
-
-
-    selected_dataset_id = get_dataset_id(ps, bfdataset)
+    selected_dataset_id = get_dataset_id(bfdataset)
 
         # reauthenticate the user
     try:
@@ -699,7 +692,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         submitdatastatus = "Done"
         invalid_dataset_messages = (
             invalid_dataset_messages
-            + "<br>Please remove invalid files/folders from your dataset before uploading. If you have hidden files present please remove them before upload. You can find more details <a href='https://docs.sodaforsparc.io/docs/common-errors/issues-regarding-hidden-files-or-folders' target='_blank'>here </a> on how to fix this issue."
+            + "<br>Please remove invalid files/folders from your dataset before uploading. If you have hidden files present please remove them before upload. You can find more details <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/common-errors/issues-regarding-hidden-files-or-folders'>here </a> on how to fix this issue."
         )
         did_fail = True
         did_upload = False
@@ -735,7 +728,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         except Exception as e:
             namespace_logger.error("Error uploading dataset files")
             namespace_logger.error(e)
-            raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
+            raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
         submitdatastatus = "Done"
     except Exception as e:
@@ -798,14 +791,11 @@ def ps_get_users(selected_bfaccount):
         list_users : list of users (first name -- last name) associated with the organization of the
         selected Pennsieve account (list of string)
     """
-
-    token = get_access_token()
-
-    org_id = get_user_information(token)["preferredOrganization"]
+    org_id = get_user_information(get_access_token())["preferredOrganization"]
         
     try:
         global PENNSIEVE_URL
-        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/members", headers=create_request_headers(token))
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/members", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         list_users = r.json()
         list_users_first_last = []
@@ -836,12 +826,10 @@ def ps_get_teams(selected_bfaccount):
         Provides list of teams belonging to the organization of
         the given Pennsieve account
     """
-    token = get_access_token()
-
     try:
-        org_id = get_user_information(token)["preferredOrganization"]
+        org_id = get_user_information(get_access_token())["preferredOrganization"]
         global PENNSIEVE_URL
-        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/teams", headers=create_request_headers(token))
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/teams", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         list_teams = r.json()
         
@@ -864,15 +852,12 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
     """
     global PENNSIEVE_URL
 
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
     try:
-        headers = create_request_headers(token)
         # user permissions
         r = requests.get(
-            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=headers
+            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=create_request_headers(get_access_token())
         )
         r.raise_for_status()
         list_dataset_permission = r.json()
@@ -887,7 +872,7 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
 
         # team permissions
         r = requests.get(
-            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", headers=headers
+            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", headers=create_request_headers(get_access_token())
         )
         r.raise_for_status()
         list_dataset_permission_teams = r.json()
@@ -905,7 +890,7 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
 
         # Organization permissions
         r = requests.get(
-            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/organizations", headers=headers
+            f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/organizations", headers=create_request_headers(get_access_token())
         )
         r.raise_for_status()
         list_dataset_permission_organizations = r.json()
@@ -959,16 +944,12 @@ def ps_add_permission(
     user_present = False
     error = ""
 
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
-
-    headers = create_request_headers(token)
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
     try:
         c = 0
-        organization_id = get_user_information(token)["preferredOrganization"]
-        r  = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/members", headers=headers)
+        organization_id = get_user_information(get_access_token())["preferredOrganization"]
+        r  = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/members", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         list_users = r.json()
         for i in range(len(list_users)):
@@ -996,13 +977,13 @@ def ps_add_permission(
 
     try:
         # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
-        r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         current_user = r.json()
         first_name_current_user = current_user["firstName"]
         last_name_current_user = current_user["lastName"]
 
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         list_dataset_permission = r.json()
         c = 0
@@ -1031,7 +1012,7 @@ def ps_add_permission(
         if selected_role == "remove current permissions":
             try:
                 jsonfile = {"id": selected_user_id}
-                r = requests.delete(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", json=jsonfile, headers=headers)
+                r = requests.delete(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", json=jsonfile, headers=create_request_headers(get_access_token()))
                 r.raise_for_status()
             except Exception as e:
                 raise Exception(e) from e
@@ -1040,12 +1021,12 @@ def ps_add_permission(
             # check if currently logged in user is owner of selected dataset (only owner can change owner)
             # change owner
             jsonfile = {"id": selected_user_id}
-            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/owner", json=jsonfile, headers=headers)
+            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/owner", json=jsonfile, headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             return {"message":  "Permission " + "'" + selected_role + "' " + " added for " + selected_user}
         else:
             jsonfile = {"id": selected_user_id, "role": selected_role}
-            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", json=jsonfile, headers=headers)
+            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", json=jsonfile, headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             return {"message": "Permission " + "'" + selected_role + "' " + " added for " + selected_user}
     except Exception as e:
@@ -1069,9 +1050,7 @@ def ps_add_permission_team(
 
     error = ""
 
-    token = get_access_token()
-
-    organization_id = get_user_information(token)["preferredOrganization"]
+    organization_id = get_user_information(get_access_token())["preferredOrganization"]
     if selected_team == "SPARC Data Curation Team" and organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
         abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team")
     if selected_team == "SPARC Embargoed Data Sharing Group" and organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
@@ -1079,15 +1058,13 @@ def ps_add_permission_team(
     c = 0
 
     try:
-        selected_dataset_id = get_dataset_id(token, selected_bfdataset)
+        selected_dataset_id = get_dataset_id(selected_bfdataset)
     except Exception as e:
         error = error + "Please select a valid Pennsieve dataset" + "<br>"
         c += 1
 
-    headers = create_request_headers(token)
-
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/organizations/{organization_id}/teams", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{organization_id}/teams", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         list_teams = r.json()
         dict_teams = {}
@@ -1117,12 +1094,12 @@ def ps_add_permission_team(
         selected_team_id = dict_teams[selected_team]
 
         # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
-        r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         current_user = r.json()
         first_name_current_user = current_user["firstName"]
         last_name_current_user = current_user["lastName"]
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=headers)
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=create_request_headers(get_access_token()))
         r.raise_for_status
         list_dataset_permission = r.json()
         c = 0
@@ -1144,12 +1121,12 @@ def ps_add_permission_team(
 
         if selected_role == "remove current permissions":
             jsonfile = {"id": selected_team_id}
-            r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=headers)
+            r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             return {"message": "Permission removed for " + selected_team}
         else:
             jsonfile = {"id": selected_team_id, "role": selected_role}
-            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=headers)
+            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             return {"message": "Permission " + "'" + selected_role + "' " + " added for " + selected_team}
     except Exception as e:
@@ -1166,12 +1143,10 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
     Return:
         License name, if any, or "No license" message
     """
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(token))
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
 
         dataset_info = r.json()
@@ -1196,16 +1171,14 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
     Return:
         Success message or error
     """
-    token = get_access_token()
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
-
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
     try:
         jsonfile = {"description": input_subtitle}
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=create_request_headers(token))
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         return{ "message": "Subtitle added!"}
     except Exception as e:
@@ -1223,12 +1196,10 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
     Return:
         Description (string with markdown code)
     """
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(token))
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
 
         dataset_readme_info = r.json()
@@ -1249,16 +1220,14 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
     Return:
         Success message or error
     """
-    token = get_access_token()
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
-
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
     try:
         jsonfile = {"readme": markdown_input}
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(token), json=jsonfile)
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(get_access_token()), json=jsonfile)
         r.raise_for_status()
         return{ "message": "Description added!"}
     except Exception as e:
@@ -1277,12 +1246,10 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
     Return:
         url of banner image (string)
     """
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", headers=create_request_headers(token))
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
 
         dataset_banner_info = r.json()
@@ -1308,15 +1275,13 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
     Return:
         Success or error message
     """
-    token = get_access_token()
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
-
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
     headers = {
-        "Authorization": f"Bearer {token}",
+        "Authorization": f"Bearer {get_access_token()}",
     }
 
 
@@ -1352,12 +1317,10 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
     Return:
         License name, if any, or "No license" message
     """
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
     try:
-        r  = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(token))
+        r  = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         dataset_info = r.json()
         list_keys = dataset_info["content"].keys()
@@ -1381,12 +1344,9 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
     Return:
         Success message or error
     """
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
-
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
     allowed_licenses_list = [
@@ -1408,7 +1368,7 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
         abort(403, "Please select a valid license.")
     jsonfile = {"license": selected_license}
     try: 
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=create_request_headers(token))
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=create_request_headers(get_access_token()))
         r.raise_for_status()
     except Exception as e:
         raise Exception(e) from e
@@ -1428,21 +1388,17 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
         List of available status options for the account (list of string).
         Current dataset status (string)
     """
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
     try:
-        headers = create_request_headers(token)
-
         # get list of available status options
-        organization_id = get_user_information(token)["preferredOrganization"]
-        r = requests.get(f"{PENNSIEVE_URL}/organizations/{organization_id}/dataset-status", headers=headers)
+        organization_id = get_user_information(get_access_token())["preferredOrganization"]
+        r = requests.get(f"{PENNSIEVE_URL}/organizations/{organization_id}/dataset-status", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         list_status = r.json()
 
         # get current status of select dataset
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers) 
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token())) 
         r.raise_for_status()
         dataset_current_status = r.json()["content"]["status"]
 
@@ -1454,19 +1410,16 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
 
 
 def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status):
-    token = get_access_token()
+    selected_dataset_id = get_dataset_id(selected_bfdataset)
 
-    selected_dataset_id = get_dataset_id(token, selected_bfdataset)
-
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
     try:
-        headers = create_request_headers(token)
         # find name corresponding to display name or show error message
-        organization_id = get_user_information(token)["preferredOrganization"]
+        organization_id = get_user_information(get_access_token())["preferredOrganization"]
         r = requests.get(
-            f"{PENNSIEVE_URL}/organizations/{organization_id}/dataset-status", headers=headers
+            f"{PENNSIEVE_URL}/organizations/{organization_id}/dataset-status", headers=create_request_headers(get_access_token())
         )
         r.raise_for_status()
         list_status = r.json()
@@ -1481,7 +1434,7 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
 
         # change dataset status
         jsonfile = {"status": new_status}
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=headers)
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         return { "message": "Success: Changed dataset status to '" + selected_status + "'" }
     except Exception as e:
@@ -1522,12 +1475,10 @@ def get_dataset_readme(selected_account, selected_dataset):
         Return:
             Readme for the dataset
     """
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, selected_dataset)
+    selected_dataset_id = get_dataset_id(selected_dataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(token))
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
 
         readme = r.json()
@@ -1541,15 +1492,13 @@ def update_dataset_readme(selected_account, selected_dataset, updated_readme):
     """
     Update the readme of a dataset on Pennsieve with the given readme string.
     """
-    token = get_access_token()
+    selected_dataset_id = get_dataset_id(selected_dataset)
 
-    selected_dataset_id = get_dataset_id(token, selected_dataset)
-
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
     try:
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", json={"readme": updated_readme}, headers=create_request_headers(token))
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", json={"readme": updated_readme}, headers=create_request_headers(get_access_token()))
         r.raise_for_status()
     except Exception as e:
         raise Exception(e) from e
@@ -1566,12 +1515,10 @@ def get_dataset_tags(selected_account, selected_dataset):
         Return:
             Tags for the dataset
     """
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, selected_dataset)
+    selected_dataset_id = get_dataset_id(selected_dataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(token))
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
 
         dataset_info = r.json()
@@ -1584,16 +1531,14 @@ def update_dataset_tags(selected_account, selected_dataset, updated_tags):
     """
     Update the tags of a dataset on Pennsieve with the given tags list.
     """
-    token = get_access_token()
+    selected_dataset_id = get_dataset_id(selected_dataset)
 
-    selected_dataset_id = get_dataset_id(token, selected_dataset)
-
-    if not has_edit_permissions(token, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
     try:
         jsonfile = {"tags": updated_tags}
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(token), json=jsonfile)
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()), json=jsonfile)
         r.raise_for_status()
         return {"message": "Tags updated"}
     except Exception as e:
