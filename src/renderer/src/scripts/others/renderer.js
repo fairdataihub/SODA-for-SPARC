@@ -65,7 +65,6 @@ import {
 } from "../utils/swal-utils";
 import canSmiley from "/img/can-smiley.png";
 import canSad from "/img/can-sad.png";
-import { swalConfirmAction } from "../utils/swal-utils";
 
 // add jquery to the window object
 window.$ = jQuery;
