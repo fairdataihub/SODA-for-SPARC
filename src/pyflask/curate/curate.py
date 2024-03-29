@@ -2362,9 +2362,9 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
         if generate_option == "new" and starting_point == "new":
             namespace_logger.info("We are going to check if we should resume")
             vs = ums.df_mid_has_progress()
-            namespace_logger.info("THe df manifest id is: ", ums.get_df_mid())
+            namespace_logger.info(f"THe df manifest id is: {ums.get_df_mid()}")
             namespace_logger.info(f"Should we resume? {vs}")
-            if resume == False or resume and not vs:
+            if resume == False or resume == True and not vs:
                 namespace_logger.info("Decided not to resume")
                 # we can assume no files/folders exist in the dataset since the generate option is new and starting point is also new
                 # therefore, we can assume the dataset structure is the same as the tracking structure
@@ -2510,7 +2510,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             manifest_data = ps.manifest.create(first_file_local_path, folder_name)
             manifest_id = manifest_data.manifest_id
 
-            ums.set_mdf_mid(manifest_id)
+            ums.set_df_mid(manifest_id)
 
             # remove the item just added to the manifest 
             list_upload_files[0][0].pop(0)
