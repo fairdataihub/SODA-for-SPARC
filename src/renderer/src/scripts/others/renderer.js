@@ -7115,6 +7115,7 @@ document.getElementById("button-generate").addEventListener("click", async funct
   document.getElementById("start-over-btn").style.display = "none";
   document.getElementById("div-vertical-progress-bar").style.display = "none";
   document.getElementById("div-generate-comeback").style.display = "none";
+  document.getElementById("wrapper-wrap").style.display = "none";
   document.getElementById("generate-dataset-progress-tab").style.display = "flex";
   $("#sidebarCollapse").prop("disabled", false);
 
@@ -7128,9 +7129,14 @@ document.getElementById("button-generate").addEventListener("click", async funct
   generateProgressBar.value = 0;
 
   progressStatus.innerHTML = "Please wait while we verify a few things...";
+  document.getElementById("wrapper-wrap").style.display = "none";
+
 
   let statusText = "Please wait while we verify a few things...";
   if (dataset_destination == "Pennsieve") {
+    setTimeout(() => {
+      document.getElementById("wrapper-wrap").style.display = "none";
+    }, 500)
     let supplementary_checks = await window.run_pre_flight_checks(false);
     if (!supplementary_checks) {
       $("#sidebarCollapse").prop("disabled", false);
@@ -7253,6 +7259,7 @@ const initiate_generate = async () => {
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   document.getElementById("div-new-curate-progress").style.display = "block";
   document.getElementById("div-generate-comeback").style.display = "none";
+  document.getElementById("wrapper-wrap").style.display = "none";
 
   // Create the progress bar clone for the navigation bar
   let organizeDataset = document.getElementById("organize_dataset_btn");
@@ -7561,6 +7568,7 @@ const initiate_generate = async () => {
           document.getElementById("prevBtn").style.display = "none";
           document.getElementById("start-over-btn").style.display = "none";
           document.getElementById("div-vertical-progress-bar").style.display = "none";
+          document.getElementById("wrapper-wrap").style.display = "flex";
           document.getElementById("div-generate-comeback").style.display = "flex";
           document.getElementById("generate-dataset-progress-tab").style.display = "flex";
         }
@@ -7638,6 +7646,7 @@ const initiate_generate = async () => {
           document.getElementById("prevBtn").style.display = "none";
           document.getElementById("start-over-btn").style.display = "none";
           document.getElementById("div-vertical-progress-bar").style.display = "none";
+          document.getElementById("wrapper-wrap").style.display = "flex";
           document.getElementById("div-generate-comeback").style.display = "none";
           document.getElementById("generate-dataset-progress-tab").style.display = "flex";
         }
