@@ -66,6 +66,8 @@ class UploadManifestSession:
         return self.get_remaining_file_count(self.mff_mid)
     
     def get_remaining_file_count(self, mid):
+        if self.ps is None:
+            self.ps = Pennsieve()
         file_string = self.ps.manifest.list_files(mid)
         print(str(file_string))
 
@@ -73,4 +75,4 @@ class UploadManifestSession:
         # TODO: Add logic for getting the file count from the json object rather than the manifest string
 
         # regular expression that searches and counts for every string that has "status: LOCAL" or "status: REGISTERED" in the string
-        return len(re.findall(r'status: LOCAL | status: REGISTERED' , str(file_string)))
+        return len(re.findall(r'status: LOCAL|status: REGISTERED' , str(file_string)))
