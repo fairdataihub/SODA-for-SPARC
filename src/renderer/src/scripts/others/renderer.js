@@ -7131,12 +7131,11 @@ document.getElementById("button-generate").addEventListener("click", async funct
   progressStatus.innerHTML = "Please wait while we verify a few things...";
   document.getElementById("wrapper-wrap").style.display = "none";
 
-
   let statusText = "Please wait while we verify a few things...";
   if (dataset_destination == "Pennsieve") {
     setTimeout(() => {
       document.getElementById("wrapper-wrap").style.display = "none";
-    }, 500)
+    }, 500);
     let supplementary_checks = await window.run_pre_flight_checks(false);
     if (!supplementary_checks) {
       $("#sidebarCollapse").prop("disabled", false);
