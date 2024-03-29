@@ -1074,7 +1074,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         errorArray.push({
           type: "notyf",
           message:
-            "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+            "A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.,",
         });
       }
       if (!datasetSubtitleInput) {

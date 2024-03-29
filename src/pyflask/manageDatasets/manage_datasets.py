@@ -74,7 +74,7 @@ upload_directly_to_bf = 0
 initial_bfdataset_size_submit = 0
 
 forbidden_characters = '<>:"/\|?*'
-forbidden_characters_bf = '\/:*?"<>'
+forbidden_characters_bf = '\/:*?"<>.,'
 
 SODA_SPARC_API_KEY = "SODA-Pennsieve"
 
