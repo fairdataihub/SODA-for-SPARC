@@ -7385,28 +7385,6 @@ const initiate_generate = async () => {
       $("#sidebarCollapse").prop("disabled", false);
       window.log.info("Completed curate function");
 
-      // update dataset list; set the dataset id and int id 
-      try {
-        let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-          params: {
-            selected_account: window.defaultBfAccount,
-          },
-        });
-        window.datasetList = [];
-        window.datasetList = responseObject.data.datasets;
-
-        // update the gloabl dataset id
-        for (const item of window.datasetList) {
-          let { name, id, intId } = item;
-          if (name === dataset_name) {
-            window.defaultBfDatasetId = id;
-            window.defaultBfDatasetIntId = intId;
-          }
-        }
-      } catch (error) {
-        clientError(error);
-      }
-
       // log high level confirmation that a dataset was generated - helps answer how many times were datasets generated in FFMs organize dataset functionality
       window.electron.ipcRenderer.send(
         "track-kombucha",
@@ -7457,6 +7435,19 @@ const initiate_generate = async () => {
 
       // log folder and file options selected ( can be merge, skip, replace, duplicate)
       logSelectedUpdateExistingDatasetOptions(datasetLocation);
+
+      // update dataset list; set the dataset id and int id 
+      try {
+        let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+          params: {
+            selected_account: window.defaultBfAccount,
+          },
+        });
+        window.datasetList = [];
+        window.datasetList = responseObject.data.datasets;
+      } catch (error) {
+        clientError(error);
+      }
 
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
