@@ -1,7 +1,7 @@
 from flask_restx import Resource, fields, reqparse
 from namespaces import NamespaceEnum, get_namespace
 from flask import request
-import json
+import traceback
 from os.path import (
     expanduser,
     join,
@@ -119,9 +119,17 @@ class Curation(Resource):
         try:
             return main_curate_function(soda_json_structure, resume)
         except Exception as e:
+            api.logger.exception(e)
             if notBadRequestException(e):
+                # general exception that was unexpected and caused by our code
                 api.abort(500, str(e))
-            raise e
+            if e.response is not None:
+                # requests exeption
+                api.logger.info("Error message details: ", e.response.json().get('message'))
+                api.abort(e.response.status_code, e.response.json().get('message'))
+            else:
+                # custom werkzeug.exception that we raised
+                api.abort(e.code, e.description)
 
 
 
@@ -137,6 +145,7 @@ model_curation_progress_response = api.model( "CurationProgressResponse", {
     "elapsed_time_formatted": fields.String(description="Elapsed time of the main curation function"),
     "total_files_uploaded": fields.Integer(description="Number of files that have been uploaded"),
     "generated_dataset_id": fields.String(description="Generated dataset ID"),
+    "generated_dataset_int_id": fields.Integer(description="Generated dataset internal ID"),
 })
 
 @api.route("/curation/progress")
