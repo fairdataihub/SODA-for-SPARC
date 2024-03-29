@@ -7436,7 +7436,7 @@ const initiate_generate = async () => {
       // log folder and file options selected ( can be merge, skip, replace, duplicate)
       logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
-      // update dataset list; set the dataset id and int id 
+      // update dataset list; set the dataset id and int id
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
           params: {
