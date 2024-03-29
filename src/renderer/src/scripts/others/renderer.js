@@ -7451,8 +7451,6 @@ const initiate_generate = async () => {
 
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
-
-
     })
     .catch(async (error) => {
       //Allow guided_mode_view to be clicked again
