@@ -111,7 +111,7 @@ def check_forbidden_characters(my_string):
     return regex.search(my_string) is not None or "\\" in r"%r" % my_string
 
 
-forbidden_characters_bf = '\/:*?"<>'
+forbidden_characters_bf = '\/:*?"<>.,'
 
 def check_forbidden_characters_ps(my_string):
     """

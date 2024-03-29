@@ -42,7 +42,7 @@ document.querySelectorAll(".ds-dd.organization").forEach((dropdownElement) => {
   });
 });
 
-var forbidden_characters_bf = '/:*?"<>';
+var forbidden_characters_bf = '\/\\:*?"<>\.,';
 
 window.check_forbidden_characters_ps = (my_string) => {
   // Args:
@@ -121,7 +121,7 @@ $("#bf-new-dataset-name").on("keyup", () => {
   if (newName !== "") {
     if (window.check_forbidden_characters_ps(newName)) {
       Swal.fire({
-        title: "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+        title: "A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.,",
         icon: "error",
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
@@ -142,7 +142,7 @@ $("#bf-rename-dataset-name").on("keyup", () => {
   if (newName !== "") {
     if (window.check_forbidden_characters_ps(newName)) {
       Swal.fire({
-        title: "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+        title: "A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.,",
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
         icon: "error",
