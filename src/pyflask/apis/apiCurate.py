@@ -141,6 +141,7 @@ model_curation_progress_response = api.model( "CurationProgressResponse", {
     "elapsed_time_formatted": fields.String(description="Elapsed time of the main curation function"),
     "total_files_uploaded": fields.Integer(description="Number of files that have been uploaded"),
     "generated_dataset_id": fields.String(description="Generated dataset ID"),
+    "generated_dataset_int_id": fields.Integer(description="Generated dataset internal ID"),
 })
 
 @api.route("/curation/progress")

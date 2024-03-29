@@ -7803,17 +7803,14 @@ const initiate_generate = async () => {
 
     // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
     let generated_dataset_id = data["generated_dataset_id"];
+    let generated_dataset_int_id = data["generated_dataset_int_id"];
     if (
       !loggedDatasetNameToIdMapping &&
       generated_dataset_id !== null &&
       generated_dataset_id !== undefined
     ) {
-      window.electron.ipcRenderer.send(
-        "track-event",
-        "Dataset ID to Dataset Name Map",
-        generated_dataset_id,
-        dataset_name
-      );
+      window.defaultBfDatasetId = generated_dataset_id;
+      window.defaultBfDatasetIntId = generated_dataset_int_id;
 
       // don't log this again for the current upload session
       loggedDatasetNameToIdMapping = true;
