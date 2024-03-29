@@ -1,7 +1,7 @@
 from pennsieve2 import Pennsieve
 import re
 
-ps = Pennsieve()
+
 
 class UploadManifestSession:
 
@@ -9,6 +9,7 @@ class UploadManifestSession:
     df_mid = None
     mdf_mid = None
     mff_mid = None
+    ps = None
 
     def __init__(self):
         self.df_mid = None
@@ -46,12 +47,13 @@ class UploadManifestSession:
         return self.manifest_has_progress(self.mff_mid)
     
     def manifest_has_progress(self, mid):
-        mfs = ps.list_manifests()
+        if self.ps is None:
+            self.ps = Pennsieve()
+        mfs = self.ps.list_manifests()
         for mf in mfs:
             print(mf)
-            if mf.id == mid:
-                if mf.status == "Initiated":
-                    return True      
+            if mf.id == mid and mf.status == "Initiated":
+                return True      
         return False
     
     def get_remaining_df_file_count(self):
@@ -64,7 +66,7 @@ class UploadManifestSession:
         return self.get_remaining_file_count(self.mff_mid)
     
     def get_remaining_file_count(self, mid):
-        file_string = ps.manifest.list_files(mid)
+        file_string = self.ps.manifest.list_files(mid)
         print(str(file_string))
 
         # if there is no node_id then an upload hasn't started yet - all files are remaining 
