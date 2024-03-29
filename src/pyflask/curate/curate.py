@@ -2457,6 +2457,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
         if resume and ums.df_mid_has_progress():
             total_files += ums.get_remaining_df_file_count()
             total_dataset_files += ums.get_remaining_df_file_count()
+
+            namespace_logger.info(f"Total files to upload: {total_files}")
         else:
             for folderInformation in list_upload_files:
                 file_paths_count = len(folderInformation[0])
@@ -2473,6 +2475,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             # get the current manifest id for data files
             manifest_id = ums.get_df_mid()
             namespace_logger.info(f"Resuming upload with manifest id: {manifest_id}")
+            bytes_uploaded_per_file = {}
+            file_uploaded = 0
+            total_bytes_uploaded = {"value": 0}
+            current_files_in_subscriber_session = total_dataset_files
             # upload the manifest files
             try: 
                 ps.manifest.upload(manifest_id)
