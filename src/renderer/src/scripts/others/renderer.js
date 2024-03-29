@@ -7436,9 +7436,7 @@ const initiate_generate = async () => {
       // log folder and file options selected ( can be merge, skip, replace, duplicate)
       logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
-      //Allow guided_mode_view to be clicked again
-      document.getElementById("guided_mode_view").style.pointerEvents = "";
-
+      // update dataset list; set the dataset id and int id
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
           params: {
@@ -7450,6 +7448,9 @@ const initiate_generate = async () => {
       } catch (error) {
         clientError(error);
       }
+
+      //Allow guided_mode_view to be clicked again
+      document.getElementById("guided_mode_view").style.pointerEvents = "";
     })
     .catch(async (error) => {
       //Allow guided_mode_view to be clicked again
@@ -7791,17 +7792,14 @@ const initiate_generate = async () => {
 
     // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
     let generated_dataset_id = data["generated_dataset_id"];
+    let generated_dataset_int_id = data["generated_dataset_int_id"];
     if (
       !loggedDatasetNameToIdMapping &&
       generated_dataset_id !== null &&
       generated_dataset_id !== undefined
     ) {
-      window.electron.ipcRenderer.send(
-        "track-event",
-        "Dataset ID to Dataset Name Map",
-        generated_dataset_id,
-        dataset_name
-      );
+      window.defaultBfDatasetId = generated_dataset_id;
+      window.defaultBfDatasetIntId = generated_dataset_int_id;
 
       // don't log this again for the current upload session
       loggedDatasetNameToIdMapping = true;
