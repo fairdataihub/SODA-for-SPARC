@@ -2314,7 +2314,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
 
                 # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
                 previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
-
+                
+                
                 # update the file id's current total bytes uploaded value 
                 bytes_uploaded_per_file[file_id] = current_bytes_uploaded
 
@@ -2323,9 +2324,9 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
                 if previous_bytes_uploaded == total_bytes_to_upload:
                     previous_bytes_uploaded = 0 
 
-
                 # calculate the additional amount of bytes that have just been uploaded for the given file id
                 total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
+                ums.set_total_upload_size(total_bytes_uploaded["value"])
 
                 # check if the given file has finished uploading
                 if current_bytes_uploaded == total_bytes_to_upload and  file_id != "":
@@ -2479,6 +2480,9 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             file_uploaded = 0
             total_bytes_uploaded = {"value": 0}
             current_files_in_subscriber_session = total_dataset_files
+            main_total_generate_dataset_size = ums.get_main_total_generate_dataset_size()
+            total_bytes_uploaded = ums.get_total_upload_size()
+
             # upload the manifest files
             try: 
                 ps.manifest.upload(manifest_id)
@@ -2834,6 +2838,12 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
         end = timer()
         namespace_logger.info(f"Time for ps_upload_to_dataset function: {timedelta(seconds=end - start)}")
     except Exception as e:
+        ums.set_bytes_uploaded_per_file(bytes_uploaded_per_file)
+        ums.set_main_total_generate_dataset_size(main_total_generate_dataset_size)
+        ums.set_total_upload_size(total_bytes_uploaded) # Note might need to be careful about this one in particular 
+        ums.set_total_files_uploaded(files_uploaded)
+        ums.set_total_dataset_files(total_dataset_files)
+
         raise e
 
 main_curate_status = ""

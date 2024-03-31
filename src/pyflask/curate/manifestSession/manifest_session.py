@@ -11,6 +11,13 @@ class UploadManifestSession:
     mff_mid = None
     ps = None
 
+    # upload values 
+    main_total_generate_dataset_size = None
+    total_bytes_uploaded = None 
+    bytes_uploaded_per_file = None # if the agent stops this needs to be stored in order to get an accurate accounting of what we had vs how much is now uplaoded for each file 
+    total_files_uploaded = None
+
+
     def __init__(self):
         self.df_mid = None
         self.mdf_mid = None
@@ -33,6 +40,19 @@ class UploadManifestSession:
     
     def get_mff_mid(self):
         return self.mff_mid
+    
+
+    def set_main_total_generate_dataset_size(self, size):
+        self.main_total_generate_dataset_size = size
+
+    def get_main_total_generate_dataset_size(self):
+        return self.main_total_generate_dataset_size
+    
+    def set_total_upload_size(self, size):
+        self.total_bytes_uploaded = size
+
+    def get_total_upload_size(self):
+        return self.total_bytes_uploaded
     
     def has_stored_mids(self):
         return self.df_mid is not None or self.mdf_mid is not None or self.mff_mid is not None
@@ -76,3 +96,4 @@ class UploadManifestSession:
 
         # regular expression that searches and counts for every string that has "status: LOCAL" or "status: REGISTERED" in the string
         return len(re.findall(r'status: LOCAL|status: REGISTERED' , str(file_string)))
+    
