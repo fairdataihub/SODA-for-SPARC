@@ -2470,9 +2470,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             bytes_uploaded_per_file = ums.get_bytes_uploaded_per_file()
             main_total_generate_dataset_size = ums.get_main_total_generate_dataset_size()
             total_bytes_uploaded["value"] = ums.get_total_uploaded_bytes()
-            main_curation_uploaded_files = ums.get_total_files_uploaded()
             total_dataset_files = ums.get_total_files_to_upload() # TODO: Technically not accurate sice this may not always be total files if they upload manifest/metadata files
             total_files = ums.get_total_files_to_upload()
+            main_curation_uploaded_files = total_files - ums.get_remaining_file_count(manifest_id)
+
             current_files_in_subscriber_session = total_dataset_files
 
             namespace_logger.info(f"Total files to upload: {total_files}")
