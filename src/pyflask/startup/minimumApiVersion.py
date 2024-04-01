@@ -9,3 +9,4 @@ def get_api_version():
 
 
     return {'version': os.getenv('API_VERSION', "14.1.0")}
+
