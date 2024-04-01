@@ -7733,6 +7733,13 @@ const initiate_generate = async (e) => {
 
       divGenerateProgressBar.style.display = "block";
 
+      console.log("main_curate_status: ", main_curate_status);
+      console.log("main_curate_progress_message: ", main_curate_progress_message);
+      console.log("main_total_generate_dataset_size: ", main_total_generate_dataset_size);
+      console.log("main_generated_dataset_size: ", main_generated_dataset_size);
+      console.log("elapsed_time_formatted: ", elapsed_time_formatted);
+      console.log("total_files_uploaded: ", total_files_uploaded);
+
       if (main_curate_progress_message.includes("Success: COMPLETED!")) {
         clearInterval(timerProgress);
         generateProgressBar.value = 100;

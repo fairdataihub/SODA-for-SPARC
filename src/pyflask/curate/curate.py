@@ -2326,7 +2326,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
 
                 # calculate the additional amount of bytes that have just been uploaded for the given file id
                 total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
-                ums.set_total_upload_size(total_bytes_uploaded["value"])
+                ums.set_total_uploaded_bytes(total_bytes_uploaded["value"])
 
                 # check if the given file has finished uploading
                 if current_bytes_uploaded == total_bytes_to_upload and  file_id != "":
@@ -2356,15 +2356,9 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
         ]
 
         main_curate_progress_message = "Preparing a list of files to upload"
-        namespace_logger.info("The resume option value is: ", resume)
-        namespace_logger.info("The starting point is: ", starting_point)
-        namespace_logger.info("The generate option is: ", generate_option)
         # 1. Scan the dataset structure and create a list of files/folders to be uploaded with the desired renaming
         if generate_option == "new" and starting_point == "new":
-            namespace_logger.info("We are going to check if we should resume")
             vs = ums.df_mid_has_progress()
-            namespace_logger.info(f"THe df manifest id is: {ums.get_df_mid()}")
-            namespace_logger.info(f"Should we resume? {vs}")
             if resume == False or resume == True and not vs:
                 namespace_logger.info("Decided not to resume")
                 # we can assume no files/folders exist in the dataset since the generate option is new and starting point is also new
@@ -2454,17 +2448,13 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
                         main_total_generate_dataset_size += getsize(manifestpath)
 
 
-        # 2. Count how many files will be uploaded to inform frontend
-        if resume and ums.df_mid_has_progress():
-            total_files += ums.get_remaining_df_file_count()
-            total_dataset_files += ums.get_remaining_df_file_count()
-
-            namespace_logger.info(f"Total files to upload: {total_files}")
-        else:
+        # 2. Count how many files will be uploaded to inform frontend - do not count if we are resuming a previous upload
+        if not resume:
             for folderInformation in list_upload_files:
                 file_paths_count = len(folderInformation[0])
                 total_files += file_paths_count
                 total_dataset_files += file_paths_count
+
 
         # 3. Upload files and add to tracking list
         start_generate = 1
@@ -2476,12 +2466,16 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             # get the current manifest id for data files
             manifest_id = ums.get_df_mid()
             namespace_logger.info(f"Resuming upload with manifest id: {manifest_id}")
-            bytes_uploaded_per_file = {}
-            file_uploaded = 0
-            total_bytes_uploaded = {"value": 0}
-            current_files_in_subscriber_session = total_dataset_files
+            # get the cached values of the previous upload session 
+            bytes_uploaded_per_file = ums.get_bytes_uploaded_per_file()
             main_total_generate_dataset_size = ums.get_main_total_generate_dataset_size()
-            total_bytes_uploaded = ums.get_total_upload_size()
+            total_bytes_uploaded["value"] = ums.get_total_uploaded_bytes()
+            main_curation_uploaded_files = ums.get_total_files_uploaded()
+            total_dataset_files = ums.get_total_files_to_upload() # TODO: Technically not accurate sice this may not always be total files if they upload manifest/metadata files
+            total_files = ums.get_total_files_to_upload()
+            current_files_in_subscriber_session = total_dataset_files
+
+            namespace_logger.info(f"Total files to upload: {total_files}")
 
             # upload the manifest files
             try: 
@@ -2564,7 +2558,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
 
             # reset global variables used in the subscriber monitoring function
             bytes_uploaded_per_file = {}
-            file_uploaded = 0
             total_bytes_uploaded = {"value": 0}
             current_files_in_subscriber_session = total_dataset_files
 
@@ -2840,9 +2833,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
     except Exception as e:
         ums.set_bytes_uploaded_per_file(bytes_uploaded_per_file)
         ums.set_main_total_generate_dataset_size(main_total_generate_dataset_size)
-        ums.set_total_upload_size(total_bytes_uploaded) # Note might need to be careful about this one in particular 
-        ums.set_total_files_uploaded(files_uploaded)
-        ums.set_total_dataset_files(total_dataset_files)
+        ums.set_total_uploaded_bytes(total_bytes_uploaded["value"]) # Note might need to be careful about this one in particular 
+        ums.set_total_files_uploaded(main_curation_uploaded_files)
+        ums.set_total_files_to_upload(total_files)
+
 
         raise e
 
