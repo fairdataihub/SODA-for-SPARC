@@ -177,6 +177,7 @@ let bfAccountOptions = [];
 window.defaultBfAccount = undefined;
 window.defaultBfDataset = "Select dataset";
 window.defaultBfDatasetId = undefined;
+window.defaultBfDatasetIntId = undefined;
 window.reverseSwalButtons = false;
 window.SODA_SPARC_API_KEY = "SODA-Pennsieve";
 window.datasetList = [];
@@ -1620,7 +1621,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
             // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
             // Ensure the dataset is not locked before proceeding
-            const datasetIsLocked = await api.isDatasetLocked(window.defaultBfDataset, bfDataset);
+            const datasetIsLocked = await api.isDatasetLocked(window.defaultBfAccount, bfDataset);
             if (datasetIsLocked) {
               // Show the locked swal and return
               await Swal.fire({
@@ -1726,9 +1727,10 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
         // update the gloabl dataset id
         for (const item of window.datasetList) {
-          let { name, id } = item;
+          let { name, id, intId } = item;
           if (name === bfDataset) {
             window.defaultBfDatasetId = id;
+            window.defaultBfDatasetIntId = intId;
           }
         }
 

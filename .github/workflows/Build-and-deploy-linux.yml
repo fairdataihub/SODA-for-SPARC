@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - pre-staging
 
 jobs:
   deploy-on-linux:
