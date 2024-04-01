@@ -55,7 +55,7 @@ class UploadManifestSession:
         return self.main_total_generate_dataset_size
     
     def set_total_uploaded_bytes(self, size):
-        self.total_bytes_uploaded["value"] += size
+        self.total_bytes_uploaded["value"] = size
 
     def get_total_uploaded_bytes(self):
         return self.total_bytes_uploaded["value"]
