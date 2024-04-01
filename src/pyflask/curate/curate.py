@@ -1880,6 +1880,7 @@ current_files_in_subscriber_session = 0
 bytes_uploaded_per_file = {}
 total_bytes_uploaded = {"value": 0}
 current_files_in_subscriber_session = 0
+cached_bytes_uploaded_per_file = {"value": 0}
 
 def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
     global namespace_logger
@@ -1900,6 +1901,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
     global total_dataset_files
     global current_files_in_subscriber_session
     global renaming_files_flow
+    global cached_bytes_uploaded_per_file
 
 
     total_files = 0
@@ -2306,11 +2308,20 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             global current_files_in_subscriber_session
             global bytes_uploaded_per_file
             global main_curation_uploaded_files
+            global cached_bytes_uploaded_per_file
 
             if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
                 file_id = events_dict["upload_status"].file_id
                 total_bytes_to_upload = events_dict["upload_status"].total
                 current_bytes_uploaded = events_dict["upload_status"].current
+
+                if current_bytes_uploaded < cached_bytes_uploaded_per_file.get(file_id, 0):
+                    namespace_logger.info(f"Cached bytes greater than new byte total for the given file id. Discrepancy is: {current_bytes_uploaded} < {cached_bytes_uploaded_per_file.get(file_id, 0)}")
+                    namespace_logger.info(f"File id: {file_id}")
+                    ps.unsubscribe(10)
+
+                if current_bytes_uploaded == cached_bytes_uploaded_per_file.get(file_id, 0):
+                    namespace_logger.info(f"Current bytes uploaded is equal to the cached bytes uploaded for the given file id. Current bytes uploaded: {current_bytes_uploaded} Cached bytes uploaded: {cached_bytes_uploaded_per_file.get(file_id, 0)}")
 
                 # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
                 previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
@@ -2467,7 +2478,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             manifest_id = ums.get_df_mid()
             namespace_logger.info(f"Resuming upload with manifest id: {manifest_id}")
             # get the cached values of the previous upload session 
-            bytes_uploaded_per_file = ums.get_bytes_uploaded_per_file()
+            cached_bytes_uploaded_per_file = ums.get_bytes_uploaded_per_file()
             main_total_generate_dataset_size = ums.get_main_total_generate_dataset_size()
             total_bytes_uploaded["value"] = ums.get_total_uploaded_bytes()
             total_dataset_files = ums.get_total_files_to_upload() # TODO: Technically not accurate sice this may not always be total files if they upload manifest/metadata files
@@ -2832,7 +2843,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
         end = timer()
         namespace_logger.info(f"Time for ps_upload_to_dataset function: {timedelta(seconds=end - start)}")
     except Exception as e:
-        ums.set_bytes_uploaded_per_file(bytes_uploaded_per_file)
+        ums.set_bytes_uploaded_per_file(cached_bytes_uploaded_per_file)
         ums.set_main_total_generate_dataset_size(main_total_generate_dataset_size)
         ums.set_total_uploaded_bytes(total_bytes_uploaded["value"]) # Note might need to be careful about this one in particular 
         ums.set_total_files_uploaded(main_curation_uploaded_files)
