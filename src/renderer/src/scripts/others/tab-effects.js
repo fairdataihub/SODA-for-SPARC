@@ -54,7 +54,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   var x = document.getElementsByClassName("parent-tabs");
   fixStepIndicator(tabNow);
   if (tabNow === 0) {
-    console.log("first step here")
+    console.log("first step here");
     fixStepDone(tabNow);
   } else {
     fixStepDone(tabNow - 1);
@@ -83,7 +83,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 0) {
-    console.log("also first step here")
+    console.log("also first step here");
     //$("#prevBtn").css("display", "none");
 
     // disable continue button if none of the options in step 1 have been clicked
