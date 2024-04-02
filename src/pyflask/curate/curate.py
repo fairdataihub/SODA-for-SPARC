@@ -2310,10 +2310,24 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             global main_curation_uploaded_files
             global cached_bytes_uploaded_per_file
 
+            # TODO: Handle the edge case where the local tracking structure shows that a file is complete but it was canceled before the manifest sets its status to Imported or Greater 
+            # How to: Check the cached structure and see if that file was already set to completed. If so then just subtract that progress from the current total_bytes and of course add in whatever 
+            # the newer value is from the subscribers current upload bytes count. 
+
+            # TODO: Store in a separate variable progress for files that are actually completed. Set this as the toal_bytes_uploaded starting value. In the above edge case this value 
+            # ma fluctuate. But What could you do. 
+
+            # TODO: Add a SWAL that appears when the user clicks retry on the front end that expalins any progress for a file that isn't completed will be lost and reuploaded. 
+
+            # TODO: Make sure we do not double track reuploaded file bytes for analytics. 
+
             if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
                 file_id = events_dict["upload_status"].file_id
                 total_bytes_to_upload = events_dict["upload_status"].total
                 current_bytes_uploaded = events_dict["upload_status"].current
+
+                if current_bytes_uploaded == total_bytes_to_upload:
+                    namespace_logger.info(f"File upload complete for file id: {file_id}")
 
                 if current_bytes_uploaded < cached_bytes_uploaded_per_file.get(file_id, 0):
                     namespace_logger.info(f"Cached bytes greater than new byte total for the given file id. Discrepancy is: {current_bytes_uploaded} < {cached_bytes_uploaded_per_file.get(file_id, 0)}")
@@ -2327,7 +2341,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
                 previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
                 
                 # only update the byte count if the current bytes uploaded is greater than the previous bytes uploaded
-                if cached_bytes_uploaded_per_file.get(file_id, 0) < current_bytes_uploaded:
+                if current_bytes_uploaded > previous_bytes_uploaded:
                     # update the file id's current total bytes uploaded value 
                     bytes_uploaded_per_file[file_id] = current_bytes_uploaded
 
@@ -2484,6 +2498,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             cached_bytes_uploaded_per_file = ums.get_bytes_uploaded_per_file()
             main_total_generate_dataset_size = ums.get_main_total_generate_dataset_size()
             total_bytes_uploaded["value"] = ums.get_total_uploaded_bytes()
+            namespace_logger.info(f"Resuming upload and starting with total bytes uploaded: {total_bytes_uploaded['value']}")
             total_dataset_files = ums.get_total_files_to_upload() # TODO: Technically not accurate sice this may not always be total files if they upload manifest/metadata files
             total_files = ums.get_total_files_to_upload()
             main_curation_uploaded_files = total_files - ums.get_remaining_file_count(manifest_id)
@@ -2851,6 +2866,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
         ums.set_bytes_uploaded_per_file(cached_bytes_uploaded_per_file)
         ums.set_main_total_generate_dataset_size(main_total_generate_dataset_size)
         ums.set_total_uploaded_bytes(total_bytes_uploaded["value"]) # Note might need to be careful about this one in particular 
+        namespace_logger.info(f"Ending upload with this many bytes uploaded: {total_bytes_uploaded['value']}")
         ums.set_total_files_uploaded(main_curation_uploaded_files)
         ums.set_total_files_to_upload(total_files)
 
