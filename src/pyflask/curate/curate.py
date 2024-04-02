@@ -2326,18 +2326,21 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
                 # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
                 previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
                 
-                
-                # update the file id's current total bytes uploaded value 
-                bytes_uploaded_per_file[file_id] = current_bytes_uploaded
+                # only update the byte count if the current bytes uploaded is greater than the previous bytes uploaded
+                if cached_bytes_uploaded_per_file.get(file_id, 0) < current_bytes_uploaded:
+                    # update the file id's current total bytes uploaded value 
+                    bytes_uploaded_per_file[file_id] = current_bytes_uploaded
+
+                    # calculate the additional amount of bytes that have just been uploaded for the given file id
+                    total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
+                    ums.set_total_uploaded_bytes(total_bytes_uploaded["value"])
 
                 # sometimes a user uploads the same file to multiple locations in the same session. Edge case. Handle it by resetting the value to 0 if it is equivalent to the 
                 # total bytes for that file 
-                if previous_bytes_uploaded == total_bytes_to_upload:
-                    previous_bytes_uploaded = 0 
+                # if previous_bytes_uploaded == total_bytes_to_upload:
+                #     previous_bytes_uploaded = 0 
 
-                # calculate the additional amount of bytes that have just been uploaded for the given file id
-                total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
-                ums.set_total_uploaded_bytes(total_bytes_uploaded["value"])
+
 
                 # check if the given file has finished uploading
                 if current_bytes_uploaded == total_bytes_to_upload and  file_id != "":
@@ -2484,6 +2487,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             total_dataset_files = ums.get_total_files_to_upload() # TODO: Technically not accurate sice this may not always be total files if they upload manifest/metadata files
             total_files = ums.get_total_files_to_upload()
             main_curation_uploaded_files = total_files - ums.get_remaining_file_count(manifest_id)
+            files_uploaded = main_curation_uploaded_files
 
             current_files_in_subscriber_session = total_dataset_files
 
@@ -2843,6 +2847,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
         end = timer()
         namespace_logger.info(f"Time for ps_upload_to_dataset function: {timedelta(seconds=end - start)}")
     except Exception as e:
+        # reset the total bytes uploaded for any file that has not been fully uploaded
         ums.set_bytes_uploaded_per_file(cached_bytes_uploaded_per_file)
         ums.set_main_total_generate_dataset_size(main_total_generate_dataset_size)
         ums.set_total_uploaded_bytes(total_bytes_uploaded["value"]) # Note might need to be careful about this one in particular 
