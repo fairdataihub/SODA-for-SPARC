@@ -121,32 +121,8 @@
               </svg>
             </span>
           </div>
-          <div class="vertical-progress-bar-step">
-            <span>5</span>
-            <span>
-              <svg style="width: 16.41px; height: 12.12px" viewBox="0 0 24 24">
-                <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
-              </svg>
-            </span>
-          </div>
-          <div class="vertical-progress-bar-step">
-            <span>6</span>
-            <span>
-              <svg style="width: 16.41px; height: 12.12px" viewBox="0 0 24 24">
-                <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
-              </svg>
-            </span>
-          </div>
-          <div class="vertical-progress-bar-step">
-            <span>7</span>
-            <span>
-              <svg style="width: 16.41px; height: 12.12px" viewBox="0 0 24 24">
-                <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
-              </svg>
-            </span>
-          </div>
           <div class="vertical-progress-bar-step last">
-            <span>8</span>
+            <span>5</span>
             <span>
               <svg style="width: 16.41px; height: 12.12px" viewBox="0 0 24 24">
                 <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
@@ -184,14 +160,21 @@
             </h3>
 
             <div class="individual-question getting-started show" id="Question-getting-started-1"
-              style="text-align: -webkit-center">
-              <div class="ui form" style="width: 100%; text-align: -webkit-center">
-                <div class="grouped fields">
-                  <label style="font-size: 17px; text-align: center; color: var(--color-bg-plum)">Let's get started.
-                    What would you like to do?
+              style="text-align: -webkit-center; height: 100%">
+              <div class="ui form" style="width: 100%; text-align: -webkit-center; height: 100%">
+                <div class="grouped fields" style="height: 100%">
+                  <label style="font-size: 17px; text-align: center; color: var(--color-bg-plum)">Where is the folder located?</label>
 
-                    <br /><span style="color: #898989; font-size: 12px">Please select one:</span></label>
-                  <div id="getting-started-1-radio-buttons"
+                  <div id="drag-n-drop-container" style="border-style: dashed; height: 100%; margin-top: 2rem; background-color: #13716d14; display: flex; justify-content: space-around; align-items: center; border-radius: 4px;">
+                    <div>
+                      <svg width="65" height="58" viewBox="0 0 65 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M24.2068 0.504639C25.1649 0.504757 26.1107 0.718361 26.9743 1.12966C27.8379 1.54095 28.5972 2.13941 29.196 2.88079L33.6706 8.42515H57.7026C59.3979 8.42515 61.0238 9.09273 62.2226 10.281C63.4214 11.4693 64.0949 13.081 64.0949 14.7616V51.1959C64.0949 52.8764 63.4214 54.4881 62.2226 55.6764C61.0238 56.8647 59.3979 57.5323 57.7026 57.5323H6.56398C4.86863 57.5323 3.24271 56.8647 2.04392 55.6764C0.845128 54.4881 0.171653 52.8764 0.171653 51.1959V6.84104C0.171653 5.16052 0.845128 3.54884 2.04392 2.36053C3.24271 1.17222 4.86863 0.504639 6.56398 0.504639H24.2068ZM24.2068 6.84104H6.56398V51.1959H57.7026V14.7616H33.6674C32.7093 14.7614 31.7635 14.5478 30.8999 14.1365C30.0363 13.7252 29.277 13.1268 28.6782 12.3854L24.2068 6.84104ZM34.393 23.2302L41.172 29.9499C41.4773 30.2422 41.7208 30.5918 41.8883 30.9783C42.0558 31.3648 42.144 31.7806 42.1476 32.2012C42.1513 32.6219 42.0705 33.0391 41.9098 33.4285C41.7491 33.8178 41.5117 34.1716 41.2116 34.469C40.9115 34.7665 40.5547 35.0017 40.1619 35.161C39.7691 35.3203 39.3482 35.4005 38.9238 35.3968C38.4994 35.3932 38.0801 35.3058 37.6901 35.1398C37.3002 34.9737 36.9475 34.7323 36.6526 34.4298L35.3294 33.1181V41.6913C35.3294 42.5315 34.9927 43.3374 34.3933 43.9315C33.7939 44.5257 32.9809 44.8595 32.1333 44.8595C31.2856 44.8595 30.4726 44.5257 29.8732 43.9315C29.2738 43.3374 28.9371 42.5315 28.9371 41.6913V33.1181L27.6139 34.4298C27.3191 34.7323 26.9664 34.9737 26.5764 35.1398C26.1865 35.3058 25.7671 35.3932 25.3427 35.3968C24.9183 35.4005 24.4975 35.3203 24.1047 35.161C23.7119 35.0017 23.355 34.7665 23.0549 34.469C22.7548 34.1716 22.5175 33.8178 22.3568 33.4285C22.1961 33.0391 22.1152 32.6219 22.1189 32.2012C22.1226 31.7806 22.2108 31.3648 22.3783 30.9783C22.5458 30.5918 22.7893 30.2422 23.0945 29.9499L29.8704 23.2302C30.1672 22.9356 30.5197 22.7019 30.9077 22.5425C31.2957 22.383 31.7116 22.301 32.1317 22.301C32.5517 22.301 32.9676 22.383 33.3556 22.5425C33.7436 22.7019 34.0961 22.9356 34.393 23.2302Z" fill="#13716D"/>
+                        </svg>
+                        <p style="text-align: center; font-size: 15px; color: black; font-weight: 600; margin-top: 2rem">Drag and drop the folder here <br> or </p>
+                        <button style="border-radius: 4px; height: 30px; width: 150px; background-color: #13716D; color: white; border: none">Browse Computer</button>
+                    </div>
+                  </div>
+                  <!-- <div id="getting-started-1-radio-buttons"
                     style="display: flex; flex-direction: row; justify-content: center">
                     <div style="margin: 15px 0">
                       <div class="option-card radio-button getting-started-1st-question"
@@ -284,7 +267,7 @@
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>

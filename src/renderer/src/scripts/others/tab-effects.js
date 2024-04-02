@@ -31,6 +31,10 @@ window.currentTab = 0; // Current tab is set to be the first tab (0)
 const delay = 250;
 
 window.showParentTab = async (tabNow, nextOrPrev) => {
+  // tabNow represent the current tab
+  // nextOrPrev represent the direction of the tab (1 or -1)
+  console.log(tabNow);
+  console.log(nextOrPrev);
   $("#nextBtn").prop("disabled", true);
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
@@ -50,6 +54,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   var x = document.getElementsByClassName("parent-tabs");
   fixStepIndicator(tabNow);
   if (tabNow === 0) {
+    console.log("first step here")
     fixStepDone(tabNow);
   } else {
     fixStepDone(tabNow - 1);
@@ -60,7 +65,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     $(x[tabNow]).css("overflow", "auto");
   }, 1200);
 
-  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter((element) => {
+  var inActiveTabArray = [0, 1, 2, 3, 4, 5].filter((element) => {
     return ![tabNow].includes(element);
   });
 
@@ -78,6 +83,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 0) {
+    console.log("also first step here")
     //$("#prevBtn").css("display", "none");
 
     // disable continue button if none of the options in step 1 have been clicked
