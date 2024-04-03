@@ -2364,7 +2364,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
                     files_uploaded += 1
                     main_curation_uploaded_files += 1
                     completed_files_byte_count["value"] += total_bytes_to_upload
-                    ums.set_completed_files_byte_count(completed_files_byte_count)
+                    ums.set_completed_files_byte_count(completed_files_byte_count["value"])
 
 
                 # check if the upload has finished
@@ -3350,6 +3350,8 @@ def main_curate_function_progress():
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the upload session
     global myds
     global renaming_files_flow
+
+    namespace_logger.info(total_bytes_uploaded)
 
 
     elapsed_time = time.time() - generate_start_time
