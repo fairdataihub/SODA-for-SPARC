@@ -17,7 +17,7 @@ class UploadManifestSession:
     bytes_uploaded_per_file = None # if the agent stops this needs to be stored in order to get an accurate accounting of what we had vs how much is now uplaoded for each file 
     total_files_uploaded = None
     total_files_to_upload = None 
-
+    completed_files_byte_count = {"value": 0}
 
     def __init__(self):
         self.df_mid = None
@@ -83,6 +83,12 @@ class UploadManifestSession:
     
     def mff_mid_has_progress(self):
         return self.manifest_has_progress(self.mff_mid)
+    
+    def set_completed_files_byte_count(self, count):
+        self.completed_files_byte_count["value"] = count
+
+    def get_completed_files_byte_count(self):
+        return self.completed_files_byte_count["value"]
     
     def manifest_has_progress(self, mid):
         if self.ps is None:
