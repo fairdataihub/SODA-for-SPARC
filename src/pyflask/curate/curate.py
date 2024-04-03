@@ -2838,6 +2838,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
         ums.set_mdf_mid(None)
         ums.set_mff_mid(None)
 
+        # reset the calculated values for the upload session
+        bytes_file_path_dict = {}
+
+
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
         end = timer()
         namespace_logger.info(f"Time for ps_upload_to_dataset function: {timedelta(seconds=end - start)}")
