@@ -1904,6 +1904,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
     global renaming_files_flow
     global cached_bytes_uploaded_per_file
     global completed_files_byte_count
+    global bytes_uploaded_per_file
+
 
 
     total_files = 0
@@ -1912,6 +1914,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
     total_manifest_files = 0
     main_curation_uploaded_files = 0
     total_bytes_uploaded = {"value": 0}
+    total_bytes_uploaded_per_file = {}
     files_uploaded = 0
     renamed_files_counter = 0
 
@@ -2344,13 +2347,13 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
                 previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
                 
                 # only update the byte count if the current bytes uploaded is greater than the previous bytes uploaded
-                if current_bytes_uploaded > previous_bytes_uploaded:
-                    # update the file id's current total bytes uploaded value 
-                    bytes_uploaded_per_file[file_id] = current_bytes_uploaded
+                # if current_bytes_uploaded > previous_bytes_uploaded:
+                # update the file id's current total bytes uploaded value 
+                bytes_uploaded_per_file[file_id] = current_bytes_uploaded
 
-                    # calculate the additional amount of bytes that have just been uploaded for the given file id
-                    total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
-                    ums.set_total_uploaded_bytes(total_bytes_uploaded["value"])
+                # calculate the additional amount of bytes that have just been uploaded for the given file id
+                total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
+                ums.set_total_uploaded_bytes(total_bytes_uploaded["value"])
 
                 # sometimes a user uploads the same file to multiple locations in the same session. Edge case. Handle it by resetting the value to 0 if it is equivalent to the 
                 # total bytes for that file 
@@ -2365,6 +2368,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
                     main_curation_uploaded_files += 1
                     completed_files_byte_count["value"] += total_bytes_to_upload
                     ums.set_completed_files_byte_count(completed_files_byte_count["value"])
+                    namespace_logger.info(f"Total completed bytes count that will be used for resume: {completed_files_byte_count['value']}")
 
 
                 # check if the upload has finished
@@ -2503,11 +2507,12 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             cached_bytes_uploaded_per_file = ums.get_bytes_uploaded_per_file()
             main_total_generate_dataset_size = ums.get_main_total_generate_dataset_size()
             total_bytes_uploaded["value"] = ums.get_completed_files_byte_count()
-            namespace_logger.info(f"Resuming upload and starting with total bytes uploaded: {total_bytes_uploaded['value']}")
+            namespace_logger.info(f"Resuming upload with this amount of completed bytes: {total_bytes_uploaded['value']}")
             total_dataset_files = ums.get_total_files_to_upload() # TODO: Technically not accurate sice this may not always be total files if they upload manifest/metadata files
             total_files = ums.get_total_files_to_upload()
             main_curation_uploaded_files = total_files - ums.get_remaining_file_count(manifest_id)
             files_uploaded = main_curation_uploaded_files
+            bytes_uploaded_per_file = {}
 
             current_files_in_subscriber_session = total_dataset_files
 
@@ -3350,8 +3355,6 @@ def main_curate_function_progress():
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the upload session
     global myds
     global renaming_files_flow
-
-    namespace_logger.info(total_bytes_uploaded)
 
 
     elapsed_time = time.time() - generate_start_time
