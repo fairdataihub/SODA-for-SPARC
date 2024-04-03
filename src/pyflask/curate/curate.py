@@ -1878,6 +1878,8 @@ bytes_uploaded_per_file = {}
 total_bytes_uploaded = {"value": 0}
 current_files_in_subscriber_session = 0
 
+bytes_file_path_dict = {}
+
 def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
     global namespace_logger
 
@@ -1899,6 +1901,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
     global renaming_files_flow
     global bytes_uploaded_per_file
     global total_bytes_uploaded_per_file
+    global bytes_file_path_dict
 
 
     total_files = 0
@@ -1978,6 +1981,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             """
             print("recursive_dataset_scan_for_upload")
             global main_total_generate_dataset_size
+            global bytes_file_path_dict
             list_of_local_file_paths = []
             # First loop will take place in the root of the dataset
             if "folders" in dataset_structure.keys():
@@ -2017,7 +2021,9 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
                             list_final_names.append(desired_name)
                             list_initial_names.append(projected_name)
 
-                        main_total_generate_dataset_size += getsize(file_path)
+                        file_size = getsize(file_path)
+                        main_total_generate_dataset_size += file_size
+                        bytes_file_path_dict[file_path] = file_size
 
                 if list_local_files:
                     list_upload_files.append([
