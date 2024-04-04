@@ -163,18 +163,6 @@ class UploadManifestSession:
 
         return total_bytes_uploaded
 
-
-
-# read the byte_file_paths_dic.json file and set it to a dictionary 
-# import json
-# byte_file_paths_dic = {}
-# # with open('byte_file_paths_dic.json') as f:
-# #     byte_file_paths_dic = json.load(f)
-
-# u = UploadManifestSession()
-# s = u.get_remaining_file_count(180, 1100)
-# print(s)
-
     
 
 
