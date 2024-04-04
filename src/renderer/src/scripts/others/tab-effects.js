@@ -546,19 +546,11 @@ window.nextPrev = (pageIndex) => {
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
     console.log("exiting?")
-    // let event = new CustomEvent("custom-back", {
-    //   detail: {
-    //     target: { dataset: { section: "guided_mode-section" }, classList: ["someclass"] },
-    //   },
-    // });
-
-    // document.body.dispatchEvent(event);
+    // Remove the text from the dataset path in step 1
+    $("#org-dataset-folder-path").text("");
+    // Disable continue button
+    $("#nextBtn").prop("disabled", true);
     window.returnToGuided();
-    if ($("#nextBtn").prop("disabled") === true) {
-      window.nextBtnDisabledVariable = true;
-    } else {
-      window.nextBtnDisabledVariable = false;
-    }
     return;
   }
 
