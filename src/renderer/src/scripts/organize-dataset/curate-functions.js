@@ -149,19 +149,20 @@ $(".button-individual-metadata.go-back").click(function () {
 window.uploadDatasetDropHandler = async (ev) => {
   // Drag and drop handler for upload dataset
   ev.preventDefault();
+  console.log(ev);
 
   if (ev.dataTransfer.items) {
-    let itemDropped = ev.dataTransfer.items[0];
-    if (itemDropped.kind === "folder") {
+    const itemDropped = ev.dataTransfer.items[0];
+    const folderPath = itemDropped.getAsFile().path;
+    const isDirectory = fs.statSync(folderPath).isDirectory;
+
+    if (isDirectory) {
       console.log("Folder dropped");
-      let folderPath = itemDropped.getAsFile().path;
-      let folderName = window.path.basename(folderPath);
-      let folderNameNoSpaces = folderName.replace(/\s/g, "_");
-      console.log(itemDropped);
-      console.log(folderPath);
+      document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
+      // Hide error message if it was revealed
+      document.getElementById("para-org-dataset-path").classList.add("hidden");
     } else {
-      document.getElementById("para-dataset-upload-status").innerHTML =
-        "<span style='color:red'>Please only drag and drop a folder!</span>";
+      document.getElementById("para-org-dataset-path").classList.remove("hidden");
     }
   }
 };
