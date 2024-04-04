@@ -2475,26 +2475,18 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
 
         
         if resume and ums.df_mid_has_progress():
-            namespace_logger.info("Will resume an upload using prior manifest")
             # get the current manifest id for data files
             manifest_id = ums.get_df_mid()
-            namespace_logger.info(f"Resuming upload with manifest id: {manifest_id}")
             # get the cached values of the previous upload session 
             main_total_generate_dataset_size = ums.get_main_total_generate_dataset_size()
-            total_dataset_files = ums.get_total_files_to_upload() # TODO: Technically not accurate sice this may not always be total files if they upload manifest/metadata files
+            total_dataset_files = ums.get_total_files_to_upload()
             total_files = ums.get_total_files_to_upload()
             main_curation_uploaded_files = total_files - ums.get_remaining_file_count(manifest_id, total_files)
-            namespace_logger.info(f"Total amount of files for this dataset: {total_files}")
-            namespace_logger.info(f"Amount of files to upload this session: {ums.get_remaining_file_count(manifest_id, total_files)}")
             files_uploaded = main_curation_uploaded_files
             bytes_uploaded_per_file = {}
             s = ums.calculate_completed_upload_size(manifest_id, bytes_file_path_dict, total_files )
-            namespace_logger.info(f"Resuming upload with this amount of completed bytes: {s}")
             total_bytes_uploaded["value"] = s
-
             current_files_in_subscriber_session = total_dataset_files
-
-            namespace_logger.info(f"Total files to upload: {total_files}")
 
             # upload the manifest files
             try: 
@@ -2858,7 +2850,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
         ums.set_main_total_generate_dataset_size(main_total_generate_dataset_size)
         ums.set_total_files_uploaded(main_curation_uploaded_files)
         ums.set_total_files_to_upload(total_files)
-        namespace_logger.info(f"Total files to upload: {total_files}")
 
 
         raise e
