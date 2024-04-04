@@ -1,6 +1,6 @@
 from pennsieve2 import Pennsieve
 import re
-import requests 
+import math
 
 
 
@@ -110,16 +110,20 @@ class UploadManifestSession:
     def get_remaining_mff_file_count(self):
         return self.get_remaining_file_count(self.mff_mid)
     
-    def get_remaining_file_count(self, mid):
+    def get_remaining_file_count(self, mid, total_files):
         if self.ps is None:
             self.ps = Pennsieve()
-        file_string = self.ps.manifest.list_files(mid, 0 , 200)
-
-        # if there is no node_id then an upload hasn't started yet - all files are remaining 
-        # TODO: Add logic for getting the file count from the json object rather than the manifest string
-
-        # regular expression that searches and counts for every string that has "status: LOCAL" or "status: REGISTERED" in the string
-        return len(re.findall(r'status: LOCAL|status: REGISTERED' , str(file_string)))
+        total_pages = math.ceil(total_files / 1000)
+        remaining_files = 0
+        offset = 0
+        for i in range(total_pages):
+            if i > 1:
+                offset += 1001
+            file_page = self.ps.manifest.list_files(mid, offset , 1000)
+            # if there is no node_id then an upload hasn't started yet - all files are remaining 
+            # TODO: Add logic for getting the file count from the json object rather than the manifest string
+            # regular expression that searches and counts for every string that has "status: LOCAL" or "status: REGISTERED" in the string
+            remaining_files +=  len(re.findall(r'status: LOCAL|status: REGISTERED' , str(file_page)))
     
     def create_obj_from_string(self,s):
         # Split into individual objects
@@ -136,18 +140,23 @@ class UploadManifestSession:
 
         return parsed_objects
 
-    def calculate_completed_upload_size(self, mid, bytes_per_file_dict):
+    def calculate_completed_upload_size(self, mid, bytes_per_file_dict, total_files):
         if self.ps is None:
             self.ps = Pennsieve()
-        file_string = self.ps.manifest.list_files(mid, 0 , 200)
-        parsed_objects = self.create_obj_from_string(str(file_string))
-        total_bytes_uploaded = 0 
-        for obj in parsed_objects:
-            if obj['status'] == 'UPLOADED' or obj['status'] == 'IMPORTED' or obj['status'] == 'FINALIZED' or obj['status'] == 'VERIFIED':
-                file_path = obj['source_path']
-                # remove the first and last characer of file_path - these are quotation marks
-                file_path = file_path[1:-1]
-                total_bytes_uploaded += int(bytes_per_file_dict.get(file_path, 0))
+        total_pages = math.ceil(total_files / 1000)
+        offset = 0
+        for i in range(total_pages):
+            if i > 1:
+                offset += 1001
+            file_string = self.ps.manifest.list_files(mid, offset , 1000)
+            parsed_objects = self.create_obj_from_string(str(file_string))
+            total_bytes_uploaded = 0 
+            for obj in parsed_objects:
+                if obj['status'] == 'UPLOADED' or obj['status'] == 'IMPORTED' or obj['status'] == 'FINALIZED' or obj['status'] == 'VERIFIED':
+                    file_path = obj['source_path']
+                    # remove the first and last characer of file_path - these are quotation marks
+                    file_path = file_path[1:-1]
+                    total_bytes_uploaded += int(bytes_per_file_dict.get(file_path, 0))
 
         return total_bytes_uploaded
 
