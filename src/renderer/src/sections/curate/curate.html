@@ -146,33 +146,32 @@
               justify-content: flex-start;
               height: 100%;
             ">
-            <h3 id="getting-started-summary-message" class="question-title" style="
-                color: #000000;
-                font-size: 15px;
-                text-align: center;
-                margin: 20px;
-                font-weight: 600;
-              ">
-              Step 1: Getting started
-              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link" target="_blank"
-                href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/step-1">
-              </a>
-            </h3>
 
             <div class="individual-question getting-started show" id="Question-getting-started-1"
               style="text-align: -webkit-center; height: 100%">
               <div class="ui form" style="width: 100%; text-align: -webkit-center; height: 100%">
-                <div class="grouped fields" style="height: 100%">
+                <div class="grouped fields" style="height: 100%; padding-top: 3rem">
                   <label style="font-size: 17px; text-align: center; color: var(--color-bg-plum)">Where is the folder located?</label>
 
-                  <div id="drag-n-drop-container" style="border-style: dashed; height: 100%; margin-top: 2rem; background-color: #13716d14; display: flex; justify-content: space-around; align-items: center; border-radius: 4px;">
+                  <div
+                    id="drag-n-drop-container"
+                    class="dashed-border"
+                    style="border-style: dashed; flex-direction: column; height: 100%; margin-top: 2rem; background-color: #13716d14; display: flex; justify-content: space-evenly; align-items: center; border-radius: 4px;"
+                    droppable="true"
+                    ondrop="window.uploadDatasetDropHandler(event);"
+                    ondragover="return false;"
+                  >
                     <div>
                       <svg width="65" height="58" viewBox="0 0 65 58" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M24.2068 0.504639C25.1649 0.504757 26.1107 0.718361 26.9743 1.12966C27.8379 1.54095 28.5972 2.13941 29.196 2.88079L33.6706 8.42515H57.7026C59.3979 8.42515 61.0238 9.09273 62.2226 10.281C63.4214 11.4693 64.0949 13.081 64.0949 14.7616V51.1959C64.0949 52.8764 63.4214 54.4881 62.2226 55.6764C61.0238 56.8647 59.3979 57.5323 57.7026 57.5323H6.56398C4.86863 57.5323 3.24271 56.8647 2.04392 55.6764C0.845128 54.4881 0.171653 52.8764 0.171653 51.1959V6.84104C0.171653 5.16052 0.845128 3.54884 2.04392 2.36053C3.24271 1.17222 4.86863 0.504639 6.56398 0.504639H24.2068ZM24.2068 6.84104H6.56398V51.1959H57.7026V14.7616H33.6674C32.7093 14.7614 31.7635 14.5478 30.8999 14.1365C30.0363 13.7252 29.277 13.1268 28.6782 12.3854L24.2068 6.84104ZM34.393 23.2302L41.172 29.9499C41.4773 30.2422 41.7208 30.5918 41.8883 30.9783C42.0558 31.3648 42.144 31.7806 42.1476 32.2012C42.1513 32.6219 42.0705 33.0391 41.9098 33.4285C41.7491 33.8178 41.5117 34.1716 41.2116 34.469C40.9115 34.7665 40.5547 35.0017 40.1619 35.161C39.7691 35.3203 39.3482 35.4005 38.9238 35.3968C38.4994 35.3932 38.0801 35.3058 37.6901 35.1398C37.3002 34.9737 36.9475 34.7323 36.6526 34.4298L35.3294 33.1181V41.6913C35.3294 42.5315 34.9927 43.3374 34.3933 43.9315C33.7939 44.5257 32.9809 44.8595 32.1333 44.8595C31.2856 44.8595 30.4726 44.5257 29.8732 43.9315C29.2738 43.3374 28.9371 42.5315 28.9371 41.6913V33.1181L27.6139 34.4298C27.3191 34.7323 26.9664 34.9737 26.5764 35.1398C26.1865 35.3058 25.7671 35.3932 25.3427 35.3968C24.9183 35.4005 24.4975 35.3203 24.1047 35.161C23.7119 35.0017 23.355 34.7665 23.0549 34.469C22.7548 34.1716 22.5175 33.8178 22.3568 33.4285C22.1961 33.0391 22.1152 32.6219 22.1189 32.2012C22.1226 31.7806 22.2108 31.3648 22.3783 30.9783C22.5458 30.5918 22.7893 30.2422 23.0945 29.9499L29.8704 23.2302C30.1672 22.9356 30.5197 22.7019 30.9077 22.5425C31.2957 22.383 31.7116 22.301 32.1317 22.301C32.5517 22.301 32.9676 22.383 33.3556 22.5425C33.7436 22.7019 34.0961 22.9356 34.393 23.2302Z" fill="#13716D"/>
                         </svg>
                         <p style="text-align: center; font-size: 15px; color: black; font-weight: 600; margin-top: 2rem">Drag and drop the folder here <br> or </p>
-                        <button style="border-radius: 4px; height: 30px; width: 150px; background-color: #13716D; color: white; border: none">Browse Computer</button>
+                        <button
+                          style="border-radius: 4px; height: 30px; width: 150px; background-color: #13716D; color: white; border: none"
+                          onclick="window.uploadDatasetClickHandler()"
+                        >Browse Computer</button>
                     </div>
+                    <p id="org-dataset-folder-path"></p>
                   </div>
                   <!-- <div id="getting-started-1-radio-buttons"
                     style="display: flex; flex-direction: row; justify-content: center">
@@ -508,123 +507,9 @@
               height: 100%;
               margin-right: 50px;
             ">
-            <h3 class="question-title" style="
-                color: black;
-                font-size: 15px;
-                text-align: center;
-                font-weight: 600;
-                margin-top: 20px;
-              ">
-              Step 2: Specify high-level folders
-              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link" target="_blank"
-                href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/step-2">
-                <!-- <img
-                    class="nav-video"
-                    src="assets/img/documentation-icon.png"
-                  /> -->
-              </a>
-            </h3>
             <div class="container-body condensed" style="min-height: 450px">
-              <h3 class="question-title" style="text-align: center; padding-bottom: 5px; margin-bottom: 0">
-                Which SPARC high-level folders<br />
-                would you like to add to your dataset?<br />
-                <span style="font-size: 14px">Note: You will be able to delete undesired folders in step 3.
-                </span>
-                <br />
-                <span style="color: #696969; font-size: 13px">Please select at least one: </span>
-              </h3>
-              <div>
-                <div class="first-three-high-level-folders">
-                  <div class="option-card high-level-folders">
-                    <div class="card-head">
-                      <h2 style="margin-left: 1rem"><i class="fas fa-folder"></i>code</h2>
-                      <div class="folder-checkbox" style="float: right">
-                        <input class="folder-input-check" id="code-check" type="checkbox" />
-                        <label for="code-check"></label>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <p>Folder containing all the source code used in the study</p>
-                    </div>
-                  </div>
-                  <div class="option-card high-level-folders">
-                    <div class="card-head">
-                      <h2><i class="fas fa-folder"></i>primary</h2>
-                      <div class="folder-checkbox">
-                        <input class="folder-input-check" id="primary-check" type="checkbox" />
-                        <label for="primary-check"></label>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <p>
-                        Folder containing all folders and files for experimental subjects and/or
-                        samples
-                      </p>
-                    </div>
-                  </div>
-                  <div class="option-card high-level-folders">
-                    <div class="card-head">
-                      <h2><i class="fas fa-folder"></i>source</h2>
-                      <div class="folder-checkbox">
-                        <input class="folder-input-check" id="source-check" type="checkbox" />
-                        <label for="source-check"></label>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <p>
-                        Folder containing very raw data i.e. raw or untouched files from an
-                        experiment
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div class="first-three-high-level-folders">
-                  <div class="option-card high-level-folders">
-                    <div class="card-head">
-                      <h2 style="margin-left: 1rem"><i class="fas fa-folder"></i>docs</h2>
-                      <div class="folder-checkbox">
-                        <input class="folder-input-check" id="docs-check" type="checkbox" />
-                        <label for="docs-check"></label>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <p>
-                        Folder containing all other supporting files that don't belong to any of the
-                        other folders
-                      </p>
-                    </div>
-                  </div>
-                  <div class="option-card high-level-folders">
-                    <div class="card-head">
-                      <h2><i class="fas fa-folder"></i>protocol</h2>
-                      <div class="folder-checkbox">
-                        <input class="folder-input-check" id="protocol-check" type="checkbox" />
-                        <label for="protocol-check"></label>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <p>
-                        Folder containing supplementary files to accompany the protocols submitted
-                        to Protocols.io.
-                      </p>
-                    </div>
-                  </div>
-                  <div class="option-card high-level-folders">
-                    <div class="card-head">
-                      <h2 style="padding-left: 10px">
-                        <i class="fas fa-folder" style="margin-right: 7px"></i>derivative
-                      </h2>
-                      <div class="folder-checkbox">
-                        <input class="folder-input-check" id="derivative-check" type="checkbox" />
-                        <label for="derivative-check"></label>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <p>Folder containing data files derived from raw data</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <label style="font-size: 17px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Is this the account and workspace you would like to use?</label>
+              <div id="top-level-card-container--upload-dataset" class="top-level-card-container"></div>
             </div>
           </div>
 
