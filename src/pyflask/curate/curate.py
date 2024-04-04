@@ -2320,6 +2320,11 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
 
                 # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
                 previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
+
+                # sometimes a user uploads the same file to multiple locations in the same session. Edge case. Handle it by resetting the value to 0 if it is equivalent to the 
+                # total bytes for that file 
+                if previous_bytes_uploaded == total_bytes_to_upload:
+                    previous_bytes_uploaded = 0 
                 
                 # only update the byte count if the current bytes uploaded is greater than the previous bytes uploaded
                 # if current_bytes_uploaded > previous_bytes_uploaded:
@@ -2329,10 +2334,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
                 # calculate the additional amount of bytes that have just been uploaded for the given file id
                 total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
 
-                # sometimes a user uploads the same file to multiple locations in the same session. Edge case. Handle it by resetting the value to 0 if it is equivalent to the 
-                # total bytes for that file 
-                # if previous_bytes_uploaded == total_bytes_to_upload:
-                #     previous_bytes_uploaded = 0 
+
 
 
 
@@ -2476,11 +2478,13 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             namespace_logger.info(f"Resuming upload with manifest id: {manifest_id}")
             # get the cached values of the previous upload session 
             main_total_generate_dataset_size = ums.get_main_total_generate_dataset_size()
-            total_bytes_uploaded["value"] = ums.get_completed_files_byte_count()
+            total_bytes_uploaded["value"] = ums.calculate_completed_upload_size(manifest_id, bytes_file_path_dict )
             namespace_logger.info(f"Resuming upload with this amount of completed bytes: {total_bytes_uploaded['value']}")
             total_dataset_files = ums.get_total_files_to_upload() # TODO: Technically not accurate sice this may not always be total files if they upload manifest/metadata files
             total_files = ums.get_total_files_to_upload()
             main_curation_uploaded_files = total_files - ums.get_remaining_file_count(manifest_id)
+            namespace_logger.info(f"Total amount of files for this dataset: {total_files}")
+            namespace_logger.info(f"Amount of files to upload this session: {ums.get_remaining_file_count(manifest_id)}")
             files_uploaded = main_curation_uploaded_files
             bytes_uploaded_per_file = {}
 

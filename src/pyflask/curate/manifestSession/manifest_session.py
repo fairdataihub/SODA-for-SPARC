@@ -113,9 +113,7 @@ class UploadManifestSession:
     def get_remaining_file_count(self, mid):
         if self.ps is None:
             self.ps = Pennsieve()
-        file_string = self.ps.manifest.list_files(mid)
-
-        self.create_obj_from_string(str(file_string))
+        file_string = self.ps.manifest.list_files(mid, 0 , 200)
 
         # if there is no node_id then an upload hasn't started yet - all files are remaining 
         # TODO: Add logic for getting the file count from the json object rather than the manifest string
@@ -136,12 +134,28 @@ class UploadManifestSession:
             parsed_object = {line.split(': ')[0]: line.split(': ')[1] for line in lines}
             parsed_objects.append(parsed_object)
 
-        print(parsed_objects)
+        return parsed_objects
+
+    def calculate_completed_upload_size(self, mid, bytes_per_file_dict):
+        if self.ps is None:
+            self.ps = Pennsieve()
+        file_string = self.ps.manifest.list_files(mid, 0 , 200)
+        parsed_objects = self.create_obj_from_string(str(file_string))
+        total_bytes_uploaded = 0 
+        for obj in parsed_objects:
+            if obj['status'] == 'UPLOADED' or obj['status'] == 'IMPORTED' or obj['status'] == 'FINALIZED' or obj['status'] == 'VERIFIED':
+                file_path = obj['source_path']
+                # remove the first and last characer of file_path - these are quotation marks
+                file_path = file_path[1:-1]
+                total_bytes_uploaded += int(bytes_per_file_dict.get(file_path, 0))
+
+        return total_bytes_uploaded
+
+
+
+
     
 
-ps = Pennsieve()
-u = UploadManifestSession()
-u.set_df_mid(160)
-print(u.get_remaining_file_count(160))
+
 
 
