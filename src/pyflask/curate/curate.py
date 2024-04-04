@@ -35,6 +35,7 @@ from utils import connect_pennsieve_client, get_dataset_id, create_request_heade
 from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
 from authentication import get_access_token
 from .manifestSession import UploadManifestSession
+import json
 
 from pysodaUtils import (
     check_forbidden_characters_ps,
@@ -2366,6 +2367,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
         ]
 
         main_curate_progress_message = "Preparing a list of files to upload"
+
+
         # 1. Scan the dataset structure and create a list of files/folders to be uploaded with the desired renaming
         if generate_option == "new" and starting_point == "new":
             vs = ums.df_mid_has_progress()
@@ -2466,6 +2469,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
                 total_dataset_files += file_paths_count
 
 
+                # write byte_file_paths_dic to a file in this directory
+        with open("byte_file_paths_dic.json", "w") as f:
+            json.dump(bytes_file_path_dict, f)
+
         # 3. Upload files and add to tracking list
         start_generate = 1
         main_curate_progress_message = ("Queuing dataset files for upload with the Pennsieve Agent..." + "<br>" + "This may take some time.")
@@ -2478,15 +2485,16 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             namespace_logger.info(f"Resuming upload with manifest id: {manifest_id}")
             # get the cached values of the previous upload session 
             main_total_generate_dataset_size = ums.get_main_total_generate_dataset_size()
-            total_bytes_uploaded["value"] = ums.calculate_completed_upload_size(manifest_id, bytes_file_path_dict )
-            namespace_logger.info(f"Resuming upload with this amount of completed bytes: {total_bytes_uploaded['value']}")
             total_dataset_files = ums.get_total_files_to_upload() # TODO: Technically not accurate sice this may not always be total files if they upload manifest/metadata files
             total_files = ums.get_total_files_to_upload()
-            main_curation_uploaded_files = total_files - ums.get_remaining_file_count(manifest_id)
+            main_curation_uploaded_files = total_files - ums.get_remaining_file_count(manifest_id, total_files)
             namespace_logger.info(f"Total amount of files for this dataset: {total_files}")
-            namespace_logger.info(f"Amount of files to upload this session: {ums.get_remaining_file_count(manifest_id)}")
+            namespace_logger.info(f"Amount of files to upload this session: {ums.get_remaining_file_count(manifest_id, total_files)}")
             files_uploaded = main_curation_uploaded_files
             bytes_uploaded_per_file = {}
+            s = ums.calculate_completed_upload_size(manifest_id, bytes_file_path_dict, total_files )
+            namespace_logger.info(f"Resuming upload with this amount of completed bytes: {s}")
+            total_bytes_uploaded["value"] = s
 
             current_files_in_subscriber_session = total_dataset_files
 
@@ -2854,6 +2862,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
         ums.set_main_total_generate_dataset_size(main_total_generate_dataset_size)
         ums.set_total_files_uploaded(main_curation_uploaded_files)
         ums.set_total_files_to_upload(total_files)
+        namespace_logger.info(f"Total files to upload: {total_files}")
 
 
         raise e

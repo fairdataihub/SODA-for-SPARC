@@ -94,6 +94,7 @@ class UploadManifestSession:
     def manifest_has_progress(self, mid):
         if self.ps is None:
             self.ps = Pennsieve()
+        self.ps.manifest.sync(mid)
         mfs = self.ps.list_manifests()
         for mf in mfs:
             print(mf)
@@ -117,13 +118,15 @@ class UploadManifestSession:
         remaining_files = 0
         offset = 0
         for i in range(total_pages):
-            if i > 1:
-                offset += 1001
+            if i >= 1:
+                offset += 1000
+            print(offset)
             file_page = self.ps.manifest.list_files(mid, offset , 1000)
             # if there is no node_id then an upload hasn't started yet - all files are remaining 
             # TODO: Add logic for getting the file count from the json object rather than the manifest string
             # regular expression that searches and counts for every string that has "status: LOCAL" or "status: REGISTERED" in the string
-            remaining_files +=  len(re.findall(r'status: LOCAL|status: REGISTERED' , str(file_page)))
+            remaining_files +=  len(re.findall(r'status: REGISTERED|status: LOCAL' , str(file_page)))
+        return remaining_files
     
     def create_obj_from_string(self,s):
         # Split into individual objects
@@ -145,12 +148,12 @@ class UploadManifestSession:
             self.ps = Pennsieve()
         total_pages = math.ceil(total_files / 1000)
         offset = 0
+        total_bytes_uploaded = 0
         for i in range(total_pages):
-            if i > 1:
-                offset += 1001
+            if i >= 1:
+                offset += 1000
             file_string = self.ps.manifest.list_files(mid, offset , 1000)
             parsed_objects = self.create_obj_from_string(str(file_string))
-            total_bytes_uploaded = 0 
             for obj in parsed_objects:
                 if obj['status'] == 'UPLOADED' or obj['status'] == 'IMPORTED' or obj['status'] == 'FINALIZED' or obj['status'] == 'VERIFIED':
                     file_path = obj['source_path']
@@ -162,6 +165,15 @@ class UploadManifestSession:
 
 
 
+# read the byte_file_paths_dic.json file and set it to a dictionary 
+# import json
+# byte_file_paths_dic = {}
+# # with open('byte_file_paths_dic.json') as f:
+# #     byte_file_paths_dic = json.load(f)
+
+# u = UploadManifestSession()
+# s = u.get_remaining_file_count(180, 1100)
+# print(s)
 
     
 
