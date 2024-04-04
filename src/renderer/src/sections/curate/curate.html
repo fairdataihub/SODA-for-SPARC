@@ -504,13 +504,18 @@
           </div>
           <div class="parent-tabs" id="high-level-folders-tab" style="
               flex-direction: column;
-              justify-content: flex-start;
+              justify-content: center;
               height: 100%;
               margin-right: 50px;
             ">
-            <div class="container-body condensed" style="min-height: 450px">
+            <div class="container-body condensed" style="height: 40%; flex-direction: column; align-items: center;">
               <label style="font-size: 17px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Is this the account and workspace you would like to use?</label>
               <div id="top-level-card-container--upload-dataset" class="top-level-card-container"></div>
+              <div style="display: flex; flex-direction: row; justify-content: space-evenly; width: 550px;">
+                <button id="confirm-account-workspace">Yes</button>
+                <button id="change-account-btn">Change Account</button>
+                <button id="change-workspace-btn">Change Workspace</button>
+              </div>
             </div>
           </div>
 
