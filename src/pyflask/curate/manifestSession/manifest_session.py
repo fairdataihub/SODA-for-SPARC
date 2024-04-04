@@ -1,5 +1,6 @@
 from pennsieve2 import Pennsieve
 import re
+import requests 
 
 
 
@@ -113,7 +114,8 @@ class UploadManifestSession:
         if self.ps is None:
             self.ps = Pennsieve()
         file_string = self.ps.manifest.list_files(mid)
-        print(str(file_string))
+
+        self.create_obj_from_string(str(file_string))
 
         # if there is no node_id then an upload hasn't started yet - all files are remaining 
         # TODO: Add logic for getting the file count from the json object rather than the manifest string
@@ -121,3 +123,25 @@ class UploadManifestSession:
         # regular expression that searches and counts for every string that has "status: LOCAL" or "status: REGISTERED" in the string
         return len(re.findall(r'status: LOCAL|status: REGISTERED' , str(file_string)))
     
+    def create_obj_from_string(self,s):
+        # Split into individual objects
+        objects = re.findall(r'file {([^}]*?)}', s, re.DOTALL)
+
+        # Parse each object
+        parsed_objects = []
+        for obj in objects:
+            # Split into lines and remove empty lines
+            lines = [line.strip() for line in obj.split('\n') if line.strip()]
+            # Split each line into key and value and create a dictionary
+            parsed_object = {line.split(': ')[0]: line.split(': ')[1] for line in lines}
+            parsed_objects.append(parsed_object)
+
+        print(parsed_objects)
+    
+
+ps = Pennsieve()
+u = UploadManifestSession()
+u.set_df_mid(160)
+print(u.get_remaining_file_count(160))
+
+
