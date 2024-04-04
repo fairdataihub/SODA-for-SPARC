@@ -146,6 +146,42 @@ $(".button-individual-metadata.go-back").click(function () {
   }
 });
 
+window.uploadDatasetDropHandler = async (ev) => {
+  // Drag and drop handler for upload dataset
+  ev.preventDefault();
+
+  if (ev.dataTransfer.items) {
+    let itemDropped = ev.dataTransfer.items[0];
+    if (itemDropped.kind === "folder") {
+      console.log("Folder dropped");
+      let folderPath = itemDropped.getAsFile().path;
+      let folderName = window.path.basename(folderPath);
+      let folderNameNoSpaces = folderName.replace(/\s/g, "_");
+      console.log(itemDropped);
+      console.log(folderPath);
+    } else {
+      document.getElementById("para-dataset-upload-status").innerHTML =
+        "<span style='color:red'>Please only drag and drop a folder!</span>";
+    
+    }
+  }
+};
+
+window.uploadDatasetClickHandler = async (ev) => {
+  window.electron.ipcRenderer.send("open-file-dialog-upload-dataset");
+}
+
+window.electron.ipcRenderer.on("selected-destination-upload-dataset", (event, path) => {
+  if (path.length > 0) {
+    console.log(path);
+    // Get the path of the first index
+    let folderPath = path[0];
+    let folderName = window.path.basename(folderPath);
+    document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
+    document.getElementById("nextBtn").disabled = false;
+  }
+});
+
 const metadataFileExtensionObject = {
   submission: [".csv", ".xlsx", ".xls", ".json"],
   dataset_description: [".csv", ".xlsx", ".xls", ".json"],
