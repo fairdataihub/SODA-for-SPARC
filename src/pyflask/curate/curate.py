@@ -2469,10 +2469,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
                 total_dataset_files += file_paths_count
 
 
-                # write byte_file_paths_dic to a file in this directory
-        with open("byte_file_paths_dic.json", "w") as f:
-            json.dump(bytes_file_path_dict, f)
-
         # 3. Upload files and add to tracking list
         start_generate = 1
         main_curate_progress_message = ("Queuing dataset files for upload with the Pennsieve Agent..." + "<br>" + "This may take some time.")
