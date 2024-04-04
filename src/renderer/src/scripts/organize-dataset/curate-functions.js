@@ -161,6 +161,7 @@ window.uploadDatasetDropHandler = async (ev) => {
       document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
       // Hide error message if it was revealed
       document.getElementById("para-org-dataset-path").classList.add("hidden");
+      document.getElementById("nextBtn").disabled = false;
     } else {
       document.getElementById("para-org-dataset-path").classList.remove("hidden");
     }
@@ -482,7 +483,7 @@ const importDatasetStructure = (object) => {
   if ("dataset-structure" in object) {
     datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
     recursive_check_for_missing_files(datasetStructureJSONObj);
-    window.highLevelFoldersDisableOptions();
+    // window.highLevelFoldersDisableOptions();
   } else {
     datasetStructureJSONObj = { folders: {}, files: {}, type: "" };
   }

@@ -79,22 +79,21 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   $("#nextBtn").html("Continue");
 
   if (nextOrPrev === -1) {
+    console.log("going back");
     $("#nextBtn").prop("disabled", false);
   }
 
   if (tabNow == 0) {
     console.log("also first step here");
-    //$("#prevBtn").css("display", "none");
-
-    // disable continue button if none of the options in step 1 have been clicked
-    if ($('input[name="getting-started-1"]:checked').length === 1) {
+    // If there is not folder path in step one, disable the continue button
+    if (document.getElementById("org-dataset-folder-path").innerHTML !== "") {
       $("#nextBtn").prop("disabled", false);
-    } else if ($('input[name="getting-started-1"]:checked').length === 0) {
+    } else {
       $("#nextBtn").prop("disabled", true);
     }
   } else if (tabNow == 1) {
-    checkHighLevelFoldersInput();
-    window.highLevelFoldersDisableOptions();
+    // checkHighLevelFoldersInput();
+    // window.highLevelFoldersDisableOptions();
   } else {
     if (tabNow === 3) {
       if (Object.keys(window.datasetStructureJSONObj["folders"]).includes("code")) {
@@ -209,6 +208,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == x.length - 1) {
+    console.log("last step here");
     let step5Bubble = document.getElementsByClassName("vertical-progress-bar-step")[4];
     // if (step5Bubble.classList.contains("is-current")) {
     //   step5Bubble.classList.remove("is-current");
@@ -542,8 +542,10 @@ const checkHighLevelFoldersInput = () => {
 window.nextPrev = (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
   let parentTabs = document.getElementsByClassName("parent-tabs");
+  console.log("current tab: ", window.currentTab);
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
+    console.log("exiting?")
     // let event = new CustomEvent("custom-back", {
     //   detail: {
     //     target: { dataset: { section: "guided_mode-section" }, classList: ["someclass"] },
@@ -620,7 +622,7 @@ window.nextPrev = (pageIndex) => {
         window.currentTab = window.currentTab + pageIndex;
         // For step 1,2,3, check for High level folders input to disable Continue button
         if (window.currentTab === 1 || window.currentTab === 2 || window.currentTab === 3) {
-          window.highLevelFoldersDisableOptions();
+          // window.highLevelFoldersDisableOptions();
         }
         // Display the correct tab:
         window.showParentTab(window.currentTab, pageIndex);
@@ -793,7 +795,7 @@ window.nextPrev = (pageIndex) => {
     window.currentTab = window.currentTab + pageIndex;
     // For step 1,2,3, check for High level folders input to disable Continue button
     if (window.currentTab === 1 || window.currentTab === 2 || window.currentTab === 3) {
-      window.highLevelFoldersDisableOptions();
+      // window.highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
     window.showParentTab(window.currentTab, pageIndex);
@@ -840,7 +842,7 @@ window.nextPrev = (pageIndex) => {
     window.currentTab = window.currentTab + pageIndex;
     // For step 1,2,3, check for High level folders input to disable Continue button
     if (window.currentTab === 1 || window.currentTab === 2 || window.currentTab === 3) {
-      window.highLevelFoldersDisableOptions();
+      // window.highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
     window.showParentTab(window.currentTab, pageIndex);
