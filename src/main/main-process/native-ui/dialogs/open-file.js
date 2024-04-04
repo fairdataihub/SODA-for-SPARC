@@ -83,7 +83,7 @@ ipcMain.on("open-file-dialog-upload-dataset", async (event) => {
   if (files) {
     mainWindow.webContents.send("selected-destination-upload-dataset", files.filePaths);
   }
-})
+});
 
 ipcMain.on("open-file-dialog-metadata-curate", async (event) => {
   let mainWindow = BrowserWindow.getFocusedWindow();

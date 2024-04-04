@@ -162,14 +162,13 @@ window.uploadDatasetDropHandler = async (ev) => {
     } else {
       document.getElementById("para-dataset-upload-status").innerHTML =
         "<span style='color:red'>Please only drag and drop a folder!</span>";
-    
     }
   }
 };
 
 window.uploadDatasetClickHandler = async (ev) => {
   window.electron.ipcRenderer.send("open-file-dialog-upload-dataset");
-}
+};
 
 window.electron.ipcRenderer.on("selected-destination-upload-dataset", (event, path) => {
   if (path.length > 0) {

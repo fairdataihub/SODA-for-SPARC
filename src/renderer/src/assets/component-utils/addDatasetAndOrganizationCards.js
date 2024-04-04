@@ -235,25 +235,25 @@ const addDatasetAndOrganizationCardComponents = () => {
     .querySelector("#top-level-card-container--change-dataset-status")
     .appendChild(changeDatasetStatusCard);
 
-    let uploadDatasetCard = UserDetailsCard({
-      tabName: "manage-dataset",
-      buttonId: "button_upload_dataset_confirm",
-      currentTab: "upload_dataset_tab",
-      currentParentTab: "upload_dataset_parent-tab",
-      action: "delete",
-      section: "individual-question manage-dataset",
-      dataNext: "upload_dataset_div",
-      fields: [
-        FIELD_OPTIONS.ACCOUNT_EDITABLE,
-  
-        FIELD_OPTIONS.ORGANIZATION_EDITABLE,
-        // FIELD_OPTIONS.DATASET_EDITABLE,
-      ],
-    });
+  let uploadDatasetCard = UserDetailsCard({
+    tabName: "manage-dataset",
+    buttonId: "button_upload_dataset_confirm",
+    currentTab: "upload_dataset_tab",
+    currentParentTab: "upload_dataset_parent-tab",
+    action: "delete",
+    section: "individual-question manage-dataset",
+    dataNext: "upload_dataset_div",
+    fields: [
+      FIELD_OPTIONS.ACCOUNT_EDITABLE,
 
-    document
-      .querySelector("#top-level-card-container--upload-dataset")
-      .appendChild(uploadDatasetCard);
+      FIELD_OPTIONS.ORGANIZATION_EDITABLE,
+      // FIELD_OPTIONS.DATASET_EDITABLE,
+    ],
+  });
+
+  document
+    .querySelector("#top-level-card-container--upload-dataset")
+    .appendChild(uploadDatasetCard);
 };
 
 export default addDatasetAndOrganizationCardComponents;
