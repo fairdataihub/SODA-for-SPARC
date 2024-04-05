@@ -7107,8 +7107,8 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
   }
 };
 
-const preGenerateSetup = async (e) => {
-  $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
+const preGenerateSetup = async (e, elementContext) => {
+  $($($(elementContext).parent()[0]).parents()[0]).removeClass("tab-active");
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   document.getElementById("prevBtn").style.display = "none";
@@ -7204,11 +7204,11 @@ const preGenerateSetup = async (e) => {
 };
 
 document.getElementById("button-generate").addEventListener("click", async function (e) {
-  preGenerateSetup(e);
+  preGenerateSetup(e, this);
 });
 
 document.getElementById("button-retry").addEventListener("click", async function (e) {
-  preGenerateSetup(e);
+  preGenerateSetup(e, this);
 });
 
 window.delete_imported_manifest = () => {
