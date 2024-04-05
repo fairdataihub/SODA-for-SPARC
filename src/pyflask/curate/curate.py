@@ -2536,6 +2536,11 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
 
             loc = get_agent_installation_location()
 
+            # reset global variables used in the subscriber monitoring function
+            bytes_uploaded_per_file = {}
+            total_bytes_uploaded = {"value": 0}
+            current_files_in_subscriber_session = total_dataset_files
+
             # there are files to add to the manifest if there are more than one file in the first folder or more than one folder
             if len(list_upload_files[0][0]) > 1 or len(list_upload_files) > 1:
                 index_skip = True
@@ -2571,11 +2576,26 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
                         ps.manifest.add(file_path, folder_name, manifest_id)
                         final_files_index += 1
 
-            # reset global variables used in the subscriber monitoring function
-            bytes_uploaded_per_file = {}
-            total_bytes_uploaded = {"value": 0}
-            current_files_in_subscriber_session = total_dataset_files
 
+            # add metadata files to the manifest
+            if list_upload_metadata_files:
+                current_files_in_subscriber_session += total_metadata_files
+                # add the files to the manifest
+                for manifest_path in list_upload_metadata_files:
+                    # subprocess call to the pennsieve agent to add the files to the manifest
+                    ps.manifest.add(manifest_path, target_base_path="", manifest_id=manifest_id)
+
+
+            # add manifest files to the upload manifest
+            if list_upload_manifest_files:
+                current_files_in_subscriber_session += total_manifest_files
+                for item in list_upload_manifest_files:
+                    manifest_file = item[0]
+                    ps_folder = item[1]
+                    main_curate_progress_message = ( f"Uploading manifest file in {ps_folder} folder" )
+
+                    # add the files to the manifest
+                    ps.manifest.add(manifest_file, ps_folder, manifest_id)
 
             # upload the manifest files
             try: 
@@ -2590,75 +2610,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
                 namespace_logger.error(e)
                 raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
-        # 4. Upload metadata files
-        if list_upload_metadata_files:
-            namespace_logger.info("ps_create_new_dataset (optional) step 6 upload metadata files")
-            main_curate_progress_message = (f"Uploading metadata files in high-level dataset folder {str(ds['content']['name'])}")
-
-            # create the manifest 
-            manifest_data = ps.manifest.create(list_upload_metadata_files[0])
-            manifest_id = manifest_data.manifest_id
-
-            ums.set_mdf_mid(manifest_id)
-
-            loc = get_agent_installation_location()
-
-            # add the files to the manifest
-            for manifest_path in list_upload_metadata_files[1:]:
-                # subprocess call to the pennsieve agent to add the files to the manifest
-                ps.manifest.add(manifest_path, target_base_path="", manifest_id=manifest_id)
-
-            # reset global variables used in the subscriber monitoring function
-            bytes_uploaded_per_file = {}
-            current_files_in_subscriber_session = total_metadata_files
-            files_uploaded = 0
-
-            # upload the manifest 
-            try:
-                ps.manifest.upload(manifest_id)
-
-                # subscribe to the manifest upload so we wait until it has finished uploading before moving on
-                ps.subscribe(10, False, monitor_subscriber_progress)
-            except Exception as e:
-                namespace_logger.error("Error uploading metadata files")
-                namespace_logger.error(e)
-                raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
-
-        # 5. Upload manifest files
-        if list_upload_manifest_files:
-            namespace_logger.info("ps_create_new_dataset (optional) step 7 upload manifest files")
-
-            ps_folder = list_upload_manifest_files[0][1]
-            manifest_data = ps.manifest.create(list_upload_manifest_files[0][0], ps_folder)
-            manifest_id = manifest_data.manifest_id
-
-            ums.set_mff_mid(manifest_id)
-
-            loc = get_agent_installation_location()
-
-            if len(list_upload_manifest_files) > 1:
-                for item in list_upload_manifest_files[1:]:
-                    manifest_file = item[0]
-                    ps_folder = item[1]
-                    main_curate_progress_message = ( f"Uploading manifest file in {ps_folder} folder" )
-
-                    # add the files to the manifest
-                    ps.manifest.add(manifest_file, ps_folder, manifest_id)
-
-            # reset global variable used in the subscriber monitoring function
-            bytes_uploaded_per_file = {}
-            current_files_in_subscriber_session = total_manifest_files
-            files_uploaded = 0
-
-            try: 
-                # upload the manifest 
-                ps.manifest.upload(manifest_id)
-
-                ps.subscribe(10, False, monitor_subscriber_progress)
-            except Exception as e:
-                namespace_logger.error("Error uploading manifest files")
-                namespace_logger.error(e)
-                raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
         # wait for all of the Agent's processes to finish to avoid errors when deleting files on Windows
         time.sleep(1)
