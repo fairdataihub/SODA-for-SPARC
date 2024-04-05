@@ -197,7 +197,7 @@ document.getElementById("change-account-btn").addEventListener("click", async fu
 document.getElementById("change-workspace-btn").addEventListener("click", async function () {
   // If the user changes the workspace, show the dropdown prompt
   window.openDropdownPrompt(this, "organization");
-})
+});
 
 const metadataFileExtensionObject = {
   submission: [".csv", ".xlsx", ".xls", ".json"],

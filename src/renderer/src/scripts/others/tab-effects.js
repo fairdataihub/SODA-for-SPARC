@@ -545,7 +545,7 @@ window.nextPrev = (pageIndex) => {
   console.log("current tab: ", window.currentTab);
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
-    console.log("exiting?")
+    console.log("exiting?");
     // Remove the text from the dataset path in step 1
     $("#org-dataset-folder-path").text("");
     // Disable continue button
