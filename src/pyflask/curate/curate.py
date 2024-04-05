@@ -2366,14 +2366,15 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             "if-existing-files"
         ]
 
-        main_curate_progress_message = "Preparing a list of files to upload"
+
+
 
 
         # 1. Scan the dataset structure and create a list of files/folders to be uploaded with the desired renaming
         if generate_option == "new" and starting_point == "new":
             vs = ums.df_mid_has_progress()
             if resume == False or resume == True and not vs:
-                namespace_logger.info("Decided not to resume")
+                main_curate_progress_message = "Preparing a list of files to upload"
                 # we can assume no files/folders exist in the dataset since the generate option is new and starting point is also new
                 # therefore, we can assume the dataset structure is the same as the tracking structure
                 brand_new_dataset = True
@@ -2386,6 +2387,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
                 list_upload_manifest_files = gather_manifest_files(soda_json_structure)
 
         else:
+            main_curate_progress_message = "Preparing a list of files to upload"
             # we will need a tracking structure to compare against
             tracking_json_structure = ds
             normalize_tracking_folder(tracking_json_structure)
@@ -2471,10 +2473,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
 
         # 3. Upload files and add to tracking list
         start_generate = 1
-        main_curate_progress_message = ("Queuing dataset files for upload with the Pennsieve Agent..." + "<br>" + "This may take some time.")
 
         
         if resume and ums.df_mid_has_progress():
+            main_curate_progress_message = ("Preparing to retry upload. Progress on partially uploaded files will be reset.")
             # reset necessary variables that were used in the failed upload session and cannot be reliably cached
             bytes_uploaded_per_file = {}
 
@@ -2483,7 +2485,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             # get the cached values of the previous upload session 
             main_total_generate_dataset_size = ums.get_main_total_generate_dataset_size()
 
-            # TODO: Place all files under the same manifest rather than creating separate ones
             total_files = ums.get_total_files_to_upload()
             total_dataset_files = total_files         
             current_files_in_subscriber_session = total_dataset_files
@@ -2491,6 +2492,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
             main_curation_uploaded_files = total_files - ums.get_remaining_file_count(manifest_id, total_files)
             files_uploaded = main_curation_uploaded_files
             total_bytes_uploaded["value"] = ums.calculate_completed_upload_size(manifest_id, bytes_file_path_dict, total_files )
+            time.sleep(5)
+
 
             # upload the manifest files
             try: 
@@ -2504,6 +2507,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
                 raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
         # create a manifest for files - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
         elif len(list_upload_files) > 0:
+            main_curate_progress_message = ("Queuing dataset files for upload with the Pennsieve Agent..." + "<br>" + "This may take some time.")
+
             first_file_local_path = list_upload_files[0][0][0]
 
             if brand_new_dataset:
