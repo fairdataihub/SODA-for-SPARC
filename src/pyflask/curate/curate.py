@@ -2839,9 +2839,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
 
         # reset the manifests used for the upload session                                 
         ums.set_df_mid(None)
-        ums.set_mdf_mid(None)
-        ums.set_mff_mid(None)
-
+        
         # reset the calculated values for the upload session
         bytes_file_path_dict = {}
 
