@@ -586,11 +586,10 @@ window.nextPrev = (pageIndex) => {
     }
   }
 
-  // TODO: Fix comparison by reference bug in 3rd condition
   if (
     pageIndex === 1 &&
     parentTabs[window.currentTab].id === "organize-dataset-tab" &&
-    window.sodaJSONObj["dataset-structure"] === { folders: {} }
+    JSON.stringify(window.sodaJSONObj["dataset-structure"]) === JSON.stringify({ folders: {} })
   ) {
     Swal.fire({
       icon: "warning",

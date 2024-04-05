@@ -183,6 +183,22 @@ window.electron.ipcRenderer.on("selected-destination-upload-dataset", (event, pa
   }
 });
 
+// Event listeners for buttons in step 2 of Organize Dataset
+document.getElementById("confirm-account-workspace").addEventListener("click", async function () {
+  // If the user confirms the workspace and account, proceed to the next step
+  document.getElementById("nextBtn").disabled = false;
+});
+
+document.getElementById("change-account-btn").addEventListener("click", async function () {
+  // If the user changes the account, show the dropdown prompt
+  window.openDropdownPrompt(this, "bf");
+});
+
+document.getElementById("change-workspace-btn").addEventListener("click", async function () {
+  // If the user changes the workspace, show the dropdown prompt
+  window.openDropdownPrompt(this, "organization");
+})
+
 const metadataFileExtensionObject = {
   submission: [".csv", ".xlsx", ".xls", ".json"],
   dataset_description: [".csv", ".xlsx", ".xls", ".json"],
