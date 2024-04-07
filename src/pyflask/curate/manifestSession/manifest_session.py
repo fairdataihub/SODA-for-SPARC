@@ -99,6 +99,8 @@ class UploadManifestSession:
             file_string = self.ps.manifest.list_files(mid, offset , 1000)
             parsed_objects = self.create_obj_from_string(str(file_string))
             for obj in parsed_objects:
+                if 'status' not in obj:
+                    total_bytes_uploaded += 0
                 if obj['status'] == 'UPLOADED' or obj['status'] == 'IMPORTED' or obj['status'] == 'FINALIZED' or obj['status'] == 'VERIFIED':
                     file_path = obj['source_path']
                     # remove the first and last characer of file_path - these are quotation marks
