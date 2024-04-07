@@ -3219,16 +3219,22 @@ def main_curate_function(soda_json_structure, resume):
 
                 elif generate_option == "new":
                     # if dataset name is in the generate-dataset section, we are generating a new dataset
-                    if "dataset-name" in soda_json_structure["generate-dataset"] and resume == False:
+                    if "dataset-name" in soda_json_structure["generate-dataset"]:
                         dataset_name = soda_json_structure["generate-dataset"][
                             "dataset-name"
                         ]
-                        ds = ps_create_new_dataset(dataset_name, ps)
-                        selected_dataset_id = ds["content"]["id"]
-                    else:
-                        # get the dataset id by the name 
-                        selected_dataset_id = get_dataset_id(soda_json_structure["generate-dataset"]["dataset-name"])
-
+                        if not resume: 
+                            ds = ps_create_new_dataset(dataset_name, ps)
+                            selected_dataset_id = ds["content"]["id"]
+                        else: 
+                            # get the dataset id by the name 
+                            try: 
+                                selected_dataset_id = get_dataset_id(dataset_name)
+                            except Exception as e:
+                                if e.code == 404:
+                                    # dataset does not exist - create it 
+                                    ds = ps_create_new_dataset(dataset_name, ps)
+                                    selected_dataset_id = ds["content"]["id"]
 
                     # check that dataset was created with a limited retry (for some users the dataset isn't automatically accessible)
                     attempts = 0
