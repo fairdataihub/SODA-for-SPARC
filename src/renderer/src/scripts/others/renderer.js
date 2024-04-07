@@ -6982,22 +6982,7 @@ window.electron.ipcRenderer.on(
   }
 );
 
-document.getElementById("button-generate-comeback").addEventListener("click", function () {
-  setTimeout(function () {
-    document.getElementById("generate-dataset-progress-tab").style.display = "none";
-    document.getElementById("div-vertical-progress-bar").style.display = "flex";
-    document.getElementById("prevBtn").style.display = "inline";
-    document.getElementById("nextBtn").style.display = "inline";
-    document.getElementById("start-over-btn").style.display = "inline-block";
-    window.showParentTab(window.currentTab, 1);
-    if (
-      window.sodaJSONObj["starting-point"]["type"] == "new" &&
-      "local-path" in window.sodaJSONObj["starting-point"]
-    ) {
-      window.sodaJSONObj["starting-point"]["type"] = "local";
-    }
-  }, window.delayAnimation);
-});
+
 
 // function to hide the sidebar and disable the sidebar expand button
 // function forceActionSidebar(action) {
