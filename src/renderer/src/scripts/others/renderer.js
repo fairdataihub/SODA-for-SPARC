@@ -6982,8 +6982,6 @@ window.electron.ipcRenderer.on(
   }
 );
 
-
-
 // function to hide the sidebar and disable the sidebar expand button
 // function forceActionSidebar(action) {
 //   if (action === "show") {
