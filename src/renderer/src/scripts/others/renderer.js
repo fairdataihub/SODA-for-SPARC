@@ -7542,7 +7542,7 @@ const initiate_generate = async (e) => {
       Swal.fire({
         icon: "error",
         title: "An Error Occurred While Uploading Your Dataset",
-        html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
+        html: "Check the error message on the progress page to learn more.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
@@ -7620,7 +7620,7 @@ const initiate_generate = async (e) => {
       Swal.fire({
         icon: "error",
         title: "An Error Occurred While Uploading Your Dataset",
-        html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
+        html: "Check the error message on the progress page to learn more.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
