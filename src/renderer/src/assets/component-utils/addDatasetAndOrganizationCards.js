@@ -271,8 +271,8 @@ const addDatasetAndOrganizationCardComponents = () => {
   });
 
   document
-    .querySelector('#top-level-card-container--select-upload-dataset')
-    .appendChild(uploadSelectDatasetCard)
+    .querySelector("#top-level-card-container--select-upload-dataset")
+    .appendChild(uploadSelectDatasetCard);
 };
 
 export default addDatasetAndOrganizationCardComponents;
