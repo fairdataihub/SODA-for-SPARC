@@ -15447,7 +15447,7 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
     clientError(error);
     let emessage = userErrorMessage(error);
     //make an unclosable sweet alert that forces the user to close out of the app
-    await Swal.fire({
+    let res = await Swal.fire({
       allowOutsideClick: false,
       allowEscapeKey: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -15457,13 +15457,14 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
       html: `
           <p>Error message: ${emessage}</p>
           <p>
-            Please close the SODA app and restart it again. You will be able to resume your upload
-            in progress by returning to Guided Mode and clicking the "Resume Upload"
+            You may retry the upload now or close SODA and try again later. If you close SODA, 
+            you will be able to resume your upload in progress by returning to Guided Mode and clicking the "Resume Upload"
             button on your dataset's progress card.
           </p>
         `,
-      showCancelButton: false,
-      confirmButtonText: "Close SODA Application",
+      showCancelButton: true,
+      cancelButtonText: "Close SODA Application",
+      confirmButtonText: "Retry Upload",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -15471,6 +15472,15 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
+
+    if (res.isConfirmed) {
+      window.retryGuidedMode = true; //set the retry flag to true
+      guidedUploadDatasetToPennsieve();
+      return;
+    }
+
+    console.log("Exiring app");
+
     app.showExitPrompt = false;
     app.quit();
   }
@@ -15553,7 +15563,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       `/curate_datasets/curation`,
       {
         soda_json_structure: window.sodaJSONObj,
-        resume: false,
+        resume: window.retryGuidedMode ? true : false,
       },
       { timeout: 0 }
     )
@@ -15803,7 +15813,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       }
 
       //make an unclosable sweet alert that forces the user to close out of the app
-      await Swal.fire({
+      let res = await Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -15813,13 +15823,14 @@ const guidedUploadDatasetToPennsieve = async () => {
         html: `
           <p>Error message: ${emessage}</p>
           <p>
-            Please close the SODA app and restart it again. You will be able to resume your upload
-            in progress by returning to Guided Mode and clicking the "Resume Upload"
-            button on your dataset's progress card.
+          You may retry the upload now or close SODA and try again later. If you close SODA, 
+          you will be able to resume your upload in progress by returning to Guided Mode and clicking the "Resume Upload"
+          button on your dataset's progress card.
           </p>
         `,
-        showCancelButton: false,
-        confirmButtonText: "Close SODA Application",
+        showCancelButton: true,
+        cancelButtonText: "Close SODA Application",
+        confirmButtonText: "Retry Upload",
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
         },
@@ -15827,6 +15838,15 @@ const guidedUploadDatasetToPennsieve = async () => {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
       });
+
+      if (res.isConfirmed) {
+        window.retryGuidedMode = true; //set the retry flag to true
+        guidedUploadDatasetToPennsieve();
+        return;
+      }
+
+      console.log("Going to exit app");
+
       // TODO: Update to new conventions
       app.showExitPrompt = false;
       app.quit();
