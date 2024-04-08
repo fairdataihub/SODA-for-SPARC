@@ -189,17 +189,19 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
   document.getElementById("nextBtn").disabled = false;
 });
 
-document.getElementById("dataset-upload-existing-dataset").addEventListener("click", async function () {
-  document.getElementById("new-dataset-upload").classList.add("hidden")
-  document.getElementById("existing-dataset-upload").classList.remove("hidden");
+document
+  .getElementById("dataset-upload-existing-dataset")
+  .addEventListener("click", async function () {
+    document.getElementById("new-dataset-upload").classList.add("hidden");
+    document.getElementById("existing-dataset-upload").classList.remove("hidden");
 
-  document.getElementById("dataset-upload-existing-dataset").classList.add("checked");
-  document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
-});
+    document.getElementById("dataset-upload-existing-dataset").classList.add("checked");
+    document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
+  });
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
   document.getElementById("existing-dataset-upload").classList.add("hidden");
-  document.getElementById("new-dataset-upload").classList.remove("hidden")
+  document.getElementById("new-dataset-upload").classList.remove("hidden");
 
   document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
   document.getElementById("dataset-upload-new-dataset").classList.add("checked");
