@@ -189,6 +189,16 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
   document.getElementById("nextBtn").disabled = false;
 });
 
+document.getElementById("dataset-upload-existing-dataset").addEventListener("click", async function () {
+  document.getElementById("new-dataset-upload").classList.add("hidden")
+  document.getElementById("existing-dataset-upload").classList.remove("hidden");
+});
+
+document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
+  document.getElementById("existing-dataset-upload").classList.add("hidden");
+  document.getElementById("new-dataset-upload").classList.remove("hidden")
+});
+
 document.getElementById("change-account-btn").addEventListener("click", async function () {
   // If the user changes the account, show the dropdown prompt
   window.openDropdownPrompt(this, "bf");
