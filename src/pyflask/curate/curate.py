@@ -3056,6 +3056,7 @@ def main_curate_function(soda_json_structure, resume):
     global main_initial_bfdataset_size
     global main_curation_uploaded_files
     global uploaded_folder_counter
+    global ums
 
     global myds
     global generated_dataset_id
@@ -3215,7 +3216,11 @@ def main_curate_function(soda_json_structure, resume):
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
                     r.raise_for_status()
                     myds = r.json()
-                    ps_update_existing_dataset(soda_json_structure, myds, ps)
+
+                    if resume and ums.df_mid_has_progress(): 
+                        ps_upload_to_dataset(soda_json_structure, ps, myds, resume)
+                    else:
+                        ps_update_existing_dataset(soda_json_structure, myds, ps)
 
                 elif generate_option == "new":
                     # if dataset name is in the generate-dataset section, we are generating a new dataset
