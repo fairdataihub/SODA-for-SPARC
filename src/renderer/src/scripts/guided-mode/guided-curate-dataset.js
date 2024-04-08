@@ -15474,8 +15474,13 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
     });
 
     if (res.isConfirmed) {
+      console.log("Catched error here");
       window.retryGuidedMode = true; //set the retry flag to true
-      guidedUploadDatasetToPennsieve();
+      let supplementary_checks = await window.run_pre_flight_checks(false);
+      if (!supplementary_checks) {
+        return;
+      }
+      guidedPennsieveDatasetUpload();
       return;
     }
 
@@ -15841,7 +15846,11 @@ const guidedUploadDatasetToPennsieve = async () => {
 
       if (res.isConfirmed) {
         window.retryGuidedMode = true; //set the retry flag to true
-        guidedUploadDatasetToPennsieve();
+        let supplementary_checks = await window.run_pre_flight_checks(false);
+        if (!supplementary_checks) {
+          return;
+        }
+        guidedPennsieveDatasetUpload();
         return;
       }
 
