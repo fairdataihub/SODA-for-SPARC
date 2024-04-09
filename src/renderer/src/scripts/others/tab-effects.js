@@ -165,7 +165,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 2) {
-    console.log("TAB 2?????")
+    console.log("TAB 2?????");
     if (!introStatus.organizeStep3) {
       introJs()
         .setOptions({
