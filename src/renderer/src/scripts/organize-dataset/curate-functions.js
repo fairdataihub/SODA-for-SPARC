@@ -180,10 +180,7 @@ window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (eve
 
     // Import the folder path into the soda json object
     // Step 1: validate that folder is a sparc dataset
-    let valid_dataset = window.verify_sparc_folder(
-      folderPath,
-      "local"
-    );
+    let valid_dataset = window.verify_sparc_folder(folderPath, "local");
 
     console.log(valid_dataset);
 
@@ -193,7 +190,7 @@ window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (eve
       let replaced = {};
 
       window.detectIrregularFolders(window.path.basename(folderPath), folderPath);
-      console.log(window.irregularFolderArray)
+      console.log(window.irregularFolderArray);
 
       let footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${window.nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
       if (window.irregularFolderArray.length > 0) {
@@ -220,9 +217,7 @@ window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (eve
             action = "replace";
             if (window.irregularFolderArray.length > 0) {
               for (let i = 0; i < window.irregularFolderArray.length; i++) {
-                renamedFolderName = window.replaceIrregularFolders(
-                  window.irregularFolderArray[i]
-                );
+                renamedFolderName = window.replaceIrregularFolders(window.irregularFolderArray[i]);
                 replaced[window.path.basename(window.irregularFolderArray[i])] = renamedFolderName;
               }
             }
@@ -230,9 +225,7 @@ window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (eve
             action = "remove";
             if (window.irregularFolderArray.length > 0) {
               for (let i = 0; i < irregularFolderArray.length; i++) {
-                renamedFolderName = window.removeIrregularFolders(
-                  window.irregularFolderArray[i]
-                );
+                renamedFolderName = window.removeIrregularFolders(window.irregularFolderArray[i]);
                 replaced[window.irregularFolderArray[i]] = renamedFolderName;
               }
             }
@@ -242,7 +235,7 @@ window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (eve
           }
 
           window.sodaJSONObj["starting-point"]["local-path"] = folderPath;
-          
+
           try {
             let importLocalDatasetResponse = await client.post(
               `/organize_datasets/datasets/import`,
@@ -253,7 +246,7 @@ window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (eve
                 replaced: replaced,
               },
               { timeout: 0 }
-            )
+            );
 
             let { data } = importLocalDatasetResponse;
             window.sodaJSONObj = data;
@@ -261,9 +254,9 @@ window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (eve
             console.log(window.sodaJSONObj);
           } catch (error) {
             clientError(error);
-            clearInterval(local_progress)
+            clearInterval(local_progress);
           }
-        })
+        });
       } else {
         // Import the dataset
         window.sodaJSONObj["starting-point"]["local-path"] = folderPath;
@@ -341,22 +334,30 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
   document.getElementById("dataset-upload-new-dataset").classList.add("checked");
 });
 
-document.getElementById("inputNewNameDataset-upload-dataset").addEventListener("input", function (event) {
-  console.log(event.target.value);
-  if (event.target.value != "") {
-    // Show the confirm button
-    document.getElementById("upload-dataset-btn-confirm-new-dataset-name").classList.remove("hidden");
-  } else {
-    document.getElementById("upload-dataset-btn-confirm-new-dataset-name").classList.add("hidden");
-  }
-});
+document
+  .getElementById("inputNewNameDataset-upload-dataset")
+  .addEventListener("input", function (event) {
+    console.log(event.target.value);
+    if (event.target.value != "") {
+      // Show the confirm button
+      document
+        .getElementById("upload-dataset-btn-confirm-new-dataset-name")
+        .classList.remove("hidden");
+    } else {
+      document
+        .getElementById("upload-dataset-btn-confirm-new-dataset-name")
+        .classList.add("hidden");
+    }
+  });
 
-document.getElementById("upload-dataset-btn-confirm-new-dataset-name").addEventListener("click", async function () {
-  // Once clicked, verify if the dataset name exists, if not warn the user that they need to choose a different name
-  console.log("clicked")
+document
+  .getElementById("upload-dataset-btn-confirm-new-dataset-name")
+  .addEventListener("click", async function () {
+    // Once clicked, verify if the dataset name exists, if not warn the user that they need to choose a different name
+    console.log("clicked");
 
-  document.getElementById("nextBtn").disabled = false;
-})
+    document.getElementById("nextBtn").disabled = false;
+  });
 
 document.getElementById("change-account-btn").addEventListener("click", async function () {
   // If the user changes the account, show the dropdown prompt
