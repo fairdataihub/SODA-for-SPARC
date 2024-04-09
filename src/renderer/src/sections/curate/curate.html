@@ -522,9 +522,9 @@
           <!-- 3. Organize dataset -->
           <div class="parent-tabs condensed" id="organize-dataset-tab"
             style="grid-template-rows: auto; padding-right: 10px">
-            <label style="font-size: 17px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Are you uploading to a new or existing Pennsieve dataset?</label>
+            <label style="margin-top: 2rem; font-size: 17px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Are you uploading to a new or existing Pennsieve dataset?</label>
             <div style="display: flex; flex-direction: row; align-self: center; margin-top: 3rem;">
-              <div id="dataset-upload-new-dataset" class="option-card radio-button getting-started-1st-question">
+              <div id="dataset-upload-new-dataset" class="option-card radio-button getting-started-1st-question" style="margin-right: 5rem">
                 <div class="card-head">
                   <div class="folder-checkbox">
                     <label for="prepare-new"></label>
@@ -566,7 +566,31 @@
               class="hidden"
               style="margin-top: 5rem; display: flex; flex-direction: column;"
             >
-              <label style="font-size: 17px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Which dataset would you like to upload to?</label>
+              <label class="w-100 text-center" style="font-weight: 700; font-size: 17px; color: var(--color-bg-plum)">Which dataset would you like to upload to?</label>
+              <div class="field justify-center"
+                style="margin-top: 2rem; margin: 15px auto; display: flex; justify-content: center">
+                <input type="text" class="form-control"
+                  style="background: #fff !important; width: 550px !important" id="inputNewNameDataset-upload-dataset"
+                  placeholder="Type here" />
+
+                  <button id="upload-dataset-btn-confirm-new-dataset-name"
+                  class="hidden"
+                  style="
+                    margin-top: 2rem !important;
+                    cursor: pointer;
+                    border-radius: 4px;
+                    margin: 0 10px;
+                    width: 100px;
+                    height: 35px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    font-size: 14px;
+                  ">
+                  Confirm
+                </button>
+              </div>
             </div>
 
             <div
@@ -722,1088 +746,85 @@
 
           <!-- 4. Metadata files -->
           <div class="parent-tabs condensed" id="metadata-files-tab" style="grid-template-rows: 10% 90%">
-            <h3 class="question-title" style="
-                color: black;
-                font-size: 15px;
-                text-align: center;
-                font-weight: 600;
-                margin-top: 20px;
-              ">
-              Step 4: Specify high-level metadata files
-              <a style="padding: 0px 0px 0px 5px" class="github-wiki-link" target="_blank"
-                href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/step-4">
-              </a>
-              <br />
-            </h3>
-            <div id="metadata-files-menu" class="div-organize-generate-dataset metadata">
-              <h3 class="question-title" style="padding-bottom: 10px">
-                Specify metadata files to be included in your dataset<br />
-                <span style="color: #696969; font-size: 13px">Click below to add desired files.</span>
-              </h3>
-              <div style="margin-bottom: 15px">
-                <div class="flex-main-container">
-                  <div class="flex-row-container">
-                    <div class="flex-content-container" style="flex-direction: column">
-                      <div class="header-container">
-                        <p class="content-header metadata-step4">
-                          Mandatory high-level metadata files
-                        </p>
-                      </div>
-                      <div class="button-container" style="flex-direction: row">
-                        <button class="metadata-button button-generate-dataset" data-next="submissionUpload">
-                          <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus"
-                            fill="#13716D" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                              d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z">
-                            </path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
-                            <path fill-rule="evenodd"
-                              d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z">
-                            </path>
-                          </svg>
-                          <svg style="display: none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                            fill="var(--color-light-green)" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z">
-                            </path>
-                          </svg>
-                          <p style="margin-top: 30px; font-family: 'Poppins', sans-serif">
-                            submission
-                          </p>
-                        </button>
+            <label class="w-100 text-center" style="font-weight: 700; font-size: 17px; color: var(--color-bg-plum)">Would you like SODA to auto-generate your manifest files?</label>
 
-                        <button class="metadata-button button-generate-dataset" data-next="datasetDescriptionUpload">
-                          <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus"
-                            fill="#13716D" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                              d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z">
-                            </path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
-                            <path fill-rule="evenodd"
-                              d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z">
-                            </path>
-                          </svg>
-                          <svg style="display: none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                            fill="var(--color-light-green)" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z">
-                            </path>
-                          </svg>
-                          <p style="margin-top: 30px; font-family: 'Poppins', sans-serif">
-                            dataset description
-                          </p>
-                        </button><button class="metadata-button button-generate-dataset" data-next="readmeUpload">
-                          <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus"
-                            fill="#13716D" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                              d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z">
-                            </path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
-                            <path fill-rule="evenodd"
-                              d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z">
-                            </path>
-                          </svg>
-                          <svg style="display: none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                            fill="var(--color-light-green)" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z">
-                            </path>
-                          </svg>
-                          <p style="margin-top: 30px; font-family: 'Poppins', sans-serif">README</p>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex-row-container">
-                    <div class="flex-content-container">
-                      <div class="header-container">
-                        <p class="content-header metadata-step4">
-                          Dataset-specific high-level metadata files
-                        </p>
-                      </div>
-                      <div class="button-container">
-                        <button class="metadata-button button-generate-dataset" data-next="subjectsUpload">
-                          <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus"
-                            fill="#13716D" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                              d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z">
-                            </path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
-                            <path fill-rule="evenodd"
-                              d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z">
-                            </path>
-                          </svg>
-                          <svg style="display: none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                            fill="var(--color-light-green)" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z">
-                            </path>
-                          </svg>
-                          <p style="margin-top: 30px; font-family: 'Poppins', sans-serif">
-                            subjects
-                          </p>
-                        </button>
-                        <!-- </div> -->
-                        <!-- <div style="margin-bottom: 15px"> -->
-                        <button class="metadata-button button-generate-dataset" data-next="samplesUpload">
-                          <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus"
-                            fill="#13716D" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                              d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z">
-                            </path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
-                            <path fill-rule="evenodd"
-                              d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z">
-                            </path>
-                          </svg>
-                          <svg style="display: none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                            fill="var(--color-light-green)" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z">
-                            </path>
-                          </svg>
-                          <p style="margin-top: 30px; font-family: 'Poppins', sans-serif">
-                            samples
-                          </p>
-                        </button>
-
-                        <button class="metadata-button button-generate-dataset" data-next="changesUpload">
-                          <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus"
-                            fill="#13716D" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                              d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z">
-                            </path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
-                            <path fill-rule="evenodd"
-                              d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z">
-                            </path>
-                          </svg>
-                          <svg style="display: none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                            fill="var(--color-light-green)" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z">
-                            </path>
-                          </svg>
-                          <p style="margin-top: 30px; font-family: 'Poppins', sans-serif">
-                            CHANGES
-                          </p>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- </div> -->
-                  <!-- <div> -->
-
-                  <div class="flex-row-container code-metadata" style="display: flex">
-                    <div class="flex-content-container">
-                      <div class="header-container">
-                        <p class="content-header metadata-step4">Code-related metadata file</p>
-                      </div>
-                      <div class="button-container">
-                        <button class="metadata-button button-generate-dataset code-metadata"
-                          data-next="codeDescriptionUpload" style="display: block">
-                          <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus"
-                            fill="#13716D" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                              d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z">
-                            </path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
-                            <path fill-rule="evenodd"
-                              d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z">
-                            </path>
-                          </svg>
-                          <svg style="display: none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                            fill="var(--color-light-green)" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z">
-                            </path>
-                          </svg>
-                          <p style="margin-top: 30px; font-family: 'Poppins', sans-serif">
-                            code_description
-                          </p>
-                        </button>
-                        <button class="metadata-button button-generate-dataset code-metadata"
-                          data-next="inputsMetadataUpload" style="display: block">
-                          <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus"
-                            fill="#13716D" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                              d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z">
-                            </path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
-                            <path fill-rule="evenodd"
-                              d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z">
-                            </path>
-                          </svg>
-                          <svg style="display: none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                            fill="var(--color-light-green)" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z">
-                            </path>
-                          </svg>
-                          <p style="margin-top: 30px; font-family: 'Poppins', sans-serif">
-                            code_parameters
-                          </p>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <div style="height: 150px; text-align: center">
+              <div style="margin-top: 30px; margin-bottom: 50px" id="pulse-manifest-checkbox">
+                <label class="labelradiocurate-manifest no" style="padding-left: 10px">
+                  No
+                </label>
+                <label class="switch">
+                  <input id="generate-manifest-curate" name="manifest" type="checkbox" class="with-style-manifest"
+                    onclick="window.updateManifestLabelColor(this)" />
+                  <span class="slider round manifest" style="width: 60px; height: 30px"></span>
+                </label>
+                <label class="labelradiocurate-manifest yes" style="padding-left: 10px" id="label-manifest">
+                  Yes
+                </label>
               </div>
-            </div>
-
-            <!-- submission -->
-            <div id="submissionUpload" class="div-individual-metadata">
-              <h5 style="text-align: center; color: #585858; font-size: 16px">
-                submission <br />(must be in .csv, .xlsx, or .json format)
-              </h5>
-              <div class="text-center d-flex mt-3 justify-center">
-                <h5 style="text-align: center"></h5>
-                <div class="div-file-import" droppable="true"
-                  ondrop="window.dropHandler(event, 'para-submission-file-path', 'submission', 'free-form');"
-                  ondragover="return false">
-                  <p style="font-weight: bold">Import existing file</p>
-                  <div>
-                    <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                    <svg style="display: none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                      fill="var(--color-light-green)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                    </svg>
-                    <!-- <i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i> -->
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Drag and drop your <br />
-                    file here OR
-                  </p>
-                  <button id="button-sub"
-                    onclick="window.importMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path', 'free-form')"
-                    class="div-file-import-button">
-                    Choose file
-                  </button>
+              <div class="guided--panel mt-0 hidden" id="manifest-creating-loading">
+                <div class="lds-roller">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
                 </div>
-                <div class="div-file-import pennsieve p-3 justify-content-between" id="metadata-submission-pennsieve">
-                  <p style="font-weight: bold">Import Pennsieve file</p>
-                  <div>
-                    <svg style="transform: rotate(180deg)" width="65px" height="65px" viewBox="0 0 16 16"
-                      class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Use the file present <br />
-                    on Pennsieve
-                  </p>
+                Generating manifest files...
+              </div>
+              <div id="manifest-items-container"
+                style="display: flex; flex-direction: column; justify-content: center">
+                
+                <div id="ffm-container-manifest-file-cards" style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 20px;
+                  "></div>
+                <div 
+                  id="ffm-container-local-manifest-file-generation"
+                  class="hidden"
+                  style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                ">
+                  <h5
+                    style="
+                      text-align: center;
+                      color: var(--color);
+                      font-size: 16px;
+                      margin-top: 20px;
+                    ">
+                    To create a local copy of the manifest files, click the button below.
+                  </h5>
                   <button
-                    onclick="window.importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
-                    class="div-file-import-button">
-                    Use file
+                    class="ui primary button dataset-card-button-confirm"
+                    id="ffm-button-generate-manifest-files-locally"
+                    style="
+                      width: 295px !important;
+                      height: 3rem;
+                    "
+                  >
+                    Generate manifest files locally
                   </button>
                 </div>
               </div>
-              <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-submission-file-path"></p>
+              <div id="manifest-creation-prohibited" class="info-dropdown mt-lg" style="justify-content: center;">
+                <p class="info-dropdown-text" data-dropdown-type="info" style="font-weight: 600; font-size: 16px;">Manifest files will not be generated</p>
+                <i class="fas fa-chevron-right"></i>
               </div>
-              <div class="div-metadata-confirm" style="margin-top: 15px; display: none; flex-direction: column">
-                <button class="button-individual-metadata confirm transition-btn"
-                  onclick="window.confirmMetadataFilePath(this)" style="
-                    margin: 30px auto;
-                    margin-bottom: 10px;
-                    width: 200px;
-                    height: 40px;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-check" style="margin-right: 10px"></i>Confirm
-                </button>
-                <button class="button-individual-metadata remove transition-btn" style="
-                    display: block;
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    color: #fff;
-                    background: #dc3545;
-                    border: 1px solid #dc3545;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-times" style="margin-right: 10px"></i>Remove
-                </button>
-              </div>
-              <div class="div-metadata-go-back" style="margin-top: 15px; display: flex; flex-direction: column">
-                <button class="button-individual-metadata go-back transition-btn" style="
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    background: #fff;
-                    color: var(--color-bg-plum);
-                    border: 1px solid var(--color-bg-plum);
-                  ">
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-                </button>
-              </div>
-            </div>
-
-            <!-- dataset desc. -->
-            <div id="datasetDescriptionUpload" class="div-individual-metadata">
-              <h5 style="text-align: center; color: #585858; font-size: 16px">
-                dataset_description <br />(must be in .csv, .xlsx, or .json format)
-              </h5>
-              <div class="text-center d-flex mt-3 justify-center">
-                <h5 class="text-center"></h5>
-                <div class="div-file-import" droppable="true"
-                  ondrop="window.dropHandler(event, 'para-ds-description-file-path', 'dataset_description', 'free-form');"
-                  ondragover="return false">
-                  <p style="font-weight: bold">Import existing file</p>
-                  <div>
-                    <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Drag and drop your <br />
-                    file here OR
-                  </p>
-                  <button
-                    onclick="window.importMetadataFiles(this, 'dataset_description', ['.csv', '.xlsx', '.xls', '.json'], 'para-ds-description-file-path', 'free-form')"
-                    class="div-file-import-button">
-                    Choose file
-                  </button>
-                </div>
-                <div class="div-file-import pennsieve p-3 justify-content-between"
-                  id="metadata-ds-description-pennsieve">
-                  <p style="font-weight: bold">Import Pennsieve file</p>
-                  <div>
-                    <svg style="transform: rotate(180deg)" width="65px" height="65px" viewBox="0 0 16 16"
-                      class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Use the file present <br />
-                    on Pennsieve
-                  </p>
-                  <button
-                    onclick="window.importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
-                    class="div-file-import-button">
-                    Use file
-                  </button>
-                </div>
-              </div>
-              <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-ds-description-file-path"></p>
-              </div>
-              <div class="div-metadata-confirm" style="margin-top: 15px; display: none; flex-direction: column">
-                <button class="button-individual-metadata confirm transition-btn"
-                  onclick="window.confirmMetadataFilePath(this)" style="
-                    margin: 30px auto;
-                    margin-bottom: 10px;
-                    width: 200px;
-                    height: 40px;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-check" style="margin-right: 10px"></i>Confirm
-                </button>
-                <button class="button-individual-metadata remove transition-btn" style="
-                    display: block;
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    color: #fff;
-                    background: #dc3545;
-                    border: 1px solid #dc3545;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-times" style="margin-right: 10px"></i>Remove
-                </button>
-              </div>
-              <div class="div-metadata-go-back" style="margin-top: 15px; display: flex; flex-direction: column">
-                <button class="button-individual-metadata go-back transition-btn" style="
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    background: #fff;
-                    color: var(--color-bg-plum);
-                    border: 1px solid var(--color-bg-plum);
-                  ">
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-                </button>
-              </div>
-            </div>
-            <!-- subjects -->
-            <div id="subjectsUpload" class="div-individual-metadata">
-              <h5 style="text-align: center; color: #585858; font-size: 16px">
-                subjects <br />(must be in .csv, .xlsx, or .json format)
-              </h5>
-              <div class="text-center d-flex mt-3 justify-center">
-                <h5 style="text-align: center"></h5>
-                <div class="div-file-import" droppable="true"
-                  ondrop="window.dropHandler(event, 'para-subjects-file-path', 'subjects', 'free-form');"
-                  ondragover="return false">
-                  <p style="font-weight: bold">Import existing file</p>
-                  <div>
-                    <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Drag and drop your <br />
-                    file here OR
-                  </p>
-                  <button
-                    onclick="window.importMetadataFiles(this, 'subjects', ['.csv', '.xlsx', '.xls', '.json'], 'para-subjects-file-path', 'free-form')"
-                    class="div-file-import-button">
-                    Choose file
-                  </button>
-                </div>
-                <div class="div-file-import pennsieve p-3 justify-content-between" id="metadata-subjects-pennsieve">
-                  <p style="font-weight: bold">Import Pennsieve file</p>
-                  <div>
-                    <svg style="transform: rotate(180deg)" width="65px" height="65px" viewBox="0 0 16 16"
-                      class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Use the file present <br />
-                    on Pennsieve
-                  </p>
-                  <button
-                    onclick="window.importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
-                    class="div-file-import-button">
-                    Use file
-                  </button>
-                </div>
-              </div>
-              <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-subjects-file-path"></p>
-              </div>
-              <div class="div-metadata-confirm" style="margin-top: 15px; display: none; flex-direction: column">
-                <button class="button-individual-metadata confirm transition-btn"
-                  onclick="window.confirmMetadataFilePath(this)" style="
-                    margin: 30px auto;
-                    margin-bottom: 10px;
-                    width: 200px;
-                    height: 40px;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-check" style="margin-right: 10px"></i>Confirm
-                </button>
-                <button class="button-individual-metadata remove transition-btn" style="
-                    display: block;
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    color: #fff;
-                    background: #dc3545;
-                    border: 1px solid #dc3545;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-times" style="margin-right: 10px"></i>Remove
-                </button>
-              </div>
-              <div class="div-metadata-go-back" style="margin-top: 15px; display: flex; flex-direction: column">
-                <button class="button-individual-metadata go-back transition-btn" style="
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    background: #fff;
-                    color: var(--color-bg-plum);
-                    border: 1px solid var(--color-bg-plum);
-                  ">
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-                </button>
-              </div>
-            </div>
-            <!-- samples -->
-            <div id="samplesUpload" class="div-individual-metadata">
-              <h5 style="text-align: center; color: #585858; font-size: 16px">
-                samples <br />(must be in .csv, .xlsx, or .json format)
-              </h5>
-              <div class="text-center d-flex mt-3 justify-center">
-                <h5 style="text-align: center"></h5>
-                <div class="div-file-import" droppable="true"
-                  ondrop="window.dropHandler(event,'para-samples-file-path', 'samples', 'free-form');"
-                  ondragover="return false">
-                  <p style="font-weight: bold">Import existing file</p>
-                  <div>
-                    <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Drag and drop your <br />
-                    file here OR
-                  </p>
-                  <button
-                    onclick="window.importMetadataFiles(this, 'samples', ['.csv', '.xlsx', '.xls', '.json'], 'para-samples-file-path', 'free-form')"
-                    class="div-file-import-button">
-                    Choose file
-                  </button>
-                </div>
-                <div class="div-file-import pennsieve p-3 justify-content-between" id="metadata-samples-pennsieve">
-                  <p style="font-weight: bold">Import Pennsieve file</p>
-                  <div>
-                    <svg style="transform: rotate(180deg)" width="65px" height="65px" viewBox="0 0 16 16"
-                      class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Use the file present <br />
-                    on Pennsieve
-                  </p>
-                  <button
-                    onclick="window.importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
-                    class="div-file-import-button">
-                    Use file
-                  </button>
-                </div>
-              </div>
-              <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-samples-file-path"></p>
-              </div>
-              <div class="div-metadata-confirm" style="margin-top: 15px; display: none; flex-direction: column">
-                <button class="button-individual-metadata confirm transition-btn"
-                  onclick="window.confirmMetadataFilePath(this)" style="
-                    margin: 30px auto;
-                    margin-bottom: 10px;
-                    width: 200px;
-                    height: 40px;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-check" style="margin-right: 10px"></i>Confirm
-                </button>
-                <button class="button-individual-metadata remove transition-btn" style="
-                    display: block;
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    color: #fff;
-                    background: #dc3545;
-                    border: 1px solid #dc3545;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-times" style="margin-right: 10px"></i>Remove
-                </button>
-              </div>
-              <div class="div-metadata-go-back" style="margin-top: 15px; display: flex; flex-direction: column">
-                <button class="button-individual-metadata go-back transition-btn" style="
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    background: #fff;
-                    color: var(--color-bg-plum);
-                    border: 1px solid var(--color-bg-plum);
-                  ">
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-                </button>
-              </div>
-            </div>
-            <!-- CHANGES -->
-            <div id="changesUpload" class="div-individual-metadata">
-              <h5 style="text-align: center; color: #585858; font-size: 16px">
-                CHANGES <br />(must be in .txt format)
-              </h5>
-              <div class="text-center d-flex mt-3 justify-center">
-                <h5 style="text-align: center"></h5>
-                <div class="div-file-import" droppable="true"
-                  ondrop="window.dropHandler(event, 'para-changes-file-path', 'CHANGES', 'free-form');"
-                  ondragover="return false">
-                  <p style="font-weight: bold">Import existing file</p>
-                  <div>
-                    <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Drag and drop your <br />
-                    file here OR
-                  </p>
-                  <button
-                    onclick="window.importMetadataFiles(this, 'CHANGES', ['.txt'], 'para-changes-file-path', 'free-form')"
-                    class="div-file-import-button">
-                    Choose file
-                  </button>
-                </div>
-                <div class="div-file-import pennsieve p-3 justify-content-between" id="metadata-CHANGES-pennsieve">
-                  <p style="font-weight: bold">Import Pennsieve file</p>
-                  <div>
-                    <svg style="transform: rotate(180deg)" width="65px" height="65px" viewBox="0 0 16 16"
-                      class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Use the file present <br />
-                    on Pennsieve
-                  </p>
-                  <button
-                    onclick="window.importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
-                    class="div-file-import-button">
-                    Use file
-                  </button>
-                </div>
-              </div>
-              <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-changes-file-path"></p>
-              </div>
-              <div class="div-metadata-confirm" style="margin-top: 15px; display: none; flex-direction: column">
-                <button class="button-individual-metadata confirm transition-btn"
-                  onclick="window.confirmMetadataFilePath(this)" style="
-                    margin: 30px auto;
-                    margin-bottom: 10px;
-                    width: 200px;
-                    height: 40px;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-check" style="margin-right: 10px"></i>Confirm
-                </button>
-                <button class="button-individual-metadata remove transition-btn" style="
-                    display: block;
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    color: #fff;
-                    background: #dc3545;
-                    border: 1px solid #dc3545;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-times" style="margin-right: 10px"></i>Remove
-                </button>
-              </div>
-              <div class="div-metadata-go-back" style="margin-top: 15px; display: flex; flex-direction: column">
-                <button class="button-individual-metadata go-back transition-btn" style="
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    background: #fff;
-                    color: var(--color-bg-plum);
-                    border: 1px solid var(--color-bg-plum);
-                  ">
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-                </button>
-              </div>
-            </div>
-
-            <!-- README -->
-            <div id="readmeUpload" class="div-individual-metadata">
-              <h5 style="text-align: center; color: #585858; font-size: 16px">
-                README <br />(must be in .txt format)
-              </h5>
-              <div class="text-center d-flex mt-3 justify-center">
-                <h5 style="text-align: center"></h5>
-                <div class="div-file-import" droppable="true"
-                  ondrop="window.dropHandler(event, 'para-readme-file-path', 'README', 'free-form');"
-                  ondragover="return false">
-                  <p style="font-weight: bold">Import existing file</p>
-                  <div>
-                    <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Drag and drop your <br />
-                    file here OR
-                  </p>
-                  <button onclick="window.importMetadataFiles(this, 'README', ['.txt'], 'para-readme-file-path', 'free-form')"
-                    class="div-file-import-button">
-                    Choose file
-                  </button>
-                </div>
-                <div class="div-file-import pennsieve p-3 justify-content-between" id="metadata-README-pennsieve">
-                  <p style="font-weight: bold">Import Pennsieve file</p>
-                  <div>
-                    <svg style="transform: rotate(180deg)" width="65px" height="65px" viewBox="0 0 16 16"
-                      class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Use the file present <br />
-                    on Pennsieve
-                  </p>
-                  <button
-                    onclick="window.importPennsieveMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
-                    class="div-file-import-button">
-                    Use file
-                  </button>
-                </div>
-              </div>
-              <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-readme-file-path"></p>
-              </div>
-              <div class="div-metadata-confirm" style="margin-top: 15px; display: none; flex-direction: column">
-                <button class="button-individual-metadata confirm transition-btn"
-                  onclick="window.confirmMetadataFilePath(this)" style="
-                    margin: 30px auto;
-                    margin-bottom: 10px;
-                    width: 200px;
-                    height: 40px;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-check" style="margin-right: 10px"></i>Confirm
-                </button>
-                <button class="button-individual-metadata remove transition-btn" style="
-                    display: block;
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    color: #fff;
-                    background: #dc3545;
-                    border: 1px solid #dc3545;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-times" style="margin-right: 10px"></i>Remove
-                </button>
-              </div>
-              <div class="div-metadata-go-back" style="margin-top: 15px; display: flex; flex-direction: column">
-                <button class="button-individual-metadata go-back transition-btn" style="
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    background: #fff;
-                    color: var(--color-bg-plum);
-                    border: 1px solid var(--color-bg-plum);
-                  ">
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-                </button>
-              </div>
-            </div>
-
-            <!-- code_description -->
-            <div id="codeDescriptionUpload" class="div-individual-metadata">
-              <h5 style="text-align: center; color: #585858; font-size: 16px">
-                code_description <br />(must be in .xlsx format)
-              </h5>
-              <div class="text-center d-flex mt-3 justify-center">
-                <h5 style="text-align: center"></h5>
-                <div class="div-file-import" droppable="true"
-                  ondrop="window.dropHandler(event, 'para-codeDescription-file-path', 'code_description', 'free-form');"
-                  ondragover="return false">
-                  <p style="font-weight: bold">Import existing file</p>
-                  <div>
-                    <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                    <svg style="display: none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                      fill="var(--color-light-green)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Drag and drop your <br />
-                    file here OR
-                  </p>
-                  <button id="button-sub"
-                    onclick="window.importMetadataFiles(this, 'code_description', ['.xlsx'], 'para-codeDescription-file-path', 'free-form')"
-                    class="div-file-import-button">
-                    Choose file
-                  </button>
-                </div>
-                <div class="div-file-import pennsieve p-3 justify-content-between"
-                  id="metadata-codeDescription-pennsieve">
-                  <p style="font-weight: bold">Import Pennsieve file</p>
-                  <div>
-                    <svg style="transform: rotate(180deg)" width="65px" height="65px" viewBox="0 0 16 16"
-                      class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Use the file present <br />
-                    on Pennsieve
-                  </p>
-                  <button
-                    onclick="window.importPennsieveMetadataFiles(this, 'codeDescription', ['.xlsx'], 'para-codeDescription-file-path')"
-                    class="div-file-import-button">
-                    Use file
-                  </button>
-                </div>
-              </div>
-              <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-codeDescription-file-path"></p>
-              </div>
-              <div class="div-metadata-confirm" style="margin-top: 15px; display: none; flex-direction: column">
-                <button class="button-individual-metadata confirm transition-btn"
-                  onclick="window.confirmMetadataFilePath(this)" style="
-                    margin: 30px auto;
-                    margin-bottom: 10px;
-                    width: 200px;
-                    height: 40px;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-check" style="margin-right: 10px"></i>Confirm
-                </button>
-                <button class="button-individual-metadata remove transition-btn" style="
-                    display: block;
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    color: #fff;
-                    background: #dc3545;
-                    border: 1px solid #dc3545;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-times" style="margin-right: 10px"></i>Remove
-                </button>
-              </div>
-              <div class="div-metadata-go-back" style="margin-top: 15px; display: flex; flex-direction: column">
-                <button class="button-individual-metadata go-back transition-btn" style="
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    background: #fff;
-                    color: var(--color-bg-plum);
-                    border: 1px solid var(--color-bg-plum);
-                  ">
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-                </button>
-              </div>
-            </div>
-            <!-- inputs_metadata -->
-            <div id="inputsMetadataUpload" class="div-individual-metadata">
-              <h5 style="text-align: center; color: #585858; font-size: 16px">
-                code_parameters <br />(must be in .csv, .tsv, .json or .xlsx format)
-              </h5>
-              <div class="text-center d-flex mt-3 justify-center">
-                <h5 style="text-align: center"></h5>
-                <div class="div-file-import" droppable="true"
-                  ondrop="window.dropHandler(event, 'para-codeParamMetadata-file-path', 'code_parameters', 'free-form');"
-                  ondragover="return false">
-                  <p style="font-weight: bold">Import existing file</p>
-                  <div>
-                    <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                    <svg style="display: none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                      fill="var(--color-light-green)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Drag and drop your <br />
-                    file here OR
-                  </p>
-                  <button id="button-sub"
-                    onclick="window.importMetadataFiles(this, 'code_parameters', ['.xlsx', '.csv', '.tsv', '.json'], 'para-codeParamMetadata-file-path', 'free-form')"
-                    class="div-file-import-button">
-                    Choose file
-                  </button>
-                </div>
-                <div class="div-file-import pennsieve p-3 justify-content-between"
-                  id="metadata-inputsMetadata-pennsieve">
-                  <p style="font-weight: bold">Import Pennsieve file</p>
-                  <div>
-                    <svg style="transform: rotate(180deg)" width="65px" height="65px" viewBox="0 0 16 16"
-                      class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Use the file present <br />
-                    on Pennsieve
-                  </p>
-                  <button
-                    onclick="window.importPennsieveMetadataFiles(this, 'inputsMetadata', ['.xlsx'], 'para-codeParamMetadata-file-path')"
-                    class="div-file-import-button">
-                    Use file
-                  </button>
-                </div>
-              </div>
-              <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-codeParamMetadata-file-path"></p>
-              </div>
-              <div class="div-metadata-confirm" style="margin-top: 15px; display: none; flex-direction: column">
-                <button class="button-individual-metadata confirm transition-btn"
-                  onclick="window.confirmMetadataFilePath(this)" style="
-                    margin: 30px auto;
-                    margin-bottom: 10px;
-                    width: 200px;
-                    height: 40px;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-check" style="margin-right: 10px"></i>Confirm
-                </button>
-                <button class="button-individual-metadata remove transition-btn" style="
-                    display: block;
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    color: #fff;
-                    background: #dc3545;
-                    border: 1px solid #dc3545;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-times" style="margin-right: 10px"></i>Remove
-                </button>
-              </div>
-              <div class="div-metadata-go-back" style="margin-top: 15px; display: flex; flex-direction: column">
-                <button class="button-individual-metadata go-back transition-btn" style="
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    background: #fff;
-                    color: var(--color-bg-plum);
-                    border: 1px solid var(--color-bg-plum);
-                  ">
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-                </button>
-              </div>
-            </div>
-            <!-- outputs_metadata -->
-            <div id="outputsMetadataUpload" class="div-individual-metadata">
-              <h5 style="text-align: center; color: #585858; font-size: 16px">
-                outputs_metadata <br />(must be in .xlsx format)
-              </h5>
-              <div class="text-center d-flex mt-3 justify-center">
-                <h5 style="text-align: center"></h5>
-                <div class="div-file-import" droppable="true"
-                  ondrop="window.dropHandler(event, 'para-outputsMetadata-file-path', 'outputs_metadata', 'free-form');"
-                  ondragover="return false">
-                  <p style="font-weight: bold">Import existing file</p>
-                  <div>
-                    <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                    <svg style="display: none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                      fill="var(--color-light-green)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Drag and drop your <br />
-                    file here OR
-                  </p>
-                  <button id="button-sub"
-                    onclick="window.importMetadataFiles(this, 'outputs_metadata', ['.xlsx'], 'para-outputsMetadata-file-path', 'free-form')"
-                    class="div-file-import-button">
-                    Choose file
-                  </button>
-                </div>
-                <div class="div-file-import pennsieve p-3 justify-content-between"
-                  id="metadata-outputsMetadata-pennsieve">
-                  <p style="font-weight: bold">Import Pennsieve file</p>
-                  <div>
-                    <svg style="transform: rotate(180deg)" width="65px" height="65px" viewBox="0 0 16 16"
-                      class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
-                    Use the file present <br />
-                    on Pennsieve
-                  </p>
-                  <button
-                    onclick="window.importPennsieveMetadataFiles(this, 'outputsMetadata', ['.xlsx'], 'para-outputsMetadata-file-path')"
-                    class="div-file-import-button">
-                    Use file
-                  </button>
-                </div>
-              </div>
-              <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-outputsMetadata-file-path"></p>
-              </div>
-              <div class="div-metadata-confirm" style="margin-top: 15px; display: none; flex-direction: column">
-                <button class="button-individual-metadata confirm transition-btn"
-                  onclick="window.confirmMetadataFilePath(this)" style="
-                    margin: 30px auto;
-                    margin-bottom: 10px;
-                    width: 200px;
-                    height: 40px;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-check" style="margin-right: 10px"></i>Confirm
-                </button>
-                <button class="button-individual-metadata remove transition-btn" style="
-                    display: block;
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    color: #fff;
-                    background: #dc3545;
-                    border: 1px solid #dc3545;
-                    font-size: 15px;
-                  ">
-                  <i class="fas fa-times" style="margin-right: 10px"></i>Remove
-                </button>
-              </div>
-              <div class="div-metadata-go-back" style="margin-top: 15px; display: flex; flex-direction: column">
-                <button class="button-individual-metadata go-back transition-btn" style="
-                    margin: 0 auto;
-                    width: 200px;
-                    height: 40px;
-                    background: #fff;
-                    color: var(--color-bg-plum);
-                    border: 1px solid var(--color-bg-plum);
-                  ">
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-                </button>
+              <div class="info-container" style="max-width: 800px; margin: auto;">
+                <p class="help-text mb-0">
+                  The selected Pennsieve dataset already includes data files. 
+                  To prevent conflicts, SODA will not generate manifest files.
+                  You can generate manifest files after the upload is complete by navigating to the home page, selecting "Advanced features", and then selecting the "Create manifest files" option.
+                </p>
               </div>
             </div>
           </div>
