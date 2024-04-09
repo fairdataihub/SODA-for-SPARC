@@ -287,11 +287,11 @@ window.handleLocalDatasetImport = async (path) => {
     progressBar_rightSide.style.transform = `rotate(0deg)`;
     progressBar_leftSide.style.transform = `rotate(0deg)`;
     numb.innerText = "0%";
-  
+
     // Show the progress bar
     document.getElementById("loading_local_dataset").style.display = "block";
     local_progress = setInterval(progressReport, 500);
-  
+
     try {
       let importLocalDatasetResponse = await client.post(
         `/organize_datasets/datasets/import`,
@@ -303,7 +303,7 @@ window.handleLocalDatasetImport = async (path) => {
         },
         { timeout: 0 }
       );
-  
+
       let { data } = importLocalDatasetResponse;
       window.sodaJSONObj = data;
       window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
