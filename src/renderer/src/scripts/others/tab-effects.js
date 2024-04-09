@@ -37,18 +37,18 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   console.log(nextOrPrev);
   $("#nextBtn").prop("disabled", true);
   // check to show Save progress btn (only after step 2)
-  if (tabNow >= 2) {
-    // check if users are Continuing with an existing BF ds. If so, hide Save progress btn
-    if ($('input[name="getting-started-1"]:checked').prop("id") === "existing-bf") {
-      $("#save-progress-btn").css("display", "none");
-    } else {
-      $("#save-progress-btn").css("display", "block");
-    }
-    $("#start-over-btn").css("display", "inline-block");
-  } else {
-    $("#save-progress-btn").css("display", "none");
-    $("#start-over-btn").css("display", "none");
-  }
+  // if (tabNow >= 2) {
+  //   // check if users are Continuing with an existing BF ds. If so, hide Save progress btn
+  //   if ($('input[name="getting-started-1"]:checked').prop("id") === "existing-bf") {
+  //     $("#save-progress-btn").css("display", "none");
+  //   } else {
+  //     $("#save-progress-btn").css("display", "block");
+  //   }
+  //   $("#start-over-btn").css("display", "inline-block");
+  // } else {
+  //   $("#save-progress-btn").css("display", "none");
+  //   $("#start-over-btn").css("display", "none");
+  // }
 
   // This function will display the specified tab of the form ...
   var x = document.getElementsByClassName("parent-tabs");
@@ -165,6 +165,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 2) {
+    console.log("TAB 2?????")
     if (!introStatus.organizeStep3) {
       introJs()
         .setOptions({
