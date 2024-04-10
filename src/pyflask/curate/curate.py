@@ -3182,7 +3182,9 @@ def main_curate_function(soda_json_structure, resume):
         namespace_logger.info("main_curate_function step 1.3.2")
         # Check that bf files/folders exist (Only used for when generating from an existing Pennsieve dataset)
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
-        if generate_option == "existing-bf":
+        if generate_option == "existing-bf" and (
+            not resume or not ums.df_mid_has_progress()
+        ):
             try:
                 main_curate_progress_message = (
                     "Checking that the Pennsieve files and folders are valid"
@@ -3235,10 +3237,7 @@ def main_curate_function(soda_json_structure, resume):
                         dataset_name = soda_json_structure["generate-dataset"][
                             "dataset-name"
                         ]
-                        if not resume: 
-                            ds = ps_create_new_dataset(dataset_name, ps)
-                            selected_dataset_id = ds["content"]["id"]
-                        else: 
+                        if resume: 
                             # get the dataset id by the name 
                             try: 
                                 selected_dataset_id = get_dataset_id(dataset_name)
@@ -3248,6 +3247,9 @@ def main_curate_function(soda_json_structure, resume):
                                     ds = ps_create_new_dataset(dataset_name, ps)
                                     selected_dataset_id = ds["content"]["id"]
 
+                        else: 
+                            ds = ps_create_new_dataset(dataset_name, ps)
+                            selected_dataset_id = ds["content"]["id"]
                     # check that dataset was created with a limited retry (for some users the dataset isn't automatically accessible)
                     attempts = 0
                     while(attempts < 3):
@@ -3264,7 +3266,7 @@ def main_curate_function(soda_json_structure, resume):
                                 # raise the error to the user
                                 raise e
                             time.sleep(10)
-                            
+
 
                     ps_upload_to_dataset(soda_json_structure, ps, myds, resume)
         except Exception as e:
