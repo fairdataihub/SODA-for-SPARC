@@ -1141,6 +1141,33 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
+      // If the dataset contains subjects, check to see if the dataset contains microscopy images
+      if (buttonDatasetContainsSubjects.classList.contains("selected")) {
+        const datasetContainsMicroscopyImages = document
+          .getElementById("guided-button-dataset-contains-microscopy-images")
+          .classList.contains("selected");
+        const datasetDoesNotContainMicroscopyImages = document
+          .getElementById("guided-button-dataset-does-not-contain-microscopy-images")
+          .classList.contains("selected");
+        if (!datasetContainsMicroscopyImages && !datasetDoesNotContainMicroscopyImages) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate whether or not the dataset contains microscopy images",
+          });
+          throw errorArray;
+        }
+
+        // If the dataset contains subjects, check to see if the dataset contains microscopy images
+        if (datasetContainsMicroscopyImages) {
+          guidedUnSkipPageSet("microscopy-image-pages");
+        } else {
+          guidedSkipPageSet("microscopy-image-pages");
+        }
+      } else {
+        // If the dataset does not contain subjects, no need to check for microscopy images
+        guidedSkipPageSet("microscopy-image-pages");
+      }
+
       const buttonContainsCode = document.getElementById("guided-button-dataset-contains-code");
       const buttonDoesNotContainCode = document.getElementById(
         "guided-button-dataset-does-not-contain-code"
@@ -1458,6 +1485,12 @@ const savePageChanges = async (pageBeingLeftID) => {
 
     if (pageBeingLeftID === "guided-primary-data-organization-tab") {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("primary");
+    }
+
+    if (pageBeingLeftID === "guided-microscopy-image-confirmation-tab") {
+      const confirmedMicroscopyImagePaths =
+        useGuidedModeStore.getState().confirmedMicroscopyImagePaths;
+      window.sodaJSONObj["confirmed-microscopy-image-paths"] = confirmedMicroscopyImagePaths;
     }
 
     if (pageBeingLeftID === "guided-source-data-organization-tab") {
@@ -4340,6 +4373,30 @@ const guidedSkipPage = (pageId) => {
   }
 };
 
+// Skip all pages with data-page-set values equal to pageSet parameter
+const guidedSkipPageSet = (pageSet) => {
+  const pagesToSkip = Array.from(document.querySelectorAll(`[data-page-set=${pageSet}]`)).map(
+    (page) => page.id
+  );
+
+  for (const pageId of pagesToSkip) {
+    console.log(`Skipping page ${pageId}`);
+    guidedSkipPage(pageId);
+  }
+};
+
+// Unskip all pages with data-page-set values equal to pageSet parameter
+const guidedUnSkipPageSet = (pageSet) => {
+  const pagesToUnSkip = Array.from(document.querySelectorAll(`[data-page-set=${pageSet}]`)).map(
+    (page) => page.id
+  );
+
+  for (const pageId of pagesToUnSkip) {
+    console.log(`Unskipping page ${pageId}`);
+    guidedUnSkipPage(pageId);
+  }
+};
+
 const guidedUnSkipPage = (pageId) => {
   const page = document.getElementById(pageId);
 
@@ -4865,7 +4922,7 @@ const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
 };
 
 const getPotentialMicroscopyImagesFromDatasetStructure = (datasetStructureObj) => {
-  const microscopyImageFileTypes = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp"];
+  const microscopyImageFileTypes = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".jp2"];
   const checkIfFileTypeIsMicroscopyImage = (fileType) => {
     return microscopyImageFileTypes.includes(fileType.toLowerCase());
   };
@@ -5406,9 +5463,12 @@ window.openPage = async (targetPageID) => {
       const potentialMicroscopyImages = getPotentialMicroscopyImagesFromDatasetStructure(
         window.datasetStructureJSONObj
       );
+      const confirmedMicroscopyImagePaths =
+        window.sodaJSONObj["confirmed-microscopy-image-paths"] || [];
 
       useGuidedModeStore.setState({
         potentialMicroscopyImages,
+        confirmedMicroscopyImagePaths,
       });
     }
 
@@ -13315,7 +13375,6 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
 
   if (controlledSectionID === "guided-section-dataset-type") {
     const previouslySavedDatasetType = window.sodaJSONObj["saved-dataset-type"];
-
     const buttonDatasetContainsSubjects = document.getElementById(
       "guided-button-dataset-contains-subjects"
     );
@@ -13327,6 +13386,12 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
     );
     const buttonDatasetDoesNotContainCode = document.getElementById(
       "guided-button-dataset-does-not-contain-code"
+    );
+    const sectionShowDatasetIsExperimental = document.getElementById(
+      "guided-sub-section-experimental-confirmation"
+    );
+    const sectionShowDatasetIsComputational = document.getElementById(
+      "guided-sub-section-computational-confirmation"
     );
 
     // If neither button is selected, return
@@ -13418,14 +13483,10 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
         .classList.remove("hidden");
     }
     if (interpredDatasetType === "computational") {
-      document
-        .getElementById("guided-sub-section-computational-confirmation")
-        .classList.remove("hidden");
+      sectionShowDatasetIsComputational.classList.remove("hidden");
     }
     if (interpredDatasetType === "experimental") {
-      document
-        .getElementById("guided-sub-section-experimental-confirmation")
-        .classList.remove("hidden");
+      sectionShowDatasetIsExperimental.classList.remove("hidden");
     }
   }
 

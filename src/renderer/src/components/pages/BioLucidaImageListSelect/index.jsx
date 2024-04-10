@@ -6,14 +6,17 @@ import {
   Card,
   Image,
   Text,
+  Affix,
   Badge,
   Button,
   Group,
   HoverCard,
-  Affix,
   Transition,
   Paper,
 } from "@mantine/core";
+import { IconSquareCheck } from "@tabler/icons-react";
+import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
+import styles from "./BioLucidaImageListSelectPage.module.css";
 
 import ExternalLink from "../../buttons/ExternalLink";
 
@@ -36,32 +39,29 @@ const BioLucidaImageListSelectPage = () => {
       pageHeader="BioLucida Image Selection"
       pageDescription="Select the microscopy images you would like to upload to BioLucida (Up to 10)."
     >
-      <SimpleGrid cols={4}>
+      <SimpleGrid cols={5}>
         {microscopyImagesUploadableToBioLucida.map((image) => (
-          <Card shadow="sm" padding="lg" radius="md" withBorder key={image.relativePath}>
+          <Card
+            shadow="sm"
+            padding="lg"
+            radius="md"
+            withBorder
+            key={image.relativePath}
+            className={styles.imageCard}
+            onClick={() => {
+              microscopyImagesSelectedToBeUploadedToBioLucida.includes(image.filePath)
+                ? removeMicroscopyImageToBeUploadedToBioLucida(image.filePath)
+                : addMicroscopyImageToBeUploadedToBioLucida(image.filePath);
+            }}
+          >
+            {microscopyImagesSelectedToBeUploadedToBioLucida.includes(image.filePath) && (
+              <Card.Section pos="relative" style={{ zIndex: 1000 }}>
+                <IconSquareCheck className={styles.imageCheckMark} />
+              </Card.Section>
+            )}
             <Card.Section>
               <Image src={image.filePath} height={160} alt="Microscopy image" />
             </Card.Section>
-
-            <Group justify="space-between" mt="md">
-              <Text truncate="end">{image.relativePath}</Text>
-            </Group>
-            {microscopyImagesSelectedToBeUploadedToBioLucida.includes(image.filePath) ? (
-              <Button
-                mt="sm"
-                onClick={() => removeMicroscopyImageToBeUploadedToBioLucida(image.filePath)}
-                color="red"
-              >
-                Remove
-              </Button>
-            ) : (
-              <Button
-                mt="sm"
-                onClick={() => addMicroscopyImageToBeUploadedToBioLucida(image.filePath)}
-              >
-                Select
-              </Button>
-            )}
           </Card>
         ))}
       </SimpleGrid>
@@ -72,9 +72,9 @@ const BioLucidaImageListSelectPage = () => {
             zIndex: 1000,
           }}
         >
-          <Paper p="md" shadow="xs" radius="md">
+          <SodaGreenPaper>
             <Text>Images selected: {microscopyImagesSelectedToBeUploadedToBioLucida.length}</Text>
-          </Paper>
+          </SodaGreenPaper>
         </Affix>
       )}
     </GuidedModePage>

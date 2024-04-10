@@ -782,7 +782,7 @@
               <button
                 class="ui positive basic button guided--radio-button"
                 id="guided-button-dataset-contains-subjects"
-                data-next-element="guided-section-ask-if-dataset-contains-code"
+                data-next-element="guided-section-ask-if-dataset-contains-microscopy-images"
                 data-button-config-value="dataset-contains-subjects"
                 data-button-config-value-state="yes"
                 data-controls-section="guided-section-dataset-type"
@@ -807,7 +807,34 @@
               >
             </p>
           </div>
-
+          <div
+            class="guided--section"
+            id="guided-section-ask-if-dataset-contains-microscopy-images"
+          >
+            <label class="guided--form-label centered"
+              >Does your dataset include microscopy images?</label
+            >
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-dataset-contains-microscopy-images"
+                data-next-element="guided-section-ask-if-dataset-contains-code"
+                data-button-config-value="dataset-contains-microscopy-images"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-dataset-does-not-contain-microscopy-images"
+                data-next-element="guided-section-ask-if-dataset-contains-code"
+                data-button-config-value="dataset-contains-microscopy-images"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
+          </div>
           <div class="guided--section" id="guided-section-ask-if-dataset-contains-code">
             <label class="guided--form-label centered"
               >Does your dataset include code files (computational models or analysis etc.)?</label
@@ -1859,6 +1886,7 @@
         <div
           id="guided-microscopy-image-confirmation-tab"
           class="guided--page react-rendered-guided-mode-page"
+          data-page-set="microscopy-image-pages"
           data-page-header="Microscopy image confirmation"
           data-page-name="Microscopy image confirmation"
         ></div>
@@ -5140,6 +5168,7 @@
         <div
           id="guided-biolucida-image-selection-tab"
           class="guided--page react-rendered-guided-mode-page"
+          data-page-set="microscopy-image-pages"
           data-page-header="BioLucida image selection"
           data-page-name="BioLucida image selection"
         ></div>

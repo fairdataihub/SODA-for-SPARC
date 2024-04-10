@@ -1,27 +1,34 @@
 import useGuidedModeStore from "../../../stores/guidedModeStore";
 import GuidedModePage from "../../containers/GuidedModePage";
-import GuidedModeSection from "../../containers/GuidedModeSection";
-import { Table, Checkbox, Image, Text } from "@mantine/core";
+import { Table, Checkbox, Image, Text, Center, Overlay } from "@mantine/core";
+import styles from "./MicroscopyImageConfirmationPage.module.css";
 
 const MicroscopyImageConfirmationPage = () => {
-  const { currentGuidedModePage, potentialMicroscopyImages } = useGuidedModeStore();
+  const {
+    potentialMicroscopyImages,
+    confirmedMicroscopyImagePaths,
+    designateImageAsMicroscopyImage,
+    undesignateImageAsMicroscopyImage,
+  } = useGuidedModeStore();
 
   const tableRows = potentialMicroscopyImages.map((potentialMicroscopyImage) => (
     <Table.Tr key={potentialMicroscopyImage.relativePath}>
       <Table.Td>
         <Checkbox
           aria-label="Select row"
-          checked={true}
-          onChange={(event) => {
-            console.log(event);
-          }}
+          checked={confirmedMicroscopyImagePaths.includes(potentialMicroscopyImage.filePath)}
+          onClick={
+            confirmedMicroscopyImagePaths.includes(potentialMicroscopyImage.filePath)
+              ? () => undesignateImageAsMicroscopyImage(potentialMicroscopyImage)
+              : () => designateImageAsMicroscopyImage(potentialMicroscopyImage)
+          }
         />
       </Table.Td>
       <Table.Td>
-        <Image src={potentialMicroscopyImage.filePath} height={120} alt="Microscopy image" />
+        <Text ta="left">{potentialMicroscopyImage.filePath}</Text>
       </Table.Td>
       <Table.Td>
-        <Text>{potentialMicroscopyImage.filePath}</Text>
+        <Text ta="left">{potentialMicroscopyImage.relativePath}</Text>
       </Table.Td>
     </Table.Tr>
   ));
@@ -30,10 +37,10 @@ const MicroscopyImageConfirmationPage = () => {
       pageHeader="BioLucida Image Selection"
       pageDescription="Confirm the microscopy images listed below are microscopy images . If you would like to remove any images, click the 'Remove' button."
     >
-      <Table w={700}>
+      <Table>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>Microscopy Image</Table.Th>
+            <Table.Th />
             <Table.Th>Image</Table.Th>
             <Table.Th>Relative path</Table.Th>
           </Table.Tr>

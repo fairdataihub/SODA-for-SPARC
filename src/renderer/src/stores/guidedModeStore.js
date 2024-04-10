@@ -12,20 +12,29 @@ const useGuidedModeStore = create((set) => ({
   setDatasetSubtitle: (datasetSubtitle) => set(() => ({ datasetSubtitle: datasetSubtitle })),
 
   potentialMicroscopyImages: [],
-  setPotentialMicroscopyImages: (potentialMicroscopyImages) =>
-    set(() => ({ potentialMicroscopyImages: potentialMicroscopyImages })),
+  confirmedMicroscopyImagePaths: [],
 
-  confirmedMicroscopyImages: [],
-  addPotentialMicroscopyImage: (potentialMicroscopyImage) =>
-    set((state) => ({
-      potentialMicroscopyImages: [...state.potentialMicroscopyImages, potentialMicroscopyImage],
+  setPotentialMicroscopyImages: (potentialMicroscopyImages) =>
+    set(() => ({
+      potentialMicroscopyImages: potentialMicroscopyImages,
+    })),
+  setConfirmedMicroscopyImagePaths: (confirmedMicroscopyImagePaths) =>
+    set(() => ({
+      confirmedMicroscopyImagePaths: confirmedMicroscopyImagePaths,
     })),
 
-  removePotentialMicroscopyImage: (potentialMicroscopyImage) =>
+  designateImageAsMicroscopyImage: (microscopyImage) =>
     set((state) => ({
-      potentialMicroscopyImages: state.potentialMicroscopyImages.filter(
-        (existingPotentialMicroscopyImage) =>
-          existingPotentialMicroscopyImage.filePath !== potentialMicroscopyImage.filePath
+      confirmedMicroscopyImagePaths: [
+        ...state.confirmedMicroscopyImagePaths,
+        microscopyImage.filePath,
+      ],
+    })),
+
+  undesignateImageAsMicroscopyImage: (microscopyImage) =>
+    set((state) => ({
+      confirmedMicroscopyImagePaths: state.confirmedMicroscopyImagePaths.filter(
+        (existingMicroscopyImagePath) => existingMicroscopyImagePath !== microscopyImage.filePath
       ),
     })),
 
