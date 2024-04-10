@@ -7577,7 +7577,6 @@ const initiate_generate = async (e) => {
         }
       });
 
-
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
           params: {
