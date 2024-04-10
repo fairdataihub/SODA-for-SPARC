@@ -7198,10 +7198,6 @@ document.getElementById("button-generate").addEventListener("click", async funct
 });
 
 document.getElementById("button-retry").addEventListener("click", async function (e) {
-  // document.getElementById("header-retry-curate-progress-bar-status").textContent =
-  //   `Prior Upload Progress Information. Once the upload has restarted progress will be reset for any partially uploaded files.`;
-  // let retryProgressStatus = document.getElementById("para-retry-curate-progress-bar-status");
-  // retryProgressStatus.innerHTML = progressStatus.innerHTML;
   preGenerateSetup(e, this);
 });
 
