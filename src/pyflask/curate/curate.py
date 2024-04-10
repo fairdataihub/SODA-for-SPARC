@@ -2811,6 +2811,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
         ums.set_total_files_to_upload(total_files)
         ums.set_elapsed_time(elapsed_time)
         main_curate_progress_message = ("Upload Failed")
+        time.sleep(1)
         
 
 
