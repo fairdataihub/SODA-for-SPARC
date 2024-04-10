@@ -13,6 +13,7 @@ class UploadManifestSession:
     # upload values 
     main_total_generate_dataset_size = None
     total_files_to_upload = None 
+    elapsed_time = None
 
     def __init__(self):
         self.df_mid = None
@@ -22,6 +23,12 @@ class UploadManifestSession:
     
     def get_df_mid(self):
         return self.df_mid
+    
+    def set_elapsed_time(self, time):
+        self.elapsed_time = time
+
+    def get_elapsed_time(self):
+        return self.elapsed_time
     
     def set_main_total_generate_dataset_size(self, size):
         self.main_total_generate_dataset_size = size

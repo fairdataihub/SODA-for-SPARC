@@ -1903,6 +1903,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
     global bytes_uploaded_per_file
     global total_bytes_uploaded_per_file
     global bytes_file_path_dict
+    global elapsed_time
 
 
     total_files = 0
@@ -2795,6 +2796,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
 
         # reset the manifests used for the upload session                                 
         ums.set_df_mid(None)
+        ums.set_elapsed_time(None)
         
         # reset the calculated values for the upload session
         bytes_file_path_dict = {}
@@ -2807,6 +2809,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
         # reset the total bytes uploaded for any file that has not been fully uploaded
         ums.set_main_total_generate_dataset_size(main_total_generate_dataset_size)
         ums.set_total_files_to_upload(total_files)
+        ums.set_elapsed_time(elapsed_time)
+        
 
 
         raise e
@@ -2822,6 +2826,7 @@ main_generate_destination = ""
 main_initial_bfdataset_size = 0
 myds = ""
 renaming_files_flow = False
+elapsed_time = None
 
 
 
@@ -3277,6 +3282,7 @@ def main_curate_function(soda_json_structure, resume):
     }
 
 
+
 def main_curate_function_progress():
     """
     Function frequently called by front end to help keep track of the dataset generation progress
@@ -3294,10 +3300,18 @@ def main_curate_function_progress():
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the upload session
     global myds
     global renaming_files_flow
+    global ums 
+    global elapsed_time
 
 
-    elapsed_time = time.time() - generate_start_time
+    prior_elapsed_time = ums.get_elapsed_time()
+    if prior_elapsed_time is not None: 
+        elapsed_time =  ( time.time() - generate_start_time ) + prior_elapsed_time
+    else:
+        elapsed_time = time.time() - generate_start_time
+
     elapsed_time_formatted = time_format(elapsed_time)
+
 
     if renaming_files_flow:
         testing_variable = main_generated_dataset_size

@@ -7141,11 +7141,13 @@ const preGenerateSetup = async (e, elementContext) => {
   }
 
   // from here you can modify
-  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
-  progressStatus.innerHTML = "";
-  document.getElementById("div-new-curate-progress").style.display = "none";
+
+
   if (!resume) {
     progressBarNewCurate.value = 0;
+    progressStatus.innerHTML = "";
+    document.getElementById("div-new-curate-progress").style.display = "none";
+    progressStatus.innerHTML = "Please wait...";
   }
 
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
