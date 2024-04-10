@@ -7113,6 +7113,11 @@ const preGenerateSetup = async (e, elementContext) => {
   if (!resume) {
     progressStatus.innerHTML = "Please wait while we verify a few things...";
     generateProgressBar.value = 0;
+  } else {
+    // NOTE: This only works if we got to the upload. SO add more code to check for this.
+    let preservedInformation = progressStatus.innerHTML.split("<br>").slice(2).join("<br>");
+    progressStatus.innerHTML = `Please wait while we perform setup for retrying the upload...<br>${preservedInformation}`;
+    // replace the first line with the following
   }
   document.getElementById("wrapper-wrap").style.display = "none";
 
