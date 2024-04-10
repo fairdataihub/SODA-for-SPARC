@@ -7109,12 +7109,13 @@ const preGenerateSetup = async (e, elementContext) => {
 
   let [dataset_name, dataset_destination] = setDatasetNameAndDestination(sodaJSONObj);
 
-  generateProgressBar.value = 0;
-
-  progressStatus.innerHTML = "Please wait while we verify a few things...";
+  let resume = e.target.textContent.trim() == "Retry" ? true : false;
+  if (!resume) {
+    progressStatus.innerHTML = "Please wait while we verify a few things...";
+    generateProgressBar.value = 0;
+  }
   document.getElementById("wrapper-wrap").style.display = "none";
 
-  let statusText = "Please wait while we verify a few things...";
   if (dataset_destination == "Pennsieve") {
     setTimeout(() => {
       document.getElementById("wrapper-wrap").style.display = "none";
@@ -7137,16 +7138,17 @@ const preGenerateSetup = async (e, elementContext) => {
   }
 
   // from here you can modify
-  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
-  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
-  progressStatus.innerHTML = "";
-  document.getElementById("div-new-curate-progress").style.display = "none";
+  if (!resume) {
+    document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
+    progressStatus.innerHTML = "";
+    document.getElementById("div-new-curate-progress").style.display = "none";
+    progressBarNewCurate.value = 0;
+  }
 
-  progressBarNewCurate.value = 0;
+  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
 
   deleteTreeviewFiles(sodaJSONObj);
 
-  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
   let errorMessage = await checkEmptyFilesAndFolders(sodaJSONObj);
 
   if (errorMessage) {
@@ -7191,6 +7193,10 @@ document.getElementById("button-generate").addEventListener("click", async funct
 });
 
 document.getElementById("button-retry").addEventListener("click", async function (e) {
+  // document.getElementById("header-retry-curate-progress-bar-status").textContent =
+  //   `Prior Upload Progress Information. Once the upload has restarted progress will be reset for any partially uploaded files.`;
+  // let retryProgressStatus = document.getElementById("para-retry-curate-progress-bar-status");
+  // retryProgressStatus.innerHTML = progressStatus.innerHTML;
   preGenerateSetup(e, this);
 });
 
@@ -7233,6 +7239,8 @@ window.uploadComplete = new Notyf({
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
 const initiate_generate = async (e) => {
+  let resume = e.target.textContent.trim() == "Retry" ? true : false;
+
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
   document.getElementById("guided_mode_view").style.pointerEvents = "none";
 
@@ -7242,12 +7250,14 @@ const initiate_generate = async (e) => {
   var main_total_generate_dataset_size;
 
   // get the amount of files
-  document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ...";
+  if (!resume) {
+    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+      "Preparing files ...";
+    progressStatus.innerHTML = "Preparing files ...";
+    document.getElementById("para-please-wait-new-curate").innerHTML = "";
+    document.getElementById("div-new-curate-progress").style.display = "block";
+  }
 
-  progressStatus.innerHTML = "Preparing files ...";
-
-  document.getElementById("para-please-wait-new-curate").innerHTML = "";
-  document.getElementById("div-new-curate-progress").style.display = "block";
   document.getElementById("div-generate-comeback").style.display = "none";
   document.getElementById("wrapper-wrap").style.display = "none";
 
@@ -7356,11 +7366,6 @@ const initiate_generate = async (e) => {
     datasetUploadSession.startSession();
   }
 
-  console.log(e.target);
-  console.log(e.target.textContent.trim());
-  let resume = e.target.textContent.trim() == "Retry" ? true : false;
-  console.log(resume);
-
   let start = performance.now();
   client
     .post(
@@ -7450,6 +7455,7 @@ const initiate_generate = async (e) => {
       document.getElementById("guided_mode_view").style.pointerEvents = "";
     })
     .catch(async (error) => {
+      clearInterval(timerProgress);
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
 
@@ -7569,10 +7575,11 @@ const initiate_generate = async (e) => {
           document.getElementById("generate-dataset-progress-tab").style.display = "flex";
         }
       });
-      progressStatus.innerHTML = "";
-      statusText.innerHTML = "";
-      document.getElementById("div-new-curate-progress").style.display = "none";
-      generateProgressBar.value = 0;
+      // progressStatus.innerHTML = "";
+      // statusText.innerHTML = "";
+      // TODO: Once the user hits exit this should be hidden if not automatically
+      // document.getElementById("div-new-curate-progress").style.display = "none";
+      // generateProgressBar.value = 0;
 
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
@@ -7716,13 +7723,6 @@ const initiate_generate = async (e) => {
 
       divGenerateProgressBar.style.display = "block";
 
-      console.log("main_curate_status: ", main_curate_status);
-      console.log("main_curate_progress_message: ", main_curate_progress_message);
-      console.log("main_total_generate_dataset_size: ", main_total_generate_dataset_size);
-      console.log("main_generated_dataset_size: ", main_generated_dataset_size);
-      console.log("elapsed_time_formatted: ", elapsed_time_formatted);
-      console.log("total_files_uploaded: ", total_files_uploaded);
-
       if (main_curate_progress_message.includes("Success: COMPLETED!")) {
         clearInterval(timerProgress);
         generateProgressBar.value = 100;
@@ -7732,8 +7732,17 @@ const initiate_generate = async (e) => {
         successful = true;
       }
     } else {
-      statusText.innerHTML = `${main_curate_progress_message}<br>Elapsed time: ${elapsed_time_formatted}`;
-      progressStatus.innerHTML = `${main_curate_progress_message}<br>Elapsed time: ${elapsed_time_formatted}`;
+      if (!resume) {
+        statusText.innerHTML = `${main_curate_progress_message}<br>Elapsed time: ${elapsed_time_formatted}`;
+        progressStatus.innerHTML = `${main_curate_progress_message}<br>Elapsed time: ${elapsed_time_formatted}`;
+      } else {
+        console.log(main_curate_progress_message);
+        console.log(elapsed_time_formatted);
+        if (main_curate_progress_message !== "") {
+          let preservedInformation = progressStatus.innerHTML.split("<br>").slice(2).join("<br>");
+          progressStatus.innerHTML = `${main_curate_progress_message}<br>Elapsed time: ${elapsed_time_formatted}<br>${preservedInformation}`;
+        }
+      }
     }
 
     if (main_curate_progress_message.includes("Preparing files to be renamed...")) {
