@@ -7239,7 +7239,7 @@ window.uploadComplete = new Notyf({
 });
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
-const initiate_generate = async (e) => {
+const                                                                                                                                                                                           initiate_generate = async (e) => {
   let resume = e.target.textContent.trim() == "Retry" ? true : false;
 
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
@@ -7457,6 +7457,14 @@ const initiate_generate = async (e) => {
     })
     .catch(async (error) => {
       clearInterval(timerProgress);
+
+      // set the first line of progressStatus to 'Upload Failed'
+      if(progressStatus.innerHTML.split("<br>").length > 1) {
+        progressStatus.innerHTML = `Upload Failed<br>${progressStatus.innerHTML.split("<br>").slice(1).join("<br>")}`
+      } else {
+        progressStatus.innerHTML = `Upload Failed`;
+      }
+      
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
 
@@ -7602,6 +7610,12 @@ const initiate_generate = async (e) => {
     } catch (error) {
       clientError(error);
       let emessage = userErrorMessage(error);
+
+      if(progressStatus.innerHTML.split("<br>").length > 1) {
+        progressStatus.innerHTML = `Upload Failed<br>${progressStatus.innerHTML.split("<br>").slice(1).join("<br>")}`
+      } else {
+        progressStatus.innerHTML = `Upload Failed`;
+      }
 
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
         `<span style='color: red;'>${emessage}</span>`;

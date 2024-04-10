@@ -2810,11 +2810,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
         ums.set_main_total_generate_dataset_size(main_total_generate_dataset_size)
         ums.set_total_files_to_upload(total_files)
         ums.set_elapsed_time(elapsed_time)
-        main_curate_progress_message = ("Upload Failed")
-        time.sleep(1)
-        
-
-
         raise e
 
 main_curate_status = ""
