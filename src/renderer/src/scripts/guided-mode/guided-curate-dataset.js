@@ -2763,7 +2763,7 @@ for (const infoDropdown of Array.from(infoDropdowns)) {
   });
 }
 
-window.guidedSaveAndExit = async () => {
+const guidedSaveAndExit = async () => {
   if (!window.sodaJSONObj["digital-metadata"]["name"]) {
     // If a progress file has not been created, then we don't need to save anything
     guidedTransitionToHome();
@@ -16457,7 +16457,7 @@ $("#guided-next-button").on("click", async function () {
 
 // Save and exit button click handler
 document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
-  await window.guidedSaveAndExit();
+  await guidedSaveAndExit();
 });
 
 const getPrevPageNotSkipped = (currentPageID) => {
@@ -16481,7 +16481,7 @@ $("#guided-back-button").on("click", async () => {
   // If the target page when clicking the back button does not exist, then we are on the first not skipped page.
   // In this case, we want to save and exit guided mode.
   if (!targetPage) {
-    await window.guidedSaveAndExit();
+    await guidedSaveAndExit();
     return;
   }
 
