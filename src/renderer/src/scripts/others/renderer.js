@@ -7576,11 +7576,7 @@ const initiate_generate = async (e) => {
           document.getElementById("generate-dataset-progress-tab").style.display = "flex";
         }
       });
-      // progressStatus.innerHTML = "";
-      // statusText.innerHTML = "";
-      // TODO: Once the user hits exit this should be hidden if not automatically
-      // document.getElementById("div-new-curate-progress").style.display = "none";
-      // generateProgressBar.value = 0;
+
 
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
