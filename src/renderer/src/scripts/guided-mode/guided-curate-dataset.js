@@ -5118,26 +5118,24 @@ window.openPage = async (targetPageID) => {
     // as their progress is saved when continuing to the next page
     const datasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
     const nextButton = document.getElementById("guided-next-button");
-    const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
     const nextButtonSpans = document.querySelectorAll(".next-button-span");
 
     if (!datasetName) {
-      nextButton.innerHTML = "Continue";
+      // set the span inside of nextButton to "Continue"
+      nextButton.querySelector("span.nav-button-text").innerHTML = "Continue";
       nextButtonSpans.forEach((span) => {
         span.innerHTML = "Continue";
       });
-      saveAndExitButton.innerHTML = "Return to Home Page";
       guidedLockSideBar(false);
     } else {
       // Set the dataset name display in the side bar
       const datasetNameDisplay = document.getElementById("guided-navbar-dataset-name-display");
       datasetNameDisplay.innerHTML = datasetName;
 
-      nextButton.innerHTML = "Save and Continue";
+      nextButton.querySelector("span.nav-button-text").innerHTML = "Save and Continue";
       nextButtonSpans.forEach((span) => {
         span.innerHTML = "Save and Continue";
       });
-      saveAndExitButton.innerHTML = `<i class="far fa-save" style="margin-right: 10px"></i>Save and Exit`;
       guidedLockSideBar(true);
     }
 
@@ -16455,6 +16453,11 @@ $("#guided-next-button").on("click", async function () {
       });
     }
   }
+});
+
+// Save and exit button click handler
+document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
+  await window.guidedSaveAndExit();
 });
 
 const getPrevPageNotSkipped = (currentPageID) => {
