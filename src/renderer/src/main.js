@@ -26,10 +26,15 @@ import "./scripts/metadata-files/downloadTemplates";
 import "./scripts/advanced-features/advanced_features";
 import "./scripts/sds-templates/sds_templates";
 
+// Render React Components into the DOM
+import "./components/renderers/ExternalLinkRenderer";
+import "./components/renderers/GuidedModePageRenderer";
+
 // Application Lotties
 import "./assets/lotties/activate-lotties";
 
 // Application CSS
+import "@mantine/core/styles.css";
 import "cropperjs/dist/cropper.css";
 import "fomantic-ui/dist/semantic.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
