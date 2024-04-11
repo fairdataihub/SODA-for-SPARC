@@ -1974,7 +1974,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             The second list will have the relative files paths according to the dataset structure.
             If the folder does not existing yet on Pennsieve the agent will create it.
             """
-            print("recursive_dataset_scan_for_upload")
             global main_total_generate_dataset_size
             global bytes_file_path_dict
             list_of_local_file_paths = []
