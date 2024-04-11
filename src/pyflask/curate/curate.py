@@ -1178,7 +1178,7 @@ def create_high_lvl_manifest_files_existing_ps(
                 (
                     my_bf_existing_files_name,
                     my_bf_existing_files_name_with_extension,
-                ) = ps_get_existing_files_details(my_bf_folder, ps)
+                ) = ps_get_existing_files_details(my_bf_folder)
             else:
                 my_bf_existing_files = []
                 my_bf_existing_files_name = []
@@ -1449,7 +1449,7 @@ def ps_get_existing_folders_details(ps_folders):
     return ps_existing_folders, ps_existing_folders_name
 
 
-def ps_get_existing_files_details(ps_folder, ps):
+def ps_get_existing_files_details(ps_folder):
     # TODO: Dorian -> ["extensions doesn't seem to be returned anymore by the endpoint"]
     def verify_file_name(file_name, extension):
         if extension == "":
@@ -2144,7 +2144,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 (
                     my_bf_existing_files_name,
                     my_bf_existing_files_name_with_extension,
-                ) = ps_get_existing_files_details(my_tracking_folder, ps)
+                ) = ps_get_existing_files_details(my_tracking_folder)
 
                 for file_key, file in my_folder["files"].items():
                     # if local then we are either adding a new file to an existing/new dataset or replacing a file in an existing dataset
@@ -2162,7 +2162,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 (
                     my_bf_existing_files_name,
                     my_bf_existing_files_name_with_extension,
-                ) = ps_get_existing_files_details(my_tracking_folder, ps)
+                ) = ps_get_existing_files_details(my_tracking_folder)
 
                 list_local_files = []
                 list_projected_names = []
@@ -2399,7 +2399,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 (
                     my_bf_existing_files_name,
                     _,
-                ) = ps_get_existing_files_details(ds, ps)
+                ) = ps_get_existing_files_details(ds)
                 metadata_files = soda_json_structure["metadata-files"]
                 for file_key, file in metadata_files.items():
                     if file["type"] == "local":
@@ -2914,7 +2914,7 @@ def ps_check_dataset_files_validity(soda_json_structure):
                         try:
                             r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}/view", headers=create_request_headers(get_access_token()))
                             r.raise_for_status()
-                        except Exception as e:
+                        except Exception:
                             error.append(f"{relative_path} id: {collection_id}")
                         continue
                     if next((item for item in root_folder if item["content"]["id"] == collection_id), None) is None:
@@ -2970,7 +2970,6 @@ def clean_json_structure(soda_json_structure):
 
         for item in list(folder["folders"]):
             recursive_file_delete(folder["folders"][item])
-        return
 
 
     # Rename any files that exist on Pennsieve
@@ -2986,7 +2985,6 @@ def clean_json_structure(soda_json_structure):
         for item in list(folder["folders"]):
             recursive_file_rename(folder["folders"][item])
 
-        return
 
     def recursive_folder_delete(folder):
         """
