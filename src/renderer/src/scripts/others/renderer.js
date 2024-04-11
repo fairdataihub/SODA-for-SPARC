@@ -7783,6 +7783,7 @@ const initiate_generate = async (e) => {
         uploadLocally.disabled = false;
 
         // Add the original classes back to the buttons
+        document.getElementById("wrapper-wrap").style.display = "flex";
         organizeDataset_option_buttons.style.display = "flex";
         guidedModeHomePageButton.className = "button-prompt-container";
         organizeDataset.className = "content-button is-selected";
