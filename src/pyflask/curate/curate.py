@@ -269,15 +269,14 @@ def open_file(file_path):
     Action:
         Opens file explorer window to the given path
     """
-    try:
-        if platform.system() == "Windows":
-            subprocess.Popen(f"explorer /select,{str(file_path)}")
-        elif platform.system() == "Darwin":
-            subprocess.Popen(["open", file_path])
-        else:
-            subprocess.Popen(["xdg-open", file_path])
-    except Exception as e:
-        raise e
+
+    if platform.system() == "Windows":
+        subprocess.Popen(f"explorer /select,{str(file_path)}")
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", file_path])
+    else:
+        subprocess.Popen(["xdg-open", file_path])
+
 
 
 def folder_size(path):
