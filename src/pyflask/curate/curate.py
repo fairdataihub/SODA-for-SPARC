@@ -770,7 +770,7 @@ manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
 
 
-def check_JSON_size(jsonStructure):
+def check_json_size(jsonStructure):
     """
         This function is called to check size of files that will be created locally on a user's device.
     """

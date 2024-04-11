@@ -14,7 +14,7 @@ from curate import (
     main_curate_function_progress,
     generate_manifest_file_locally,
     generate_manifest_file_data,
-    check_JSON_size,
+    check_json_size,
     clean_json_structure,
     check_server_access_to_files,
 )
@@ -277,6 +277,6 @@ class DatasetSize(Resource):
         soda_json_structure = data["soda_json_structure"]
 
         try:
-            return check_JSON_size(soda_json_structure)
+            return check_json_size(soda_json_structure)
         except Exception as e:
             api.abort(500, str(e))
