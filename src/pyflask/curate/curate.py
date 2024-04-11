@@ -3042,8 +3042,10 @@ def validate_local_dataset_generate_path(soda_json_structure):
 
 
 def generating_locally(soda_json_structure):
-    return "generate-dataset" in soda_json_structure.keys() and soda_json_structure["generate-dataset"]["destination"] == "local"
+    return soda_json_structure["generate-dataset"]["destination"] == "local"
 
+def generating_on_ps(soda_json_structure):
+    return soda_json_structure["generate-dataset"]["destination"] == "bf"
 
 def uploading_with_ps_account(soda_json_structure):
     return "bf-account-selected" in soda_json_structure
@@ -3055,52 +3057,103 @@ def can_resume_prior_upload(resume_status):
     global ums 
     return resume_status and ums.df_mid_has_progress()
 
-
+def virtual_dataset_empty(soda_json_structure):
+    return (
+        "dataset-structure" not in soda_json_structure
+        and "metadata-files" not in soda_json_structure
+        )
 
 def generate_options_set(soda_json_structure):
     return "generate-dataset" in soda_json_structure.keys()
 
-def main_curate_function(soda_json_structure, resume):
-    global namespace_logger
 
-    namespace_logger.info("Starting main_curate_function")
-    namespace_logger.info(f"main_curate_function metadata generate-options={soda_json_structure['generate-dataset']}")
+def get_dataset_with_backoff(selected_dataset_id):
+    # check that dataset was created with a limited retry (for some users the dataset isn't automatically accessible)
+    attempts = 0
+    while(attempts < 3):
+        try: 
+            # whether we are generating a new dataset or merging, we want the dataset information for later steps
+            r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
+            r.raise_for_status()
+            return r.json()
+        except Exception as e:
+            attempts += 1 
+            # check if final attempt
+            if attempts >= 2:
+                # raise the error to the user
+                raise e
+            time.sleep(10)
+
+
+def generate_new_ds_ps_resume(soda_json_structure, dataset_name, ps):
+    # get the dataset id by the name 
+    try: 
+        selected_dataset_id = get_dataset_id(dataset_name)
+    except Exception as e:
+        if e.code == 404:
+            # dataset does not exist - create it 
+            ds = ps_create_new_dataset(dataset_name, ps)
+            selected_dataset_id = ds["content"]["id"]
+    
+    myds = get_dataset_with_backoff(selected_dataset_id)
+    ps_upload_to_dataset(soda_json_structure, ps, myds, True)
+
+def generate_new_ds_ps(soda_json_structure, dataset_name, ps):
+    ds = ps_create_new_dataset(dataset_name, ps)
+    selected_dataset_id = ds["content"]["id"]    
+    myds = get_dataset_with_backoff(selected_dataset_id)
+    ps_upload_to_dataset(soda_json_structure, ps, myds, False)
+
+
+def generate_dataset(soda_json_structure, resume, ps):
+    global main_generate_destination
+    global main_total_generate_dataset_size
+
+ 
+    # Generate dataset locally
+    if generating_locally(soda_json_structure):
+        main_generate_destination = soda_json_structure["generate-dataset"][
+            "destination"
+        ]
+        _, main_total_generate_dataset_size = generate_dataset_locally(
+            soda_json_structure
+        )
+
+    # Generate dataset to Pennsieve
+    if generating_on_ps(soda_json_structure):
+        main_generate_destination = soda_json_structure["generate-dataset"][
+            "destination"
+        ]
+        generate_option = soda_json_structure["generate-dataset"]["generate-option"]
+
+        if uploading_to_existing_ps_dataset(soda_json_structure):
+            # make an api request to pennsieve to get the dataset details
+            r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
+            r.raise_for_status()
+            myds = r.json()
+
+            if can_resume_prior_upload(resume): 
+                ps_upload_to_dataset(soda_json_structure, ps, myds, resume)
+            else:
+                ps_update_existing_dataset(soda_json_structure, myds, ps, resume)
+
+        elif generate_option == "new":
+            # if dataset name is in the generate-dataset section, we are generating a new dataset
+            if "dataset-name" in soda_json_structure["generate-dataset"]:
+                dataset_name = soda_json_structure["generate-dataset"][
+                    "dataset-name"
+                ]
+                if resume: 
+                    generate_new_ds_ps_resume(soda_json_structure, dataset_name, ps)
+                else: 
+                    generate_new_ds_ps(soda_json_structure, dataset_name, ps)
+
+
+def validate_dataset_structure(soda_json_structure, resume):
 
     global main_curate_status
     global main_curate_progress_message
-    global main_total_generate_dataset_size
-    global main_generated_dataset_size
-    global start_generate
-    global generate_start_time
-    global main_generate_destination
-    global main_initial_bfdataset_size
-    global main_curation_uploaded_files
-    global uploaded_folder_counter
-    global ums
-
-    global myds
-    global generated_dataset_id
-
-    start_generate = 0
-    start = timer()
-    generate_start_time = time.time()
-
-    # variables for tracking the progress of the curate process on the frontend 
-    main_curate_status = ""
-    main_curate_progress_message = "Starting..."
-    main_total_generate_dataset_size = 0
-    main_generated_dataset_size = 0
-    main_curation_uploaded_files = 0
-    uploaded_folder_counter = 0
-    generated_dataset_id = None
-
-    main_curate_status = "Curating"
-    main_curate_progress_message = "Starting dataset curation"
-    main_generate_destination = ""
-    main_initial_bfdataset_size = 0
-
-    myds = ""
-    error = ""
+    global namespace_logger
 
     # 1] Check for potential errors
     namespace_logger.info("main_curate_function step 1")
@@ -3129,7 +3182,7 @@ def main_curate_function(soda_json_structure, resume):
                 "Checking that the selected Pennsieve account is valid"
             )
             accountname = soda_json_structure["bf-account-selected"]["account-name"]
-            ps = connect_pennsieve_client(accountname)
+            connect_pennsieve_client(accountname)
         except Exception as e:
             main_curate_status = "Done"
             abort(400, "Please select a valid Pennsieve account.")
@@ -3161,38 +3214,28 @@ def main_curate_function(soda_json_structure, resume):
     # 1.3. Check that specified dataset files and folders are valid (existing path) if generate dataset is requested
     # Note: Empty folders and 0 kb files will be removed without warning (a warning will be provided on the front end before starting the curate process)
     # Check at least one file or folder are added to the dataset
-    try:
-        main_curate_progress_message = "Checking that the dataset is not empty"
-        if (
-            "dataset-structure" not in soda_json_structure
-            and "metadata-files" not in soda_json_structure
-        ):
-            main_curate_status = "Done" 
-            abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
-    except Exception as e:
-        main_curate_status = "Done"
-        raise e
+    main_curate_progress_message = "Checking that the dataset is not empty"
+    if virtual_dataset_empty(soda_json_structure):
+        main_curate_status = "Done" 
+        abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
+
 
     namespace_logger.info("main_curate_function step 1.3.1")
 
     # Check that local files/folders exist
-    try:
-        if error := check_local_dataset_files_validity(soda_json_structure):
-            main_curate_status = "Done"
-            abort(400, error)
-
-        # check that dataset is not empty after removing all the empty files and folders
-        if not soda_json_structure["dataset-structure"]["folders"] and "metadata-files" not in soda_json_structure:
-            main_curate_status = "Done"
-            abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
-    except Exception as e:
+    if error := check_local_dataset_files_validity(soda_json_structure):
         main_curate_status = "Done"
-        raise e
+        abort(400, error)
+
+    # check that dataset is not empty after removing all the empty files and folders
+    if virtual_dataset_empty(soda_json_structure):
+        main_curate_status = "Done"
+        abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
+
 
     namespace_logger.info("main_curate_function step 1.3.2")
     # Check that bf files/folders exist (Only used for when generating from an existing Pennsieve dataset)
-    generate_option = soda_json_structure["generate-dataset"]["generate-option"]
-    if generate_option == "existing-bf" and can_resume_prior_upload(resume) == False:
+    if uploading_to_existing_ps_dataset(soda_json_structure) and can_resume_prior_upload(resume) == False:                     
         try:
             main_curate_progress_message = (
                 "Checking that the Pennsieve files and folders are valid"
@@ -3208,79 +3251,70 @@ def main_curate_function(soda_json_structure, resume):
             raise e
 
 
+
+def reset_upload_session_environment():
+    global main_curate_status
+    global main_curate_progress_message
+    global main_total_generate_dataset_size
+    global main_generated_dataset_size
+    global start_generate
+    global generate_start_time
+    global main_generate_destination
+    global main_initial_bfdataset_size
+    global main_curation_uploaded_files
+    global uploaded_folder_counter
+    global ums
+
+    global myds
+    global generated_dataset_id
+
+    start_generate = 0
+    myds = ""
+    error = ""
+
+    generate_start_time = time.time()
+
+    # variables for tracking the progress of the curate process on the frontend 
+    main_curate_status = ""
+    main_curate_progress_message = "Starting..."
+    main_total_generate_dataset_size = 0
+    main_generated_dataset_size = 0
+    main_curation_uploaded_files = 0
+    uploaded_folder_counter = 0
+    generated_dataset_id = None
+
+    main_curate_status = "Curating"
+    main_curate_progress_message = "Starting dataset curation"
+    main_generate_destination = ""
+    main_initial_bfdataset_size = 0
+
+
+
+def main_curate_function(soda_json_structure, resume):
+    global namespace_logger
+    global main_curate_status
+
+    namespace_logger.info("Starting main_curate_function")
+    namespace_logger.info(f"main_curate_function metadata generate-options={soda_json_structure['generate-dataset']}")
+    start = timer()
+
+    reset_upload_session_environment()
+
+
+    validate_dataset_structure(soda_json_structure, resume)
+
+    
     namespace_logger.info("main_curate_function step 3")
 
     # 2] Generate
     main_curate_progress_message = "Generating dataset"
     try:
-        # Generate dataset locally
-        if soda_json_structure["generate-dataset"]["destination"] == "local":
-            main_generate_destination = soda_json_structure["generate-dataset"][
-                "destination"
-            ]
-            _, main_total_generate_dataset_size = generate_dataset_locally(
-                soda_json_structure
-            )
-
-        # Generate dataset to Pennsieve
-        if soda_json_structure["generate-dataset"]["destination"] == "bf":
-            main_generate_destination = soda_json_structure["generate-dataset"][
-                "destination"
-            ]
-            if generate_option == "existing-bf":
-                # make an api request to pennsieve to get the dataset details
-                r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
-                r.raise_for_status()
-                myds = r.json()
-
-                if can_resume_prior_upload(resume): 
-                    ps_upload_to_dataset(soda_json_structure, ps, myds, resume)
-                else:
-                    ps_update_existing_dataset(soda_json_structure, myds, ps, resume)
-
-            elif generate_option == "new":
-                # if dataset name is in the generate-dataset section, we are generating a new dataset
-                if "dataset-name" in soda_json_structure["generate-dataset"]:
-                    dataset_name = soda_json_structure["generate-dataset"][
-                        "dataset-name"
-                    ]
-                    if resume: 
-                        # get the dataset id by the name 
-                        try: 
-                            selected_dataset_id = get_dataset_id(dataset_name)
-                        except Exception as e:
-                            if e.code == 404:
-                                # dataset does not exist - create it 
-                                ds = ps_create_new_dataset(dataset_name, ps)
-                                selected_dataset_id = ds["content"]["id"]
-
-                    else: 
-                        ds = ps_create_new_dataset(dataset_name, ps)
-                        selected_dataset_id = ds["content"]["id"]
-                # check that dataset was created with a limited retry (for some users the dataset isn't automatically accessible)
-                attempts = 0
-                while(attempts < 3):
-                    try: 
-                        # whether we are generating a new dataset or merging, we want the dataset information for later steps
-                        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
-                        r.raise_for_status()
-                        myds = r.json()
-                        break
-                    except Exception as e:
-                        attempts += 1 
-                        # check if final attempt
-                        if attempts >= 2:
-                            # raise the error to the user
-                            raise e
-                        time.sleep(10)
-
-
-                ps_upload_to_dataset(soda_json_structure, ps, myds, resume)
+        accountname = soda_json_structure["bf-account-selected"]["account-name"]
+        ps = connect_pennsieve_client(accountname)
+        generate_dataset(soda_json_structure, resume, ps)
     except Exception as e:
         main_curate_status = "Done"
         raise e
-
-    namespace_logger.info("main_curate_function finished")
 
     main_curate_status = "Done"
     main_curate_progress_message = "Success: COMPLETED!"
