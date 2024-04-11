@@ -37,7 +37,9 @@ import {
   swalFileListDoubleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
-import * as xlsx from "xlsx";
+
+// Import state management stores
+import useGuidedModeStore from "../../stores/guidedModeStore";
 
 import "bootstrap-select";
 // import DragSort from '@yaireo/dragsort'
@@ -1058,10 +1060,8 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-name-subtitle-tab") {
-      let datasetNameInput = document.getElementById("guided-dataset-name-input").value.trim();
-      let datasetSubtitleInput = document
-        .getElementById("guided-dataset-subtitle-input")
-        .value.trim();
+      const datasetNameInput = useGuidedModeStore.getState().datasetName.trim();
+      const datasetSubtitleInput = useGuidedModeStore.getState().datasetSubtitle.trim();
 
       //Throw error if no dataset name or subtitle were added
       if (!datasetNameInput) {
@@ -1074,7 +1074,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         errorArray.push({
           type: "notyf",
           message:
-            "A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.,",
+            "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
         });
       }
       if (!datasetSubtitleInput) {
@@ -1083,9 +1083,11 @@ const savePageChanges = async (pageBeingLeftID) => {
           message: "Please enter a dataset subtitle.",
         });
       }
+
       if (errorArray.length > 0) {
         throw errorArray;
       }
+
       const currentDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
       if (currentDatasetName) {
         // Update the progress file path name and banner image path if needed
@@ -5192,15 +5194,8 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-name-subtitle-tab") {
-      const datasetNameInput = document.getElementById("guided-dataset-name-input");
-      const datasetSubtitleInput = document.getElementById("guided-dataset-subtitle-input");
-      datasetNameInput.value = "";
-      datasetSubtitleInput.value = "";
-
       const datasetName = getGuidedDatasetName();
-      if (datasetName) {
-        datasetNameInput.value = datasetName;
-      }
+      useGuidedModeStore.setState({ datasetName: datasetName });
 
       if (pageNeedsUpdateFromPennsieve("guided-name-subtitle-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
@@ -5215,7 +5210,7 @@ window.openPage = async (targetPageID) => {
 
           // Save the subtitle to the JSON and add it to the input
           window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
-          datasetSubtitleInput.value = datasetSubtitle;
+          useGuidedModeStore.setState({ datasetSubtitle: datasetSubtitle });
 
           window.sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
         } catch (error) {
@@ -5229,16 +5224,8 @@ window.openPage = async (targetPageID) => {
       } else {
         //Update subtitle from JSON
         const datasetSubtitle = getGuidedDatasetSubtitle();
-        if (datasetSubtitle) {
-          datasetSubtitleInput.value = datasetSubtitle;
-        }
+        useGuidedModeStore.setState({ datasetSubtitle: datasetSubtitle });
       }
-
-      //Set the characters remaining counter
-      window.countCharacters(
-        document.getElementById("guided-dataset-subtitle-input"),
-        document.getElementById("guided-subtitle-char-count")
-      );
     }
 
     if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
