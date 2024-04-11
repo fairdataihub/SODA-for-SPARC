@@ -7109,7 +7109,7 @@ const preGenerateSetup = async (e, elementContext) => {
 
   let [dataset_name, dataset_destination] = setDatasetNameAndDestination(sodaJSONObj);
 
-  let resume = e.target.textContent.trim() == "Retry"
+  let resume = e.target.textContent.trim() == "Retry";
   if (!resume) {
     progressStatus.innerHTML = "Please wait while we verify a few things...";
     generateProgressBar.value = 0;
@@ -7240,7 +7240,7 @@ window.uploadComplete = new Notyf({
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
 const initiate_generate = async (e) => {
-  let resume = e.target.textContent.trim() == "Retry"
+  let resume = e.target.textContent.trim() == "Retry";
 
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
   document.getElementById("guided_mode_view").style.pointerEvents = "none";
@@ -7783,6 +7783,7 @@ const initiate_generate = async (e) => {
         uploadLocally.disabled = false;
 
         // Add the original classes back to the buttons
+        document.getElementById("wrapper-wrap").style.display = "flex";
         organizeDataset_option_buttons.style.display = "flex";
         guidedModeHomePageButton.className = "button-prompt-container";
         organizeDataset.className = "content-button is-selected";

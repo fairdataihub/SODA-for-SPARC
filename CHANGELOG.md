@@ -5,6 +5,18 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v14.1.0 - 2024-04-01
+
+## Feature Additions:
+
+- SODA disallows '.,\' in dataset titles.
+- SODA tracks int_ids as well as dataset ids so that we can track a dataset once it has been published to SPARC.Science.
+
+## Bug fixes:
+
+- SODA returns more informative error messages from the Pennsieve API when an error occurs in the curation pipeline.
+- SODA shows and hides the Return and Exit buttons that appear when a dataset upload fails in the 'Upload Dataset' feature.
+
 ## v14.0.0 - 2024-03-11
 
 ## Feature Additions:

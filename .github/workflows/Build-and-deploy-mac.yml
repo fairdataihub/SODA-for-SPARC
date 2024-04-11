@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      - retry-upload-dataset
+      - pre-staging
 
 jobs:
   deploy-on-mac:
