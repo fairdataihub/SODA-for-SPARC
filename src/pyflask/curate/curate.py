@@ -2531,8 +2531,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             # remove the item just added to the manifest 
             list_upload_files[0][0].pop(0)
 
-            loc = get_agent_installation_location()
-
             # reset global variables used in the subscriber monitoring function
             bytes_uploaded_per_file = {}
             total_bytes_uploaded = {"value": 0}
