@@ -15570,7 +15570,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       `/curate_datasets/curation`,
       {
         soda_json_structure: window.sodaJSONObj,
-        resume: window.retryGuidedMode ? true : false,
+        resume: !!window.retryGuidedMode,
       },
       { timeout: 0 }
     )
