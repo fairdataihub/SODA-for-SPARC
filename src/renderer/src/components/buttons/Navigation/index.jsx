@@ -3,10 +3,24 @@ import { useHover } from "@mantine/hooks";
 import { IconArrowLeft, IconArrowRight, IconDeviceFloppy } from "@tabler/icons-react";
 import classes from "./NavigationButton.module.css";
 
-const NavigationButton = ({ buttonId, buttonText, navIcon, buttonSize }) => {
+const NavigationButton = ({
+  buttonId,
+  buttonText,
+  navIcon,
+  buttonSize,
+  buttonColor,
+  buttonCustomWidth,
+}) => {
   const { hovered, ref } = useHover();
   return (
-    <Button variant="outline" id={buttonId} size={buttonSize} ref={ref}>
+    <Button
+      variant="outline"
+      color={buttonColor}
+      id={buttonId}
+      size={buttonSize}
+      ref={ref}
+      style={{ width: buttonCustomWidth }}
+    >
       <Group>
         {navIcon === "save" && <IconDeviceFloppy />}
         {navIcon === "left-arrow" && (
