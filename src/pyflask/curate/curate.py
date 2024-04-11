@@ -1588,7 +1588,6 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
 
         for item in list(folder["folders"]):
             recursive_file_delete(folder["folders"][item])
-        return
 
     # Delete any files on Pennsieve that have been marked as deleted
     def metadata_file_delete(soda_json_structure):
@@ -1600,7 +1599,6 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
                     r.raise_for_status()
                     del folder[item]
 
-        return
 
     def recursive_item_path_create(folder, path):
         """
@@ -1687,7 +1685,6 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
         for item in list(folder["folders"]):
             recursive_check_moved_files(folder["folders"][item])
 
-        return
 
     # Rename any files that exist on Pennsieve
     def recursive_file_rename(folder):
@@ -1704,7 +1701,6 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
         for item in list(folder["folders"]):
             recursive_file_rename(folder["folders"][item])
 
-        return
 
     def recursive_folder_delete(folder):
         """
@@ -1730,7 +1726,6 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
             else:
                 recursive_folder_delete(folder["folders"][item])
 
-        return
 
     # Rename any folders that still exist.
     def recursive_folder_rename(folder, mode):
@@ -1745,7 +1740,6 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
                 r.raise_for_status()
             recursive_folder_rename(folder["folders"][item], mode)
 
-        return
 
     ps_dataset = ""
     start = timer()
@@ -1830,7 +1824,6 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
     namespace_logger.info(f"Time for ps_update_existing_dataset function: {timedelta(seconds=end - start)}")
     ps_upload_to_dataset(soda_json_structure, ps, ds, resume)
 
-    return
 
 
 def normalize_tracking_folder(tracking_folder):
