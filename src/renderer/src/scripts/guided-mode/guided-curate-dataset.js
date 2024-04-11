@@ -16455,7 +16455,10 @@ $("#guided-next-button").on("click", async function () {
   }
 });
 
-// Save and exit button click handler
+// Save and exit button click handlers
+document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
+  await guidedSaveAndExit();
+});
 document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
   await guidedSaveAndExit();
 });

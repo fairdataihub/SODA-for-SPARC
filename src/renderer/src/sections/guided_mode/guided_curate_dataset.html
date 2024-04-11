@@ -6192,30 +6192,29 @@
     </footer>
     <footer class="footer-container hidden" id="guided-sub-page-navigation-footer-div">
       <div class="guided--container-footer-buttons flex-end">
-        <button
-          class="ui secondary basic button"
-          id="guided-button-sub-page-back"
-          style="width: 130px !important; font-family: Poppins"
-        >
-          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-        </button>
+        <div
+          class="react-navigation-button"
+          data-button-id="guided-button-sub-page-back"
+          data-button-text="Back"
+          data-nav-icon="left-arrow"
+          data-button-size="md"
+        ></div>
       </div>
       <div class="guided--container-footer-buttons flex-between">
-        <button
-          class="ui secondary basic button green-hollow-button"
-          id="guided-button-sub-page-continue"
-          style="width: 130px !important; font-family: Poppins"
-        >
-          Next</button
-        ><button
-          class="ui secondary basic button save-and-exit-button"
-          id="guided-button-sub-page-save-and-exit"
-          style="width: 165px !important; font-family: Poppins"
-          onclick="window.guidedSaveAndExit()"
-        >
-          <i class="far fa-save" style="margin-right: 10px"></i>
-          Save and Exit
-        </button>
+        <div
+          class="react-navigation-button"
+          data-button-id="guided-button-sub-page-continue"
+          data-button-text="Next"
+          data-nav-icon="right-arrow"
+          data-button-size="md"
+        ></div>
+        <div
+          class="react-navigation-button"
+          data-button-id="guided-button-sub-page-save-and-exit"
+          data-button-text="Save and Exit"
+          data-nav-icon="save"
+          data-button-size="md"
+        ></div>
       </div>
     </footer>
   </div>
