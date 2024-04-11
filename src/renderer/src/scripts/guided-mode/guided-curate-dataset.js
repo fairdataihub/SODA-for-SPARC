@@ -15455,15 +15455,15 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
       icon: "error",
       title: "An error occurred during your upload",
       html: `
-          <p>Error message: ${emessage}</p>
-          <p>
-            You may retry the upload now or close SODA and try again later. If you close SODA, 
-            you will be able to resume your upload in progress by returning to Guided Mode and clicking the "Resume Upload"
-            button on your dataset's progress card.
-          </p>
-        `,
+        <p>Error message: ${emessage}</p>
+        <p>
+        You may retry the upload now or save and exit.
+        If you choose to save and exit you will be able to resume your upload by returning to Guided Mode and clicking the "Resume Upload"
+        button on your dataset's progress card.
+        </p>
+      `,
       showCancelButton: true,
-      cancelButtonText: "Close SODA Application",
+      cancelButtonText: "Save and Exit",
       confirmButtonText: "Retry Upload",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
@@ -15474,7 +15474,6 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
     });
 
     if (res.isConfirmed) {
-      console.log("Catched error here");
       window.retryGuidedMode = true; //set the retry flag to true
       let supplementary_checks = await window.run_pre_flight_checks(false);
       if (!supplementary_checks) {
@@ -15484,10 +15483,13 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
       return;
     }
 
-    console.log("Exiring app");
-
-    app.showExitPrompt = false;
-    app.quit();
+    const currentPageID = window.CURRENT_PAGE.id;
+    try {
+      await savePageChanges(currentPageID);
+    } catch (error) {
+      log.error("Error saving page changes", error);
+    }
+    guidedTransitionToHome();
   }
   guidedSetNavLoadingState(false);
 };
@@ -15828,13 +15830,13 @@ const guidedUploadDatasetToPennsieve = async () => {
         html: `
           <p>Error message: ${emessage}</p>
           <p>
-          You may retry the upload now or close SODA and try again later. If you close SODA, 
-          you will be able to resume your upload in progress by returning to Guided Mode and clicking the "Resume Upload"
+          You may retry the upload now or save and exit.
+          If you choose to save and exit you will be able to resume your upload by returning to Guided Mode and clicking the "Resume Upload"
           button on your dataset's progress card.
           </p>
         `,
         showCancelButton: true,
-        cancelButtonText: "Close SODA Application",
+        cancelButtonText: "Save and Exit",
         confirmButtonText: "Retry Upload",
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
@@ -15854,11 +15856,13 @@ const guidedUploadDatasetToPennsieve = async () => {
         return;
       }
 
-      console.log("Going to exit app");
-
-      // TODO: Update to new conventions
-      app.showExitPrompt = false;
-      app.quit();
+      const currentPageID = window.CURRENT_PAGE.id;
+      try {
+        await savePageChanges(currentPageID);
+      } catch (error) {
+        log.error("Error saving page changes", error);
+      }
+      guidedTransitionToHome();
     });
 
   const guidedUpdateUploadStatus = async () => {
