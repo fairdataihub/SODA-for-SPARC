@@ -59,9 +59,6 @@ class UploadManifestSession:
                 return True      
         return False
     
-    def get_remaining_df_file_count(self):
-        return self.get_remaining_file_count(self.df_mid)
-    
     def get_remaining_file_count(self, mid, total_files):
         if self.ps is None:
             self.ps = Pennsieve()
