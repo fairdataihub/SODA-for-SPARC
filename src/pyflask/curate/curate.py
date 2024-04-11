@@ -836,145 +836,144 @@ def generate_dataset_locally(soda_json_structure):
 
     main_curation_uploaded_files = 0
 
-    try:
-
-        def recursive_dataset_scan(
-            my_folder, my_folderpath, list_copy_files, list_move_files
-        ):
-            global main_total_generate_dataset_size
-
-            if "folders" in my_folder.keys():
-                for folder_key, folder in my_folder["folders"].items():
-                    folderpath = join(my_folderpath, folder_key)
-                    if not isdir(folderpath):
-                        mkdir(folderpath)
-                    list_copy_files, list_move_files = recursive_dataset_scan(
-                        folder, folderpath, list_copy_files, list_move_files
-                    )
-
-            if "files" in my_folder.keys():
-                for file_key, file in my_folder["files"].items():
-                    if "deleted" not in file["action"]:
-                        file_type = file["type"]
-                        if file_type == "local":
-                            file_path = file["path"]
-                            if isfile(file_path):
-                                destination_path = abspath(
-                                    join(my_folderpath, file_key)
-                                )
-                                if not isfile(destination_path):
-                                    if (
-                                        "existing" in file["action"]
-                                        and soda_json_structure["generate-dataset"][
-                                            "if-existing"
-                                        ]
-                                        == "merge"
-                                    ):
-                                        list_move_files.append(
-                                            [file_path, destination_path]
-                                        )
-                                    else:
-                                        main_total_generate_dataset_size += getsize(
-                                            file_path
-                                        )
-                                        list_copy_files.append(
-                                            [file_path, destination_path]
-                                        )
-            return list_copy_files, list_move_files
 
 
-        namespace_logger.info("generate_dataset_locally step 1")
-        # 1. Create new folder for dataset or use existing merge with existing or create new dataset
-        main_curate_progress_message = "Generating folder structure and list of files to be included in the dataset"
-        dataset_absolute_path = soda_json_structure["generate-dataset"]["path"]
-        if_existing = soda_json_structure["generate-dataset"]["if-existing"]
-        dataset_name = soda_json_structure["generate-dataset"]["dataset-name"]
-        datasetpath = join(dataset_absolute_path, dataset_name)
-        datasetpath = return_new_path(datasetpath)
-        mkdir(datasetpath)
+    def recursive_dataset_scan(
+        my_folder, my_folderpath, list_copy_files, list_move_files
+    ):
+        global main_total_generate_dataset_size
 
-        namespace_logger.info("generate_dataset_locally step 2")
-        # 2. Scan the dataset structure and:
-        # 2.1. Create all folders (with new name if renamed)
-        # 2.2. Compile a list of files to be copied and a list of files to be moved (with new name recorded if renamed)
-        list_copy_files = []
-        list_move_files = []
-        dataset_structure = soda_json_structure["dataset-structure"]
-        for folder_key, folder in dataset_structure["folders"].items():
-            folderpath = join(datasetpath, folder_key)
-            mkdir(folderpath)
-            list_copy_files, list_move_files = recursive_dataset_scan(
-                folder, folderpath, list_copy_files, list_move_files
-            )
+        if "folders" in my_folder.keys():
+            for folder_key, folder in my_folder["folders"].items():
+                folderpath = join(my_folderpath, folder_key)
+                if not isdir(folderpath):
+                    mkdir(folderpath)
+                list_copy_files, list_move_files = recursive_dataset_scan(
+                    folder, folderpath, list_copy_files, list_move_files
+                )
 
-
-        # 3. Add high-level metadata files in the list
-        if "metadata-files" in soda_json_structure.keys():
-            namespace_logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
-            metadata_files = soda_json_structure["metadata-files"]
-            for file_key, file in metadata_files.items():
-                if file["type"] == "local":
-                    metadata_path = file["path"]
-                    if isfile(metadata_path):
-                        destination_path = join(datasetpath, file_key)
-                        if "existing" in file["action"]:
-                            list_move_files.append([metadata_path, destination_path])
-                        elif "new" in file["action"]:
-                            main_total_generate_dataset_size += getsize(metadata_path)
-                            list_copy_files.append([metadata_path, destination_path])
-
-        # 4. Add manifest files in the list
-        if "manifest-files" in soda_json_structure.keys():
-            namespace_logger.info("generate_dataset_locally (optional) step 4 handling manifest-files")
-            main_curate_progress_message = "Preparing manifest files"
-            manifest_files_structure = create_high_level_manifest_files(
-                soda_json_structure, manifest_folder_path
-            )
-            for key in manifest_files_structure.keys():
-                manifestpath = manifest_files_structure[key]
-                if isfile(manifestpath):
-                    destination_path = join(datasetpath, key, "manifest.xlsx")
-                    main_total_generate_dataset_size += getsize(manifestpath)
-                    list_copy_files.append([manifestpath, destination_path])
-
-        namespace_logger.info("generate_dataset_locally step 5 moving files to new location")
-        # 5. Move files to new location
-        main_curate_progress_message = "Moving files to new location"
-        for fileinfo in list_move_files:
-            srcfile = fileinfo[0]
-            distfile = fileinfo[1]
-            main_curate_progress_message = f"Moving file {str(srcfile)} to {str(distfile)}"
-            shutil.move(srcfile, distfile)
-
-        namespace_logger.info("generate_dataset_locally step 6 copying files to new location")
-        # 6. Copy files to new location
-        main_curate_progress_message = "Copying files to new location"
-        start_generate = 1
-        for fileinfo in list_copy_files:
-            srcfile = fileinfo[0]
-            distfile = fileinfo[1]
-            main_curate_progress_message = f"Copying file {str(srcfile)} to {str(distfile)}"
-            # track amount of copied files for loggin purposes
-            mycopyfile_with_metadata(srcfile, distfile)
-            main_curation_uploaded_files += 1
+        if "files" in my_folder.keys():
+            for file_key, file in my_folder["files"].items():
+                if "deleted" not in file["action"]:
+                    file_type = file["type"]
+                    if file_type == "local":
+                        file_path = file["path"]
+                        if isfile(file_path):
+                            destination_path = abspath(
+                                join(my_folderpath, file_key)
+                            )
+                            if not isfile(destination_path):
+                                if (
+                                    "existing" in file["action"]
+                                    and soda_json_structure["generate-dataset"][
+                                        "if-existing"
+                                    ]
+                                    == "merge"
+                                ):
+                                    list_move_files.append(
+                                        [file_path, destination_path]
+                                    )
+                                else:
+                                    main_total_generate_dataset_size += getsize(
+                                        file_path
+                                    )
+                                    list_copy_files.append(
+                                        [file_path, destination_path]
+                                    )
+        return list_copy_files, list_move_files
 
 
-        namespace_logger.info("generate_dataset_locally step 7")
-        # 7. Delete manifest folder and original folder if merge requested and rename new folder
-        shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-        if if_existing == "merge":
-            namespace_logger.info("generate_dataset_locally (optional) step 7.1 delete manifest folder if merge requested")
-            main_curate_progress_message = "Finalizing dataset"
-            original_dataset_path = join(dataset_absolute_path, dataset_name)
-            shutil.rmtree(original_dataset_path)
-            rename(datasetpath, original_dataset_path)
-            open_file(join(dataset_absolute_path, original_dataset_path))
-        else:
-            open_file(join(dataset_absolute_path, datasetpath))
-        return datasetpath, main_total_generate_dataset_size
+    namespace_logger.info("generate_dataset_locally step 1")
+    # 1. Create new folder for dataset or use existing merge with existing or create new dataset
+    main_curate_progress_message = "Generating folder structure and list of files to be included in the dataset"
+    dataset_absolute_path = soda_json_structure["generate-dataset"]["path"]
+    if_existing = soda_json_structure["generate-dataset"]["if-existing"]
+    dataset_name = soda_json_structure["generate-dataset"]["dataset-name"]
+    datasetpath = join(dataset_absolute_path, dataset_name)
+    datasetpath = return_new_path(datasetpath)
+    mkdir(datasetpath)
 
-    except Exception as e:
-        raise e
+    namespace_logger.info("generate_dataset_locally step 2")
+    # 2. Scan the dataset structure and:
+    # 2.1. Create all folders (with new name if renamed)
+    # 2.2. Compile a list of files to be copied and a list of files to be moved (with new name recorded if renamed)
+    list_copy_files = []
+    list_move_files = []
+    dataset_structure = soda_json_structure["dataset-structure"]
+    for folder_key, folder in dataset_structure["folders"].items():
+        folderpath = join(datasetpath, folder_key)
+        mkdir(folderpath)
+        list_copy_files, list_move_files = recursive_dataset_scan(
+            folder, folderpath, list_copy_files, list_move_files
+        )
+
+
+    # 3. Add high-level metadata files in the list
+    if "metadata-files" in soda_json_structure.keys():
+        namespace_logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
+        metadata_files = soda_json_structure["metadata-files"]
+        for file_key, file in metadata_files.items():
+            if file["type"] == "local":
+                metadata_path = file["path"]
+                if isfile(metadata_path):
+                    destination_path = join(datasetpath, file_key)
+                    if "existing" in file["action"]:
+                        list_move_files.append([metadata_path, destination_path])
+                    elif "new" in file["action"]:
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        list_copy_files.append([metadata_path, destination_path])
+
+    # 4. Add manifest files in the list
+    if "manifest-files" in soda_json_structure.keys():
+        namespace_logger.info("generate_dataset_locally (optional) step 4 handling manifest-files")
+        main_curate_progress_message = "Preparing manifest files"
+        manifest_files_structure = create_high_level_manifest_files(
+            soda_json_structure, manifest_folder_path
+        )
+        for key in manifest_files_structure.keys():
+            manifestpath = manifest_files_structure[key]
+            if isfile(manifestpath):
+                destination_path = join(datasetpath, key, "manifest.xlsx")
+                main_total_generate_dataset_size += getsize(manifestpath)
+                list_copy_files.append([manifestpath, destination_path])
+
+    namespace_logger.info("generate_dataset_locally step 5 moving files to new location")
+    # 5. Move files to new location
+    main_curate_progress_message = "Moving files to new location"
+    for fileinfo in list_move_files:
+        srcfile = fileinfo[0]
+        distfile = fileinfo[1]
+        main_curate_progress_message = f"Moving file {str(srcfile)} to {str(distfile)}"
+        shutil.move(srcfile, distfile)
+
+    namespace_logger.info("generate_dataset_locally step 6 copying files to new location")
+    # 6. Copy files to new location
+    main_curate_progress_message = "Copying files to new location"
+    start_generate = 1
+    for fileinfo in list_copy_files:
+        srcfile = fileinfo[0]
+        distfile = fileinfo[1]
+        main_curate_progress_message = f"Copying file {str(srcfile)} to {str(distfile)}"
+        # track amount of copied files for loggin purposes
+        mycopyfile_with_metadata(srcfile, distfile)
+        main_curation_uploaded_files += 1
+
+
+    namespace_logger.info("generate_dataset_locally step 7")
+    # 7. Delete manifest folder and original folder if merge requested and rename new folder
+    shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
+    if if_existing == "merge":
+        namespace_logger.info("generate_dataset_locally (optional) step 7.1 delete manifest folder if merge requested")
+        main_curate_progress_message = "Finalizing dataset"
+        original_dataset_path = join(dataset_absolute_path, dataset_name)
+        shutil.rmtree(original_dataset_path)
+        rename(datasetpath, original_dataset_path)
+        open_file(join(dataset_absolute_path, original_dataset_path))
+    else:
+        open_file(join(dataset_absolute_path, datasetpath))
+    return datasetpath, main_total_generate_dataset_size
+
+
     
 
 
