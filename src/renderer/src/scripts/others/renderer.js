@@ -7109,7 +7109,7 @@ const preGenerateSetup = async (e, elementContext) => {
 
   let [dataset_name, dataset_destination] = setDatasetNameAndDestination(sodaJSONObj);
 
-  let resume = e.target.textContent.trim() == "Retry"
+  let resume = e.target.textContent.trim() == "Retry";
   if (!resume) {
     progressStatus.innerHTML = "Please wait while we verify a few things...";
     generateProgressBar.value = 0;
@@ -7240,7 +7240,7 @@ window.uploadComplete = new Notyf({
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
 const initiate_generate = async (e) => {
-  let resume = e.target.textContent.trim() == "Retry"
+  let resume = e.target.textContent.trim() == "Retry";
 
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
   document.getElementById("guided_mode_view").style.pointerEvents = "none";
