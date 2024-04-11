@@ -42,22 +42,8 @@ class UploadManifestSession:
     def get_total_files_to_upload(self):
         return self.total_files_to_upload
 
-    def has_stored_mids(self):
-        return self.df_mid is not None or self.mdf_mid is not None or self.mff_mid is not None
-    
     def df_mid_has_progress(self):
         return self.manifest_has_progress(self.df_mid)
-    
-    def manifest_has_progress(self, mid):
-        if self.ps is None:
-            self.ps = Pennsieve()
-        self.ps.manifest.sync(mid)
-        mfs = self.ps.list_manifests()
-        for mf in mfs:
-            print(mf)
-            if mf.id == mid and mf.status == "Initiated":
-                return True      
-        return False
     
     def get_remaining_file_count(self, mid, total_files):
         if self.ps is None:
