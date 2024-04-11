@@ -54,10 +54,8 @@ class UploadManifestSession:
         for i in range(total_pages):
             if i >= 1:
                 offset += 1000
-            print(offset)
             file_page = self.ps.manifest.list_files(mid, offset , 1000)
             # if there is no node_id then an upload hasn't started yet - all files are remaining 
-            # TODO: Add logic for getting the file count from the json object rather than the manifest string
             # regular expression that searches and counts for every string that has "status: LOCAL" or "status: REGISTERED" in the string
             remaining_files +=  len(re.findall(r'status: REGISTERED|status: LOCAL' , str(file_page)))
         return remaining_files
