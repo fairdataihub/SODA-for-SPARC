@@ -16459,9 +16459,11 @@ $("#guided-next-button").on("click", async function () {
 document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
   await guidedSaveAndExit();
 });
-document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
-  await guidedSaveAndExit();
-});
+document
+  .getElementById("guided-button-sub-page-save-and-exit")
+  .addEventListener("click", async () => {
+    await guidedSaveAndExit();
+  });
 
 const getPrevPageNotSkipped = (currentPageID) => {
   const parentContainer = document.getElementById(currentPageID).closest(".guided--parent-tab");

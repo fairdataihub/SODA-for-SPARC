@@ -14,6 +14,7 @@ divsToRenderOver.forEach((div) => {
   const buttonSize = div.getAttribute("data-button-size"); // The size of the button (default is "md")
   const buttonColor = div.getAttribute("data-button-color"); // The color of the button (default is soda green)
   const buttonCustomWidth = div.getAttribute("data-button-custom-width"); // The width of the button (default is "auto")
+  const buttonCustomClass = div.getAttribute("data-button-custom-class"); // The custom class of the button (default is "")
 
   ReactDom.render(
     <SodaComponentWrapper>
@@ -24,6 +25,7 @@ divsToRenderOver.forEach((div) => {
         buttonSize={buttonSize}
         buttonColor={buttonColor}
         buttonCustomWidth={buttonCustomWidth}
+        buttonCustomClass={buttonCustomClass}
       />
     </SodaComponentWrapper>,
     div

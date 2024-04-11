@@ -6,10 +6,6 @@
   animation: moveRight 0.5s infinite alternate;
 }
 
-.homePageNavButton {
-  width: 250px !important;
-}
-
 @keyframes moveLeft {
   0% {
     transform: translateX(0);
