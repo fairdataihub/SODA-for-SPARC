@@ -1564,7 +1564,7 @@ def get_base_file_name(file_name):
     return output
 
 
-def ps_update_existing_dataset(soda_json_structure, ds, ps):
+def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
     global namespace_logger
 
     namespace_logger.info("Starting ps_update_existing_dataset")
@@ -1828,7 +1828,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
 
     end = timer()
     namespace_logger.info(f"Time for ps_update_existing_dataset function: {timedelta(seconds=end - start)}")
-    ps_upload_to_dataset(soda_json_structure, ps, ds)
+    ps_upload_to_dataset(soda_json_structure, ps, ds, resume)
 
     return
 
@@ -1881,7 +1881,7 @@ current_files_in_subscriber_session = 0
 
 bytes_file_path_dict = {}
 
-def ps_upload_to_dataset(soda_json_structure, ps, ds, resume):
+def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
     global namespace_logger
 
     # Progress tracking variables that are used for the frontend progress bar.
@@ -3224,7 +3224,7 @@ def main_curate_function(soda_json_structure, resume):
                     if resume and ums.df_mid_has_progress(): 
                         ps_upload_to_dataset(soda_json_structure, ps, myds, resume)
                     else:
-                        ps_update_existing_dataset(soda_json_structure, myds, ps)
+                        ps_update_existing_dataset(soda_json_structure, myds, ps, resume)
 
                 elif generate_option == "new":
                     # if dataset name is in the generate-dataset section, we are generating a new dataset
