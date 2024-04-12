@@ -534,6 +534,7 @@
               </div>
             </div>
           </div>
+        </div>
 
           <!-- 3. Organize dataset -->
           <div class="parent-tabs condensed" id="organize-dataset-tab"
@@ -1918,7 +1919,7 @@
 
             <!--TODO: Place this code into div-generate-comeback-->
             <div>
-              <button>Validate Upload</button>
+              <button onclick="window.nextPrev(1)">Validate Upload</button>
               <button>Exit</button>
             </div>
 
@@ -1979,7 +1980,7 @@
             <br /><br />
             </h3>
 
-            <div class="individual-question generate-dataset" id="Question-validate-dataset-upload" style="width: 70%">
+            <div class="individual-question" id="Question-validate-dataset-upload" style="width: 70%">
               <div class="ui form" style="width: 100%">
                 <div class="grouped fields">
                   <!-- <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Confirm details for dataset generation</label> -->
@@ -2002,7 +2003,7 @@
                         </div>
                       </div>
                       </div>
-                    </div>
+                   </div>
 
                     <div class="field" style="margin: 5px 0; width: auto" id="div-validate-dataset-failed">
                       <h4>Files that failed to be uploaded to Pennsieve</h4>
@@ -2019,16 +2020,13 @@
                         </div>
                       </div>
                     </div>
-                  </div>
                 </div>
               </div>
-            </div>
+             </div>
           </div>
-
-
-          </div>
-        </div>
       </div>
+
+
 
       <div style="
           border-top: 1px solid #f0f0f0;
@@ -2063,6 +2061,7 @@
         </div>
       </div>
     </div>
+
     <!-- Modal -->
     <div class="modal fade" id="import-files-modal" tabindex="-1" role="dialog" data-backdrop="false"
       style="background-color: rgba(0, 0, 0, 0.5); width: 100%; height: 100%">
