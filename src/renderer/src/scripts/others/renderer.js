@@ -6945,15 +6945,15 @@ window.electron.ipcRenderer.on(
 );
 
 //// Select to choose a local dataset (generate dataset)
-document
-  .getElementById("input-destination-generate-dataset-locally")
-  .addEventListener("click", function () {
-    $("#Question-generate-dataset-locally-destination").nextAll().removeClass("show");
-    $("#Question-generate-dataset-locally-destination").nextAll().removeClass("test2");
-    $("#Question-generate-dataset-locally-destination").nextAll().removeClass("prev");
-    document.getElementById("nextBtn").disabled = true;
-    window.electron.ipcRenderer.send("open-file-dialog-local-destination-curate-generate");
-  });
+// document
+//   .getElementById("input-destination-generate-dataset-locally")
+//   .addEventListener("click", function () {
+//     $("#Question-generate-dataset-locally-destination").nextAll().removeClass("show");
+//     $("#Question-generate-dataset-locally-destination").nextAll().removeClass("test2");
+//     $("#Question-generate-dataset-locally-destination").nextAll().removeClass("prev");
+//     document.getElementById("nextBtn").disabled = true;
+//     window.electron.ipcRenderer.send("open-file-dialog-local-destination-curate-generate");
+//   });
 
 window.electron.ipcRenderer.on(
   "selected-local-destination-datasetCurate-generate",

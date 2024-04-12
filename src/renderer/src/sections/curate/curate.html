@@ -760,8 +760,8 @@
             </div>
           </div>
 
-          <!-- 4. Metadata files -->
-          <div class="parent-tabs condensed" id="metadata-files-tab" style="grid-template-rows: 10% 90%">
+          <!-- 4. Manifest files -->
+          <div class="parent-tabs condensed" id="manifest-files-tab" style="grid-template-rows: 10% 90%">
             <label class="w-100 text-center" style="font-weight: 700; font-size: 17px; color: var(--color-bg-plum)">Would you like SODA to auto-generate your manifest files?</label>
 
             <div style="height: 150px; text-align: center">
@@ -845,8 +845,8 @@
             </div>
           </div>
 
-          <!-- 5. manifest file -->
-          <div class="parent-tabs" id="manifest-file-tab" style="grid-template-rows: 10% 90%">
+          <!-- Deprecated 5. manifest file -->
+          <!-- <div class="parent-tabs" id="manifest-file-tab" style="grid-template-rows: 10% 90%">
             <h3 class="question-title" style="
                 color: black;
                 font-size: 15px;
@@ -946,10 +946,10 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
 
-          <!-- 6. Generate dataset -->
-          <div class="parent-tabs" id="generate-dataset-tab" style="overflow-y: scroll">
+          <!-- Deprecated 6. Generate dataset -->
+          <!-- <div class="parent-tabs" id="generate-dataset-tab" style="overflow-y: scroll">
             <h3 class="question-title" style="
                 color: black;
                 font-weight: 600;
@@ -1006,7 +1006,6 @@
                     </div>
 
                     <div style="margin: 15px 0">
-                      <!-- <button> -->
                       <div class="option-card radio-button" data-next="Question-generate-dataset-BF-account"
                         onclick="window.transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
                         <div class="card-head">
@@ -1086,7 +1085,6 @@
                     </div>
                   </div>
 
-                  <!--Place it here i think-->
                   <div class="individual-question generate-dataset" id="Question-generate-dataset-BF-workspace" style="width: 800px">
                     <div class="ui form" style="width: 100%">
                       <div class="grouped fields">
@@ -1285,7 +1283,6 @@
                                 </svg>
                               </div>
                               <div class="ui active green inline loader small" style="display: none"></div>
-                              <!-- this is what is shown in the Edit Current dataset prompt  -->
                               <div style="display: none" id="div-permission-list-2">
                                 <h5 style="text-align: left; color: #000; display: none">
                                   Select permissions for filtering dataset lists:
@@ -1402,7 +1399,7 @@
                   </div>
                   <div style="display: flex; flex-direction: row; justify-content: center">
                     <div style="margin: 15px 0">
-                      <!-- <button> -->
+
                       <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options"
                         onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
                         <div class="card-head">
@@ -1419,7 +1416,7 @@
                       </div>
                     </div>
                     <div style="margin: 15px 0">
-                      <!-- <button> -->
+                    
                       <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options"
                         onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
                         <div class="card-head">
@@ -1440,7 +1437,7 @@
                       </div>
                     </div>
                     <div style="margin: 15px 0">
-                      <!-- <button> -->
+                     
                       <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options"
                         onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
                         <div class="card-head">
@@ -1456,7 +1453,6 @@
                             <path fill-rule="evenodd"
                               d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.752l-6.267 3.636c-.52.302-1.233-.043-1.233-.696v-2.94l-6.267 3.636C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696L7.5 7.248v-2.94c0-.653.713-.998 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5zM1 4.633v6.734L6.804 8 1 4.633zm7.5 0v6.734L14.304 8 8.5 4.633z" />
                           </svg>
-                          <!-- <i class="fas fa-forward" style="color: ;font-size:43px"></i> -->
                           <h2>Skip</h2>
                         </div>
                       </div>
@@ -1490,7 +1486,6 @@
                     </div>
                   <div style="display: flex; flex-direction: row; justify-content: center">
                     <div style="margin: 15px 0">
-                      <!-- <button> -->
                       <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div-old"
                         onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')">
                         <div class="card-head">
@@ -1507,7 +1502,6 @@
                       </div>
                     </div>
                     <div style="margin: 15px 0">
-                      <!-- <button> -->
                       <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div-old"
                         onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')">
                         <div class="card-head">
@@ -1561,9 +1555,10 @@
               </div>
             </div>
           </div>
+        -->
 
           <!-- 7. Validate dataset -->
-          <div class="parent-tabs" id="validate-dataset-tab" style="display: flex; flex-direction: column">
+          <!-- <div class="parent-tabs" id="validate-dataset-tab" style="display: flex; flex-direction: column">
             <h3 class="question-title" style="
                 color: black;
                 font-size: 15px;
@@ -1579,7 +1574,7 @@
               <br /><br />
             </h3>
 
-            <!--Some random stuff here woo woo -->
+   
             <div style="display: flex; flex-direction: column">
               <p class="m-auto text-justify" style="color: #000; font-size: 14px; font-weight: 500; max-width: 400px">
                 SODA integrates with the SPARC Data Structure (SDS) validator tool. Use this feature
@@ -1591,7 +1586,7 @@
                 Would you like to validate your dataset before uploading?
               </p>
 
-              <!--Validate option cards-->
+              
               <div style="display: flex; flex-direction: row; margin: auto">
                 <div style="margin: 15px 0">
                   <div class="option-card radio-button"
@@ -1743,7 +1738,7 @@
                 </div>
               </div>
 
-              <!-- Table to store validation results for the user -->
+             
               <div class="grouped fields">
                 <div id="organize--table-validation-errors" style="
                     visibility: hidden;
@@ -1770,7 +1765,7 @@
                       <tr>
                         <th>Path</th>
                         <th>Message</th>
-                        <!-- <th>Fix Here</th> -->
+                      
                       </tr>
                     </thead>
                     <tbody></tbody>
@@ -1778,10 +1773,10 @@
                 </div>
               </div>
             </div>
-            <!--End of step 7-->
-          </div>
+     
+          </div> -->
 
-          <!-- 8. Preview dataset -->
+          <!-- 5. Preview dataset -->
           <div class="parent-tabs" id="preview-dataset-tab" style="overflow-y: scroll">
             <h3 class="question-title" style="
                 color: black;
@@ -1919,6 +1914,12 @@
                 <p id="para-new-curate-progress-bar-status"></p>
                 <p></p>
               </div>
+            </div>
+
+            <!--TODO: Place this code into div-generate-comeback-->
+            <div>
+              <button>Validate Upload</button>
+              <button>Exit</button>
             </div>
 
             <div id="div-generate-comeback"

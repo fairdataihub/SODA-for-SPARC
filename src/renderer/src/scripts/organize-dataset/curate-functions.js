@@ -36,17 +36,17 @@ document
     window.openDropdownPrompt(this, "dataset", false);
   });
 
-document
-  .querySelector("#Question-generate-dataset-BF-dataset .change-current-account:not(.organization)")
-  .addEventListener("click", function (event) {
-    window.openDropdownPrompt(event.target, "dataset", false);
-  });
+// document
+//   .querySelector("#Question-generate-dataset-BF-dataset .change-current-account:not(.organization)")
+//   .addEventListener("click", function (event) {
+//     window.openDropdownPrompt(event.target, "dataset", false);
+//   });
 
-document
-  .querySelector("#Question-generate-dataset-BF-account .change-current-account")
-  .addEventListener("click", function () {
-    window.openDropdownPrompt(this, "bf");
-  });
+// document
+//   .querySelector("#Question-generate-dataset-BF-account .change-current-account")
+//   .addEventListener("click", function () {
+//     window.openDropdownPrompt(this, "bf");
+//   });
 
 $(".button-individual-metadata.remove").click(function () {
   let metadataFileStatus = $($(this).parents()[1]).find(".para-metadata-file-status");
@@ -644,8 +644,8 @@ const checkAvailableSpace = async () => {
     clientError(error);
   }
 };
-const btnConfirmLocalDatasetGeneration = document.getElementById("btn-confirm-local-destination");
-btnConfirmLocalDatasetGeneration.addEventListener("click", checkAvailableSpace, false);
+// const btnConfirmLocalDatasetGeneration = document.getElementById("btn-confirm-local-destination");
+// btnConfirmLocalDatasetGeneration.addEventListener("click", checkAvailableSpace, false);
 
 //////////////// IMPORT EXISTING PROGRESS FILES ////////////////////////////////
 window.progressFileDropdown = document.getElementById("progress-files-dropdown");
