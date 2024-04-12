@@ -1960,6 +1960,73 @@
               </button>
             </div>
           </div>
+
+
+          <!-- Validate Dataset-->
+          <!-- Validate Dataset Upload Statuses -->
+          <div class="parent-tabs" id="validate-upload-status-tab" style="overflow-y: scroll">
+            <h3 class="question-title" style="
+            color: black;
+            font-weight: 600;
+            font-size: 15px;
+            text-align: center;
+            margin-top: 20px;
+            padding-bottom: 0px;
+          ">
+            Step 7: Validate Dataset
+            <a target="_blank" style="padding: 0px 0px 0px 5px" class="github-wiki-link"
+              href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/step-7">
+            </a>
+            <br /><br />
+            </h3>
+
+            <div class="individual-question" id="Question-validate-dataset-upload" style="width: 70%">
+              <div class="ui form" style="width: 100%">
+                <div class="grouped fields">
+                  <!-- <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Confirm details for dataset generation</label> -->
+                  <div class="field" style="margin: 5px 0; width: auto">
+                    <div style="
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        margin-top: 15px;
+                        height: auto;
+                        box-shadow: 0px 0px 10px #d5d5d5;
+                        padding: 15px 25px;
+                        border-radius: 5px;
+                      " id="div-validate-dataset-upload-header">
+                      <div>
+                        <h4>Validating Files</h4>
+                        <div style="display: flex; flex-direction: row;">
+                          <p>Validated</p>
+                          <p>XX/XX Files</p>
+                        </div>
+                      </div>
+                      </div>
+                    </div>
+
+                    <div class="field" style="margin: 5px 0; width: auto" id="div-validate-dataset-failed">
+                      <h4>Files that failed to be uploaded to Pennsieve</h4>
+                      <p>The files below were uploaded to Pennsieve, but for an unknow reason were unable to be kept on the platform. Please take note of the failed 
+                        files below and try to upload them again. If this keeps happening reack out to someone@gamil.com.
+                      </p>
+
+                      <div id="validate-dataset-failed-table">
+                        <div>File Path</div>
+                        <div>
+                          <p>File path One</p>
+                          <p>File path Two</p>
+                          <p>File path Three</p>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+              </div>
+          </div>
+          
+
+
         </div>
       </div>
 
