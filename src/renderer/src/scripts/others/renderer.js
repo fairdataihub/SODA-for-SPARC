@@ -6982,23 +6982,6 @@ window.electron.ipcRenderer.on(
   }
 );
 
-document.getElementById("button-generate-comeback").addEventListener("click", function () {
-  setTimeout(function () {
-    document.getElementById("generate-dataset-progress-tab").style.display = "none";
-    document.getElementById("div-vertical-progress-bar").style.display = "flex";
-    document.getElementById("prevBtn").style.display = "inline";
-    document.getElementById("nextBtn").style.display = "inline";
-    document.getElementById("start-over-btn").style.display = "inline-block";
-    window.showParentTab(window.currentTab, 1);
-    if (
-      window.sodaJSONObj["starting-point"]["type"] == "new" &&
-      "local-path" in window.sodaJSONObj["starting-point"]
-    ) {
-      window.sodaJSONObj["starting-point"]["type"] = "local";
-    }
-  }, window.delayAnimation);
-});
-
 // function to hide the sidebar and disable the sidebar expand button
 // function forceActionSidebar(action) {
 //   if (action === "show") {
@@ -7107,8 +7090,8 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
   }
 };
 
-document.getElementById("button-generate").addEventListener("click", async function () {
-  $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
+const preGenerateSetup = async (e, elementContext) => {
+  $($($(elementContext).parent()[0]).parents()[0]).removeClass("tab-active");
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   document.getElementById("prevBtn").style.display = "none";
@@ -7126,12 +7109,17 @@ document.getElementById("button-generate").addEventListener("click", async funct
 
   let [dataset_name, dataset_destination] = setDatasetNameAndDestination(sodaJSONObj);
 
-  generateProgressBar.value = 0;
-
-  progressStatus.innerHTML = "Please wait while we verify a few things...";
+  let resume = e.target.textContent.trim() == "Retry";
+  if (!resume) {
+    progressStatus.innerHTML = "Please wait while we verify a few things...";
+    generateProgressBar.value = 0;
+  } else {
+    // NOTE: This only works if we got to the upload. SO add more code to check for this.
+    progressStatus.innerHTML = `Please wait while we perform setup for retrying the upload...`;
+    // replace the first line with the following
+  }
   document.getElementById("wrapper-wrap").style.display = "none";
 
-  let statusText = "Please wait while we verify a few things...";
   if (dataset_destination == "Pennsieve") {
     setTimeout(() => {
       document.getElementById("wrapper-wrap").style.display = "none";
@@ -7154,16 +7142,18 @@ document.getElementById("button-generate").addEventListener("click", async funct
   }
 
   // from here you can modify
-  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
-  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
-  progressStatus.innerHTML = "";
-  document.getElementById("div-new-curate-progress").style.display = "none";
 
-  progressBarNewCurate.value = 0;
+  if (!resume) {
+    progressBarNewCurate.value = 0;
+    progressStatus.innerHTML = "";
+    document.getElementById("div-new-curate-progress").style.display = "none";
+    progressStatus.innerHTML = "Please wait...";
+  }
+
+  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
 
   deleteTreeviewFiles(sodaJSONObj);
 
-  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
   let errorMessage = await checkEmptyFilesAndFolders(sodaJSONObj);
 
   if (errorMessage) {
@@ -7191,7 +7181,7 @@ document.getElementById("button-generate").addEventListener("click", async funct
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        initiate_generate();
+        initiate_generate(e);
       } else {
         $("#sidebarCollapse").prop("disabled", false);
         document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
@@ -7199,8 +7189,16 @@ document.getElementById("button-generate").addEventListener("click", async funct
       }
     });
   } else {
-    initiate_generate();
+    initiate_generate(e);
   }
+};
+
+document.getElementById("button-generate").addEventListener("click", async function (e) {
+  preGenerateSetup(e, this);
+});
+
+document.getElementById("button-retry").addEventListener("click", async function (e) {
+  preGenerateSetup(e, this);
 });
 
 window.delete_imported_manifest = () => {
@@ -7241,7 +7239,9 @@ window.uploadComplete = new Notyf({
 });
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
-const initiate_generate = async () => {
+const initiate_generate = async (e) => {
+  let resume = e.target.textContent.trim() == "Retry";
+
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
   document.getElementById("guided_mode_view").style.pointerEvents = "none";
 
@@ -7251,12 +7251,14 @@ const initiate_generate = async () => {
   var main_total_generate_dataset_size;
 
   // get the amount of files
-  document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ...";
+  if (!resume) {
+    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+      "Preparing files ...";
+    progressStatus.innerHTML = "Preparing files ...";
+    document.getElementById("para-please-wait-new-curate").innerHTML = "";
+    document.getElementById("div-new-curate-progress").style.display = "block";
+  }
 
-  progressStatus.innerHTML = "Preparing files ...";
-
-  document.getElementById("para-please-wait-new-curate").innerHTML = "";
-  document.getElementById("div-new-curate-progress").style.display = "block";
   document.getElementById("div-generate-comeback").style.display = "none";
   document.getElementById("wrapper-wrap").style.display = "none";
 
@@ -7371,6 +7373,7 @@ const initiate_generate = async () => {
       `/curate_datasets/curation`,
       {
         soda_json_structure: window.sodaJSONObj,
+        resume,
       },
       { timeout: 0 }
     )
@@ -7453,6 +7456,18 @@ const initiate_generate = async () => {
       document.getElementById("guided_mode_view").style.pointerEvents = "";
     })
     .catch(async (error) => {
+      clearInterval(timerProgress);
+
+      // set the first line of progressStatus to 'Upload Failed'
+      if (progressStatus.innerHTML.split("<br>").length > 1) {
+        progressStatus.innerHTML = `Upload Failed<br>${progressStatus.innerHTML
+          .split("<br>")
+          .slice(1)
+          .join("<br>")}`;
+      } else {
+        progressStatus.innerHTML = `Upload Failed`;
+      }
+
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
 
@@ -7545,7 +7560,7 @@ const initiate_generate = async () => {
       Swal.fire({
         icon: "error",
         title: "An Error Occurred While Uploading Your Dataset",
-        html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
+        html: "Check the error message on the progress page to learn more.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
@@ -7572,10 +7587,6 @@ const initiate_generate = async () => {
           document.getElementById("generate-dataset-progress-tab").style.display = "flex";
         }
       });
-      progressStatus.innerHTML = "";
-      statusText.innerHTML = "";
-      document.getElementById("div-new-curate-progress").style.display = "none";
-      generateProgressBar.value = 0;
 
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
@@ -7603,6 +7614,15 @@ const initiate_generate = async () => {
       clientError(error);
       let emessage = userErrorMessage(error);
 
+      if (progressStatus.innerHTML.split("<br>").length > 1) {
+        progressStatus.innerHTML = `Upload Failed<br>${progressStatus.innerHTML
+          .split("<br>")
+          .slice(1)
+          .join("<br>")}`;
+      } else {
+        progressStatus.innerHTML = `Upload Failed`;
+      }
+
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
         `<span style='color: red;'>${emessage}</span>`;
       window.log.error(error);
@@ -7623,7 +7643,7 @@ const initiate_generate = async () => {
       Swal.fire({
         icon: "error",
         title: "An Error Occurred While Uploading Your Dataset",
-        html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
+        html: "Check the error message on the progress page to learn more.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
