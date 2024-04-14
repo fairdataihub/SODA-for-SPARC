@@ -1,9 +1,9 @@
-import ReactDom from "react-dom";
+import { createRoot } from "react-dom/client";
 import SodaComponentWrapper from "../utils/SodaComponentWrapper";
 import NavigationButton from "../buttons/Navigation";
 
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100));
+  await new Promise((resolve) => setTimeout(resolve, 5));
 }
 
 const divsToRenderOver = document.querySelectorAll(".react-navigation-button");
@@ -16,7 +16,8 @@ divsToRenderOver.forEach((div) => {
   const buttonCustomWidth = div.getAttribute("data-button-custom-width"); // The width of the button (default is "auto")
   const buttonCustomClass = div.getAttribute("data-button-custom-class"); // The custom class of the button (default is "")
 
-  ReactDom.render(
+  const root = createRoot(div);
+  root.render(
     <SodaComponentWrapper>
       <NavigationButton
         buttonId={buttonId}
@@ -27,7 +28,8 @@ divsToRenderOver.forEach((div) => {
         buttonCustomWidth={buttonCustomWidth}
         buttonCustomClass={buttonCustomClass}
       />
-    </SodaComponentWrapper>,
-    div
+    </SodaComponentWrapper>
   );
 });
+
+window.test = "test";

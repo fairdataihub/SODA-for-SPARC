@@ -1,9 +1,9 @@
-import ReactDom from "react-dom";
+import { createRoot } from "react-dom/client";
 import SodaComponentWrapper from "../utils/SodaComponentWrapper";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 
 while (!window.htmlPagesAdded) {
-  await new Promise((resolve) => setTimeout(resolve, 100));
+  await new Promise((resolve) => setTimeout(resolve, 5));
 }
 
 const pageIdToPageComponentMap = {
@@ -15,7 +15,6 @@ guidedModePageDivs.forEach((targetDiv) => {
   const pageId = targetDiv.id;
   const pageHeader = targetDiv.getAttribute("data-page-header");
   const pageComponent = pageIdToPageComponentMap[pageId];
-  console.log("pageHeader: ", pageHeader);
-  console.log("pageId: ", pageId);
-  ReactDom.render(<SodaComponentWrapper>{pageComponent}</SodaComponentWrapper>, targetDiv);
+  const root = createRoot(targetDiv);
+  root.render(<SodaComponentWrapper>{pageComponent}</SodaComponentWrapper>);
 });

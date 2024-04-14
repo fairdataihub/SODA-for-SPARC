@@ -39,7 +39,10 @@ import {
 } from "../utils/swal-utils";
 
 // Import state management stores
-import useGuidedModeStore from "../../stores/guidedModeStore";
+
+import useGlobalStore from "../../stores/globalStore";
+
+console.log("useGlobalStore", useGlobalStore);
 
 import "bootstrap-select";
 // import DragSort from '@yaireo/dragsort'
@@ -1060,8 +1063,8 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-name-subtitle-tab") {
-      const datasetNameInput = useGuidedModeStore.getState().datasetName.trim();
-      const datasetSubtitleInput = useGuidedModeStore.getState().datasetSubtitle.trim();
+      const datasetNameInput = useGlobalStore.getState().datasetName.trim();
+      const datasetSubtitleInput = useGlobalStore.getState().datasetSubtitle.trim();
 
       //Throw error if no dataset name or subtitle were added
       if (!datasetNameInput) {
@@ -5195,7 +5198,7 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-name-subtitle-tab") {
       const datasetName = getGuidedDatasetName();
-      useGuidedModeStore.setState({ datasetName: datasetName });
+      useGlobalStore.setState({ datasetName: datasetName });
 
       if (pageNeedsUpdateFromPennsieve("guided-name-subtitle-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
@@ -5210,7 +5213,7 @@ window.openPage = async (targetPageID) => {
 
           // Save the subtitle to the JSON and add it to the input
           window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
-          useGuidedModeStore.setState({ datasetSubtitle: datasetSubtitle });
+          useGlobalStore.setState({ datasetSubtitle: datasetSubtitle });
 
           window.sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
         } catch (error) {
@@ -5224,7 +5227,7 @@ window.openPage = async (targetPageID) => {
       } else {
         //Update subtitle from JSON
         const datasetSubtitle = getGuidedDatasetSubtitle();
-        useGuidedModeStore.setState({ datasetSubtitle: datasetSubtitle });
+        useGlobalStore.setState({ datasetSubtitle: datasetSubtitle });
       }
     }
 

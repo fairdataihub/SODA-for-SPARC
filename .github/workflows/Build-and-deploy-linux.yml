@@ -7,6 +7,7 @@ on:
       - main
       - staging
       - pre-staging
+      - init-react
 
 jobs:
   deploy-on-linux:

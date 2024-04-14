@@ -2,7 +2,7 @@ import "./assets/imports";
 
 // Render React Components that must be added to the DOM before vanilla js event listeners are added
 import "./components/renderers/NavigationButtonRenderer";
-
+window.test = "test";
 import "./assets/demo-btns";
 import "./assets/nav";
 import "./scripts/client";
