@@ -94,22 +94,13 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   } else if (tabNow == 1) {
     // checkHighLevelFoldersInput();
     // window.highLevelFoldersDisableOptions();
-  } else {
-    if (tabNow === 3) {
-      if (Object.keys(window.datasetStructureJSONObj["folders"]).includes("code")) {
-        $(".metadata-button.button-generate-dataset.code-metadata").css("display", "block");
-        $(".flex-row-container.code-metadata").css("display", "flex");
-      } else {
-        $(".metadata-button.button-generate-dataset.code-metadata").css("display", "none");
-        $(".flex-row-container.code-metadata").css("display", "none");
-      }
-    }
-    $("#nextBtn").prop("disabled", true);
-  }
-  if (tabNow == 4) {
+  } else if (tabNow == 3) {
     if (nextOrPrev === -1) {
       return;
     }
+
+    // enable continue button
+    $("#nextBtn").prop("disabled", false);
 
     // if the user has files already on their dataset when starting from new/local and merging to existing pennsieve then
     // show them a message detailing why they cannot create manifest files
