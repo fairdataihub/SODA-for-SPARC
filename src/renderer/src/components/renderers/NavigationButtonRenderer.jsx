@@ -32,5 +32,3 @@ componentSlots.forEach((div) => {
     </SodaComponentWrapper>
   );
 });
-
-window.test = "test";
