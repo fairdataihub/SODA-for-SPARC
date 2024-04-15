@@ -247,6 +247,45 @@ const fill_info_details = () => {
     true
   );
 
+  // check if the user is generating on an existing dataset
+  if ($('input[name="generate-1"]:checked')[0].id === "update-existing-ds-input") {
+    console.log("Nailed it?");
+
+    if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-duplicate") {
+      addCardDetail(
+        "For existing folders",
+        "Create a duplicate",
+        1,
+        "Question-generate-dataset-existing-folders-options",
+        true
+      );
+    } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-replace") {
+      addCardDetail(
+        "For existing folders",
+        "Replace",
+        1,
+        "Question-generate-dataset-existing-folders-options",
+        true
+      );
+    } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-merge") {
+      addCardDetail(
+        "For existing folders",
+        "Merge",
+        1,
+        "Question-generate-dataset-existing-folders-options",
+        true
+      );
+    } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-skip") {
+      addCardDetail(
+        "For existing folders",
+        "Skip",
+        1,
+        "Question-generate-dataset-existing-folders-options",
+        true
+      );
+    }
+  }
+
   if (window.manifestFileCheck.checked) {
     addCardDetail("Manifest files", "Requested from SODA", 2, "pulse-manifest-checkbox", true);
   } else {
@@ -326,38 +365,7 @@ const fill_info_details = () => {
     //       true
     //     );
     //     new_dataset_name = $("#current-bf-dataset-generate").text();
-    //     if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-duplicate") {
-    //       addCardDetail(
-    //         "For existing folders",
-    //         "Create a duplicate",
-    //         1,
-    //         "Question-generate-dataset-existing-folders-options",
-    //         true
-    //       );
-    //     } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-replace") {
-    //       addCardDetail(
-    //         "For existing folders",
-    //         "Replace",
-    //         1,
-    //         "Question-generate-dataset-existing-folders-options",
-    //         true
-    //       );
-    //     } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-merge") {
-    //       addCardDetail(
-    //         "For existing folders",
-    //         "Merge",
-    //         1,
-    //         "Question-generate-dataset-existing-folders-options",
-    //         true
-    //       );
-    //     } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-skip") {
-    //       addCardDetail(
-    //         "For existing folders",
-    //         "Skip",
-    //         1,
-    //         "Question-generate-dataset-existing-folders-options",
-    //         true
-    //       );
+    //
     //     }
     //     if ($('input[name="generate-6"]:checked')[0].id === "existing-files-duplicate") {
     //       addCardDetail(
