@@ -65,21 +65,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   await waitForReactRenderedSectionsToInsertIntoDOM();
   addDatasetAndOrganizationCardComponents();
+
   window.baseHtmlLoaded = true;
 });
-
-const includeJavaScriptFile = async (filePath) => {
-  return new Promise((resolve, reject) => {
-    let script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = filePath;
-    script.async = false;
-    script.onload = () => {
-      resolve();
-    };
-    script.onerror = () => {
-      reject("cannot load script " + filePath);
-    };
-    document.body.appendChild(script);
-  });
-};
