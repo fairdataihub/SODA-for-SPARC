@@ -377,7 +377,7 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
 document
   .getElementById("dataset-upload-existing-dataset")
   .addEventListener("click", async function () {
-    document.getElementById("new-dataset-upload").classList.add("hidden");
+    document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
     document.getElementById("existing-dataset-upload").classList.remove("hidden");
 
     document.getElementById("dataset-upload-existing-dataset").classList.add("checked");
