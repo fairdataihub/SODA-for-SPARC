@@ -748,6 +748,11 @@ window.nextPrev = (pageIndex) => {
     // Display the correct tab:
     window.showParentTab(window.currentTab, pageIndex);
   } else if (window.currentTab === 4) {
+    if ($("#div-generate-comeback").is(":visible")) {
+      $(parentTabs[window.currentTab]).removeClass("tab-active");
+      window.currentTab = window.currentTab + pageIndex;
+      document.getElementById("generate-dataset-progress-tab").style.display = "none";
+    }
     window.showParentTab(window.currentTab, pageIndex);
     // generate dataset tab
   } else if (
@@ -773,6 +778,7 @@ window.nextPrev = (pageIndex) => {
       $("#generate-manifest-curate").prop("disabled", false);
     }
   } else {
+    console.log("Going to last page default");
     // Hide the current tab:
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
