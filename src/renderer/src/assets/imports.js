@@ -52,17 +52,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   await waitForHtmlSectionsToInsertIntoDOM();
   const waitForReactRenderedSectionsToInsertIntoDOM = async () => {
-    const allSections = document.querySelectorAll("[data-component-type]");
-    console.log("All sections", allSections);
-    // Make sure all sections have html inserted into them
-    for (const section of allSections) {
-      if (!section.innerHTML) {
-        console.log("Waiting for react to render", section.id);
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      }
+    while (
+      [...document.querySelectorAll("[data-component-type]")].some(
+        (section) => section.innerHTML === ""
+      )
+    ) {
+      console.log("Waiting for react to render");
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
     console.log("All sections have been rendered");
   };
+
   await waitForReactRenderedSectionsToInsertIntoDOM();
   addDatasetAndOrganizationCardComponents();
   window.baseHtmlLoaded = true;

@@ -1,8 +1,7 @@
 import "./assets/imports";
 
 // Render React Components that must be added to the DOM before vanilla js event listeners are added
-import "./components/renderers/NavigationButtonRenderer";
-window.test = "test";
+import "./components/renderers/ReactComponentRenderer";
 import "./assets/demo-btns";
 import "./assets/nav";
 import "./scripts/client";
@@ -29,10 +28,6 @@ import "./scripts/collections/collections";
 import "./scripts/metadata-files/downloadTemplates";
 import "./scripts/advanced-features/advanced_features";
 import "./scripts/sds-templates/sds_templates";
-
-// Render React Components into the DOM that do not depend on any vanilla js event listeners
-import "./components/renderers/ExternalLinkRenderer";
-import "./components/renderers/GuidedModePageRenderer";
 
 // Application Lotties
 import "./assets/lotties/activate-lotties";
