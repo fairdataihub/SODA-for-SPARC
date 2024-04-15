@@ -231,16 +231,16 @@ const fill_info_details = () => {
   let new_dataset_name = "dataset_root";
   $(".card-container.generate-preview").remove();
   if (window.sodaJSONObj["starting-point"]["type"] === "bf") {
-    add_card_detail("Pennsieve account", $("#current-bf-account-generate").text());
-    add_card_detail("Dataset name", window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
+    addCardDetail("Pennsieve account", $("#current-bf-account-generate").text());
+    addCardDetail("Dataset name", window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
     let workspace = $("#bf-organization-curate-first-question").text();
-    add_card_detail("Selected workspace", workspace);
+    addCardDetail("Selected workspace", workspace);
 
     new_dataset_name = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     if (window.manifestFileCheck.checked) {
-      add_card_detail("Manifest files", "Requested from SODA", 1, "pulse-manifest-checkbox", true);
+      addCardDetail("Manifest files", "Requested from SODA", 1, "pulse-manifest-checkbox", true);
     } else {
-      add_card_detail("Manifest files", "Not requested", 1, "pulse-manifest-checkbox", true);
+      addCardDetail("Manifest files", "Not requested", 1, "pulse-manifest-checkbox", true);
     }
   }
   if (
@@ -251,7 +251,7 @@ const fill_info_details = () => {
     console.log("Add updated code to get UI elements for perview here");
     // TODO: Add updated code to get UI elements for perview here
     // if ($('input[name="generate-1"]:checked')[0].id === "generate-local-existing") {
-    //   add_card_detail(
+    //   addCardDetail(
     //     "Current dataset location",
     //     window.sodaJSONObj["starting-point"]["local-path"],
     //     1,
@@ -260,7 +260,7 @@ const fill_info_details = () => {
     //   );
     //   new_dataset_name = window.path.basename(window.sodaJSONObj["starting-point"]["local-path"]);
     //   if (window.manifestFileCheck.checked) {
-    //     add_card_detail(
+    //     addCardDetail(
     //       "Manifest files",
     //       "Requested from SODA",
     //       2,
@@ -268,23 +268,23 @@ const fill_info_details = () => {
     //       true
     //     );
     //   } else {
-    //     add_card_detail("Manifest files", "Not requested", 2, "pulse-manifest-checkbox", true);
+    //     addCardDetail("Manifest files", "Not requested", 2, "pulse-manifest-checkbox", true);
     //   }
     // } else if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop") {
     //   if (window.sodaJSONObj["starting-point"]["type"] === "local") {
-    //     add_card_detail(
+    //     addCardDetail(
     //       "Original dataset location",
     //       window.sodaJSONObj["starting-point"]["local-path"]
     //     );
     //   }
-    //   add_card_detail(
+    //   addCardDetail(
     //     "New dataset location",
     //     $("#input-destination-generate-dataset-locally")[0].placeholder,
     //     1,
     //     "input-destination-generate-dataset-locally",
     //     true
     //   );
-    //   add_card_detail(
+    //   addCardDetail(
     //     "New dataset name",
     //     $("#inputNewNameDataset").val().trim(),
     //     1,
@@ -293,7 +293,7 @@ const fill_info_details = () => {
     //   );
     //   new_dataset_name = $("#inputNewNameDataset").val().trim();
     //   if (window.manifestFileCheck.checked) {
-    //     add_card_detail(
+    //     addCardDetail(
     //       "Manifest files",
     //       "Requested from SODA",
     //       2,
@@ -301,18 +301,18 @@ const fill_info_details = () => {
     //       true
     //     );
     //   } else {
-    //     add_card_detail("Manifest files", "Not requested", 2, "pulse-manifest-checkbox", true);
+    //     addCardDetail("Manifest files", "Not requested", 2, "pulse-manifest-checkbox", true);
     //   }
     // } else if ($('input[name="generate-1"]:checked')[0].id === "generate-upload-BF") {
     //   if (window.sodaJSONObj["starting-point"]["type"] === "local") {
-    //     add_card_detail(
+    //     addCardDetail(
     //       "Original dataset location",
     //       window.sodaJSONObj["starting-point"]["local-path"]
     //     );
     //   }
 
-    //   add_card_detail("New dataset location", "Pennsieve", 1, "Question-generate-dataset", true);
-    //   add_card_detail(
+    //   addCardDetail("New dataset location", "Pennsieve", 1, "Question-generate-dataset", true);
+    //   addCardDetail(
     //     "Pennsieve account",
     //     $("#current-bf-account-generate").text(),
     //     1,
@@ -320,7 +320,7 @@ const fill_info_details = () => {
     //     true
     //   );
     //   let workspace = $("#organization-bf-curation").text();
-    //   add_card_detail(
+    //   addCardDetail(
     //     "Selected workspace",
     //     workspace,
     //     1,
@@ -328,7 +328,7 @@ const fill_info_details = () => {
     //     true
     //   );
     //   if ($('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing") {
-    //     add_card_detail(
+    //     addCardDetail(
     //       "Dataset name",
     //       $("#current-bf-dataset-generate").text(),
     //       1,
@@ -337,7 +337,7 @@ const fill_info_details = () => {
     //     );
     //     new_dataset_name = $("#current-bf-dataset-generate").text();
     //     if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-duplicate") {
-    //       add_card_detail(
+    //       addCardDetail(
     //         "For existing folders",
     //         "Create a duplicate",
     //         1,
@@ -345,7 +345,7 @@ const fill_info_details = () => {
     //         true
     //       );
     //     } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-replace") {
-    //       add_card_detail(
+    //       addCardDetail(
     //         "For existing folders",
     //         "Replace",
     //         1,
@@ -353,7 +353,7 @@ const fill_info_details = () => {
     //         true
     //       );
     //     } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-merge") {
-    //       add_card_detail(
+    //       addCardDetail(
     //         "For existing folders",
     //         "Merge",
     //         1,
@@ -361,7 +361,7 @@ const fill_info_details = () => {
     //         true
     //       );
     //     } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-skip") {
-    //       add_card_detail(
+    //       addCardDetail(
     //         "For existing folders",
     //         "Skip",
     //         1,
@@ -370,7 +370,7 @@ const fill_info_details = () => {
     //       );
     //     }
     //     if ($('input[name="generate-6"]:checked')[0].id === "existing-files-duplicate") {
-    //       add_card_detail(
+    //       addCardDetail(
     //         "For existing files",
     //         "Create a duplicate",
     //         1,
@@ -378,7 +378,7 @@ const fill_info_details = () => {
     //         true
     //       );
     //     } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-replace") {
-    //       add_card_detail(
+    //       addCardDetail(
     //         "For existing files",
     //         "Replace",
     //         1,
@@ -386,7 +386,7 @@ const fill_info_details = () => {
     //         true
     //       );
     //     } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-skip") {
-    //       add_card_detail(
+    //       addCardDetail(
     //         "For existing files",
     //         "Skip",
     //         1,
@@ -395,7 +395,7 @@ const fill_info_details = () => {
     //       );
     //     }
     //   } else {
-    //     add_card_detail(
+    //     addCardDetail(
     //       "New Dataset name ",
     //       $("#inputNewNameDataset").val().trim(),
     //       1,
@@ -407,7 +407,7 @@ const fill_info_details = () => {
     //   // generate manifest files only when user has checked manifest file generation and they are not starting from new/local and merging
     //   // into an existing dataset that already has files
     //   if (window.manifestFileCheck.checked && !window.hasFiles) {
-    //     add_card_detail(
+    //     addCardDetail(
     //       "Manifest files",
     //       "Requested from SODA",
     //       2,
@@ -415,7 +415,7 @@ const fill_info_details = () => {
     //       true
     //     );
     //   } else {
-    //     add_card_detail("Manifest files", "Not requested", 2, "pulse-manifest-checkbox", true);
+    //     addCardDetail("Manifest files", "Not requested", 2, "pulse-manifest-checkbox", true);
     //   }
     // }
   }
@@ -462,13 +462,7 @@ window.traverse_back = (amount, element = "", pulse_animation = false) => {
 // parent_tab => how many times to click back
 // element_id => element to scroll to
 // pulse => show pulse animation
-const add_card_detail = (
-  card_left,
-  card_right,
-  parent_tab = -1,
-  element_id = "",
-  pulse = false
-) => {
+const addCardDetail = (card_left, card_right, parent_tab = -1, element_id = "", pulse = false) => {
   let link_item = "<i class='far fa-edit jump-back' onclick='window.traverse_back(";
   link_item += parent_tab.toString();
   let temp = ', "' + element_id + '", ' + pulse + ")";
