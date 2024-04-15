@@ -2,12 +2,13 @@ import { createRoot } from "react-dom/client";
 import SodaComponentWrapper from "../utils/SodaComponentWrapper";
 import NavigationButton from "../buttons/Navigation";
 
-while (!window.htmlPagesAdded) {
+while (!window.htmlSectionsAdded) {
   await new Promise((resolve) => setTimeout(resolve, 5));
 }
 
-const divsToRenderOver = document.querySelectorAll(".react-navigation-button");
-divsToRenderOver.forEach((div) => {
+const componentSlots = document.querySelectorAll('[data-component-type="navigation-button"]');
+
+componentSlots.forEach((div) => {
   const buttonId = div.getAttribute("data-button-id"); // The ID of the button (Can be used to add event listeners to the button)
   const buttonText = div.getAttribute("data-button-text"); // The text to display on the button
   const navIcon = div.getAttribute("data-nav-icon"); // The icon to display on the button

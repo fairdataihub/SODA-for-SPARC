@@ -1,7 +1,7 @@
 import addDatasetAndOrganizationCardComponents from "../assets/component-utils/addDatasetAndOrganizationCards";
 
 // adds the apps HTML pages to the DOM
-window.htmlPagesAdded = false;
+window.htmlSectionsAdded = false;
 document.addEventListener("DOMContentLoaded", async function () {
   const links = document.querySelectorAll('link[rel="import"]');
   let contentIndex = document.querySelector("#content");
@@ -48,10 +48,24 @@ document.addEventListener("DOMContentLoaded", async function () {
       }, 100);
     });
   };
+  window.htmlSectionsAdded = true;
 
   await waitForHtmlSectionsToInsertIntoDOM();
+  const waitForReactRenderedSectionsToInsertIntoDOM = async () => {
+    const allSections = document.querySelectorAll("[data-component-type]");
+    console.log("All sections", allSections);
+    // Make sure all sections have html inserted into them
+    for (const section of allSections) {
+      if (!section.innerHTML) {
+        console.log("Waiting for react to render", section.id);
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+    }
+    console.log("All sections have been rendered");
+  };
+  await waitForReactRenderedSectionsToInsertIntoDOM();
   addDatasetAndOrganizationCardComponents();
-  window.htmlPagesAdded = true;
+  window.baseHtmlLoaded = true;
 });
 
 const includeJavaScriptFile = async (filePath) => {
