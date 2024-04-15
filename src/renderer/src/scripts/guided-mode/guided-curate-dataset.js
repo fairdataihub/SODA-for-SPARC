@@ -5198,7 +5198,9 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-name-subtitle-tab") {
       const datasetName = getGuidedDatasetName();
+      console.log(datasetName);
       useGlobalStore.setState({ datasetName: datasetName });
+      console.log(useGlobalStore.getState().datasetName);
 
       if (pageNeedsUpdateFromPennsieve("guided-name-subtitle-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
