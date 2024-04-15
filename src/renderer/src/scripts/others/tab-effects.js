@@ -208,7 +208,10 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     }
   }
 
-  if (tabNow == x.length - 1) {
+  console.log("Tabnow value: ", tabNow);
+  console.log("Length of x: ", x.length);
+
+  if (tabNow == 4) {
     console.log("last step here");
     let step5Bubble = document.getElementsByClassName("vertical-progress-bar-step")[4];
     // if (step5Bubble.classList.contains("is-current")) {
@@ -717,40 +720,10 @@ window.nextPrev = (pageIndex) => {
     $("#nextBtn").prop("disabled", false);
   } else if (
     parentTabs[window.currentTab].id === "manifest-file-tab" &&
-    window.sodaJSONObj["starting-point"]["type"] == "bf"
-  ) {
-    // skip step 6 ( options irrelevant for existing bf/pennsieve workflow)
-    $(parentTabs[window.currentTab]).removeClass("tab-active");
-    if (pageIndex == 1) {
-      window.currentTab = window.currentTab + 2;
-      $("#nextBtn").prop("disabled", false);
-      fixStepDone(4);
-
-      window.showParentTab(window.currentTab, pageIndex);
-
-      // check if skip card or the validate card have been checked
-      const validationOptionSelected = document.querySelector(
-        "#validate-dataset-tab input[type=radio]:checked"
-      );
-
-      if (validationOptionSelected) {
-        // enable the continue button
-        $("#nextBtn").prop("disabled", false);
-      } else {
-        // disable the continue button
-        $("#nextBtn").prop("disabled", true);
-      }
-    } else {
-      window.currentTab = window.currentTab - 1;
-      // fixStepDone(4);
-      $("#nextBtn").prop("disabled", true);
-      window.showParentTab(window.currentTab, pageIndex);
-    }
-  } else if (
-    parentTabs[window.currentTab].id === "manifest-file-tab" &&
     (window.sodaJSONObj["starting-point"]["type"] === "new" ||
       window.sodaJSONObj["starting-point"]["type"] === "local")
   ) {
+    console.log("Nailed it again");
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     window.currentTab = window.currentTab + pageIndex;
     $("#Question-generate-dataset").show();
