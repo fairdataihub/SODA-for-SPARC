@@ -590,6 +590,7 @@ window.nextPrev = (pageIndex) => {
     }
   }
 
+  // TODO: Change the tab name to the first tab's name as this check is appropriate for that tab.
   if (
     pageIndex === 1 &&
     parentTabs[window.currentTab].id === "organize-dataset-tab" &&
@@ -794,42 +795,31 @@ window.nextPrev = (pageIndex) => {
     }
     // Display the correct tab:
     window.showParentTab(window.currentTab, pageIndex);
-
-    // check if skip card or the validate card have been checked
-    const validationOptionSelected = document.querySelector(
-      "#validate-dataset-tab input[type=radio]:checked"
-    );
-
-    if (validationOptionSelected) {
-      // enable the continue button
-      $("#nextBtn").prop("disabled", false);
-    } else {
-      // disable the continue button
-      $("#nextBtn").prop("disabled", true);
-    }
-
-    // check if we are moving to the previous tab from the current tab and if we are starting local or new
-    if (
-      (window.sodaJSONObj["starting-point"]["type"] === "new" ||
-        window.sodaJSONObj["starting-point"]["type"] === "local") &&
-      pageIndex === -1
-    ) {
-      if (window.hasFiles) {
-        $("#manifest-creation-prohibited").show();
-        // uncheck the manifest file checkbox if it is currently checked
-        if ($("#generate-manifest-curate").prop("checked")) {
-          $("#generate-manifest-curate").click();
-        }
-        $("#generate-manifest-curate").prop("disabled", true);
-        $("#nextBtn").prop("disabled", false);
-      } else {
-        $("#manifest-creation-prohibited").hide();
-        $("#generate-manifest-curate").prop("disabled", false);
-      }
-    }
   } else if (window.currentTab === 4) {
     window.showParentTab(window.currentTab, pageIndex);
     // generate dataset tab
+  } else if (
+    parentTabs[window.currentTab].id === "upload-destination-selection-tab" &&
+    pageIndex === 1
+  ) {
+    console.log("Nailed it");
+    $(parentTabs[window.currentTab]).removeClass("tab-active");
+    window.currentTab = window.currentTab + pageIndex;
+    // Display the correct tab:
+    window.showParentTab(window.currentTab, pageIndex);
+    // hide/show prohibited manifest warning based on if the dataset already has files
+    if (window.hasFiles) {
+      $("#manifest-creation-prohibited").show();
+      // uncheck the manifest file checkbox if it is currently checked
+      if ($("#generate-manifest-curate").prop("checked")) {
+        $("#generate-manifest-curate").click();
+      }
+      $("#generate-manifest-curate").prop("disabled", true);
+      $("#nextBtn").prop("disabled", false);
+    } else {
+      $("#manifest-creation-prohibited").hide();
+      $("#generate-manifest-curate").prop("disabled", false);
+    }
   } else {
     // Hide the current tab:
     $(parentTabs[window.currentTab]).removeClass("tab-active");
