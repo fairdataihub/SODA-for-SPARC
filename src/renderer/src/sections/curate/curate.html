@@ -535,7 +535,7 @@
             </div>
           </div>
 
-          <!-- 3. Organize dataset -->
+          <!-- 3. Upload Destination Selection Tab -->
           <div class="parent-tabs condensed" id="upload-destination-selection-tab"
             style="grid-template-rows: auto; padding-right: 10px">
             <label style="margin-top: 2rem; font-size: 17px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Are you uploading to a new or existing Pennsieve dataset?</label>
@@ -578,7 +578,7 @@
             </div>
 
             <div
-              id="new-dataset-upload"
+              id="Question-new-dataset-upload-name"
               class="hidden"
               style="margin-top: 5rem; display: flex; flex-direction: column;"
             >
@@ -603,7 +603,8 @@
                     font-weight: 600;
                     border: none;
                     font-size: 14px;
-                  ">
+                  "
+                   onclick="window.transitionSubQuestions(this, 'new-dataset-upload', 'upload-destination-selection-tab', '', 'individual-question getting-started')">
                   Confirm
                 </button>
               </div>

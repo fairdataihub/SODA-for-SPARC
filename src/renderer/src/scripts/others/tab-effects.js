@@ -104,9 +104,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
         $(".flex-row-container.code-metadata").css("display", "none");
       }
     }
-    $(".div-organize-generate-dataset.metadata").removeClass("hide");
-    $(".div-individual-metadata").removeClass("show");
-    $("#nextBtn").prop("disabled", false);
+    $("#nextBtn").prop("disabled", true);
   }
   if (tabNow == 4) {
     if (nextOrPrev === -1) {
@@ -208,9 +206,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     }
   }
 
-  console.log("Tabnow value: ", tabNow);
-  console.log("Length of x: ", x.length);
-
+  // preview dataset tab
   if (tabNow == 4) {
     console.log("last step here");
     let step5Bubble = document.getElementsByClassName("vertical-progress-bar-step")[4];
@@ -1019,6 +1015,13 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
       window.globalGettingStarted1stQuestionBool = false;
       return;
     }
+  }
+
+  if (currentDiv === "Question-new-dataset-upload-name") {
+    // TODO: Ensure the dataset name is valid with the character list we have
+    $("#nextBtn").prop("disabled", true);
+    $(ev).hide();
+    return;
   }
 
   // add "non-selected" to current option-card so users cannot keep selecting it
