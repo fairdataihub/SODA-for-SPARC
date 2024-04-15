@@ -230,19 +230,29 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
 const fill_info_details = () => {
   let new_dataset_name = "dataset_root";
   $(".card-container.generate-preview").remove();
-  if (window.sodaJSONObj["starting-point"]["type"] === "bf") {
-    addCardDetail("Pennsieve account", $("#current-bf-account-generate").text());
-    addCardDetail("Dataset name", window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
-    let workspace = $("#bf-organization-curate-first-question").text();
-    addCardDetail("Selected workspace", workspace);
+  addCardDetail(
+    "Pennsieve account",
+    $("#current-bf-account").text(),
+    1,
+    "Question-generate-dataset-BF-account",
+    true
+  );
+  let workspace = $("#bf-organization-curate-first-question").text();
+  addCardDetail("Selected workspace", workspace, 1, "Question-generate-dataset-BF-account", true);
+  addCardDetail(
+    "Dataset name",
+    $("#inputNewNameDataset-upload-dataset").val().trim(),
+    1,
+    "inputNewNameDataset",
+    true
+  );
 
-    new_dataset_name = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    if (window.manifestFileCheck.checked) {
-      addCardDetail("Manifest files", "Requested from SODA", 1, "pulse-manifest-checkbox", true);
-    } else {
-      addCardDetail("Manifest files", "Not requested", 1, "pulse-manifest-checkbox", true);
-    }
+  if (window.manifestFileCheck.checked) {
+    addCardDetail("Manifest files", "Requested from SODA", 2, "pulse-manifest-checkbox", true);
+  } else {
+    addCardDetail("Manifest files", "Not requested", 2, "pulse-manifest-checkbox", true);
   }
+
   if (
     window.sodaJSONObj["starting-point"]["type"] === "local" ||
     window.sodaJSONObj["starting-point"]["type"] === "new"
@@ -258,15 +268,15 @@ const fill_info_details = () => {
     //     "Question-generate-dataset",
     //     true
     //   );
-    //   new_dataset_name = window.path.basename(window.sodaJSONObj["starting-point"]["local-path"]);
-    //   if (window.manifestFileCheck.checked) {
-    //     addCardDetail(
-    //       "Manifest files",
-    //       "Requested from SODA",
-    //       2,
-    //       "pulse-manifest-checkbox",
-    //       true
-    //     );
+    // new_dataset_name = window.path.basename(window.sodaJSONObj["starting-point"]["local-path"]);
+    // if (window.manifestFileCheck.checked) {
+    //   addCardDetail(
+    //     "Manifest files",
+    //     "Requested from SODA",
+    //     2,
+    //     "pulse-manifest-checkbox",
+    //     true
+    //   );
     //   } else {
     //     addCardDetail("Manifest files", "Not requested", 2, "pulse-manifest-checkbox", true);
     //   }
@@ -284,13 +294,7 @@ const fill_info_details = () => {
     //     "input-destination-generate-dataset-locally",
     //     true
     //   );
-    //   addCardDetail(
-    //     "New dataset name",
-    //     $("#inputNewNameDataset").val().trim(),
-    //     1,
-    //     "inputNewNameDataset",
-    //     true
-    //   );
+
     //   new_dataset_name = $("#inputNewNameDataset").val().trim();
     //   if (window.manifestFileCheck.checked) {
     //     addCardDetail(
@@ -312,21 +316,7 @@ const fill_info_details = () => {
     //   }
 
     //   addCardDetail("New dataset location", "Pennsieve", 1, "Question-generate-dataset", true);
-    //   addCardDetail(
-    //     "Pennsieve account",
-    //     $("#current-bf-account-generate").text(),
-    //     1,
-    //     "Question-generate-dataset-BF-account",
-    //     true
-    //   );
-    //   let workspace = $("#organization-bf-curation").text();
-    //   addCardDetail(
-    //     "Selected workspace",
-    //     workspace,
-    //     1,
-    //     "Question-generate-dataset-BF-account",
-    //     true
-    //   );
+
     //   if ($('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing") {
     //     addCardDetail(
     //       "Dataset name",
