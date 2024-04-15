@@ -546,6 +546,7 @@ window.nextPrev = (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
   let parentTabs = document.getElementsByClassName("parent-tabs");
   console.log("current tab: ", window.currentTab);
+  console.log("Page is: ", parentTabs[window.currentTab].id);
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
     console.log("exiting?");
