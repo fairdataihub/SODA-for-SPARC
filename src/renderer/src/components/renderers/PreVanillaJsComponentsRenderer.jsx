@@ -6,6 +6,7 @@ import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
+  console.log("Waiting for HTML sections to load...");
   await new Promise((resolve) => setTimeout(resolve, 5));
 }
 
@@ -70,6 +71,6 @@ componentSlots.forEach((componentSlot) => {
   if (renderAction) {
     renderAction(componentSlot);
   } else {
-    console.error("Unknown component type:", componentType);
+    console.error(`No render action found for component type: ${componentType}`);
   }
 });

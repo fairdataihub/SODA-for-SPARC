@@ -1,7 +1,8 @@
 import "./assets/imports";
 
-// Render React Components that must be added to the DOM before vanilla js event listeners are added
-import "./components/renderers/ReactComponentRenderer";
+// Render React Components that are added to the DOM before vanilla js files have been loaded
+import "./components/renderers/PreVanillaJsComponentsRenderer";
+
 import "./assets/demo-btns";
 import "./assets/nav";
 import "./scripts/client";
@@ -31,6 +32,9 @@ import "./scripts/sds-templates/sds_templates";
 
 // Application Lotties
 import "./assets/lotties/activate-lotties";
+
+// Render React Components that are added to the DOM after vanilla js files have been loaded
+import "./components/renderers/PostVanillaJsComponentsRenderer";
 
 // Application CSS
 import "@mantine/core/styles.css";
