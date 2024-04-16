@@ -6,7 +6,12 @@ import ExternalLink from "../../buttons/ExternalLink";
 import useGlobalStore from "../../../stores/globalStore";
 
 const NameAndSubtitlePage = () => {
-  const { datasetName, setDatasetName, datasetSubtitle, setDatasetSubtitle } = useGlobalStore();
+  const {
+    guidedDatasetName,
+    guidedSetDatasetName,
+    guidedDatasetSubtitle,
+    guidedSetDatasetSubtitle,
+  } = useGlobalStore();
 
   return (
     <GuidedModePage pageHeader="Dataset name and subtitle">
@@ -14,8 +19,8 @@ const NameAndSubtitlePage = () => {
         <TextInput
           label="Dataset Name:"
           placeholder="Enter dataset name"
-          value={datasetName}
-          onChange={(event) => setDatasetName(event.target.value)}
+          value={guidedDatasetName}
+          onChange={(event) => guidedSetDatasetName(event.target.value)}
         />
         <DropDownNote
           dropDownIcon="info"
@@ -40,12 +45,12 @@ const NameAndSubtitlePage = () => {
           placeholder="Enter dataset subtitle"
           autosize
           minRows={5}
-          value={datasetSubtitle}
-          onChange={(event) => setDatasetSubtitle(event.target.value)}
+          value={guidedDatasetSubtitle}
+          onChange={(event) => guidedSetDatasetSubtitle(event.target.value)}
           maxLength={255}
         />
         <Text align="right" style={{ marginTop: "-35px", zIndex: "10", marginRight: "10px" }}>
-          {255 - datasetSubtitle.length} characters remaining
+          {255 - guidedDatasetSubtitle.length} characters remaining
         </Text>
         <DropDownNote
           dropDownIcon="info"

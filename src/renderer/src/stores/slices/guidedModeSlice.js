@@ -3,9 +3,9 @@ export const guidedModeSlice = (set) => ({
   setCurrentGuidedModePage: (currentGuidedModePage) =>
     set(() => ({ currentGuidedModePage: currentGuidedModePage })),
 
-  datasetName: "",
-  setDatasetName: (datasetName) => set(() => ({ datasetName: datasetName })),
+  guidedDatasetName: "",
+  guidedSetDatasetName: (datasetName) => set(() => ({ datasetName: datasetName })),
 
-  datasetSubtitle: "",
-  setDatasetSubtitle: (datasetSubtitle) => set(() => ({ datasetSubtitle: datasetSubtitle })),
+  guidedDatasetSubtitle: "",
+  setGuidedDatasetSubtitle: (datasetSubtitle) => set(() => ({ datasetSubtitle: datasetSubtitle })),
 });
