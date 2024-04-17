@@ -755,7 +755,7 @@ window.nextPrev = (pageIndex) => {
     }
     window.showParentTab(window.currentTab, pageIndex);
     // generate dataset tab
-  }else if (
+  } else if (
     parentTabs[window.currentTab].id === "upload-destination-selection-tab" &&
     pageIndex === 1
   ) {
