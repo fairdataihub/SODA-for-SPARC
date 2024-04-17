@@ -576,35 +576,20 @@
                               <div class="dropdown bootstrap-select w-100"><select class="w-100" id="curatebfdatasetlist" data-live-search="true" name="Pennsieve dataset" style="width: 450px; border-radius: 7px; padding: 8px" data-none-selected-text="Loading datasets...">
                               <option value="Select dataset">Search here...</option></select>
                             </div>
+                            </div>
 
                             <h5 style="text-align: left; color: #000; display: none" id="bf-organization-select-header">
                               Select your workspace
                             </h5>
-                            <div class="search-select-box" id="bf-organization-select-div">
-                              <div class="dropdown bootstrap-select w-100">
-                              <select class="w-100" id="curatebforganizationlist" data-live-search="true" name="Pennsieve organization" style="width: 450px; border-radius: 7px; padding: 8px" data-none-selected-text="Loading workspace...">
-                                <option value="Select organization">Search here...</option>
+                            <div class="search-select-box" id="bf-organization-select-div" style="display: none">
+                              <select class="w-100" id="curatebforganizationlist" data-live-search="true"
+                                name="Pennsieve organization" style="width: 450px; border-radius: 7px; padding: 8px"
+                                data-none-selected-text="Loading workspace...">
+                                <option value="" disabled>Loading...</option>
                               </select>
-                              <button type="button" tabindex="-1" class="btn dropdown-toggle btn-light" data-toggle="dropdown" role="combobox" aria-owns="bs-select-10" aria-haspopup="listbox" aria-expanded="false" data-id="curatebforganizationlist" aria-disabled="true" title="Search here...">
-                              <div class="filter-option">
-                                <div class="filter-option-inner">
-                                  <div class="filter-option-inner-inner">Search here...</div>
-                                </div> 
-                              </div>
-                              </button>
-                              <div class="dropdown-menu " style="max-height: 997px; overflow: hidden; min-height: 43px;">
-                                <div class="bs-searchbox">
-                                  <input type="search" class="form-control" autocomplete="off" role="combobox" aria-label="Search" aria-controls="bs-select-10" aria-autocomplete="list" aria-activedescendant="bs-select-10-0">
-                                </div>
-                                <div class="inner show" role="listbox" id="bs-select-10" tabindex="-1" style="max-height: 938px; overflow-y: auto; min-height: 0px;">
-                                  <ul class="dropdown-menu inner show" role="presentation" style="margin-top: 0px; margin-bottom: 0px;">
-                                    <li class="selected active"><a role="option" class="dropdown-item active selected" id="bs-select-10-0" tabindex="0" aria-setsize="1" aria-posinset="1" aria-selected="true"><span class="text">Search here...</span></a></li></ul>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                            </div>              
                           </div>
-                          </div>
+                          
                       </div>
                     </div>
                   </div>

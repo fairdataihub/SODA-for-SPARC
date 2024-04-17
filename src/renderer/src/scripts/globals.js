@@ -1897,6 +1897,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     //datasets do exist so display popup with dataset options
     //else datasets have been created
     if (window.organizationList.length > 0) {
+      console.log("Organizations do exist")
       const { value: result } = await Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         cancelButtonText: "Cancel",
