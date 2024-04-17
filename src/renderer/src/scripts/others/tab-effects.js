@@ -1132,7 +1132,7 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
   //   $("#nextBtn").prop("disabled", false);
   // }
 
-  if(ev.getAttribute("data-next") === "Question-generate-dataset-generate-div-old") {
+  if (ev.getAttribute("data-next") === "Question-generate-dataset-generate-div-old") {
     $("#nextBtn").prop("disabled", false);
   }
 
