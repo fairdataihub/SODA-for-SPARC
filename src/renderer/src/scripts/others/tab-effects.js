@@ -33,7 +33,7 @@ const delay = 250;
 window.showParentTab = async (tabNow, nextOrPrev) => {
   // tabNow represent the current tab
   // nextOrPrev represent the direction of the tab (1 or -1)
-  console.log(tabNow);
+  console.log("Tab after addition", tabNow);
   console.log(nextOrPrev);
   $("#nextBtn").prop("disabled", true);
   // check to show Save progress btn (only after step 2)
@@ -747,7 +747,7 @@ window.nextPrev = (pageIndex) => {
     }
     // Display the correct tab:
     window.showParentTab(window.currentTab, pageIndex);
-  } else if (window.currentTab === 4) {
+  } else if (window.currentTab === 4 && pageIndex === 1) {
     if ($("#div-generate-comeback").is(":visible")) {
       $(parentTabs[window.currentTab]).removeClass("tab-active");
       window.currentTab = window.currentTab + pageIndex;
@@ -755,7 +755,7 @@ window.nextPrev = (pageIndex) => {
     }
     window.showParentTab(window.currentTab, pageIndex);
     // generate dataset tab
-  } else if (
+  }else if (
     parentTabs[window.currentTab].id === "upload-destination-selection-tab" &&
     pageIndex === 1
   ) {
