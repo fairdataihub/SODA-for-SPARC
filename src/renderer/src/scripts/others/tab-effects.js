@@ -1118,17 +1118,21 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
   }
 
   // here, handling existing folders and files tabs are independent of each other
-  if (
-    !(
-      ev.getAttribute("data-next") === "Question-generate-dataset-existing-files-options" &&
-      target.classList.contains("prev")
-    )
-  ) {
-    // append to parentDiv
-    document.getElementById(parentDiv).appendChild(target);
-    $("#para-continue-existing-files-generate").text("");
-  } else {
-    // disable Next button if all questions are not fully answered by users
+  // if (
+  //   !(
+  //     ev.getAttribute("data-next") === "Question-generate-dataset-existing-files-options" &&
+  //     target.classList.contains("prev")
+  //   )
+  // ) {
+  //   // append to parentDiv
+  //   document.getElementById(parentDiv).appendChild(target);
+  //   $("#para-continue-existing-files-generate").text("");
+  // } else {
+  //   // disable Next button if all questions are not fully answered by users
+  //   $("#nextBtn").prop("disabled", false);
+  // }
+
+  if(ev.getAttribute("data-next") === "Question-generate-dataset-generate-div-old") {
     $("#nextBtn").prop("disabled", false);
   }
 
@@ -2054,15 +2058,15 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
   }
 
   // here, handling existing folders and files tabs are independent of each other
-  if (
-    !(
-      ev.getAttribute("data-next") === "Question-generate-dataset-existing-files-options" &&
-      target.classList.contains("prev")
-    )
-  ) {
-    // append to parentDiv
-    document.getElementById(parentDiv).appendChild(target);
-  }
+  // if (
+  //   !(
+  //     ev.getAttribute("data-next") === "Question-generate-dataset-existing-files-options" &&
+  //     target.classList.contains("prev")
+  //   )
+  // ) {
+  //   // append to parentDiv
+  //   document.getElementById(parentDiv).appendChild(target);
+  // }
 
   // if buttons: Add account and Confirm account were hidden, show them again here
   if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-account") {

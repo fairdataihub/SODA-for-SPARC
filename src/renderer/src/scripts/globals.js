@@ -1339,6 +1339,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
 
 var dropdownEventID = "";
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
+  console.log("Open dropdown prompt called")
   // if users edit current account
   if (dropdown === "bf") {
     await window.addBfAccount(ev, false);
