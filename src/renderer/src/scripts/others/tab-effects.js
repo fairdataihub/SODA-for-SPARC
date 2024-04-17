@@ -1117,8 +1117,6 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     setTimeout(() => target.classList.add("test2"), 100);
   }
 
-
-
   if (ev.getAttribute("data-next") === "Question-generate-dataset-generate-div-old") {
     $("#nextBtn").prop("disabled", false);
   }
