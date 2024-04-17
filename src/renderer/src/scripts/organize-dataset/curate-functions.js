@@ -31,7 +31,7 @@ document
   });
 
 document
-  .querySelector("#Question-getting-started-BF-dataset .change-current-account")
+  .querySelector("#Question-generate-dataset-BF-dataset .change-current-account")
   .addEventListener("click", function () {
     window.openDropdownPrompt(this, "dataset", false);
   });

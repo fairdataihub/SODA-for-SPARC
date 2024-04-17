@@ -460,52 +460,6 @@
                               d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z" />
                           </svg>
                           <div class="ui active green inline loader small" style="display: none"></div>
-
-                          <div style="display: none" id="div-permission-list-2">
-                            <h5 style="text-align: left; color: #000; display: none">
-                              Select permissions for filtering dataset lists:
-                              <div class="tooltipnew">
-                                <img class="info" src="./img/info.png" />
-                                <span class="tooltiptext">
-                                  You will see multiple dropdown lists throughout the SODA
-                                  interface listing you Pennsieve datasets. You can filter those
-                                  lists based on your permissions on the dataset.
-                                  <br /><br />
-                                  The default filter is "All" that shows you all the datasets
-                                  for which you have permissions.
-                                  <br /><br />
-                                  See our
-                                  <a target="_blank" href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/manage-dataset/add-edit-permissions"
-                                    style="color: white">
-                                    documentation</a>
-                                  on Pennsieve permissions for more information.
-                                </span>
-                              </div>
-                            </h5>
-                            <div style="display: none">
-                              <select class="my-dropdown" style="width: 100%" id="select-permission-list-2">
-                                <option default>All</option>
-                                <option>Owner</option>
-                                <option>Manager</option>
-                                <option>Editor</option>
-                                <option>Viewer</option>
-                              </select>
-                            </div>
-                            <div id="div-filter-datasets-progress-2" class="ui active green inline loader"
-                              style="display: none; margin: 10px auto"></div>
-                            <p id="para-filter-datasets-status-2" style="font-size: 14px; display: none"></p>
-
-                            <h5 style="text-align: left; color: #000; display: none" id="bf-dataset-select-header">
-                              Select your dataset
-                            </h5>
-                            <div class="search-select-box" id="bf-dataset-select-div" style="display: none">
-                              <select class="w-100" id="curatebfdatasetlist" data-live-search="true"
-                                name="Pennsieve dataset" style="width: 450px; border-radius: 7px; padding: 8px"
-                                data-none-selected-text="Loading datasets...">
-                                <option value="" disabled>Loading...</option>
-                              </select>
-                            </div>
-                          </div>  
                         </div>
                       </div>
                     </div>
@@ -631,8 +585,115 @@
               class="hidden"
               style="margin-top: 5rem; display: flex; flex-direction: column;"
             >
-              <label style="font-size: 17px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">What is the name of the new dataset?</label>
-              <div id="top-level-card-container--select-upload-dataset" class="top-level-card-container" style="margin-top: 1rem"></div>
+              <!-- <div id="top-level-card-container--select-upload-dataset" class="top-level-card-container" style="margin-top: 1rem"></div> -->
+              <div class="individual-question generate-dataset test2 show" id="Question-generate-dataset-BF-dataset">
+                <div class="ui form" style="width: 100%">
+                  <div class="grouped fields">
+                    <label style="font-size: 17px; color: var(--color-bg-plum)">Which existing Pennsieve dataset
+                      would you like to use?</label>
+                    <div class="field prepare-metadata-card-field">
+                      <div style="
+                          display: flex;
+                          flex-direction: column;
+                          justify-content: space-between;
+                          margin-top: 15px;
+                          height: auto;
+                          box-shadow: 0px 0px 10px #d5d5d5;
+                          padding: 15px 25px;
+                          border-radius: 5px;
+                        ">
+                        <div style="display: flex; flex-direction: row; margin-bottom: 15px">
+                          <div>
+                            <h5 style="color: #808080; font-size: 15px; text-align: left">
+                              Current dataset:
+                            </h5>
+                          </div>
+                          <div class="change-current-account" style="flex: auto" id="organize-ds-step-6-ds-select">
+                            <span style="
+                                color: #000;
+                                font-weight: 600;
+                                margin-left: 80px;
+                                font-size: 15px;
+                              " id="current-bf-dataset-generate">None</span>
+
+                            <svg class="svg-change-current-account dataset bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">
+                              <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
+                            </svg>
+                          </div>
+                          <div class="ui active green inline loader small" style="display: none"></div>
+                          <!-- this is what is shown in the Edit Current dataset prompt  -->
+                          <div style="display: none" id="div-permission-list-2">
+                            <h5 style="text-align: left; color: #000; display: none">
+                              Select permissions for filtering dataset lists:
+                              <div class="tooltipnew">
+                                <img class="info" src="./img/info.png">
+                                <span class="tooltiptext">
+                                  You will see multiple dropdown lists throughout the SODA
+                                  interface listing you Pennsieve datasets. You can filter those
+                                  lists based on your permissions on the dataset.
+                                  <br><br>
+                                  The default filter is "All" that shows you all the datasets
+                                  for which you have permissions.
+                                  <br><br>
+                                  See our
+                                  <a target="_blank" href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/manage-dataset/add-edit-permissions" style="color: white">
+                                    documentation</a>
+                                  on Pennsieve permissions for more information.
+                                </span>
+                              </div>
+                            </h5>
+                            <div style="display: none">
+                              <select class="my-dropdown" style="width: 100%" id="select-permission-list-2">
+                                <option default="">All</option>
+                                <option>Owner</option>
+                                <option>Manager</option>
+                                <option>Editor</option>
+                                <option>Viewer</option>
+                              </select>
+                            </div>
+                            <div id="div-filter-datasets-progress-2" class="ui active green inline loader" style="display: none; margin: 10px auto"></div>
+                            <p id="para-filter-datasets-status-2" style="font-size: 14px; display: none">0 dataset(s) where you have all permissions were loaded successfully below.</p>
+
+                            <h5 style="text-align: left; color: rgb(0, 0, 0); display: block;" id="bf-dataset-select-header">
+                              Select your dataset
+                            </h5>
+                            <div class="search-select-box" id="bf-dataset-select-div" style="">
+                              <div class="dropdown bootstrap-select w-100" style=""><select class="w-100" id="curatebfdatasetlist" data-live-search="true" name="Pennsieve dataset" style="width: 450px; border-radius: 7px; padding: 8px" data-none-selected-text="Loading datasets...">
+                                
+                              <option value="Select dataset">Search here...</option></select><button type="button" tabindex="-1" class="btn dropdown-toggle btn-light" data-toggle="dropdown" role="combobox" aria-owns="bs-select-9" aria-haspopup="listbox" aria-expanded="false" data-id="curatebfdatasetlist" aria-disabled="true" title="Search here..."><div class="filter-option"><div class="filter-option-inner"><div class="filter-option-inner-inner">Search here...</div></div> </div></button><div class="dropdown-menu " style="max-height: 997px; overflow: hidden; min-height: 43px;"><div class="bs-searchbox"><input type="search" class="form-control" autocomplete="off" role="combobox" aria-label="Search" aria-controls="bs-select-9" aria-autocomplete="list" aria-activedescendant="bs-select-9-0"></div><div class="inner show" role="listbox" id="bs-select-9" tabindex="-1" style="max-height: 938px; overflow-y: auto; min-height: 0px;"><ul class="dropdown-menu inner show" role="presentation" style="margin-top: 0px; margin-bottom: 0px;"><li class="selected active"><a role="option" class="dropdown-item active selected" id="bs-select-9-0" tabindex="0" aria-setsize="1" aria-posinset="1" aria-selected="true"><span class="text">Search here...</span></a></li></ul></div></div></div>
+                            </div>
+
+                            <h5 style="text-align: left; color: #000; display: none" id="bf-organization-select-header">
+                              Select your workspace
+                            </h5>
+                            <div class="search-select-box" id="bf-organization-select-div" style="">
+                              <div class="dropdown bootstrap-select w-100" style=""><select class="w-100" id="curatebforganizationlist" data-live-search="true" name="Pennsieve organization" style="width: 450px; border-radius: 7px; padding: 8px" data-none-selected-text="Loading workspace...">
+                                
+                              <option value="Select organization">Search here...</option></select><button type="button" tabindex="-1" class="btn dropdown-toggle btn-light" data-toggle="dropdown" role="combobox" aria-owns="bs-select-10" aria-haspopup="listbox" aria-expanded="false" data-id="curatebforganizationlist" aria-disabled="true" title="Search here..."><div class="filter-option"><div class="filter-option-inner"><div class="filter-option-inner-inner">Search here...</div></div> </div></button><div class="dropdown-menu " style="max-height: 997px; overflow: hidden; min-height: 43px;"><div class="bs-searchbox"><input type="search" class="form-control" autocomplete="off" role="combobox" aria-label="Search" aria-controls="bs-select-10" aria-autocomplete="list" aria-activedescendant="bs-select-10-0"></div><div class="inner show" role="listbox" id="bs-select-10" tabindex="-1" style="max-height: 938px; overflow-y: auto; min-height: 0px;"><ul class="dropdown-menu inner show" role="presentation" style="margin-top: 0px; margin-bottom: 0px;"><li class="selected active"><a role="option" class="dropdown-item active selected" id="bs-select-10-0" tabindex="0" aria-setsize="1" aria-posinset="1" aria-selected="true"><span class="text">Search here...</span></a></li></ul></div></div></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div style="
+                          display: none;
+                          flex-direction: column;
+                          justify-content: center;
+                          margin: 10px auto;
+                        ">
+                        <button id="button-confirm-bf-dataset" class="btn_animated" onclick="window.transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-dataset', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')" data-next="Question-generate-dataset-existing-folders-options" style="
+                            display: none;
+                            margin: 10px auto;
+                            width: 100px;
+                            border: none !important;
+                          "><div class="btn_animated-inside">
+                          Confirm
+                        </div></button>
+                        <p id="para-continue-empty-ds-selected" style="text-align: center; font-weight: 600; color: var(--color-light-green); display: none;"></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div
