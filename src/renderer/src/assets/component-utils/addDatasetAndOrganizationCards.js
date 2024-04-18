@@ -236,7 +236,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     .appendChild(changeDatasetStatusCard);
 
   let uploadDatasetCard = UserDetailsCard({
-    tabName: "manage-dataset",
+    tabName: "organize-dataset",
     buttonId: "button_upload_dataset_confirm",
     currentTab: "upload_dataset_tab",
     currentParentTab: "upload_dataset_parent-tab",

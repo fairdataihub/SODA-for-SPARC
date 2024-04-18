@@ -827,6 +827,7 @@ window.resetFFMUI = (ev) => {
     // if (ev.parentNode.parentNode.classList.contains("prepare-validation")) {
     //   resetValidation = false;
     // }
+    console.log(ev.parentNode.parentNode);
     if (ev.parentNode.parentNode.classList.contains("organize-dataset")) {
       resetOrganizationTab = false;
       if (ev.parentNode.parentNode.id === "bf-organization-curate-first-question-container") {
