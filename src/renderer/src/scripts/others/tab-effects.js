@@ -131,9 +131,8 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     }
   }
 
-  if(tabNow == 5) {
-    $("#Question-validate-dataset-upload").show()
-
+  if (tabNow == 5) {
+    $("#Question-validate-dataset-upload").show();
   }
 
   if (tabNow == 2) {
