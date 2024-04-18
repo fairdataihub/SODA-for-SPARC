@@ -5,25 +5,18 @@ import DropdownSelect from "../common/DropdownSelect";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.baseHtmlLoaded) {
-  console.log("Waiting for base HTML to load...");
   await new Promise((resolve) => setTimeout(resolve, 5));
 }
 
 const componentRenderActions = {
   "dropdown-select": (componentSlot) => {
-    console.log("slotId", componentSlot.id);
-    const pageId = componentSlot.id;
+    const id = componentSlot.id;
 
     // Create a React root and render the component
     const root = createRoot(componentSlot);
     root.render(
       <SodaComponentWrapper>
-        <DropdownSelect
-          label={"asdf"}
-          placeholder={"qwer"}
-          options={["a", "b"]}
-          setSelection={console.log("foo")}
-        />
+        <DropdownSelect id={id} />
       </SodaComponentWrapper>
     );
   },

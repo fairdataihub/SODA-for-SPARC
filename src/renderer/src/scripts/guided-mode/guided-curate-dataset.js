@@ -116,6 +116,14 @@ const guidedCreateEventDataPrepareMetadata = (destination, value) => {
   };
 };
 
+useGlobalStore.subscribe((state, prevState) => {
+  console.log("State changed!");
+  console.log("old state", prevState["guided-select-sparc-funding-consortium-r"].selectedValue);
+  const selectedValue = state["guided-select-sparc-funding-consortium-r"].selectedValue;
+  console.log("new state", selectedValue);
+  console.log("State changed: selectedValue is now", selectedValue);
+});
+
 window.handleGuidedModeOrgSwitch = async (buttonClicked) => {
   const clickedButtonId = buttonClicked.id;
   if (clickedButtonId === "guided-button-change-workspace-dataset-import") {
@@ -977,10 +985,9 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Set the consortium data standard value in the JSON
         window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
           "SPARC";
-        // Get the funding source value from the dropdown
-        const selectedFuncingSourceFromDropdown = $(
-          "#guided-select-sparc-funding-consortium"
-        ).val();
+        const selectedFuncingSourceFromDropdown =
+          useGlobalStore.getState()["guided-select-sparc-funding-consortium-r"].selectedValue;
+        console.log("selected funding source from react", selectedFundingSource);
 
         // Throw an error if the user did not select a funding source from the dropdown
         if (!selectedFuncingSourceFromDropdown) {
@@ -5274,40 +5281,6 @@ window.openPage = async (targetPageID) => {
           console.log(emessage);
         }
       }
-
-      // Set the funding consortium dropdown options / set up select picker
-      document.getElementById("guided-select-sparc-funding-consortium").innerHTML = `
-        <option value="">Select a funding consortium</option>
-        ${window.sparcFundingConsortiums
-          .map((consortium) => {
-            return `<option value="${consortium}">${consortium}</option>`;
-          })
-          .join("\n")}
-      `;
-      $("#guided-select-sparc-funding-consortium").selectpicker({
-        style: "SODA-select-picker",
-      });
-      $("#guided-select-sparc-funding-consortium").selectpicker("refresh");
-      // Event listener that watches what the user selects and updates the UI accordingly
-      $("#guided-select-sparc-funding-consortium").on("change", function (e) {
-        const consortium = e.target.value;
-
-        const divClickContinueFundingConsortium = document.getElementById(
-          "guided-section-confirm-funding-consortium"
-        );
-
-        // If the valueLess selection is selected, hide all sections besides the help dropdown
-        if (consortium === "") {
-          //Hide the click continue to.. div
-          divClickContinueFundingConsortium.classList.add("hidden");
-        } else {
-          // Show the click continue to.. div
-          divClickContinueFundingConsortium.classList.remove("hidden");
-          // Set the funding consortium text to the click continue to.. span
-          document.getElementById("span-continue-sparc-funding-consortium-name").innerText =
-            consortium;
-        }
-      });
 
       // Set the funding consortium dropdown to the saved value (deafult is empty string before a user selects a value)
       const savedFundingConsortium =

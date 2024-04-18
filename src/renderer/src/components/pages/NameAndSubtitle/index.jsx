@@ -6,13 +6,11 @@ import ExternalLink from "../../buttons/ExternalLink";
 import useGlobalStore from "../../../stores/globalStore";
 
 const NameAndSubtitlePage = () => {
-  const {
-    guidedDatasetName,
-    guidedSetDatasetName,
-    guidedDatasetSubtitle,
-    guidedSetDatasetSubtitle,
-  } = useGlobalStore();
-
+  const guidedDatasetName = useGlobalStore((state) => state.guidedDatasetName);
+  const guidedSetDatasetName = useGlobalStore((state) => state.guidedSetDatasetName);
+  const guidedDatasetSubtitle = useGlobalStore((state) => state.guidedDatasetSubtitle);
+  const guidedSetDatasetSubtitle = useGlobalStore((state) => state.setGuidedDatasetSubtitle);
+  console.log("component rendered");
   return (
     <GuidedModePage pageHeader="Dataset name and subtitle">
       <GuidedModeSection>

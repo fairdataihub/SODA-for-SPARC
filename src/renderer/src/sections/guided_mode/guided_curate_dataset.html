@@ -124,7 +124,7 @@
             style="flex-direction: row; justify-content: space-between; max-width: 600px"
             class="guided--section mt-md"
           >
-            <!--<div
+            <div
               data-component-type="navigation-button"
               data-button-id="sds-templates"
               data-button-text="Download SDS template"
@@ -141,8 +141,7 @@
               data-button-size="md"
               data-button-color="black"
               data-button-custom-width="250px"
-            ></div>-->
-            <div data-component-type="dropdown-select"><div>asdf</div></div>
+            ></div>
           </div>
         </div>
       </div>
@@ -578,19 +577,12 @@
             <h2 class="text-sub-step-title">
               Select the specific SPARC consortium that funded this dataset:
             </h2>
-
-            <select
-              class="w-100 mb-sm SODA-select-picker"
-              id="guided-select-sparc-funding-consortium"
-              data-live-search="true"
-              name="Dataset funding source"
-            ></select>
-
-            <div class="guided--section" id="guided-section-confirm-funding-consortium">
-              <h2 class="guided--text-user-directions">
-                Click "<span class="next-button-span"></span>" to confirm your dataset is funded by
-                <span id="span-continue-sparc-funding-consortium-name"></span>.
-              </h2>
+            <div
+              class="w-100"
+              id="guided-select-sparc-funding-consortium-r"
+              data-component-type="dropdown-select"
+            >
+              <div>asdf</div>
             </div>
           </div>
 
