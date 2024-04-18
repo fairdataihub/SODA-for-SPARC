@@ -131,26 +131,9 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     }
   }
 
-  if (tabNow == 5) {
-    // Disable the continue button if a destination has not been selected
-    // Used when traversing back and forth between tabs
-    // TODO: Update code to show Continue if the para for empty dataset is showing
-    if (
-      $("#inputNewNameDataset").val() !== "" ||
-      ($("#Question-generate-dataset-existing-files-options")
-        .find(".option-card")
-        .hasClass("checked") &&
-        $("#Question-generate-dataset-existing-folders-options")
-          .find(".option-card")
-          .hasClass("checked")) ||
-      $("#generate-dataset-replace-existing").find(".option-card").hasClass("checked") ||
-      $("#input-destination-generate-dataset-locally")[0].placeholder !== "Browse here" ||
-      $("#para-continue-empty-ds-selected").is(":visible")
-    ) {
-      $("#nextBtn").prop("disabled", false);
-    } else {
-      $("#nextBtn").prop("disabled", true);
-    }
+  if(tabNow == 5) {
+    $("#Question-validate-dataset-upload").show()
+
   }
 
   if (tabNow == 2) {
