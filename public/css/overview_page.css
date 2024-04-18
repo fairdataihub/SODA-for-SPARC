@@ -128,6 +128,21 @@
   margin: 0 !important;
 }
 
+.success-validation-lottie {
+  --lottie-animation-container-width: 20px;
+  --lottie-animation-container-height: 20px;
+  --lottie-animation-container-background-color: transparent;
+  width: var(--lottie-animation-container-width);
+  height: var(--lottie-animation-container-height);
+  background: var(--lottie-animation-container-background-color);
+  overflow: hidden;
+  margin: 0 !important;
+  height: 100px;
+  width: 100px;
+}
+
+
+
 @media (min-height: 900px) {
   .getting-started-header {
     margin-top: 8rem;
