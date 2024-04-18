@@ -3482,7 +3482,7 @@ window.resetCuration = () => {
   $("#Question-getting-started-1").addClass("show");
   $("#generate-dataset-progress-tab").css("display", "none");
 
-  console.log("Resetting current tab value")
+  console.log("Resetting current tab value");
   window.currentTab = 0;
   // uncheck all radio buttons and checkboxes
   $("#organize-section").find(".option-card").removeClass("checked");
@@ -3554,7 +3554,7 @@ window.exitCurate = async (resetProgressTabs, start_over = false) => {
       $("#generate-dataset-progress-tab").css("display", "none");
 
       window.hasFiles = false;
-      console.log("Resetting current tab value")
+      console.log("Resetting current tab value");
 
       window.currentTab = 0;
       window.wipeOutCurateProgress();

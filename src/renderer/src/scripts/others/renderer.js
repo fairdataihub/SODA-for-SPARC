@@ -7914,7 +7914,7 @@ const show_curation_shortcut = async () => {
       $("#Question-getting-started-1").addClass("show");
       $("#generate-dataset-progress-tab").css("display", "none");
 
-      console.log("Resetting current tab value")
+      console.log("Resetting current tab value");
       window.currentTab = 0;
       window.wipeOutCurateProgress();
       $("#guided-button-start-modify-component").click();
