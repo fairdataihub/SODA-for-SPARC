@@ -136,7 +136,7 @@ let successValidatedFiles_lottie_observer = new MutationObserver(function (mutat
     }
   });
 });
-let successValidatedFilesSewction = document.getElementById("div-validate-dataset-success")
+let successValidatedFilesSewction = document.getElementById("div-validate-dataset-success");
 successValidatedFiles_lottie_observer.observe(successValidatedFilesSewction, {
   attributes: true,
   attributeFilter: ["class"],

@@ -141,8 +141,6 @@
   width: 100px;
 }
 
-
-
 @media (min-height: 900px) {
   .getting-started-header {
     margin-top: 8rem;
