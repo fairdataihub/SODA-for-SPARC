@@ -557,7 +557,7 @@ window.nextPrev = (pageIndex) => {
   // TODO: Change the tab name to the first tab's name as this check is appropriate for that tab.
   if (
     pageIndex === 1 &&
-    parentTabs[window.currentTab].id === "organize-dataset-tab" &&
+    parentTabs[window.currentTab].id === "getting-started-tab" &&
     JSON.stringify(window.sodaJSONObj["dataset-structure"]) === JSON.stringify({ folders: {} })
   ) {
     Swal.fire({
