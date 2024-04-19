@@ -397,14 +397,27 @@ document
   .addEventListener("input", function (event) {
     console.log(event.target.value);
     if (event.target.value != "") {
+      let invalidName = window.check_forbidden_characters_ps(event.target.value);
+      if (invalidName) {
+        console.log("Not valid");
+        document.querySelector("#para-new-name-dataset-message").style.display = "flex";
+        document.querySelector("#para-new-name-dataset-message").textContent =
+          "A Pennsieve dataset name cannot contain any of the following characters: <>:/\\|?*";
+        document
+          .getElementById("upload-dataset-btn-confirm-new-dataset-name")
+          .classList.add("hidden");
+        return;
+      }
       // Show the confirm button
       document
         .getElementById("upload-dataset-btn-confirm-new-dataset-name")
         .classList.remove("hidden");
+      document.querySelector("#para-new-name-dataset-message").style.display = "none";
     } else {
       document
         .getElementById("upload-dataset-btn-confirm-new-dataset-name")
         .classList.add("hidden");
+      document.querySelector("#para-new-name-dataset-message").style.display = "none";
     }
   });
 

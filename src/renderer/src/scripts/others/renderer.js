@@ -6556,7 +6556,7 @@ $("#inputNewNameDataset").keyup(function () {
       document.getElementById("div-confirm-inputNewNameDataset").style.display = "none";
       $("#btn-confirm-new-dataset-name").hide();
       document.getElementById("para-new-name-dataset-message").innerHTML =
-        "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.";
+        "Error: A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.";
       // $("#nextBtn").prop("disabled", true)
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
       $("#div-confirm-inputNewNameDataset").css("display", "none");
