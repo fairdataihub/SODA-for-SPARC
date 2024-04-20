@@ -497,6 +497,23 @@ const checkHighLevelFoldersInput = () => {
   return checked;
 };
 
+window.hasEmptyFolders = (currentFolder) => {
+  console.log("current folder: ", currentFolder);
+  if (
+    !Object.keys(currentFolder["folders"]).length &&
+    !Object.keys(currentFolder["files"]).length
+  ) {
+    return true;
+  }
+
+  let emptyFolders = false;
+  for (const folder in currentFolder["folders"]) {
+    emptyFolders = emptyFolders || window.hasEmptyFolders(currentFolder["folders"][folder]);
+    console.log(emptyFolders);
+  }
+  return emptyFolders;
+};
+
 /**
  *
  * @param {number} pageIndex - 1 for next, -1 for previous
@@ -555,39 +572,47 @@ window.nextPrev = (pageIndex) => {
   }
 
   // TODO: Change the tab name to the first tab's name as this check is appropriate for that tab.
-  if (
-    pageIndex === 1 &&
-    parentTabs[window.currentTab].id === "getting-started-tab" &&
-    JSON.stringify(window.sodaJSONObj["dataset-structure"]) === JSON.stringify({ folders: {} })
-  ) {
-    Swal.fire({
-      icon: "warning",
-      text: "The current dataset folder is empty. Are you sure you want to continue?",
-      showCancelButton: true,
-      cancelButtonText: "No",
-      confirmButtonText: "Continue",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      reverseButtons: window.reverseSwalButtons,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        $(parentTabs[window.currentTab]).removeClass("tab-active");
-        // Increase or decrease the current tab by 1:
-        window.currentTab = window.currentTab + pageIndex;
-        // For step 1,2,3, check for High level folders input to disable Continue button
-        if (window.currentTab === 1 || window.currentTab === 2 || window.currentTab === 3) {
-          // window.highLevelFoldersDisableOptions();
+  if (pageIndex === 1 && parentTabs[window.currentTab].id === "getting-started-tab") {
+    // traverse the dataset structure key of sodaJSONObj depth first to see if there are any empty folders
+    // if there are empty folders, show a warning message to the user
+    let emptyFolders = window.hasEmptyFolders(window.sodaJSONObj["dataset-structure"]);
+    console.log(emptyFolders);
+
+    if (emptyFolders) {
+      Swal.fire({
+        icon: "warning",
+        text: "The current dataset has empty folders. Are you sure you want to continue?",
+        showCancelButton: true,
+        cancelButtonText: "No",
+        confirmButtonText: "Continue",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        reverseButtons: window.reverseSwalButtons,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $(parentTabs[window.currentTab]).removeClass("tab-active");
+          // Increase or decrease the current tab by 1:
+          window.currentTab = window.currentTab + pageIndex;
+          // For step 1,2,3, check for High level folders input to disable Continue button
+          if (window.currentTab === 1 || window.currentTab === 2 || window.currentTab === 3) {
+            // window.highLevelFoldersDisableOptions();
+          }
+          // Display the correct tab:
+          window.showParentTab(window.currentTab, pageIndex);
         }
-        // Display the correct tab:
-        window.showParentTab(window.currentTab, pageIndex);
-      }
-    });
+      });
+    } else {
+      $(parentTabs[window.currentTab]).removeClass("tab-active");
+      // Increase or decrease the current tab by 1:
+      window.currentTab = window.currentTab + pageIndex;
+      window.showParentTab(window.currentTab, pageIndex);
+    }
     // check if required metadata files are included
   } else if (pageIndex === 1 && parentTabs[window.currentTab].id === "metadata-files-tab") {
     var requiredFiles = ["submission", "dataset_description", "subjects", "README"];

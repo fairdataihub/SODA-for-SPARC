@@ -316,6 +316,7 @@ window.handleLocalDatasetImport = async (path) => {
   }
 };
 
+// TODO: Detect empty ds vs non-sparc folders
 window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (event, path) => {
   if (path.length > 0) {
     // Get the path of the first index
