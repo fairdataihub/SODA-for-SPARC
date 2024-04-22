@@ -7950,7 +7950,7 @@ const determineDatasetDestination = () => {
         } else {
           return [
             // get dataset name,
-            document.querySelector("#inputNewNameDataset").value,
+            document.querySelector("#inputNewNameDataset-upload-dataset").value,
             "Pennsieve",
           ];
         }
@@ -7960,12 +7960,12 @@ const determineDatasetDestination = () => {
           return [window.sodaJSONObj["generate-dataset"]["dataset-name"], "Local"];
         } else {
           // creating a new dataset from an existing local dataset
-          return [document.querySelector("#inputNewNameDataset").value, "Local"];
+          return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "Local"];
         }
       }
     }
   } else {
-    return [document.querySelector("#inputNewNameDataset").value, "Local"];
+    return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "Local"];
   }
 };
 

@@ -3258,30 +3258,30 @@ window.updateJSONStructureGenerate = (progress = false, sodaJSONObject) => {
     };
   }
 
-  if (sodaJSONObject["starting-point"]["type"] == "local") {
-    var localDestination = window.path.dirname(sodaJSONObject["starting-point"]["local-path"]);
-    var newDatasetName = window.path.basename(sodaJSONObject["starting-point"]["local-path"]);
-    // if (progress == false) {
-    //   delete window.sodaJSONObj["starting-point"]["local-path"];
-    // }
-    sodaJSONObject["generate-dataset"] = {
-      destination: "local",
-      path: localDestination,
-      "dataset-name": newDatasetName,
-      "if-existing": "merge",
-      "generate-option": "new",
-    };
-    // delete bf account and dataset keys
-    if ("bf-account-selected" in sodaJSONObject) {
-      delete sodaJSONObject["bf-account-selected"];
-    }
-    if ("bf-dataset-selected" in sodaJSONObject) {
-      delete sodaJSONObject["bf-dataset-selected"];
-    }
-    sodaJSONObject["starting-point"]["type"] = "new";
-    // TODO: Do not delete local files if user is in validation step and not in initiate_generate step (validator-phase-4-simple)
-    recursive_remove_local_deleted_files(sodaJSONObject["dataset-structure"]);
-  }
+  // if (sodaJSONObject["starting-point"]["type"] == "local") {
+  //   var localDestination = window.path.dirname(sodaJSONObject["starting-point"]["local-path"]);
+  //   var newDatasetName = window.path.basename(sodaJSONObject["starting-point"]["local-path"]);
+  //   // if (progress == false) {
+  //   //   delete window.sodaJSONObj["starting-point"]["local-path"];
+  //   // }
+  //   sodaJSONObject["generate-dataset"] = {
+  //     destination: "local",
+  //     path: localDestination,
+  //     "dataset-name": newDatasetName,
+  //     "if-existing": "merge",
+  //     "generate-option": "new",
+  //   };
+  //   // delete bf account and dataset keys
+  //   if ("bf-account-selected" in sodaJSONObject) {
+  //     delete sodaJSONObject["bf-account-selected"];
+  //   }
+  //   if ("bf-dataset-selected" in sodaJSONObject) {
+  //     delete sodaJSONObject["bf-dataset-selected"];
+  //   }
+  //   sodaJSONObject["starting-point"]["type"] = "new";
+  //   // TODO: Do not delete local files if user is in validation step and not in initiate_generate step (validator-phase-4-simple)
+  //   recursive_remove_local_deleted_files(sodaJSONObject["dataset-structure"]);
+  // }
 
   if (sodaJSONObject["starting-point"]["type"] == "new") {
     if ($('input[name="generate-1"]:checked').length > 0) {
