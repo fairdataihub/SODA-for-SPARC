@@ -3393,6 +3393,7 @@ const updateJSONStructureBfDestination = () => {
     window.sodaJSONObj["generate-dataset"] = {
       destination: "bf",
       "generate-option": "new",
+      "dataset-name": $("#inputNewNameDataset-upload-dataset").val().trim(),
     };
 
     if (window.sodaJSONObj["bf-dataset-selected"]) {
@@ -3423,10 +3424,10 @@ const updateOverallJSONStructure = (id) => {
     console.log("Not setting things");
     // set bf-account-selected
     if ("bf-account-selected" in window.sodaJSONObj) {
-      window.sodaJSONObj["bf-account-selected"]["account-name"] = $("#current-bf-account").text();
+      window.sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfAccount;
     } else {
       window.sodaJSONObj["bf-account-selected"] = {
-        "account-name": $("#current-bf-account").text(),
+        "account-name": window.defaultBfAccount,
       };
     }
   } else if (id === allParentStepsJSON["getting-started"]) {

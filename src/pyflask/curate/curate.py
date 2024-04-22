@@ -3079,7 +3079,7 @@ def main_curate_function(soda_json_structure):
     # 1.2. If generating dataset to Pennsieve or any other Pennsieve actions are requested check that the destination is valid
     if "bf-account-selected" in soda_json_structure:
         # check that the Pennsieve account is valid
-        try:
+        try: 
             main_curate_progress_message = (
                 "Checking that the selected Pennsieve account is valid"
             )
