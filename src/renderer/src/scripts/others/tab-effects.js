@@ -3385,8 +3385,25 @@ window.updateJSONStructureGenerate = (progress = false, sodaJSONObject) => {
   }
 };
 
+const updateJSONStructureBfDestination = () => {
+  console.log($("#Question-new-dataset-upload-name").hasClass("checked"));
+  // check which option-card is selected in the upload destination selection tab
+  if ($("#Question-new-dataset-upload-name").hasClass("checked")) {
+    window.sodaJSONObj["generate-dataset"] = {
+      destination: "bf",
+      "generate-option": "new",
+    };
+  } else {
+    window.sodaJSONObj["generate-dataset"] = {
+      destination: "bf",
+      "generate-option": "existing-bf",
+    };
+  }
+};
+
 // function to call when users click on Continue at each step
 const updateOverallJSONStructure = (id) => {
+  console.log(id);
   if (id === allParentStepsJSON["high-level-folders"]) {
     document.getElementById("input-global-path").value = "dataset_root/";
     var optionCards = document.getElementsByClassName("option-card high-level-folders");
@@ -3435,6 +3452,7 @@ const updateOverallJSONStructure = (id) => {
     listItems(window.datasetStructureJSONObj, "#items");
     getInFolder(".single-item", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
   } else if (id === allParentStepsJSON["getting-started"]) {
+    console.log("Getting startef");
     updateJSONStructureGettingStarted();
   } else if (id === allParentStepsJSON["metadata-files"]) {
     console.log("Impkement metadata search");
@@ -3443,6 +3461,8 @@ const updateOverallJSONStructure = (id) => {
     updateJSONStructureManifest();
   } else if (id === allParentStepsJSON["organize-dataset"]) {
     window.updateJSONStructureDSstructure();
+  } else if (id === "upload-destination-selection-tab") {
+    updateJSONStructureBfDestination();
   }
 };
 //////////////////////////////// END OF Functions to update JSON object //////////////////////////////////////////
