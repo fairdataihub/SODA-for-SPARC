@@ -2345,10 +2345,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
         starting_point = soda_json_structure["starting-point"]["type"]
         relative_path = ds["content"]["name"]
-        existing_folder_option = soda_json_structure["generate-dataset"]["if-existing"]
-        existing_file_option = soda_json_structure["generate-dataset"][
-            "if-existing-files"
-        ]
+        
 
         main_curate_progress_message = "Preparing a list of files to upload"
         # 1. Scan the dataset structure and create a list of files/folders to be uploaded with the desired renaming
@@ -2365,6 +2362,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 list_upload_manifest_files = gather_manifest_files(soda_json_structure)
 
         else:
+            existing_folder_option = soda_json_structure["generate-dataset"]["if-existing"]
+            existing_file_option = soda_json_structure["generate-dataset"][
+                "if-existing-files"
+            ]
             # we will need a tracking structure to compare against
             tracking_json_structure = ds
             normalize_tracking_folder(tracking_json_structure)

@@ -3251,11 +3251,8 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
 // update JSON object after users finish Generate dataset step
 window.updateJSONStructureGenerate = (progress = false, sodaJSONObject) => {
   let starting_point = sodaJSONObject["starting-point"]["type"];
-  if (sodaJSONObject["starting-point"]["type"] == "bf") {
-    sodaJSONObject["generate-dataset"] = {
-      destination: "bf",
-      "generate-option": "existing-bf",
-    };
+  if (sodaJSONObject["starting-point"]["type"] == "local") {
+    sodaJSONObject["starting-point"]["type"] = "new";
   }
 
   // if (sodaJSONObject["starting-point"]["type"] == "local") {
@@ -3283,107 +3280,107 @@ window.updateJSONStructureGenerate = (progress = false, sodaJSONObject) => {
   //   recursive_remove_local_deleted_files(sodaJSONObject["dataset-structure"]);
   // }
 
-  if (sodaJSONObject["starting-point"]["type"] == "new") {
-    if ($('input[name="generate-1"]:checked').length > 0) {
-      if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop") {
-        var localDestination = $("#input-destination-generate-dataset-locally")[0].placeholder;
-        if (localDestination === "Browse here") {
-          localDestination = "";
-        }
-        var newDatasetName = $("#inputNewNameDataset").val().trim();
-        sodaJSONObject["generate-dataset"] = {
-          destination: "local",
-          path: localDestination,
-          "dataset-name": newDatasetName,
-          "generate-option": "new",
-          "if-existing": "new",
-        };
-        // delete bf account and dataset keys
-        if ("bf-account-selected" in sodaJSONObject) {
-          delete sodaJSONObject["bf-account-selected"];
-        }
-        if ("bf-dataset-selected" in sodaJSONObject) {
-          delete sodaJSONObject["bf-dataset-selected"];
-        }
-      } else if ($('input[name="generate-1"]:checked')[0].id === "generate-upload-BF") {
-        sodaJSONObject["generate-dataset"] = {
-          destination: "bf",
-        };
+  // if (sodaJSONObject["starting-point"]["type"] == "new") {
+  //   if ($('input[name="generate-1"]:checked').length > 0) {
+  //     if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop") {
+  //       var localDestination = $("#input-destination-generate-dataset-locally")[0].placeholder;
+  //       if (localDestination === "Browse here") {
+  //         localDestination = "";
+  //       }
+  //       var newDatasetName = $("#inputNewNameDataset").val().trim();
+  //       sodaJSONObject["generate-dataset"] = {
+  //         destination: "local",
+  //         path: localDestination,
+  //         "dataset-name": newDatasetName,
+  //         "generate-option": "new",
+  //         "if-existing": "new",
+  //       };
+  //       // delete bf account and dataset keys
+  //       if ("bf-account-selected" in sodaJSONObject) {
+  //         delete sodaJSONObject["bf-account-selected"];
+  //       }
+  //       if ("bf-dataset-selected" in sodaJSONObject) {
+  //         delete sodaJSONObject["bf-dataset-selected"];
+  //       }
+  //     } else if ($('input[name="generate-1"]:checked')[0].id === "generate-upload-BF") {
+  //       sodaJSONObject["generate-dataset"] = {
+  //         destination: "bf",
+  //       };
 
-        if ($("#current-bf-account-generate").text() !== "None") {
-          if ("bf-account-selected" in sodaJSONObject) {
-            sodaJSONObject["bf-account-selected"]["account-name"] = window.defaultBfAccount;
-          } else {
-            sodaJSONObject["bf-account-selected"] = {
-              "account-name": window.defaultBfAccount,
-            };
-          }
-        }
-        // answer to Question if generate on BF, then: how to handle existing files and folders
-        if ($('input[name="generate-4"]:checked').length > 0) {
-          if (
-            $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing"
-          ) {
-            // The user selected to generate to an existing dataset on Pennsieve
-            // Set the generate option to existing-bf
-            sodaJSONObject["generate-dataset"]["generate-option"] = "existing-bf";
-            if ($('input[name="generate-5"]:checked').length > 0) {
-              if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-duplicate") {
-                sodaJSONObject["generate-dataset"]["if-existing"] = "create-duplicate";
-              } else if (
-                $('input[name="generate-5"]:checked')[0].id === "existing-folders-replace"
-              ) {
-                sodaJSONObject["generate-dataset"]["if-existing"] = "replace";
-              } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-merge") {
-                sodaJSONObject["generate-dataset"]["if-existing"] = "merge";
-              } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-skip") {
-                sodaJSONObject["generate-dataset"]["if-existing"] = "skip";
-              }
-            }
-            if ($('input[name="generate-6"]:checked').length > 0) {
-              if ($('input[name="generate-6"]:checked')[0].id === "existing-files-duplicate") {
-                sodaJSONObject["generate-dataset"]["if-existing-files"] = "create-duplicate";
-              } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-replace") {
-                sodaJSONObject["generate-dataset"]["if-existing-files"] = "replace";
-              } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-skip") {
-                sodaJSONObject["generate-dataset"]["if-existing-files"] = "skip";
-              }
-            }
-            // populate JSON obj with BF dataset and account
-            if ($("#current-bf-dataset-generate").text() !== "None") {
-              if ("bf-dataset-selected" in sodaJSONObject) {
-                sodaJSONObject["bf-dataset-selected"]["dataset-name"] = $(
-                  "#current-bf-dataset-generate"
-                ).text();
-              } else {
-                sodaJSONObject["bf-dataset-selected"] = {
-                  "dataset-name": $("#current-bf-dataset-generate").text(),
-                };
-              }
-            }
-            // if generate to a new dataset, then update JSON object with a new dataset
-          } else if (
-            $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-new"
-          ) {
-            // The user chose to generate to a new dataset on Pennsieve
-            // Set the generate option to new (we're creating a new dataset)
-            sodaJSONObject["generate-dataset"]["generate-option"] = "new";
-            var newDatasetName = $("#inputNewNameDataset").val().trim();
-            sodaJSONObject["generate-dataset"]["dataset-name"] = newDatasetName;
-            sodaJSONObject["generate-dataset"]["if-existing"] = "create-duplicate";
-            sodaJSONObject["generate-dataset"]["if-existing-files"] = "create-duplicate";
-            // if upload to a new bf dataset, then delete key below from JSON object
-            if ("bf-dataset-selected" in sodaJSONObject) {
-              delete sodaJSONObject["bf-dataset-selected"];
-            }
-          }
-        }
-      }
-    }
-    if (progress == true) {
-      sodaJSONObject["starting-point"]["type"] = starting_point;
-    }
-  }
+  //       if ($("#current-bf-account-generate").text() !== "None") {
+  //         if ("bf-account-selected" in sodaJSONObject) {
+  //           sodaJSONObject["bf-account-selected"]["account-name"] = window.defaultBfAccount;
+  //         } else {
+  //           sodaJSONObject["bf-account-selected"] = {
+  //             "account-name": window.defaultBfAccount,
+  //           };
+  //         }
+  //       }
+  //       // answer to Question if generate on BF, then: how to handle existing files and folders
+  //       if ($('input[name="generate-4"]:checked').length > 0) {
+  //         if (
+  //           $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing"
+  //         ) {
+  //           // The user selected to generate to an existing dataset on Pennsieve
+  //           // Set the generate option to existing-bf
+  //           sodaJSONObject["generate-dataset"]["generate-option"] = "existing-bf";
+  //           if ($('input[name="generate-5"]:checked').length > 0) {
+  //             if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-duplicate") {
+  //               sodaJSONObject["generate-dataset"]["if-existing"] = "create-duplicate";
+  //             } else if (
+  //               $('input[name="generate-5"]:checked')[0].id === "existing-folders-replace"
+  //             ) {
+  //               sodaJSONObject["generate-dataset"]["if-existing"] = "replace";
+  //             } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-merge") {
+  //               sodaJSONObject["generate-dataset"]["if-existing"] = "merge";
+  //             } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-skip") {
+  //               sodaJSONObject["generate-dataset"]["if-existing"] = "skip";
+  //             }
+  //           }
+  //           if ($('input[name="generate-6"]:checked').length > 0) {
+  //             if ($('input[name="generate-6"]:checked')[0].id === "existing-files-duplicate") {
+  //               sodaJSONObject["generate-dataset"]["if-existing-files"] = "create-duplicate";
+  //             } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-replace") {
+  //               sodaJSONObject["generate-dataset"]["if-existing-files"] = "replace";
+  //             } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-skip") {
+  //               sodaJSONObject["generate-dataset"]["if-existing-files"] = "skip";
+  //             }
+  //           }
+  //           // populate JSON obj with BF dataset and account
+  //           if ($("#current-bf-dataset-generate").text() !== "None") {
+  //             if ("bf-dataset-selected" in sodaJSONObject) {
+  //               sodaJSONObject["bf-dataset-selected"]["dataset-name"] = $(
+  //                 "#current-bf-dataset-generate"
+  //               ).text();
+  //             } else {
+  //               sodaJSONObject["bf-dataset-selected"] = {
+  //                 "dataset-name": $("#current-bf-dataset-generate").text(),
+  //               };
+  //             }
+  //           }
+  //           // if generate to a new dataset, then update JSON object with a new dataset
+  //         } else if (
+  //           $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-new"
+  //         ) {
+  //           // The user chose to generate to a new dataset on Pennsieve
+  //           // Set the generate option to new (we're creating a new dataset)
+  //           sodaJSONObject["generate-dataset"]["generate-option"] = "new";
+  //           var newDatasetName = $("#inputNewNameDataset").val().trim();
+  //           sodaJSONObject["generate-dataset"]["dataset-name"] = newDatasetName;
+  //           sodaJSONObject["generate-dataset"]["if-existing"] = "create-duplicate";
+  //           sodaJSONObject["generate-dataset"]["if-existing-files"] = "create-duplicate";
+  //           // if upload to a new bf dataset, then delete key below from JSON object
+  //           if ("bf-dataset-selected" in sodaJSONObject) {
+  //             delete sodaJSONObject["bf-dataset-selected"];
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //   if (progress == true) {
+  //     sodaJSONObject["starting-point"]["type"] = starting_point;
+  //   }
+  // }
 };
 
 const updateJSONStructureBfDestination = () => {
