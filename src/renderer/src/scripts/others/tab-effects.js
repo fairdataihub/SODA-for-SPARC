@@ -3394,11 +3394,25 @@ const updateJSONStructureBfDestination = () => {
       destination: "bf",
       "generate-option": "new",
     };
+
+    if (window.sodaJSONObj["bf-dataset-selected"]) {
+      delete window.sodaJSONObj["bf-dataset-selected"];
+    }
   } else {
     window.sodaJSONObj["generate-dataset"] = {
       destination: "bf",
       "generate-option": "existing-bf",
     };
+
+    if (window.sodaJSONObj["bf-dataset-selected"]) {
+      window.sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $(
+        "#current-bf-dataset-generate"
+      ).text();
+    } else {
+      window.sodaJSONObj["bf-dataset-selected"] = {
+        "dataset-name": $("#current-bf-dataset-generate").text(),
+      };
+    }
   }
 };
 
