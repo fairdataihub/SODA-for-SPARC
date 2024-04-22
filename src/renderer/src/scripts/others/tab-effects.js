@@ -3203,6 +3203,7 @@ const updateJSONStructureMetadataFiles = () => {
 // Step 5: Manifest file
 // update JSON object with manifest file information
 const updateJSONStructureManifest = () => {
+  console.log("Manifest stuff: ", window.manifestFileCheck.checked);
   if (window.manifestFileCheck.checked) {
     if ("manifest-files" in window.sodaJSONObj) {
       // cj this might need to be changed
@@ -3405,52 +3406,15 @@ const updateJSONStructureBfDestination = () => {
 const updateOverallJSONStructure = (id) => {
   console.log(id);
   if (id === allParentStepsJSON["high-level-folders"]) {
-    document.getElementById("input-global-path").value = "dataset_root/";
-    var optionCards = document.getElementsByClassName("option-card high-level-folders");
-    var newDatasetStructureJSONObj = { folders: {}, files: {} };
-    var keys = [];
-    for (var card of optionCards) {
-      if ($(card).hasClass("checked")) {
-        keys.push($(card).children()[0].innerText);
-      }
+    console.log("Not setting things");
+    // set bf-account-selected
+    if ("bf-account-selected" in window.sodaJSONObj) {
+      window.sodaJSONObj["bf-account-selected"]["account-name"] = $("#current-bf-account").text();
+    } else {
+      window.sodaJSONObj["bf-account-selected"] = {
+        "account-name": $("#current-bf-account").text(),
+      };
     }
-    // keys now have all the high-level folders from Step 2
-    // window.datasetStructureJSONObj["folders"] have all the folders both from the old step 2 and -deleted folders in step 3
-
-    // 1st: check if folder in keys, not in window.datasetStructureJSONObj["folders"], then add an empty object
-    // 2nd: check if folder in window.datasetStructureJSONObj["folders"], add that to newDatasetStructureJSONObj["folders"]
-    // 3rd: assign old to new
-    // 1st
-    keys.forEach((folder) => {
-      if ("folders" in window.datasetStructureJSONObj) {
-        if (Object.keys(window.datasetStructureJSONObj["folders"]).includes(folder)) {
-          // clone a new json object
-          newDatasetStructureJSONObj["folders"][folder] =
-            window.datasetStructureJSONObj["folders"][folder];
-        } else {
-          newDatasetStructureJSONObj["folders"][folder] = {
-            folders: {},
-            files: {},
-            type: "",
-            action: [],
-          };
-        }
-      }
-    });
-    // 2nd
-    if ("folders" in window.datasetStructureJSONObj) {
-      Object.keys(window.datasetStructureJSONObj["folders"]).forEach((folderKey) => {
-        if (!keys.includes(folderKey)) {
-          newDatasetStructureJSONObj["folders"][folderKey] =
-            window.datasetStructureJSONObj["folders"][folderKey];
-        }
-      });
-    }
-    // 3rd
-    window.datasetStructureJSONObj = newDatasetStructureJSONObj;
-    //dont know here
-    listItems(window.datasetStructureJSONObj, "#items");
-    getInFolder(".single-item", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
   } else if (id === allParentStepsJSON["getting-started"]) {
     console.log("Getting startef");
     updateJSONStructureGettingStarted();
