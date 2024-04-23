@@ -6558,7 +6558,6 @@ $("#inputNewNameDataset").keyup(function () {
       document.getElementById("div-confirm-inputNewNameDataset").style.display = "none";
       $("#btn-confirm-new-dataset-name").hide();
       document.getElementById("para-new-name-dataset-message").innerHTML =
-
         "Error: A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.,";
 
       // $("#nextBtn").prop("disabled", true)
@@ -6985,7 +6984,6 @@ window.electron.ipcRenderer.on(
   }
 );
 
-
 document.getElementById("button-generate-validate").addEventListener("click", function () {
   // setTimeout(function () {
   //   document.getElementById("generate-dataset-progress-tab").style.display = "none";
@@ -7002,7 +7000,6 @@ document.getElementById("button-generate-validate").addEventListener("click", fu
   //   }
   // }, window.delayAnimation);
 });
-
 
 // function to hide the sidebar and disable the sidebar expand button
 // function forceActionSidebar(action) {
