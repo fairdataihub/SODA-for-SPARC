@@ -3316,65 +3316,7 @@ window.updateJSONStructureGenerate = (progress = false, sodaJSONObject) => {
   //           };
   //         }
   //       }
-  //       // answer to Question if generate on BF, then: how to handle existing files and folders
-  //       if ($('input[name="generate-4"]:checked').length > 0) {
-  //         if (
-  //           $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing"
-  //         ) {
-  //           // The user selected to generate to an existing dataset on Pennsieve
-  //           // Set the generate option to existing-bf
-  //           sodaJSONObject["generate-dataset"]["generate-option"] = "existing-bf";
-  //           if ($('input[name="generate-5"]:checked').length > 0) {
-  //             if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-duplicate") {
-  //               sodaJSONObject["generate-dataset"]["if-existing"] = "create-duplicate";
-  //             } else if (
-  //               $('input[name="generate-5"]:checked')[0].id === "existing-folders-replace"
-  //             ) {
-  //               sodaJSONObject["generate-dataset"]["if-existing"] = "replace";
-  //             } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-merge") {
-  //               sodaJSONObject["generate-dataset"]["if-existing"] = "merge";
-  //             } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-skip") {
-  //               sodaJSONObject["generate-dataset"]["if-existing"] = "skip";
-  //             }
-  //           }
-  //           if ($('input[name="generate-6"]:checked').length > 0) {
-  //             if ($('input[name="generate-6"]:checked')[0].id === "existing-files-duplicate") {
-  //               sodaJSONObject["generate-dataset"]["if-existing-files"] = "create-duplicate";
-  //             } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-replace") {
-  //               sodaJSONObject["generate-dataset"]["if-existing-files"] = "replace";
-  //             } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-skip") {
-  //               sodaJSONObject["generate-dataset"]["if-existing-files"] = "skip";
-  //             }
-  //           }
-  //           // populate JSON obj with BF dataset and account
-  //           if ($("#current-bf-dataset-generate").text() !== "None") {
-  //             if ("bf-dataset-selected" in sodaJSONObject) {
-  //               sodaJSONObject["bf-dataset-selected"]["dataset-name"] = $(
-  //                 "#current-bf-dataset-generate"
-  //               ).text();
-  //             } else {
-  //               sodaJSONObject["bf-dataset-selected"] = {
-  //                 "dataset-name": $("#current-bf-dataset-generate").text(),
-  //               };
-  //             }
-  //           }
-  //           // if generate to a new dataset, then update JSON object with a new dataset
-  //         } else if (
-  //           $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-new"
-  //         ) {
-  //           // The user chose to generate to a new dataset on Pennsieve
-  //           // Set the generate option to new (we're creating a new dataset)
-  //           sodaJSONObject["generate-dataset"]["generate-option"] = "new";
-  //           var newDatasetName = $("#inputNewNameDataset").val().trim();
-  //           sodaJSONObject["generate-dataset"]["dataset-name"] = newDatasetName;
-  //           sodaJSONObject["generate-dataset"]["if-existing"] = "create-duplicate";
-  //           sodaJSONObject["generate-dataset"]["if-existing-files"] = "create-duplicate";
-  //           // if upload to a new bf dataset, then delete key below from JSON object
-  //           if ("bf-dataset-selected" in sodaJSONObject) {
-  //             delete sodaJSONObject["bf-dataset-selected"];
-  //           }
-  //         }
-  //       }
+
   //     }
   //   }
   //   if (progress == true) {
@@ -3410,6 +3352,31 @@ const updateJSONStructureBfDestination = () => {
       window.sodaJSONObj["bf-dataset-selected"] = {
         "dataset-name": $("#current-bf-dataset-generate").text(),
       };
+    }
+
+    // folder selection options
+    // answer to Question if generate on BF, then: how to handle existing files and folders
+    // The user selected to generate to an existing dataset on Pennsieve
+    // Set the generate option to existing-bf
+    if ($('input[name="generate-5"]:checked').length > 0) {
+      if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-duplicate") {
+        sodaJSONObject["generate-dataset"]["if-existing"] = "create-duplicate";
+      } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-replace") {
+        sodaJSONObject["generate-dataset"]["if-existing"] = "replace";
+      } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-merge") {
+        sodaJSONObject["generate-dataset"]["if-existing"] = "merge";
+      } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-skip") {
+        sodaJSONObject["generate-dataset"]["if-existing"] = "skip";
+      }
+    }
+    if ($('input[name="generate-6"]:checked').length > 0) {
+      if ($('input[name="generate-6"]:checked')[0].id === "existing-files-duplicate") {
+        sodaJSONObject["generate-dataset"]["if-existing-files"] = "create-duplicate";
+      } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-replace") {
+        sodaJSONObject["generate-dataset"]["if-existing-files"] = "replace";
+      } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-skip") {
+        sodaJSONObject["generate-dataset"]["if-existing-files"] = "skip";
+      }
     }
   }
 };
