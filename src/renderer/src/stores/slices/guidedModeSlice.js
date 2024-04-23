@@ -1,12 +1,28 @@
+import useGlobalStore from "../globalStore";
+
 export const guidedModeSlice = (set) => ({
   currentGuidedModePage: null,
-  setCurrentGuidedModePage: (currentGuidedModePage) =>
-    set(() => ({ currentGuidedModePage: currentGuidedModePage })),
-
   guidedDatasetName: "",
-  guidedSetDatasetName: (datasetName) => set(() => ({ guidedDatasetName: datasetName })),
-
   guidedDatasetSubtitle: "",
-  setGuidedDatasetSubtitle: (datasetSubtitle) =>
-    set(() => ({ guidedDatasetSubtitle: datasetSubtitle })),
 });
+
+export const setGuidedModePage = (guidedModePageName) => {
+  useGlobalStore.setState((state) => ({
+    ...state,
+    currentGuidedModePage: guidedModePageName,
+  }));
+};
+
+export const setGuidedDatasetName = (datasetName) => {
+  useGlobalStore.setState((state) => ({
+    ...state,
+    guidedDatasetName: datasetName,
+  }));
+};
+
+export const setGuidedDatasetSubtitle = (datasetSubtitle) => {
+  useGlobalStore.setState((state) => ({
+    ...state,
+    guidedDatasetSubtitle: datasetSubtitle,
+  }));
+};

@@ -1,20 +1,15 @@
 import { Select } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
+import { setDropdownState } from "../../../stores/slices/dropDownSlice";
 
 const DropdownSelect = ({ id }) => {
-  const label = useGlobalStore((state) => state[id].label);
-  const selectedValue = useGlobalStore((state) => state[id].selectedValue);
-  const placeholder = useGlobalStore((state) => state[id].placeholder);
-  const options = useGlobalStore((state) => state[id].options);
+  console.log("ID: ", id);
+  const { label, selectedValue, placeholder, options } = useGlobalStore(
+    (state) => state.dropDownState[id]
+  );
 
   const onChange = (value) => {
-    useGlobalStore.setState((state) => ({
-      ...state,
-      [id]: {
-        ...state[id],
-        selectedValue: value,
-      },
-    }));
+    setDropdownState(id, value);
   };
 
   return (

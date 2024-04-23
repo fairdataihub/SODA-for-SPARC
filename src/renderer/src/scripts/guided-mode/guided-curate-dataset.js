@@ -41,6 +41,12 @@ import {
 // Import state management stores
 
 import useGlobalStore from "../../stores/globalStore";
+import { setDropdownState } from "../../stores/slices/dropDownSlice";
+import {
+  setGuidedModePage,
+  setGuidedDatasetName,
+  setGuidedDatasetSubtitle,
+} from "../../stores/slices/guidedModeSlice";
 
 import "bootstrap-select";
 // import DragSort from '@yaireo/dragsort'
@@ -60,6 +66,10 @@ import fileOther from "/img/other-file.png";
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
+
+window.logZustandStoreState = () => {
+  console.log(useGlobalStore.getState());
+};
 
 window.returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
@@ -115,14 +125,6 @@ const guidedCreateEventDataPrepareMetadata = (destination, value) => {
     destination,
   };
 };
-
-useGlobalStore.subscribe((state, prevState) => {
-  console.log("State changed!");
-  console.log("old state", prevState["guided-select-sparc-funding-consortium-r"].selectedValue);
-  const selectedValue = state["guided-select-sparc-funding-consortium-r"].selectedValue;
-  console.log("new state", selectedValue);
-  console.log("State changed: selectedValue is now", selectedValue);
-});
 
 window.handleGuidedModeOrgSwitch = async (buttonClicked) => {
   const clickedButtonId = buttonClicked.id;
@@ -986,8 +988,9 @@ const savePageChanges = async (pageBeingLeftID) => {
         window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
           "SPARC";
         const selectedFuncingSourceFromDropdown =
-          useGlobalStore.getState()["guided-select-sparc-funding-consortium-r"].selectedValue;
-        console.log("selected funding source from react", selectedFundingSource);
+          useGlobalStore.getState()["dropDownState"]["guided-select-sparc-funding-consortium"]
+            .selectedValue;
+        console.log("selected funding source from react", selectedFuncingSourceFromDropdown);
 
         // Throw an error if the user did not select a funding source from the dropdown
         if (!selectedFuncingSourceFromDropdown) {
@@ -5206,7 +5209,7 @@ window.openPage = async (targetPageID) => {
       const datasetName = getGuidedDatasetName();
 
       // Set the zustand datasetName state value to the dataset name
-      useGlobalStore.setState({ guidedDatasetName: datasetName });
+      setGuidedDatasetName(datasetName);
 
       if (pageNeedsUpdateFromPennsieve("guided-name-subtitle-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
@@ -5221,7 +5224,7 @@ window.openPage = async (targetPageID) => {
 
           // Save the subtitle to the JSON and add it to the input
           window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
-          useGlobalStore.setState({ guidedDatasetSubtitle: datasetSubtitle });
+          setGuidedDatasetSubtitle(datasetSubtitle);
 
           window.sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
         } catch (error) {
@@ -5235,7 +5238,7 @@ window.openPage = async (targetPageID) => {
       } else {
         //Update subtitle from JSON
         const datasetSubtitle = getGuidedDatasetSubtitle();
-        useGlobalStore.setState({ guidedDatasetSubtitle: datasetSubtitle });
+        setGuidedDatasetSubtitle(datasetSubtitle);
       }
     }
 
@@ -5285,13 +5288,7 @@ window.openPage = async (targetPageID) => {
       // Set the funding consortium dropdown to the saved value (deafult is empty string before a user selects a value)
       const savedFundingConsortium =
         window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
-      if (window.sparcFundingConsortiums.includes(savedFundingConsortium)) {
-        $("#guided-select-sparc-funding-consortium").val(savedFundingConsortium);
-      } else {
-        $("#guided-select-sparc-funding-consortium").val("");
-      }
-      $("#guided-select-sparc-funding-consortium").selectpicker("refresh");
-      $("#guided-select-sparc-funding-consortium").trigger("change");
+      setDropdownState("guided-select-sparc-funding-consortium", savedFundingConsortium);
     }
 
     if (targetPageID === "guided-dataset-structure-intro-tab") {
@@ -12416,9 +12413,6 @@ const getGuidedDatasetName = () => {
   return window.sodaJSONObj["digital-metadata"]["name"];
 };
 
-const setGuidedDatasetSubtitle = (datasetSubtitle) => {
-  window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
-};
 const getGuidedDatasetSubtitle = () => {
   return window.sodaJSONObj["digital-metadata"]["subtitle"];
 };
