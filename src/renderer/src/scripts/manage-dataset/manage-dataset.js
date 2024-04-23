@@ -42,7 +42,9 @@ document.querySelectorAll(".ds-dd.organization").forEach((dropdownElement) => {
   });
 });
 
+
 var forbidden_characters_bf = '/\\:*?"<>.,';
+
 
 window.check_forbidden_characters_ps = (my_string) => {
   // Args:

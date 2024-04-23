@@ -2353,10 +2353,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
         starting_point = soda_json_structure["starting-point"]["type"]
         relative_path = ds["content"]["name"]
-        existing_folder_option = soda_json_structure["generate-dataset"]["if-existing"]
-        existing_file_option = soda_json_structure["generate-dataset"][
-            "if-existing-files"
-        ]
+        
 
 
 
@@ -2379,7 +2376,14 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 list_upload_manifest_files = gather_manifest_files(soda_json_structure)
 
         else:
+
             main_curate_progress_message = "Preparing a list of files to upload"
+
+            existing_folder_option = soda_json_structure["generate-dataset"]["if-existing"]
+            existing_file_option = soda_json_structure["generate-dataset"][
+                "if-existing-files"
+            ]
+
             # we will need a tracking structure to compare against
             tracking_json_structure = ds
             normalize_tracking_folder(tracking_json_structure)
@@ -3177,7 +3181,7 @@ def validate_dataset_structure(soda_json_structure, resume):
     # 1.2. If generating dataset to Pennsieve or any other Pennsieve actions are requested check that the destination is valid
     if uploading_with_ps_account(soda_json_structure):
         # check that the Pennsieve account is valid
-        try:
+        try: 
             main_curate_progress_message = (
                 "Checking that the selected Pennsieve account is valid"
             )
