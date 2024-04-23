@@ -1,7 +1,7 @@
 import "./assets/imports";
 
-// Render React Components that are added to the DOM before vanilla js files have been loaded
-import "./components/renderers/PreVanillaJsComponentsRenderer";
+// Render React Components into their respective slots in the DOM
+import "./components/renderers/ReactComponentRenderer";
 
 import "./assets/demo-btns";
 import "./assets/nav";
@@ -32,9 +32,6 @@ import "./scripts/sds-templates/sds_templates";
 
 // Application Lotties
 import "./assets/lotties/activate-lotties";
-
-// Render React Components that are added to the DOM after vanilla js files have been loaded
-import "./components/renderers/PostVanillaJsComponentsRenderer";
 
 // Application CSS
 import "@mantine/core/styles.css";

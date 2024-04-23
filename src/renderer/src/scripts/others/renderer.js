@@ -8825,7 +8825,8 @@ window.scaleBannerImage = async (imagePath) => {
   }
 };
 
-window.gatherLogs = () => {
+document.getElementById("button-gather-logs").addEventListener("click", () => {
+  console.log("Gather logs button clicked");
   //function will be used to gather all logs on all OS's
   let homedir = window.os.homedir();
   let file_path = "";
@@ -8950,14 +8951,14 @@ window.gatherLogs = () => {
       }
     }
   });
-};
+});
 
 /**
  * Gather the client's analytics ID and save it in a file of the user's choosing. The user can then send this to use when requesting to have their data
  * removed from our analytics database. For each computer/profile the user has they may have to perform this operation if they want all of their data
  * purged.
  */
-window.displayClientId = async () => {
+document.getElementById("button-display-client-id").addEventListener("click", async () => {
   let clientId = await window.electron.ipcRenderer.invoke("get-nodestorage-key", "userId");
 
   const copyClientIdToClipboard = () => {
@@ -8973,7 +8974,7 @@ window.displayClientId = async () => {
     allowOutsideClick: false,
     allowEscapeKey: true,
   });
-};
+});
 
 const gettingStarted = () => {
   let getting_started = document.getElementById("main_tabs_view");

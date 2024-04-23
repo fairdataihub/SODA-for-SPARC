@@ -60,6 +60,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       console.log("Waiting for react to render");
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
+
     console.log("All sections have been rendered");
   };
 

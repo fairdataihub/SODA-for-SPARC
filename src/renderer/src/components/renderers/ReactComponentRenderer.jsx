@@ -3,6 +3,8 @@ import SodaComponentWrapper from "../utils/SodaComponentWrapper";
 import ExternalLink from "../buttons/ExternalLink";
 import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
+import DropdownSelect from "../common/DropdownSelect";
+import GenericButton from "../buttons/Generic";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
@@ -36,6 +38,16 @@ const componentRenderActions = {
       </SodaComponentWrapper>
     );
   },
+  "dropdown-select": (componentSlot) => {
+    const id = componentSlot.id;
+    // Create a React root and render the component
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper>
+        <DropdownSelect id={id} />
+      </SodaComponentWrapper>
+    );
+  },
   "navigation-button": (componentSlot) => {
     const buttonId = componentSlot.getAttribute("data-button-id");
     const buttonTextNav = componentSlot.getAttribute("data-button-text");
@@ -58,6 +70,21 @@ const componentRenderActions = {
           buttonCustomWidth={buttonCustomWidth}
           buttonCustomClass={buttonCustomClass}
         />
+      </SodaComponentWrapper>
+    );
+  },
+  "generic-button": (componentSlot) => {
+    const id = componentSlot.getAttribute("data-button-id");
+    const variant = componentSlot.getAttribute("data-variant");
+    const size = componentSlot.getAttribute("data-size");
+    const color = componentSlot.getAttribute("data-color");
+    const text = componentSlot.getAttribute("data-text");
+
+    // Create a React root and render the component
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper>
+        <GenericButton id={id} variant={variant} size={size} color={color} text={text} />
       </SodaComponentWrapper>
     );
   },

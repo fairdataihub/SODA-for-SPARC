@@ -4,12 +4,14 @@ import DropDownNote from "../../utils/ui/DropDownNote";
 import { TextInput, Textarea, Text } from "@mantine/core";
 import ExternalLink from "../../buttons/ExternalLink";
 import useGlobalStore from "../../../stores/globalStore";
+import {
+  setGuidedDatasetName,
+  setGuidedDatasetSubtitle,
+} from "../../../stores/slices/guidedModeSlice";
 
 const NameAndSubtitlePage = () => {
   const guidedDatasetName = useGlobalStore((state) => state.guidedDatasetName);
-  const guidedSetDatasetName = useGlobalStore((state) => state.guidedSetDatasetName);
   const guidedDatasetSubtitle = useGlobalStore((state) => state.guidedDatasetSubtitle);
-  const guidedSetDatasetSubtitle = useGlobalStore((state) => state.setGuidedDatasetSubtitle);
   console.log("component rendered");
   return (
     <GuidedModePage pageHeader="Dataset name and subtitle">
@@ -18,7 +20,7 @@ const NameAndSubtitlePage = () => {
           label="Dataset Name:"
           placeholder="Enter dataset name"
           value={guidedDatasetName}
-          onChange={(event) => guidedSetDatasetName(event.target.value)}
+          onChange={(event) => setGuidedDatasetName(event.target.value)}
         />
         <DropDownNote
           dropDownIcon="info"
@@ -44,7 +46,7 @@ const NameAndSubtitlePage = () => {
           autosize
           minRows={5}
           value={guidedDatasetSubtitle}
-          onChange={(event) => guidedSetDatasetSubtitle(event.target.value)}
+          onChange={(event) => setGuidedDatasetSubtitle(event.target.value)}
           maxLength={255}
         />
         <Text align="right" style={{ marginTop: "-35px", zIndex: "10", marginRight: "10px" }}>

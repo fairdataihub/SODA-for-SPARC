@@ -1,4 +1,12 @@
+import { produce } from "immer";
 export const sideBarSlice = (set) => ({
   isSidebarOpen: true,
-  setIsSidebarOpen: (isSidebarOpen) => set({ isSidebarOpen: isSidebarOpen }),
 });
+
+export const setSidebarOpenState = (boolTrueOrFalse) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.isSidebarOpen = boolTrueOrFalse;
+    })
+  );
+};
