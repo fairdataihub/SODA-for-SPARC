@@ -7758,6 +7758,8 @@ const initiate_generate = async (e) => {
 
       divGenerateProgressBar.style.display = "block";
 
+      console.log("Main curate progress message: " + main_curate_progress_message);
+
       if (main_curate_progress_message.includes("Success: COMPLETED!")) {
         clearInterval(timerProgress);
         generateProgressBar.value = 100;
@@ -7789,6 +7791,9 @@ const initiate_generate = async (e) => {
       statusText.innerHTML = `Renaming files...<br>Elapsed time: ${elapsed_time_formatted}<br>
       Progress: ${value.toFixed(2)}%`;
     }
+
+    console.log("The main curate status is: " + main_curate_status);
+    console.log("THe success status is: ", successful);
 
     if (main_curate_status === "Done") {
       $("#sidebarCollapse").prop("disabled", false);

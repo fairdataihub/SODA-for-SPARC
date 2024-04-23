@@ -2604,6 +2604,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
 
                 # subscribe to the manifest upload so we wait until it has finished uploading before moving on
                 ps.subscribe(10, False, monitor_subscriber_progress)
+
+                namespace_logger.info("THE UPLOAD HAS FINISHED")
             except Exception as e:
                 namespace_logger.error("Error uploading dataset files")
                 namespace_logger.error(e)
@@ -2787,6 +2789,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                                         all_ids_found = True
                                         break
 
+
+        main_curate_progress_message = "Success: COMPLETED!"
         # reset the manifests used for the upload session                                 
         ums.set_df_mid(None)
         ums.set_elapsed_time(None)
