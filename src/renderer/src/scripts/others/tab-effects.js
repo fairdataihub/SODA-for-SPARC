@@ -3360,22 +3360,22 @@ const updateJSONStructureBfDestination = () => {
     // Set the generate option to existing-bf
     if ($('input[name="generate-5"]:checked').length > 0) {
       if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-duplicate") {
-        sodaJSONObject["generate-dataset"]["if-existing"] = "create-duplicate";
+        window.sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";
       } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-replace") {
-        sodaJSONObject["generate-dataset"]["if-existing"] = "replace";
+        window.sodaJSONObj["generate-dataset"]["if-existing"] = "replace";
       } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-merge") {
-        sodaJSONObject["generate-dataset"]["if-existing"] = "merge";
+        window.sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
       } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-skip") {
-        sodaJSONObject["generate-dataset"]["if-existing"] = "skip";
+        window.sodaJSONObj["generate-dataset"]["if-existing"] = "skip";
       }
     }
     if ($('input[name="generate-6"]:checked').length > 0) {
       if ($('input[name="generate-6"]:checked')[0].id === "existing-files-duplicate") {
-        sodaJSONObject["generate-dataset"]["if-existing-files"] = "create-duplicate";
+        window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "create-duplicate";
       } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-replace") {
-        sodaJSONObject["generate-dataset"]["if-existing-files"] = "replace";
+        window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
       } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-skip") {
-        sodaJSONObject["generate-dataset"]["if-existing-files"] = "skip";
+        window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
       }
     }
   }
