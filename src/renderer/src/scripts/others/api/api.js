@@ -213,6 +213,7 @@ const getDatasetsForAccount = async (selected_account) => {
   });
 
   let { datasets } = responseObject.data;
+  console.log(datasets);
 
   return datasets;
 };

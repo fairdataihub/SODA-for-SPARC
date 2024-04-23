@@ -42,7 +42,7 @@ document.querySelectorAll(".ds-dd.organization").forEach((dropdownElement) => {
   });
 });
 
-var forbidden_characters_bf = '\\/:*?"<>';
+var forbidden_characters_bf = '/\\:*?"<>.,';
 
 window.check_forbidden_characters_ps = (my_string) => {
   // Args:
@@ -121,7 +121,8 @@ $("#bf-new-dataset-name").on("keyup", () => {
   if (newName !== "") {
     if (window.check_forbidden_characters_ps(newName)) {
       Swal.fire({
-        title: "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+        title:
+          "A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.,",
         icon: "error",
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
@@ -142,7 +143,8 @@ $("#bf-rename-dataset-name").on("keyup", () => {
   if (newName !== "") {
     if (window.check_forbidden_characters_ps(newName)) {
       Swal.fire({
-        title: "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+        title:
+          "A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.,",
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
         icon: "error",
@@ -194,6 +196,7 @@ $("#button-create-bf-new-dataset").click(async () => {
         }
       );
       let res = bf_new_dataset.data.id;
+      let intId = bf_new_dataset.data.int_id;
 
       Swal.fire({
         title: `Dataset ${bfNewDatasetName} was created successfully`,
@@ -225,6 +228,7 @@ $("#button-create-bf-new-dataset").click(async () => {
 
       window.defaultBfDataset = bfNewDatasetName;
       window.defaultBfDatasetId = res;
+      window.defaultBfDatasetIntId = intId;
       // log a map of datasetId to dataset name to analytics
       // this will be used to help us track private datasets which are not trackable using a datasetId alone
       window.electron.ipcRenderer.send(
@@ -248,6 +252,8 @@ $("#button-create-bf-new-dataset").click(async () => {
         {
           value: 1,
           dataset_id: window.defaultBfDatasetId,
+          dataset_int_id: window.defaultBfDatasetIntId,
+          dataset_name: bfNewDatasetName,
         }
       );
 
@@ -391,6 +397,7 @@ $("#button-rename-dataset").on("click", async () => {
           {
             value: 1,
             dataset_id: window.defaultBfDatasetId,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
 
@@ -423,6 +430,7 @@ $("#button-rename-dataset").on("click", async () => {
         {
           value: 1,
           dataset_id: window.defaultBfDatasetId,
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
 
@@ -536,6 +544,7 @@ $("#button-add-permission-pi").click(async () => {
           {
             value: selectedUser,
             dataset_id: window.defaultBfDatasetId,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
 
@@ -567,6 +576,7 @@ $("#button-add-permission-pi").click(async () => {
           {
             value: selectedUser,
             dataset_id: window.defaultBfDatasetId,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
 
@@ -693,6 +703,7 @@ const addPermissionUser = async (
         value: 1,
         dataset_id: window.defaultBfDatasetId,
         dataset_name: window.defaultBfDataset,
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
 
@@ -720,6 +731,7 @@ const addPermissionUser = async (
       value: 1,
       dataset_id: window.defaultBfDatasetId,
       dataset_name: window.defaultBfDataset,
+      dataset_int_id: window.defaultBfDatasetIntId,
     }
   );
 
@@ -848,6 +860,7 @@ $("#button-add-permission-team").click(async () => {
           value: 1,
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
 
@@ -883,6 +896,7 @@ $("#button-add-permission-team").click(async () => {
           value: 1,
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
 
@@ -973,6 +987,7 @@ $("#button-add-subtitle").click(async () => {
         {
           value: 1,
           dataset_id: window.defaultBfDatasetId,
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
 
@@ -1016,6 +1031,7 @@ $("#button-add-subtitle").click(async () => {
         {
           value: 1,
           dataset_id: window.defaultBfDatasetId,
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
     }
@@ -1377,6 +1393,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
       {
         value: 1,
         dataset_id: window.defaultBfDatasetId,
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
 
@@ -1399,6 +1416,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     {
       value: 1,
       dataset_id: window.defaultBfDatasetId,
+      dataset_int_id: window.defaultBfDatasetIntId,
     }
   );
 
@@ -1996,6 +2014,7 @@ const uploadBannerImage = async () => {
           {
             value: image_file_size,
             dataset_id: window.defaultBfDatasetId,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
 
@@ -2039,6 +2058,7 @@ const uploadBannerImage = async () => {
           {
             value: 1,
             dataset_id: window.defaultBfDatasetId,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
       }
@@ -2105,6 +2125,7 @@ const uploadBannerImage = async () => {
           {
             value: image_file_size,
             dataset_id: window.defaultBfDatasetId,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
       } catch (error) {
@@ -2126,6 +2147,7 @@ const uploadBannerImage = async () => {
           {
             value: 1,
             dataset_id: window.defaultBfDatasetId,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
       }
@@ -2360,6 +2382,7 @@ $("#button-add-tags").click(async () => {
       {
         value: 1,
         dataset_id: window.defaultBfDatasetId,
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
 
@@ -2391,6 +2414,7 @@ $("#button-add-tags").click(async () => {
     {
       value: 1,
       dataset_id: window.defaultBfDatasetId,
+      dataset_int_id: window.defaultBfDatasetIntId,
     }
   );
 
@@ -2540,6 +2564,7 @@ $("#button-add-license").click(async () => {
         {
           value: 1,
           dataset_id: window.defaultBfDatasetId,
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
 
@@ -2574,6 +2599,7 @@ $("#button-add-license").click(async () => {
         {
           value: 1,
           dataset_id: window.defaultBfDatasetId,
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
     }
@@ -2867,6 +2893,7 @@ $("#button-submit-dataset").click(async () => {
           value: emessage,
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
+          dataset_int_id: window.defaultBfDatasetIntId,
         };
 
         window.electron.ipcRenderer.send(
@@ -2957,6 +2984,7 @@ $("#button-submit-dataset").click(async () => {
             value: statusMessage,
             dataset_id: window.defaultBfDatasetId,
             dataset_name: window.defaultBfDataset,
+            dataset_int_id: window.defaultBfDatasetIntId,
           };
 
           window.electron.ipcRenderer.send(
@@ -2982,6 +3010,7 @@ $("#button-submit-dataset").click(async () => {
           value: eventValue,
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
+          dataset_int_id: window.defaultBfDatasetIntId,
         };
 
         window.electron.ipcRenderer.send(
@@ -3222,6 +3251,7 @@ $("#button-submit-dataset").click(async () => {
           value: datasetUploadSession.id,
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
+          dataset_int_id: window.defaultBfDatasetIntId,
         };
 
         window.electron.ipcRenderer.send(
@@ -3259,6 +3289,7 @@ $("#button-submit-dataset").click(async () => {
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
           upload_session: datasetUploadSession.id,
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
     })
@@ -3327,6 +3358,7 @@ $("#button-submit-dataset").click(async () => {
           value: totalFileSize,
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
 
@@ -3357,6 +3389,7 @@ $("#button-submit-dataset").click(async () => {
           value: num_of_folders,
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
 
@@ -3372,6 +3405,7 @@ $("#button-submit-dataset").click(async () => {
           value: num_of_files,
           dataset_id: window.defaultBfDatasetId,
           dataset_name: window.defaultBfDataset,
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
 
@@ -3448,6 +3482,7 @@ $("#bf_list_dataset_status").on("change", async () => {
       {
         value: selectedStatusOption,
         dataset_id: window.defaultBfDatasetId,
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
 
@@ -3479,6 +3514,7 @@ $("#bf_list_dataset_status").on("change", async () => {
       {
         value: selectedStatusOption,
         dataset_id: window.defaultBfDatasetId,
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
 

@@ -61,10 +61,10 @@ import {
   swalFileListTripleAction,
   swalFileListDoubleAction,
   swalShowError,
+  swalConfirmAction,
 } from "../utils/swal-utils";
 import canSmiley from "/img/can-smiley.png";
 import canSad from "/img/can-sad.png";
-import { swalConfirmAction } from "../utils/swal-utils";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -3274,6 +3274,7 @@ window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       {
         value: 1,
         dataset_id: window.defaultBfDatasetId,
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
 
@@ -3311,6 +3312,7 @@ window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
     {
       value: 1,
       dataset_id: window.defaultBfDatasetId,
+      dataset_int_id: window.defaultBfDatasetIntId,
     }
   );
 
@@ -6556,7 +6558,8 @@ $("#inputNewNameDataset").keyup(function () {
       document.getElementById("div-confirm-inputNewNameDataset").style.display = "none";
       $("#btn-confirm-new-dataset-name").hide();
       document.getElementById("para-new-name-dataset-message").innerHTML =
-        "Error: A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.";
+        "Error: A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.,";
+
       // $("#nextBtn").prop("disabled", true)
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
       $("#div-confirm-inputNewNameDataset").css("display", "none");
@@ -7106,14 +7109,15 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
   }
 };
 
-document.getElementById("button-generate").addEventListener("click", async function () {
-  $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
+const preGenerateSetup = async (e, elementContext) => {
+  $($($(elementContext).parent()[0]).parents()[0]).removeClass("tab-active");
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   document.getElementById("prevBtn").style.display = "none";
   document.getElementById("start-over-btn").style.display = "none";
   document.getElementById("div-vertical-progress-bar").style.display = "none";
   document.getElementById("div-generate-comeback").style.display = "none";
+  document.getElementById("wrapper-wrap").style.display = "none";
   document.getElementById("generate-dataset-progress-tab").style.display = "flex";
   $("#sidebarCollapse").prop("disabled", false);
 
@@ -7124,12 +7128,21 @@ document.getElementById("button-generate").addEventListener("click", async funct
 
   let [dataset_name, dataset_destination] = setDatasetNameAndDestination(sodaJSONObj);
 
-  generateProgressBar.value = 0;
+  let resume = e.target.textContent.trim() == "Retry";
+  if (!resume) {
+    progressStatus.innerHTML = "Please wait while we verify a few things...";
+    generateProgressBar.value = 0;
+  } else {
+    // NOTE: This only works if we got to the upload. SO add more code to check for this.
+    progressStatus.innerHTML = `Please wait while we perform setup for retrying the upload...`;
+    // replace the first line with the following
+  }
+  document.getElementById("wrapper-wrap").style.display = "none";
 
-  progressStatus.innerHTML = "Please wait while we verify a few things...";
-
-  let statusText = "Please wait while we verify a few things...";
   if (dataset_destination == "Pennsieve") {
+    setTimeout(() => {
+      document.getElementById("wrapper-wrap").style.display = "none";
+    }, 500);
     let supplementary_checks = await window.run_pre_flight_checks(false);
     if (!supplementary_checks) {
       $("#sidebarCollapse").prop("disabled", false);
@@ -7148,16 +7161,18 @@ document.getElementById("button-generate").addEventListener("click", async funct
   }
 
   // from here you can modify
-  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
-  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
-  progressStatus.innerHTML = "";
-  document.getElementById("div-new-curate-progress").style.display = "none";
 
-  progressBarNewCurate.value = 0;
+  if (!resume) {
+    progressBarNewCurate.value = 0;
+    progressStatus.innerHTML = "";
+    document.getElementById("div-new-curate-progress").style.display = "none";
+    progressStatus.innerHTML = "Please wait...";
+  }
+
+  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
 
   deleteTreeviewFiles(sodaJSONObj);
 
-  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
   let errorMessage = await checkEmptyFilesAndFolders(sodaJSONObj);
 
   if (errorMessage) {
@@ -7180,12 +7195,12 @@ document.getElementById("button-generate").addEventListener("click", async funct
         popup: "animate__animated animate__zoomOut animate__faster",
       },
       didOpen: () => {
-        document.getElementById("swal2-content").style.maxHeight = "19rem";
-        document.getElementById("swal2-content").style.overflowY = "auto";
+        document.getElementById("swal2-html-container").style.maxHeight = "19rem";
+        document.getElementById("swal2-html-container").style.overflowY = "auto";
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        initiate_generate();
+        initiate_generate(e);
       } else {
         $("#sidebarCollapse").prop("disabled", false);
         document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
@@ -7193,8 +7208,16 @@ document.getElementById("button-generate").addEventListener("click", async funct
       }
     });
   } else {
-    initiate_generate();
+    initiate_generate(e);
   }
+};
+
+document.getElementById("button-generate").addEventListener("click", async function (e) {
+  preGenerateSetup(e, this);
+});
+
+document.getElementById("button-retry").addEventListener("click", async function (e) {
+  preGenerateSetup(e, this);
 });
 
 window.delete_imported_manifest = () => {
@@ -7235,7 +7258,9 @@ window.uploadComplete = new Notyf({
 });
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
-const initiate_generate = async () => {
+const initiate_generate = async (e) => {
+  let resume = e.target.textContent.trim() == "Retry";
+
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
   document.getElementById("guided_mode_view").style.pointerEvents = "none";
 
@@ -7245,13 +7270,16 @@ const initiate_generate = async () => {
   var main_total_generate_dataset_size;
 
   // get the amount of files
-  document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ...";
+  if (!resume) {
+    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+      "Preparing files ...";
+    progressStatus.innerHTML = "Preparing files ...";
+    document.getElementById("para-please-wait-new-curate").innerHTML = "";
+    document.getElementById("div-new-curate-progress").style.display = "block";
+  }
 
-  progressStatus.innerHTML = "Preparing files ...";
-
-  document.getElementById("para-please-wait-new-curate").innerHTML = "";
-  document.getElementById("div-new-curate-progress").style.display = "block";
   document.getElementById("div-generate-comeback").style.display = "none";
+  document.getElementById("wrapper-wrap").style.display = "none";
 
   // Create the progress bar clone for the navigation bar
   let organizeDataset = document.getElementById("organize_dataset_btn");
@@ -7364,6 +7392,7 @@ const initiate_generate = async () => {
       `/curate_datasets/curation`,
       {
         soda_json_structure: window.sodaJSONObj,
+        resume,
       },
       { timeout: 0 }
     )
@@ -7429,9 +7458,7 @@ const initiate_generate = async () => {
       // log folder and file options selected ( can be merge, skip, replace, duplicate)
       logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
-      //Allow guided_mode_view to be clicked again
-      document.getElementById("guided_mode_view").style.pointerEvents = "";
-
+      // update dataset list; set the dataset id and int id
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
           params: {
@@ -7443,8 +7470,23 @@ const initiate_generate = async () => {
       } catch (error) {
         clientError(error);
       }
+
+      //Allow guided_mode_view to be clicked again
+      document.getElementById("guided_mode_view").style.pointerEvents = "";
     })
     .catch(async (error) => {
+      clearInterval(timerProgress);
+
+      // set the first line of progressStatus to 'Upload Failed'
+      if (progressStatus.innerHTML.split("<br>").length > 1) {
+        progressStatus.innerHTML = `Upload Failed<br>${progressStatus.innerHTML
+          .split("<br>")
+          .slice(1)
+          .join("<br>")}`;
+      } else {
+        progressStatus.innerHTML = `Upload Failed`;
+      }
+
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
 
@@ -7537,7 +7579,7 @@ const initiate_generate = async () => {
       Swal.fire({
         icon: "error",
         title: "An Error Occurred While Uploading Your Dataset",
-        html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
+        html: "Check the error message on the progress page to learn more.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
@@ -7547,27 +7589,23 @@ const initiate_generate = async () => {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
         didOpen: () => {
-          document.getElementById("swal2-content").style.maxHeight = "19rem";
-          document.getElementById("swal2-content").style.overflowY = "auto";
+          document.getElementById("swal2-html-container").style.maxHeight = "19rem";
+          document.getElementById("swal2-html-container").style.overflowY = "auto";
         },
       }).then((result) => {
         statusBarClone.remove();
         sparc_container.style.display = "inline";
         if (result.isConfirmed) {
-          organizeDataset.click();
           let button = document.getElementById("button-generate");
           $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
           document.getElementById("prevBtn").style.display = "none";
           document.getElementById("start-over-btn").style.display = "none";
           document.getElementById("div-vertical-progress-bar").style.display = "none";
+          document.getElementById("wrapper-wrap").style.display = "flex";
           document.getElementById("div-generate-comeback").style.display = "flex";
           document.getElementById("generate-dataset-progress-tab").style.display = "flex";
         }
       });
-      progressStatus.innerHTML = "";
-      statusText.innerHTML = "";
-      document.getElementById("div-new-curate-progress").style.display = "none";
-      generateProgressBar.value = 0;
 
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
@@ -7595,6 +7633,15 @@ const initiate_generate = async () => {
       clientError(error);
       let emessage = userErrorMessage(error);
 
+      if (progressStatus.innerHTML.split("<br>").length > 1) {
+        progressStatus.innerHTML = `Upload Failed<br>${progressStatus.innerHTML
+          .split("<br>")
+          .slice(1)
+          .join("<br>")}`;
+      } else {
+        progressStatus.innerHTML = `Upload Failed`;
+      }
+
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
         `<span style='color: red;'>${emessage}</span>`;
       window.log.error(error);
@@ -7615,7 +7662,7 @@ const initiate_generate = async () => {
       Swal.fire({
         icon: "error",
         title: "An Error Occurred While Uploading Your Dataset",
-        html: "Check the error text in the Organize Dataset's upload page to see what went wrong.",
+        html: "Check the error message on the progress page to learn more.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showClass: {
@@ -7631,12 +7678,12 @@ const initiate_generate = async () => {
       }).then((result) => {
         //statusBarClone.remove();
         if (result.isConfirmed) {
-          organizeDataset.click();
           let button = document.getElementById("button-generate");
           $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
           document.getElementById("prevBtn").style.display = "none";
           document.getElementById("start-over-btn").style.display = "none";
           document.getElementById("div-vertical-progress-bar").style.display = "none";
+          document.getElementById("wrapper-wrap").style.display = "flex";
           document.getElementById("div-generate-comeback").style.display = "none";
           document.getElementById("generate-dataset-progress-tab").style.display = "flex";
         }
@@ -7755,6 +7802,7 @@ const initiate_generate = async () => {
         uploadLocally.disabled = false;
 
         // Add the original classes back to the buttons
+        document.getElementById("wrapper-wrap").style.display = "flex";
         organizeDataset_option_buttons.style.display = "flex";
         guidedModeHomePageButton.className = "button-prompt-container";
         organizeDataset.className = "content-button is-selected";
@@ -7784,17 +7832,14 @@ const initiate_generate = async () => {
 
     // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
     let generated_dataset_id = data["generated_dataset_id"];
+    let generated_dataset_int_id = data["generated_dataset_int_id"];
     if (
       !loggedDatasetNameToIdMapping &&
       generated_dataset_id !== null &&
       generated_dataset_id !== undefined
     ) {
-      window.electron.ipcRenderer.send(
-        "track-event",
-        "Dataset ID to Dataset Name Map",
-        generated_dataset_id,
-        dataset_name
-      );
+      window.defaultBfDatasetId = generated_dataset_id;
+      window.defaultBfDatasetIntId = generated_dataset_int_id;
 
       // don't log this again for the current upload session
       loggedDatasetNameToIdMapping = true;
@@ -8342,6 +8387,7 @@ window.logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, s
       destination: destination,
       origin: uploadBFBoolean ? window.defaultBfDatasetId : "Local",
       dataset_name: window.defaultBfDataset,
+      dataset_int_id: window.defaultBfDatasetIntId,
     }
   );
 
