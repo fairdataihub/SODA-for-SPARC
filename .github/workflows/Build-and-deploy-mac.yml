@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+    - org-dataset-redesign
 
 jobs:
   deploy-on-mac:

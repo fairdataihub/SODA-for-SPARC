@@ -316,6 +316,8 @@ function initialize() {
         sandbox: false,
         // preload: path.join(__dirname, "preload.js"),
       },
+      frame: false,
+      titleBarStyle: "hidden",
     };
     mainWindow = new BrowserWindow(windowOptions);
     require("@electron/remote/main").enable(mainWindow.webContents);
