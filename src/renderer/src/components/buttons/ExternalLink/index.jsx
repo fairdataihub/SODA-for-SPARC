@@ -26,7 +26,7 @@ const ExternalLink = ({ href, buttonText, buttonType }) => {
         rel="noopener noreferrer"
         size="lg"
         ml={6}
-        style={{ whiteSpace: "nowrap" }}
+        style={{ whiteSpace: "nowrap", color: "#0070f3" }}
       >
         {buttonText}
         <IconExternalLink size={18} style={{ marginLeft: "3px" }} />

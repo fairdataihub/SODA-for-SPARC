@@ -2,7 +2,7 @@
 // // Import required modules
 // //////////////////////////////////
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
@@ -61,10 +61,10 @@ import {
   swalFileListTripleAction,
   swalFileListDoubleAction,
   swalShowError,
+  swalConfirmAction,
 } from "../utils/swal-utils";
 import canSmiley from "/img/can-smiley.png";
 import canSad from "/img/can-sad.png";
-import { swalConfirmAction } from "../utils/swal-utils";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -3274,6 +3274,7 @@ window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       {
         value: 1,
         dataset_id: window.defaultBfDatasetId,
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
 
@@ -3311,6 +3312,7 @@ window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
     {
       value: 1,
       dataset_id: window.defaultBfDatasetId,
+      dataset_int_id: window.defaultBfDatasetIntId,
     }
   );
 
@@ -6556,7 +6558,7 @@ $("#inputNewNameDataset").keyup(function () {
       document.getElementById("div-confirm-inputNewNameDataset").style.display = "none";
       $("#btn-confirm-new-dataset-name").hide();
       document.getElementById("para-new-name-dataset-message").innerHTML =
-        "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.";
+        "Error: A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.,";
       // $("#nextBtn").prop("disabled", true)
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
       $("#div-confirm-inputNewNameDataset").css("display", "none");
@@ -7113,6 +7115,7 @@ document.getElementById("button-generate").addEventListener("click", async funct
   document.getElementById("start-over-btn").style.display = "none";
   document.getElementById("div-vertical-progress-bar").style.display = "none";
   document.getElementById("div-generate-comeback").style.display = "none";
+  document.getElementById("wrapper-wrap").style.display = "none";
   document.getElementById("generate-dataset-progress-tab").style.display = "flex";
   $("#sidebarCollapse").prop("disabled", false);
 
@@ -7126,9 +7129,13 @@ document.getElementById("button-generate").addEventListener("click", async funct
   generateProgressBar.value = 0;
 
   progressStatus.innerHTML = "Please wait while we verify a few things...";
+  document.getElementById("wrapper-wrap").style.display = "none";
 
   let statusText = "Please wait while we verify a few things...";
   if (dataset_destination == "Pennsieve") {
+    setTimeout(() => {
+      document.getElementById("wrapper-wrap").style.display = "none";
+    }, 500);
     let supplementary_checks = await window.run_pre_flight_checks(false);
     if (!supplementary_checks) {
       $("#sidebarCollapse").prop("disabled", false);
@@ -7179,8 +7186,8 @@ document.getElementById("button-generate").addEventListener("click", async funct
         popup: "animate__animated animate__zoomOut animate__faster",
       },
       didOpen: () => {
-        document.getElementById("swal2-content").style.maxHeight = "19rem";
-        document.getElementById("swal2-content").style.overflowY = "auto";
+        document.getElementById("swal2-html-container").style.maxHeight = "19rem";
+        document.getElementById("swal2-html-container").style.overflowY = "auto";
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -7251,6 +7258,7 @@ const initiate_generate = async () => {
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   document.getElementById("div-new-curate-progress").style.display = "block";
   document.getElementById("div-generate-comeback").style.display = "none";
+  document.getElementById("wrapper-wrap").style.display = "none";
 
   // Create the progress bar clone for the navigation bar
   let organizeDataset = document.getElementById("organize_dataset_btn");
@@ -7428,9 +7436,7 @@ const initiate_generate = async () => {
       // log folder and file options selected ( can be merge, skip, replace, duplicate)
       logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
-      //Allow guided_mode_view to be clicked again
-      document.getElementById("guided_mode_view").style.pointerEvents = "";
-
+      // update dataset list; set the dataset id and int id
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
           params: {
@@ -7442,6 +7448,9 @@ const initiate_generate = async () => {
       } catch (error) {
         clientError(error);
       }
+
+      //Allow guided_mode_view to be clicked again
+      document.getElementById("guided_mode_view").style.pointerEvents = "";
     })
     .catch(async (error) => {
       //Allow guided_mode_view to be clicked again
@@ -7546,19 +7555,19 @@ const initiate_generate = async () => {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
         didOpen: () => {
-          document.getElementById("swal2-content").style.maxHeight = "19rem";
-          document.getElementById("swal2-content").style.overflowY = "auto";
+          document.getElementById("swal2-html-container").style.maxHeight = "19rem";
+          document.getElementById("swal2-html-container").style.overflowY = "auto";
         },
       }).then((result) => {
         statusBarClone.remove();
         sparc_container.style.display = "inline";
         if (result.isConfirmed) {
-          organizeDataset.click();
           let button = document.getElementById("button-generate");
           $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
           document.getElementById("prevBtn").style.display = "none";
           document.getElementById("start-over-btn").style.display = "none";
           document.getElementById("div-vertical-progress-bar").style.display = "none";
+          document.getElementById("wrapper-wrap").style.display = "flex";
           document.getElementById("div-generate-comeback").style.display = "flex";
           document.getElementById("generate-dataset-progress-tab").style.display = "flex";
         }
@@ -7630,12 +7639,12 @@ const initiate_generate = async () => {
       }).then((result) => {
         //statusBarClone.remove();
         if (result.isConfirmed) {
-          organizeDataset.click();
           let button = document.getElementById("button-generate");
           $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
           document.getElementById("prevBtn").style.display = "none";
           document.getElementById("start-over-btn").style.display = "none";
           document.getElementById("div-vertical-progress-bar").style.display = "none";
+          document.getElementById("wrapper-wrap").style.display = "flex";
           document.getElementById("div-generate-comeback").style.display = "none";
           document.getElementById("generate-dataset-progress-tab").style.display = "flex";
         }
@@ -7754,6 +7763,7 @@ const initiate_generate = async () => {
         uploadLocally.disabled = false;
 
         // Add the original classes back to the buttons
+        document.getElementById("wrapper-wrap").style.display = "flex";
         organizeDataset_option_buttons.style.display = "flex";
         guidedModeHomePageButton.className = "button-prompt-container";
         organizeDataset.className = "content-button is-selected";
@@ -7783,17 +7793,14 @@ const initiate_generate = async () => {
 
     // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
     let generated_dataset_id = data["generated_dataset_id"];
+    let generated_dataset_int_id = data["generated_dataset_int_id"];
     if (
       !loggedDatasetNameToIdMapping &&
       generated_dataset_id !== null &&
       generated_dataset_id !== undefined
     ) {
-      window.electron.ipcRenderer.send(
-        "track-event",
-        "Dataset ID to Dataset Name Map",
-        generated_dataset_id,
-        dataset_name
-      );
+      window.defaultBfDatasetId = generated_dataset_id;
+      window.defaultBfDatasetIntId = generated_dataset_int_id;
 
       // don't log this again for the current upload session
       loggedDatasetNameToIdMapping = true;
@@ -8340,6 +8347,7 @@ window.logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, s
       destination: destination,
       origin: uploadBFBoolean ? window.defaultBfDatasetId : "Local",
       dataset_name: window.defaultBfDataset,
+      dataset_int_id: window.defaultBfDatasetIntId,
     }
   );
 
@@ -8817,7 +8825,8 @@ window.scaleBannerImage = async (imagePath) => {
   }
 };
 
-window.gatherLogs = () => {
+document.getElementById("button-gather-logs").addEventListener("click", () => {
+  console.log("Gather logs button clicked");
   //function will be used to gather all logs on all OS's
   let homedir = window.os.homedir();
   let file_path = "";
@@ -8942,14 +8951,14 @@ window.gatherLogs = () => {
       }
     }
   });
-};
+});
 
 /**
  * Gather the client's analytics ID and save it in a file of the user's choosing. The user can then send this to use when requesting to have their data
  * removed from our analytics database. For each computer/profile the user has they may have to perform this operation if they want all of their data
  * purged.
  */
-window.displayClientId = async () => {
+document.getElementById("button-display-client-id").addEventListener("click", async () => {
   let clientId = await window.electron.ipcRenderer.invoke("get-nodestorage-key", "userId");
 
   const copyClientIdToClipboard = () => {
@@ -8965,19 +8974,11 @@ window.displayClientId = async () => {
     allowOutsideClick: false,
     allowEscapeKey: true,
   });
-};
+});
 
 const gettingStarted = () => {
   let getting_started = document.getElementById("main_tabs_view");
   getting_started.click();
-};
-
-const sodaVideo = () => {
-  document.getElementById("overview-column-1").blur();
-  window.electron.ipcRenderer.invoke(
-    "shell-open-external",
-    "https://docs.sodaforsparc.io/docs/getting-started/user-interface"
-  );
 };
 
 const directToGuidedMode = () => {
@@ -8990,9 +8991,6 @@ window.directToFreeFormMode = () => {
   // freeFormModeLinkButton.click();
 };
 
-document
-  .getElementById("home-button-interface-instructions-link")
-  .addEventListener("click", sodaVideo);
 document
   .getElementById("home-button-guided-mode-link")
   .addEventListener("click", directToGuidedMode);

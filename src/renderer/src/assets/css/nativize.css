@@ -27,6 +27,12 @@ a {
   outline: none;
 }
 
+/* For YouTube Video links */
+a[href^="https://www.youtube.com"]
+{
+  border-bottom: 0px solid;
+}
+
 .github-wiki-link {
   text-decoration: none;
   border: 0px !important;

@@ -1,4 +1,8 @@
 import "./assets/imports";
+
+// Render React Components into their respective slots in the DOM
+import "./components/renderers/ReactComponentRenderer";
+
 import "./assets/demo-btns";
 import "./assets/nav";
 import "./scripts/client";
@@ -38,6 +42,7 @@ import "@mantine/core/styles.css";
 import "cropperjs/dist/cropper.css";
 import "fomantic-ui/dist/semantic.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import "./assets/css/mantine-custom.css";
 import "./assets/css/animations.css";
 import "./assets/css/buttons.css";
 import "./assets/css/containers.css";

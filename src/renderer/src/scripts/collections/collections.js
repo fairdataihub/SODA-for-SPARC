@@ -3,7 +3,7 @@ import { clientError } from "../others/http-error-handler/error-handler";
 import api from "../others/api/api";
 import kombuchaEnums from "../analytics/analytics-enums";
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
@@ -171,6 +171,7 @@ $(document).ready(function () {
             value: whiteListTags.length + newTags.length - removeTags.length,
             dataset_name: window.defaultBfDataset,
             dataset_id: window.defaultBfDatasetId,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
       } else {
@@ -193,6 +194,7 @@ $(document).ready(function () {
             value: 1,
             dataset_name: window.defaultBfDataset,
             dataset_id: window.defaultBfDatasetId,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
       }

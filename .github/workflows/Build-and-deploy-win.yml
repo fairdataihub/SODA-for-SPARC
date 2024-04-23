@@ -6,7 +6,8 @@ on:
     branches:
       - main
       - staging
-      - base-react
+      - pre-staging
+      - init-react
 
 jobs:
   deploy-on-windows:

@@ -1,15 +1,26 @@
-import useGuidedModeStore from "../../../stores/guidedModeStore";
+import React from "react";
+import useGlobalStore from "../../../stores/globalStore";
+import {
+  designateImageAsMicroscopyImage,
+  undesignateImageAsMicroscopyImage,
+} from "../../../stores/slices/microscopyImageSlice";
+import { Table, Checkbox, Text } from "@mantine/core";
 import GuidedModePage from "../../containers/GuidedModePage";
-import { Table, Checkbox, Image, Text, Center, Overlay } from "@mantine/core";
 import styles from "./MicroscopyImageConfirmationPage.module.css";
 
 const MicroscopyImageConfirmationPage = () => {
-  const {
-    potentialMicroscopyImages,
-    confirmedMicroscopyImagePaths,
-    designateImageAsMicroscopyImage,
-    undesignateImageAsMicroscopyImage,
-  } = useGuidedModeStore();
+  const potentialMicroscopyImages = useGlobalStore((state) => state.potentialMicroscopyImages);
+  const confirmedMicroscopyImagePaths = useGlobalStore(
+    (state) => state.confirmedMicroscopyImagePaths
+  );
+
+  const toggleMicroscopyImageDesignation = (potentialMicroscopyImage) => {
+    if (confirmedMicroscopyImagePaths.includes(potentialMicroscopyImage.filePath)) {
+      undesignateImageAsMicroscopyImage(potentialMicroscopyImage);
+    } else {
+      designateImageAsMicroscopyImage(potentialMicroscopyImage);
+    }
+  };
 
   const tableRows = potentialMicroscopyImages.map((potentialMicroscopyImage) => (
     <Table.Tr key={potentialMicroscopyImage.relativePath}>
@@ -17,11 +28,7 @@ const MicroscopyImageConfirmationPage = () => {
         <Checkbox
           aria-label="Select row"
           checked={confirmedMicroscopyImagePaths.includes(potentialMicroscopyImage.filePath)}
-          onClick={
-            confirmedMicroscopyImagePaths.includes(potentialMicroscopyImage.filePath)
-              ? () => undesignateImageAsMicroscopyImage(potentialMicroscopyImage)
-              : () => designateImageAsMicroscopyImage(potentialMicroscopyImage)
-          }
+          onChange={() => toggleMicroscopyImageDesignation(potentialMicroscopyImage)}
         />
       </Table.Td>
       <Table.Td>
@@ -32,10 +39,11 @@ const MicroscopyImageConfirmationPage = () => {
       </Table.Td>
     </Table.Tr>
   ));
+
   return (
     <GuidedModePage
       pageHeader="BioLucida Image Selection"
-      pageDescription="Confirm the microscopy images listed below are microscopy images . If you would like to remove any images, click the 'Remove' button."
+      pageDescription="Confirm the microscopy images listed below are microscopy images. If you would like to remove any images, click the 'Remove' button."
     >
       <Table>
         <Table.Thead>

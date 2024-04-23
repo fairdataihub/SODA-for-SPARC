@@ -5,6 +5,7 @@ const createEventDataPrepareMetadata = (destination, value) => {
       destination: "Pennsieve",
       dataset_name: window.defaultBfDataset,
       dataset_id: window.defaultBfDatasetId,
+      dataset_int_id: window.defaultBfDatasetIntId,
     };
   }
 

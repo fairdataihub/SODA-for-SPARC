@@ -16,7 +16,7 @@ import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
@@ -1396,6 +1396,7 @@ const initiate_generate_manifest_bf = async () => {
     {
       value: high_level_folder_num,
       dataset_id: window.defaultBfDatasetId,
+      dataset_int_id: window.defaultBfDatasetIntId,
       origin: origin,
       destination: destination,
     }

@@ -3273,6 +3273,7 @@ def main_curate_function_progress():
         "elapsed_time_formatted": elapsed_time_formatted,
         "total_files_uploaded": main_curation_uploaded_files,
         "generated_dataset_id": myds["content"]["id"] if myds != "" else None, # when a new dataset gets generated log its id to our analytics
+        "generated_dataset_int_id": myds["content"]["intId"] if myds != "" else None,
     }
 
 

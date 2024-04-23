@@ -1,21 +1,26 @@
-import useGuidedModeStore from "../../../stores/guidedModeStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import DropDownNote from "../../utils/ui/DropDownNote";
 import { TextInput, Textarea, Text } from "@mantine/core";
 import ExternalLink from "../../buttons/ExternalLink";
+import useGlobalStore from "../../../stores/globalStore";
+import {
+  setGuidedDatasetName,
+  setGuidedDatasetSubtitle,
+} from "../../../stores/slices/guidedModeSlice";
 
 const NameAndSubtitlePage = () => {
-  const { datasetName, setDatasetName, datasetSubtitle, setDatasetSubtitle } = useGuidedModeStore();
-
+  const guidedDatasetName = useGlobalStore((state) => state.guidedDatasetName);
+  const guidedDatasetSubtitle = useGlobalStore((state) => state.guidedDatasetSubtitle);
+  console.log("component rendered");
   return (
     <GuidedModePage pageHeader="Dataset name and subtitle">
       <GuidedModeSection>
         <TextInput
           label="Dataset Name:"
           placeholder="Enter dataset name"
-          value={datasetName}
-          onChange={(event) => setDatasetName(event.target.value)}
+          value={guidedDatasetName}
+          onChange={(event) => setGuidedDatasetName(event.target.value)}
         />
         <DropDownNote
           dropDownIcon="info"
@@ -40,12 +45,12 @@ const NameAndSubtitlePage = () => {
           placeholder="Enter dataset subtitle"
           autosize
           minRows={5}
-          value={datasetSubtitle}
-          onChange={(event) => setDatasetSubtitle(event.target.value)}
+          value={guidedDatasetSubtitle}
+          onChange={(event) => setGuidedDatasetSubtitle(event.target.value)}
           maxLength={255}
         />
         <Text align="right" style={{ marginTop: "-35px", zIndex: "10", marginRight: "10px" }}>
-          {255 - datasetSubtitle.length} characters remaining
+          {255 - guidedDatasetSubtitle.length} characters remaining
         </Text>
         <DropDownNote
           dropDownIcon="info"

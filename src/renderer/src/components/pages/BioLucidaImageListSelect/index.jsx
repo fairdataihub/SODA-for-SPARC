@@ -1,6 +1,12 @@
 import useGuidedModeStore from "../../../stores/guidedModeStore";
+import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
+import {
+  setMicroscopyImagesUploadableToBioLucida,
+  addMicroscopyImageToBeUploadedToBioLucida,
+  removeMicroscopyImageToBeUploadedToBioLucida,
+} from "../../../stores/slices/microscopyImageSlice";
 import {
   SimpleGrid,
   Card,
@@ -21,17 +27,12 @@ import styles from "./BioLucidaImageListSelectPage.module.css";
 import ExternalLink from "../../buttons/ExternalLink";
 
 const BioLucidaImageListSelectPage = () => {
-  const {
-    currentGuidedModePage,
-    microscopyImagesUploadableToBioLucida,
-    microscopyImagesSelectedToBeUploadedToBioLucida,
-    addMicroscopyImageToBeUploadedToBioLucida,
-    removeMicroscopyImageToBeUploadedToBioLucida,
-  } = useGuidedModeStore();
-  console.log("microscopyImagesUploadableToBioLucida", microscopyImagesUploadableToBioLucida);
-  console.log(
-    "microscopyImagesSelectedToBeUploadedToBioLucida",
-    microscopyImagesSelectedToBeUploadedToBioLucida
+  const { currentGuidedModePage } = useGlobalStore();
+  const microscopyImagesUploadableToBioLucida = useGlobalStore(
+    (state) => state.microscopyImagesUploadableToBioLucida
+  );
+  const microscopyImagesSelectedToBeUploadedToBioLucida = useGlobalStore(
+    (state) => state.microscopyImagesSelectedToBeUploadedToBioLucida
   );
 
   return (

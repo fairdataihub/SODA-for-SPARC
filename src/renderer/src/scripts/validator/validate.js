@@ -8,7 +8,7 @@ import { clientError, userErrorMessage } from "../others/http-error-handler/erro
 import kombuchaEnums from "../analytics/analytics-enums";
 import api from "../others/api/api";
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
@@ -485,6 +485,7 @@ const validatePennsieveDatasetStandAlone = async () => {
         value: file_counter,
         dataset_name: datasetName,
         dataset_id: datasetPopulationResponse.dataset_id,
+        dataset_int_id: window.defaultBfDatasetIntId,
         origin: "Pennsieve",
       }
     );
@@ -569,6 +570,7 @@ const validatePennsieveDatasetStandAlone = async () => {
       value: file_counter,
       dataset_name: datasetName,
       dataset_id: datasetPopulationResponse.dataset_id,
+      dataset_int_id: window.defaultBfDatasetIntId,
       origin: "Pennsieve",
     }
   );

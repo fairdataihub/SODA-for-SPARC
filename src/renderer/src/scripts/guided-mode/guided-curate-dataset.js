@@ -36,14 +36,20 @@ import {
   swalShowInfo,
 } from "../utils/swal-utils";
 
-import { useStore } from "zustand";
-
 // Import state management stores
-import useGuidedModeStore from "../../stores/guidedModeStore";
 
-// Get non-reactive fresh state
-const initialGuidedModeStore = useGuidedModeStore.getState();
-console.log("Initial Guided Mode Store State:", initialGuidedModeStore);
+import useGlobalStore from "../../stores/globalStore";
+import {
+  setConfirmedMicroscopyImagePaths,
+  setMicroscopyImagesUploadableToBioLucida,
+  setPotentialMicroscopyImages,
+} from "../../stores/slices/microscopyImageSlice";
+import { setDropdownState } from "../../stores/slices/dropDownSlice";
+import {
+  setGuidedModePage,
+  setGuidedDatasetName,
+  setGuidedDatasetSubtitle,
+} from "../../stores/slices/guidedModeSlice";
 
 import "bootstrap-select";
 // import DragSort from '@yaireo/dragsort'
@@ -61,9 +67,13 @@ import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
 import { map } from "jquery";
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
+
+window.logZustandStoreState = () => {
+  console.log(useGlobalStore.getState());
+};
 
 window.returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
@@ -110,6 +120,7 @@ const guidedCreateEventDataPrepareMetadata = (destination, value) => {
       destination: "Pennsieve",
       dataset_name: guidedGetDatasetName(window.sodaJSONObj),
       dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+      dataset_int_id: window.defaultBfDatasetIntId,
     };
   }
 
@@ -980,10 +991,10 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Set the consortium data standard value in the JSON
         window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
           "SPARC";
-        // Get the funding source value from the dropdown
-        const selectedFuncingSourceFromDropdown = $(
-          "#guided-select-sparc-funding-consortium"
-        ).val();
+        const selectedFuncingSourceFromDropdown =
+          useGlobalStore.getState()["dropDownState"]["guided-select-sparc-funding-consortium"]
+            .selectedValue;
+        console.log("selected funding source from react", selectedFuncingSourceFromDropdown);
 
         // Throw an error if the user did not select a funding source from the dropdown
         if (!selectedFuncingSourceFromDropdown) {
@@ -1064,8 +1075,8 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-name-subtitle-tab") {
-      const datasetNameInput = useGuidedModeStore.getState().datasetName.trim();
-      const datasetSubtitleInput = useGuidedModeStore.getState().datasetSubtitle.trim();
+      const datasetNameInput = useGlobalStore.getState().guidedDatasetName.trim();
+      const datasetSubtitleInput = useGlobalStore.getState().guidedDatasetSubtitle.trim();
 
       //Throw error if no dataset name or subtitle were added
       if (!datasetNameInput) {
@@ -1488,8 +1499,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-microscopy-image-confirmation-tab") {
-      const confirmedMicroscopyImagePaths =
-        useGuidedModeStore.getState().confirmedMicroscopyImagePaths;
+      const confirmedMicroscopyImagePaths = useGlobalStore.getState().confirmedMicroscopyImagePaths;
       window.sodaJSONObj["confirmed-microscopy-image-paths"] = confirmedMicroscopyImagePaths;
     }
 
@@ -1891,7 +1901,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     if (pageBeingLeftID === "guided-biolucida-image-selection-tab") {
       console.log("WEEEEEEE");
       const microscopyImagesUploadableToBioLucida =
-        useGuidedModeStore.getState().microscopyImagesUploadableToBioLucida;
+        useGlobalStore.getState().microscopyImagesUploadableToBioLucida;
 
       console.log("Images on page leave", microscopyImagesUploadableToBioLucida);
     }
@@ -2810,7 +2820,7 @@ for (const infoDropdown of Array.from(infoDropdowns)) {
   });
 }
 
-window.guidedSaveAndExit = async () => {
+const guidedSaveAndExit = async () => {
   if (!window.sodaJSONObj["digital-metadata"]["name"]) {
     // If a progress file has not been created, then we don't need to save anything
     guidedTransitionToHome();
@@ -3707,6 +3717,7 @@ document
           dataset_id: guidedGetDatasetId(window.sodaJSONObj),
           dataset_name: guidedGetDatasetName(window.sodaJSONObj),
           origin: guidedGetDatasetOrigin(window.sodaJSONObj),
+          dataset_int_id: window.defaultBfDatasetIntId,
         };
 
         window.electron.ipcRenderer.send(
@@ -3801,6 +3812,7 @@ document
           dataset_id: guidedGetDatasetId(window.sodaJSONObj),
           dataset_name: guidedGetDatasetName(window.sodaJSONObj),
           origin: guidedGetDatasetOrigin(window.sodaJSONObj),
+          dataset_int_id: window.defaultBfDatasetIntId,
         };
 
         window.electron.ipcRenderer.send(
@@ -3843,6 +3855,7 @@ document
             dataset_id: guidedGetDatasetId(window.sodaJSONObj),
             dataset_name: guidedGetDatasetName(window.sodaJSONObj),
             origin: guidedGetDatasetOrigin(window.sodaJSONObj),
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
       }
@@ -5222,26 +5235,24 @@ window.openPage = async (targetPageID) => {
     // as their progress is saved when continuing to the next page
     const datasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
     const nextButton = document.getElementById("guided-next-button");
-    const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
     const nextButtonSpans = document.querySelectorAll(".next-button-span");
 
     if (!datasetName) {
-      nextButton.innerHTML = "Continue";
+      // set the span inside of nextButton to "Continue"
+      nextButton.querySelector("span.nav-button-text").innerHTML = "Continue";
       nextButtonSpans.forEach((span) => {
         span.innerHTML = "Continue";
       });
-      saveAndExitButton.innerHTML = "Return to Home Page";
       guidedLockSideBar(false);
     } else {
       // Set the dataset name display in the side bar
       const datasetNameDisplay = document.getElementById("guided-navbar-dataset-name-display");
       datasetNameDisplay.innerHTML = datasetName;
 
-      nextButton.innerHTML = "Save and Continue";
+      nextButton.querySelector("span.nav-button-text").innerHTML = "Save and Continue";
       nextButtonSpans.forEach((span) => {
         span.innerHTML = "Save and Continue";
       });
-      saveAndExitButton.innerHTML = `<i class="far fa-save" style="margin-right: 10px"></i>Save and Exit`;
       guidedLockSideBar(true);
     }
 
@@ -5298,8 +5309,11 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-name-subtitle-tab") {
+      // Get the dataset name and subtitle from the JSON obj
       const datasetName = getGuidedDatasetName();
-      useGuidedModeStore.setState({ datasetName: datasetName });
+
+      // Set the zustand datasetName state value to the dataset name
+      setGuidedDatasetName(datasetName);
 
       if (pageNeedsUpdateFromPennsieve("guided-name-subtitle-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
@@ -5314,7 +5328,7 @@ window.openPage = async (targetPageID) => {
 
           // Save the subtitle to the JSON and add it to the input
           window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
-          useGuidedModeStore.setState({ datasetSubtitle: datasetSubtitle });
+          setGuidedDatasetSubtitle(datasetSubtitle);
 
           window.sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
         } catch (error) {
@@ -5328,7 +5342,7 @@ window.openPage = async (targetPageID) => {
       } else {
         //Update subtitle from JSON
         const datasetSubtitle = getGuidedDatasetSubtitle();
-        useGuidedModeStore.setState({ datasetSubtitle: datasetSubtitle });
+        setGuidedDatasetSubtitle(datasetSubtitle);
       }
     }
 
@@ -5375,50 +5389,10 @@ window.openPage = async (targetPageID) => {
         }
       }
 
-      // Set the funding consortium dropdown options / set up select picker
-      document.getElementById("guided-select-sparc-funding-consortium").innerHTML = `
-        <option value="">Select a funding consortium</option>
-        ${window.sparcFundingConsortiums
-          .map((consortium) => {
-            return `<option value="${consortium}">${consortium}</option>`;
-          })
-          .join("\n")}
-      `;
-      $("#guided-select-sparc-funding-consortium").selectpicker({
-        style: "SODA-select-picker",
-      });
-      $("#guided-select-sparc-funding-consortium").selectpicker("refresh");
-      // Event listener that watches what the user selects and updates the UI accordingly
-      $("#guided-select-sparc-funding-consortium").on("change", function (e) {
-        const consortium = e.target.value;
-
-        const divClickContinueFundingConsortium = document.getElementById(
-          "guided-section-confirm-funding-consortium"
-        );
-
-        // If the valueLess selection is selected, hide all sections besides the help dropdown
-        if (consortium === "") {
-          //Hide the click continue to.. div
-          divClickContinueFundingConsortium.classList.add("hidden");
-        } else {
-          // Show the click continue to.. div
-          divClickContinueFundingConsortium.classList.remove("hidden");
-          // Set the funding consortium text to the click continue to.. span
-          document.getElementById("span-continue-sparc-funding-consortium-name").innerText =
-            consortium;
-        }
-      });
-
       // Set the funding consortium dropdown to the saved value (deafult is empty string before a user selects a value)
       const savedFundingConsortium =
         window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
-      if (window.sparcFundingConsortiums.includes(savedFundingConsortium)) {
-        $("#guided-select-sparc-funding-consortium").val(savedFundingConsortium);
-      } else {
-        $("#guided-select-sparc-funding-consortium").val("");
-      }
-      $("#guided-select-sparc-funding-consortium").selectpicker("refresh");
-      $("#guided-select-sparc-funding-consortium").trigger("change");
+      setDropdownState("guided-select-sparc-funding-consortium", savedFundingConsortium);
     }
 
     if (targetPageID === "guided-dataset-structure-intro-tab") {
@@ -5463,13 +5437,11 @@ window.openPage = async (targetPageID) => {
       const potentialMicroscopyImages = getPotentialMicroscopyImagesFromDatasetStructure(
         window.datasetStructureJSONObj
       );
+      console.log(potentialMicroscopyImages);
       const confirmedMicroscopyImagePaths =
         window.sodaJSONObj["confirmed-microscopy-image-paths"] || [];
-
-      useGuidedModeStore.setState({
-        potentialMicroscopyImages,
-        confirmedMicroscopyImagePaths,
-      });
+      setPotentialMicroscopyImages(potentialMicroscopyImages);
+      setConfirmedMicroscopyImagePaths(confirmedMicroscopyImagePaths);
     }
 
     if (targetPageID === "guided-source-data-organization-tab") {
@@ -6540,10 +6512,7 @@ window.openPage = async (targetPageID) => {
       );
       console.log("Microscopy Images");
       console.log(microscopyImages);
-
-      useGuidedModeStore.setState({
-        microscopyImagesUploadableToBioLucida: microscopyImages,
-      });
+      setMicroscopyImagesUploadableToBioLucida(microscopyImages);
 
       /*try {
         // Create a directory to store the guided image thumbnails if it doesn't exist
@@ -6991,7 +6960,7 @@ window.openPage = async (targetPageID) => {
     window.currentGuidedModePage = targetPageID;
     // Set the state of the curreng page in the guided mode store to rerender the React Components subscribing
     // to the currentGuidedModePage store state
-    useGuidedModeStore.setState({ currentGuidedModePage: targetPageID });
+    setGuidedModePage(targetPageID);
     await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
     const eMessage = userErrorMessage(error);
@@ -12591,9 +12560,6 @@ const getGuidedDatasetName = () => {
   return window.sodaJSONObj["digital-metadata"]["name"] || "";
 };
 
-const setGuidedDatasetSubtitle = (datasetSubtitle) => {
-  window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
-};
 const getGuidedDatasetSubtitle = () => {
   return window.sodaJSONObj["digital-metadata"]["subtitle"] || "";
 };
@@ -13903,10 +13869,18 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
       }
     );
     let createdDatasetsID = bf_new_dataset.data.id;
+    let createdDatasetIntId = bf_new_dataset.data.int_id;
+
+    // set the global dataset id and dataset int id for reference in future events
+    window.defaultBfDatasetId = createdDatasetsID;
+    window.defaultBfDatasetIntId = createdDatasetIntId;
+
     datasetNameUploadText.innerHTML = `Successfully created dataset with name: ${datasetName}`;
     const kombuchaEventData = {
       value: 1,
       dataset_id: createdDatasetsID,
+      dataset_name: datasetName,
+      dataset_int_id: window.defaultBfDatasetIntId,
     };
 
     window.electron.ipcRenderer.send(
@@ -14010,6 +13984,7 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
         value: 1,
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
   } catch (error) {
@@ -14024,6 +13999,7 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
         value: 1,
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
     window.electron.ipcRenderer.send(
@@ -14094,6 +14070,7 @@ const guidedAddDatasetDescription = async (
         value: 1,
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
   } catch (error) {
@@ -14108,6 +14085,7 @@ const guidedAddDatasetDescription = async (
         value: 1,
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
     window.electron.ipcRenderer.send(
@@ -14178,6 +14156,7 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
         value: bannerImageSize,
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
   } catch (error) {
@@ -14196,6 +14175,7 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
         value: bannerImageSize,
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
     window.electron.ipcRenderer.send(
@@ -14251,6 +14231,7 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
         value: 1,
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
   } catch (error) {
@@ -14269,6 +14250,7 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
         value: 1,
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
     window.electron.ipcRenderer.send(
@@ -14322,6 +14304,7 @@ const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
         value: 1,
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
   } catch (error) {
@@ -14339,6 +14322,7 @@ const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
         value: 1,
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
     window.electron.ipcRenderer.send(
@@ -14439,6 +14423,7 @@ const guidedGrantUserPermission = async (
         value: 1,
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
   } catch (error) {
@@ -14462,6 +14447,7 @@ const guidedGrantUserPermission = async (
         value: 1,
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
     window.electron.ipcRenderer.send(
@@ -14581,6 +14567,7 @@ const guidedGrantTeamPermission = async (
         value: 1,
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
   } catch (error) {
@@ -14604,6 +14591,7 @@ const guidedGrantTeamPermission = async (
         value: 1,
         dataset_name: guidedGetDatasetName(window.sodaJSONObj),
         dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
       }
     );
     window.electron.ipcRenderer.send(
@@ -15691,6 +15679,7 @@ const guidedUploadDatasetToPennsieve = async () => {
           dataset_name: guidedGetDatasetName(window.sodaJSONObj),
           origin: guidedGetDatasetOrigin(window.sodaJSONObj),
           destination: "Pennsieve",
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
 
@@ -15710,6 +15699,7 @@ const guidedUploadDatasetToPennsieve = async () => {
             origin: guidedGetDatasetOrigin(window.sodaJSONObj),
             destination: "Pennsieve",
             upload_session: datasetUploadSession.id,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
       }
@@ -15738,6 +15728,7 @@ const guidedUploadDatasetToPennsieve = async () => {
             origin: guidedGetDatasetOrigin(window.sodaJSONObj),
             destination: "Pennsieve",
             upload_session: datasetUploadSession.id,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
       }
@@ -15800,6 +15791,7 @@ const guidedUploadDatasetToPennsieve = async () => {
           dataset_name: guidedGetDatasetName(window.sodaJSONObj),
           origin: guidedGetDatasetOrigin(window.sodaJSONObj),
           destination: "Pennsieve",
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
 
@@ -15820,6 +15812,7 @@ const guidedUploadDatasetToPennsieve = async () => {
             origin: guidedGetDatasetOrigin(window.sodaJSONObj),
             destination: "Pennsieve",
             upload_session: datasetUploadSession.id,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
       }
@@ -15848,6 +15841,7 @@ const guidedUploadDatasetToPennsieve = async () => {
             origin: guidedGetDatasetOrigin(window.sodaJSONObj),
             destination: "Pennsieve",
             upload_session: datasetUploadSession.id,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
       }
@@ -15875,6 +15869,7 @@ const guidedUploadDatasetToPennsieve = async () => {
             origin: guidedGetDatasetOrigin(window.sodaJSONObj),
             destination: "Pennsieve",
             upload_session: datasetUploadSession.id,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
       }
@@ -15893,6 +15888,7 @@ const guidedUploadDatasetToPennsieve = async () => {
           origin: guidedGetDatasetOrigin(window.sodaJSONObj),
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
 
@@ -16030,6 +16026,7 @@ const guidedUploadDatasetToPennsieve = async () => {
           origin: guidedGetDatasetOrigin(window.sodaJSONObj),
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
 
@@ -16057,6 +16054,7 @@ const guidedUploadDatasetToPennsieve = async () => {
           origin: guidedGetDatasetOrigin(window.sodaJSONObj),
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
+          dataset_int_id: window.defaultBfDatasetIntId,
         }
       );
 
@@ -16563,6 +16561,16 @@ $("#guided-next-button").on("click", async function () {
   }
 });
 
+// Save and exit button click handlers
+document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
+  await guidedSaveAndExit();
+});
+document
+  .getElementById("guided-button-sub-page-save-and-exit")
+  .addEventListener("click", async () => {
+    await guidedSaveAndExit();
+  });
+
 const getPrevPageNotSkipped = (currentPageID) => {
   const parentContainer = document.getElementById(currentPageID).closest(".guided--parent-tab");
   const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
@@ -16584,7 +16592,7 @@ $("#guided-back-button").on("click", async () => {
   // If the target page when clicking the back button does not exist, then we are on the first not skipped page.
   // In this case, we want to save and exit guided mode.
   if (!targetPage) {
-    await window.guidedSaveAndExit();
+    await guidedSaveAndExit();
     return;
   }
 
