@@ -230,42 +230,39 @@ const fill_info_details = () => {
   );
 
   // check if the user is generating on an existing dataset
-  if ($('input[name="generate-1"]:checked').id === "update-existing-ds-input") {
-    console.log("Nailed it?");
 
-    // if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-duplicate") {
-    //   addCardDetail(
-    //     "For existing folders",
-    //     "Create a duplicate",
-    //     1,
-    //     "Question-generate-dataset-existing-folders-options",
-    //     true
-    //   );
-    // } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-replace") {
-    //   addCardDetail(
-    //     "For existing folders",
-    //     "Replace",
-    //     1,
-    //     "Question-generate-dataset-existing-folders-options",
-    //     true
-    //   );
-    // } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-merge") {
-    //   addCardDetail(
-    //     "For existing folders",
-    //     "Merge",
-    //     1,
-    //     "Question-generate-dataset-existing-folders-options",
-    //     true
-    //   );
-    // } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-skip") {
-    //   addCardDetail(
-    //     "For existing folders",
-    //     "Skip",
-    //     1,
-    //     "Question-generate-dataset-existing-folders-options",
-    //     true
-    //   );
-    // }
+  if ($('input[name="generate-5"]:checked')[0]?.id === "existing-folders-duplicate") {
+    addCardDetail(
+      "For existing folders",
+      "Create a duplicate",
+      1,
+      "Question-generate-dataset-existing-folders-options",
+      true
+    );
+  } else if ($('input[name="generate-5"]:checked')[0]?.id === "existing-folders-replace") {
+    addCardDetail(
+      "For existing folders",
+      "Replace",
+      1,
+      "Question-generate-dataset-existing-folders-options",
+      true
+    );
+  } else if ($('input[name="generate-5"]:checked')[0]?.id === "existing-folders-merge") {
+    addCardDetail(
+      "For existing folders",
+      "Merge",
+      1,
+      "Question-generate-dataset-existing-folders-options",
+      true
+    );
+  } else if ($('input[name="generate-5"]:checked')[0]?.id === "existing-folders-skip") {
+    addCardDetail(
+      "For existing folders",
+      "Skip",
+      1,
+      "Question-generate-dataset-existing-folders-options",
+      true
+    );
   }
 
   if (window.manifestFileCheck.checked) {
