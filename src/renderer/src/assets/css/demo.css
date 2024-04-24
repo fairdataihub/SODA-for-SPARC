@@ -540,13 +540,6 @@ select.my-dropdown {
   height: 38px;
 }
 
-table {
-  width: 100%;
-  border-spacing: 0;
-  border: 1px solid hsla(0, 0%, 0%, 0.08);
-  border-width: 0 1px 1px 0;
-}
-
 th {
   background-color: hsla(0, 0%, 50%, 0.06);
 }
@@ -554,14 +547,6 @@ th {
 /* th:hover {
   background-color: lightblue;
 } */
-
-th,
-td {
-  text-align: center;
-  border: 1px solid hsla(0, 0%, 0%, 0.08);
-  border-width: 1px 0 0 1px;
-  padding: 10px;
-}
 
 th.table-header {
   text-indent: 40%;

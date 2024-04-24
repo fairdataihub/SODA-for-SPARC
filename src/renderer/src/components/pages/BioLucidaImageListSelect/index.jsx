@@ -7,19 +7,7 @@ import {
   addMicroscopyImageToBeUploadedToBioLucida,
   removeMicroscopyImageToBeUploadedToBioLucida,
 } from "../../../stores/slices/microscopyImageSlice";
-import {
-  SimpleGrid,
-  Card,
-  Image,
-  Text,
-  Affix,
-  Badge,
-  Button,
-  Group,
-  HoverCard,
-  Transition,
-  Paper,
-} from "@mantine/core";
+import { SimpleGrid, Card, Image, Text, Affix } from "@mantine/core";
 import { IconSquareCheck } from "@tabler/icons-react";
 import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 import styles from "./BioLucidaImageListSelectPage.module.css";

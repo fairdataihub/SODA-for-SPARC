@@ -45,7 +45,7 @@ const MicroscopyImageConfirmationPage = () => {
       pageHeader="BioLucida Image Selection"
       pageDescription="Confirm the microscopy images listed below are microscopy images. If you would like to remove any images, click the 'Remove' button."
     >
-      <Table>
+      <Table withTableBorder>
         <Table.Thead>
           <Table.Tr>
             <Table.Th />

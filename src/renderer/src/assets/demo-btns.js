@@ -1,6 +1,8 @@
-// const settings = require("electron-settings");
-
+while (!window.baseHtmlLoaded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
 const demoBtns = document.querySelectorAll(".js-container-target");
+console.log("demoBtns", demoBtns);
 // Listen for demo button clicks
 Array.prototype.forEach.call(demoBtns, (btn) => {
   btn.addEventListener("click", (event) => {
