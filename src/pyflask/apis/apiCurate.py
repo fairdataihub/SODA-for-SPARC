@@ -14,7 +14,7 @@ from curate import (
     main_curate_function_progress,
     generate_manifest_file_locally,
     generate_manifest_file_data,
-    check_JSON_size,
+    check_json_size,
     clean_json_structure,
     check_server_access_to_files,
 )
@@ -108,12 +108,16 @@ class Curation(Resource):
         if "soda_json_structure" not in data:
             api.abort(400, "Missing parameter: soda_json_structure")
 
+        if "resume" not in data:
+            api.abort(400, "Missing parameter: resume")
+
         soda_json_structure = data["soda_json_structure"]
+        resume = data["resume"]
 
         api.logger.info('/curation POST request')
 
         try:
-            return main_curate_function(soda_json_structure)
+            return main_curate_function(soda_json_structure, resume)
         except Exception as e:
             api.logger.exception(e)
             if notBadRequestException(e):
@@ -273,6 +277,6 @@ class DatasetSize(Resource):
         soda_json_structure = data["soda_json_structure"]
 
         try:
-            return check_JSON_size(soda_json_structure)
+            return check_json_size(soda_json_structure)
         except Exception as e:
             api.abort(500, str(e))

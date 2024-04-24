@@ -14732,7 +14732,7 @@ window.electron.ipcRenderer.on(
       // Start the local dataset generation process
       client.post(
         `/curate_datasets/curation`,
-        { soda_json_structure: sodaJSONObjCopy },
+        { soda_json_structure: sodaJSONObjCopy, resume: false },
         { timeout: 0 }
       );
 
@@ -15551,7 +15551,7 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
     clientError(error);
     let emessage = userErrorMessage(error);
     //make an unclosable sweet alert that forces the user to close out of the app
-    await Swal.fire({
+    let res = await Swal.fire({
       allowOutsideClick: false,
       allowEscapeKey: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -15559,15 +15559,16 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
       icon: "error",
       title: "An error occurred during your upload",
       html: `
-          <p>Error message: ${emessage}</p>
-          <p>
-            Please close the SODA app and restart it again. You will be able to resume your upload
-            in progress by returning to Guided Mode and clicking the "Resume Upload"
-            button on your dataset's progress card.
-          </p>
-        `,
-      showCancelButton: false,
-      confirmButtonText: "Close SODA Application",
+        <p>Error message: ${emessage}</p>
+        <p>
+        You may retry the upload now or save and exit.
+        If you choose to save and exit you will be able to resume your upload by returning to Guided Mode and clicking the "Resume Upload"
+        button on your dataset's progress card.
+        </p>
+      `,
+      showCancelButton: true,
+      cancelButtonText: "Save and Exit",
+      confirmButtonText: "Retry Upload",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -15575,8 +15576,24 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-    app.showExitPrompt = false;
-    app.quit();
+
+    if (res.isConfirmed) {
+      window.retryGuidedMode = true; //set the retry flag to true
+      let supplementary_checks = await window.run_pre_flight_checks(false);
+      if (!supplementary_checks) {
+        return;
+      }
+      guidedPennsieveDatasetUpload();
+      return;
+    }
+
+    const currentPageID = window.CURRENT_PAGE.id;
+    try {
+      await savePageChanges(currentPageID);
+    } catch (error) {
+      log.error("Error saving page changes", error);
+    }
+    guidedTransitionToHome();
   }
   guidedSetNavLoadingState(false);
 };
@@ -15657,6 +15674,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       `/curate_datasets/curation`,
       {
         soda_json_structure: window.sodaJSONObj,
+        resume: !!window.retryGuidedMode,
       },
       { timeout: 0 }
     )
@@ -15906,7 +15924,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       }
 
       //make an unclosable sweet alert that forces the user to close out of the app
-      await Swal.fire({
+      let res = await Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -15916,13 +15934,14 @@ const guidedUploadDatasetToPennsieve = async () => {
         html: `
           <p>Error message: ${emessage}</p>
           <p>
-            Please close the SODA app and restart it again. You will be able to resume your upload
-            in progress by returning to Guided Mode and clicking the "Resume Upload"
-            button on your dataset's progress card.
+          You may retry the upload now or save and exit.
+          If you choose to save and exit you will be able to resume your upload by returning to Guided Mode and clicking the "Resume Upload"
+          button on your dataset's progress card.
           </p>
         `,
-        showCancelButton: false,
-        confirmButtonText: "Close SODA Application",
+        showCancelButton: true,
+        cancelButtonText: "Save and Exit",
+        confirmButtonText: "Retry Upload",
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
         },
@@ -15930,9 +15949,24 @@ const guidedUploadDatasetToPennsieve = async () => {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
       });
-      // TODO: Update to new conventions
-      app.showExitPrompt = false;
-      app.quit();
+
+      if (res.isConfirmed) {
+        window.retryGuidedMode = true; //set the retry flag to true
+        let supplementary_checks = await window.run_pre_flight_checks(false);
+        if (!supplementary_checks) {
+          return;
+        }
+        guidedPennsieveDatasetUpload();
+        return;
+      }
+
+      const currentPageID = window.CURRENT_PAGE.id;
+      try {
+        await savePageChanges(currentPageID);
+      } catch (error) {
+        log.error("Error saving page changes", error);
+      }
+      guidedTransitionToHome();
     });
 
   const guidedUpdateUploadStatus = async () => {
