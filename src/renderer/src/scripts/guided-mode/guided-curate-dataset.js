@@ -37,7 +37,16 @@ import {
   swalFileListDoubleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
-import * as xlsx from "xlsx";
+
+// Import state management stores
+
+import useGlobalStore from "../../stores/globalStore";
+import { setDropdownState } from "../../stores/slices/dropDownSlice";
+import {
+  setGuidedModePage,
+  setGuidedDatasetName,
+  setGuidedDatasetSubtitle,
+} from "../../stores/slices/guidedModeSlice";
 
 import "bootstrap-select";
 // import DragSort from '@yaireo/dragsort'
@@ -54,9 +63,13 @@ import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
+
+window.logZustandStoreState = () => {
+  console.log(useGlobalStore.getState());
+};
 
 window.returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
@@ -974,10 +987,10 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Set the consortium data standard value in the JSON
         window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
           "SPARC";
-        // Get the funding source value from the dropdown
-        const selectedFuncingSourceFromDropdown = $(
-          "#guided-select-sparc-funding-consortium"
-        ).val();
+        const selectedFuncingSourceFromDropdown =
+          useGlobalStore.getState()["dropDownState"]["guided-select-sparc-funding-consortium"]
+            .selectedValue;
+        console.log("selected funding source from react", selectedFuncingSourceFromDropdown);
 
         // Throw an error if the user did not select a funding source from the dropdown
         if (!selectedFuncingSourceFromDropdown) {
@@ -1058,10 +1071,8 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-name-subtitle-tab") {
-      let datasetNameInput = document.getElementById("guided-dataset-name-input").value.trim();
-      let datasetSubtitleInput = document
-        .getElementById("guided-dataset-subtitle-input")
-        .value.trim();
+      const datasetNameInput = useGlobalStore.getState().guidedDatasetName.trim();
+      const datasetSubtitleInput = useGlobalStore.getState().guidedDatasetSubtitle.trim();
 
       //Throw error if no dataset name or subtitle were added
       if (!datasetNameInput) {
@@ -1074,7 +1085,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         errorArray.push({
           type: "notyf",
           message:
-            "A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.,",
+            "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
         });
       }
       if (!datasetSubtitleInput) {
@@ -1083,9 +1094,11 @@ const savePageChanges = async (pageBeingLeftID) => {
           message: "Please enter a dataset subtitle.",
         });
       }
+
       if (errorArray.length > 0) {
         throw errorArray;
       }
+
       const currentDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
       if (currentDatasetName) {
         // Update the progress file path name and banner image path if needed
@@ -2763,7 +2776,7 @@ for (const infoDropdown of Array.from(infoDropdowns)) {
   });
 }
 
-window.guidedSaveAndExit = async () => {
+const guidedSaveAndExit = async () => {
   if (!window.sodaJSONObj["digital-metadata"]["name"]) {
     // If a progress file has not been created, then we don't need to save anything
     guidedTransitionToHome();
@@ -5118,26 +5131,24 @@ window.openPage = async (targetPageID) => {
     // as their progress is saved when continuing to the next page
     const datasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
     const nextButton = document.getElementById("guided-next-button");
-    const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
     const nextButtonSpans = document.querySelectorAll(".next-button-span");
 
     if (!datasetName) {
-      nextButton.innerHTML = "Continue";
+      // set the span inside of nextButton to "Continue"
+      nextButton.querySelector("span.nav-button-text").innerHTML = "Continue";
       nextButtonSpans.forEach((span) => {
         span.innerHTML = "Continue";
       });
-      saveAndExitButton.innerHTML = "Return to Home Page";
       guidedLockSideBar(false);
     } else {
       // Set the dataset name display in the side bar
       const datasetNameDisplay = document.getElementById("guided-navbar-dataset-name-display");
       datasetNameDisplay.innerHTML = datasetName;
 
-      nextButton.innerHTML = "Save and Continue";
+      nextButton.querySelector("span.nav-button-text").innerHTML = "Save and Continue";
       nextButtonSpans.forEach((span) => {
         span.innerHTML = "Save and Continue";
       });
-      saveAndExitButton.innerHTML = `<i class="far fa-save" style="margin-right: 10px"></i>Save and Exit`;
       guidedLockSideBar(true);
     }
 
@@ -5194,15 +5205,11 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-name-subtitle-tab") {
-      const datasetNameInput = document.getElementById("guided-dataset-name-input");
-      const datasetSubtitleInput = document.getElementById("guided-dataset-subtitle-input");
-      datasetNameInput.value = "";
-      datasetSubtitleInput.value = "";
-
+      // Get the dataset name and subtitle from the JSON obj
       const datasetName = getGuidedDatasetName();
-      if (datasetName) {
-        datasetNameInput.value = datasetName;
-      }
+
+      // Set the zustand datasetName state value to the dataset name
+      setGuidedDatasetName(datasetName);
 
       if (pageNeedsUpdateFromPennsieve("guided-name-subtitle-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
@@ -5217,7 +5224,7 @@ window.openPage = async (targetPageID) => {
 
           // Save the subtitle to the JSON and add it to the input
           window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
-          datasetSubtitleInput.value = datasetSubtitle;
+          setGuidedDatasetSubtitle(datasetSubtitle);
 
           window.sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
         } catch (error) {
@@ -5231,16 +5238,8 @@ window.openPage = async (targetPageID) => {
       } else {
         //Update subtitle from JSON
         const datasetSubtitle = getGuidedDatasetSubtitle();
-        if (datasetSubtitle) {
-          datasetSubtitleInput.value = datasetSubtitle;
-        }
+        setGuidedDatasetSubtitle(datasetSubtitle);
       }
-
-      //Set the characters remaining counter
-      window.countCharacters(
-        document.getElementById("guided-dataset-subtitle-input"),
-        document.getElementById("guided-subtitle-char-count")
-      );
     }
 
     if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
@@ -5286,50 +5285,10 @@ window.openPage = async (targetPageID) => {
         }
       }
 
-      // Set the funding consortium dropdown options / set up select picker
-      document.getElementById("guided-select-sparc-funding-consortium").innerHTML = `
-        <option value="">Select a funding consortium</option>
-        ${window.sparcFundingConsortiums
-          .map((consortium) => {
-            return `<option value="${consortium}">${consortium}</option>`;
-          })
-          .join("\n")}
-      `;
-      $("#guided-select-sparc-funding-consortium").selectpicker({
-        style: "SODA-select-picker",
-      });
-      $("#guided-select-sparc-funding-consortium").selectpicker("refresh");
-      // Event listener that watches what the user selects and updates the UI accordingly
-      $("#guided-select-sparc-funding-consortium").on("change", function (e) {
-        const consortium = e.target.value;
-
-        const divClickContinueFundingConsortium = document.getElementById(
-          "guided-section-confirm-funding-consortium"
-        );
-
-        // If the valueLess selection is selected, hide all sections besides the help dropdown
-        if (consortium === "") {
-          //Hide the click continue to.. div
-          divClickContinueFundingConsortium.classList.add("hidden");
-        } else {
-          // Show the click continue to.. div
-          divClickContinueFundingConsortium.classList.remove("hidden");
-          // Set the funding consortium text to the click continue to.. span
-          document.getElementById("span-continue-sparc-funding-consortium-name").innerText =
-            consortium;
-        }
-      });
-
       // Set the funding consortium dropdown to the saved value (deafult is empty string before a user selects a value)
       const savedFundingConsortium =
         window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
-      if (window.sparcFundingConsortiums.includes(savedFundingConsortium)) {
-        $("#guided-select-sparc-funding-consortium").val(savedFundingConsortium);
-      } else {
-        $("#guided-select-sparc-funding-consortium").val("");
-      }
-      $("#guided-select-sparc-funding-consortium").selectpicker("refresh");
-      $("#guided-select-sparc-funding-consortium").trigger("change");
+      setDropdownState("guided-select-sparc-funding-consortium", savedFundingConsortium);
     }
 
     if (targetPageID === "guided-dataset-structure-intro-tab") {
@@ -12454,9 +12413,6 @@ const getGuidedDatasetName = () => {
   return window.sodaJSONObj["digital-metadata"]["name"];
 };
 
-const setGuidedDatasetSubtitle = (datasetSubtitle) => {
-  window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
-};
 const getGuidedDatasetSubtitle = () => {
   return window.sodaJSONObj["digital-metadata"]["subtitle"];
 };
@@ -16491,6 +16447,16 @@ $("#guided-next-button").on("click", async function () {
   }
 });
 
+// Save and exit button click handlers
+document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
+  await guidedSaveAndExit();
+});
+document
+  .getElementById("guided-button-sub-page-save-and-exit")
+  .addEventListener("click", async () => {
+    await guidedSaveAndExit();
+  });
+
 const getPrevPageNotSkipped = (currentPageID) => {
   const parentContainer = document.getElementById(currentPageID).closest(".guided--parent-tab");
   const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
@@ -16512,7 +16478,7 @@ $("#guided-back-button").on("click", async () => {
   // If the target page when clicking the back button does not exist, then we are on the first not skipped page.
   // In this case, we want to save and exit guided mode.
   if (!targetPage) {
-    await window.guidedSaveAndExit();
+    await guidedSaveAndExit();
     return;
   }
 

@@ -1,7 +1,7 @@
 import addDatasetAndOrganizationCardComponents from "../assets/component-utils/addDatasetAndOrganizationCards";
 
 // adds the apps HTML pages to the DOM
-window.htmlPagesAdded = false;
+window.htmlSectionsAdded = false;
 document.addEventListener("DOMContentLoaded", async function () {
   const links = document.querySelectorAll('link[rel="import"]');
   let contentIndex = document.querySelector("#content");
@@ -48,24 +48,24 @@ document.addEventListener("DOMContentLoaded", async function () {
       }, 100);
     });
   };
+  window.htmlSectionsAdded = true;
 
   await waitForHtmlSectionsToInsertIntoDOM();
-  addDatasetAndOrganizationCardComponents();
-  window.htmlPagesAdded = true;
-});
+  const waitForReactRenderedSectionsToInsertIntoDOM = async () => {
+    while (
+      [...document.querySelectorAll("[data-component-type]")].some(
+        (section) => section.innerHTML === ""
+      )
+    ) {
+      console.log("Waiting for react to render");
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
 
-const includeJavaScriptFile = async (filePath) => {
-  return new Promise((resolve, reject) => {
-    let script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src = filePath;
-    script.async = false;
-    script.onload = () => {
-      resolve();
-    };
-    script.onerror = () => {
-      reject("cannot load script " + filePath);
-    };
-    document.body.appendChild(script);
-  });
-};
+    console.log("All sections have been rendered");
+  };
+
+  await waitForReactRenderedSectionsToInsertIntoDOM();
+  addDatasetAndOrganizationCardComponents();
+
+  window.baseHtmlLoaded = true;
+});

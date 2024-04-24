@@ -10,7 +10,7 @@ import tippy from "tippy.js";
 import doiRegex from "doi-regex";
 import validator from "validator";
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 

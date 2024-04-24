@@ -2,7 +2,7 @@
 // // Import required modules
 // //////////////////////////////////
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
@@ -8845,7 +8845,8 @@ window.scaleBannerImage = async (imagePath) => {
   }
 };
 
-window.gatherLogs = () => {
+document.getElementById("button-gather-logs").addEventListener("click", () => {
+  console.log("Gather logs button clicked");
   //function will be used to gather all logs on all OS's
   let homedir = window.os.homedir();
   let file_path = "";
@@ -8970,14 +8971,14 @@ window.gatherLogs = () => {
       }
     }
   });
-};
+});
 
 /**
  * Gather the client's analytics ID and save it in a file of the user's choosing. The user can then send this to use when requesting to have their data
  * removed from our analytics database. For each computer/profile the user has they may have to perform this operation if they want all of their data
  * purged.
  */
-window.displayClientId = async () => {
+document.getElementById("button-display-client-id").addEventListener("click", async () => {
   let clientId = await window.electron.ipcRenderer.invoke("get-nodestorage-key", "userId");
 
   const copyClientIdToClipboard = () => {
@@ -8993,30 +8994,13 @@ window.displayClientId = async () => {
     allowOutsideClick: false,
     allowEscapeKey: true,
   });
-};
+});
 
 const gettingStarted = () => {
   let getting_started = document.getElementById("main_tabs_view");
   getting_started.click();
 };
 
-const sodaVideo = () => {
-  document.getElementById("overview-column-1").blur();
-  window.electron.ipcRenderer.invoke(
-    "shell-open-external",
-    "https://docs.sodaforsparc.io/docs/getting-started/user-interface"
-  );
-};
-
-const directToDocumentation = () => {
-  window.electron.ipcRenderer.invoke(
-    "shell-open-external",
-    "https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda"
-  );
-
-  document.getElementById("overview-column-2").blur();
-  // window.open('https://docs.sodaforsparc.io', '_blank');
-};
 const directToGuidedMode = () => {
   const guidedModeLinkButton = document.getElementById("guided_mode_view");
   guidedModeLinkButton.click();
@@ -9027,10 +9011,7 @@ window.directToFreeFormMode = () => {
   directToOrganize.click();
   // freeFormModeLinkButton.click();
 };
-document.getElementById("doc-btn").addEventListener("click", directToDocumentation);
-document
-  .getElementById("home-button-interface-instructions-link")
-  .addEventListener("click", sodaVideo);
+
 document
   .getElementById("home-button-guided-mode-link")
   .addEventListener("click", directToGuidedMode);

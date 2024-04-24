@@ -15,7 +15,7 @@ import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
 import { swalConfirmAction } from "../utils/swal-utils";
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 

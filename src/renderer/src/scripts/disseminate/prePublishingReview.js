@@ -13,7 +13,7 @@ import api from "../others/api/api";
 import Swal from "sweetalert2";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
