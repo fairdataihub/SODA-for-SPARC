@@ -4,7 +4,7 @@ import {
   undesignateImageAsMicroscopyImage,
   setConfirmedMicroscopyImagePaths,
 } from "../../../stores/slices/microscopyImageSlice";
-import { Table, Checkbox, Text, Tooltip, Button } from "@mantine/core";
+import { Table, Checkbox, Text, Tooltip, Button, Stack } from "@mantine/core";
 import GuidedModePage from "../../containers/GuidedModePage";
 import styles from "./MicroscopyImageConfirmationPage.module.css";
 
@@ -14,8 +14,14 @@ const MicroscopyImageConfirmationPage = () => {
     (state) => state.confirmedMicroscopyImagePaths
   );
 
-  console.log("Rendering potentialMicroscopyImages", potentialMicroscopyImages);
-  console.log("Rendering confirmedMicroscopyImagePaths", confirmedMicroscopyImagePaths);
+  const toggleAllMicroscopyImages = (markAllImagesAsMicroscopy) => {
+    if (markAllImagesAsMicroscopy) {
+      const allImagePaths = Object.keys(potentialMicroscopyImages);
+      setConfirmedMicroscopyImagePaths(allImagePaths);
+    } else {
+      setConfirmedMicroscopyImagePaths([]);
+    }
+  };
 
   const toggleMicroscopyImageDesignation = (imagePath) => {
     if (confirmedMicroscopyImagePaths.includes(imagePath)) {
@@ -25,17 +31,29 @@ const MicroscopyImageConfirmationPage = () => {
     }
   };
 
+  const areAllImagesSelected =
+    Object.keys(potentialMicroscopyImages).length === confirmedMicroscopyImagePaths.length;
+
   const tableRows = Object.keys(potentialMicroscopyImages).map((imagePath) => (
     <Table.Tr key={imagePath}>
       <Table.Td className={styles.centeredCell}>
         <Checkbox
-          aria-label="Select row"
+          aria-label={`Select ${imagePath}`}
           checked={confirmedMicroscopyImagePaths.includes(imagePath)}
           onChange={() => toggleMicroscopyImageDesignation(imagePath)}
         />
       </Table.Td>
       <Table.Td>
-        <Tooltip label={potentialMicroscopyImages[imagePath].join("\n")}>
+        <Tooltip
+          multiline
+          label={
+            <Stack gap="xs">
+              {potentialMicroscopyImages[imagePath].map((image) => (
+                <Text key={image}>{image}</Text>
+              ))}
+            </Stack>
+          }
+        >
           <Text ta="left">{imagePath}</Text>
         </Tooltip>
       </Table.Td>
@@ -50,8 +68,11 @@ const MicroscopyImageConfirmationPage = () => {
       <Table withTableBorder>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>
-              <Button>Select all</Button>
+            <Table.Th hidden={!areAllImagesSelected}>
+              <Button onClick={() => toggleAllMicroscopyImages(false)}>Deselect all</Button>
+            </Table.Th>
+            <Table.Th hidden={areAllImagesSelected}>
+              <Button onClick={() => toggleAllMicroscopyImages(true)}>Select all</Button>
             </Table.Th>
             <Table.Th>Image file path</Table.Th>
           </Table.Tr>
