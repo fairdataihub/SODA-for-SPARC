@@ -33,7 +33,7 @@ def get_verified_files_count(manifest_id, total_files):
         # Otherwise, increment the offset by the limit and continue to the next page
         offset += limit
 
-    return remaining_files
+    return {"count": remaining_files}
 
 
 def get_upload_manifest_ids():
