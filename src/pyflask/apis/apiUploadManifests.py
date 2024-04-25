@@ -6,8 +6,15 @@ from uploadManifests import get_verified_files_count,get_file_paths_by_status, g
 api = get_namespace(NamespaceEnum.UPLOAD_MANIFESTS)
 
 
+
+uploadManifestVerifiedFiles = api.model('UploadManifestVerifiedFiles', {
+    "count": fields.Integer(required=True, description="Total number of verified files in the upload manifest.")
+})
+
+
 @api.route("/{m_id}/verified_files_count")
 class VerifiedFilesCount(Resource):
+    @api.marshal_with( uploadManifestVerifiedFiles, False, 200)
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request', 404: "Not Found"}, description="Returns the count of files in an upload manifest that have had their statuses verified.", params={'manifest_id': 'The upload manifest id.'})
     def get(self, m_id):
         """
