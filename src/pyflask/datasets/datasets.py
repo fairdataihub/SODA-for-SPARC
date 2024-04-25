@@ -8,9 +8,9 @@ import requests
 from utils import create_request_headers, connect_pennsieve_client, authenticate_user_with_client, get_dataset_id
 from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
 from authentication import get_access_token
+from constants import PENNSIEVE_URL
 
 
-PENNSIEVE_URL = "https://api.pennsieve.io"
 
 def get_role(dataset):
     selected_dataset_id = get_dataset_id(dataset)

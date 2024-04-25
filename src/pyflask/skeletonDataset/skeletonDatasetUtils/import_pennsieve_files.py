@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 from utils import create_request_headers, load_metadata_to_dataframe, get_dataset_id
 from authentication import get_access_token
+from constants import PENNSIEVE_URL
 
 
 #from utils import create_request_headers
@@ -10,7 +11,6 @@ from authentication import get_access_token
 # TODO: Add the rest of the metadata files
 METADATA_FILES = ["submission.xlsx", "README.txt", "CHANGES.txt", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx"]
 HIGH_LEVEL_FOLDERS = ["primary", "code", "derivative", "docs", "source", "protocols"]
-PENNSIEVE_URL = "https://api.pennsieve.io"
 path = os.path.join(os.path.expanduser("~"), "SODA", "skeleton")
 
 

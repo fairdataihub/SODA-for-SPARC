@@ -14,6 +14,7 @@ import requests
 from namespaces import NamespaceEnum, get_namespace_logger
 from authentication import get_access_token
 from utils import get_dataset_id, create_request_headers, load_metadata_to_dataframe
+from constants import PENNSIEVE_URL
 
 
 
@@ -79,7 +80,6 @@ def get_manifests(soda_json_structure):
         "protocol",
         "source",
       ]
-      PENNSIEVE_URL = "https://api.pennsieve.io"
       
 
 

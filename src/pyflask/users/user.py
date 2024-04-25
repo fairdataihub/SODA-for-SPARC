@@ -62,7 +62,6 @@ def get_user_information(token):
   Get a user's information from Pennsieve.
   """
 
-  PENNSIEVE_URL = "https://api.pennsieve.io"
 
   headers = {
     "Content-Type": "application/json",

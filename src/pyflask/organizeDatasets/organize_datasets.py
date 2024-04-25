@@ -31,6 +31,7 @@ from namespaces import NamespaceEnum, get_namespace_logger
 from openpyxl.styles import PatternFill
 from openpyxl import load_workbook
 from utils import load_metadata_to_dataframe
+from constants import PENNSIEVE_URL
 
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
 from authentication import get_access_token
@@ -67,7 +68,6 @@ initial_bfdataset_size_submit = 0
 forbidden_characters = '<>:"/\|?*'
 forbidden_characters_bf = '\/:*?"<>'
 
-PENNSIEVE_URL = "https://api.pennsieve.io"
 
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)

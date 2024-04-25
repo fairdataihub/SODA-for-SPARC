@@ -92,7 +92,6 @@ def bf_dataset_size(ps, dataset_id):
     """
     Function to get storage size of a dataset on Pennsieve
     """
-    PENNSIEVE_URL = "https://api.pennsieve.io"
 
     try: 
         # get the 
@@ -320,7 +319,6 @@ def bf_dataset_account(accountname):
 
     """
     global namespace_logger
-    PENNSIEVE_URL = "https://api.pennsieve.io"
 
     # get the datasets the user has access to
     try:
@@ -794,7 +792,6 @@ def ps_get_users(selected_bfaccount):
     org_id = get_user_information(get_access_token())["preferredOrganization"]
         
     try:
-        global PENNSIEVE_URL
         r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/members", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         list_users = r.json()
@@ -828,7 +825,6 @@ def ps_get_teams(selected_bfaccount):
     """
     try:
         org_id = get_user_information(get_access_token())["preferredOrganization"]
-        global PENNSIEVE_URL
         r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/teams", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
         list_teams = r.json()
@@ -850,7 +846,6 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
         list_permission: list of permission (first name -- last name -- role) associated with the
         selected dataset (list of string)
     """
-    global PENNSIEVE_URL
 
     selected_dataset_id = get_dataset_id(selected_bfdataset)
 
