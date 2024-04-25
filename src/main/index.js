@@ -577,6 +577,7 @@ const initialize = () => {
         height: 735,
         center: true,
         show: false,
+        frame: false,
         nodeIntegration: true,
         autoHideMenuBar: true,
         icon: iconPath,

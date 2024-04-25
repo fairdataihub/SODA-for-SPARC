@@ -84,7 +84,36 @@
   </head>
 
   <body>
-    <header id="titleBar"></header>
+    <header id="titlebar">
+      <div id="drag-region">
+        <div id="window-title">
+          <img id="logo" src="src/renderer/public/menu-icon/soda_icon.png" alt="my logo">
+        </div>
+        <div id="window-controls">
+          <div class="button window-hover" id="min-button">
+            <img class="icon" id="min" alt="minimize"
+              srcset="src/renderer/public/img/titlebar-content/min-w-10.png"
+              draggable="false" />
+          </div>
+          <div class="button window-hover" id="max-button">
+            <img class="icon" id="max" alt="maximize"
+              srcset="src/renderer/public/img/titlebar-content/max-w-10.png"
+              draggable="false" />
+          </div>
+          <div class="button window-hover" id="restore-button">
+            <img class="icon" id="restore" alt="restore"
+              srcset="src/renderer/public/img/titlebar-content/restore-w-10.png"
+              draggable="false" />
+          </div>
+          <div class="button window-hover-close" id="close-button">
+            <img class="icon" id="close" alt="close"
+              srcset="src/renderer/public/img/titlebar-content/close-w-10.png"
+              draggable="false" />
+          </div>
+        </div>
+      </div>
+    </header>
+  
     <button type="button" id="sidebarCollapse" class="navbar-btn">
       <span></span>
       <span></span>

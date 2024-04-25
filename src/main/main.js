@@ -308,6 +308,8 @@ function initialize() {
       center: true,
       show: false,
       icon: __dirname + "/assets/menu-icon/soda_icon.png",
+      frame: false,
+      titleBarStyle: "hidden",
       // autoHideMenuBar: true,
       webPreferences: {
         nodeIntegration: true,
@@ -316,8 +318,6 @@ function initialize() {
         sandbox: false,
         // preload: path.join(__dirname, "preload.js"),
       },
-      frame: false,
-      titleBarStyle: "hidden",
     };
     mainWindow = new BrowserWindow(windowOptions);
     require("@electron/remote/main").enable(mainWindow.webContents);
