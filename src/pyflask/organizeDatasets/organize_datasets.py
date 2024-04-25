@@ -583,7 +583,6 @@ def create_dataset(recursivePath, jsonStructure, listallfiles):
 
                 mycopyfile_with_metadata(srcfile, distfile)
 
-
 def create_soda_json_object_backend(
     soda_json_structure, root_folder_path, irregularFolders, replaced
 ):

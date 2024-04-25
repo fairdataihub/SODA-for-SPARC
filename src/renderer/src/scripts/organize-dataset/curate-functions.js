@@ -178,12 +178,14 @@ window.handleLocalDatasetImport = async (path) => {
   const progressBar_rightSide = document.getElementById("left-side_less_than_50");
   const progressBar_leftSide = document.getElementById("right-side_greater_than_50");
   let local_progress;
-
+  
   // Reset import variables
   const footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${window.nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
   window.irregularFolderArray = [];
   let replaced = {};
   let moveForward = false;
+  let action = "";
+  let renamedFolderName = "";
 
   // Function to get the progress of the local dataset every 500ms
   const progressReport = async () => {
@@ -235,7 +237,7 @@ window.handleLocalDatasetImport = async (path) => {
   console.log(window.irregularFolderArray);
 
   if (window.irregularFolderArray.length > 0) {
-    Swal.fire({
+    await Swal.fire({
       title:
         "The following folders contain non-allowed characters in their names. How should we handle them?",
       html:
@@ -256,22 +258,22 @@ window.handleLocalDatasetImport = async (path) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         action = "replace";
+        moveForward = true;
         if (window.irregularFolderArray.length > 0) {
           for (let i = 0; i < window.irregularFolderArray.length; i++) {
             renamedFolderName = window.replaceIrregularFolders(window.irregularFolderArray[i]);
             replaced[window.path.basename(window.irregularFolderArray[i])] = renamedFolderName;
           }
         }
-        moveForward = true;
       } else if (result.isDenied) {
         action = "remove";
+        moveForward = true;
         if (window.irregularFolderArray.length > 0) {
           for (let i = 0; i < irregularFolderArray.length; i++) {
             renamedFolderName = window.removeIrregularFolders(window.irregularFolderArray[i]);
-            replaced[window.irregularFolderArray[i]] = renamedFolderName;
+            replaced[window.path.basename(window.irregularFolderArray[i])] = renamedFolderName;
           }
         }
-        moveForward = true;
       } else {
         document.getElementById("org-dataset-folder-path").innerHTML = "";
         moveForward = false;
@@ -291,6 +293,10 @@ window.handleLocalDatasetImport = async (path) => {
     // Show the progress bar
     document.getElementById("loading_local_dataset").style.visibility = "visible";
     local_progress = setInterval(progressReport, 500);
+    console.log(window.irregularFolderArray.toString());
+    console.log(JSON.stringify(replaced));
+    console.log(JSON.stringify(window.sodaJSONObj));
+    console.log(path);
 
     try {
       let importLocalDatasetResponse = await client.post(

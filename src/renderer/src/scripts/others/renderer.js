@@ -5148,9 +5148,12 @@ window.replaceIrregularFolders = (pathElement) => {
 };
 
 window.removeIrregularFolders = (pathElement) => {
+  console.log(pathElement);
+  console.log(window.path.basename(pathElement));
   const reg = /[^a-zA-Z0-9-]/g;
   const str = window.path.basename(pathElement);
   const newFolderName = str.replace(reg, "");
+  console.log(newFolderName);
   return newFolderName;
 };
 
