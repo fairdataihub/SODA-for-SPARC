@@ -178,7 +178,7 @@ window.handleLocalDatasetImport = async (path) => {
   const progressBar_rightSide = document.getElementById("left-side_less_than_50");
   const progressBar_leftSide = document.getElementById("right-side_greater_than_50");
   let local_progress;
-  
+
   // Reset import variables
   const footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${window.nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
   window.irregularFolderArray = [];
