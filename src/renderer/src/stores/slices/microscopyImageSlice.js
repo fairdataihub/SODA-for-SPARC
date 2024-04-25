@@ -24,22 +24,19 @@ export const setConfirmedMicroscopyImagePaths = (confirmedMicroscopyImagePaths) 
   );
 };
 
-export const designateImageAsMicroscopyImage = (microscopyImage) => {
+export const designateImageAsMicroscopyImage = (imagePath) => {
   useGlobalStore.setState(
     produce((state) => {
-      state.confirmedMicroscopyImagePaths = [
-        ...state.confirmedMicroscopyImagePaths,
-        microscopyImage.filePath,
-      ];
+      state.confirmedMicroscopyImagePaths = [...state.confirmedMicroscopyImagePaths, imagePath];
     })
   );
 };
 
-export const undesignateImageAsMicroscopyImage = (microscopyImage) => {
+export const undesignateImageAsMicroscopyImage = (imagePath) => {
   useGlobalStore.setState(
     produce((state) => {
       state.confirmedMicroscopyImagePaths = state.confirmedMicroscopyImagePaths.filter(
-        (existingMicroscopyImagePath) => existingMicroscopyImagePath !== microscopyImage.filePath
+        (existingMicroscopyImagePath) => existingMicroscopyImagePath !== imagePath
       );
     })
   );

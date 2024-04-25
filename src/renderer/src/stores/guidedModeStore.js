@@ -23,18 +23,15 @@ const useGuidedModeStore = create((set) => ({
       confirmedMicroscopyImagePaths: confirmedMicroscopyImagePaths,
     })),
 
-  designateImageAsMicroscopyImage: (microscopyImage) =>
+  designateImageAsMicroscopyImage: (imagePath) =>
     set((state) => ({
-      confirmedMicroscopyImagePaths: [
-        ...state.confirmedMicroscopyImagePaths,
-        microscopyImage.filePath,
-      ],
+      confirmedMicroscopyImagePaths: [...state.confirmedMicroscopyImagePaths, imagePath],
     })),
 
-  undesignateImageAsMicroscopyImage: (microscopyImage) =>
+  undesignateImageAsMicroscopyImage: (imagePath) =>
     set((state) => ({
       confirmedMicroscopyImagePaths: state.confirmedMicroscopyImagePaths.filter(
-        (existingMicroscopyImagePath) => existingMicroscopyImagePath !== microscopyImage.filePath
+        (existingMicroscopyImagePath) => existingMicroscopyImagePath !== imagePath
       ),
     })),
 

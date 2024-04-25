@@ -1,10 +1,10 @@
-import React from "react";
 import useGlobalStore from "../../../stores/globalStore";
 import {
   designateImageAsMicroscopyImage,
   undesignateImageAsMicroscopyImage,
+  setConfirmedMicroscopyImagePaths,
 } from "../../../stores/slices/microscopyImageSlice";
-import { Table, Checkbox, Text } from "@mantine/core";
+import { Table, Checkbox, Text, Tooltip, Button } from "@mantine/core";
 import GuidedModePage from "../../containers/GuidedModePage";
 import styles from "./MicroscopyImageConfirmationPage.module.css";
 
@@ -14,28 +14,30 @@ const MicroscopyImageConfirmationPage = () => {
     (state) => state.confirmedMicroscopyImagePaths
   );
 
-  const toggleMicroscopyImageDesignation = (potentialMicroscopyImage) => {
-    if (confirmedMicroscopyImagePaths.includes(potentialMicroscopyImage.filePath)) {
-      undesignateImageAsMicroscopyImage(potentialMicroscopyImage);
+  console.log("Rendering potentialMicroscopyImages", potentialMicroscopyImages);
+  console.log("Rendering confirmedMicroscopyImagePaths", confirmedMicroscopyImagePaths);
+
+  const toggleMicroscopyImageDesignation = (imagePath) => {
+    if (confirmedMicroscopyImagePaths.includes(imagePath)) {
+      undesignateImageAsMicroscopyImage(imagePath);
     } else {
-      designateImageAsMicroscopyImage(potentialMicroscopyImage);
+      designateImageAsMicroscopyImage(imagePath);
     }
   };
 
-  const tableRows = potentialMicroscopyImages.map((potentialMicroscopyImage) => (
-    <Table.Tr key={potentialMicroscopyImage.relativePath}>
-      <Table.Td>
+  const tableRows = Object.keys(potentialMicroscopyImages).map((imagePath) => (
+    <Table.Tr key={imagePath}>
+      <Table.Td className={styles.centeredCell}>
         <Checkbox
           aria-label="Select row"
-          checked={confirmedMicroscopyImagePaths.includes(potentialMicroscopyImage.filePath)}
-          onChange={() => toggleMicroscopyImageDesignation(potentialMicroscopyImage)}
+          checked={confirmedMicroscopyImagePaths.includes(imagePath)}
+          onChange={() => toggleMicroscopyImageDesignation(imagePath)}
         />
       </Table.Td>
       <Table.Td>
-        <Text ta="left">{potentialMicroscopyImage.filePath}</Text>
-      </Table.Td>
-      <Table.Td>
-        <Text ta="left">{potentialMicroscopyImage.relativePath}</Text>
+        <Tooltip label={potentialMicroscopyImages[imagePath].join("\n")}>
+          <Text ta="left">{imagePath}</Text>
+        </Tooltip>
       </Table.Td>
     </Table.Tr>
   ));
@@ -48,9 +50,10 @@ const MicroscopyImageConfirmationPage = () => {
       <Table withTableBorder>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th />
-            <Table.Th>Image</Table.Th>
-            <Table.Th>Relative path</Table.Th>
+            <Table.Th>
+              <Button>Select all</Button>
+            </Table.Th>
+            <Table.Th>Image file path</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>{tableRows}</Table.Tbody>

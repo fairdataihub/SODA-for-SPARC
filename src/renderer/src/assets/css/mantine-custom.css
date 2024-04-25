@@ -1,3 +1,6 @@
 .mantine-Popover-dropdown {
   z-index: 1001 !important;
 }
+.mantine-Tooltip-tooltip {
+  z-index: 1001 !important;
+}

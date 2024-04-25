@@ -4934,39 +4934,68 @@ const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
   }
 };
 
-const getPotentialMicroscopyImagesFromDatasetStructure = (datasetStructureObj) => {
-  const microscopyImageFileTypes = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".jp2"];
-  const checkIfFileTypeIsMicroscopyImage = (fileType) => {
-    return microscopyImageFileTypes.includes(fileType.toLowerCase());
-  };
-  const microscopyImages = [];
-  const getPotentialMicroscopyImagesFromDatasetStructureHelper = (
-    datasetStructureObj,
-    currentRelativePath
-  ) => {
+/**
+ * Extracts image data from a nested dataset structure.
+ *
+ * This function takes a dataset structure object and returns an object containing
+ * image data. The returned object uses file paths as keys and stores an array of
+ * corresponding relative paths for each image.
+ *
+ * @param {object} datasetStructureObj - The nested dataset structure object.
+ * @returns {object} An object containing extracted image data.
+ */
+const getImagesInDatasetStructure = (datasetStructureObj) => {
+  // Supported image file extensions (lowercase for case-insensitive matching)
+  const imageFileTypes = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".jp2"];
+
+  /**
+   * Checks if a given file extension is an image file extension.
+   *
+   * @param {string} fileType - The file extension to be checked.
+   * @returns {boolean} True if the file extension is an image file extension, false otherwise.
+   */
+  const checkIfFileTypeIsImage = (fileType) => imageFileTypes.includes(fileType.toLowerCase());
+
+  // Object to store unique file paths with their corresponding relative paths
+  const imageData = {};
+
+  /**
+   * Helper function to recursively traverse the dataset structure and extract image data.
+   *
+   * Populates the `imageData` object with extracted information.
+   *
+   * @param {object} datasetStructureObj - The current object in the dataset structure.
+   * @param {string} currentRelativePath - The current relative path within the dataset structure.
+   * @returns {void} (Does not return a value, modifies the `imageData` object)
+   */
+  const getImagesInDatasetStructureHelper = (datasetStructureObj, currentRelativePath) => {
     const files = Object.keys(datasetStructureObj["files"]);
     const folders = Object.keys(datasetStructureObj["folders"]);
 
     for (const file of files) {
       const fileObj = datasetStructureObj["files"][file];
       const fileExtension = fileObj?.["extension"];
-      if (checkIfFileTypeIsMicroscopyImage(fileExtension)) {
-        microscopyImages.push({
-          filePath: fileObj["path"],
-          relativePath: `${currentRelativePath}${file}`,
-        });
+      if (checkIfFileTypeIsImage(fileExtension)) {
+        const filePath = fileObj["path"];
+        if (!imageData[filePath]) {
+          imageData[filePath] = [];
+        }
+        imageData[filePath].push(`${currentRelativePath}${file}`);
       }
     }
+
     for (const folder of folders) {
-      getPotentialMicroscopyImagesFromDatasetStructureHelper(
+      getImagesInDatasetStructureHelper(
         datasetStructureObj["folders"][folder],
         `${currentRelativePath}${folder}/`
       );
     }
   };
 
-  getPotentialMicroscopyImagesFromDatasetStructureHelper(datasetStructureObj, "");
-  return microscopyImages;
+  getImagesInDatasetStructureHelper(datasetStructureObj, "");
+
+  console.log("Image data extracted from dataset structure:", imageData);
+  return imageData;
 };
 
 const guidedAddUsersAndTeamsToDropdown = (usersArray, teamsArray) => {
@@ -5434,10 +5463,9 @@ window.openPage = async (targetPageID) => {
       openSubPageNavigation(targetPageID);
     }
     if (targetPageID === "guided-microscopy-image-confirmation-tab") {
-      const potentialMicroscopyImages = getPotentialMicroscopyImagesFromDatasetStructure(
-        window.datasetStructureJSONObj
-      );
-      console.log(potentialMicroscopyImages);
+      const potentialMicroscopyImages = getImagesInDatasetStructure(window.datasetStructureJSONObj);
+      console.log("potentialMicroscopyImages", potentialMicroscopyImages);
+      console.log("potentialMicroscopyImagesKeys", Object.keys(potentialMicroscopyImages));
       const confirmedMicroscopyImagePaths =
         window.sodaJSONObj["confirmed-microscopy-image-paths"] || [];
       setPotentialMicroscopyImages(potentialMicroscopyImages);
@@ -6507,9 +6535,7 @@ window.openPage = async (targetPageID) => {
       }
     }
     if (targetPageID === "guided-biolucida-image-selection-tab") {
-      const microscopyImages = getPotentialMicroscopyImagesFromDatasetStructure(
-        window.datasetStructureJSONObj
-      );
+      const microscopyImages = getImagesInDatasetStructure(window.datasetStructureJSONObj);
       console.log("Microscopy Images");
       console.log(microscopyImages);
       setMicroscopyImagesUploadableToBioLucida(microscopyImages);
