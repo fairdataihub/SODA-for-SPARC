@@ -512,6 +512,20 @@ const getDatasetFileCount = async (datasetId) => {
   return response.data;
 };
 
+const checkDatasetNameExists = async (datasetName) => {
+  try {
+    let response = await client.get(`/datasets/${datasetName}`);
+    console.log(response);
+    if (response.status === 200) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    clientError(error);
+  }
+};
+
 const api = {
   getUserInformation,
   getDataset,
@@ -544,6 +558,7 @@ const api = {
   createProfileName,
   getOrganizations,
   getDatasetFileCount,
+  checkDatasetNameExists
 };
 
 export default api;

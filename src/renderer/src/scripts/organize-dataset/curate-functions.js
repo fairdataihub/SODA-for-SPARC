@@ -1,5 +1,6 @@
 import Swal from "sweetalert2";
 import { updateDatasetList } from "../globals";
+import api from "../others/api/api";
 import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 import { successCheck } from "../../assets/lotties/lotties";
@@ -322,7 +323,6 @@ window.handleLocalDatasetImport = async (path) => {
   }
 };
 
-// TODO: Detect empty ds vs non-sparc folders
 window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (event, path) => {
   if (path.length > 0) {
     // Get the path of the first index
@@ -403,6 +403,7 @@ document
   .getElementById("inputNewNameDataset-upload-dataset")
   .addEventListener("input", function (event) {
     console.log(event.target.value);
+    document.getElementById("para-new-name-dataset-message").innerText = "";
     if (event.target.value != "") {
       let invalidName = window.check_forbidden_characters_ps(event.target.value);
       if (invalidName) {
@@ -419,22 +420,40 @@ document
       document
         .getElementById("upload-dataset-btn-confirm-new-dataset-name")
         .classList.remove("hidden");
-      document.querySelector("#para-new-name-dataset-message").style.display = "none";
+      // document.querySelector("#para-new-name-dataset-message").style.display = "none";
     } else {
       document
         .getElementById("upload-dataset-btn-confirm-new-dataset-name")
         .classList.add("hidden");
-      document.querySelector("#para-new-name-dataset-message").style.display = "none";
+      // document.querySelector("#para-new-name-dataset-message").style.display = "none";
     }
   });
 
 document
   .getElementById("upload-dataset-btn-confirm-new-dataset-name")
   .addEventListener("click", async function () {
+    // TODO: Add a loading icon within the button when checking for if a dataset exists
     // Once clicked, verify if the dataset name exists, if not warn the user that they need to choose a different name
     console.log("clicked");
+    let datasetName = document.getElementById("inputNewNameDataset-upload-dataset").value;
+    let invalidName = window.check_forbidden_characters_ps(datasetName);
+    if (invalidName) {
+      document.querySelector("#para-new-name-dataset-message").style.display = "flex";
+      document.querySelector("#para-new-name-dataset-message").textContent =
+        "A Pennsieve dataset name cannot contain any of the following characters: <>:/\\|?*";
+    }
 
-    document.getElementById("nextBtn").disabled = false;
+    let datasetExists = await api.checkDatasetNameExists(datasetName);
+    console.log(datasetExists);
+    if (datasetExists) {
+      document.querySelector("#para-new-name-dataset-message").style.display = "flex";
+      document.querySelector("#para-new-name-dataset-message").textContent =
+        "A dataset with this name already exists. Please choose a different name.";
+    } else {
+      document.getElementById("upload-dataset-btn-confirm-new-dataset-name").classList.add("hidden");
+      document.getElementById("nextBtn").disabled = false;
+    }
+
   });
 
 document.getElementById("change-account-btn").addEventListener("click", async function () {
