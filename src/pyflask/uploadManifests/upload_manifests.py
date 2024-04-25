@@ -6,7 +6,7 @@ from namespaces import NamespaceEnum, get_namespace_logger
 
 namespace_logger = get_namespace_logger(NamespaceEnum.UPLOAD_MANIFESTS)
 
-def get_verified_files_count(manifest_id, total_files):
+def get_verified_files_count(manifest_id):
     """
     Get the number of verified files in an upload manifest. For a file to be verified its status must be 
     one of the following: VERIFIED | FAILED | FINALIZED.
