@@ -1,4 +1,3 @@
-import useGuidedModeStore from "../../../stores/guidedModeStore";
 import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";

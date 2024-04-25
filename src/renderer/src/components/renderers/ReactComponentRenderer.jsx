@@ -5,6 +5,7 @@ import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 import BioLucidaImageListSelectPage from "../pages/BioLucidaImageListSelect";
 import MicroscopyImageConfirmationPage from "../pages/MicroscopyImageConfirmationPage";
+import BioLucidaLogin from "../pages/BioLucidaLogin";
 import DropdownSelect from "../common/DropdownSelect";
 import GenericButton from "../buttons/Generic";
 
@@ -21,6 +22,7 @@ const componentRenderActions = {
       "guided-name-subtitle-tab": <NameAndSubtitlePage />,
       "guided-biolucida-image-selection-tab": <BioLucidaImageListSelectPage />,
       "guided-microscopy-image-confirmation-tab": <MicroscopyImageConfirmationPage />,
+      "guided-biolucida-login-tab": <BioLucidaLogin />,
     };
     const pageId = componentSlot.id;
     const pageComponent = pageIdToPageComponentMap[pageId];
