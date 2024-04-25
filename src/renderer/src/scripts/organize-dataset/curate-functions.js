@@ -222,7 +222,7 @@ window.handleLocalDatasetImport = async (path) => {
           Destinations.LOCAL
         );
         setTimeout(() => {
-          document.getElementById("loading_local_dataset").style.display = "none";
+          document.getElementById("loading_local_dataset").style.visibility = "hidden";
         }, 1000);
       }
     } catch (error) {
@@ -289,7 +289,7 @@ window.handleLocalDatasetImport = async (path) => {
     numb.innerText = "0%";
 
     // Show the progress bar
-    document.getElementById("loading_local_dataset").style.display = "block";
+    document.getElementById("loading_local_dataset").style.visibility = "visible";
     local_progress = setInterval(progressReport, 500);
 
     try {

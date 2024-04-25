@@ -6580,18 +6580,19 @@ $("#inputNewNameDataset").keyup(function () {
 });
 
 //// Select to choose a local dataset (getting started)
-document
-  .getElementById("input-destination-getting-started-locally")
-  .addEventListener("click", function () {
-    $("#Question-getting-started-locally-destination").nextAll().removeClass("show");
-    $("#Question-getting-started-locally-destination").nextAll().removeClass("test2");
-    $("#Question-getting-started-locally-destination").nextAll().removeClass("prev");
-    document.getElementById("input-destination-getting-started-locally").placeholder =
-      "Browse here";
-    $("#para-continue-location-dataset-getting-started").text("");
-    document.getElementById("nextBtn").disabled = true;
-    window.electron.ipcRenderer.send("open-file-dialog-local-destination-curate");
-  });
+// TODO: DELETE IF NOT NEEDED, CAUSING ERRORS
+// document
+//   .getElementById("input-destination-getting-started-locally")
+//   .addEventListener("click", function () {
+//     $("#Question-getting-started-locally-destination").nextAll().removeClass("show");
+//     $("#Question-getting-started-locally-destination").nextAll().removeClass("test2");
+//     $("#Question-getting-started-locally-destination").nextAll().removeClass("prev");
+//     document.getElementById("input-destination-getting-started-locally").placeholder =
+//       "Browse here";
+//     $("#para-continue-location-dataset-getting-started").text("");
+//     document.getElementById("nextBtn").disabled = true;
+//     window.electron.ipcRenderer.send("open-file-dialog-local-destination-curate");
+//   });
 
 // TODO: Possibly no longer needed after org dataset rework
 // Local dataset selected response
