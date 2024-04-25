@@ -154,7 +154,7 @@ window.uploadDatasetDropHandler = async (ev) => {
   if (ev.dataTransfer.items) {
     const itemDropped = ev.dataTransfer.items[0];
     const folderPath = itemDropped.getAsFile().path;
-    const isDirectory = fs.statSync(folderPath).isDirectory;
+    const { isDirectory } = fs.statSync(folderPath);
 
     if (isDirectory) {
       console.log("Folder dropped");
@@ -439,12 +439,16 @@ document
 
 document.getElementById("change-account-btn").addEventListener("click", async function () {
   // If the user changes the account, show the dropdown prompt
-  window.openDropdownPrompt(this, "bf");
+  await window.openDropdownPrompt(this, "bf");
+  document.getElementById("change-account-btn").classList.add("basic");
+  document.getElementById("change-account-btn").classList.remove("selected");
 });
 
 document.getElementById("change-workspace-btn").addEventListener("click", async function () {
   // If the user changes the workspace, show the dropdown prompt
-  window.openDropdownPrompt(this, "organization");
+  await window.openDropdownPrompt(this, "organization");
+  document.getElementById("change-workspace-btn").classList.add("basic");
+  document.getElementById("change-workspace-btn").classList.remove("selected");
 });
 
 const metadataFileExtensionObject = {
