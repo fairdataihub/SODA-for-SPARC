@@ -47,7 +47,17 @@ class CheckEmptyFilesFolders(Resource):
         try:
             return check_empty_files_folders(soda_json_structure)
         except Exception as e:
-            api.abort(500, str(e))
+            api.logger.exception(e)
+            if notBadRequestException(e):
+                # general exception that was unexpected and caused by our code
+                api.abort(500, str(e))
+            if e.response is not None:
+                # requests exeption
+                api.logger.info("Error message details: ", e.response.json().get('message'))
+                api.abort(e.response.status_code, e.response.json().get('message'))
+            else:
+                # custom werkzeug.exception that we raised
+                api.abort(e.code, e.description)
 
 
 
@@ -64,7 +74,17 @@ class Curation(Resource):
         try:
             return check_server_access_to_files(file_list_to_check)
         except Exception as e:
-            api.abort(500, str(e))
+            api.logger.exception(e)
+            if notBadRequestException(e):
+                # general exception that was unexpected and caused by our code
+                api.abort(500, str(e))
+            if e.response is not None:
+                # requests exeption
+                api.logger.info("Error message details: ", e.response.json().get('message'))
+                api.abort(e.response.status_code, e.response.json().get('message'))
+            else:
+                # custom werkzeug.exception that we raised
+                api.abort(e.code, e.description)
 
 
 @api.route("/clean-dataset")
@@ -82,9 +102,17 @@ class Curation(Resource):
         try:
             return clean_json_structure(soda_json_structure)
         except Exception as e:
+            api.logger.exception(e)
             if notBadRequestException(e):
+                # general exception that was unexpected and caused by our code
                 api.abort(500, str(e))
-            raise e
+            if e.response is not None:
+                # requests exeption
+                api.logger.info("Error message details: ", e.response.json().get('message'))
+                api.abort(e.response.status_code, e.response.json().get('message'))
+            else:
+                # custom werkzeug.exception that we raised
+                api.abort(e.code, e.description)
 
 
 

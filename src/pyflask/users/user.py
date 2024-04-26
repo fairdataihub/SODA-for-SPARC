@@ -29,17 +29,12 @@ def integrate_orcid_with_pennsieve(access_code):
 
   token = get_access_token()
     
-  try:
-    jsonfile = {"authorizationCode": access_code}
-    r = requests.post(f"{PENNSIEVE_URL}/user/orcid", json=jsonfile, headers=create_request_headers(token))
-    r.raise_for_status()
+  jsonfile = {"authorizationCode": access_code}
+  r = requests.post(f"{PENNSIEVE_URL}/user/orcid", json=jsonfile, headers=create_request_headers(token))
+  r.raise_for_status()
 
-    return r.json()
-  except Exception as e:
-    # If status is 400 then the orcid is already linked to users account
-    if r.status_code == 400:
-      abort(409, "ORCID iD is already linked to your Pennsieve account.")
-    abort(400, "Invalid access code")
+  return r.json()
+
 
   
 def get_user():
@@ -47,13 +42,12 @@ def get_user():
   Get a user's information.
   """
   token = get_access_token()
-  try:
-    r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(token))
-    r.raise_for_status()
 
-    return r.json()
-  except Exception as e:
-    raise Exception(e) from e
+  r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(token))
+  r.raise_for_status()
+
+  return r.json()
+
 
 
 
@@ -122,7 +116,7 @@ def set_default_profile(profile_name):
 
     if ps_k_s[0] is None or ps_k_s[1] is None:
       logger.info(f"No valid api key and secret found for profile {profile_name.lower()}")
-      raise Exception(f"No valid api key and secret found for profile {profile_name.lower()}")
+      abort(404, f"No valid api key and secret found for profile {profile_name.lower()}")
     
     # verify that the keys are valid 
     get_access_token(ps_k_s[0], ps_k_s[1])
@@ -145,9 +139,11 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
         response = requests.request("PUT", url, headers=headers)
         response.raise_for_status()
 
-    except Exception as err:
-        new_err_msg = "It looks like you don't have access to your desired organization. An organization is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to your desired organization and try again."
-        raise Exception(new_err_msg) from err
+    except Exception as e:
+        if response.status_code == 403:
+          new_err_msg = "It looks like you don't have access to your desired organization. An organization is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to your desired organization and try again."
+          abort(403, new_err_msg)
+        raise e
     
 
     profile_name = create_unique_profile_name(token, machine_username_specifier)
@@ -193,11 +189,8 @@ def get_user_organizations():
   """
   Get a user's organizations.
   """
-  try:
-    token = get_access_token()
-  except Exception as e:
-     abort(400, "Please select a valid Pennsieve account")
 
+  token = get_access_token()
 
   r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token))
   r.raise_for_status()
