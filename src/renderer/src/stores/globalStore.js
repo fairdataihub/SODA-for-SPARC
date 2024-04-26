@@ -4,6 +4,7 @@ import { guidedModeSlice } from "./slices/guidedModeSlice";
 import { sideBarSlice } from "./slices/sideBarSlice";
 import { dropDownSlice } from "./slices/dropDownSlice";
 import { microscopyImageSlice } from "./slices/microscopyImageSlice";
+import { authSlice } from "./slices/authSlice";
 
 const useGlobalStore = create(
   immer((...a) => ({
@@ -11,6 +12,7 @@ const useGlobalStore = create(
     ...sideBarSlice(...a),
     ...dropDownSlice(...a),
     ...microscopyImageSlice(...a),
+    ...authSlice(...a),
   }))
 );
 

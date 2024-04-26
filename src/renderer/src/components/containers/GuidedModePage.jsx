@@ -5,7 +5,9 @@ import GuidedModeSection from "./GuidedModeSection";
 const GuidedModePage = ({ pageHeader, pageDescription, children }) => {
   return (
     <Stack gap="md" className={classes.guidedModePage}>
-      <Title ta="center">{pageHeader}</Title>
+      <Title ta="center" mt="lg" mb="sm">
+        {pageHeader}
+      </Title>
       {pageDescription && (
         <GuidedModeSection>
           <Text size="lg">{pageDescription}</Text>
