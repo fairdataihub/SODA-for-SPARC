@@ -1,1 +1,1 @@
-from .pennsieve import PENNSIEVE_URL
+from .pennsieve import PENNSIEVE_URL, PENNSIEVE_2_URL
