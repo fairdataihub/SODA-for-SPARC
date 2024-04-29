@@ -17,12 +17,6 @@ configpath = join(userpath, ".pennsieve", "config.ini")
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
 # Variables for token caching
-
-cached_access_token = None
-last_fetch_time = 0
-TOKEN_CACHE_DURATION = 60 # Amount of time in seconds to cache the access token
-
-# Variables for token caching
 cached_access_token = None
 last_fetch_time = 0
 TOKEN_CACHE_DURATION = 60 # Amount of time in seconds to cache the access token

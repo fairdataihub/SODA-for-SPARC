@@ -50,6 +50,7 @@ import {
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
 } from "../../stores/slices/guidedModeSlice";
+import { clearBioLucidaCredentials } from "../../stores/slices/authSlice";
 
 import "bootstrap-select";
 // import DragSort from '@yaireo/dragsort'
@@ -1505,6 +1506,39 @@ const savePageChanges = async (pageBeingLeftID) => {
 
     if (pageBeingLeftID === "guided-source-data-organization-tab") {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("source");
+    }
+
+    if (pageBeingLeftID === "guided-biolucida-login-tab") {
+      const userIsAuthenticatedToBioLucida = useGlobalStore.getState().userAuthenticatedToBioLucida;
+      if (!userIsAuthenticatedToBioLucida) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please sign in to BioLucida to continue",
+        });
+        throw errorArray;
+      }
+
+      const bioLucidaAuthToken = useGlobalStore.getState().bioLucidaAuthToken;
+      const BioLucidaAuthTokenExpiration = useGlobalStore.getState().BioLucidaAuthTokenExpiration;
+      if (!bioLucidaAuthToken || BioLucidaAuthTokenExpiration < Date.now()) {
+        errorArray.push({
+          type: "notyf",
+          message: "Auth token expired. Please sign in to BioLucida to continue",
+        });
+        clearBioLucidaCredentials();
+        throw errorArray;
+      }
+      if (BioLucidaAuthTokenExpiration < Date.now()) {
+        errorArray.push({
+          type: "notyf",
+          message: "Your BioLucida session has expired. Please sign in again to continue",
+        });
+        throw errorArray;
+      } else {
+        // console log how many minutes are left before the token expires
+        const minutesLeft = Math.floor((BioLucidaAuthTokenExpiration - Date.now()) / 60000);
+        console.log("Minutes left before BioLucida token expires:", minutesLeft);
+      }
     }
 
     if (pageBeingLeftID === "guided-derivative-data-organization-tab") {

@@ -10,6 +10,24 @@ namespace_logger = get_namespace_logger(NamespaceEnum.IMAGE_PROCESSING)
 
 
 
+class BioLucidaTokenManager:
+    def __init__(self):
+        self.bioLucida_username = None
+        self.bioLucida_token = None
+        self.bioLucida_token_expiration = None
+        
+    
+    def get_token(self):
+        if self.bioLucida_token is None:   
+            return None
+        return self.bioLucida_token
+    
+    def set_token(self, username, token):
+        self.bioLucida_username = username
+        self.bioLucida_token = token
+        self.bioLucida_token_expiration = None
+BioLucidaTokenManager = BioLucidaTokenManager()
+
 
 @api.route('/biolucida_login')
 class BiolucidaLogin(Resource):
@@ -39,51 +57,124 @@ class BiolucidaLogin(Resource):
             username = data['username']
             password = data['password']
             namespace_logger.info(f"Logging in to Biolucida with username: {username}")
-            res = requests.post('https://sparc.biolucida.net/api/v1/authenticate', data={'username': username, 'password': password, 'token': '1234'})
+            res = requests.post('https://sparc.biolucida.net/api/v1/authenticate', data={'username': username, 'password': password, 'token': 'unused_but_required'})
             namespace_logger.info(f"Login response: {res.json()}")
+            namespace_logger.info(f"Creating collection in Biolucida")
+            access_token = res.json()['token']
+            namespace_logger.info(f"Access token: {access_token}")
+            headers = {
+                'token': access_token
+            }
+            payload={
+                'name': 'Soda Integration Test Collection',
+                'parent_id': 0,
+                'owner': ''
+            }
+            create_collection_res = requests.post('https://sparc.biolucida.net/api/v1/collections/create', headers=headers, data=payload)
+            namespace_logger.info(f"Create collection response: {create_collection_res.json()}")
+            new_res = requests.get('https://sparc.biolucida.net/api/v1/collections/all', headers=headers)
+            all_collections = new_res.json()
+            # loop through collections to find the one we want
+            test_collection = None
+            for collection in all_collections:
+                namespace_logger.info(f"Collection name: {collection['name']}")
+                if (collection['name'] == 'Soda Integration Test Collection'):
+                    test_collection = collection
+                    break
+            if test_collection is None:
+                namespace_logger.info(f"Test collection not found")
+            else:
+                namespace_logger.info(f"Test collection found")
+                namespace_logger.info(f"Collection name: {test_collection['name']}")
+                namespace_logger.info(f"Collection id: {test_collection['id']}")
+                namespace_logger.info(f"Collection folder path: {test_collection['folder_path']}")
+
+            # get the info for the collection with the id '264'
+            test_res = requests.get('https://sparc.biolucida.net/api/v1/collections/264', headers=headers)
+            test_collection_info = test_res.json()
+            namespace_logger.info(f"Test collection info: {test_collection_info}")
+
+                
             return res.json()
         except Exception as e:
             namespace_logger.error(f"Error logging in to Biolucida: {str(e)}")
             api.abort(500, str(e))
+
+@api.route('/biolucida_create_collection')
+class BiolucidaLogin(Resource):
+    global namespace_logger
     
+    request_model = {
+        'token': fields.String(required=True, description="The token to use for authentication"),
+        'collection_name': fields.String(required=True, description="The name of the collection to create"),
+    }
+    response_model = {
+        'status': fields.String(description="Additional message, such as error details")
+    }
     
-thumbnail_model = api.model('ThumbnailStatus', {
-    'image_path': fields.String(required=True, description="Path to the thumbnail image file"),
-    'status': fields.String(required=True, description="Success or failure status of thumbnail creation"),
-    'message': fields.String(description="Additional message, such as error details")
-})
-@api.route('/create_image_thumbnails')
-class CreateThumbnail(Resource):
-    parser_create_image_thumbnails = reqparse.RequestParser(bundle_errors=True)
-    parser_create_image_thumbnails.add_argument('raw_image_paths', type=list, required=True, help="List of image paths to create thumbnails for")
-    parser_create_image_thumbnails.add_argument('output_path', type=str, required=True, help="Path to save the thumbnails")
-    @api.expect(api.model('ThumbnailData', {
-        'raw_image_paths': fields.List(fields.String, required=True, description="List of image paths to create thumbnails for"),
-        'output_path': fields.String(required=True, description="Path to save the thumbnails"),
-    }))
-    @api.response(200, 'Thumbnails created successfully', thumbnail_model)
+    parser = reqparse.RequestParser(bundle_errors=True)
+    parser.add_argument('token', type=str, required=True, help="The token to use for authentication")
+    parser.add_argument('collection_name', type=str, required=True, help="The name of the collection to create")
+
+    @api.expect(request_model)
+    @api.response(200, 'Collection created', response_model)
     @api.response(400, 'Bad request')
     @api.response(500, 'Internal server error')
-    def get(self):
+
+    def post(self):
         try:
-            data = self.parser_create_image_thumbnails.parse_args()
-            return data
-            raw_image_paths = data['raw_image_paths']
-            output_path = data['output_path']
-
-            converted_image_data = []
-            for raw_image_path in raw_image_paths:
-                image_name = os.path.basename(raw_image_path)
-                try:
-                    with Image.open(raw_image_path) as img:
-                        img.thumbnail((128, 128))
-                        img.save(os.path.join(output_path, f"{image_name}_thumbnail.jpg"))
-                        converted_image_data.append({'image_path': f"{output_path}/{image_name}_thumbnail.jpg", 'status': 'Success'})
-                except Exception as e:
-                    converted_image_data.append({'image_name': image_name, 'status': 'Failure', 'message': str(e)})
-
-            return converted_image_data
-
+            data = self.parser.parse_args()
+            token = data['token']
+            collection_name = data['collection_name']
+            namespace_logger.info(f"Creating collection in Biolucida: {collection_name}")
+            headers = {
+                'token': token
+            }
+            payload={
+                'name': collection_name,
+                'parent_id': 0,
+                'owner': ''
+            }
+            res = requests.post('https://sparc.biolucida.net/api/v1/collections/create', headers=headers, data=payload)
+            namespace_logger.info(f"Create collection response: {res.json()}")
+            return res.json()
         except Exception as e:
-            api.logger.error(f"Error creating thumbnails: {str(e)}")
-            api.abort(500, str(e)) 
+            namespace_logger.error(f"Error creating collection in Biolucida: {str(e)}")
+            api.abort(500, str(e))
+
+
+@api.route('/biolucida_create_folder')
+class BiolucidaCreateFolder(Resource):
+    global namespace_logger
+    
+    request_model = {
+        'folder_name': fields.String(required=True, description="The name of the folder to create"),
+        'token': fields.String(required=True, description="The token to use for authentication"),
+    }
+    response_model = {
+        'status': fields.String(description="Additional message, such as error details")
+    }
+    
+    parser = reqparse.RequestParser(bundle_errors=True)
+    parser.add_argument('folder_name', type=str, required=True, help="The name of the folder to create")
+    parser.add_argument('token', type=str, required=True, help="The token to use for authentication")
+
+    @api.expect(request_model)
+    @api.response(200, 'Folder created', response_model)
+    @api.response(400, 'Bad request')
+    @api.response(500, 'Internal server error')
+    def post(self):
+        try:
+            data = self.parser.parse_args()
+            folder_name = data['folder_name']
+            token = data['token']
+            namespace_logger.info(f"Creating folder in Biolucida: {folder_name}")
+            res = requests.post('https://sparc.biolucida.net/api/v1/folder', data={'folder_name': folder_name, 'token': token})
+            namespace_logger.info(f"Create folder response: {res.json()}")
+            
+            return res.json()
+        except Exception as e:
+            namespace_logger.error(f"Error creating folder in Biolucida: {str(e)}")
+            api.abort(500, str(e))
+    
+    

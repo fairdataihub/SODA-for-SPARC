@@ -1,6 +1,9 @@
 import { useState } from "react";
 import useGlobalStore from "../../../stores/globalStore";
-import { setAuthenticatedBioLucidaUserName } from "../../../stores/slices/authSlice";
+import {
+  setBioLucidaCredentials,
+  clearBioLucidaCredentials,
+} from "../../../stores/slices/authSlice";
 
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
@@ -22,16 +25,19 @@ import { IconInfoCircle, IconUser } from "@tabler/icons-react";
 
 import client from "../../../scripts/client";
 import styles from "./BioLucidaLogin.module.css";
+
 const BioLucidaLogin = () => {
-  const authenticatedBioLucidaUserName = useGlobalStore(
-    (state) => state.authenticatedBioLucidaUserName
+  const userAuthenticatedToBioLucida = useGlobalStore(
+    (state) => state.userAuthenticatedToBioLucida
   );
+  const bioLucidaUsername = useGlobalStore((state) => state.bioLucidaUsername);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // New state for loading
 
   const { getInputProps, formError, onSubmit } = useForm({
     mode: "uncontrolled",
     initialValues: {
-      username: "",
+      username: "jclark",
       password: "",
     },
     validate: {
@@ -43,18 +49,20 @@ const BioLucidaLogin = () => {
   const handleLogin = async (values) => {
     if (formError) return;
     setErrorMessage(null);
+    setIsLoading(true); // Set loading to true before API call
 
     try {
       const res = await client.post("/image_processing/biolucida_login", {
         username: values.username,
         password: values.password,
       });
-      console.log(res); // Handle successful login here (e.g., navigate)
-      setAuthenticatedBioLucidaUserName(values.username);
+      const { data } = res;
+      setBioLucidaCredentials(data.username, data.token);
     } catch (error) {
       console.error(error);
       setErrorMessage("Invalid username or password");
     }
+    setIsLoading(false); // Set loading to false after API call finishes
   };
 
   return (
@@ -72,14 +80,14 @@ const BioLucidaLogin = () => {
               width: "400px",
             }}
           >
-            {authenticatedBioLucidaUserName ? (
+            {userAuthenticatedToBioLucida ? (
               <Stack align="center">
                 <Avatar size={100} radius={100} />
                 <Text ta="center" fz="lg" fw={500} mt="md">
-                  {authenticatedBioLucidaUserName}
+                  {bioLucidaUsername}
                 </Text>
                 <Text ta="center" c="dimmed" fz="sm">
-                  Account connected
+                  BioLucida Account connected
                 </Text>
 
                 <Button
@@ -87,7 +95,7 @@ const BioLucidaLogin = () => {
                   fullWidth
                   mt="md"
                   onClick={() => {
-                    setAuthenticatedBioLucidaUserName(null);
+                    clearBioLucidaCredentials();
                   }}
                 >
                   Log out
@@ -101,15 +109,19 @@ const BioLucidaLogin = () => {
                     label="BioLucida account username"
                     placeholder="ILoveMiscroscopes123"
                     {...getInputProps("username")}
+                    disabled={isLoading} // Disable form while loading
                   />
                   <PasswordInput
                     withAsterisk
                     label="BioLucida account password"
                     placeholder="fuzzysocks123"
                     {...getInputProps("password")}
+                    disabled={isLoading} // Disable form while loading
                   />
                   <Group justify="center" m="md">
-                    <Button type="submit">Log in</Button>
+                    <Button type="submit" disabled={isLoading}>
+                      {isLoading ? "Connecting account..." : "Connect BioLucida Account"}
+                    </Button>
                   </Group>
                 </Stack>
               </form>
