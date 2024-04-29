@@ -37,10 +37,16 @@ class UploadManifestFilePaths(Resource):
 
 @api.route("/ids")
 class UploadManifestList(Resource):
+
+    manifest_ids_parser = reqparse.RequestParser(bundle_errors=True)
+    manifest_ids_parser.add_argument('dataset_id', type=str, required=True, help='The Pennsieve dataset id to return upload manifests for.', location="args")
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request', 404: "Not Found"}, description="Returns a list of all upload manifest ids that have been initiated.")
+    @api.expect(manifest_ids_parser)
     def get(self):
         """
         Get the ids of all upload manifests that have been initiated.
         """
-        return get_upload_manifest_ids()
+        data = self.manifest_ids_parser.parse_args()
+        dataset_id = data.get('dataset_id')
+        return get_upload_manifest_ids(dataset_id)
 

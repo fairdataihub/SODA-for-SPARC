@@ -1,6 +1,10 @@
-import math
 import re 
 from pennsieve2 import Pennsieve
+import requests
+
+from constants import PENNSIEVE_URL
+from utils import create_request_headers
+from authentication import get_access_token
 from namespaces import NamespaceEnum, get_namespace_logger
 
 
@@ -36,15 +40,21 @@ def get_verified_files_count(manifest_id):
     return {"count": remaining_files}
 
 
-def get_upload_manifest_ids():
+def get_upload_manifest_ids(dataset_id):
     """
-    Get the ids of all upload manifests that have been initiated.
+    Get the ids of all upload manifests that have been initiated by the Pennsieve Agent.
     """
 
     global namespace_logger
     namespace_logger.info("Getting the ids of all upload manifests that have been initiated")
 
-    return []
+    r = requests.get(f"https://api2.pennsieve.io/manifest?dataset_id={dataset_id}", headers=create_request_headers(get_access_token()))
+    r.raise_for_status()
+
+    print(r.json())
+
+    return r.json()
+    
 
 
 def get_file_paths_by_status(manifest_id, status):
