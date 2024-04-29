@@ -1,16 +1,8 @@
 from flask_restx import Resource, fields, reqparse
 from namespaces import NamespaceEnum, get_namespace
-from flask import request
 from uploadManifests import get_files_for_manifest, get_upload_manifest_ids
 
 api = get_namespace(NamespaceEnum.UPLOAD_MANIFESTS)
-
-
-
-# uploadManifestVerifiedFiles = api.model('UploadManifestVerifiedFiles', {
-#     "count": fields.Integer(required=True, description="Total number of verified files in the upload manifest.")
-# })
-
 
 @api.route("/<string:manifest_id>/files")
 class VerifiedFilesCount(Resource):
