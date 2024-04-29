@@ -41,15 +41,3 @@ def get_upload_manifest_ids(dataset_id):
     r.raise_for_status()
 
     return r.json()
-    
-
-
-def get_file_paths_by_status(manifest_id, status):
-    """
-    Get the files in an upload manifest that have a specific status.
-    """
-
-    global namespace_logger
-    namespace_logger.info(f"Getting the files in the manifest with id: {manifest_id} that have the status: {status}")
-
-    return []

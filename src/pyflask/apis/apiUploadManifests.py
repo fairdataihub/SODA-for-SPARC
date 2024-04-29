@@ -1,7 +1,7 @@
 from flask_restx import Resource, fields, reqparse
 from namespaces import NamespaceEnum, get_namespace
 from flask import request
-from uploadManifests import get_files_for_manifest,get_file_paths_by_status, get_upload_manifest_ids
+from uploadManifests import get_files_for_manifest, get_upload_manifest_ids
 
 api = get_namespace(NamespaceEnum.UPLOAD_MANIFESTS)
 
@@ -30,17 +30,6 @@ class VerifiedFilesCount(Resource):
         limit = data.get('limit')
         continuation_token = data.get('continuation_token')
         return get_files_for_manifest(manifest_id, limit, continuation_token)
-
-
-@api.route("/{m_id}/paths")
-class UploadManifestFilePaths(Resource):
-    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request', 404: "Not Found"}, description="Returns the paths of files in an upload manifest that have a specific status.", params={'manifest_id': 'The upload manifest id.', 'status': 'The status of the files to return.'})
-    def get(self, m_id):
-        """
-        Get the files in an upload manifest that have a specific status.
-        """
-        status = request.args.get("status")
-        return get_file_paths_by_status(m_id, status)
     
 
 @api.route("/ids")
