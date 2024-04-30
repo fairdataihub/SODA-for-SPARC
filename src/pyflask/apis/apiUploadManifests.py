@@ -1,6 +1,6 @@
 from flask_restx import Resource, fields, reqparse
 from namespaces import NamespaceEnum, get_namespace
-from uploadManifests import get_files_for_manifest, get_upload_manifest_ids
+from uploadManifests import get_files_for_manifest, get_upload_manifests
 
 api = get_namespace(NamespaceEnum.UPLOAD_MANIFESTS)
 
@@ -24,7 +24,7 @@ class VerifiedFilesCount(Resource):
         return get_files_for_manifest(manifest_id, limit, continuation_token)
     
 
-@api.route("/ids")
+@api.route("")
 class UploadManifestList(Resource):
 
     manifest_ids_parser = reqparse.RequestParser(bundle_errors=True)
@@ -37,5 +37,5 @@ class UploadManifestList(Resource):
         """
         data = self.manifest_ids_parser.parse_args()
         dataset_id = data.get('dataset_id')
-        return get_upload_manifest_ids(dataset_id)
+        return get_upload_manifests(dataset_id)
 

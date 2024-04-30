@@ -34,6 +34,7 @@ from openpyxl.styles import PatternFill
 from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL, get_users_dataset_list
 from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
 from authentication import get_access_token
+from uploadManifests import  get_upload_manifests
 from errors import PennsieveUploadException
 from .manifestSession import UploadManifestSession
 import json
@@ -1824,6 +1825,11 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
     ps_upload_to_dataset(soda_json_structure, ps, ds, resume)
 
 
+def get_origin_manifest_id(dataset_id):
+    manifests = get_upload_manifests(dataset_id)
+    return manifests["manifests"][0]["id"]
+
+
 
 def normalize_tracking_folder(tracking_folder):
     """
@@ -1896,7 +1902,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
     global total_bytes_uploaded_per_file
     global bytes_file_path_dict
     global elapsed_time
-
+    global manifest_id
+    global origin_manifest_id
 
     total_files = 0
     total_dataset_files = 0
@@ -2528,7 +2535,11 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                     renamed_files_counter += 1
 
             manifest_data = ps.manifest.create(first_file_local_path, folder_name)
+            namespace_logger.info(f"Manifest created with {manifest_data}")
             manifest_id = manifest_data.manifest_id
+
+            # get the origin manifest id 
+            namespace_logger.info(f"Origin manifest id: {origin_manifest_id}")
 
             ums.set_df_mid(manifest_id)
 
@@ -2794,6 +2805,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
         # reset the manifests used for the upload session                                 
         ums.set_df_mid(None)
         ums.set_elapsed_time(None)
+
+        origin_manifest_id = get_origin_manifest_id(selected_id)
+        namespace_logger.info(f"Origin manifest id: {origin_manifest_id}")
+
         
         # reset the calculated values for the upload session
         bytes_file_path_dict = {}
@@ -2821,6 +2836,8 @@ main_initial_bfdataset_size = 0
 myds = ""
 renaming_files_flow = False
 elapsed_time = None
+manifest_id = None 
+origin_manifest_id = None
 
 
 
@@ -3190,6 +3207,7 @@ def validate_dataset_structure(soda_json_structure, resume):
                 "Checking that the selected Pennsieve account is valid"
             )
             accountname = soda_json_structure["bf-account-selected"]["account-name"]
+            namespace_logger.info("accountname: " + accountname)
             connect_pennsieve_client(accountname)
         except Exception as e:
             main_curate_status = "Done"
@@ -3332,6 +3350,8 @@ def main_curate_function(soda_json_structure, resume):
         "main_curate_progress_message": main_curate_progress_message,
         "main_total_generate_dataset_size": main_total_generate_dataset_size,
         "main_curation_uploaded_files": main_curation_uploaded_files,
+        "local_manifest_id": manifest_id,
+        "origin_manifest_id": origin_manifest_id
     }
 
 

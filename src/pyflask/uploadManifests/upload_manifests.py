@@ -29,7 +29,7 @@ def get_files_for_manifest(manifest_id, limit, continuation_token=None):
 
 
 
-def get_upload_manifest_ids(dataset_id):
+def get_upload_manifests(dataset_id):
     """
     Get the ids of all upload manifests that have been initiated by the Pennsieve Agent.
     """
