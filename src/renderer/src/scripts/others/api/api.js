@@ -558,7 +558,7 @@ const api = {
   createProfileName,
   getOrganizations,
   getDatasetFileCount,
-  checkDatasetNameExists
+  checkDatasetNameExists,
 };
 
 export default api;

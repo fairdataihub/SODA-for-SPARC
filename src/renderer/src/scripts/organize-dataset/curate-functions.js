@@ -450,10 +450,11 @@ document
       document.querySelector("#para-new-name-dataset-message").textContent =
         "A dataset with this name already exists. Please choose a different name.";
     } else {
-      document.getElementById("upload-dataset-btn-confirm-new-dataset-name").classList.add("hidden");
+      document
+        .getElementById("upload-dataset-btn-confirm-new-dataset-name")
+        .classList.add("hidden");
       document.getElementById("nextBtn").disabled = false;
     }
-
   });
 
 document.getElementById("change-account-btn").addEventListener("click", async function () {
