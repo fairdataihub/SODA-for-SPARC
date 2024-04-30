@@ -7403,6 +7403,8 @@ const initiate_generate = async (e) => {
 
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
       uploadedFiles = data["main_curation_uploaded_files"];
+      window.pennsieveAgentManifestId = data["local_manifest_id"];
+      window.pennsieveManifestId = data["origin_manifest_id"];
 
       $("#sidebarCollapse").prop("disabled", false);
       window.log.info("Completed curate function");
