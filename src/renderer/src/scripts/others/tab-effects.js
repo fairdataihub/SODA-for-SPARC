@@ -133,6 +133,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
 
   if (tabNow == 5) {
     $("#Question-validate-dataset-upload").show();
+    window.monitorUploadFileVerificationProgress();
   }
 
   if (tabNow == 2) {

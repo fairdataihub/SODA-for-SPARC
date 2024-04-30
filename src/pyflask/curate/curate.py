@@ -2538,8 +2538,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             namespace_logger.info(f"Manifest created with {manifest_data}")
             manifest_id = manifest_data.manifest_id
 
-            # get the origin manifest id 
-            namespace_logger.info(f"Origin manifest id: {origin_manifest_id}")
 
             ums.set_df_mid(manifest_id)
 

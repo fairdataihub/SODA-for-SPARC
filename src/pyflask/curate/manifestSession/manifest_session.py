@@ -106,3 +106,5 @@ class UploadManifestSession:
 
 
 
+# ums = UploadManifestSession()
+# ums.df_mid_has_progress()
