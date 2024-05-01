@@ -2,29 +2,26 @@ import useGlobalStore from "../../../stores/globalStore";
 import {
   designateImageAsMicroscopyImage,
   undesignateImageAsMicroscopyImage,
-  setConfirmedMicroscopyImagePaths,
+  setConfirmedMicroscopyImages,
 } from "../../../stores/slices/microscopyImageSlice";
 import { Table, Checkbox, Text, Tooltip, Button, Stack } from "@mantine/core";
 import GuidedModePage from "../../containers/GuidedModePage";
 import styles from "./MicroscopyImageConfirmationPage.module.css";
 
 const MicroscopyImageConfirmationPage = () => {
-  const { potentialMicroscopyImages, confirmedMicroscopyImagePaths } = useGlobalStore();
+  // Get the required zustand store state variables
+  const { potentialMicroscopyImages, confirmedMicroscopyImages } = useGlobalStore();
 
-  const confirmedMicroscopyImagePathNames = confirmedMicroscopyImagePaths.map(
-    (imageObj) => imageObj["fileName"]
+  const confirmedMicroscopyImagePathPaths = confirmedMicroscopyImages.map(
+    (imageObj) => imageObj["filePath"]
   );
+  const allImagesSelected = potentialMicroscopyImages.length === confirmedMicroscopyImages.length;
 
-  console.log("potentialMicroscopyImages rendered", potentialMicroscopyImages);
-  console.log("confirmedMicroscopyImagePaths rendered", confirmedMicroscopyImagePaths);
-  const areAllImagesSelected =
-    potentialMicroscopyImages.length === confirmedMicroscopyImagePaths.length;
-
-  const toggleAllMicroscopyImages = (markAllImagesAsMicroscopy) => {
+  const toggleAllImages = (markAllImagesAsMicroscopy) => {
     if (markAllImagesAsMicroscopy) {
-      setConfirmedMicroscopyImagePaths(potentialMicroscopyImages);
+      setConfirmedMicroscopyImages(potentialMicroscopyImages);
     } else {
-      setConfirmedMicroscopyImagePaths([]);
+      setConfirmedMicroscopyImages([]);
     }
   };
 
@@ -32,7 +29,8 @@ const MicroscopyImageConfirmationPage = () => {
     const filePath = imageObj["filePath"];
     const fileName = imageObj["fileName"];
     const filePathsInDatasetStructure = imageObj["filePathsInDatasetStructure"];
-    const isImageDesignatedAsMicroscopyImage = confirmedMicroscopyImagePathNames.includes(fileName);
+    // Check if the image is already confirmed as a microscopy image
+    const isImageDesignatedAsMicroscopyImage = confirmedMicroscopyImagePathPaths.includes(filePath);
 
     return (
       <Table.Tr key={filePath}>
@@ -81,18 +79,12 @@ const MicroscopyImageConfirmationPage = () => {
         <Table.Thead>
           <Table.Tr>
             <Table.Th className={styles.selectHeader}>
-              {areAllImagesSelected ? (
-                <Button
-                  className={styles.toggleButton}
-                  onClick={() => toggleAllMicroscopyImages(false)}
-                >
+              {allImagesSelected ? (
+                <Button className={styles.toggleButton} onClick={() => toggleAllImages(false)}>
                   Deselect all
                 </Button>
               ) : (
-                <Button
-                  className={styles.toggleButton}
-                  onClick={() => toggleAllMicroscopyImages(true)}
-                >
+                <Button className={styles.toggleButton} onClick={() => toggleAllImages(true)}>
                   Select all
                 </Button>
               )}

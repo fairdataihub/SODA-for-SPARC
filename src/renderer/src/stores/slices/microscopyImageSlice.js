@@ -3,7 +3,7 @@ import { produce } from "immer";
 
 export const microscopyImageSlice = (set) => ({
   potentialMicroscopyImages: [],
-  confirmedMicroscopyImagePaths: [],
+  confirmedMicroscopyImages: [],
   microscopyImagesSelectedToBeUploadedToBioLucida: [],
 });
 
@@ -15,11 +15,11 @@ export const setPotentialMicroscopyImages = (potentialMicroscopyImages) => {
   );
 };
 
-export const setConfirmedMicroscopyImagePaths = (confirmedMicroscopyImagePaths) => {
-  console.log("setConfirmedMicroscopyImagePaths", confirmedMicroscopyImagePaths);
+export const setConfirmedMicroscopyImages = (confirmedMicroscopyImages) => {
+  console.log("setConfirmedMicroscopyImages", confirmedMicroscopyImages);
   useGlobalStore.setState(
     produce((state) => {
-      state.confirmedMicroscopyImagePaths = confirmedMicroscopyImagePaths;
+      state.confirmedMicroscopyImages = confirmedMicroscopyImages;
     })
   );
 };
@@ -28,7 +28,7 @@ export const designateImageAsMicroscopyImage = (imageObj) => {
   console.log("designateImageAsMicroscopyImage", imageObj);
   useGlobalStore.setState(
     produce((state) => {
-      state.confirmedMicroscopyImagePaths = [...state.confirmedMicroscopyImagePaths, imageObj];
+      state.confirmedMicroscopyImages = [...state.confirmedMicroscopyImages, imageObj];
     })
   );
 };
@@ -36,8 +36,8 @@ export const designateImageAsMicroscopyImage = (imageObj) => {
 export const undesignateImageAsMicroscopyImage = (imageObj) => {
   useGlobalStore.setState(
     produce((state) => {
-      state.confirmedMicroscopyImagePaths = state.confirmedMicroscopyImagePaths.filter(
-        (existingMicroscopyImagePath) => existingMicroscopyImagePath.filePath !== imageObj.filePath
+      state.confirmedMicroscopyImages = state.confirmedMicroscopyImages.filter(
+        (existingMicroscopyImageObj) => existingMicroscopyImageObj.filePath !== imageObj.filePath
       );
     })
   );

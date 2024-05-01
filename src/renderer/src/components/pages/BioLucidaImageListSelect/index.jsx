@@ -11,37 +11,31 @@ import { Affix, Text, Table, Checkbox, Tooltip, Stack, Button } from "@mantine/c
 import styles from "./BioLucidaImageListSelectPage.module.css";
 
 const BioLucidaImageListSelectPage = () => {
+  // Get the required zustand store state variables
   const {
     currentGuidedModePage,
-    confirmedMicroscopyImagePaths,
+    confirmedMicroscopyImages,
     microscopyImagesSelectedToBeUploadedToBioLucida,
   } = useGlobalStore();
 
-  console.log("confirmedMicroscopyImagePaths", confirmedMicroscopyImagePaths);
-  console.log(
-    "microscopyImagesSelectedToBeUploadedToBioLucida",
-    microscopyImagesSelectedToBeUploadedToBioLucida
-  );
   const filePathsSelectedToBeUploadedToBioLucida =
     microscopyImagesSelectedToBeUploadedToBioLucida.map((imageObj) => imageObj["filePath"]);
-
-  const allImagesAreSelected =
-    confirmedMicroscopyImagePaths.length === microscopyImagesSelectedToBeUploadedToBioLucida.length;
-
-  console.log("allImagesAreSelected", allImagesAreSelected);
+  const allImagesSelected =
+    confirmedMicroscopyImages.length === microscopyImagesSelectedToBeUploadedToBioLucida.length;
 
   const toggleAllImages = (uploadAllImagesToBioLucida) => {
     if (uploadAllImagesToBioLucida) {
-      setMicroscopyImagesUploadableToBioLucida(confirmedMicroscopyImagePaths);
+      setMicroscopyImagesUploadableToBioLucida(confirmedMicroscopyImages);
     } else {
       setMicroscopyImagesUploadableToBioLucida([]);
     }
   };
 
-  const tableRows = confirmedMicroscopyImagePaths.map((imageObj) => {
+  const tableRows = confirmedMicroscopyImages.map((imageObj) => {
     const filePath = imageObj["filePath"];
     const fileName = imageObj["fileName"];
     const filePathsInDatasetStructure = imageObj["filePathsInDatasetStructure"];
+    // Check if the image is already selected to be uploaded to BioLucida
     const isImageSelectedToBeUploadedToBioLucida =
       filePathsSelectedToBeUploadedToBioLucida.includes(filePath);
     return (
@@ -91,7 +85,7 @@ const BioLucidaImageListSelectPage = () => {
         <Table.Thead>
           <Table.Tr>
             <Table.Th className={styles.selectHeader}>
-              {allImagesAreSelected ? (
+              {allImagesSelected ? (
                 <Button className={styles.toggleButton} onClick={() => toggleAllImages(false)}>
                   Deselect all
                 </Button>

@@ -41,9 +41,9 @@ import useGlobalStore from "../../stores/globalStore";
 
 // Import zustand store state slices
 import {
-  setConfirmedMicroscopyImagePaths,
+  setConfirmedMicroscopyImages,
   setPotentialMicroscopyImages,
-  setImagesSelectedToBeUploadedToBioLucida,
+  setMicroscopyImagesUploadableToBioLucida,
 } from "../../stores/slices/microscopyImageSlice";
 import { setDropdownState } from "../../stores/slices/dropDownSlice";
 import {
@@ -1501,15 +1501,31 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-microscopy-image-confirmation-tab") {
-      const confirmedMicroscopyImagePaths = useGlobalStore.getState().confirmedMicroscopyImagePaths;
-      window.sodaJSONObj["confirmed-microscopy-image-paths"] = confirmedMicroscopyImagePaths;
-      console.log("Leaving guided-microscopy-image-confirmation-tab");
-      console.log("confirmedMicroscopyImagePaths", confirmedMicroscopyImagePaths);
+      // Get the confirmed microscopy images from the global store and add them to the JSON
+      const confirmedMicroscopyImages = useGlobalStore.getState().confirmedMicroscopyImages;
+      if (confirmedMicroscopyImages.length === 0) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please confirm at least one microscopy image",
+        });
+        throw errorArray;
+      }
+      window.sodaJSONObj["confirmed-microscopy-images"] = confirmedMicroscopyImages;
     }
 
     if (pageBeingLeftID === "guided-biolucida-image-selection-tab") {
-      const confirmedMicroscopyImagePaths = useGlobalStore.getState().confirmedMicroscopyImagePaths;
-      console.log("confirmedMicroscopyImagePaths", confirmedMicroscopyImagePaths);
+      // Get the images selected to be uploaded to BioLucida from the global store and add them to the JSON
+      const microscopyImagesSelectedToBeUploadedToBioLucida =
+        useGlobalStore.getState().microscopyImagesSelectedToBeUploadedToBioLucida;
+      if (microscopyImagesSelectedToBeUploadedToBioLucida.length === 0) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please select at least one microscopy image to upload to BioLucida",
+        });
+        throw errorArray;
+      }
+      window.sodaJSONObj["microscopy-images-selected-to-be-uploaded-to-biolucida"] =
+        microscopyImagesSelectedToBeUploadedToBioLucida;
     }
 
     if (pageBeingLeftID === "guided-source-data-organization-tab") {
@@ -5486,21 +5502,21 @@ window.openPage = async (targetPageID) => {
       openSubPageNavigation(targetPageID);
     }
     if (targetPageID === "guided-microscopy-image-confirmation-tab") {
-      console.log("Opening page guided-microscopy-image-confirmation-tab");
+      // Get the potential microscopy images and the confirmed microscopy images (if they were previously set)
+      // and update the zustand store state to update the React components
       const potentialMicroscopyImages = getImagesInDatasetStructure(window.datasetStructureJSONObj);
-      console.log("potentialMicroscopyImages", potentialMicroscopyImages);
-      const confirmedMicroscopyImagePaths =
-        window.sodaJSONObj["confirmed-microscopy-image-paths"] || [];
-      console.log("confirmedMicroscopyImagePaths", confirmedMicroscopyImagePaths);
+      const confirmedMicroscopyImages = window.sodaJSONObj["confirmed-microscopy-images"] || [];
       setPotentialMicroscopyImages(potentialMicroscopyImages);
-      setConfirmedMicroscopyImagePaths(confirmedMicroscopyImagePaths);
+      setConfirmedMicroscopyImages(confirmedMicroscopyImages);
     }
     if (targetPageID === "guided-biolucida-image-selection-tab") {
-      const confirmedMicroscopyImagePaths = window.sodaJSONObj["confirmed-microscopy-image-paths"];
-      setConfirmedMicroscopyImagePaths(confirmedMicroscopyImagePaths);
-      const imagesSelectedToBeUploadedToBioLucida =
-        window.sodaJSONObj["images-selected-to-be-uploaded-to-biolucida"] || [];
-      setImagesSelectedToBeUploadedToBioLucida(imagesSelectedToBeUploadedToBioLucida);
+      // Get the confirmed microscopy images and the microscopy images selected to be uploaded to BioLucida (if they were previously set)
+      // and update the zustand store state to update the React components
+      const confirmedMicroscopyImages = window.sodaJSONObj["confirmed-microscopy-images"];
+      const microscopyImagesSelectedToBeUploadedToBioLucida =
+        window.sodaJSONObj["microscopy-images-selected-to-be-uploaded-to-biolucida"] || [];
+      setConfirmedMicroscopyImages(confirmedMicroscopyImages);
+      setMicroscopyImagesUploadableToBioLucida(microscopyImagesSelectedToBeUploadedToBioLucida);
     }
     if (targetPageID === "guided-source-data-organization-tab") {
       openSubPageNavigation(targetPageID);
