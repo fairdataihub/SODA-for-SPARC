@@ -1503,10 +1503,8 @@ const savePageChanges = async (pageBeingLeftID) => {
     if (pageBeingLeftID === "guided-microscopy-image-confirmation-tab") {
       const confirmedMicroscopyImagePaths = useGlobalStore.getState().confirmedMicroscopyImagePaths;
       window.sodaJSONObj["confirmed-microscopy-image-paths"] = confirmedMicroscopyImagePaths;
-      console.log(
-        `window.sodaJSONObj["confirmed-microscopy-image-paths"]`,
-        window.sodaJSONObj["confirmed-microscopy-image-paths"]
-      );
+      console.log("Leaving guided-microscopy-image-confirmation-tab");
+      console.log("confirmedMicroscopyImagePaths", confirmedMicroscopyImagePaths);
     }
 
     if (pageBeingLeftID === "guided-biolucida-image-selection-tab") {
@@ -4976,30 +4974,35 @@ const getImagesInDatasetStructure = (datasetStructureObj) => {
 
   const checkIfFileTypeIsImage = (fileType) => imageFileTypes.includes(fileType.toLowerCase());
 
-  // Object to store unique file paths with their corresponding relative paths
-  const imageData = {};
+  // Array to store unique file paths with their corresponding relative paths
+  const imageData = [];
 
   const getImagesInDatasetStructureHelper = (datasetStructureObj, currentRelativePath) => {
     const files = Object.keys(datasetStructureObj["files"]);
-    console.log("files", files);
     const folders = Object.keys(datasetStructureObj["folders"]);
 
     for (const fileName of files) {
-      console.log("looping through file", fileName);
       const fileObj = datasetStructureObj["files"][fileName];
 
       const fileExtension = fileObj?.["extension"];
-      console.log("fileObj", fileObj);
       if (checkIfFileTypeIsImage(fileExtension)) {
-        const localFilePath = fileObj["path"];
+        const filePath = fileObj["path"];
         const filePathInDatasetStructure = `${currentRelativePath}${fileName}`;
-        if (!imageData[localFilePath]) {
-          imageData[localFilePath] = {
-            fileName: fileName,
-            pathsInDatasetStructure: [filePathInDatasetStructure],
-          };
+        // Check if the file path already exists in the imageData array
+        const existingImageDataIndex = imageData.findIndex(
+          (imageObj) => imageObj.filePath === filePath
+        );
+
+        if (existingImageDataIndex !== -1) {
+          imageData[existingImageDataIndex]["filePathsInDatasetStructure"].push(
+            filePathInDatasetStructure
+          );
         } else {
-          imageData[localFilePath]["pathsInDatasetStructure"].push(filePathInDatasetStructure);
+          imageData.push({
+            fileName: fileName,
+            filePath: filePath,
+            filePathsInDatasetStructure: [filePathInDatasetStructure],
+          });
         }
       }
     }
@@ -5483,11 +5486,12 @@ window.openPage = async (targetPageID) => {
       openSubPageNavigation(targetPageID);
     }
     if (targetPageID === "guided-microscopy-image-confirmation-tab") {
+      console.log("Opening page guided-microscopy-image-confirmation-tab");
       const potentialMicroscopyImages = getImagesInDatasetStructure(window.datasetStructureJSONObj);
       console.log("potentialMicroscopyImages", potentialMicroscopyImages);
-      console.log("potentialMicroscopyImagesKeys", Object.keys(potentialMicroscopyImages));
       const confirmedMicroscopyImagePaths =
         window.sodaJSONObj["confirmed-microscopy-image-paths"] || [];
+      console.log("confirmedMicroscopyImagePaths", confirmedMicroscopyImagePaths);
       setPotentialMicroscopyImages(potentialMicroscopyImages);
       setConfirmedMicroscopyImagePaths(confirmedMicroscopyImagePaths);
     }

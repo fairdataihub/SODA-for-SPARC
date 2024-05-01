@@ -18,6 +18,7 @@ export const setPotentialMicroscopyImages = (potentialMicroscopyImages) => {
 };
 
 export const setConfirmedMicroscopyImagePaths = (confirmedMicroscopyImagePaths) => {
+  console.log("setConfirmedMicroscopyImagePaths", confirmedMicroscopyImagePaths);
   useGlobalStore.setState(
     produce((state) => {
       state.confirmedMicroscopyImagePaths = confirmedMicroscopyImagePaths;
@@ -25,25 +26,27 @@ export const setConfirmedMicroscopyImagePaths = (confirmedMicroscopyImagePaths) 
   );
 };
 
-export const designateImageAsMicroscopyImage = (imagePath) => {
+export const designateImageAsMicroscopyImage = (imageObj) => {
+  console.log("designateImageAsMicroscopyImage", imageObj);
   useGlobalStore.setState(
     produce((state) => {
-      state.confirmedMicroscopyImagePaths = [...state.confirmedMicroscopyImagePaths, imagePath];
+      state.confirmedMicroscopyImagePaths = [...state.confirmedMicroscopyImagePaths, imageObj];
     })
   );
 };
 
-export const undesignateImageAsMicroscopyImage = (imagePath) => {
+export const undesignateImageAsMicroscopyImage = (imageObj) => {
   useGlobalStore.setState(
     produce((state) => {
       state.confirmedMicroscopyImagePaths = state.confirmedMicroscopyImagePaths.filter(
-        (existingMicroscopyImagePath) => existingMicroscopyImagePath !== imagePath
+        (existingMicroscopyImagePath) => existingMicroscopyImagePath.filePath !== imageObj.filePath
       );
     })
   );
 };
 
 export const setMicroscopyImagesUploadableToBioLucida = (microscopyImagesUploadableToBioLucida) => {
+  console.log("setMicroscopyImagesUploadableToBioLucida", microscopyImagesUploadableToBioLucida);
   useGlobalStore.setState(
     produce((state) => {
       state.microscopyImagesUploadableToBioLucida = microscopyImagesUploadableToBioLucida;

@@ -13,55 +13,66 @@ const MicroscopyImageConfirmationPage = () => {
   const confirmedMicroscopyImagePaths = useGlobalStore(
     (state) => state.confirmedMicroscopyImagePaths
   );
+  const confirmedMicroscopyImagePathNames = confirmedMicroscopyImagePaths.map(
+    (imageObj) => imageObj["fileName"]
+  );
+
+  console.log("potentialMicroscopyImages rendered", potentialMicroscopyImages);
+  console.log("confirmedMicroscopyImagePaths rendered", confirmedMicroscopyImagePaths);
+  const areAllImagesSelected =
+    potentialMicroscopyImages.length === confirmedMicroscopyImagePaths.length;
 
   const toggleAllMicroscopyImages = (markAllImagesAsMicroscopy) => {
     if (markAllImagesAsMicroscopy) {
-      const allImagePaths = Object.keys(potentialMicroscopyImages);
-      setConfirmedMicroscopyImagePaths(allImagePaths);
+      setConfirmedMicroscopyImagePaths(potentialMicroscopyImages);
     } else {
       setConfirmedMicroscopyImagePaths([]);
     }
   };
 
-  const toggleMicroscopyImageDesignation = (imagePath) => {
-    if (confirmedMicroscopyImagePaths.includes(imagePath)) {
-      undesignateImageAsMicroscopyImage(imagePath);
-    } else {
-      designateImageAsMicroscopyImage(imagePath);
-    }
-  };
+  const tableRows = potentialMicroscopyImages.map((imageObj) => {
+    const filePath = imageObj["filePath"];
+    const fileName = imageObj["fileName"];
+    const filePathsInDatasetStructure = imageObj["filePathsInDatasetStructure"];
+    const isImageDesignatedAsMicroscopyImage = confirmedMicroscopyImagePathNames.includes(fileName);
 
-  const areAllImagesSelected =
-    Object.keys(potentialMicroscopyImages).length === confirmedMicroscopyImagePaths.length;
-
-  const tableRows = Object.keys(potentialMicroscopyImages).map((imagePath) => (
-    <Table.Tr key={imagePath}>
-      <Table.Td className={styles.selectCell}>
-        <Checkbox
-          aria-label={`Select ${imagePath.fileName}`}
-          checked={confirmedMicroscopyImagePaths.includes(imagePath)}
-          onChange={() => toggleMicroscopyImageDesignation(imagePath)}
-        />
-      </Table.Td>
-      <Table.Td>
-        <Tooltip
-          multiline
-          label={
-            <Stack gap="xs">
-              <Text ta="left">Local file path:</Text>
-              <Text ta="left">{imagePath}</Text>
-              <Text ta="left">Paths in organized dataset structure:</Text>
-              {potentialMicroscopyImages[imagePath]["pathsInDatasetStructure"].map((image) => (
-                <Text key={image}>{image}</Text>
-              ))}
-            </Stack>
-          }
-        >
-          <Text ta="left">{potentialMicroscopyImages[imagePath]["fileName"]}</Text>
-        </Tooltip>
-      </Table.Td>
-    </Table.Tr>
-  ));
+    return (
+      <Table.Tr key={fileName}>
+        <Table.Td className={styles.selectCell}>
+          {isImageDesignatedAsMicroscopyImage ? (
+            <Checkbox
+              aria-label={`Deselect ${imageObj.fileName}`}
+              checked={true}
+              onChange={() => undesignateImageAsMicroscopyImage(imageObj)}
+            />
+          ) : (
+            <Checkbox
+              aria-label={`Select ${imageObj.fileName}`}
+              checked={false}
+              onChange={() => designateImageAsMicroscopyImage(imageObj)}
+            />
+          )}
+        </Table.Td>
+        <Table.Td>
+          <Tooltip
+            multiline
+            label={
+              <Stack gap="xs">
+                <Text ta="left">Local file path:</Text>
+                <Text ta="left">{filePath}</Text>
+                <Text ta="left">Paths in organized dataset structure:</Text>
+                {filePathsInDatasetStructure.map((imagePath) => (
+                  <Text key={imagePath}>{imagePath}</Text>
+                ))}
+              </Stack>
+            }
+          >
+            <Text ta="left">{fileName}</Text>
+          </Tooltip>
+        </Table.Td>
+      </Table.Tr>
+    );
+  });
 
   return (
     <GuidedModePage
@@ -71,7 +82,7 @@ const MicroscopyImageConfirmationPage = () => {
       <Table withTableBorder>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th>
+            <Table.Th className={styles.selectHeader}>
               {areAllImagesSelected ? (
                 <Button
                   className={styles.toggleButton}
