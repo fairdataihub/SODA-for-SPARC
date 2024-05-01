@@ -58,6 +58,11 @@ window.monitorUploadFileVerificationProgress = async () => {
   let failedFilesPathsList = [];
   let finalizedFiles = [];
 
+  // initalize the UI with the total files count
+  document.getElementById("verify-dataset-upload-files-count").innerText =
+        `${verifiedFilesCount} / ${window.totalFilesCount} Files`;
+
+  // loop until all files are verified
   while (true) {
     document.getElementById("verify-dataset-upload-files-progress-para").innerText =
       "Fetching file statuses...";
