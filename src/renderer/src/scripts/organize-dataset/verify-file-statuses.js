@@ -42,7 +42,11 @@ const processFilesPage = (filePage, finalizedFiles, failedFilesPathsList) => {
       failedFilesPathsList.push(`${file["file_path"]}/${file["file_name"]}`);
     }
 
-    if (file["status"] === "Imported" || file["status"] === "Finalized" || file["status"] === "Verified") {
+    if (
+      file["status"] === "Imported" ||
+      file["status"] === "Finalized" ||
+      file["status"] === "Verified"
+    ) {
       finalizedFiles.push(`${file["file_path"]}/${file["file_name"]}`);
     }
   }
@@ -54,7 +58,7 @@ window.monitorUploadFileVerificationProgress = async () => {
 
   while (verifiedFilesCount < window.totalFilesCount) {
     let verifiedFiles = await getVerifiedFilesFromManifest(manifestId);
-    console.log(verifiedFiles)
+    console.log(verifiedFiles);
     let finalizedFiles = verifiedFiles["finalizedFiles"];
     let failedFilesPathsList = verifiedFiles["failedFilesPathsList"];
     verifiedFilesCount = finalizedFiles.length + failedFilesPathsList.length;
