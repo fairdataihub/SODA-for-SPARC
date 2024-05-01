@@ -107,5 +107,6 @@ window.monitorUploadFileVerificationProgress = async () => {
   }
 
   // TODO: Show success Lottie and show exit buttons
-  // document.getElementById("verify-dataset-upload-files-failed-files").innerText = "No failed files found!";
+  $('#Question-validate-dataset-upload-3').show()
+  $("#success-validated-files-lottie").addClass('is-shown')
 };
