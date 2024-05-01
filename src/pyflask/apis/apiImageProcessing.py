@@ -59,42 +59,8 @@ class BiolucidaLogin(Resource):
             namespace_logger.info(f"Logging in to Biolucida with username: {username}")
             res = requests.post('https://sparc.biolucida.net/api/v1/authenticate', data={'username': username, 'password': password, 'token': 'unused_but_required'})
             namespace_logger.info(f"Login response: {res.json()}")
-            namespace_logger.info(f"Creating collection in Biolucida")
             access_token = res.json()['token']
-            namespace_logger.info(f"Access token: {access_token}")
-            headers = {
-                'token': access_token
-            }
-            payload={
-                'name': 'Soda Integration Test Collection',
-                'parent_id': 0,
-                'owner': ''
-            }
-            create_collection_res = requests.post('https://sparc.biolucida.net/api/v1/collections/create', headers=headers, data=payload)
-            namespace_logger.info(f"Create collection response: {create_collection_res.json()}")
-            new_res = requests.get('https://sparc.biolucida.net/api/v1/collections/all', headers=headers)
-            all_collections = new_res.json()
-            # loop through collections to find the one we want
-            test_collection = None
-            for collection in all_collections:
-                namespace_logger.info(f"Collection name: {collection['name']}")
-                if (collection['name'] == 'Soda Integration Test Collection'):
-                    test_collection = collection
-                    break
-            if test_collection is None:
-                namespace_logger.info(f"Test collection not found")
-            else:
-                namespace_logger.info(f"Test collection found")
-                namespace_logger.info(f"Collection name: {test_collection['name']}")
-                namespace_logger.info(f"Collection id: {test_collection['id']}")
-                namespace_logger.info(f"Collection folder path: {test_collection['folder_path']}")
-
-            # get the info for the collection with the id '264'
-            test_res = requests.get('https://sparc.biolucida.net/api/v1/collections/264', headers=headers)
-            test_collection_info = test_res.json()
-            namespace_logger.info(f"Test collection info: {test_collection_info}")
-
-                
+            namespace_logger.info(f"Access token: {access_token}")    
             return res.json()
         except Exception as e:
             namespace_logger.error(f"Error logging in to Biolucida: {str(e)}")

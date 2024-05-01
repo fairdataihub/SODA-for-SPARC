@@ -36,9 +36,9 @@ const MicroscopyImageConfirmationPage = () => {
 
   const tableRows = Object.keys(potentialMicroscopyImages).map((imagePath) => (
     <Table.Tr key={imagePath}>
-      <Table.Td className={styles.centeredCell}>
+      <Table.Td className={styles.selectCell}>
         <Checkbox
-          aria-label={`Select ${imagePath}`}
+          aria-label={`Select ${imagePath.fileName}`}
           checked={confirmedMicroscopyImagePaths.includes(imagePath)}
           onChange={() => toggleMicroscopyImageDesignation(imagePath)}
         />
@@ -48,13 +48,16 @@ const MicroscopyImageConfirmationPage = () => {
           multiline
           label={
             <Stack gap="xs">
-              {potentialMicroscopyImages[imagePath].map((image) => (
+              <Text ta="left">Local file path:</Text>
+              <Text ta="left">{imagePath}</Text>
+              <Text ta="left">Paths in organized dataset structure:</Text>
+              {potentialMicroscopyImages[imagePath]["pathsInDatasetStructure"].map((image) => (
                 <Text key={image}>{image}</Text>
               ))}
             </Stack>
           }
         >
-          <Text ta="left">{imagePath}</Text>
+          <Text ta="left">{potentialMicroscopyImages[imagePath]["fileName"]}</Text>
         </Tooltip>
       </Table.Td>
     </Table.Tr>
@@ -63,18 +66,30 @@ const MicroscopyImageConfirmationPage = () => {
   return (
     <GuidedModePage
       pageHeader="BioLucida Image Selection"
-      pageDescription="Confirm the microscopy images listed below are microscopy images. If you would like to remove any images, click the 'Remove' button."
+      pageDescription="Check the box for all images in your dataset that are microscopy images. The images you select will be processed by MicroFile+."
     >
       <Table withTableBorder>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th hidden={!areAllImagesSelected}>
-              <Button onClick={() => toggleAllMicroscopyImages(false)}>Deselect all</Button>
+            <Table.Th>
+              {areAllImagesSelected ? (
+                <Button
+                  className={styles.toggleButton}
+                  onClick={() => toggleAllMicroscopyImages(false)}
+                >
+                  Deselect all
+                </Button>
+              ) : (
+                <Button
+                  className={styles.toggleButton}
+                  onClick={() => toggleAllMicroscopyImages(true)}
+                >
+                  Select all
+                </Button>
+              )}
             </Table.Th>
-            <Table.Th hidden={areAllImagesSelected}>
-              <Button onClick={() => toggleAllMicroscopyImages(true)}>Select all</Button>
-            </Table.Th>
-            <Table.Th>Image file path</Table.Th>
+
+            <Table.Th>Image name</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>{tableRows}</Table.Tbody>

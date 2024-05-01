@@ -1,5 +1,10 @@
-.centeredCell {
+.selectCell {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 125px;
+}
+
+.toggleButton {
+  width: 110px !important;
 }

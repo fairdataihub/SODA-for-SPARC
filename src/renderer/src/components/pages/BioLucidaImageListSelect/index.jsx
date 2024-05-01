@@ -25,7 +25,7 @@ const BioLucidaImageListSelectPage = () => {
   return (
     <GuidedModePage
       pageHeader="BioLucida Image Selection"
-      pageDescription="Select the microscopy images you would like to upload to BioLucida (Up to 10)."
+      pageDescription="Select the microscopy images you would like to upload to BioLucida (Up to 50)."
     >
       <SimpleGrid cols={5}>
         {microscopyImagesUploadableToBioLucida.map((image) => (
@@ -61,7 +61,9 @@ const BioLucidaImageListSelectPage = () => {
           }}
         >
           <SodaGreenPaper>
-            <Text>Images selected: {microscopyImagesSelectedToBeUploadedToBioLucida.length}</Text>
+            <Text>
+              Images selected: {microscopyImagesSelectedToBeUploadedToBioLucida.length}/50
+            </Text>
           </SodaGreenPaper>
         </Affix>
       )}

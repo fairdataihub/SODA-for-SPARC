@@ -6,6 +6,7 @@ export const microscopyImageSlice = (set) => ({
   confirmedMicroscopyImagePaths: [],
   microscopyImagesUploadableToBioLucida: [],
   microscopyImagesSelectedToBeUploadedToBioLucida: [],
+  imagesSelectedToBeUploadedToBioLucida: [],
 });
 
 export const setPotentialMicroscopyImages = (potentialMicroscopyImages) => {
@@ -68,6 +69,14 @@ export const removeMicroscopyImageToBeUploadedToBioLucida = (filePath) => {
         state.microscopyImagesSelectedToBeUploadedToBioLucida.filter(
           (existingFilePath) => existingFilePath !== filePath
         );
+    })
+  );
+};
+
+export const setImagesSelectedToBeUploadedToBioLucida = (imagePaths) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.imagesSelectedToBeUploadedToBioLucida = imagePaths;
     })
   );
 };

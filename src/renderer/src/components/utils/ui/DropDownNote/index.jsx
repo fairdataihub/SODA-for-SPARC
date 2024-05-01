@@ -11,7 +11,7 @@ const DropDownNote = ({ dropDownIcon, dropDownButtonText, dropDownNote }) => {
   };
   const [dropDownOpen, setDropDownOpen] = useState(false);
   return (
-    <Stack gap="xs">
+    <Stack gap={dropDownOpen ? "xs" : "0px"}>
       <Button justify="left" variant="subtle" onClick={() => setDropDownOpen(!dropDownOpen)}>
         {dropDownIcon && dropDownIcons[dropDownIcon]}
         <Text

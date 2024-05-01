@@ -36,13 +36,14 @@ import {
   swalShowInfo,
 } from "../utils/swal-utils";
 
-// Import state management stores
-
+// Import state management store
 import useGlobalStore from "../../stores/globalStore";
+
+// Import zustand store state slices
 import {
   setConfirmedMicroscopyImagePaths,
-  setMicroscopyImagesUploadableToBioLucida,
   setPotentialMicroscopyImages,
+  setImagesSelectedToBeUploadedToBioLucida,
 } from "../../stores/slices/microscopyImageSlice";
 import { setDropdownState } from "../../stores/slices/dropDownSlice";
 import {
@@ -1502,6 +1503,15 @@ const savePageChanges = async (pageBeingLeftID) => {
     if (pageBeingLeftID === "guided-microscopy-image-confirmation-tab") {
       const confirmedMicroscopyImagePaths = useGlobalStore.getState().confirmedMicroscopyImagePaths;
       window.sodaJSONObj["confirmed-microscopy-image-paths"] = confirmedMicroscopyImagePaths;
+      console.log(
+        `window.sodaJSONObj["confirmed-microscopy-image-paths"]`,
+        window.sodaJSONObj["confirmed-microscopy-image-paths"]
+      );
+    }
+
+    if (pageBeingLeftID === "guided-biolucida-image-selection-tab") {
+      const confirmedMicroscopyImagePaths = useGlobalStore.getState().confirmedMicroscopyImagePaths;
+      console.log("confirmedMicroscopyImagePaths", confirmedMicroscopyImagePaths);
     }
 
     if (pageBeingLeftID === "guided-source-data-organization-tab") {
@@ -1930,14 +1940,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
       const selectedLicense = selectedLicenseButton.dataset.value;
       window.sodaJSONObj["digital-metadata"]["license"] = selectedLicense;
-    }
-    console.log("Page being left", pageBeingLeftID);
-    if (pageBeingLeftID === "guided-biolucida-image-selection-tab") {
-      console.log("WEEEEEEE");
-      const microscopyImagesUploadableToBioLucida =
-        useGlobalStore.getState().microscopyImagesUploadableToBioLucida;
-
-      console.log("Images on page leave", microscopyImagesUploadableToBioLucida);
     }
 
     if (pageBeingLeftID === "guided-dataset-structure-review-tab") {
@@ -4968,53 +4970,37 @@ const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
   }
 };
 
-/**
- * Extracts image data from a nested dataset structure.
- *
- * This function takes a dataset structure object and returns an object containing
- * image data. The returned object uses file paths as keys and stores an array of
- * corresponding relative paths for each image.
- *
- * @param {object} datasetStructureObj - The nested dataset structure object.
- * @returns {object} An object containing extracted image data.
- */
 const getImagesInDatasetStructure = (datasetStructureObj) => {
   // Supported image file extensions (lowercase for case-insensitive matching)
   const imageFileTypes = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".jp2"];
 
-  /**
-   * Checks if a given file extension is an image file extension.
-   *
-   * @param {string} fileType - The file extension to be checked.
-   * @returns {boolean} True if the file extension is an image file extension, false otherwise.
-   */
   const checkIfFileTypeIsImage = (fileType) => imageFileTypes.includes(fileType.toLowerCase());
 
   // Object to store unique file paths with their corresponding relative paths
   const imageData = {};
 
-  /**
-   * Helper function to recursively traverse the dataset structure and extract image data.
-   *
-   * Populates the `imageData` object with extracted information.
-   *
-   * @param {object} datasetStructureObj - The current object in the dataset structure.
-   * @param {string} currentRelativePath - The current relative path within the dataset structure.
-   * @returns {void} (Does not return a value, modifies the `imageData` object)
-   */
   const getImagesInDatasetStructureHelper = (datasetStructureObj, currentRelativePath) => {
     const files = Object.keys(datasetStructureObj["files"]);
+    console.log("files", files);
     const folders = Object.keys(datasetStructureObj["folders"]);
 
-    for (const file of files) {
-      const fileObj = datasetStructureObj["files"][file];
+    for (const fileName of files) {
+      console.log("looping through file", fileName);
+      const fileObj = datasetStructureObj["files"][fileName];
+
       const fileExtension = fileObj?.["extension"];
+      console.log("fileObj", fileObj);
       if (checkIfFileTypeIsImage(fileExtension)) {
-        const filePath = fileObj["path"];
-        if (!imageData[filePath]) {
-          imageData[filePath] = [];
+        const localFilePath = fileObj["path"];
+        const filePathInDatasetStructure = `${currentRelativePath}${fileName}`;
+        if (!imageData[localFilePath]) {
+          imageData[localFilePath] = {
+            fileName: fileName,
+            pathsInDatasetStructure: [filePathInDatasetStructure],
+          };
+        } else {
+          imageData[localFilePath]["pathsInDatasetStructure"].push(filePathInDatasetStructure);
         }
-        imageData[filePath].push(`${currentRelativePath}${file}`);
       }
     }
 
@@ -5505,7 +5491,13 @@ window.openPage = async (targetPageID) => {
       setPotentialMicroscopyImages(potentialMicroscopyImages);
       setConfirmedMicroscopyImagePaths(confirmedMicroscopyImagePaths);
     }
-
+    if (targetPageID === "guided-biolucida-image-selection-tab") {
+      const confirmedMicroscopyImagePaths = window.sodaJSONObj["confirmed-microscopy-image-paths"];
+      setConfirmedMicroscopyImagePaths(confirmedMicroscopyImagePaths);
+      const imagesSelectedToBeUploadedToBioLucida =
+        window.sodaJSONObj["images-selected-to-be-uploaded-to-biolucida"] || [];
+      setImagesSelectedToBeUploadedToBioLucida(imagesSelectedToBeUploadedToBioLucida);
+    }
     if (targetPageID === "guided-source-data-organization-tab") {
       openSubPageNavigation(targetPageID);
     }
@@ -6567,33 +6559,6 @@ window.openPage = async (targetPageID) => {
           selectedLicenseRadioButton.click();
         }
       }
-    }
-    if (targetPageID === "guided-biolucida-image-selection-tab") {
-      const microscopyImages = getImagesInDatasetStructure(window.datasetStructureJSONObj);
-      console.log("Microscopy Images");
-      console.log(microscopyImages);
-      setMicroscopyImagesUploadableToBioLucida(microscopyImages);
-
-      /*try {
-        // Create a directory to store the guided image thumbnails if it doesn't exist
-        const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
-        if (!window.fs.existsSync(guidedThumbnailsPath)) {
-          window.fs.mkdirSync(guidedThumbnailsPath, { recursive: true });
-        }
-
-        const res = await client.get(`/image_processing/create_image_thumbnails`, {
-          params: {
-            raw_image_paths: [
-              "C:\\Users\\jacob\\Downloads\\soskar-smethurst-B1GtwanCbiw-unsplash.jpg",
-              "C:\\Users\\jacob\\Downloads\\fedor-PtW4RywQV4s-unsplash.jpg",
-            ],
-            output_path: guidedThumbnailsPath,
-          },
-        });
-      } catch (error) {
-        const emessage = userErrorMessage(error);
-        await swalShowError("Error fetching images", emessage);
-      }*/
     }
 
     if (targetPageID === "guided-create-subjects-metadata-tab") {
