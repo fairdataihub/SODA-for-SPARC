@@ -7405,6 +7405,9 @@ const initiate_generate = async (e) => {
       uploadedFiles = data["main_curation_uploaded_files"];
       window.pennsieveAgentManifestId = data["local_manifest_id"];
       window.pennsieveManifestId = data["origin_manifest_id"];
+
+      console.log("Manifest ids are: ", window.pennsieveAgentManifestId, window.pennsieveManifestId);
+      console.log("Data is: ", data);
       window.totalFilesCount = uploadedFiles;
 
       $("#sidebarCollapse").prop("disabled", false);

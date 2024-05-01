@@ -38,12 +38,12 @@ const getVerifiedFilesFromManifest = async (targetPennsieveManifestId) => {
 
 const processFilesPage = (filePage, finalizedFiles, failedFilesPathsList) => {
   for (const file of filePage) {
-    if (file["status"] === "FAILED") {
-      failedFilesPathsList.append(file["path"]);
+    if (file["status"] === "Failed") {
+      failedFilesPathsList.push(`${file["file_path"]}/${file["file_name"]}`);
     }
 
-    if (file["status"] === "FINALIZED") {
-      finalizedFiles.append(file);
+    if (file["status"] === "Imported" || file["status"] === "Finalized" || file["status"] === "Verified") {
+      finalizedFiles.push(`${file["file_path"]}/${file["file_name"]}`);
     }
   }
 };
@@ -54,13 +54,14 @@ window.monitorUploadFileVerificationProgress = async () => {
 
   while (verifiedFilesCount < window.totalFilesCount) {
     let verifiedFiles = await getVerifiedFilesFromManifest(manifestId);
-    let completeFilesList = verifiedFiles["completeFilesList"];
+    console.log(verifiedFiles)
+    let finalizedFiles = verifiedFiles["finalizedFiles"];
     let failedFilesPathsList = verifiedFiles["failedFilesPathsList"];
-    verifiedFilesCount = completeFilesList.length + failedFilesPathsList.length;
+    verifiedFilesCount = finalizedFiles.length + failedFilesPathsList.length;
 
     // update the UI with the verified files count
     document.getElementById("verify-dataset-upload-files-count").innerText =
-      `verifiedFilesCount / window.totalFilesCount Files`;
+      `${verifiedFilesCount} / ${window.totalFilesCount} Files`;
 
     // wait 1 minute before checking again so we are not spamming the Pennsieve API for large datasets + to give files time to process
     await new Promise((resolve) => setTimeout(resolve, 60000));
