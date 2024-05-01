@@ -7406,7 +7406,11 @@ const initiate_generate = async (e) => {
       window.pennsieveAgentManifestId = data["local_manifest_id"];
       window.pennsieveManifestId = data["origin_manifest_id"];
 
-      console.log("Manifest ids are: ", window.pennsieveAgentManifestId, window.pennsieveManifestId);
+      console.log(
+        "Manifest ids are: ",
+        window.pennsieveAgentManifestId,
+        window.pennsieveManifestId
+      );
       console.log("Data is: ", data);
       window.totalFilesCount = uploadedFiles;
 

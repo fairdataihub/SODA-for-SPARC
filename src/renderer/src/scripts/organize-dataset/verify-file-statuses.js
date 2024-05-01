@@ -42,7 +42,11 @@ const processFilesPage = (filePage, finalizedFiles, failedFilesPathsList) => {
       failedFilesPathsList.push(`${file["file_path"]}/${file["file_name"]}`);
     }
 
-    if (file["status"] === "Imported" || file["status"] === "Finalized" || file["status"] === "Verified") {
+    if (
+      file["status"] === "Imported" ||
+      file["status"] === "Finalized" ||
+      file["status"] === "Verified"
+    ) {
       finalizedFiles.push(`${file["file_path"]}/${file["file_name"]}`);
     }
   }
