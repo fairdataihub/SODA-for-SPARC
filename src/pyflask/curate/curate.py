@@ -1826,7 +1826,9 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
 
 
 def get_origin_manifest_id(dataset_id):
+    global namespace_logger
     manifests = get_upload_manifests(dataset_id)
+    namespace_logger.info(f"manifests: {manifests}")
     return manifests["manifests"][0]["id"]
 
 
@@ -3317,6 +3319,8 @@ def reset_upload_session_environment():
 def main_curate_function(soda_json_structure, resume):
     global namespace_logger
     global main_curate_status
+    global manifest_id 
+    global origin_manifest_id
 
     namespace_logger.info("Starting main_curate_function")
     namespace_logger.info(f"main_curate_function metadata generate-options={soda_json_structure['generate-dataset']}")

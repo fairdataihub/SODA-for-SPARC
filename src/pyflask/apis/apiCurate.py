@@ -92,6 +92,8 @@ model_main_curation_function_response = api.model( "MainCurationFunctionResponse
     "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
     "main_total_generate_dataset_size": fields.String(description="Total size of the dataset"),
     "main_curation_uploaded_files": fields.Integer(description="Number of files that are being generated. "), 
+    "local_manifest_id": fields.String(description="ID of the local manifest file created by the Pennsieve Agent for the upload."),
+    "origin_manifest_id": fields.String(description="ID of the manifest file created on Pennsieve for the upload."),
 })
 
 # TODO: Add example JSON structures for upload
