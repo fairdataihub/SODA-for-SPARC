@@ -12,3 +12,7 @@
     transform: scale(1.1);
   }
 }
+
+.selectHeader {
+  width: 125px;
+}

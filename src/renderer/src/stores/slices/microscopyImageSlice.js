@@ -4,9 +4,7 @@ import { produce } from "immer";
 export const microscopyImageSlice = (set) => ({
   potentialMicroscopyImages: [],
   confirmedMicroscopyImagePaths: [],
-  microscopyImagesUploadableToBioLucida: [],
   microscopyImagesSelectedToBeUploadedToBioLucida: [],
-  imagesSelectedToBeUploadedToBioLucida: [],
 });
 
 export const setPotentialMicroscopyImages = (potentialMicroscopyImages) => {
@@ -45,32 +43,32 @@ export const undesignateImageAsMicroscopyImage = (imageObj) => {
   );
 };
 
-export const setMicroscopyImagesUploadableToBioLucida = (microscopyImagesUploadableToBioLucida) => {
-  console.log("setMicroscopyImagesUploadableToBioLucida", microscopyImagesUploadableToBioLucida);
+export const setMicroscopyImagesUploadableToBioLucida = (imageObjs) => {
   useGlobalStore.setState(
     produce((state) => {
-      state.microscopyImagesUploadableToBioLucida = microscopyImagesUploadableToBioLucida;
+      state.microscopyImagesSelectedToBeUploadedToBioLucida = imageObjs;
     })
   );
 };
 
-export const addMicroscopyImageToBeUploadedToBioLucida = (filePath) => {
+export const addImageToBioLucidaUploadList = (imageObj) => {
   useGlobalStore.setState(
     produce((state) => {
       state.microscopyImagesSelectedToBeUploadedToBioLucida = [
         ...state.microscopyImagesSelectedToBeUploadedToBioLucida,
-        filePath,
+        imageObj,
       ];
     })
   );
 };
 
-export const removeMicroscopyImageToBeUploadedToBioLucida = (filePath) => {
+export const removeImageFromBioLucidaUploadList = (imageObj) => {
   useGlobalStore.setState(
     produce((state) => {
       state.microscopyImagesSelectedToBeUploadedToBioLucida =
         state.microscopyImagesSelectedToBeUploadedToBioLucida.filter(
-          (existingFilePath) => existingFilePath !== filePath
+          (existingMicroscopyImagePath) =>
+            existingMicroscopyImagePath.filePath !== imageObj.filePath
         );
     })
   );

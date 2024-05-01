@@ -105,14 +105,12 @@ const BioLucidaLogin = () => {
               <form onSubmit={onSubmit(handleLogin)}>
                 <Stack>
                   <TextInput
-                    withAsterisk
                     label="BioLucida account username"
                     placeholder="ILoveMiscroscopes123"
                     {...getInputProps("username")}
                     disabled={isLoading} // Disable form while loading
                   />
                   <PasswordInput
-                    withAsterisk
                     label="BioLucida account password"
                     placeholder="fuzzysocks123"
                     {...getInputProps("password")}

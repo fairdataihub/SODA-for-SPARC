@@ -9,10 +9,8 @@ import GuidedModePage from "../../containers/GuidedModePage";
 import styles from "./MicroscopyImageConfirmationPage.module.css";
 
 const MicroscopyImageConfirmationPage = () => {
-  const potentialMicroscopyImages = useGlobalStore((state) => state.potentialMicroscopyImages);
-  const confirmedMicroscopyImagePaths = useGlobalStore(
-    (state) => state.confirmedMicroscopyImagePaths
-  );
+  const { potentialMicroscopyImages, confirmedMicroscopyImagePaths } = useGlobalStore();
+
   const confirmedMicroscopyImagePathNames = confirmedMicroscopyImagePaths.map(
     (imageObj) => imageObj["fileName"]
   );
@@ -37,7 +35,7 @@ const MicroscopyImageConfirmationPage = () => {
     const isImageDesignatedAsMicroscopyImage = confirmedMicroscopyImagePathNames.includes(fileName);
 
     return (
-      <Table.Tr key={fileName}>
+      <Table.Tr key={filePath}>
         <Table.Td className={styles.selectCell}>
           {isImageDesignatedAsMicroscopyImage ? (
             <Checkbox
@@ -76,7 +74,7 @@ const MicroscopyImageConfirmationPage = () => {
 
   return (
     <GuidedModePage
-      pageHeader="BioLucida Image Selection"
+      pageHeader="Microscopy Image Selection"
       pageDescription="Check the box for all images in your dataset that are microscopy images. The images you select will be processed by MicroFile+."
     >
       <Table withTableBorder>
