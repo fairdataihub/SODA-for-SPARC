@@ -1533,6 +1533,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-biolucida-login-tab") {
+      // Check if the user is authenticated to BioLucida
       const userIsAuthenticatedToBioLucida = useGlobalStore.getState().userAuthenticatedToBioLucida;
       if (!userIsAuthenticatedToBioLucida) {
         errorArray.push({
@@ -1542,6 +1543,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
+      // Check if the BioLucida auth token has expired
       const bioLucidaAuthToken = useGlobalStore.getState().bioLucidaAuthToken;
       const BioLucidaAuthTokenExpiration = useGlobalStore.getState().BioLucidaAuthTokenExpiration;
       if (!bioLucidaAuthToken || BioLucidaAuthTokenExpiration < Date.now()) {
@@ -1551,17 +1553,30 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
         clearBioLucidaCredentials();
         throw errorArray;
-      }
-      if (BioLucidaAuthTokenExpiration < Date.now()) {
-        errorArray.push({
-          type: "notyf",
-          message: "Your BioLucida session has expired. Please sign in again to continue",
-        });
-        throw errorArray;
       } else {
         // console log how many minutes are left before the token expires
         const minutesLeft = Math.floor((BioLucidaAuthTokenExpiration - Date.now()) / 60000);
         console.log("Minutes left before BioLucida token expires:", minutesLeft);
+        try {
+          const res = await client.post("/image_processing/biolucida_image_upload", {
+            token: bioLucidaAuthToken,
+            collection_name: "SODA",
+            files_to_upload: [],
+          });
+          console.log("BioLucida upload response", res);
+        } catch (error) {
+          console.log("Error uploading to BioLucida", error);
+          const emessage = userErrorMessage(error);
+          console.log("Error uploading to BioLucida", emessage);
+          errorArray.push({
+            type: "swal",
+            title: "Error uploading to BioLucida",
+            message: `
+              The following error occurred while trying to upload images to BioLucida: ${emessage}
+            `,
+          });
+          throw errorArray;
+        }
       }
     }
 

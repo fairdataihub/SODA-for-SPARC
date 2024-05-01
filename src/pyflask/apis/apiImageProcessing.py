@@ -28,7 +28,6 @@ class BioLucidaTokenManager:
         self.bioLucida_token_expiration = None
 BioLucidaTokenManager = BioLucidaTokenManager()
 
-
 @api.route('/biolucida_login')
 class BiolucidaLogin(Resource):
     global namespace_logger
@@ -65,6 +64,59 @@ class BiolucidaLogin(Resource):
         except Exception as e:
             namespace_logger.error(f"Error logging in to Biolucida: {str(e)}")
             api.abort(500, str(e))
+
+
+@api.route('/biolucida_image_upload')
+class BiolucidaImageUpload(Resource):
+    global namespace_logger
+
+    request_model = {
+        'token': fields.String(required=True, description="The token to use for authentication"),
+        'collection_name': fields.String(required=True, description="The name of the collection to upload the image to"),
+        'files_to_upload': fields.List(fields.String, required=True, description="The list of files to upload")
+    }
+
+    response_model = {
+        'status': fields.String(description="Additional message, such as error details")
+    }
+
+    parser = reqparse.RequestParser(bundle_errors=True)
+    parser.add_argument('token', type=str, required=True, help="The token to use for authentication")
+    parser.add_argument('collection_name', type=str, required=True, help="The name of the collection to upload the image to")
+    parser.add_argument('files_to_upload', type=list, help="The list of files to upload")
+
+    @api.expect(request_model)
+    @api.response(200, 'Image uploaded', response_model)
+    @api.response(400, 'Bad request')
+    @api.response(500, 'Internal server error')
+    def post(self):
+        try:
+            namespace_logger.info("Received request to upload image to Biolucida")
+            data = self.parser.parse_args()
+            namespace_logger.info(f"Uploading image to Biolucida: {data}")
+            token = data['token']
+            collection_name = data['collection_name']
+            files_to_upload = data['files_to_upload']
+
+            headers = {
+                'token': token
+            }
+
+            payload = {
+               'filesize': '',
+                'chunk_size': '',
+                'filename': '',
+                'tracked_dir': collection_name,
+            }
+            res = requests.post('https://sparc.biolucida.net/api/v1/upload/init', headers=headers, data=payload)
+            namespace_logger.info(f"Upload image response: {res.json()}")
+            return res.json()
+        except Exception as e:
+            namespace_logger.info(f"Raw error message: {e}")
+            api.abort(500, e)
+
+
+
 
 @api.route('/biolucida_create_collection')
 class BiolucidaLogin(Resource):

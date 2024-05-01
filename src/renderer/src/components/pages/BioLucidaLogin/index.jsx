@@ -38,7 +38,7 @@ const BioLucidaLogin = () => {
     mode: "uncontrolled",
     initialValues: {
       username: "jclark",
-      password: "",
+      password: "Biosmallpasta5.",
     },
     validate: {
       username: (value) => (value ? null : "Username is required"),
