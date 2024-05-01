@@ -51,19 +51,48 @@ const processFilesPage = (filePage, finalizedFiles, failedFilesPathsList) => {
 window.monitorUploadFileVerificationProgress = async () => {
   let manifestId = window.pennsieveManifestId;
   let verifiedFilesCount = 0;
+  let failedFilesPathsList = []
+  let finalizedFiles = []
 
-  while (verifiedFilesCount < window.totalFilesCount) {
+  while (true) {
+    document.getElementById("verify-dataset-upload-files-progress-para").innerText = "Fetching file statuses..."
     let verifiedFiles = await getVerifiedFilesFromManifest(manifestId);
-    console.log(verifiedFiles)
-    let finalizedFiles = verifiedFiles["finalizedFiles"];
-    let failedFilesPathsList = verifiedFiles["failedFilesPathsList"];
-    verifiedFilesCount = finalizedFiles.length + failedFilesPathsList.length;
+    finalizedFiles = verifiedFiles["finalizedFiles"];
+    failedFilesPathsList = verifiedFiles["failedFilesPathsList"];
+    let updatedVerifiedFilesCount = finalizedFiles.length + failedFilesPathsList.length;
 
-    // update the UI with the verified files count
-    document.getElementById("verify-dataset-upload-files-count").innerText =
-      `${verifiedFilesCount} / ${window.totalFilesCount} Files`;
+    if (updatedVerifiedFilesCount > verifiedFilesCount) {
+      // update the UI with the verified files count
+      verifiedFilesCount = updatedVerifiedFilesCount;
+      document.getElementById("verify-dataset-upload-files-count").innerText =
+        `${verifiedFilesCount} / ${window.totalFilesCount} Files`;
+      document.getElementById("verify-dataset-upload-files-progress-para").innerText = "Processed fetched file statuses."
+    } else {
+      document.getElementById("verify-dataset-upload-files-progress-para").innerText = "Processed fetched file statuses. No updates found."
+    }
 
-    // wait 1 minute before checking again so we are not spamming the Pennsieve API for large datasets + to give files time to process
-    await new Promise((resolve) => setTimeout(resolve, 60000));
+
+    if (verifiedFilesCount === window.totalFilesCount) {
+      break
+    }
+
+    // allow the prior status to be read
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    // wait 55 seconds before checking again so we are not spamming the Pennsieve API for large datasets + to give files time to process
+    document.getElementById("verify-dataset-upload-files-progress-para").innerText = "Waiting to fetch file statuses..."
+    await new Promise((resolve) => setTimeout(resolve, 55000));
   }
+
+  // all file statuses fetched
+  document.getElementById("verify-dataset-upload-files-progress-para").innerText = ""
+
+  // TODO: Show Errors Table 
+  if (failedFilesPathsList.length) {
+    document.getElementById("verify-dataset-upload-files-failed-files").innerText = "Failed Files: " + failedFilesPathsList.join(", ");
+    return
+  }
+
+  // TODO: Show success Lottie and show exit buttons
+  // document.getElementById("verify-dataset-upload-files-failed-files").innerText = "No failed files found!";
 };
