@@ -101,8 +101,8 @@ window.monitorUploadFileVerificationProgress = async () => {
 
   // TODO: Show Errors Table
   if (failedFilesPathsList.length) {
-    document.getElementById("verify-dataset-upload-files-failed-files").innerText =
-      "Failed Files: " + failedFilesPathsList.join(", ");
+    $('#Question-validate-dataset-upload-2').show()
+    populateFailedFilePaths(document.getElementById("validate-dataset-failed-table"), failedFilesPathsList);
     return;
   }
 
@@ -110,3 +110,14 @@ window.monitorUploadFileVerificationProgress = async () => {
   $('#Question-validate-dataset-upload-3').show()
   $("#success-validated-files-lottie").addClass('is-shown')
 };
+
+
+const populateFailedFilePaths = (targetTableElement, failedFilesPathsList) => {
+  let tableBody = targetTableElement.getElementsByTagName("tbody")[0];
+  for (const failedFilePath of failedFilesPathsList) {
+    let row = tableBody.insertRow(-1);
+    let cell = row.insertCell(0);
+    let newText = document.createTextNode(failedFilePath);
+    cell.appendChild(newText);
+  }
+}
