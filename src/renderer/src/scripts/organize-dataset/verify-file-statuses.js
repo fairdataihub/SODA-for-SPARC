@@ -107,8 +107,8 @@ window.monitorUploadFileVerificationProgress = async () => {
   }
 
   // TODO: Show success Lottie and show exit buttons
-  $('#Question-validate-dataset-upload-3').show()
-  $("#success-validated-files-lottie").addClass('is-shown')
+  $("#Question-validate-dataset-upload-3").show();
+  $("#success-validated-files-lottie").addClass("is-shown");
 };
 
 
