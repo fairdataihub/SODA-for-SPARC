@@ -55,11 +55,12 @@ const processFilesPage = (filePage, finalizedFiles, failedFilesPathsList) => {
 window.monitorUploadFileVerificationProgress = async () => {
   let manifestId = window.pennsieveManifestId;
   let verifiedFilesCount = 0;
-  let failedFilesPathsList = []
-  let finalizedFiles = []
+  let failedFilesPathsList = [];
+  let finalizedFiles = [];
 
   while (true) {
-    document.getElementById("verify-dataset-upload-files-progress-para").innerText = "Fetching file statuses..."
+    document.getElementById("verify-dataset-upload-files-progress-para").innerText =
+      "Fetching file statuses...";
     let verifiedFiles = await getVerifiedFilesFromManifest(manifestId);
     finalizedFiles = verifiedFiles["finalizedFiles"];
     failedFilesPathsList = verifiedFiles["failedFilesPathsList"];
@@ -70,31 +71,34 @@ window.monitorUploadFileVerificationProgress = async () => {
       verifiedFilesCount = updatedVerifiedFilesCount;
       document.getElementById("verify-dataset-upload-files-count").innerText =
         `${verifiedFilesCount} / ${window.totalFilesCount} Files`;
-      document.getElementById("verify-dataset-upload-files-progress-para").innerText = "Processed fetched file statuses."
+      document.getElementById("verify-dataset-upload-files-progress-para").innerText =
+        "Processed fetched file statuses.";
     } else {
-      document.getElementById("verify-dataset-upload-files-progress-para").innerText = "Processed fetched file statuses. No updates found."
+      document.getElementById("verify-dataset-upload-files-progress-para").innerText =
+        "Processed fetched file statuses. No updates found.";
     }
 
-
     if (verifiedFilesCount === window.totalFilesCount) {
-      break
+      break;
     }
 
     // allow the prior status to be read
     await new Promise((resolve) => setTimeout(resolve, 5000));
 
     // wait 55 seconds before checking again so we are not spamming the Pennsieve API for large datasets + to give files time to process
-    document.getElementById("verify-dataset-upload-files-progress-para").innerText = "Waiting to fetch file statuses..."
+    document.getElementById("verify-dataset-upload-files-progress-para").innerText =
+      "Waiting to fetch file statuses...";
     await new Promise((resolve) => setTimeout(resolve, 55000));
   }
 
   // all file statuses fetched
-  document.getElementById("verify-dataset-upload-files-progress-para").innerText = ""
+  document.getElementById("verify-dataset-upload-files-progress-para").innerText = "";
 
-  // TODO: Show Errors Table 
+  // TODO: Show Errors Table
   if (failedFilesPathsList.length) {
-    document.getElementById("verify-dataset-upload-files-failed-files").innerText = "Failed Files: " + failedFilesPathsList.join(", ");
-    return
+    document.getElementById("verify-dataset-upload-files-failed-files").innerText =
+      "Failed Files: " + failedFilesPathsList.join(", ");
+    return;
   }
 
   // TODO: Show success Lottie and show exit buttons
