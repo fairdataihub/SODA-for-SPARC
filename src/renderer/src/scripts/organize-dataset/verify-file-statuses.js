@@ -5,13 +5,44 @@
  */
 import api from "../others/api/api";
 
+while (!window.htmlPagesAdded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
+let failedFilesPathsList = [];
+
+
+document.querySelector("#verify-file-status-download-list").addEventListener("click", async () => {
+  const savePath = await window.electron.ipcRenderer.invoke(
+    "open-folder-path-select",
+    "Select a folder to save your failed files list"
+  );
+
+  if (!savePath) {
+    // If no path selected, exit the function
+    return;
+  }
+
+  const csvData = failedFilesPathsList.join("\n");
+
+  const csvFilePath = `${savePath}/failed_files_list.csv`;
+
+  // make a csv with the csvData and save it to the csvFilePath
+  window.fs.writeFileSync(csvFilePath, csvData);
+
+  // open the file in the default CSV viewer
+  window.electron.ipcRenderer.send("open-file-at-path", csvFilePath);
+})
+
+
 /**
  * Returns the paths for files that have been FINALIZED or FAILED in the target Pennsieve manifest.
  * @returns {Promise<{completeFilesList: [], failedFilesPathsList: []}>}
  */
 const getVerifiedFilesFromManifest = async (targetPennsieveManifestId) => {
   let finalizedFiles = [];
-  let failedFilesPathsList = [];
+  failedFilesPathsList = []
+  
   let continuationToken = "";
   let filesBatchResponse = await api.getPennsieveUploadManifestFiles(
     targetPennsieveManifestId,
@@ -55,7 +86,7 @@ const processFilesPage = (filePage, finalizedFiles, failedFilesPathsList) => {
 window.monitorUploadFileVerificationProgress = async () => {
   let manifestId = window.pennsieveManifestId;
   let verifiedFilesCount = 0;
-  let failedFilesPathsList = [];
+  failedFilesPathsList = [];
   let finalizedFiles = [];
 
   // initalize the UI with the total files count
@@ -99,12 +130,6 @@ window.monitorUploadFileVerificationProgress = async () => {
   // all file statuses fetched
   document.getElementById("verify-dataset-upload-files-progress-para").innerText = "";
 
-  // add dummy data for test
-  failedFilesPathsList.push("test1/sharp/section.css");
-  failedFilesPathsList.push("test2/sharp/section.xml");
-  failedFilesPathsList.push("test3/sharp/section.json");
-
-  // TODO: Show Errors Table
   if (failedFilesPathsList.length) {
     $("#Question-validate-dataset-upload-2").show();
     populateFailedFilePaths(
