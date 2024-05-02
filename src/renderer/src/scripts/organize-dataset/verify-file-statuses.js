@@ -33,6 +33,20 @@ document.querySelector("#verify-file-status-download-list").addEventListener("cl
   window.electron.ipcRenderer.send("open-file-at-path", csvFilePath);
 });
 
+document.querySelector("#verify-file-status-retry-upload").addEventListener("click", async () => {
+  $("#Question-validate-dataset-upload-2").hide();
+  $("#Question-validate-dataset-upload-3").hide();
+
+  // move to the previous page and show the generate dataset upload page 
+  window.nextPrev(-1);
+
+  // hide question 1 of generate dataset
+  $("#Question-preview-dataset-details").hide()
+  $("#Question-generate-dataset-generate-div").hide()
+
+  document.querySelector("#button-retry").click()
+})
+
 /**
  * Returns the paths for files that have been FINALIZED or FAILED in the target Pennsieve manifest.
  * @returns {Promise<{completeFilesList: [], failedFilesPathsList: []}>}
@@ -154,3 +168,5 @@ const populateFailedFilePaths = (targetTableElement, failedFilesPathsList) => {
     cell.appendChild(newText);
   }
 };
+
+
