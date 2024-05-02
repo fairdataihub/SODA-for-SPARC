@@ -31,6 +31,7 @@ from namespaces import NamespaceEnum, get_namespace_logger
 from openpyxl.styles import PatternFill
 from openpyxl import load_workbook
 from utils import load_metadata_to_dataframe
+from constants import PENNSIEVE_URL
 
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
 from authentication import get_access_token
@@ -67,7 +68,6 @@ initial_bfdataset_size_submit = 0
 forbidden_characters = '<>:"/\|?*'
 forbidden_characters_bf = '\/:*?"<>'
 
-PENNSIEVE_URL = "https://api.pennsieve.io"
 
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
@@ -1165,7 +1165,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             curatestatus = "Done"
             raise Exception("You don't have permissions for uploading to this Pennsieve dataset")
     except Exception as e:
-        abort(401, "You do not have permissions to edit upload this Pennsieve dataset.")
+        abort(403, "You do not have permissions to edit upload this Pennsieve dataset.")
 
 
     # surface layer of dataset is pulled. then go through through the children to get information on subfolders

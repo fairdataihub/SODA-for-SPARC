@@ -7,6 +7,8 @@ from flask import abort
 from os import mkdir
 import time
 
+from constants import PENNSIEVE_URL
+
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.USER)
 
@@ -14,7 +16,6 @@ from profileUtils import create_unique_profile_name
 
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
-PENNSIEVE_URL = "https://api.pennsieve.io"
 
 # Variables for token caching
 cached_access_token = None
@@ -80,7 +81,7 @@ def get_cognito_userpool_access_token(email, password):
     Creates a temporary access token for utilizing the Pennsieve API. Utilizes email and password to authenticate with the Pennsieve Cognito Userpool 
     which provides higher privileges than the API token and secret flow.
     """
-    PENNSIEVE_URL = "https://api.pennsieve.io"
+    
 
     try:
         response = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
@@ -242,7 +243,6 @@ def bf_add_account_username(keyname, key, secret):
 
 def delete_duplicate_keys(token, keyname):
     try:
-        PENNSIEVE_URL = "https://api.pennsieve.io"
 
         headers = {
             "Content-Type": "application/json",

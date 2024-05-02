@@ -1,8 +1,8 @@
 import requests
 from flask import abort
+from constants import PENNSIEVE_URL
 
 def pennsieve_get_current_user_permissions(dataset_id, ps_or_token):
-    PENNSIEVE_URL = "https://api.pennsieve.io"
 
     if type(ps_or_token) is str:
         access_token = ps_or_token

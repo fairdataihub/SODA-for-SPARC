@@ -36,7 +36,7 @@ from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, 
 from authentication import get_access_token
 from errors import PennsieveUploadException
 from .manifestSession import UploadManifestSession
-import json
+from constants import PENNSIEVE_URL
 
 from pysodaUtils import (
     check_forbidden_characters_ps,
@@ -252,7 +252,7 @@ PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
 
 
-PENNSIEVE_URL = "https://api.pennsieve.io"
+
 
 ums = UploadManifestSession()
 
@@ -2843,7 +2843,6 @@ def ps_check_dataset_files_validity(soda_json_structure):
         Output:
             error: error message with list of non valid files/folders, if any
         """
-        global PENNSIEVE_URL
         # get the folder content through Pennsieve api
         r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
@@ -2889,7 +2888,6 @@ def ps_check_dataset_files_validity(soda_json_structure):
 
         return error
 
-    global PENNSIEVE_URL
     error = []
     # check that the files and folders specified in the dataset are valid
     dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]

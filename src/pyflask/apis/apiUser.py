@@ -2,6 +2,8 @@ from flask_restx import Resource, reqparse
 from namespaces import get_namespace, NamespaceEnum
 
 from users import integrate_orcid_with_pennsieve, get_user, set_preferred_organization, get_user_organizations, create_profile_name, set_default_profile
+from errorHandlers.notBadRequestException import notBadRequestException
+
 
 api = get_namespace(NamespaceEnum.USER)
 
@@ -25,7 +27,17 @@ class Orcid(Resource):
           try:
               return integrate_orcid_with_pennsieve(access_code, pennsieve_account)
           except Exception as e:
-              api.abort(500, str(e))
+            api.logger.exception(e)
+            if notBadRequestException(e):
+                # general exception that was unexpected and caused by our code
+                api.abort(500, str(e))
+            if e.response is not None:
+                # requests exeption
+                api.logger.info("Error message details: ", e.response.json().get('message'))
+                api.abort(e.response.status_code, e.response.json().get('message'))
+            else:
+                # custom werkzeug.exception that we raised
+                api.abort(e.code, e.description)
 
 
 @api.route("/profile_name")
@@ -36,7 +48,17 @@ class ProfileName(Resource):
         try:
             return create_profile_name()
         except Exception as e:
-            api.abort(500, str(e))
+            api.logger.exception(e)
+            if notBadRequestException(e):
+                # general exception that was unexpected and caused by our code
+                api.abort(500, str(e))
+            if e.response is not None:
+                # requests exeption
+                api.logger.info("Error message details: ", e.response.json().get('message'))
+                api.abort(e.response.status_code, e.response.json().get('message'))
+            else:
+                # custom werkzeug.exception that we raised
+                api.abort(e.code, e.description)
 
 
 @api.route('/')
@@ -48,7 +70,17 @@ class User(Resource):
         try:
             return get_user()
         except Exception as e:
-            api.abort(500, str(e))
+            api.logger.exception(e)
+            if notBadRequestException(e):
+                # general exception that was unexpected and caused by our code
+                api.abort(500, str(e))
+            if e.response is not None:
+                # requests exeption
+                api.logger.info("Error message details: ", e.response.json().get('message'))
+                api.abort(e.response.status_code, e.response.json().get('message'))
+            else:
+                # custom werkzeug.exception that we raised
+                api.abort(e.code, e.description)
 
 
     def put(self):
@@ -72,7 +104,17 @@ class DefaultProfile(Resource):
         try:
             return set_default_profile(profile_name)
         except Exception as e:
-            api.abort(500, str(e))
+            api.logger.exception(e)
+            if notBadRequestException(e):
+                # general exception that was unexpected and caused by our code
+                api.abort(500, str(e))
+            if e.response is not None:
+                # requests exeption
+                api.logger.info("Error message details: ", e.response.json().get('message'))
+                api.abort(e.response.status_code, e.response.json().get('message'))
+            else:
+                # custom werkzeug.exception that we raised
+                api.abort(e.code, e.description)
 
 
 
@@ -116,7 +158,17 @@ class PreferredOrganization(Resource):
         try:
             return set_preferred_organization(organization, email, password, machine_username_specifier)
         except Exception as e:
-            api.abort(500, str(e))
+            api.logger.exception(e)
+            if notBadRequestException(e):
+                # general exception that was unexpected and caused by our code
+                api.abort(500, str(e))
+            if e.response is not None:
+                # requests exeption
+                api.logger.info("Error message details: ", e.response.json().get('message'))
+                api.abort(e.response.status_code, e.response.json().get('message'))
+            else:
+                # custom werkzeug.exception that we raised
+                api.abort(e.code, e.description)
 
 
 
@@ -129,4 +181,14 @@ class Organizations(Resource):
         try:
             return get_user_organizations()
         except Exception as e:
-            api.abort(500, str(e))
+            api.logger.exception(e)
+            if notBadRequestException(e):
+                # general exception that was unexpected and caused by our code
+                api.abort(500, str(e))
+            if e.response is not None:
+                # requests exeption
+                api.logger.info("Error message details: ", e.response.json().get('message'))
+                api.abort(e.response.status_code, e.response.json().get('message'))
+            else:
+                # custom werkzeug.exception that we raised
+                api.abort(e.code, e.description)

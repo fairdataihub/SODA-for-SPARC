@@ -1,8 +1,8 @@
 import os.path
 import requests
 from utils import create_request_headers
+from constants import PENNSIEVE_URL
 
-PENNSIEVE_URL = "https://api.pennsieve.io"
 
 # check for non-empty fields (cells)
 def column_check(x):
