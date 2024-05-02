@@ -99,6 +99,11 @@ window.monitorUploadFileVerificationProgress = async () => {
   // all file statuses fetched
   document.getElementById("verify-dataset-upload-files-progress-para").innerText = "";
 
+  // add dummy data for test 
+  failedFilesPathsList.push("test1/sharp/section.css");
+  failedFilesPathsList.push("test2/sharp/section.xml");
+  failedFilesPathsList.push("test3/sharp/section.json");
+
   // TODO: Show Errors Table
   if (failedFilesPathsList.length) {
     $("#Question-validate-dataset-upload-2").show();
@@ -120,6 +125,9 @@ const populateFailedFilePaths = (targetTableElement, failedFilesPathsList) => {
     let row = tableBody.insertRow(-1);
     let cell = row.insertCell(0);
     let newText = document.createTextNode(failedFilePath);
+    // left align the text in the cell
+    cell.style.textAlign = "left";
+    cell.style.color = "black"
     cell.appendChild(newText);
   }
 };
