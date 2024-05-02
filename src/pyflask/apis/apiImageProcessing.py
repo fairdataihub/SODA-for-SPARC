@@ -58,6 +58,7 @@ class BiolucidaLogin(Resource):
             namespace_logger.info(f"Logging in to Biolucida with username: {username}")
             res = requests.post('https://sparc.biolucida.net/api/v1/authenticate', data={'username': username, 'password': password, 'token': 'unused_but_required'})
             namespace_logger.info(f"Login response: {res.json()}")
+            namespace_logger.info(f"Login status code: {res.status_code}")
             access_token = res.json()['token']
             namespace_logger.info(f"Access token: {access_token}")    
             return res.json()
@@ -103,17 +104,34 @@ class BiolucidaImageUpload(Resource):
             }
 
             payload = {
-               'filesize': '',
-                'chunk_size': '',
-                'filename': '',
-                'tracked_dir': collection_name,
+                'filesize': '4096 ',
+                'chunk_size': '1024',
+                'filename': 'test.jp2',
+                'tracked_dir': '',
             }
+
             res = requests.post('https://sparc.biolucida.net/api/v1/upload/init', headers=headers, data=payload)
-            namespace_logger.info(f"Upload image response: {res.json()}")
-            return res.json()
+            namespace_logger.info(f"Upload init response: {res}")
+            namespace_logger.info(f"Upload init text: {res.text}")
+            namespace_logger.info(f"Response headers: {res.headers}")
+            namespace_logger.info(f"Response header content-type: {res.headers['content-type']}")
+            response_keys = res.__dict__.keys()
+            for key in response_keys:
+                value = res.__dict__[key]
+                namespace_logger.error(f"Response Key: {key}, Value: {value}")
+            namespace_logger.info(f"Handling res based on status code: {res.status_code}")
+            if (res.status_code != 200):
+                namespace_logger.error(f"Error uploading image to Biolucida: {res}")
+                namespace_logger.error(f"Error status code: {res.status_code}")
+                api.abort(500, res)
+            else:
+                namespace_logger.info(f"Upload image response: {res}")
+                namespace_logger.info(f"Upload image status code: {res.status_code}")
+                namespace_logger.info(f"Upload image text: {res.text}")
+                return res.json()
         except Exception as e:
-            namespace_logger.info(f"Raw error message: {e}")
-            api.abort(500, e)
+            namespace_logger.error(f"Error uploading image to Biolucida: {str(e)}")
+            api.abort(500, str(e))
 
 
 

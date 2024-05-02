@@ -73,11 +73,3 @@ export const removeImageFromBioLucidaUploadList = (imageObj) => {
     })
   );
 };
-
-export const setImagesSelectedToBeUploadedToBioLucida = (imagePaths) => {
-  useGlobalStore.setState(
-    produce((state) => {
-      state.imagesSelectedToBeUploadedToBioLucida = imagePaths;
-    })
-  );
-};
