@@ -3502,7 +3502,7 @@ window.exitCurate = async (resetProgressTabs, start_over = false) => {
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
     let message = "Are you sure you want to start exit?";
-  
+
     var res = await raiseWarningExit(message);
 
     if (res) {
@@ -3599,11 +3599,9 @@ window.wipeOutCurateProgress = () => {
   $("#current-bf-dataset").text("None"); // step 1
   $("#current-bf-dataset-generate").text("None"); // step 6 for when merging a new dataset into an existing dataset
   $("#button-confirm-bf-dataset").hide(); // hide step 6 confirm button until the user selects the dataset again
-  
 
   // clear the validate-dataset-failed-table rows from the body
   $("#validate-dataset-failed-table tbody").empty();
-  
 };
 
 // once users click on option card: Organize dataset
