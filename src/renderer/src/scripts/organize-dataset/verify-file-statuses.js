@@ -11,7 +11,6 @@ while (!window.htmlPagesAdded) {
 
 let failedFilesPathsList = [];
 
-
 document.querySelector("#verify-file-status-download-list").addEventListener("click", async () => {
   const savePath = await window.electron.ipcRenderer.invoke(
     "open-folder-path-select",
@@ -32,8 +31,7 @@ document.querySelector("#verify-file-status-download-list").addEventListener("cl
 
   // open the file in the default CSV viewer
   window.electron.ipcRenderer.send("open-file-at-path", csvFilePath);
-})
-
+});
 
 /**
  * Returns the paths for files that have been FINALIZED or FAILED in the target Pennsieve manifest.
@@ -41,8 +39,8 @@ document.querySelector("#verify-file-status-download-list").addEventListener("cl
  */
 const getVerifiedFilesFromManifest = async (targetPennsieveManifestId) => {
   let finalizedFiles = [];
-  failedFilesPathsList = []
-  
+  failedFilesPathsList = [];
+
   let continuationToken = "";
   let filesBatchResponse = await api.getPennsieveUploadManifestFiles(
     targetPennsieveManifestId,
