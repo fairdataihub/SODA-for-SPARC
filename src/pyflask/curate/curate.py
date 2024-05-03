@@ -2496,7 +2496,9 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
 
             main_curation_uploaded_files = total_files - ums.get_remaining_file_count(manifest_id, total_files)
             files_uploaded = main_curation_uploaded_files
+            namespace_logger.info(f"Bytes per file dict values: {bytes_file_path_dict}")
             total_bytes_uploaded["value"] = ums.calculate_completed_upload_size(manifest_id, bytes_file_path_dict, total_files )
+            namespace_logger.info("Total bytes uploaded value is: " + str(total_bytes_uploaded["value"]))
             time.sleep(5)
 
 
@@ -2802,16 +2804,20 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
 
 
         main_curate_progress_message = "Success: COMPLETED!"
-        # reset the manifests used for the upload session                                 
-        ums.set_df_mid(None)
-        ums.set_elapsed_time(None)
 
+
+        # get the manifest id of the Pennsieve upload manifest created when uploading
         origin_manifest_id = get_origin_manifest_id(selected_id)
         namespace_logger.info(f"Origin manifest id: {origin_manifest_id}")
 
+        # if files were uploaded but later receive the 'Failed' status in the Pennsieve manifest we allow users to retry the upload; set the pre-requisite information for the upload to 
+        # be retried in that case
+        ums.set_main_total_generate_dataset_size(main_total_generate_dataset_size)
+        ums.set_total_files_to_upload(total_files)
+        ums.set_elapsed_time(elapsed_time)
+
         
-        # reset the calculated values for the upload session
-        bytes_file_path_dict = {}
+
 
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
@@ -3278,7 +3284,7 @@ def validate_dataset_structure(soda_json_structure, resume):
 
 
 
-def reset_upload_session_environment():
+def reset_upload_session_environment(resume):
     global main_curate_status
     global main_curate_progress_message
     global main_total_generate_dataset_size
@@ -3293,6 +3299,7 @@ def reset_upload_session_environment():
 
     global myds
     global generated_dataset_id
+    global bytes_file_path_dict
 
     start_generate = 0
     myds = ""
@@ -3314,6 +3321,15 @@ def reset_upload_session_environment():
     main_generate_destination = ""
     main_initial_bfdataset_size = 0
 
+    if not resume:
+        ums.set_df_mid(None)
+        ums.set_elapsed_time(None)
+        ums.set_total_files_to_upload(0)
+        ums.set_main_total_generate_dataset_size(0)
+        # reset the calculated values for the upload session
+        bytes_file_path_dict = {}
+
+
 
 
 def main_curate_function(soda_json_structure, resume):
@@ -3326,7 +3342,7 @@ def main_curate_function(soda_json_structure, resume):
     namespace_logger.info(f"main_curate_function metadata generate-options={soda_json_structure['generate-dataset']}")
     start = timer()
 
-    reset_upload_session_environment()
+    reset_upload_session_environment(resume)
 
 
     validate_dataset_structure(soda_json_structure, resume)
