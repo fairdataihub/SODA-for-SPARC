@@ -15,6 +15,8 @@ import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
 import { swalConfirmAction } from "../utils/swal-utils";
+// import * as path from "path";
+// const path = require("path");
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -169,6 +171,35 @@ window.uploadDatasetDropHandler = async (ev) => {
   }
 };
 
+async function getFilesAndFolders(directoryPath) {
+  try {
+      // Read the contents of the directory
+      const contents = fs.readdirSync(directoryPath);
+
+      // Separate files and folders
+      const files = [];
+      const folders = [];
+      contents.forEach(item => {
+          // Get the full path of the item
+          const itemPath = path.join(directoryPath, item);
+
+          // Check if it's a file or a folder
+          const stats = fs.statSync(itemPath);
+          if (stats.isFile()) {
+              files.push(item);
+          } else if (stats.isDirectory()) {
+              folders.push(item);
+          }
+      });
+
+      return { files, folders };
+  } catch (err) {
+      // Handle any errors
+      console.error('Error reading directory:', err);
+      return null;
+  }
+}
+
 window.uploadDatasetClickHandler = async (ev) => {
   window.electron.ipcRenderer.send("open-file-dialog-upload-dataset");
 };
@@ -283,44 +314,50 @@ window.handleLocalDatasetImport = async (path) => {
   } else {
     moveForward = true;
   }
+  let list = await getFilesAndFolders(path);
+  console.log("LIST: " + list);
+  const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
+  const buildDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(list.folders, currentFileExplorerPath);
 
-  if (moveForward) {
-    window.sodaJSONObj["starting-point"]["local-path"] = path;
-    //Reset the progress bar
-    progressBar_rightSide.style.transform = `rotate(0deg)`;
-    progressBar_leftSide.style.transform = `rotate(0deg)`;
-    numb.innerText = "0%";
+  console.log(buildDatasetStructure);
 
-    // Show the progress bar
-    document.getElementById("loading_local_dataset").style.visibility = "visible";
-    local_progress = setInterval(progressReport, 500);
-    console.log(window.irregularFolderArray.toString());
-    console.log(JSON.stringify(replaced));
-    console.log(JSON.stringify(window.sodaJSONObj));
-    console.log(path);
+  // if (moveForward) {
+  //   window.sodaJSONObj["starting-point"]["local-path"] = path;
+  //   //Reset the progress bar
+  //   progressBar_rightSide.style.transform = `rotate(0deg)`;
+  //   progressBar_leftSide.style.transform = `rotate(0deg)`;
+  //   numb.innerText = "0%";
 
-    try {
-      let importLocalDatasetResponse = await client.post(
-        `/organize_datasets/datasets/import`,
-        {
-          sodajsonobject: window.sodaJSONObj,
-          root_folder_path: path,
-          irregular_folders: window.irregularFolderArray,
-          replaced: replaced,
-        },
-        { timeout: 0 }
-      );
+  //   // Show the progress bar
+  //   document.getElementById("loading_local_dataset").style.visibility = "visible";
+  //   local_progress = setInterval(progressReport, 500);
+  //   console.log(window.irregularFolderArray.toString());
+  //   console.log(JSON.stringify(replaced));
+  //   console.log(JSON.stringify(window.sodaJSONObj));
+  //   console.log(path);
 
-      let { data } = importLocalDatasetResponse;
-      window.sodaJSONObj = data;
-      window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-      return true;
-    } catch (error) {
-      clientError(error);
-      clearInterval(local_progress);
-      return false;
-    }
-  }
+  //   try {
+  //     let importLocalDatasetResponse = await client.post(
+  //       `/organize_datasets/datasets/import`,
+  //       {
+  //         sodajsonobject: window.sodaJSONObj,
+  //         root_folder_path: path,
+  //         irregular_folders: window.irregularFolderArray,
+  //         replaced: replaced,
+  //       },
+  //       { timeout: 0 }
+  //     );
+
+  //     let { data } = importLocalDatasetResponse;
+  //     window.sodaJSONObj = data;
+  //     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
+  //     return true;
+  //   } catch (error) {
+  //     clientError(error);
+  //     clearInterval(local_progress);
+  //     return false;
+  //   }
+  // }
 };
 
 window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (event, path) => {

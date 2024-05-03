@@ -4657,7 +4657,7 @@ const closeFileImportLoadingSweetAlert = () => {
   }
 };
 
-const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileExplorerPath) => {
+window.buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileExplorerPath) => {
   const inaccessibleItems = [];
   const forbiddenFileNames = [];
   const problematicFolderNames = [];
@@ -5003,7 +5003,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
     // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
     const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
 
-    const builtDatasetStructure = await buildDatasetStructureJsonFromImportedData(
+    const builtDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
       importedData,
       currentFileExplorerPath
     );
