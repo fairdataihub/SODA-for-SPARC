@@ -42,6 +42,7 @@ document.querySelector("#verify-file-status-retry-upload").addEventListener("cli
 
   // hide question 1 of generate dataset
   $("#Question-preview-dataset-details").hide();
+  $("#preview-dataset-tab").hide(); // might have to remove tab-active
   $("#Question-generate-dataset-generate-div").hide();
 
   document.querySelector("#button-retry").click();
