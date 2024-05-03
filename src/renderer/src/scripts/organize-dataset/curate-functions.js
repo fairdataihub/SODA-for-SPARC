@@ -173,30 +173,30 @@ window.uploadDatasetDropHandler = async (ev) => {
 
 async function getFilesAndFolders(directoryPath) {
   try {
-      // Read the contents of the directory
-      const contents = fs.readdirSync(directoryPath);
+    // Read the contents of the directory
+    const contents = fs.readdirSync(directoryPath);
 
-      // Separate files and folders
-      const files = [];
-      const folders = [];
-      contents.forEach(item => {
-          // Get the full path of the item
-          const itemPath = path.join(directoryPath, item);
+    // Separate files and folders
+    const files = [];
+    const folders = [];
+    contents.forEach((item) => {
+      // Get the full path of the item
+      const itemPath = path.join(directoryPath, item);
 
-          // Check if it's a file or a folder
-          const stats = fs.statSync(itemPath);
-          if (stats.isFile()) {
-              files.push(item);
-          } else if (stats.isDirectory()) {
-              folders.push(item);
-          }
-      });
+      // Check if it's a file or a folder
+      const stats = fs.statSync(itemPath);
+      if (stats.isFile()) {
+        files.push(item);
+      } else if (stats.isDirectory()) {
+        folders.push(item);
+      }
+    });
 
-      return { files, folders };
+    return { files, folders };
   } catch (err) {
-      // Handle any errors
-      console.error('Error reading directory:', err);
-      return null;
+    // Handle any errors
+    console.error("Error reading directory:", err);
+    return null;
   }
 }
 
@@ -317,7 +317,10 @@ window.handleLocalDatasetImport = async (path) => {
   let list = await getFilesAndFolders(path);
   console.log("LIST: " + list);
   const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
-  const buildDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(list.folders, currentFileExplorerPath);
+  const buildDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
+    list.folders,
+    currentFileExplorerPath
+  );
 
   console.log(buildDatasetStructure);
 
