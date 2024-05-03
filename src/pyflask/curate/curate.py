@@ -1906,6 +1906,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
     global elapsed_time
     global manifest_id
     global origin_manifest_id
+    global main_curate_status 
 
     total_files = 0
     total_dataset_files = 0
@@ -2804,6 +2805,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
 
 
         main_curate_progress_message = "Success: COMPLETED!"
+        main_curate_status = "Done"
 
 
         # get the manifest id of the Pennsieve upload manifest created when uploading
