@@ -135,9 +135,12 @@ window.monitorUploadFileVerificationProgress = async () => {
     await new Promise((resolve) => setTimeout(resolve, 5000));
 
     // wait 55 seconds before checking again so we are not spamming the Pennsieve API for large datasets + to give files time to process
-    document.getElementById("verify-dataset-upload-files-progress-para").innerText =
-      "Waiting to fetch file statuses...";
-    await new Promise((resolve) => setTimeout(resolve, 55000));
+
+    for (let time = 60; time > 0; time--) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      document.getElementById("verify-dataset-upload-files-progress-para").innerText =
+        `Waiting ${time} seconds for Pennsieve to process more files...`;
+    }
   }
 
   // all file statuses fetched
