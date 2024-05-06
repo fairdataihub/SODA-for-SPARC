@@ -544,7 +544,7 @@ window.nextPrev = (pageIndex) => {
     // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
     // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
     document.getElementById("inputNewNameDataset-upload-dataset").value = "";
-    
+
     // Disable continue button
     $("#nextBtn").prop("disabled", true);
     window.returnToGuided();
