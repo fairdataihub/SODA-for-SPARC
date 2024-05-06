@@ -179,16 +179,21 @@ async function getFilesAndFolders(directoryPath) {
     // Separate files and folders
     const files = [];
     const folders = [];
+    console.log(directoryPath);
     contents.forEach((item) => {
       // Get the full path of the item
+      console.log(item)
       const itemPath = path.join(directoryPath, item);
+      console.log(itemPath)
 
       // Check if it's a file or a folder
       const stats = fs.statSync(itemPath);
-      if (stats.isFile()) {
-        files.push(item);
-      } else if (stats.isDirectory()) {
-        folders.push(item);
+      console.log(stats);
+      if (stats.isFile) {
+        // push the path of item
+        files.push(itemPath);
+      } else if (stats.isDirectory) {
+        folders.push(itemPath);
       }
     });
 
@@ -316,6 +321,7 @@ window.handleLocalDatasetImport = async (path) => {
   }
   let list = await getFilesAndFolders(path);
   console.log("LIST: " + list);
+  console.log(list);
   const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
   const buildDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
     list.folders,
@@ -324,43 +330,10 @@ window.handleLocalDatasetImport = async (path) => {
 
   console.log(buildDatasetStructure);
 
-  // if (moveForward) {
-  //   window.sodaJSONObj["starting-point"]["local-path"] = path;
-  //   //Reset the progress bar
-  //   progressBar_rightSide.style.transform = `rotate(0deg)`;
-  //   progressBar_leftSide.style.transform = `rotate(0deg)`;
-  //   numb.innerText = "0%";
+  window.sodaJSONObj["dataset-structure"] = buildDatasetStructure;
 
-  //   // Show the progress bar
-  //   document.getElementById("loading_local_dataset").style.visibility = "visible";
-  //   local_progress = setInterval(progressReport, 500);
-  //   console.log(window.irregularFolderArray.toString());
-  //   console.log(JSON.stringify(replaced));
-  //   console.log(JSON.stringify(window.sodaJSONObj));
-  //   console.log(path);
-
-  //   try {
-  //     let importLocalDatasetResponse = await client.post(
-  //       `/organize_datasets/datasets/import`,
-  //       {
-  //         sodajsonobject: window.sodaJSONObj,
-  //         root_folder_path: path,
-  //         irregular_folders: window.irregularFolderArray,
-  //         replaced: replaced,
-  //       },
-  //       { timeout: 0 }
-  //     );
-
-  //     let { data } = importLocalDatasetResponse;
-  //     window.sodaJSONObj = data;
-  //     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-  //     return true;
-  //   } catch (error) {
-  //     clientError(error);
-  //     clearInterval(local_progress);
-  //     return false;
-  //   }
-  // }
+  // Import the metadata files
+  window.sodaJSONObj["metadata-files"] = list.files;
 };
 
 window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (event, path) => {
