@@ -60,8 +60,8 @@ class UploadManifestSession:
                 offset += 1000
             file_page = self.ps.manifest.list_files(mid, offset , 1000)
             # if there is no node_id then an upload hasn't started yet - all files are remaining 
-            # regular expression that searches and counts for every string that has "status: LOCAL" or "status: REGISTERED" in the string
-            remaining_files +=  len(re.findall(r'status: REGISTERED|status: LOCAL' , str(file_page)))
+            # regular expression that searches and counts for every string that has "status: LOCAL" or "status: REGISTERED" or "status: FAILED" in the string
+            remaining_files +=  len(re.findall(r'status: REGISTERED|status: LOCAL|status: FAILED' , str(file_page)))
         return remaining_files
     
     def create_obj_from_string(self,s):
@@ -106,3 +106,5 @@ class UploadManifestSession:
 
 
 
+# ums = UploadManifestSession()
+# ums.df_mid_has_progress()

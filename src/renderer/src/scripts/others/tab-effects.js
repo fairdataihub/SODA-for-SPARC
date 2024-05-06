@@ -132,7 +132,11 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 5) {
+    $("#nextBtn").css("display", "none");
+    $("#prevBtn").css("display", "none");
+    // $("#nextBtn").html("Continue");
     $("#Question-validate-dataset-upload").show();
+    window.monitorUploadFileVerificationProgress();
   }
 
   if (tabNow == 2) {
@@ -3500,14 +3504,7 @@ window.exitCurate = async (resetProgressTabs, start_over = false) => {
   $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
-    var message;
-
-    if ($("#save-progress-btn").css("display") === "block") {
-      message =
-        "This will reset your progress so far. We recommend saving your progress before exiting. Are you sure you want to continue?";
-    } else {
-      message = "Are you sure you want to start over?";
-    }
+    let message = "Are you sure you want to start exit?";
 
     var res = await raiseWarningExit(message);
 
@@ -3519,6 +3516,7 @@ window.exitCurate = async (resetProgressTabs, start_over = false) => {
       $(".getting-started").removeClass("test2");
       $("#Question-getting-started-1").addClass("show");
       $("#generate-dataset-progress-tab").css("display", "none");
+      $("#validate-upload-status-tab").css("display", "none");
 
       window.hasFiles = false;
       console.log("Resetting current tab value");
@@ -3604,7 +3602,9 @@ window.wipeOutCurateProgress = () => {
   $("#current-bf-dataset").text("None"); // step 1
   $("#current-bf-dataset-generate").text("None"); // step 6 for when merging a new dataset into an existing dataset
   $("#button-confirm-bf-dataset").hide(); // hide step 6 confirm button until the user selects the dataset again
-  //
+
+  // clear the validate-dataset-failed-table rows from the body
+  $("#validate-dataset-failed-table tbody").empty();
 };
 
 // once users click on option card: Organize dataset

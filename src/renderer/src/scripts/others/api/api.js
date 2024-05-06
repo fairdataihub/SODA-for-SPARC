@@ -525,6 +525,17 @@ const checkDatasetNameExists = async (datasetName) => {
     clientError(error);
   }
 };
+const getPennsieveUploadManifests = async (datasetId) => {
+  const response = await client.get(`/upload_manifests?dataset_id=${datasetId}`);
+  return response.data;
+};
+
+const getPennsieveUploadManifestFiles = async (uploadManifestId, limit, continuationToken) => {
+  const response = await client.get(
+    `/upload_manifests/${uploadManifestId}/files?limit=${limit}&continuation_token=${continuationToken}`
+  );
+  return response.data;
+};
 
 const api = {
   getUserInformation,
@@ -559,6 +570,8 @@ const api = {
   getOrganizations,
   getDatasetFileCount,
   checkDatasetNameExists,
+  getPennsieveUploadManifests,
+  getPennsieveUploadManifestFiles,
 };
 
 export default api;
