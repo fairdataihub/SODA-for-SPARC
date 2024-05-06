@@ -177,7 +177,7 @@ async function getFilesAndFolders(directoryPath) {
     const contents = fs.readdirSync(directoryPath);
 
     // Separate files and folders
-    const files = [];
+    const files = {};
     const folders = [];
     console.log(directoryPath);
     contents.forEach((item) => {
@@ -190,14 +190,26 @@ async function getFilesAndFolders(directoryPath) {
       const stats = fs.statSync(itemPath);
       console.log(stats);
       if (stats.isFile) {
-        // push the path of item
-        files.push(itemPath);
+        files[item] = itemPath;
       } else if (stats.isDirectory) {
         folders.push(itemPath);
       }
     });
 
-    return { files, folders };
+    // itereate through the folders and get the files. If any of the files are names "manifest.csv" or "manifest.xlsx", save them to the variable manifestFiles
+    let manifestFiles = [];
+    for (let i = 0; i < folders.length; i++) {
+      let folder = folders[i];
+      let files = fs.readdirSync(folder);
+      for (let j = 0; j < files.length; j++) {
+        let file = files[j];
+        if (file === "manifest.csv" || file === "manifest.xlsx") {
+          manifestFiles.push(path.join(folder, file));
+        }
+      }
+    }
+
+    return { files, folders, manifestFiles };
   } catch (err) {
     // Handle any errors
     console.error("Error reading directory:", err);
