@@ -1934,6 +1934,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             global total_files
             global main_total_generate_dataset_size
             nonlocal total_manifest_files
+            global bytes_file_path_dict
 
             list_manifest_files = []
             if "auto-generated" in soda_json_structure["manifest-files"] and soda_json_structure["manifest-files"]["auto-generated"] == True:
@@ -1943,7 +1944,9 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                         list_manifest_files.append([manifestpath, key])
                         total_files += 1
                         total_manifest_files += 1
-                        main_total_generate_dataset_size += getsize(manifestpath)
+                        mf_s = getsize(manifestpath)
+                        main_total_generate_dataset_size += mf_s
+                        bytes_file_path_dict[manifestpath] = mf_s
 
             return list_manifest_files
 
@@ -1955,6 +1958,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             global main_total_generate_dataset_size
             global total_files
             nonlocal total_metadata_files
+            global bytes_file_path_dict
 
             metadata_files = soda_json_structure["metadata-files"]
             metadata_files_list = []
@@ -1963,9 +1967,11 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                     metadata_path = file["path"]
                     if isfile(metadata_path):
                         metadata_files_list.append(metadata_path)
-                        main_total_generate_dataset_size += getsize(metadata_path)
+                        mf_s = getsize(metadata_path)
+                        main_total_generate_dataset_size += mf_s
                         total_files += 1
                         total_metadata_files += 1
+                        bytes_file_path_dict[metadata_path] = mf_s
 
             return metadata_files_list
 
