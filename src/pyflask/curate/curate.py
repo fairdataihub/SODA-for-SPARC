@@ -3160,6 +3160,9 @@ def generate_dataset(soda_json_structure, resume, ps):
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
 
         if uploading_to_existing_ps_dataset(soda_json_structure):
+            selected_dataset_id = get_dataset_id(
+                soda_json_structure["bf-dataset-selected"]["dataset-name"]
+            )
             # make an api request to pennsieve to get the dataset details
             r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
             r.raise_for_status()
