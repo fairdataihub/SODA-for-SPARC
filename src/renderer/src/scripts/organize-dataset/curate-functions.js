@@ -228,30 +228,104 @@ window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestF
     return datasetStructure;
   }
 
-  // // Open the manifest file and read the contents
-  // for (let folder in manifestFiles) {
-  //   console.log(folder);
-  //   if (folder in datasetStructure["folders"]) {
-  //     // Get the manifest file path
-  //     let manifestFilePath = manifestFiles[folder];
-
-  //     // Read the contents of the manifest file
-  //     try {
-  //       const manifestContents = fs.readFileSync(manifestFilePath, "utf-8");
-  //       console.log(manifestContents);
-  //     } catch(e) {
-  //       console.error("Error reading manifest file:", e);
-  //     }
-  // }
-  // }
-
-  console.log(JSON.stringify(window.sodaJSONObj));
-  window.ffmCreateManifest(window.sodaJSONObj);
-
-  
-
   // Open the manifest file and read the contents
+  for (let folder in manifestFiles) {
+    console.log(folder);
+    console.log(datasetStructure)
+    if (Object.keys(datasetStructure["dataset-structure"]["folders"]).includes(folder)) {
+      // Get the manifest file path
+      let manifestFilePath = manifestFiles[folder];
 
+      // Read the contents of the manifest file
+      try {
+        let jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
+          sourceFile: manifestFilePath,
+          columnToKey: {
+            "*": "{{columnHeader}}",
+          },
+        });
+
+        // console.log(datasetStructure["dataset-structure"]["folders"][folder]["files"])
+        for (let file in datasetStructure["dataset-structure"]["folders"][folder]["files"]) {
+          // console.log(file);
+          if (file.includes("manifeset.xlsx") || file.includes("manifest.csv")) {
+            // delete key
+            delete datasetStructure["dataset-structure"]["folders"][folder]["files"][file];
+          }
+        }
+
+        jsonManifest.shift();
+        for (let manifest of jsonManifest) {
+          // console.log(manifest);
+          let filename = manifest["filename"].split("/");
+          if (filename.length == 1) {
+            // update the dataset structure key
+            // get the metadata already stored in the dataset structure
+            console.log(folder);
+            console.log(filename[0])
+            let metadata = datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]]
+            console.log(metadata);
+            datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]] = {
+              "action": ["new"],
+              "additional-metadata": manifest["Additional Metadata"],
+              "description": manifest["description"],
+              "timestamp": manifest["timestamp"],
+              "type": manifest["file type"],
+              "path": metadata.path,
+              "extension": metadata.extension,
+            }
+
+            if (Object.keys(manifest).length > 4) {
+              // extra columns are present, ensure to preserve them in the data structure
+              // iterate through the keys in manifest
+              console.log(manifest);
+              console.log("SHOULD BE ABOVE")
+
+              for (let key in manifest) {
+                console.log("AS:LDKJASLKDJA:LSKDJA:LSKJD")
+                console.log(key);
+                if (key !== "filename" && key !== "timestamp" && key !== "description" && key !== "file type" && key !== "Additional Metadata") {
+                  datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]]["extra_columns"] = {[key]: manifest[key]};
+                }
+              }
+            }
+            console.log(datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]])
+            console.log(filename);
+          } else {
+            // within a subfolder
+            // depending on the length of filename will determine how many folders deep to traverse
+            // get the metadata already stored in the dataset structure
+            let currentFolder = datasetStructure["dataset-structure"]["folders"][folder];
+            for (let i = 0; i < filename.length - 1; i++) {
+              currentFolder = currentFolder["folders"][filename[i]];
+            }
+            let metadata = currentFolder["files"][filename[filename.length - 1]];
+            currentFolder["files"][filename[filename.length - 1]] = {
+              "action": ["new"],
+              "additional-metadata": manifest["Additional Metadata"],
+              "description": manifest["description"],
+              "timestamp": manifest["timestamp"],
+              "type": manifest["file type"],
+              "path": metadata.path,
+              "extension": metadata.extension,
+            }
+
+            if (Object.keys(manifest).length > 4) {
+              // extra columns are present, ensure to preserve them in the data structure
+              // iterate through the keys in manifest
+              for (let key in manifest) {
+                if (key !== "filename" && key !== "timestamp" && key !== "description" && key !== "file type" && key !== "Additional Metadata") {
+                  currentFolder["files"][filename[filename.length - 1]]["extra_columns"] = {[key]: manifest[key]};
+                }
+              }
+            }
+          }
+        }
+      } catch(e) {
+        console.error("Error reading manifest file:", e);
+      }
+  }
+  }
 
   return datasetStructure;
 }
@@ -385,7 +459,10 @@ window.handleLocalDatasetImport = async (path) => {
   window.sodaJSONObj["dataset-structure"] = buildDatasetStructure;
   window.sodaJSONObj["metadata-files"] = list.files;
   window.sodaJSONObj["starting-point"]["local-path"] = path;
-  await window.addManifestDetailsToDatasetStructure(window.sodaJSONObj, list.manifestFiles);
+  window.sodaJSONObj = await window.addManifestDetailsToDatasetStructure(window.sodaJSONObj, list.manifestFiles);
+
+  console.log("COMEFKJASKLDJ")
+  console.log(window.sodaJSONObj);
   return true;
 };
 
