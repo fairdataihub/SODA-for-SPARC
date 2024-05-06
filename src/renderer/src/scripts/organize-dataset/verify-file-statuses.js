@@ -109,7 +109,7 @@ window.monitorUploadFileVerificationProgress = async () => {
   // loop until all files are verified
   while (true) {
     document.getElementById("verify-dataset-upload-files-progress-para").innerText =
-      "Fetching file statuses...";
+      "Determining if all local files have been successfully imported by Pennsieve...";
     let verifiedFiles = await getVerifiedFilesFromManifest(manifestId);
     finalizedFiles = verifiedFiles["finalizedFiles"];
     failedFilesPathsList = verifiedFiles["failedFilesPathsList"];
@@ -117,14 +117,15 @@ window.monitorUploadFileVerificationProgress = async () => {
 
     if (updatedVerifiedFilesCount > verifiedFilesCount) {
       // update the UI with the verified files count
+      let difference = updatedVerifiedFilesCount - verifiedFilesCount;
       verifiedFilesCount = updatedVerifiedFilesCount;
       document.getElementById("verify-dataset-upload-files-count").innerText =
         `${verifiedFilesCount} / ${window.totalFilesCount} Files`;
       document.getElementById("verify-dataset-upload-files-progress-para").innerText =
-        "Processed fetched file statuses.";
+        `Pennsieve imported ${difference} more local files.`;
     } else {
       document.getElementById("verify-dataset-upload-files-progress-para").innerText =
-        "Processed fetched file statuses. No updates found.";
+        "Pennsieve imported 0 more local files.";
     }
 
     if (verifiedFilesCount === window.totalFilesCount) {
@@ -135,11 +136,10 @@ window.monitorUploadFileVerificationProgress = async () => {
     await new Promise((resolve) => setTimeout(resolve, 5000));
 
     // wait 55 seconds before checking again so we are not spamming the Pennsieve API for large datasets + to give files time to process
-
     for (let time = 60; time > 0; time--) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       document.getElementById("verify-dataset-upload-files-progress-para").innerText =
-        `Waiting ${time} seconds for Pennsieve to process more files...`;
+        `Waiting ${time} seconds for Pennsieve to import more local files...`;
     }
   }
 
