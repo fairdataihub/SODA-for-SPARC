@@ -529,7 +529,22 @@ window.nextPrev = (pageIndex) => {
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
     console.log("exiting?");
     // Remove the text from the dataset path in step 1
+    // step 1
     $("#org-dataset-folder-path").text("");
+
+    // step 2
+    $("#confirm-account-workspace").removeClass("selected");
+    $("#confirm-account-workspace").removeClass("not-selected");
+    $("#change-account-btn").removeClass("selected");
+    $("#change-account-btn").removeClass("not-selected");
+    $("#change-workspace-btn").removeClass("selected");
+    $("#change-workspace-btn").removeClass("not-selected");
+
+    // step 3
+    // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
+    // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
+    document.getElementById("inputNewNameDataset-upload-dataset").value = "";
+    
     // Disable continue button
     $("#nextBtn").prop("disabled", true);
     window.returnToGuided();

@@ -349,52 +349,6 @@ window.handleLocalDatasetImport = async (path) => {
   let action = "";
   let renamedFolderName = "";
 
-  // Function to get the progress of the local dataset every 500ms
-  // const progressReport = async () => {
-  //   try {
-  //     let monitorProgressResponse = await client.get(`/organize_datasets/datasets/import/progress`);
-
-  //     let { data } = monitorProgressResponse;
-  //     let percentage_amount = data["progress_percentage"].toFixed(2);
-  //     let finished = data["create_soda_json_completed"];
-
-  //     numb.innerText = percentage_amount + "%";
-  //     if (percentage_amount <= 50) {
-  //       progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360}deg)`;
-  //     } else {
-  //       progressBar_rightSide.style.transition = "";
-  //       progressBar_rightSide.classList.add("notransition");
-  //       progressBar_rightSide.style.transform = `rotate(180deg)`;
-  //       progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180}deg)`;
-  //     }
-
-  //     if (finished === 1) {
-  //       progressBar_leftSide.style.transform = `rotate(180deg)`;
-  //       numb.innerText = "100%";
-  //       clearInterval(local_progress);
-  //       progressBar_rightSide.classList.remove("notransition");
-  //       window.populate_existing_folders(window.datasetStructureJSONObj);
-  //       window.populate_existing_metadata(window.sodaJSONObj);
-  //       $("#para-continue-location-dataset-getting-started").text("Please continue below.");
-  //       $("#nextBtn").prop("disabled", false);
-  //       // log the success to analytics
-  //       window.logMetadataForAnalytics(
-  //         "Success",
-  //         window.PrepareDatasetsAnalyticsPrefix.CURATE,
-  //         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-  //         window.Actions.EXISTING,
-  //         Destinations.LOCAL
-  //       );
-  //       setTimeout(() => {
-  //         document.getElementById("loading_local_dataset").style.visibility = "hidden";
-  //       }, 1000);
-  //     }
-  //   } catch (error) {
-  //     clientError(error);
-  //     clearInterval(local_progress);
-  //   }
-  // };
-
   window.detectIrregularFolders(window.path.basename(path), path);
   console.log(window.irregularFolderArray);
 
@@ -444,9 +398,7 @@ window.handleLocalDatasetImport = async (path) => {
   } else {
     moveForward = true;
   }
-  let list = await getFilesAndFolders(path);
-  console.log("LIST: " + list);
-  console.log(list);
+  const list = await getFilesAndFolders(path);
   const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
   const buildDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
     list.folders,
@@ -460,7 +412,7 @@ window.handleLocalDatasetImport = async (path) => {
   window.sodaJSONObj["starting-point"]["local-path"] = path;
   window.sodaJSONObj = await window.addManifestDetailsToDatasetStructure(window.sodaJSONObj, list.manifestFiles);
 
-  console.log("COMEFKJASKLDJ")
+  console.log("COMEFKJASKLDJ");
   console.log(window.sodaJSONObj);
   return true;
 };
@@ -526,6 +478,7 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
 document
   .getElementById("dataset-upload-existing-dataset")
   .addEventListener("click", async function () {
+    document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
     document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
     document.getElementById("existing-dataset-upload").classList.remove("hidden");
 
@@ -534,6 +487,7 @@ document
   });
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
+  document.getElementById("dataset-upload-new-dataset").classList.add("checked");
   document.getElementById("existing-dataset-upload").classList.add("hidden");
   document.getElementById("Question-new-dataset-upload-name").classList.remove("hidden");
 
