@@ -132,6 +132,9 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 5) {
+    $("#nextBtn").css("display", "none");
+    $("#prevBtn").css("display", "none");
+    // $("#nextBtn").html("Continue");
     $("#Question-validate-dataset-upload").show();
     window.monitorUploadFileVerificationProgress();
   }
