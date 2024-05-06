@@ -454,7 +454,6 @@ window.handleLocalDatasetImport = async (path) => {
   );
 
   console.log(buildDatasetStructure);
-
   
   window.sodaJSONObj["dataset-structure"] = buildDatasetStructure;
   window.sodaJSONObj["metadata-files"] = list.files;
