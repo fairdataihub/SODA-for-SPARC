@@ -14,7 +14,6 @@ import fileDoc from "/img/doc-file.png";
 import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
-import { swalConfirmAction } from "../utils/swal-utils";
 // import * as path from "path";
 // const path = require("path");
 
@@ -171,7 +170,7 @@ window.uploadDatasetDropHandler = async (ev) => {
   }
 };
 
-async function getFilesAndFolders(directoryPath) {
+const getFilesAndFolders = async (directoryPath) => {
   try {
     // Read the contents of the directory
     const contents = fs.readdirSync(directoryPath);
@@ -190,21 +189,27 @@ async function getFilesAndFolders(directoryPath) {
       const stats = fs.statSync(itemPath);
       console.log(stats);
       if (stats.isFile) {
-        files[item] = itemPath;
+        files[item] = {
+          "path": itemPath,
+          "action": ["new"],
+          "type": "local"
+        };
       } else if (stats.isDirectory) {
         folders.push(itemPath);
       }
     });
 
     // itereate through the folders and get the files. If any of the files are names "manifest.csv" or "manifest.xlsx", save them to the variable manifestFiles
-    let manifestFiles = [];
+    let manifestFiles = {};
     for (let i = 0; i < folders.length; i++) {
       let folder = folders[i];
+      let folderName = path.basename(folder);
       let files = fs.readdirSync(folder);
       for (let j = 0; j < files.length; j++) {
         let file = files[j];
         if (file === "manifest.csv" || file === "manifest.xlsx") {
-          manifestFiles.push(path.join(folder, file));
+          manifestFiles[folderName] = path.join(folder, file);
+          // Create a copy of the manifest files in the root directory
         }
       }
     }
@@ -215,6 +220,40 @@ async function getFilesAndFolders(directoryPath) {
     console.error("Error reading directory:", err);
     return null;
   }
+}
+
+window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestFiles) => {
+  // Add the manifest files to the dataset structure
+  if (manifestFiles.length == 0) {
+    return datasetStructure;
+  }
+
+  // // Open the manifest file and read the contents
+  // for (let folder in manifestFiles) {
+  //   console.log(folder);
+  //   if (folder in datasetStructure["folders"]) {
+  //     // Get the manifest file path
+  //     let manifestFilePath = manifestFiles[folder];
+
+  //     // Read the contents of the manifest file
+  //     try {
+  //       const manifestContents = fs.readFileSync(manifestFilePath, "utf-8");
+  //       console.log(manifestContents);
+  //     } catch(e) {
+  //       console.error("Error reading manifest file:", e);
+  //     }
+  // }
+  // }
+
+  console.log(JSON.stringify(window.sodaJSONObj));
+  window.ffmCreateManifest(window.sodaJSONObj);
+
+  
+
+  // Open the manifest file and read the contents
+
+
+  return datasetStructure;
 }
 
 window.uploadDatasetClickHandler = async (ev) => {
@@ -237,50 +276,50 @@ window.handleLocalDatasetImport = async (path) => {
   let renamedFolderName = "";
 
   // Function to get the progress of the local dataset every 500ms
-  const progressReport = async () => {
-    try {
-      let monitorProgressResponse = await client.get(`/organize_datasets/datasets/import/progress`);
+  // const progressReport = async () => {
+  //   try {
+  //     let monitorProgressResponse = await client.get(`/organize_datasets/datasets/import/progress`);
 
-      let { data } = monitorProgressResponse;
-      let percentage_amount = data["progress_percentage"].toFixed(2);
-      let finished = data["create_soda_json_completed"];
+  //     let { data } = monitorProgressResponse;
+  //     let percentage_amount = data["progress_percentage"].toFixed(2);
+  //     let finished = data["create_soda_json_completed"];
 
-      numb.innerText = percentage_amount + "%";
-      if (percentage_amount <= 50) {
-        progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360}deg)`;
-      } else {
-        progressBar_rightSide.style.transition = "";
-        progressBar_rightSide.classList.add("notransition");
-        progressBar_rightSide.style.transform = `rotate(180deg)`;
-        progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180}deg)`;
-      }
+  //     numb.innerText = percentage_amount + "%";
+  //     if (percentage_amount <= 50) {
+  //       progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360}deg)`;
+  //     } else {
+  //       progressBar_rightSide.style.transition = "";
+  //       progressBar_rightSide.classList.add("notransition");
+  //       progressBar_rightSide.style.transform = `rotate(180deg)`;
+  //       progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180}deg)`;
+  //     }
 
-      if (finished === 1) {
-        progressBar_leftSide.style.transform = `rotate(180deg)`;
-        numb.innerText = "100%";
-        clearInterval(local_progress);
-        progressBar_rightSide.classList.remove("notransition");
-        window.populate_existing_folders(window.datasetStructureJSONObj);
-        window.populate_existing_metadata(window.sodaJSONObj);
-        $("#para-continue-location-dataset-getting-started").text("Please continue below.");
-        $("#nextBtn").prop("disabled", false);
-        // log the success to analytics
-        window.logMetadataForAnalytics(
-          "Success",
-          window.PrepareDatasetsAnalyticsPrefix.CURATE,
-          window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          window.Actions.EXISTING,
-          Destinations.LOCAL
-        );
-        setTimeout(() => {
-          document.getElementById("loading_local_dataset").style.visibility = "hidden";
-        }, 1000);
-      }
-    } catch (error) {
-      clientError(error);
-      clearInterval(local_progress);
-    }
-  };
+  //     if (finished === 1) {
+  //       progressBar_leftSide.style.transform = `rotate(180deg)`;
+  //       numb.innerText = "100%";
+  //       clearInterval(local_progress);
+  //       progressBar_rightSide.classList.remove("notransition");
+  //       window.populate_existing_folders(window.datasetStructureJSONObj);
+  //       window.populate_existing_metadata(window.sodaJSONObj);
+  //       $("#para-continue-location-dataset-getting-started").text("Please continue below.");
+  //       $("#nextBtn").prop("disabled", false);
+  //       // log the success to analytics
+  //       window.logMetadataForAnalytics(
+  //         "Success",
+  //         window.PrepareDatasetsAnalyticsPrefix.CURATE,
+  //         window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+  //         window.Actions.EXISTING,
+  //         Destinations.LOCAL
+  //       );
+  //       setTimeout(() => {
+  //         document.getElementById("loading_local_dataset").style.visibility = "hidden";
+  //       }, 1000);
+  //     }
+  //   } catch (error) {
+  //     clientError(error);
+  //     clearInterval(local_progress);
+  //   }
+  // };
 
   window.detectIrregularFolders(window.path.basename(path), path);
   console.log(window.irregularFolderArray);
@@ -342,10 +381,12 @@ window.handleLocalDatasetImport = async (path) => {
 
   console.log(buildDatasetStructure);
 
+  
   window.sodaJSONObj["dataset-structure"] = buildDatasetStructure;
-
-  // Import the metadata files
   window.sodaJSONObj["metadata-files"] = list.files;
+  window.sodaJSONObj["starting-point"]["local-path"] = path;
+  await window.addManifestDetailsToDatasetStructure(window.sodaJSONObj, list.manifestFiles);
+  return true;
 };
 
 window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (event, path) => {
@@ -2319,6 +2360,7 @@ window.ffmCreateManifest = async (sodaJson) => {
   try {
     // used for imported local datasets and pennsieve datasets
     // filters out deleted files/folders before creating manifest data again
+    console.log(JSON.stringify(window.sodaCopy));
     const cleanJson = await client.post(
       `/curate_datasets/clean-dataset`,
       { soda_json_structure: window.sodaCopy },
