@@ -2038,6 +2038,9 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
       return;
     }
 
+    // hide the confirm button
+    $("#button-confirm-bf-dataset").hide();
+
     $("#Question-generate-dataset-existing-folders-options").show();
     document.getElementById("existing-folders-merge").checked = false;
     document.getElementById("existing-files-replace").checked = false;
@@ -2049,17 +2052,6 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     );
     // continue as usual otherwise
   }
-
-  // here, handling existing folders and files tabs are independent of each other
-  // if (
-  //   !(
-  //     ev.getAttribute("data-next") === "Question-generate-dataset-existing-files-options" &&
-  //     target.classList.contains("prev")
-  //   )
-  // ) {
-  //   // append to parentDiv
-  //   document.getElementById(parentDiv).appendChild(target);
-  // }
 
   // if buttons: Add account and Confirm account were hidden, show them again here
   if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-account") {
