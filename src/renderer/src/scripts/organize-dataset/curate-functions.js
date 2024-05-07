@@ -384,19 +384,71 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
 document
   .getElementById("dataset-upload-existing-dataset")
   .addEventListener("click", async function () {
+    // check if the user has already entered a dataset name in the input field
+    let datasetName = document.getElementById("inputNewNameDataset-upload-dataset").value;
+    if (datasetName) {
+      // confirm with the user if they want to lose their progress by switching to the other workflow
+      let confirmSwitch = await swalConfirmAction(
+        "warning",
+        "Are you sure you want to switch to the existing dataset upload workflow?",
+        "You will lose the progress you have made in the current workflow.",
+        "Yes",
+        "No"
+      );
+
+      if (!confirmSwitch) return;
+    }
+
+    // reset the dataset name input field
+    document.getElementById("inputNewNameDataset-upload-dataset").value = "";
+    //hide the confirm button
+    $("#upload-dataset-btn-confirm-new-dataset-name").addClass("hidden");
+
     document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
     document.getElementById("existing-dataset-upload").classList.remove("hidden");
 
     document.getElementById("dataset-upload-existing-dataset").classList.add("checked");
     document.getElementById("Question-new-dataset-upload-name").classList.remove("checked");
+
+    $("#nextBtn").prop("disabled", true);
   });
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
+  let dsName = document.getElementById("current-bf-dataset-generate").textContent;
+  if (dsName !== "None") {
+    // confirm with the user if they want to lose their progress by switching to the other workflow
+    let confirmSwitch = await swalConfirmAction(
+      "warning",
+      "Are you sure you want to switch to the new dataset upload workflow?",
+      "You will lose the progress you have made in the current workflow.",
+      "Yes",
+      "No"
+    );
+
+    if (!confirmSwitch) return;
+
+    // reset the dataset name input field
+    document.getElementById("current-bf-dataset-generate").textContent = "None";
+
+    // get every input with name="generate-5" and remove the checked property
+    let inputs = document.querySelectorAll('input[name="generate-5"]');
+    inputs.forEach((input) => {
+      input.checked = false;
+    });
+  }
+
   document.getElementById("existing-dataset-upload").classList.add("hidden");
   document.getElementById("Question-new-dataset-upload-name").classList.remove("hidden");
 
   document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
   document.getElementById("Question-new-dataset-upload-name").classList.add("checked");
+
+  // hide the existing folder options
+  $("#Question-generate-dataset-existing-folders-options").hide();
+  $("#Question-generate-dataset-existing-files-options").hide();
+
+  // disable the continue btn
+  $("#nextBtn").prop("disabled", true);
 });
 
 document
