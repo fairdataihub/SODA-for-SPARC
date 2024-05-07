@@ -2014,7 +2014,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     $("#button-confirm-bf-dataset").hide();
 
     $("#Question-generate-dataset-existing-folders-options").show();
-    $("Question-generate-dataset-existing-folders-options").removeClass("hidden");
+    $("#Question-generate-dataset-existing-folders-options").removeClass("hidden");
     document.getElementById("existing-folders-merge").checked = false;
     document.getElementById("existing-files-replace").checked = false;
 
