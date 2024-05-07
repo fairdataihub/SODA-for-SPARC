@@ -435,6 +435,7 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
     let inputs = document.querySelectorAll('input[name="generate-5"]');
     inputs.forEach((input) => {
       input.checked = false;
+      input.classList.remove("checked");
     });
   }
 
