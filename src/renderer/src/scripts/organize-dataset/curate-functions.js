@@ -181,13 +181,10 @@ const getFilesAndFolders = async (directoryPath) => {
     console.log(directoryPath);
     contents.forEach((item) => {
       // Get the full path of the item
-      console.log(item);
       const itemPath = path.join(directoryPath, item);
-      console.log(itemPath);
 
       // Check if it's a file or a folder
       const stats = fs.statSync(itemPath);
-      console.log(stats);
       if (stats.isFile) {
         files[item] = {
           path: itemPath,
@@ -222,16 +219,61 @@ const getFilesAndFolders = async (directoryPath) => {
   }
 };
 
-window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestFiles) => {
+window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestFiles, problematicItems) => {
   // Add the manifest files to the dataset structure
   if (manifestFiles.length == 0) {
     return datasetStructure;
   }
 
+  const problematicFolders = problematicItems[1];
+  const problematicFiles = problematicItems[2]
+
+  let problematicFoldersObj = {};
+  let problematicFilesObj = {};
+
+  for (let folder of problematicFolders) {
+    // console.log(folder);
+    let primaryFolder = folder.split("/")[1];
+    if (problematicFoldersObj[primaryFolder]) {
+      // There is already a problematic folder in this primary folder
+      // Handle if there was a change to the folder
+      problematicFoldersObj[primaryFolder].push({
+        "path": folder,
+        "folder_name": path.basename(folder),
+      });
+    }
+    problematicFoldersObj[primaryFolder] = []
+
+    problematicFoldersObj[primaryFolder].push({
+      "path": folder,
+      "folder_name": path.basename(folder),
+    })
+  }
+
+  for (let file of problematicFiles) {
+    // console.log(file);
+    let primaryFolder = file.split("/")[1];
+    if (problematicFilesObj[primaryFolder]) {
+      // There is already a problematic file in this primary folder
+      // Handle if there was a change to the file
+      problematicFilesObj[primaryFolder].push({
+        "path": file,
+        "file_name": path.basename(file),
+      });
+    }
+    problematicFilesObj[primaryFolder].push({
+      "path": file,
+      "file_name": path.basename(file),
+    })
+  }
+
+  console.log(problematicFoldersObj);
+  console.log(problematicFilesObj);
+
   // Open the manifest file and read the contents
   for (let folder in manifestFiles) {
-    console.log(folder);
-    console.log(datasetStructure);
+    // console.log(folder);
+    // console.log(datasetStructure);
     if (Object.keys(datasetStructure["dataset-structure"]["folders"]).includes(folder)) {
       // Get the manifest file path
       let manifestFilePath = manifestFiles[folder];
@@ -255,6 +297,8 @@ window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestF
         }
 
         jsonManifest.shift();
+        console.log(jsonManifest);
+        console.log(datasetStructure);
         for (let manifest of jsonManifest) {
           // console.log(manifest);
           let filename = manifest["filename"].split("/");
@@ -306,8 +350,28 @@ window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestF
             // within a subfolder
             // depending on the length of filename will determine how many folders deep to traverse
             // get the metadata already stored in the dataset structure
+            console.log(folder);
+            console.log(filename);
+            if (Object.keys(problematicFilesObj).length > 0 && Object.keys(problematicFilesObj).includes(folder)) {
+              // Therer is a problematic file in this primary folder
+              // Handle if there was a change to the file
+              for(let i = 0; i < problematicFilesObj[folder].length; i++) {
+                console.log(problematicFilesObj[folder][i]);
+              }
+            }
+
+            if (Object.keys(problematicFoldersObj).length > 0 && Object.keys(problematicFoldersObj).includes(folder)) {
+              // There is a problematic folder in this primary folder
+              console.log(problematicFoldersObj[folder]);
+              console.log(problematicFoldersObj[folder].length);
+              for (let i = 0; i < problematicFoldersObj[folder].length; i++) {
+                console.log(problematicFoldersObj[folder][i]);
+              }
+            }
+
             let currentFolder = datasetStructure["dataset-structure"]["folders"][folder];
             for (let i = 0; i < filename.length - 1; i++) {
+              console.log(currentFolder["folders"][filename[i]]);
               currentFolder = currentFolder["folders"][filename[i]];
             }
             let metadata = currentFolder["files"][filename[filename.length - 1]];
@@ -354,84 +418,21 @@ window.uploadDatasetClickHandler = async (ev) => {
 };
 
 window.handleLocalDatasetImport = async (path) => {
-  // Progress variables
-  const numb = document.getElementById("local_dataset_number");
-  const progressBar_rightSide = document.getElementById("left-side_less_than_50");
-  const progressBar_leftSide = document.getElementById("right-side_greater_than_50");
-  let local_progress;
-
-  // Reset import variables
-  const footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${window.nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-  window.irregularFolderArray = [];
-  let replaced = {};
-  let moveForward = false;
-  let action = "";
-  let renamedFolderName = "";
-
-  window.detectIrregularFolders(window.path.basename(path), path);
-  console.log(window.irregularFolderArray);
-
-  if (window.irregularFolderArray.length > 0) {
-    await Swal.fire({
-      title:
-        "The following folders contain non-allowed characters in their names. How should we handle them?",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" +
-        window.irregularFolderArray.join("</br>") +
-        "</div>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Replace characters with (-)",
-      denyButtonText: "Remove characters",
-      cancelButtonText: "Cancel",
-      didOpen: () => {
-        $(".swal-popover").popover();
-      },
-      footer: footer,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        action = "replace";
-        moveForward = true;
-        if (window.irregularFolderArray.length > 0) {
-          for (let i = 0; i < window.irregularFolderArray.length; i++) {
-            renamedFolderName = window.replaceIrregularFolders(window.irregularFolderArray[i]);
-            replaced[window.path.basename(window.irregularFolderArray[i])] = renamedFolderName;
-          }
-        }
-      } else if (result.isDenied) {
-        action = "remove";
-        moveForward = true;
-        if (window.irregularFolderArray.length > 0) {
-          for (let i = 0; i < irregularFolderArray.length; i++) {
-            renamedFolderName = window.removeIrregularFolders(window.irregularFolderArray[i]);
-            replaced[window.path.basename(window.irregularFolderArray[i])] = renamedFolderName;
-          }
-        }
-      } else {
-        document.getElementById("org-dataset-folder-path").innerHTML = "";
-        moveForward = false;
-      }
-    });
-  } else {
-    moveForward = true;
-  }
   const list = await getFilesAndFolders(path);
   const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
   const buildDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
     list.folders,
-    currentFileExplorerPath
+    currentFileExplorerPath,
+    true
   );
 
-  console.log(buildDatasetStructure);
-
-  window.sodaJSONObj["dataset-structure"] = buildDatasetStructure;
+  window.sodaJSONObj["dataset-structure"] = buildDatasetStructure[0];
   window.sodaJSONObj["metadata-files"] = list.files;
   window.sodaJSONObj["starting-point"]["local-path"] = path;
   window.sodaJSONObj = await window.addManifestDetailsToDatasetStructure(
     window.sodaJSONObj,
-    list.manifestFiles
+    list.manifestFiles,
+    buildDatasetStructure
   );
 
   console.log("COMEFKJASKLDJ");

@@ -4657,7 +4657,7 @@ const closeFileImportLoadingSweetAlert = () => {
   }
 };
 
-window.buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileExplorerPath) => {
+window.buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileExplorerPath, datasetImport=false) => {
   const inaccessibleItems = [];
   const forbiddenFileNames = [];
   const problematicFolderNames = [];
@@ -4853,6 +4853,10 @@ window.buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFile
     Object.keys(datasetStructure?.["files"]).length === 0
   ) {
     throw new Error("Error building dataset structure");
+  }
+
+  if (datasetImport) {
+    return [datasetStructure, problematicFolderNames, problematicFileNames]
   }
 
   return datasetStructure;
