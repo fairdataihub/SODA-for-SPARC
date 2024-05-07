@@ -535,7 +535,7 @@ window.nextPrev = async (pageIndex) => {
       console.log(warnBeforeExitCurate);
       // TODO: KEEP RESETING UPLOAD DATASET UI
       if (warnBeforeExitCurate.isConfirmed) {
-        console.log("SHOULD RESET")
+        console.log("SHOULD RESET");
         // step 1
         $("#org-dataset-folder-path").text("");
 
@@ -563,7 +563,7 @@ window.nextPrev = async (pageIndex) => {
         return;
       }
     } else {
-      console.log("SHOULD RESET")
+      console.log("SHOULD RESET");
       // step 1
       $("#org-dataset-folder-path").text("");
 

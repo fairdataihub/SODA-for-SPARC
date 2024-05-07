@@ -204,17 +204,17 @@ const getFilesAndFolders = async (directoryPath) => {
       let files = fs.readdirSync(folder);
       for (let j = 0; j < files.length; j++) {
         let file = files[j];
-        console.log("______")
+        console.log("______");
         console.log(file);
-        console.log("______")
+        console.log("______");
         if (file === "manifest.csv" || file === "manifest.xlsx") {
           manifestFiles[folderName] = path.join(folder, file);
           // Create a copy of the manifest files in the root directory
         }
       }
     }
-    console.log("MANIFESTFILES")
-    console.log(manifestFiles)
+    console.log("MANIFESTFILES");
+    console.log(manifestFiles);
     return { files, folders, manifestFiles };
   } catch (err) {
     // Handle any errors
@@ -223,14 +223,18 @@ const getFilesAndFolders = async (directoryPath) => {
   }
 };
 
-window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestFiles, problematicItems) => {
+window.addManifestDetailsToDatasetStructure = async (
+  datasetStructure,
+  manifestFiles,
+  problematicItems
+) => {
   // Add the manifest files to the dataset structure
   if (manifestFiles.length == 0) {
     return datasetStructure;
   }
 
   const problematicFolders = problematicItems[1];
-  const problematicFiles = problematicItems[2]
+  const problematicFiles = problematicItems[2];
 
   let problematicFoldersObj = {};
   let problematicFilesObj = {};
@@ -242,16 +246,16 @@ window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestF
       // There is already a problematic folder in this primary folder
       // Handle if there was a change to the folder
       problematicFoldersObj[primaryFolder].push({
-        "path": folder,
-        "folder_name": path.basename(folder),
+        path: folder,
+        folder_name: path.basename(folder),
       });
     }
-    problematicFoldersObj[primaryFolder] = []
+    problematicFoldersObj[primaryFolder] = [];
 
     problematicFoldersObj[primaryFolder].push({
-      "path": folder,
-      "folder_name": path.basename(folder),
-    })
+      path: folder,
+      folder_name: path.basename(folder),
+    });
   }
 
   for (let file of problematicFiles) {
@@ -261,14 +265,14 @@ window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestF
       // There is already a problematic file in this primary folder
       // Handle if there was a change to the file
       problematicFilesObj[primaryFolder].push({
-        "path": file,
-        "file_name": path.basename(file),
+        path: file,
+        file_name: path.basename(file),
       });
     }
     problematicFilesObj[primaryFolder].push({
-      "path": file,
-      "file_name": path.basename(file),
-    })
+      path: file,
+      file_name: path.basename(file),
+    });
   }
 
   console.log(problematicFoldersObj);
@@ -293,9 +297,9 @@ window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestF
 
         // console.log(datasetStructure["dataset-structure"]["folders"][folder]["files"])
         for (let file in datasetStructure["dataset-structure"]["folders"][folder]["files"]) {
-          console.log("WATCH THIS")
+          console.log("WATCH THIS");
           console.log(file);
-          console.log("WATCH THIS")
+          console.log("WATCH THIS");
           if (file.includes("manifest.xlsx") || file.includes("manifest.csv")) {
             // delete key
             delete datasetStructure["dataset-structure"]["folders"][folder]["files"][file];
@@ -356,19 +360,25 @@ window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestF
             // within a subfolder
             // depending on the length of filename will determine how many folders deep to traverse
             // get the metadata already stored in the dataset structure
-            console.log("AS:DLKJAW")
+            console.log("AS:DLKJAW");
             console.log(folder);
             console.log(filename);
-            console.log("AS:DLKJAW")
-            if (Object.keys(problematicFilesObj).length > 0 && Object.keys(problematicFilesObj).includes(folder)) {
+            console.log("AS:DLKJAW");
+            if (
+              Object.keys(problematicFilesObj).length > 0 &&
+              Object.keys(problematicFilesObj).includes(folder)
+            ) {
               // Therer is a problematic file in this primary folder
               // Handle if there was a change to the file
-              for(let i = 0; i < problematicFilesObj[folder].length; i++) {
+              for (let i = 0; i < problematicFilesObj[folder].length; i++) {
                 console.log(problematicFilesObj[folder][i]);
               }
             }
 
-            if (Object.keys(problematicFoldersObj).length > 0 && Object.keys(problematicFoldersObj).includes(folder)) {
+            if (
+              Object.keys(problematicFoldersObj).length > 0 &&
+              Object.keys(problematicFoldersObj).includes(folder)
+            ) {
               // There is a problematic folder in this primary folder
               console.log(problematicFoldersObj[folder]);
               console.log(problematicFoldersObj[folder].length);
@@ -394,7 +404,7 @@ window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestF
                 path: metadata.path,
                 extension: metadata.extension,
               };
-  
+
               if (Object.keys(manifest).length > 4) {
                 // extra columns are present, ensure to preserve them in the data structure
                 // iterate through the keys in manifest
