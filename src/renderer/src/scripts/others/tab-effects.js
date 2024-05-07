@@ -535,12 +535,14 @@ window.nextPrev = async (pageIndex) => {
       console.log(warnBeforeExitCurate);
       // TODO: KEEP RESETING UPLOAD DATASET UI
       if (warnBeforeExitCurate.isConfirmed) {
+        console.log("SHOULD RESET")
         // step 1
         $("#org-dataset-folder-path").text("");
 
         // step 2
         $("#confirm-account-workspace").removeClass("selected");
         $("#confirm-account-workspace").removeClass("not-selected");
+        $("#confirm-account-workspace").addClass("basic");
         $("#change-account-btn").removeClass("selected");
         $("#change-account-btn").removeClass("not-selected");
         $("#change-workspace-btn").removeClass("selected");
@@ -549,6 +551,8 @@ window.nextPrev = async (pageIndex) => {
         // step 3
         // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
         // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
+        document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
+        document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
         document.getElementById("inputNewNameDataset-upload-dataset").value = "";
 
         // Disable continue button
@@ -559,6 +563,7 @@ window.nextPrev = async (pageIndex) => {
         return;
       }
     } else {
+      console.log("SHOULD RESET")
       // step 1
       $("#org-dataset-folder-path").text("");
 
