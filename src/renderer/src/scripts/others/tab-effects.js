@@ -37,32 +37,15 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   console.log(nextOrPrev);
   $("#nextBtn").prop("disabled", true);
   if (tabNow == -1) {
+    // When exiting upload dataset workflow, the tabNow state changes to -1 which will cause an error
+    // Reset the tabNow state to 0
     tabNow = 0;
     window.currentTab = 0;
   }
-  // check to show Save progress btn (only after step 2)
-  // if (tabNow >= 2) {
-  //   // check if users are Continuing with an existing BF ds. If so, hide Save progress btn
-  //   if ($('input[name="getting-started-1"]:checked').prop("id") === "existing-bf") {
-  //     $("#save-progress-btn").css("display", "none");
-  //   } else {
-  //     $("#save-progress-btn").css("display", "block");
-  //   }
-  //   $("#start-over-btn").css("display", "inline-block");
-  // } else {
-  //   $("#save-progress-btn").css("display", "none");
-  //   $("#start-over-btn").css("display", "none");
-  // }
 
   // This function will display the specified tab of the form ...
   var x = document.getElementsByClassName("parent-tabs");
   fixStepIndicator(tabNow);
-  // if (tabNow === 0 && nextOrPrev === 1) {
-  //   console.log("first step here");
-  //   fixStepDone(tabNow);
-  // } else if (nextOrPrev === -1){
-  //   fixStepDone(tabNow - 1);
-  // }
 
   $(x[tabNow]).addClass("tab-active");
   setTimeout(() => {
@@ -87,15 +70,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     $("#nextBtn").prop("disabled", false);
   }
 
-  // if (tabNow == 0) {
-  //   console.log("also first step here");
-  //   // If there is not folder path in step one, disable the continue button
-  //   if (document.getElementById("org-dataset-folder-path").innerHTML !== "") {
-  //     $("#nextBtn").prop("disabled", false);
-  //   } else {
-  //     $("#nextBtn").prop("disabled", true);
-  //   }
-  // } else 
   if (tabNow == 1) {
     // checkHighLevelFoldersInput();
     // window.highLevelFoldersDisableOptions();
@@ -535,7 +509,7 @@ window.nextPrev = async (pageIndex) => {
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
     console.log("exiting?");
     // Remove the text from the dataset path in step 1
-    if (window.sodaJSONObj != {} || window.sodaJSONObj != null) {
+    if (JSON.stringify(window.sodaJSONObj) != "{}" || window.sodaJSONObj != null) {
       const transitionWarningMessage = `
           Going back home will wipe out the progress you have made organizing your dataset.
         `;
@@ -558,20 +532,9 @@ window.nextPrev = async (pageIndex) => {
         },
       });
 
+      console.log(warnBeforeExitCurate);
+      // TODO: KEEP RESETING UPLOAD DATASET UI
       if (warnBeforeExitCurate.isConfirmed) {
-        // Wipe out organize dataset progress before entering Guided Mode
-        // $("#dataset-loaded-message").hide();
-        // $(".vertical-progress-bar-step").removeClass("is-current");
-        // $(".vertical-progress-bar-step").removeClass("done");
-        // $(".getting-started").removeClass("prev");
-        // $(".getting-started").removeClass("show");
-        // $(".getting-started").removeClass("test2");
-        // $("#Question-getting-started-1").addClass("show");
-        // $("#generate-dataset-progress-tab").css("display", "none");
-        // window.currentTab = 0;
-        // window.wipeOutCurateProgress();
-        // window.globalGettingStarted1stQuestionBool = false;
-
         // step 1
         $("#org-dataset-folder-path").text("");
 
@@ -596,19 +559,6 @@ window.nextPrev = async (pageIndex) => {
         return;
       }
     } else {
-      // // Wipe out organize dataset progress before entering Guided Mode
-      // $("#dataset-loaded-message").hide();
-      // $(".vertical-progress-bar-step").removeClass("is-current");
-      // $(".vertical-progress-bar-step").removeClass("done");
-      // $(".getting-started").removeClass("prev");
-      // $(".getting-started").removeClass("show");
-      // $(".getting-started").removeClass("test2");
-      // $("#Question-getting-started-1").addClass("show");
-      // $("#generate-dataset-progress-tab").css("display", "none");
-      // window.currentTab = 0;
-      // window.wipeOutCurateProgress();
-      // window.globalGettingStarted1stQuestionBool = false;
-
       // step 1
       $("#org-dataset-folder-path").text("");
 
