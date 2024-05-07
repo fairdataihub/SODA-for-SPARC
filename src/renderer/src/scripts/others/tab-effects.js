@@ -1989,6 +1989,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
 
   // Step 6 - The Merge/Skip/Replace options for selecting how to upload data to an existing Pennsieve dataset
   if (ev.getAttribute("data-next") === "Question-generate-dataset-existing-folders-options") {
+    console.log("We will show the folders");
     if (!window.hasFiles) {
       // select the Merge option for Folders
       document.getElementById("existing-folders-merge").checked = true;
@@ -2013,6 +2014,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     $("#button-confirm-bf-dataset").hide();
 
     $("#Question-generate-dataset-existing-folders-options").show();
+    $("Question-generate-dataset-existing-folders-options").removeClass("hide");
     document.getElementById("existing-folders-merge").checked = false;
     document.getElementById("existing-files-replace").checked = false;
 
