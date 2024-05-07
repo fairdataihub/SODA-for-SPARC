@@ -36,6 +36,10 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   console.log("Tab after addition", tabNow);
   console.log(nextOrPrev);
   $("#nextBtn").prop("disabled", true);
+  if (tabNow == -1) {
+    tabNow = 0;
+    window.currentTab = 0;
+  }
   // check to show Save progress btn (only after step 2)
   // if (tabNow >= 2) {
   //   // check if users are Continuing with an existing BF ds. If so, hide Save progress btn
@@ -53,12 +57,12 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   // This function will display the specified tab of the form ...
   var x = document.getElementsByClassName("parent-tabs");
   fixStepIndicator(tabNow);
-  if (tabNow === 0) {
-    console.log("first step here");
-    fixStepDone(tabNow);
-  } else {
-    fixStepDone(tabNow - 1);
-  }
+  // if (tabNow === 0 && nextOrPrev === 1) {
+  //   console.log("first step here");
+  //   fixStepDone(tabNow);
+  // } else if (nextOrPrev === -1){
+  //   fixStepDone(tabNow - 1);
+  // }
 
   $(x[tabNow]).addClass("tab-active");
   setTimeout(() => {
@@ -83,15 +87,16 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     $("#nextBtn").prop("disabled", false);
   }
 
-  if (tabNow == 0) {
-    console.log("also first step here");
-    // If there is not folder path in step one, disable the continue button
-    if (document.getElementById("org-dataset-folder-path").innerHTML !== "") {
-      $("#nextBtn").prop("disabled", false);
-    } else {
-      $("#nextBtn").prop("disabled", true);
-    }
-  } else if (tabNow == 1) {
+  // if (tabNow == 0) {
+  //   console.log("also first step here");
+  //   // If there is not folder path in step one, disable the continue button
+  //   if (document.getElementById("org-dataset-folder-path").innerHTML !== "") {
+  //     $("#nextBtn").prop("disabled", false);
+  //   } else {
+  //     $("#nextBtn").prop("disabled", true);
+  //   }
+  // } else 
+  if (tabNow == 1) {
     // checkHighLevelFoldersInput();
     // window.highLevelFoldersDisableOptions();
   } else if (tabNow == 3) {
@@ -521,7 +526,7 @@ window.hasEmptyFolders = (currentFolder) => {
  * Also performs events or actions (such as update window.sodaJSONObj) based off the state of the Organize Datasets section
  * currently being displayed after pressing the Continue button/back button.
  */
-window.nextPrev = (pageIndex) => {
+window.nextPrev = async (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
   let parentTabs = document.getElementsByClassName("parent-tabs");
   console.log("current tab: ", window.currentTab);
@@ -530,26 +535,100 @@ window.nextPrev = (pageIndex) => {
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
     console.log("exiting?");
     // Remove the text from the dataset path in step 1
-    // step 1
-    $("#org-dataset-folder-path").text("");
+    if (window.sodaJSONObj != {} || window.sodaJSONObj != null) {
+      const transitionWarningMessage = `
+          Going back home will wipe out the progress you have made organizing your dataset.
+        `;
 
-    // step 2
-    $("#confirm-account-workspace").removeClass("selected");
-    $("#confirm-account-workspace").removeClass("not-selected");
-    $("#change-account-btn").removeClass("selected");
-    $("#change-account-btn").removeClass("not-selected");
-    $("#change-workspace-btn").removeClass("selected");
-    $("#change-workspace-btn").removeClass("not-selected");
+      const warnBeforeExitCurate = await Swal.fire({
+        icon: "warning",
+        html: transitionWarningMessage,
+        showCancelButton: true,
+        focusCancel: true,
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Go back Home",
+        reverseButtons: window.reverseSwalButtons,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
 
-    // step 3
-    // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
-    // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
-    document.getElementById("inputNewNameDataset-upload-dataset").value = "";
+      if (warnBeforeExitCurate.isConfirmed) {
+        // Wipe out organize dataset progress before entering Guided Mode
+        // $("#dataset-loaded-message").hide();
+        // $(".vertical-progress-bar-step").removeClass("is-current");
+        // $(".vertical-progress-bar-step").removeClass("done");
+        // $(".getting-started").removeClass("prev");
+        // $(".getting-started").removeClass("show");
+        // $(".getting-started").removeClass("test2");
+        // $("#Question-getting-started-1").addClass("show");
+        // $("#generate-dataset-progress-tab").css("display", "none");
+        // window.currentTab = 0;
+        // window.wipeOutCurateProgress();
+        // window.globalGettingStarted1stQuestionBool = false;
 
-    // Disable continue button
-    $("#nextBtn").prop("disabled", true);
-    window.returnToGuided();
-    return;
+        // step 1
+        $("#org-dataset-folder-path").text("");
+
+        // step 2
+        $("#confirm-account-workspace").removeClass("selected");
+        $("#confirm-account-workspace").removeClass("not-selected");
+        $("#change-account-btn").removeClass("selected");
+        $("#change-account-btn").removeClass("not-selected");
+        $("#change-workspace-btn").removeClass("selected");
+        $("#change-workspace-btn").removeClass("not-selected");
+
+        // step 3
+        // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
+        // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
+        document.getElementById("inputNewNameDataset-upload-dataset").value = "";
+
+        // Disable continue button
+        $("#nextBtn").prop("disabled", true);
+        window.returnToGuided();
+      } else {
+        //Stay in Organize datasets section
+        return;
+      }
+    } else {
+      // // Wipe out organize dataset progress before entering Guided Mode
+      // $("#dataset-loaded-message").hide();
+      // $(".vertical-progress-bar-step").removeClass("is-current");
+      // $(".vertical-progress-bar-step").removeClass("done");
+      // $(".getting-started").removeClass("prev");
+      // $(".getting-started").removeClass("show");
+      // $(".getting-started").removeClass("test2");
+      // $("#Question-getting-started-1").addClass("show");
+      // $("#generate-dataset-progress-tab").css("display", "none");
+      // window.currentTab = 0;
+      // window.wipeOutCurateProgress();
+      // window.globalGettingStarted1stQuestionBool = false;
+
+      // step 1
+      $("#org-dataset-folder-path").text("");
+
+      // step 2
+      $("#confirm-account-workspace").removeClass("selected");
+      $("#confirm-account-workspace").removeClass("not-selected");
+      $("#change-account-btn").removeClass("selected");
+      $("#change-account-btn").removeClass("not-selected");
+      $("#change-workspace-btn").removeClass("selected");
+      $("#change-workspace-btn").removeClass("not-selected");
+
+      // step 3
+      // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
+      // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
+      document.getElementById("inputNewNameDataset-upload-dataset").value = "";
+
+      // Disable continue button
+      $("#nextBtn").prop("disabled", true);
+      window.returnToGuided();
+    }
   }
 
   // update JSON structure
@@ -815,10 +894,13 @@ window.nextPrev = (pageIndex) => {
 const fixStepIndicator = (pageIndex) => {
   // This function removes the "is-current" class of all steps...
   let progressSteps = document.getElementsByClassName("vertical-progress-bar-step");
-  for (let step of progressSteps) {
-    step.className = step.className.replace(" is-current", "");
+  if (progressSteps != undefined) {
+    for (let step of progressSteps) {
+      console.log(step);
+      step.className = step.className.replace(" is-current", "");
+    }
+    progressSteps[pageIndex].className += " is-current";
   }
-  progressSteps[pageIndex].className += " is-current";
 };
 
 const fixStepDone = (pageIndex) => {
