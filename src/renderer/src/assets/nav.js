@@ -100,14 +100,6 @@ const handleSectionTrigger = async (event) => {
     );
     const transitionWarningMessage = `
           Going back home will wipe out the progress you have made organizing your dataset.
-          <br><br>
-          ${
-            buttonContinueExistingPennsieve.classList.contains("checked")
-              ? `To continue making modifications to your existing Pennsieve dataset, press Cancel.`
-              : `To save your progress, press Cancel${
-                  window.currentTab < 2 ? ", progress to the third step," : ""
-                } and press "Save Progress" in the Organize Dataset tab.`
-          }
         `;
 
     const warnBeforeExitCurate = await Swal.fire({

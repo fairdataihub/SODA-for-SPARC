@@ -293,8 +293,10 @@ window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestF
 
         // console.log(datasetStructure["dataset-structure"]["folders"][folder]["files"])
         for (let file in datasetStructure["dataset-structure"]["folders"][folder]["files"]) {
-          // console.log(file);
-          if (file.includes("manifeset.xlsx") || file.includes("manifest.csv")) {
+          console.log("WATCH THIS")
+          console.log(file);
+          console.log("WATCH THIS")
+          if (file.includes("manifest.xlsx") || file.includes("manifest.csv")) {
             // delete key
             delete datasetStructure["dataset-structure"]["folders"][folder]["files"][file];
           }
@@ -354,8 +356,10 @@ window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestF
             // within a subfolder
             // depending on the length of filename will determine how many folders deep to traverse
             // get the metadata already stored in the dataset structure
+            console.log("AS:DLKJAW")
             console.log(folder);
             console.log(filename);
+            console.log("AS:DLKJAW")
             if (Object.keys(problematicFilesObj).length > 0 && Object.keys(problematicFilesObj).includes(folder)) {
               // Therer is a problematic file in this primary folder
               // Handle if there was a change to the file
@@ -373,12 +377,13 @@ window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestF
               }
             }
 
-            let currentFolder = datasetStructure["dataset-structure"]["folders"][folder];
+            console.log(JSON.stringify(datasetStructure["dataset-structure"]));
+            let currentFolder = datasetStructure?.["dataset-structure"]?.["folders"]?.[folder];
             for (let i = 0; i < filename.length - 1; i++) {
-              console.log(currentFolder["folders"]?.[filename[i]]);
-              currentFolder = currentFolder["folders"]?.[filename[i]];
+              console.log(currentFolder?.["folders"]?.[filename[i]]);
+              currentFolder = currentFolder?.["folders"]?.[filename[i]];
             }
-            let metadata = currentFolder["files"]?.[filename[filename.length - 1]];
+            let metadata = currentFolder?.["files"]?.[filename[filename.length - 1]];
             if (currentFolder === !undefined) {
               currentFolder["files"][filename[filename.length - 1]] = {
                 action: ["new"],
