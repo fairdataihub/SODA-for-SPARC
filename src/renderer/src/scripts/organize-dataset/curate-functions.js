@@ -204,13 +204,17 @@ const getFilesAndFolders = async (directoryPath) => {
       let files = fs.readdirSync(folder);
       for (let j = 0; j < files.length; j++) {
         let file = files[j];
+        console.log("______")
+        console.log(file);
+        console.log("______")
         if (file === "manifest.csv" || file === "manifest.xlsx") {
           manifestFiles[folderName] = path.join(folder, file);
           // Create a copy of the manifest files in the root directory
         }
       }
     }
-
+    console.log("MANIFESTFILES")
+    console.log(manifestFiles)
     return { files, folders, manifestFiles };
   } catch (err) {
     // Handle any errors
@@ -371,34 +375,36 @@ window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestF
 
             let currentFolder = datasetStructure["dataset-structure"]["folders"][folder];
             for (let i = 0; i < filename.length - 1; i++) {
-              console.log(currentFolder["folders"][filename[i]]);
-              currentFolder = currentFolder["folders"][filename[i]];
+              console.log(currentFolder["folders"]?.[filename[i]]);
+              currentFolder = currentFolder["folders"]?.[filename[i]];
             }
-            let metadata = currentFolder["files"][filename[filename.length - 1]];
-            currentFolder["files"][filename[filename.length - 1]] = {
-              action: ["new"],
-              "additional-metadata": manifest["Additional Metadata"],
-              description: manifest["description"],
-              timestamp: manifest["timestamp"],
-              type: manifest["file type"],
-              path: metadata.path,
-              extension: metadata.extension,
-            };
-
-            if (Object.keys(manifest).length > 4) {
-              // extra columns are present, ensure to preserve them in the data structure
-              // iterate through the keys in manifest
-              for (let key in manifest) {
-                if (
-                  key !== "filename" &&
-                  key !== "timestamp" &&
-                  key !== "description" &&
-                  key !== "file type" &&
-                  key !== "Additional Metadata"
-                ) {
-                  currentFolder["files"][filename[filename.length - 1]]["extra_columns"] = {
-                    [key]: manifest[key],
-                  };
+            let metadata = currentFolder["files"]?.[filename[filename.length - 1]];
+            if (currentFolder === !undefined) {
+              currentFolder["files"][filename[filename.length - 1]] = {
+                action: ["new"],
+                "additional-metadata": manifest["Additional Metadata"],
+                description: manifest["description"],
+                timestamp: manifest["timestamp"],
+                type: manifest["file type"],
+                path: metadata.path,
+                extension: metadata.extension,
+              };
+  
+              if (Object.keys(manifest).length > 4) {
+                // extra columns are present, ensure to preserve them in the data structure
+                // iterate through the keys in manifest
+                for (let key in manifest) {
+                  if (
+                    key !== "filename" &&
+                    key !== "timestamp" &&
+                    key !== "description" &&
+                    key !== "file type" &&
+                    key !== "Additional Metadata"
+                  ) {
+                    currentFolder["files"][filename[filename.length - 1]]["extra_columns"] = {
+                      [key]: manifest[key],
+                    };
+                  }
                 }
               }
             }

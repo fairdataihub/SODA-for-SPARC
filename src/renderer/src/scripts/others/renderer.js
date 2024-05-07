@@ -4532,6 +4532,9 @@ const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
 const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
   const currentFoldersAtPath = Object.keys(datasetStructure.folders);
   for (const folderKey of currentFoldersAtPath) {
+    console.log("TEST");
+    console.log(folderKey);
+    console.log("TEST");
     const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
       folderKey,
       "folder-and-file-name-is-valid"
