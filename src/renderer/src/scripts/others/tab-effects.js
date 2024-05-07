@@ -1023,8 +1023,8 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
 
   if (currentDiv === "Question-generate-dataset-existing-folders-options") {
     // show the existing file options div
-    $("#generate-dataset-existing-files-options").show();
-    $("#generate-dataset-existing-files-options").removeClass("hidden");
+    $("#Question-generate-dataset-existing-files-options").show();
+    $("#Question-generate-dataset-existing-files-options").removeClass("hidden");
   }
 
   // add "non-selected" to current option-card so users cannot keep selecting it
