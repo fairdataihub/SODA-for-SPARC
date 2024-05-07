@@ -444,8 +444,8 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
   document.getElementById("Question-new-dataset-upload-name").classList.add("checked");
 
   // hide the existing folder options
-  $("#Question-generate-dataset-existing-folders-options").hide();
-  $("#Question-generate-dataset-existing-files-options").hide();
+  $("#Question-generate-dataset-existing-folders-options").addClass("hidden");
+  $("#Question-generate-dataset-existing-files-options").addClass("hidden");
 
   // disable the continue btn
   $("#nextBtn").prop("disabled", true);
