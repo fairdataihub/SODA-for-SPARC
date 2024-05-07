@@ -1194,36 +1194,6 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     }
   }
 
-  if (ev.getAttribute("data-next") === "Question-generate-dataset-generate-div-old") {
-    if (
-      $("#generate-local-existing").is(":checked") &&
-      currentDiv === "Question-generate-dataset"
-    ) {
-      let starting_point = window.sodaJSONObj["starting-point"]["local-path"];
-
-      Swal.fire({
-        icon: "info",
-        text: `The following local folder '${starting_point}' will be modified as instructed.`,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
-      $("#para-continue-replace-local-generate").show();
-      $("#para-continue-replace-local-generate").text("Please continue below.");
-    } else {
-      if (currentDiv === "Question-generate-dataset-existing-files-options") {
-        $("#para-continue-existing-files-generate").show();
-        $("#para-continue-existing-files-generate").text("Please continue below.");
-      } else {
-        $("#para-continue-existing-files-generate").hide();
-        $("#para-continue-existing-files-generate").text("");
-      }
-    }
-    $("#nextBtn").prop("disabled", false);
-  } else {
-    $("#para-continue-replace-local-generate").hide();
-    $("#para-continue-replace-local-generate").text("");
-  }
-
   if (ev.getAttribute("data-next") === "Question-getting-started-locally-destination") {
     if ($("#existing-local").is(":checked") && currentDiv == "Question-getting-started-1") {
       window.sodaJSONObj = {
