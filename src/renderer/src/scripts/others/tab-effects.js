@@ -2033,18 +2033,6 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     document.getElementById("btn-bf-workspace").style.display = "block";
   }
 
-  if (ev.getAttribute("data-next") === "Question-generate-dataset-generate-div-old") {
-    $("#nextBtn").prop("disabled", false);
-  } else {
-    // create moving effects when new questions appear
-    let step6 = document.getElementById("generate-dataset-tab");
-    if (step6.classList.contains("tab-active")) {
-      $("#nextBtn").prop("disabled", true);
-    }
-    // $("#nextBtn").prop("disabled", false);
-    setTimeout(() => target.classList.add("test2"), 100);
-  }
-
   document.getElementById(currentDiv).classList.add("prev");
 
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
