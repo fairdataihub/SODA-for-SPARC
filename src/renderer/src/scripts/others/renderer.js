@@ -4537,7 +4537,9 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
       "folder-and-file-name-is-valid"
     );
     if (!folderNameIsValid) {
+      console.log("Folder name is not valid: ", folderKey);
       const newFolderName = folderKey.replace(sparcFolderAndFileRegex, "-");
+      console.log("Newly corrected folder name: ", newFolderName);
       const newFolderObj = { ...datasetStructure["folders"][folderKey] };
       if (!newFolderObj["action"].includes("renamed")) {
         newFolderObj["action"].push("renamed");
@@ -4545,6 +4547,8 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
       datasetStructure["folders"][newFolderName] = newFolderObj;
       delete datasetStructure["folders"][folderKey];
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][newFolderName]);
+    } else {
+      replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
     }
   }
 };
