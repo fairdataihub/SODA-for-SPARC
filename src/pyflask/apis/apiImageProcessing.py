@@ -9,25 +9,6 @@ api = get_namespace(NamespaceEnum.IMAGE_PROCESSING)
 namespace_logger = get_namespace_logger(NamespaceEnum.IMAGE_PROCESSING)
 
 
-
-class BioLucidaTokenManager:
-    def __init__(self):
-        self.bioLucida_username = None
-        self.bioLucida_token = None
-        self.bioLucida_token_expiration = None
-        
-    
-    def get_token(self):
-        if self.bioLucida_token is None:   
-            return None
-        return self.bioLucida_token
-    
-    def set_token(self, username, token):
-        self.bioLucida_username = username
-        self.bioLucida_token = token
-        self.bioLucida_token_expiration = None
-BioLucidaTokenManager = BioLucidaTokenManager()
-
 @api.route('/biolucida_login')
 class BiolucidaLogin(Resource):
     global namespace_logger
@@ -94,8 +75,8 @@ class BiolucidaImageUpload(Resource):
         try:
             namespace_logger.info("Received request to upload image to Biolucida")
             data = self.parser.parse_args()
-            namespace_logger.info(f"Uploading image to Biolucida: {data}")
             token = data['token']
+            namespace_logger.info(f"Token for request: {token}")
             collection_name = data['collection_name']
             files_to_upload = data['files_to_upload']
 
@@ -103,31 +84,27 @@ class BiolucidaImageUpload(Resource):
                 'token': token
             }
 
-            payload = {
-                'filesize': '4096 ',
-                'chunk_size': '1024',
-                'filename': 'test.jp2',
-                'tracked_dir': '',
+            data = {
+                'filesize': '100',
+                'chunk_size': '100',
+                'filename': 'test',
             }
+            namespace_logger.info(f"Init request headers: {headers}")
+            namespace_logger.info(f"Init request payload: {data}")
 
-            res = requests.post('https://sparc.biolucida.net/api/v1/upload/init', headers=headers, data=payload)
+            res = requests.post('https://sparc.biolucida.net/api/v1/upload/init', headers=headers, data=data)
             namespace_logger.info(f"Upload init response: {res}")
             namespace_logger.info(f"Upload init text: {res.text}")
-            namespace_logger.info(f"Response headers: {res.headers}")
-            namespace_logger.info(f"Response header content-type: {res.headers['content-type']}")
-            response_keys = res.__dict__.keys()
-            for key in response_keys:
-                value = res.__dict__[key]
-                namespace_logger.error(f"Response Key: {key}, Value: {value}")
+            namespace_logger.info(f"Upload init status code: {res.status_code}")
             namespace_logger.info(f"Handling res based on status code: {res.status_code}")
             if (res.status_code != 200):
-                namespace_logger.error(f"Error uploading image to Biolucida: {res}")
-                namespace_logger.error(f"Error status code: {res.status_code}")
+                namespace_logger.error(f"FAILED Error uploading image to Biolucida: {res}")
+                namespace_logger.error(f"FAILED BioLucida API status code: {res.status_code}")
                 api.abort(500, res)
             else:
-                namespace_logger.info(f"Upload image response: {res}")
-                namespace_logger.info(f"Upload image status code: {res.status_code}")
-                namespace_logger.info(f"Upload image text: {res.text}")
+                namespace_logger.info(f"SUCCESS Upload image response: {res}")
+                namespace_logger.info(f"SUCCESS Upload image status code: {res.status_code}")
+                namespace_logger.info(f"SUCCESS Upload image text: {res.text}")
                 return res.json()
         except Exception as e:
             namespace_logger.error(f"Error uploading image to Biolucida: {str(e)}")
