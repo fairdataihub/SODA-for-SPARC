@@ -1130,10 +1130,6 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     $("#Question-generate-dataset-generate-div").children().hide();
   }
 
-  if (ev.getAttribute("data-next") === "Question-generate-dataset-generate-div-old") {
-    $("#nextBtn").prop("disabled", false);
-  }
-
   // add "prev" to previous questions just so the text becomes gray -> take the attention away from those questions
   document.getElementById(currentDiv).classList.add("prev");
 
