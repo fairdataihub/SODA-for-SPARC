@@ -4536,6 +4536,8 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
       folderKey,
       "folder-and-file-name-is-valid"
     );
+    // If the folder name is not valid, replace it with a valid name and then recurse through the
+    // renamed folder to check for any other problematic folders
     if (!folderNameIsValid) {
       const newFolderName = folderKey.replace(sparcFolderAndFileRegex, "-");
       const newFolderObj = { ...datasetStructure["folders"][folderKey] };
@@ -4545,10 +4547,12 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
       datasetStructure["folders"][newFolderName] = newFolderObj;
       delete datasetStructure["folders"][folderKey];
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][newFolderName]);
+    } else {
+      // If the folder name is valid, recurse through the folder to check for any problematic folders
+      replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
     }
   }
 };
-
 const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
