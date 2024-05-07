@@ -1122,7 +1122,6 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     // create moving effects when new questions appear
     $("#Question-generate-dataset-generate-div").hide();
     $("#Question-generate-dataset-generate-div").children().hide();
-    setTimeout(() => target.classList.add("test2"), 100);
   }
 
   if (ev.getAttribute("data-next") === "Question-generate-dataset-generate-div-old") {
