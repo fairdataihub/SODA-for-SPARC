@@ -1027,6 +1027,14 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     $("#Question-generate-dataset-existing-files-options").removeClass("hidden");
   }
 
+  if (currentDiv === "Question-generate-dataset-existing-files-options") {
+    // activate the continue button
+    $("#nextBtn").prop("disabled", false);
+    // show the continue para text
+    $("#para-continue-existing-files-generate").show();
+    $("#para-continue-existing-files-generate").text("Please continue to the next step");
+  }
+
   // add "non-selected" to current option-card so users cannot keep selecting it
   $(ev).removeClass("non-selected");
   $(ev).children().find(".folder-input-check").prop("checked", true);
