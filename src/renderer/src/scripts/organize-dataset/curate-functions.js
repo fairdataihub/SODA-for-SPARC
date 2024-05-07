@@ -316,10 +316,10 @@ window.addManifestDetailsToDatasetStructure = async (datasetStructure, manifestF
             console.log(metadata);
             datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]] = {
               action: ["new"],
-              "additional-metadata": manifest["Additional Metadata"],
-              description: manifest["description"],
-              timestamp: manifest["timestamp"],
-              type: manifest["file type"],
+              "additional-metadata": manifest?.["Additional Metadata"] || "",
+              description: manifest?.["description"] || "",
+              timestamp: manifest?.["timestamp"] || "",
+              type: manifest?.["file type"] || "",
               path: metadata.path,
               extension: metadata.extension,
             };
@@ -433,6 +433,7 @@ window.handleLocalDatasetImport = async (path) => {
   );
 
   window.sodaJSONObj["dataset-structure"] = buildDatasetStructure[0];
+  // window.sodaJSONObj["dataset-structure"]["files"] = list.files;
   window.sodaJSONObj["metadata-files"] = list.files;
   window.sodaJSONObj["starting-point"]["local-path"] = path;
   window.sodaJSONObj = await window.addManifestDetailsToDatasetStructure(

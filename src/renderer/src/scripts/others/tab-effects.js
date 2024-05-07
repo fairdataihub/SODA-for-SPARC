@@ -192,6 +192,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
 
     let dataset_name = fill_info_details();
     window.datasetStructureJSONObj["files"] = window.sodaJSONObj["metadata-files"];
+    window.datasetStructureJSONObj["folders"] = window.sodaJSONObj["dataset-structure"]["folders"];
     window.showTreeViewPreview(
       false,
       false,
