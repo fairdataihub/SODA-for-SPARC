@@ -1021,6 +1021,12 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     return;
   }
 
+  if (currentDiv === "Question-generate-dataset-existing-folders-options") {
+    // show the existing file options div
+    $("#generate-dataset-existing-files-options").show();
+    $("#generate-dataset-existing-files-options").removeClass("hidden");
+  }
+
   // add "non-selected" to current option-card so users cannot keep selecting it
   $(ev).removeClass("non-selected");
   $(ev).children().find(".folder-input-check").prop("checked", true);

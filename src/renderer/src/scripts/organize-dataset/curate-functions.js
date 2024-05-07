@@ -431,6 +431,7 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
     document.getElementById("current-bf-dataset-generate").textContent = "None";
 
     // get every input with name="generate-5" and remove the checked property
+    // TODO: REset sodaJSONObj here too
     let inputs = document.querySelectorAll('input[name="generate-5"]');
     inputs.forEach((input) => {
       input.checked = false;
