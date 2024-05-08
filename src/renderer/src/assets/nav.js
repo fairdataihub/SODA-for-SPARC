@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import { swalConfirmAction } from "../scripts/utils/swal-utils";
 import lottie from "lottie-web";
 import { existingDataset, modifyDataset } from "../assets/lotties/lotties";
 
@@ -6,9 +7,37 @@ while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
+const leavingUploadDatasets = () => {
+  let activeTabs = document.querySelectorAll(".tab-active");
+  for (const tab of activeTabs) {
+    if (tab.id === "getting-started-tab" || tab.id === "high-level-folders-tab" 
+        || tab.id === "upload-destination-selection-tab" || tab.id === "manifest-file-tab" || tab.id === "preview-dataset-tab" 
+        || tab.id === "generate-dataset-progress-tab" || tab.id === "validate-upload-status-tab"
+       ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+const sodaJSONHasProgress = () => {
+  return JSON.stringify(window.sodaJSONObj) !== "{}" && window.sodaJSONObj
+}
+
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
-document.body.addEventListener("click", (event) => {
+document.body.addEventListener("click", async (event) => {
   if (event.target.dataset.section) {
+    if (leavingUploadDatasets() && sodaJSONHasProgress()) {
+      let leaveUploadDataset = await swalConfirmAction(
+        "warning",
+        "Exit Upload Dataset?",
+        "Progress will not be saved in SODA. Do you want to continue?",
+        "Yes",
+        "Cancel",
+      )
+      if(!leaveUploadDataset) return 
+      window.resetCurationTabs()
+    }
     handleSectionTrigger(event);
   } else if (event.target.dataset.modal) {
     handleModalTrigger(event);
@@ -18,6 +47,8 @@ document.body.addEventListener("click", (event) => {
 });
 
 document.body.addEventListener("custom-back", (e) => {
+  console.log("Pre-section trigger 2?")
+
   handleSectionTrigger(e);
 });
 // Variable used to determine the disabled status of the organize datasets next button
@@ -64,9 +95,11 @@ const handleSectionTriggerOrganize = async (
   sectionId,
   freeFormItemsContainer,
   freeFormButtons
-) => {};
+) => { };
 
 const handleSectionTrigger = async (event) => {
+  console.log("Calling section trigger")
+  console.log(event)
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
   const itemsContainer = document.getElementById("items");
@@ -94,6 +127,7 @@ const handleSectionTrigger = async (event) => {
 
   // check if we are entering the organize datasets section
   if (sectionId === "organize-section") {
+    console.log("Entering organize section")
     //reset lazyloading values
     resetLazyLoading();
     window.hasFiles = false;
@@ -108,6 +142,27 @@ const handleSectionTrigger = async (event) => {
   }
 
   if (sectionId === "guided_mode-section") {
+
+    // let activeTab = document.querySelectorAll(".tab-active");
+    // console.log(activeTab)
+    // for(const tab of activeTab) {
+    //   console.log(tab)
+    //   if(tab.id === "getting-started-tab" && JSON.stringify(window.sodaJSONObj) !== "{}" && window.sodaJSONObj) {
+    //     Swal.fire({
+    //       icon: "warning",
+    //       text: "You cannot curate another dataset while an upload is in progress but you can still modify dataset components.",
+    //       confirmButtonText: "OK",
+    //     })
+
+    //     window.exitCurate(true)
+    //   }
+    // }
+
+
+
+
+    // check if the 
+    console.log("Guided Mode section")
     // Disallow the transition if an upload is in progress
     if (document.getElementById("returnButton") !== null) {
       Swal.fire({
@@ -126,6 +181,8 @@ const handleSectionTrigger = async (event) => {
       document.getElementById("main_tabs_view").click();
       document.getElementById("organize_dataset_btn").click();
     }
+
+    console.log(sectionRenderFileExplorer)
 
     if (sectionRenderFileExplorer != "file-explorer") {
       window.sodaJSONObj = {};

@@ -3530,15 +3530,7 @@ window.resetCuration = () => {
   window.globalGettingStarted1stQuestionBool = false;
 };
 
-window.exitCurate = async (resetProgressTabs, start_over = false) => {
-  $("#dataset-loaded-message").hide();
-  // if exit Btn is clicked after Generate
-  if (resetProgressTabs) {
-    let message = "Are you sure you want to start exit?";
-
-    var res = await raiseWarningExit(message);
-
-    if (res) {
+window.resetCurationTabs = () => {
       $(".vertical-progress-bar-step").removeClass("is-current");
       $(".vertical-progress-bar-step").removeClass("done");
       $(".getting-started").removeClass("prev");
@@ -3555,10 +3547,24 @@ window.exitCurate = async (resetProgressTabs, start_over = false) => {
       window.wipeOutCurateProgress();
       window.showParentTab(0, 1);
       window.globalGettingStarted1stQuestionBool = false;
+}
+
+window.exitCurate = async (resetProgressTabs, start_over = false) => {
+  $("#dataset-loaded-message").hide();
+  // if exit Btn is clicked after Generate
+  if (resetProgressTabs) {
+    let message = "Are you sure you want to exit?";
+
+    var res = await raiseWarningExit(message);
+
+    if (res) {
+      
+      window.resetCurationTabs()
+
       if (start_over) {
         $("#organize_dataset_btn").click();
       } else {
-        window.returnToGuided();
+        // window.returnToGuided();
         if ($("#nextBtn").prop("disabled") === true) {
           window.nextBtnDisabledVariable = true;
         } else {
