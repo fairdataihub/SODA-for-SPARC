@@ -20,14 +20,12 @@ const leavingUploadDatasets = () => {
   return false;
 }
 
-const sodaJSONHasProgress = () => {
-  return JSON.stringify(window.sodaJSONObj) !== "{}" && window.sodaJSONObj
-}
+
 
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 document.body.addEventListener("click", async (event) => {
   if (event.target.dataset.section) {
-    if (leavingUploadDatasets() && sodaJSONHasProgress()) {
+    if (leavingUploadDatasets() && window.sodaJSONHasProgress()) {
       let leaveUploadDataset = await swalConfirmAction(
         "warning",
         "Exit Upload Dataset?",
