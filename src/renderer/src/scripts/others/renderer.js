@@ -4532,10 +4532,15 @@ const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
 const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
   const currentFoldersAtPath = Object.keys(datasetStructure.folders);
   for (const folderKey of currentFoldersAtPath) {
+    console.log("TEST");
+    console.log(folderKey);
+    console.log("TEST");
     const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
       folderKey,
       "folder-and-file-name-is-valid"
     );
+    // If the folder name is not valid, replace it with a valid name and then recurse through the
+    // renamed folder to check for any other problematic folders
     if (!folderNameIsValid) {
       const newFolderName = folderKey.replace(sparcFolderAndFileRegex, "-");
       const newFolderObj = { ...datasetStructure["folders"][folderKey] };
@@ -4545,6 +4550,9 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
       datasetStructure["folders"][newFolderName] = newFolderObj;
       delete datasetStructure["folders"][folderKey];
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][newFolderName]);
+    } else {
+      // If the folder name is valid, recurse through the folder to check for any problematic folders
+      replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
     }
   }
 };
@@ -4657,7 +4665,11 @@ const closeFileImportLoadingSweetAlert = () => {
   }
 };
 
-const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileExplorerPath) => {
+window.buildDatasetStructureJsonFromImportedData = async (
+  itemPaths,
+  currentFileExplorerPath,
+  datasetImport = false
+) => {
   const inaccessibleItems = [];
   const forbiddenFileNames = [];
   const problematicFolderNames = [];
@@ -4855,6 +4867,10 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
     throw new Error("Error building dataset structure");
   }
 
+  if (datasetImport) {
+    return [datasetStructure, problematicFolderNames, problematicFileNames];
+  }
+
   return datasetStructure;
 };
 
@@ -5003,7 +5019,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
     // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
     const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
 
-    const builtDatasetStructure = await buildDatasetStructureJsonFromImportedData(
+    const builtDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
       importedData,
       currentFileExplorerPath
     );

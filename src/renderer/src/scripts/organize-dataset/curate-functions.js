@@ -14,7 +14,8 @@ import fileDoc from "/img/doc-file.png";
 import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
-import { swalConfirmAction } from "../utils/swal-utils";
+// import * as path from "path";
+// const path = require("path");
 
 while (!window.htmlPagesAdded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -169,158 +170,296 @@ window.uploadDatasetDropHandler = async (ev) => {
   }
 };
 
+const getFilesAndFolders = async (directoryPath) => {
+  try {
+    // Read the contents of the directory
+    const contents = fs.readdirSync(directoryPath);
+
+    // Separate files and folders
+    const files = {};
+    const folders = [];
+    console.log(directoryPath);
+    contents.forEach((item) => {
+      // Get the full path of the item
+      const itemPath = path.join(directoryPath, item);
+
+      // Check if it's a file or a folder
+      const stats = fs.statSync(itemPath);
+      if (stats.isFile) {
+        files[item] = {
+          path: itemPath,
+          action: ["new"],
+          type: "local",
+        };
+      } else if (stats.isDirectory) {
+        folders.push(itemPath);
+      }
+    });
+
+    // itereate through the folders and get the files. If any of the files are names "manifest.csv" or "manifest.xlsx", save them to the variable manifestFiles
+    let manifestFiles = {};
+    for (let i = 0; i < folders.length; i++) {
+      let folder = folders[i];
+      let folderName = path.basename(folder);
+      let files = fs.readdirSync(folder);
+      for (let j = 0; j < files.length; j++) {
+        let file = files[j];
+        console.log("______");
+        console.log(file);
+        console.log("______");
+        if (file === "manifest.csv" || file === "manifest.xlsx") {
+          manifestFiles[folderName] = path.join(folder, file);
+          // Create a copy of the manifest files in the root directory
+        }
+      }
+    }
+    console.log("MANIFESTFILES");
+    console.log(manifestFiles);
+    return { files, folders, manifestFiles };
+  } catch (err) {
+    // Handle any errors
+    console.error("Error reading directory:", err);
+    return null;
+  }
+};
+
+window.addManifestDetailsToDatasetStructure = async (
+  datasetStructure,
+  manifestFiles,
+  problematicItems
+) => {
+  // Add the manifest files to the dataset structure
+  if (manifestFiles.length == 0) {
+    return datasetStructure;
+  }
+
+  const problematicFolders = problematicItems[1];
+  const problematicFiles = problematicItems[2];
+
+  let problematicFoldersObj = {};
+  let problematicFilesObj = {};
+
+  for (let folder of problematicFolders) {
+    // console.log(folder);
+    let primaryFolder = folder.split("/")[1];
+    if (problematicFoldersObj[primaryFolder]) {
+      // There is already a problematic folder in this primary folder
+      // Handle if there was a change to the folder
+      problematicFoldersObj[primaryFolder].push({
+        path: folder,
+        folder_name: path.basename(folder),
+      });
+    }
+    problematicFoldersObj[primaryFolder] = [];
+
+    problematicFoldersObj[primaryFolder].push({
+      path: folder,
+      folder_name: path.basename(folder),
+    });
+  }
+
+  for (let file of problematicFiles) {
+    // console.log(file);
+    let primaryFolder = file.split("/")[1];
+    if (problematicFilesObj[primaryFolder]) {
+      // There is already a problematic file in this primary folder
+      // Handle if there was a change to the file
+      problematicFilesObj[primaryFolder].push({
+        path: file,
+        file_name: path.basename(file),
+      });
+    }
+    problematicFilesObj[primaryFolder].push({
+      path: file,
+      file_name: path.basename(file),
+    });
+  }
+
+  console.log(problematicFoldersObj);
+  console.log(problematicFilesObj);
+
+  // Open the manifest file and read the contents
+  for (let folder in manifestFiles) {
+    // console.log(folder);
+    // console.log(datasetStructure);
+    if (Object.keys(datasetStructure["dataset-structure"]["folders"]).includes(folder)) {
+      // Get the manifest file path
+      let manifestFilePath = manifestFiles[folder];
+
+      // Read the contents of the manifest file
+      try {
+        let jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
+          sourceFile: manifestFilePath,
+          columnToKey: {
+            "*": "{{columnHeader}}",
+          },
+        });
+
+        // console.log(datasetStructure["dataset-structure"]["folders"][folder]["files"])
+        for (let file in datasetStructure["dataset-structure"]["folders"][folder]["files"]) {
+          console.log("WATCH THIS");
+          console.log(file);
+          console.log("WATCH THIS");
+          if (file.includes("manifest.xlsx") || file.includes("manifest.csv")) {
+            // delete key
+            delete datasetStructure["dataset-structure"]["folders"][folder]["files"][file];
+          }
+        }
+
+        jsonManifest.shift();
+        console.log(jsonManifest);
+        console.log(datasetStructure);
+        for (let manifest of jsonManifest) {
+          // console.log(manifest);
+          let filename = manifest["filename"].split("/");
+          if (filename.length == 1) {
+            // update the dataset structure key
+            // get the metadata already stored in the dataset structure
+            console.log(folder);
+            console.log(filename[0]);
+            let metadata =
+              datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]];
+            console.log(metadata);
+            datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]] = {
+              action: ["new"],
+              "additional-metadata": manifest?.["Additional Metadata"] || "",
+              description: manifest?.["description"] || "",
+              timestamp: manifest?.["timestamp"] || "",
+              type: manifest?.["file type"] || "",
+              path: metadata.path,
+              extension: metadata.extension,
+            };
+
+            if (Object.keys(manifest).length > 4) {
+              // extra columns are present, ensure to preserve them in the data structure
+              // iterate through the keys in manifest
+              console.log(manifest);
+              console.log("SHOULD BE ABOVE");
+
+              for (let key in manifest) {
+                console.log("AS:LDKJASLKDJA:LSKDJA:LSKJD");
+                console.log(key);
+                if (
+                  key !== "filename" &&
+                  key !== "timestamp" &&
+                  key !== "description" &&
+                  key !== "file type" &&
+                  key !== "Additional Metadata"
+                ) {
+                  datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]][
+                    "extra_columns"
+                  ] = { [key]: manifest[key] };
+                }
+              }
+            }
+            console.log(
+              datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]]
+            );
+            console.log(filename);
+          } else {
+            // within a subfolder
+            // depending on the length of filename will determine how many folders deep to traverse
+            // get the metadata already stored in the dataset structure
+            console.log("AS:DLKJAW");
+            console.log(folder);
+            console.log(filename);
+            console.log("AS:DLKJAW");
+            if (
+              Object.keys(problematicFilesObj).length > 0 &&
+              Object.keys(problematicFilesObj).includes(folder)
+            ) {
+              // Therer is a problematic file in this primary folder
+              // Handle if there was a change to the file
+              for (let i = 0; i < problematicFilesObj[folder].length; i++) {
+                console.log(problematicFilesObj[folder][i]);
+              }
+            }
+
+            if (
+              Object.keys(problematicFoldersObj).length > 0 &&
+              Object.keys(problematicFoldersObj).includes(folder)
+            ) {
+              // There is a problematic folder in this primary folder
+              console.log(problematicFoldersObj[folder]);
+              console.log(problematicFoldersObj[folder].length);
+              for (let i = 0; i < problematicFoldersObj[folder].length; i++) {
+                console.log(problematicFoldersObj[folder][i]);
+              }
+            }
+
+            console.log(JSON.stringify(datasetStructure["dataset-structure"]));
+            let currentFolder = datasetStructure?.["dataset-structure"]?.["folders"]?.[folder];
+            for (let i = 0; i < filename.length - 1; i++) {
+              console.log(currentFolder?.["folders"]?.[filename[i]]);
+              currentFolder = currentFolder?.["folders"]?.[filename[i]];
+            }
+            let metadata = currentFolder?.["files"]?.[filename[filename.length - 1]];
+            if (currentFolder === !undefined) {
+              currentFolder["files"][filename[filename.length - 1]] = {
+                action: ["new"],
+                "additional-metadata": manifest["Additional Metadata"],
+                description: manifest["description"],
+                timestamp: manifest["timestamp"],
+                type: manifest["file type"],
+                path: metadata.path,
+                extension: metadata.extension,
+              };
+
+              if (Object.keys(manifest).length > 4) {
+                // extra columns are present, ensure to preserve them in the data structure
+                // iterate through the keys in manifest
+                for (let key in manifest) {
+                  if (
+                    key !== "filename" &&
+                    key !== "timestamp" &&
+                    key !== "description" &&
+                    key !== "file type" &&
+                    key !== "Additional Metadata"
+                  ) {
+                    currentFolder["files"][filename[filename.length - 1]]["extra_columns"] = {
+                      [key]: manifest[key],
+                    };
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Error reading manifest file:", e);
+      }
+    }
+  }
+
+  return datasetStructure;
+};
+
 window.uploadDatasetClickHandler = async (ev) => {
   window.electron.ipcRenderer.send("open-file-dialog-upload-dataset");
 };
 
 window.handleLocalDatasetImport = async (path) => {
-  // Progress variables
-  const numb = document.getElementById("local_dataset_number");
-  const progressBar_rightSide = document.getElementById("left-side_less_than_50");
-  const progressBar_leftSide = document.getElementById("right-side_greater_than_50");
-  let local_progress;
+  const list = await getFilesAndFolders(path);
+  const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
+  const buildDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
+    list.folders,
+    currentFileExplorerPath,
+    true
+  );
 
-  // Reset import variables
-  const footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${window.nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-  window.irregularFolderArray = [];
-  let replaced = {};
-  let moveForward = false;
-  let action = "";
-  let renamedFolderName = "";
+  window.sodaJSONObj["dataset-structure"] = buildDatasetStructure[0];
+  // window.sodaJSONObj["dataset-structure"]["files"] = list.files;
+  window.sodaJSONObj["metadata-files"] = list.files;
+  window.sodaJSONObj["starting-point"]["local-path"] = path;
+  window.sodaJSONObj = await window.addManifestDetailsToDatasetStructure(
+    window.sodaJSONObj,
+    list.manifestFiles,
+    buildDatasetStructure
+  );
 
-  // Function to get the progress of the local dataset every 500ms
-  const progressReport = async () => {
-    try {
-      let monitorProgressResponse = await client.get(`/organize_datasets/datasets/import/progress`);
-
-      let { data } = monitorProgressResponse;
-      let percentage_amount = data["progress_percentage"].toFixed(2);
-      let finished = data["create_soda_json_completed"];
-
-      numb.innerText = percentage_amount + "%";
-      if (percentage_amount <= 50) {
-        progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360}deg)`;
-      } else {
-        progressBar_rightSide.style.transition = "";
-        progressBar_rightSide.classList.add("notransition");
-        progressBar_rightSide.style.transform = `rotate(180deg)`;
-        progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180}deg)`;
-      }
-
-      if (finished === 1) {
-        progressBar_leftSide.style.transform = `rotate(180deg)`;
-        numb.innerText = "100%";
-        clearInterval(local_progress);
-        progressBar_rightSide.classList.remove("notransition");
-        window.populate_existing_folders(window.datasetStructureJSONObj);
-        window.populate_existing_metadata(window.sodaJSONObj);
-        $("#para-continue-location-dataset-getting-started").text("Please continue below.");
-        $("#nextBtn").prop("disabled", false);
-        // log the success to analytics
-        window.logMetadataForAnalytics(
-          "Success",
-          window.PrepareDatasetsAnalyticsPrefix.CURATE,
-          window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-          window.Actions.EXISTING,
-          Destinations.LOCAL
-        );
-        setTimeout(() => {
-          document.getElementById("loading_local_dataset").style.visibility = "hidden";
-        }, 1000);
-      }
-    } catch (error) {
-      clientError(error);
-      clearInterval(local_progress);
-    }
-  };
-
-  window.detectIrregularFolders(window.path.basename(path), path);
-  console.log(window.irregularFolderArray);
-
-  if (window.irregularFolderArray.length > 0) {
-    await Swal.fire({
-      title:
-        "The following folders contain non-allowed characters in their names. How should we handle them?",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" +
-        window.irregularFolderArray.join("</br>") +
-        "</div>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Replace characters with (-)",
-      denyButtonText: "Remove characters",
-      cancelButtonText: "Cancel",
-      didOpen: () => {
-        $(".swal-popover").popover();
-      },
-      footer: footer,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        action = "replace";
-        moveForward = true;
-        if (window.irregularFolderArray.length > 0) {
-          for (let i = 0; i < window.irregularFolderArray.length; i++) {
-            renamedFolderName = window.replaceIrregularFolders(window.irregularFolderArray[i]);
-            replaced[window.path.basename(window.irregularFolderArray[i])] = renamedFolderName;
-          }
-        }
-      } else if (result.isDenied) {
-        action = "remove";
-        moveForward = true;
-        if (window.irregularFolderArray.length > 0) {
-          for (let i = 0; i < irregularFolderArray.length; i++) {
-            renamedFolderName = window.removeIrregularFolders(window.irregularFolderArray[i]);
-            replaced[window.path.basename(window.irregularFolderArray[i])] = renamedFolderName;
-          }
-        }
-      } else {
-        document.getElementById("org-dataset-folder-path").innerHTML = "";
-        moveForward = false;
-      }
-    });
-  } else {
-    moveForward = true;
-  }
-
-  if (moveForward) {
-    window.sodaJSONObj["starting-point"]["local-path"] = path;
-    //Reset the progress bar
-    progressBar_rightSide.style.transform = `rotate(0deg)`;
-    progressBar_leftSide.style.transform = `rotate(0deg)`;
-    numb.innerText = "0%";
-
-    // Show the progress bar
-    document.getElementById("loading_local_dataset").style.visibility = "visible";
-    local_progress = setInterval(progressReport, 500);
-    console.log(window.irregularFolderArray.toString());
-    console.log(JSON.stringify(replaced));
-    console.log(JSON.stringify(window.sodaJSONObj));
-    console.log(path);
-
-    try {
-      let importLocalDatasetResponse = await client.post(
-        `/organize_datasets/datasets/import`,
-        {
-          sodajsonobject: window.sodaJSONObj,
-          root_folder_path: path,
-          irregular_folders: window.irregularFolderArray,
-          replaced: replaced,
-        },
-        { timeout: 0 }
-      );
-
-      let { data } = importLocalDatasetResponse;
-      window.sodaJSONObj = data;
-      window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-      return true;
-    } catch (error) {
-      clientError(error);
-      clearInterval(local_progress);
-      return false;
-    }
-  }
+  console.log("COMEFKJASKLDJ");
+  console.log(window.sodaJSONObj);
+  return true;
 };
 
 window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (event, path) => {
@@ -2348,6 +2487,7 @@ window.ffmCreateManifest = async (sodaJson) => {
   try {
     // used for imported local datasets and pennsieve datasets
     // filters out deleted files/folders before creating manifest data again
+    console.log(JSON.stringify(window.sodaCopy));
     const cleanJson = await client.post(
       `/curate_datasets/clean-dataset`,
       { soda_json_structure: window.sodaCopy },
