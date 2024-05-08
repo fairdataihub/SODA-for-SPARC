@@ -526,7 +526,7 @@ document
   .addEventListener("click", async function () {
     // check if the user has already entered a dataset name in the input field
     let datasetName = document.getElementById("inputNewNameDataset-upload-dataset").value;
-    if (datasetName) {
+    if (datasetName !== "") {
       // confirm with the user if they want to lose their progress by switching to the other workflow
       let confirmSwitch = await swalConfirmAction(
         "warning",
@@ -556,6 +556,7 @@ document
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
   let dsName = document.getElementById("current-bf-dataset-generate").textContent;
+  console.log(dsName);
   if (dsName !== "None") {
     // confirm with the user if they want to lose their progress by switching to the other workflow
     let confirmSwitch = await swalConfirmAction(

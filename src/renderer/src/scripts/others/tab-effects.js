@@ -583,6 +583,7 @@ window.nextPrev = async (pageIndex) => {
       // step 2
       $("#confirm-account-workspace").removeClass("selected");
       $("#confirm-account-workspace").removeClass("not-selected");
+      $("#confirm-account-workspace").addClass("basic");
       $("#change-account-btn").removeClass("selected");
       $("#change-account-btn").removeClass("not-selected");
       $("#change-workspace-btn").removeClass("selected");
