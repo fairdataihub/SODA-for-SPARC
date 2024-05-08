@@ -3581,6 +3581,7 @@ window.exitCurate = async (resetProgressTabs, start_over = false) => {
   }
 };
 
+
 window.wipeOutCurateProgress = () => {
   // set SODA json object back
   window.sodaJSONObj = {
@@ -3588,6 +3589,50 @@ window.wipeOutCurateProgress = () => {
     "dataset-structure": {},
     "metadata-files": {},
   };
+
+  // reset imported dataset path 
+  document.querySelector("#org-dataset-folder-path").textContent = ""
+
+  // reset page 2 button selections
+  $("#confirm-account-workspace").removeClass("selected");
+  $("#confirm-account-workspace").removeClass("not-selected");
+  $("#change-account-btn").removeClass("selected");
+  $("#change-account-btn").removeClass("not-selected");
+  $("#change-workspace-btn").removeClass("selected");
+  $("#change-workspace-btn").removeClass("not-selected");
+  $("#confirm-account-workspace").addClass("basic");
+
+
+  // reset page 3 dataset upload options
+
+  // reset the two option card selections
+  document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
+  document.getElementById("Question-new-dataset-upload-name").classList.remove("checked");
+
+  // reset the dataset name input field
+  document.getElementById("inputNewNameDataset-upload-dataset").value = "";
+  document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
+  $("#upload-dataset-btn-confirm-new-dataset-name").addClass("hidden");
+
+
+  // get every input with name="generate-5" and remove the checked property
+  let inputs = document.querySelectorAll('input[name="generate-5"]');
+  inputs.forEach((input) => {
+    input.checked = false;
+    input.classList.remove("checked");
+  });
+  document.getElementById("current-bf-dataset-generate").textContent = "None";
+  // hide the existing folder/files options
+  $("#Question-generate-dataset-existing-folders-options").addClass("hidden");
+  $("#Question-generate-dataset-existing-files-options").addClass("hidden");
+
+
+  // reset manifest color
+  document.getElementById("label-manifest").style.color = "#303030";
+
+  
+
+
   // uncheck all radio buttons and checkboxes
   $("#organize-section").find(".option-card").removeClass("checked");
   $("#organize-section").find(".option-card.radio-button").removeClass("non-selected");
