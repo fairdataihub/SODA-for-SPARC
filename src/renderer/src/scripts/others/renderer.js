@@ -7131,6 +7131,8 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
 
 const preGenerateSetup = async (e, elementContext) => {
   $($($(elementContext).parent()[0]).parents()[0]).removeClass("tab-active");
+  // set tab-active to generate-progress-tab
+  $("#generate-dataset-progress-tab").addClass("tab-active")
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   document.getElementById("prevBtn").style.display = "none";
