@@ -93,7 +93,12 @@ class UploadManifestSession:
             for obj in parsed_objects:
                 if 'status' not in obj:
                     total_bytes_uploaded += 0
-                if obj['status'] == 'UPLOADED' or obj['status'] == 'IMPORTED' or obj['status'] == 'FINALIZED' or obj['status'] == 'VERIFIED':
+                elif obj['status'] in [
+                    'UPLOADED',
+                    'IMPORTED',
+                    'FINALIZED',
+                    'VERIFIED',
+                ]:
                     file_path = obj['source_path']
                     # remove the first and last characer of file_path - these are quotation marks
                     file_path = file_path[1:-1]
