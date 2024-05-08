@@ -576,7 +576,15 @@ window.nextPrev = async (pageIndex) => {
       $("#change-workspace-btn").removeClass("not-selected");
 
       // step 3
-      // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
+      document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
+      document.getElementById("Question-generate-dataset-BF-dataset").classList.add("hidden");
+      document.getElementById("current-bf-dataset-generate").innerText = "";
+      
+      // Step 4
+      if (document.getElementById("generate-manifest-curate").checked) {
+        document.getElementById("generate-manifest-curate").click();
+      }
+
       // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
       document.getElementById("inputNewNameDataset-upload-dataset").value = "";
 
