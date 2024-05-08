@@ -513,7 +513,10 @@ window.nextPrev = async (pageIndex) => {
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
     console.log("exiting?");
     // Remove the text from the dataset path in step 1
-    if (JSON.stringify(window.sodaJSONObj) != "{}" || window.sodaJSONObj != null) {
+    console.log(JSON.stringify(window.sodaJSONObj));
+    console.log(JSON.stringify(window.sodaJSONObj) !== "{}");
+    console.log(window.sodaJSONObj != null);
+    if (JSON.stringify(window.sodaJSONObj) !== "{}") {
       const transitionWarningMessage = `
           Going back home will wipe out the progress you have made organizing your dataset.
         `;
@@ -546,17 +549,22 @@ window.nextPrev = async (pageIndex) => {
         // step 2
         $("#confirm-account-workspace").removeClass("selected");
         $("#confirm-account-workspace").removeClass("not-selected");
-        $("#confirm-account-workspace").addClass("basic");
         $("#change-account-btn").removeClass("selected");
         $("#change-account-btn").removeClass("not-selected");
         $("#change-workspace-btn").removeClass("selected");
         $("#change-workspace-btn").removeClass("not-selected");
 
         // step 3
+        document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
+        document.getElementById("Question-generate-dataset-BF-dataset").classList.add("hidden");
+        document.getElementById("current-bf-dataset-generate").innerText = "";
+
+        // Step 4
+        if (document.getElementById("generate-manifest-curate").checked) {
+          document.getElementById("generate-manifest-curate").click();
+        }
+
         // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
-        // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
-        document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
-        document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
         document.getElementById("inputNewNameDataset-upload-dataset").value = "";
 
         // Disable continue button
@@ -583,7 +591,7 @@ window.nextPrev = async (pageIndex) => {
       document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
       document.getElementById("Question-generate-dataset-BF-dataset").classList.add("hidden");
       document.getElementById("current-bf-dataset-generate").innerText = "";
-      
+
       // Step 4
       if (document.getElementById("generate-manifest-curate").checked) {
         document.getElementById("generate-manifest-curate").click();

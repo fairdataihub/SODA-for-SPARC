@@ -119,7 +119,7 @@ const handleSectionTrigger = async (event) => {
       }
     });
 
-    if (window.sodaJSONObj != undefined && boolRadioButtonsSelected === true) {
+    if (JSON.stringify(window.sodaJSONObj) != "{}" && boolRadioButtonsSelected === true) {
       //get the element with data-next="Question-getting-started-BF-account"
       const buttonContinueExistingPennsieve = document.querySelector(
         '[data-next="Question-getting-started-BF-account"]'
