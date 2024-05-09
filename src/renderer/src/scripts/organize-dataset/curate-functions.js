@@ -694,7 +694,9 @@ document
         .classList.add("hidden");
       document.getElementById("nextBtn").disabled = false;
     }
-    document.getElementById("upload-dataset-btn-confirm-new-dataset-name").classList.remove("loading");
+    document
+      .getElementById("upload-dataset-btn-confirm-new-dataset-name")
+      .classList.remove("loading");
   });
 
 document.getElementById("change-account-btn").addEventListener("click", async function () {
