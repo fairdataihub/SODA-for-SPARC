@@ -46,6 +46,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   // This function will display the specified tab of the form ...
   var x = document.getElementsByClassName("parent-tabs");
   fixStepIndicator(tabNow);
+  fixStepDone(tabNow);
 
   $(x[tabNow]).addClass("tab-active");
   setTimeout(() => {
@@ -3469,7 +3470,7 @@ window.resetCurationTabs = () => {
   document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
   document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
   document.getElementById("inputNewNameDataset-upload-dataset").value = "";
-  document.getElementById("button-confirm-bf-dataset").parentNode.style.display = "flex"
+  document.getElementById("button-confirm-bf-dataset").parentNode.style.display = "flex";
 
   // Step 4
   if (document.getElementById("generate-manifest-curate").checked) {
