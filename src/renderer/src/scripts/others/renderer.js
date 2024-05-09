@@ -7285,6 +7285,10 @@ const initiate_generate = async (e) => {
 
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
   document.getElementById("guided_mode_view").style.pointerEvents = "none";
+  // Disable the Docs sidebar button to prevent the sodaJSONObj from being modified
+  document.getElementById("documentation-view").style.pointerEvents = "none";
+  // Disable the Contact Us sidebar button to prevent the sodaJSONObj from being modified
+  document.getElementById("contact-us-view").style.pointerEvents = "none";
 
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
@@ -7505,6 +7509,10 @@ const initiate_generate = async (e) => {
 
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
+      // Allow documentation view to be clicked again
+      document.getElementById("documentation-view").style.pointerEvents = "";
+      // Allow contact us view to be clicked again
+      document.getElementById("contact-us-view").style.pointerEvents = "";
     })
     .catch(async (error) => {
       clearInterval(timerProgress);
@@ -7521,6 +7529,10 @@ const initiate_generate = async (e) => {
 
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
+      // Allow documentation view to be clicked again
+      document.getElementById("documentation-view").style.pointerEvents = "";
+      // Allow contact us view to be clicked again
+      document.getElementById("contact-us-view").style.pointerEvents = "";
 
       clientError(error);
       let emessage = userErrorMessage(error);
