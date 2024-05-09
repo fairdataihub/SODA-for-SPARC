@@ -3429,7 +3429,8 @@ window.resetCurationTabs = () => {
   // step 2
   $("#confirm-account-workspace").removeClass("selected");
   $("#confirm-account-workspace").removeClass("not-selected");
-  $("#confirm-account-workspace").addClass("basic");
+  $("#confirm-account-workspace").addClass("soda-green-border");
+  $("#confirm-account-workspace").removeClass("soda-green-background");
   $("#change-account-btn").removeClass("selected");
   $("#change-account-btn").removeClass("not-selected");
   $("#change-workspace-btn").removeClass("selected");
@@ -3505,6 +3506,8 @@ window.wipeOutCurateProgress = () => {
   // reset page 2 button selections
   $("#confirm-account-workspace").removeClass("selected");
   $("#confirm-account-workspace").removeClass("not-selected");
+  $("#confirm-account-workspace").removeClass("soda-green-background");
+  $("#confirm-account-workspace").addClass("soda-green-border");
   $("#change-account-btn").removeClass("selected");
   $("#change-account-btn").removeClass("not-selected");
   $("#change-workspace-btn").removeClass("selected");

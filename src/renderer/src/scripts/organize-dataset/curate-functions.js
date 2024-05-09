@@ -559,6 +559,8 @@ window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (eve
 // Event listeners for buttons in step 2 of Organize Dataset
 document.getElementById("confirm-account-workspace").addEventListener("click", async function () {
   // If the user confirms the workspace and account, proceed to the next step
+  document.getElementById("confirm-account-workspace").classList.remove("soda-green-border");
+  document.getElementById("confirm-account-workspace").classList.add("soda-green-background");
   document.getElementById("nextBtn").disabled = false;
 });
 
@@ -697,6 +699,8 @@ document
 
 document.getElementById("change-account-btn").addEventListener("click", async function () {
   // If the user changes the account, show the dropdown prompt
+  document.getElementById("confirm-account-workspace").classList.add("soda-green-border");
+  document.getElementById("confirm-account-workspace").classList.remove("soda-green-background");
   await window.openDropdownPrompt(this, "bf");
   document.getElementById("change-account-btn").classList.add("basic");
   document.getElementById("change-account-btn").classList.remove("selected");
@@ -704,6 +708,8 @@ document.getElementById("change-account-btn").addEventListener("click", async fu
 
 document.getElementById("change-workspace-btn").addEventListener("click", async function () {
   // If the user changes the workspace, show the dropdown prompt
+  document.getElementById("confirm-account-workspace").classList.add("soda-green-border");
+  document.getElementById("confirm-account-workspace").classList.remove("soda-green-background");
   await window.openDropdownPrompt(this, "organization");
   document.getElementById("change-workspace-btn").classList.add("basic");
   document.getElementById("change-workspace-btn").classList.remove("selected");
