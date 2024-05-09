@@ -524,6 +524,7 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
 document
   .getElementById("dataset-upload-existing-dataset")
   .addEventListener("click", async function () {
+    // EVENT CLICKER FOR EXISTING DATASET UPLOAD (UPLOAD DATASET WORKFLOW)
     // check if the user has already entered a dataset name in the input field
     let datasetName = document.getElementById("inputNewNameDataset-upload-dataset").value;
     if (datasetName !== "") {
@@ -549,15 +550,12 @@ document
 
     document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
     document.getElementById("dataset-upload-existing-dataset").classList.add("checked");
-    document.getElementById("Question-new-dataset-upload-name").classList.remove("checked");
 
     $("#nextBtn").prop("disabled", true);
   });
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
   let dsName = document.getElementById("current-bf-dataset-generate").innerText;
-  console.log("DSNAME", dsName);
-  console.log((["None", ""].includes(dsName)))
   if (!["None", ""].includes(dsName)) {
     // confirm with the user if they want to lose their progress by switching to the other workflow
     let confirmSwitch = await swalConfirmAction(

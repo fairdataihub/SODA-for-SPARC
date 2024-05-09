@@ -557,8 +557,10 @@ window.nextPrev = async (pageIndex) => {
 
         // step 3
         document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
-        document.getElementById("Question-generate-dataset-BF-dataset").classList.add("hidden");
+        document.getElementById("existing-dataset-upload").classList.add("hidden");
         document.getElementById("current-bf-dataset-generate").innerText = "";
+        document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
+        document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
 
         // Step 4
         if (document.getElementById("generate-manifest-curate").checked) {
@@ -591,8 +593,10 @@ window.nextPrev = async (pageIndex) => {
 
       // step 3
       document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
-      document.getElementById("Question-generate-dataset-BF-dataset").classList.add("hidden");
+      document.getElementById("existing-dataset-upload").classList.add("hidden");
       document.getElementById("current-bf-dataset-generate").innerText = "";
+      document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
+      document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
 
       // Step 4
       if (document.getElementById("generate-manifest-curate").checked) {
