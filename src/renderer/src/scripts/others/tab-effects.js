@@ -132,7 +132,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 2) {
-
   }
 
   // preview dataset tab

@@ -7511,6 +7511,9 @@ const initiate_generate = async (e) => {
       // log folder and file options selected ( can be merge, skip, replace, duplicate)
       logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
+      // hide the retry button
+      $("#button-retry").hide();
+
       // update dataset list; set the dataset id and int id
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
@@ -7543,6 +7546,8 @@ const initiate_generate = async (e) => {
       } else {
         progressStatus.innerHTML = `Upload Failed`;
       }
+
+      $("#button-retry").show();
 
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
