@@ -284,16 +284,11 @@ window.addManifestDetailsToDatasetStructure = async (
   for (let folder of problematicFolders) {
     // console.log(folder);
     let primaryFolder = folder.split("/")[1];
-    if (problematicFoldersObj[primaryFolder]) {
+    if (!problematicFoldersObj[primaryFolder]) {
       // There is already a problematic folder in this primary folder
       // Handle if there was a change to the folder
-      problematicFoldersObj[primaryFolder].push({
-        path: folder,
-        folder_name: path.basename(folder),
-      });
+      problematicFoldersObj[primaryFolder] = [];
     }
-    problematicFoldersObj[primaryFolder] = [];
-
     problematicFoldersObj[primaryFolder].push({
       path: folder,
       folder_name: path.basename(folder),
@@ -301,19 +296,18 @@ window.addManifestDetailsToDatasetStructure = async (
   }
 
   for (let file of problematicFiles) {
-    // console.log(file);
-    let primaryFolder = file.split("/")[1];
-    if (problematicFilesObj[primaryFolder]) {
+    console.log("HERE MATE")
+    console.log(file);
+    let primaryFolder = file["relativePath"].split("/")[1];
+    let fileName = file["fileName"]
+    if (!problematicFilesObj[primaryFolder]) {
       // There is already a problematic file in this primary folder
       // Handle if there was a change to the file
-      problematicFilesObj[primaryFolder].push({
-        path: file,
-        file_name: path.basename(file),
-      });
+      problematicFilesObj[primaryFolder] = [];
     }
     problematicFilesObj[primaryFolder].push({
       path: file,
-      file_name: path.basename(file),
+      file_name: fileName,
     });
   }
 
