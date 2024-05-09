@@ -339,9 +339,6 @@ window.addManifestDetailsToDatasetStructure = async (
 
         // console.log(datasetStructure["dataset-structure"]["folders"][folder]["files"])
         for (let file in datasetStructure["dataset-structure"]["folders"][folder]["files"]) {
-          console.log("WATCH THIS");
-          console.log(file);
-          console.log("WATCH THIS");
           if (file.includes("manifest.xlsx") || file.includes("manifest.csv")) {
             // delete key
             delete datasetStructure["dataset-structure"]["folders"][folder]["files"][file];
@@ -362,12 +359,16 @@ window.addManifestDetailsToDatasetStructure = async (
             let metadata =
               datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]];
             console.log(metadata);
+            let additionalMetadata = manifest["Additional Metadata"] || "";
+            let description = manifest["description"] || "";
+            let timestamp = manifest["timestamp"] || "";
+            let type = manifest["file type"] || "";
             datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]] = {
               action: ["new"],
-              "additional-metadata": manifest?.["Additional Metadata"] || "",
-              description: manifest?.["description"] || "",
-              timestamp: manifest?.["timestamp"] || "",
-              type: manifest?.["file type"] || "",
+              "additional-metadata": String(additionalMetadata),
+              description: String(description),
+              timestamp: String(timestamp),
+              type: String(type),
               path: metadata.path,
               extension: metadata.extension,
             };
@@ -390,7 +391,7 @@ window.addManifestDetailsToDatasetStructure = async (
                 ) {
                   datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]][
                     "extra_columns"
-                  ] = { [key]: manifest[key] };
+                  ] = { [key]: String(manifest[key]) };
                 }
               }
             }
@@ -431,14 +432,38 @@ window.addManifestDetailsToDatasetStructure = async (
 
             console.log(JSON.stringify(datasetStructure["dataset-structure"]));
             let currentFolder = datasetStructure?.["dataset-structure"]?.["folders"]?.[folder];
+            let currentFolderProblematicFolders = problematicFoldersObj?.[folder];
+            console.log(problematicFoldersObj?.[folder]);
+            console.log(JSON.stringify(currentFolder));
             for (let i = 0; i < filename.length - 1; i++) {
-              console.log(currentFolder?.["folders"]?.[filename[i]]);
-              currentFolder = currentFolder?.["folders"]?.[filename[i]];
+              console.log("HEHEHEHEHE")
+              console.log(filename[i]);
+              // console.log(currentFolder?.["folders"]?.[filename[i]]);
+              let fileName = filename[i];
+              let temp = currentFolder?.["folders"]?.[fileName];
+              if (temp == undefined) {
+                // Folder might have been renamed
+                // Check subfolders of currentFolder and see if any of the keys' value, action, includes "renamed"
+                let keys = Object.keys(currentFolder["folders"]);
+                console.log(keys);
+                for (let key of keys) {
+                  if (currentFolder["folders"][key]["action"].includes("renamed")) {
+                    if (currentFolder["folders"][key]["original-name"] == filename[i]) {
+                      // The folder has been renamed
+                      // Get the new folder name
+                      fileName = currentFolder["folders"][key]["new-name"];
+                      break;
+                    }
+                  }
+                }
+              }
+              console.log("fileName", fileName);
+              currentFolder = currentFolder?.["folders"]?.[fileName];
             }
             let metadata = currentFolder?.["files"]?.[filename[filename.length - 1]];
-            if (currentFolder === !undefined) {
+            if (currentFolder != undefined) {
               currentFolder["files"][filename[filename.length - 1]] = {
-                action: ["new"],
+                action: metadata.action,
                 "additional-metadata": manifest["Additional Metadata"],
                 description: manifest["description"],
                 timestamp: manifest["timestamp"],
@@ -464,6 +489,9 @@ window.addManifestDetailsToDatasetStructure = async (
                   }
                 }
               }
+            } else {
+              // File might have been renamed
+
             }
           }
         }
@@ -670,9 +698,7 @@ document
 document
   .getElementById("upload-dataset-btn-confirm-new-dataset-name")
   .addEventListener("click", async function () {
-    // TODO: Add a loading icon within the button when checking for if a dataset exists
     // Once clicked, verify if the dataset name exists, if not warn the user that they need to choose a different name
-    console.log("clicked");
     document.getElementById("upload-dataset-btn-confirm-new-dataset-name").classList.add("loading");
     let datasetName = document.getElementById("inputNewNameDataset-upload-dataset").value;
     let invalidName = window.check_forbidden_characters_ps(datasetName);

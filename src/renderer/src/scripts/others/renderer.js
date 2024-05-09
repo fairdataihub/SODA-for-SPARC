@@ -4547,6 +4547,8 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
       if (!newFolderObj["action"].includes("renamed")) {
         newFolderObj["action"].push("renamed");
       }
+      newFolderObj["original-name"] = folderKey;
+      newFolderObj["new-name"] = newFolderName;
       datasetStructure["folders"][newFolderName] = newFolderObj;
       delete datasetStructure["folders"][folderKey];
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][newFolderName]);
@@ -4570,6 +4572,8 @@ const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
       if (!newFileObj["action"].includes("renamed")) {
         newFileObj["action"].push("renamed");
       }
+      newFileObj["original-name"] = fileKey;
+      newFileObj["new-name"] = newFileName;
       datasetStructure["files"][newFileName] = newFileObj;
       delete datasetStructure["files"][fileKey];
     }
