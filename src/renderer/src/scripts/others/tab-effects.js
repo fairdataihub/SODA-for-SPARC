@@ -71,12 +71,22 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     $("#nextBtn").prop("disabled", false);
   }
 
-  if (tabNow == 1) {
-    // enable the continue button if the Yes button is already selected
-    if ($("#confirm-account-workspace").hasClass("selected")) {
+  if (tabNow == 1 && $("#confirm-account-workspace").hasClass("selected")) {
+    $("#nextBtn").prop("disabled", false);
+  }
+
+  if (tabNow == 2) {
+    // check if the user is creating a new ds and confirm button is hidden
+    if ($("#dataset-upload-new-dataset").hasClass("checked") && ($("#inputNewNameDataset-upload-dataset").val().trim() !== "" && $("#upload-dataset-btn-confirm-new-dataset-name").hasClass("hidden"))) {
       $("#nextBtn").prop("disabled", false);
     }
-  } else if (tabNow == 3) {
+    // check if the user is updating an existing dataset and has selected their merge options
+    else if ($("#dataset-upload-existing-dataset").hasClass("checked") && $('input[name="generate-5"]:checked').length === 2) {
+      $("#nextBtn").prop("disabled", false);
+    }
+  }
+
+  if (tabNow == 3) {
     if (nextOrPrev === -1) {
       return;
     }
@@ -113,29 +123,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     }
   }
 
-  if (tabNow == 5) {
-    $("#nextBtn").css("display", "none");
-    $("#prevBtn").css("display", "none");
-    // $("#nextBtn").html("Continue");
-    $("#Question-validate-dataset-upload").show();
-    // disable guided_mode_view
-    document.getElementById("guided_mode_view").style.pointerEvents = "none";
-    // disable documentation view to be clicked again
-    document.getElementById("documentation-view").style.pointerEvents = "none";
-    // disable contact us view to be clicked again
-    document.getElementById("contact-us-view").style.pointerEvents = "none";
-    await window.monitorUploadFileVerificationProgress();
-    // disable guided_mode_view
-    document.getElementById("guided_mode_view").style.pointerEvents = "";
-    // disable documentation view to be clicked again
-    document.getElementById("documentation-view").style.pointerEvents = "";
-    // disable contact us view to be clicked again
-    document.getElementById("contact-us-view").style.pointerEvents = "";
-  }
-
-  if (tabNow == 2) {
-  }
-
   // preview dataset tab
   if (tabNow == 4) {
     console.log("last step here");
@@ -163,6 +150,26 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     $("#Question-generate-dataset-generate-div").show();
     $("#Question-generate-dataset-generate-div").children().show();
     //$("#preview-dataset-structure-btn").show();
+  }
+
+  if (tabNow == 5) {
+    $("#nextBtn").css("display", "none");
+    $("#prevBtn").css("display", "none");
+    // $("#nextBtn").html("Continue");
+    $("#Question-validate-dataset-upload").show();
+    // disable guided_mode_view
+    document.getElementById("guided_mode_view").style.pointerEvents = "none";
+    // disable documentation view to be clicked again
+    document.getElementById("documentation-view").style.pointerEvents = "none";
+    // disable contact us view to be clicked again
+    document.getElementById("contact-us-view").style.pointerEvents = "none";
+    await window.monitorUploadFileVerificationProgress();
+    // disable guided_mode_view
+    document.getElementById("guided_mode_view").style.pointerEvents = "";
+    // disable documentation view to be clicked again
+    document.getElementById("documentation-view").style.pointerEvents = "";
+    // disable contact us view to be clicked again
+    document.getElementById("contact-us-view").style.pointerEvents = "";
   }
 };
 
