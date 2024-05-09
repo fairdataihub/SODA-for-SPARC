@@ -632,7 +632,7 @@ window.nextPrev = async (pageIndex) => {
       if (
         "manifest.xlsx" in window.datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
         window.datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"][
-        "forTreeview"
+          "forTreeview"
         ] === true
       ) {
         delete window.datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"];
@@ -992,22 +992,21 @@ window.sodaJSONHasProgress = () => {
   return !(
     JSON.stringify(window.sodaJSONObj) === "{}" ||
     JSON.stringify(window.sodaJSONObj) ===
-    '{"starting-point":{"type":"new"},"dataset-structure":{},"metadata-files":{}}' ||
+      '{"starting-point":{"type":"new"},"dataset-structure":{},"metadata-files":{}}' ||
     JSON.stringify(window.sodaJSONObj) ===
-    '{"starting-point":{"type":""},"dataset-structure":{},"metadata-files":{}}' ||
+      '{"starting-point":{"type":""},"dataset-structure":{},"metadata-files":{}}' ||
     JSON.stringify(window.sodaJSONObj) ===
-    '{"bf-account-selected":{},"bf-dataset-selected":{},"dataset-structure":{},"metadata-files":{},"manifest-files":{},"generate-dataset":{},"starting-point":{ "type": "local","local-path":""}}' ||
+      '{"bf-account-selected":{},"bf-dataset-selected":{},"dataset-structure":{},"metadata-files":{},"manifest-files":{},"generate-dataset":{},"starting-point":{ "type": "local","local-path":""}}' ||
     JSON.stringify(window.sodaJSONObj) ===
-    '{"bf-account-selected":{"account-name":{}}, "bf-dataset-selected":{"dataset-name":{}}, "dataset-structure":{},"metadata-files":{}, "manifest-files":{}, "generate-dataset":{}, "starting-point": {"type": "bf"}}'
-  )
-}
+      '{"bf-account-selected":{"account-name":{}}, "bf-dataset-selected":{"dataset-name":{}}, "dataset-structure":{},"metadata-files":{}, "manifest-files":{}, "generate-dataset":{}, "starting-point": {"type": "bf"}}'
+  );
+};
 
 // raise warning before wiping out existing window.sodaJSONObj
 // show warning message
 const raiseWarningGettingStarted = (ev) => {
   return new Promise((resolve) => {
-    if (window.sodaJSONHasProgress()
-    ) {
+    if (window.sodaJSONHasProgress()) {
       Swal.fire({
         icon: "warning",
         text: "This will reset your progress so far. Are you sure you want to continue?",
@@ -1560,29 +1559,29 @@ const recursive_structure_create = (
           for (item in window.sodaJSONObj["starting-point"][high_level_folder]["manifest"]) {
             if (
               window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
-              "filename"
+                "filename"
               ] == relative_path
             ) {
               if (
                 window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
-                "description"
+                  "description"
                 ] != undefined
               ) {
                 manifest_object["description"] =
                   window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
-                  "description"
+                    "description"
                   ];
               } else {
                 manifest_object["description"] = "";
               }
               if (
                 window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
-                "Additional Metadata"
+                  "Additional Metadata"
                 ] != undefined
               ) {
                 manifest_object["additional-metadata"] =
                   window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
-                  "AdditionalMetadata"
+                    "AdditionalMetadata"
                   ];
               } else {
                 manifest_object["additional-metadata"] = "";
@@ -1714,29 +1713,29 @@ const recursive_structure_create_include_manifest = (
           for (item in window.sodaJSONObj["starting-point"][high_level_folder]["manifest"]) {
             if (
               window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
-              "filename"
+                "filename"
               ] == relative_path
             ) {
               if (
                 window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
-                "description"
+                  "description"
                 ] != undefined
               ) {
                 manifest_object["description"] =
                   window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
-                  "description"
+                    "description"
                   ];
               } else {
                 manifest_object["description"] = "";
               }
               if (
                 window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
-                "AdditionalMetadata"
+                  "AdditionalMetadata"
                 ] != undefined
               ) {
                 manifest_object["additional-metadata"] =
                   window.sodaJSONObj["starting-point"][high_level_folder]["manifest"][item][
-                  "AdditionalMetadata"
+                    "AdditionalMetadata"
                   ];
               } else {
                 manifest_object["additional-metadata"] = "";
@@ -3552,7 +3551,7 @@ window.resetCurationTabs = () => {
   window.wipeOutCurateProgress();
   window.showParentTab(0, 1);
   window.globalGettingStarted1stQuestionBool = false;
-}
+};
 
 window.exitCurate = async (resetProgressTabs, start_over = false) => {
   $("#dataset-loaded-message").hide();
@@ -3563,8 +3562,7 @@ window.exitCurate = async (resetProgressTabs, start_over = false) => {
     var res = await raiseWarningExit(message);
 
     if (res) {
-
-      window.resetCurationTabs()
+      window.resetCurationTabs();
 
       if (start_over) {
         $("#organize_dataset_btn").click();
@@ -3586,7 +3584,6 @@ window.exitCurate = async (resetProgressTabs, start_over = false) => {
   }
 };
 
-
 window.wipeOutCurateProgress = () => {
   // set SODA json object back
   window.sodaJSONObj = {
@@ -3595,8 +3592,8 @@ window.wipeOutCurateProgress = () => {
     "metadata-files": {},
   };
 
-  // reset imported dataset path 
-  document.querySelector("#org-dataset-folder-path").textContent = ""
+  // reset imported dataset path
+  document.querySelector("#org-dataset-folder-path").textContent = "";
 
   // reset page 2 button selections
   $("#confirm-account-workspace").removeClass("selected");
@@ -3606,7 +3603,6 @@ window.wipeOutCurateProgress = () => {
   $("#change-workspace-btn").removeClass("selected");
   $("#change-workspace-btn").removeClass("not-selected");
   $("#confirm-account-workspace").addClass("basic");
-
 
   // reset page 3 dataset upload options
 
@@ -3619,7 +3615,6 @@ window.wipeOutCurateProgress = () => {
   document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
   $("#upload-dataset-btn-confirm-new-dataset-name").addClass("hidden");
 
-
   // get every input with name="generate-5" and remove the checked property
   let inputs = document.querySelectorAll('input[name="generate-5"]');
   inputs.forEach((input) => {
@@ -3631,20 +3626,14 @@ window.wipeOutCurateProgress = () => {
   $("#Question-generate-dataset-existing-folders-options").addClass("hidden");
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");
 
-
   // reset manifest color
   document.getElementById("label-manifest").style.color = "#303030";
 
   // hide the failed and success upload file verification divs
-  $("#Question-validate-dataset-upload-2").hide()
-  $("#Question-validate-dataset-upload-3").hide()
+  $("#Question-validate-dataset-upload-2").hide();
+  $("#Question-validate-dataset-upload-3").hide();
   // empty the failed files table if it has values
   $("#validate-dataset-failed-table tbody tr").remove();
-
-
-
-
-
 
   // uncheck all radio buttons and checkboxes
   $("#organize-section").find(".option-card").removeClass("checked");
@@ -3753,9 +3742,9 @@ const saveSODAJSONProgress = (progressFileName) => {
   for (var highLevelFol in window.sodaJSONObj["dataset-structure"]["folders"]) {
     if (
       "manifest.xlsx" in
-      window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
       window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
-      "forTreeview"
+        "forTreeview"
       ] === true
     ) {
       delete window.sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
