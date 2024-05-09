@@ -160,11 +160,52 @@ window.uploadDatasetDropHandler = async (ev) => {
     const { isDirectory } = fs.statSync(folderPath);
 
     if (isDirectory) {
-      console.log("Folder dropped");
-      document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
-      // Hide error message if it was revealed
+      window.sodaJSONObj = {
+        "bf-account-selected": {},
+        "bf-dataset-selected": {},
+        "dataset-structure": {},
+        "metadata-files": {},
+        "manifest-files": {},
+        "generate-dataset": {},
+        "starting-point": {
+          type: "local",
+          "local-path": "",
+        },
+      };
+
+      let moveForward = false;
       document.getElementById("para-org-dataset-path").classList.add("hidden");
-      document.getElementById("nextBtn").disabled = false;
+      let valid_dataset = window.verify_sparc_folder(folderPath, "local");
+
+      if (valid_dataset) {
+        moveForward = await window.handleLocalDatasetImport(folderPath);
+      } else {
+        Swal.fire({
+          icon: "warning",
+          html: `This folder seem to have non-SPARC folders. Please select a folder that has a valid SPARC dataset structure.
+          <br/>
+          See the "Data Organization" section of the SPARC documentation for more
+          <a target="_blank" href="https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT#top"> details</a>`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showConfirmButton: false,
+          showCancelButton: true,
+          focusCancel: true,
+          cancelButtonText: "Okay",
+          reverseButtons: window.reverseSwalButtons,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        });
+      }
+
+      if (moveForward) {
+        document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
+        document.getElementById("nextBtn").disabled = false;
+      }
     } else {
       document.getElementById("para-org-dataset-path").classList.remove("hidden");
     }
@@ -630,6 +671,7 @@ document
     // TODO: Add a loading icon within the button when checking for if a dataset exists
     // Once clicked, verify if the dataset name exists, if not warn the user that they need to choose a different name
     console.log("clicked");
+    document.getElementById("upload-dataset-btn-confirm-new-dataset-name").classList.add("loading");
     let datasetName = document.getElementById("inputNewNameDataset-upload-dataset").value;
     let invalidName = window.check_forbidden_characters_ps(datasetName);
     if (invalidName) {
@@ -650,6 +692,7 @@ document
         .classList.add("hidden");
       document.getElementById("nextBtn").disabled = false;
     }
+    document.getElementById("upload-dataset-btn-confirm-new-dataset-name").classList.remove("loading");
   });
 
 document.getElementById("change-account-btn").addEventListener("click", async function () {
