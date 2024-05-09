@@ -460,6 +460,23 @@ window.addManifestDetailsToDatasetStructure = async (
               console.log("fileName", fileName);
               currentFolder = currentFolder?.["folders"]?.[fileName];
             }
+            let temp = currentFolder?.["files"]?.[filename[filename.length - 1]];
+            if (temp == undefined) {
+              // File might have been renamed
+              // Check subfolders of currentFolder and see if any of the keys' value, action, includes "renamed"
+              let keys = Object.keys(currentFolder["files"]);
+              console.log(keys);
+              for (let key of keys) {
+                if (currentFolder["files"][key]["action"].includes("renamed")) {
+                  if (currentFolder["files"][key]["original-name"] == filename[filename.length - 1]) {
+                    // The file has been renamed
+                    // Get the new file name
+                    filename[filename.length - 1] = currentFolder["files"][key]["new-name"];
+                    break;
+                  }
+                }
+              }
+            }
             let metadata = currentFolder?.["files"]?.[filename[filename.length - 1]];
             if (currentFolder != undefined) {
               currentFolder["files"][filename[filename.length - 1]] = {
@@ -489,9 +506,6 @@ window.addManifestDetailsToDatasetStructure = async (
                   }
                 }
               }
-            } else {
-              // File might have been renamed
-
             }
           }
         }
