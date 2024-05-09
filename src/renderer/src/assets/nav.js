@@ -28,17 +28,17 @@ const leavingUploadDatasets = () => {
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 document.body.addEventListener("click", async (event) => {
   if (event.target.dataset.section) {
-    // if (leavingUploadDatasets() && window.sodaJSONHasProgress()) {
-    //   let leaveUploadDataset = await swalConfirmAction(
-    //     "warning",
-    //     "Exit Upload Dataset?",
-    //     "Progress will not be saved in SODA. Do you want to continue?",
-    //     "Yes",
-    //     "Cancel"
-    //   );
-    //   if (!leaveUploadDataset) return;
-    //   window.resetCurationTabs();
-    // }
+    if (leavingUploadDatasets() && window.sodaJSONHasProgress()) {
+      let leaveUploadDataset = await swalConfirmAction(
+        "warning",
+        "Exit Upload Dataset?",
+        "Progress will not be saved in SODA. Do you want to continue?",
+        "Yes",
+        "Cancel"
+      );
+      if (!leaveUploadDataset) return;
+      window.resetCurationTabs();
+    }
     handleSectionTrigger(event);
   } else if (event.target.dataset.modal) {
     handleModalTrigger(event);
