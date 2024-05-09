@@ -3469,6 +3469,7 @@ window.resetCurationTabs = () => {
   document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
   document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
   document.getElementById("inputNewNameDataset-upload-dataset").value = "";
+  document.getElementById("button-confirm-bf-dataset").parentNode.style.display = "flex"
 
   // Step 4
   if (document.getElementById("generate-manifest-curate").checked) {
@@ -3570,32 +3571,32 @@ window.wipeOutCurateProgress = () => {
   $("#validate-dataset-failed-table tbody tr").remove();
 
   // uncheck all radio buttons and checkboxes
-  $("#organize-section").find(".option-card").removeClass("checked");
-  $("#organize-section").find(".option-card.radio-button").removeClass("non-selected");
-  $("#organize-section").find(".option-card.high-level-folders").removeClass("disabled");
-  $("#organize-section").find(".option-card .folder-input-check").prop("checked", false);
-  $("#organize-section").find(".parent-tabs.option-card").removeClass("checked");
-  $("#organize-section").find(".parent-tabs.option-card.radio-button").removeClass("non-selected");
-  $("#organize-section")
-    .find(".parent-tabs.option-card.high-level-folders")
-    .removeClass("disabled");
-  $("#organize-section").find(".parent-tabs.option-card.folder-input-check").prop("checked", false);
-  $(".metadata-button.button-generate-dataset").removeClass("done");
-  $(".metadata-button.button-generate-dataset").removeClass("d-flex");
-  $("#organize-section input:checkbox").prop("checked", false);
-  $("#organize-section input:radio").prop("checked", false);
+  // $("#organize-section").find(".option-card").removeClass("checked");
+  // $("#organize-section").find(".option-card.radio-button").removeClass("non-selected");
+  // $("#organize-section").find(".option-card.high-level-folders").removeClass("disabled");
+  // $("#organize-section").find(".option-card .folder-input-check").prop("checked", false);
+  // $("#organize-section").find(".parent-tabs.option-card").removeClass("checked");
+  // $("#organize-section").find(".parent-tabs.option-card.radio-button").removeClass("non-selected");
+  // $("#organize-section")
+  //   .find(".parent-tabs.option-card.high-level-folders")
+  //   .removeClass("disabled");
+  // $("#organize-section").find(".parent-tabs.option-card.folder-input-check").prop("checked", false);
+  // $(".metadata-button.button-generate-dataset").removeClass("done");
+  // $(".metadata-button.button-generate-dataset").removeClass("d-flex");
+  // $("#organize-section input:checkbox").prop("checked", false);
+  // $("#organize-section input:radio").prop("checked", false);
 
   // set back local destination for folders to empty
-  $("#input-destination-generate-dataset-locally").val("");
+  // $("#input-destination-generate-dataset-locally").val("");
   // $("#input-destination-getting-started-locally").val("");
   // $("#input-destination-getting-started-locally").prop("placeholder", "Browse here");
-  $("#input-destination-generate-dataset-locally").prop("placeholder", "Browse here");
+  // $("#input-destination-generate-dataset-locally").prop("placeholder", "Browse here");
 
   // set metadata file paths to empty
-  $(".para-metadata-file-status").text("");
+  // $(".para-metadata-file-status").text("");
 
   // hide the generate manifest locally button
-  document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
+  // document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
 
   // set back Please continue para element
   $("#para-continue-prepare-new-getting-started").text("");
@@ -3603,7 +3604,7 @@ window.wipeOutCurateProgress = () => {
   $("#para-continue-location-dataset-getting-started").text("");
 
   // un-show all divs from Generate dataset step
-  $($("#Question-generate-dataset").siblings()).removeClass("show");
+  // $($("#Question-generate-dataset").siblings()).removeClass("show");
 
   $(".generate-dataset").removeClass("prev");
   $(".generate-dataset").removeClass("show");
