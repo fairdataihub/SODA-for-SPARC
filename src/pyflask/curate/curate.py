@@ -1827,9 +1827,15 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
 
 def get_origin_manifest_id(dataset_id):
     global namespace_logger
-    manifests = get_upload_manifests(dataset_id)
-    namespace_logger.info(f"manifests: {manifests}")
-    return manifests["manifests"][0]["id"]
+    max_attempts = 3
+    for _ in range(max_attempts):
+        manifests = get_upload_manifests(dataset_id)
+        namespace_logger.info(f"manifests: {manifests}")
+        if manifests and "manifests" in manifests and manifests["manifests"]:
+            return manifests["manifests"][0]["id"]
+        time.sleep(5)  # Wait for 5 seconds before the next attempt
+
+    raise Exception("Did not get the origin manifest id in an expected amount of time.")
 
 
 
@@ -2810,11 +2816,12 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                                         break
 
 
-        main_curate_progress_message = "Success: COMPLETED!"
-        main_curate_status = "Done"
+        
 
 
-        # get the manifest id of the Pennsieve upload manifest created when uploading
+                # get the manifest id of the Pennsieve upload manifest created when uploading
+        
+                
         origin_manifest_id = get_origin_manifest_id(selected_id)
         namespace_logger.info(f"Origin manifest id: {origin_manifest_id}")
 
@@ -2824,10 +2831,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
         ums.set_total_files_to_upload(total_files)
         ums.set_elapsed_time(elapsed_time)
 
+        main_curate_progress_message = "Success: COMPLETED!"
+        main_curate_status = "Done"
+
         
-
-
-
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
         end = timer()
         namespace_logger.info(f"Time for ps_upload_to_dataset function: {timedelta(seconds=end - start)}")
