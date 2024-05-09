@@ -296,10 +296,10 @@ window.addManifestDetailsToDatasetStructure = async (
   }
 
   for (let file of problematicFiles) {
-    console.log("HERE MATE")
+    console.log("HERE MATE");
     console.log(file);
     let primaryFolder = file["relativePath"].split("/")[1];
-    let fileName = file["fileName"]
+    let fileName = file["fileName"];
     if (!problematicFilesObj[primaryFolder]) {
       // There is already a problematic file in this primary folder
       // Handle if there was a change to the file
