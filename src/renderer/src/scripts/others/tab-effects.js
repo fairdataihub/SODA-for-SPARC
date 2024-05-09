@@ -512,104 +512,7 @@ window.nextPrev = async (pageIndex) => {
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
     console.log("exiting?");
-    // Remove the text from the dataset path in step 1
-    console.log(JSON.stringify(window.sodaJSONObj));
-    console.log(JSON.stringify(window.sodaJSONObj) !== "{}");
-    console.log(window.sodaJSONObj != null);
-    if (JSON.stringify(window.sodaJSONObj) !== "{}") {
-      const transitionWarningMessage = `
-          Going back home will wipe out the progress you have made organizing your dataset.
-        `;
-
-      const warnBeforeExitCurate = await Swal.fire({
-        icon: "warning",
-        html: transitionWarningMessage,
-        showCancelButton: true,
-        focusCancel: true,
-        cancelButtonText: "Cancel",
-        confirmButtonText: "Go back Home",
-        reverseButtons: window.reverseSwalButtons,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-
-      console.log(warnBeforeExitCurate);
-      // TODO: KEEP RESETING UPLOAD DATASET UI
-      if (warnBeforeExitCurate.isConfirmed) {
-        console.log("SHOULD RESET");
-        // step 1
-        $("#org-dataset-folder-path").text("");
-
-        // step 2
-        $("#confirm-account-workspace").removeClass("selected");
-        $("#confirm-account-workspace").removeClass("not-selected");
-        $("#confirm-account-workspace").addClass("basic");
-        $("#change-account-btn").removeClass("selected");
-        $("#change-account-btn").removeClass("not-selected");
-        $("#change-workspace-btn").removeClass("selected");
-        $("#change-workspace-btn").removeClass("not-selected");
-
-        // step 3
-        document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
-        document.getElementById("existing-dataset-upload").classList.add("hidden");
-        document.getElementById("current-bf-dataset-generate").innerText = "";
-        document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
-        document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
-
-        // Step 4
-        if (document.getElementById("generate-manifest-curate").checked) {
-          document.getElementById("generate-manifest-curate").click();
-        }
-
-        // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
-        document.getElementById("inputNewNameDataset-upload-dataset").value = "";
-
-        // Disable continue button
-        $("#nextBtn").prop("disabled", true);
-        window.returnToGuided();
-      } else {
-        //Stay in Organize datasets section
-        return;
-      }
-    } else {
-      console.log("SHOULD RESET");
-      // step 1
-      $("#org-dataset-folder-path").text("");
-
-      // step 2
-      $("#confirm-account-workspace").removeClass("selected");
-      $("#confirm-account-workspace").removeClass("not-selected");
-      $("#confirm-account-workspace").addClass("basic");
-      $("#change-account-btn").removeClass("selected");
-      $("#change-account-btn").removeClass("not-selected");
-      $("#change-workspace-btn").removeClass("selected");
-      $("#change-workspace-btn").removeClass("not-selected");
-
-      // step 3
-      document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
-      document.getElementById("existing-dataset-upload").classList.add("hidden");
-      document.getElementById("current-bf-dataset-generate").innerText = "";
-      document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
-      document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
-
-      // Step 4
-      if (document.getElementById("generate-manifest-curate").checked) {
-        document.getElementById("generate-manifest-curate").click();
-      }
-
-      // document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
-      document.getElementById("inputNewNameDataset-upload-dataset").value = "";
-
-      // Disable continue button
-      $("#nextBtn").prop("disabled", true);
-      window.returnToGuided();
-    }
+    window.returnToGuided();
   }
 
   // update JSON structure
@@ -3547,6 +3450,33 @@ window.resetCurationTabs = () => {
   $("#Question-getting-started-1").addClass("show");
   $("#generate-dataset-progress-tab").css("display", "none");
   $("#validate-upload-status-tab").css("display", "none");
+
+  // step 1
+  $("#org-dataset-folder-path").text("");
+
+  // step 2
+  $("#confirm-account-workspace").removeClass("selected");
+  $("#confirm-account-workspace").removeClass("not-selected");
+  $("#confirm-account-workspace").addClass("basic");
+  $("#change-account-btn").removeClass("selected");
+  $("#change-account-btn").removeClass("not-selected");
+  $("#change-workspace-btn").removeClass("selected");
+  $("#change-workspace-btn").removeClass("not-selected");
+
+  // step 3
+  document.getElementById("existing-dataset-upload").classList.add("hidden");
+  document.getElementById("current-bf-dataset-generate").innerText = "";
+  document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
+  document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
+  document.getElementById("inputNewNameDataset-upload-dataset").value = "";
+
+  // Step 4
+  if (document.getElementById("generate-manifest-curate").checked) {
+    document.getElementById("generate-manifest-curate").click();
+  }
+
+  // Disable continue button
+  $("#nextBtn").prop("disabled", true);
 
   window.hasFiles = false;
   console.log("Resetting current tab value");
