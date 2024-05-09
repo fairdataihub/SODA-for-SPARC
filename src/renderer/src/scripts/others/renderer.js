@@ -7142,7 +7142,7 @@ const preGenerateSetup = async (e, elementContext) => {
   document.getElementById("wrapper-wrap").style.display = "none";
   document.getElementById("generate-dataset-progress-tab").style.display = "flex";
   $("#sidebarCollapse").prop("disabled", false);
-  // disable guided_mode_view 
+  // disable guided_mode_view
   document.getElementById("guided_mode_view").style.pointerEvents = "none";
   // disable documentation view to be clicked again
   document.getElementById("documentation-view").style.pointerEvents = "none";

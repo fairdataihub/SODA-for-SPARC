@@ -96,12 +96,7 @@ const processFilesPage = (filePage, finalizedFiles, failedFilesPathsList) => {
   }
 };
 
-
 window.monitorUploadFileVerificationProgress = async () => {
-
-
-
-
   let manifestId = window.pennsieveManifestId;
   let verifiedFilesCount = 0;
   failedFilesPathsList = [];
@@ -147,8 +142,6 @@ window.monitorUploadFileVerificationProgress = async () => {
         `Waiting ${time} seconds for Pennsieve to import more local files...`;
     }
   }
-
-
 
   // all file statuses fetched
   document.getElementById("verify-dataset-upload-files-progress-para").innerText = "";
