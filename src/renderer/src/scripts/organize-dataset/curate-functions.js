@@ -555,9 +555,10 @@ document
   });
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
-  let dsName = document.getElementById("current-bf-dataset-generate").textContent;
-  console.log(dsName);
-  if (dsName !== "None") {
+  let dsName = document.getElementById("current-bf-dataset-generate").innerText;
+  console.log("DSNAME", dsName);
+  console.log((["None", ""].includes(dsName)))
+  if (!["None", ""].includes(dsName)) {
     // confirm with the user if they want to lose their progress by switching to the other workflow
     let confirmSwitch = await swalConfirmAction(
       "warning",
