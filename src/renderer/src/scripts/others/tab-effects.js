@@ -116,7 +116,19 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     $("#prevBtn").css("display", "none");
     // $("#nextBtn").html("Continue");
     $("#Question-validate-dataset-upload").show();
-    window.monitorUploadFileVerificationProgress();
+    // disable guided_mode_view
+    document.getElementById("guided_mode_view").style.pointerEvents = "none";
+    // disable documentation view to be clicked again
+    document.getElementById("documentation-view").style.pointerEvents = "none";
+    // disable contact us view to be clicked again
+    document.getElementById("contact-us-view").style.pointerEvents = "none";
+    await window.monitorUploadFileVerificationProgress();
+    // disable guided_mode_view
+    document.getElementById("guided_mode_view").style.pointerEvents = "";
+    // disable documentation view to be clicked again
+    document.getElementById("documentation-view").style.pointerEvents = "";
+    // disable contact us view to be clicked again
+    document.getElementById("contact-us-view").style.pointerEvents = "";
   }
 
   if (tabNow == 2) {

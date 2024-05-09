@@ -7142,6 +7142,12 @@ const preGenerateSetup = async (e, elementContext) => {
   document.getElementById("wrapper-wrap").style.display = "none";
   document.getElementById("generate-dataset-progress-tab").style.display = "flex";
   $("#sidebarCollapse").prop("disabled", false);
+  // disable guided_mode_view
+  document.getElementById("guided_mode_view").style.pointerEvents = "none";
+  // disable documentation view to be clicked again
+  document.getElementById("documentation-view").style.pointerEvents = "none";
+  // disable contact us view to be clicked again
+  document.getElementById("contact-us-view").style.pointerEvents = "none";
 
   // updateJSON structure after Generate dataset tab
   window.updateJSONStructureGenerate(false, sodaJSONObj);
@@ -7178,6 +7184,12 @@ const preGenerateSetup = async (e, elementContext) => {
       document.getElementById("div-vertical-progress-bar").style.display = "flex";
       document.getElementById("div-generate-comeback").style.display = "flex";
       document.getElementById("generate-dataset-progress-tab").style.display = "none";
+
+      document.getElementById("guided_mode_view").style.pointerEvents = "";
+      // Allow documentation view to be clicked again
+      document.getElementById("documentation-view").style.pointerEvents = "";
+      // Allow contact us view to be clicked again
+      document.getElementById("contact-us-view").style.pointerEvents = "";
       return;
     }
   }
@@ -7227,6 +7239,11 @@ const preGenerateSetup = async (e, elementContext) => {
         $("#sidebarCollapse").prop("disabled", false);
         document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
         document.getElementById("div-generate-comeback").style.display = "flex";
+        document.getElementById("guided_mode_view").style.pointerEvents = "";
+        // Allow documentation view to be clicked again
+        document.getElementById("documentation-view").style.pointerEvents = "";
+        // Allow contact us view to be clicked again
+        document.getElementById("contact-us-view").style.pointerEvents = "";
       }
     });
   } else {
