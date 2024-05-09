@@ -436,7 +436,7 @@ window.addManifestDetailsToDatasetStructure = async (
             console.log(problematicFoldersObj?.[folder]);
             console.log(JSON.stringify(currentFolder));
             for (let i = 0; i < filename.length - 1; i++) {
-              console.log("HEHEHEHEHE")
+              console.log("HEHEHEHEHE");
               console.log(filename[i]);
               // console.log(currentFolder?.["folders"]?.[filename[i]]);
               let fileName = filename[i];
@@ -468,7 +468,9 @@ window.addManifestDetailsToDatasetStructure = async (
               console.log(keys);
               for (let key of keys) {
                 if (currentFolder["files"][key]["action"].includes("renamed")) {
-                  if (currentFolder["files"][key]["original-name"] == filename[filename.length - 1]) {
+                  if (
+                    currentFolder["files"][key]["original-name"] == filename[filename.length - 1]
+                  ) {
                     // The file has been renamed
                     // Get the new file name
                     filename[filename.length - 1] = currentFolder["files"][key]["new-name"];
