@@ -15,6 +15,7 @@ import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
 // import * as path from "path";
+import { swalConfirmAction } from "../utils/swal-utils";
 // const path = require("path");
 
 while (!window.htmlPagesAdded) {
@@ -525,7 +526,7 @@ document
   .addEventListener("click", async function () {
     // check if the user has already entered a dataset name in the input field
     let datasetName = document.getElementById("inputNewNameDataset-upload-dataset").value;
-    if (datasetName) {
+    if (datasetName !== "") {
       // confirm with the user if they want to lose their progress by switching to the other workflow
       let confirmSwitch = await swalConfirmAction(
         "warning",
@@ -546,6 +547,7 @@ document
     document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
     document.getElementById("existing-dataset-upload").classList.remove("hidden");
 
+    document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
     document.getElementById("dataset-upload-existing-dataset").classList.add("checked");
     document.getElementById("Question-new-dataset-upload-name").classList.remove("checked");
 
@@ -554,6 +556,7 @@ document
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
   let dsName = document.getElementById("current-bf-dataset-generate").textContent;
+  console.log(dsName);
   if (dsName !== "None") {
     // confirm with the user if they want to lose their progress by switching to the other workflow
     let confirmSwitch = await swalConfirmAction(
@@ -577,7 +580,7 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
       input.classList.remove("checked");
     });
   }
-
+  document.getElementById("dataset-upload-new-dataset").classList.add("checked");
   document.getElementById("existing-dataset-upload").classList.add("hidden");
   document.getElementById("Question-new-dataset-upload-name").classList.remove("hidden");
 
