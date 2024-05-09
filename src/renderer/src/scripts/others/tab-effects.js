@@ -3633,6 +3633,14 @@ window.wipeOutCurateProgress = () => {
   // reset manifest color
   document.getElementById("label-manifest").style.color = "#303030";
 
+  // hide the failed and success upload file verification divs
+  $("#Question-validate-dataset-upload-2").hide()
+  $("#Question-validate-dataset-upload-3").hide()
+  // empty the failed files table if it has values
+  $("#validate-dataset-failed-table tbody tr").remove();
+
+
+
 
 
 
