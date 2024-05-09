@@ -362,7 +362,8 @@ window.addManifestDetailsToDatasetStructure = async (
               "additional-metadata": String(additionalMetadata),
               description: String(description),
               timestamp: String(timestamp),
-              type: String(type),
+              type: "local",
+              "extention": metadata.extension,
               path: metadata.path,
               extension: metadata.extension,
             };
@@ -480,7 +481,8 @@ window.addManifestDetailsToDatasetStructure = async (
                 "additional-metadata": manifest["Additional Metadata"],
                 description: manifest["description"],
                 timestamp: manifest["timestamp"],
-                type: manifest["file type"],
+                type: "local",
+                "extention": metadata.extension,
                 path: metadata.path,
                 extension: metadata.extension,
               };
