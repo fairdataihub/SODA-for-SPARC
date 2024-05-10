@@ -2,6 +2,7 @@ from flask_restx import Resource, fields, reqparse
 from flask import request
 from namespaces import get_namespace, NamespaceEnum, get_namespace_logger
 from PIL import Image
+import time
 import os
 import requests
 
@@ -55,9 +56,8 @@ class BiolucidaImageUpload(Resource):
     request_model = {
         'token': fields.String(required=True, description="The token to use for authentication"),
         'collection_name': fields.String(required=True, description="The name of the collection to upload the image to"),
-        'files_to_upload': fields.List(fields.String, required=True, description="The list of files to upload")
+        'files_to_upload': fields.List(fields.String, required=True, description="The list of filepaths to upload")
     }
-
     response_model = {
         'status': fields.String(description="Additional message, such as error details")
     }
@@ -65,7 +65,7 @@ class BiolucidaImageUpload(Resource):
     parser = reqparse.RequestParser(bundle_errors=True)
     parser.add_argument('token', type=str, required=True, help="The token to use for authentication")
     parser.add_argument('collection_name', type=str, required=True, help="The name of the collection to upload the image to")
-    parser.add_argument('files_to_upload', type=list, help="The list of files to upload")
+    parser.add_argument('files_to_upload', type=list, required=True, help='List of filepaths to upload to BioLucida', location='json',)
 
     @api.expect(request_model)
     @api.response(200, 'Image uploaded', response_model)
@@ -80,32 +80,56 @@ class BiolucidaImageUpload(Resource):
             collection_name = data['collection_name']
             files_to_upload = data['files_to_upload']
 
-            headers = {
-                'token': token
-            }
 
-            data = {
-                'filesize': '100',
-                'chunk_size': '100',
-                'filename': 'test',
-            }
-            namespace_logger.info(f"Init request headers: {headers}")
-            namespace_logger.info(f"Init request payload: {data}")
+            namespace_logger.info(f"Collection name: {collection_name}")
+            namespace_logger.info(f"Files to upload: {files_to_upload}")
+            for filePath in files_to_upload:
+                namespace_logger.info(f"Uploading file: {filePath}")
+                # Get the name of the file
+                filename = os.path.basename(filePath)
+                # Get the size of the file
+                fileSize = os.path.getsize(filePath)
+                namespace_logger.info(f"File size: {fileSize}")
+                namespace_logger.info(f"File name: {filename}")
+                chunk_size = fileSize if fileSize < 1000000 else 1000000
 
-            res = requests.post('https://sparc.biolucida.net/api/v1/upload/init', headers=headers, data=data)
-            namespace_logger.info(f"Upload init response: {res}")
-            namespace_logger.info(f"Upload init text: {res.text}")
-            namespace_logger.info(f"Upload init status code: {res.status_code}")
-            namespace_logger.info(f"Handling res based on status code: {res.status_code}")
-            if (res.status_code != 200):
-                namespace_logger.error(f"FAILED Error uploading image to Biolucida: {res}")
-                namespace_logger.error(f"FAILED BioLucida API status code: {res.status_code}")
-                api.abort(500, res)
-            else:
-                namespace_logger.info(f"SUCCESS Upload image response: {res}")
-                namespace_logger.info(f"SUCCESS Upload image status code: {res.status_code}")
-                namespace_logger.info(f"SUCCESS Upload image text: {res.text}")
-                return res.json()
+                headers = {
+                    'token': token
+                }
+                payload = {
+                    'filesize': fileSize,
+                    'chunk_size': chunk_size,
+                    'filename': filename,
+                    'tracked_directory': '269',
+                }
+                res = requests.post('https://sparc.biolucida.net/api/v1/upload/init', headers=headers, data=payload)
+                namespace_logger.info(f"Init response: {res.json()}")
+                number_of_chunks = int(res.json()['total_chunks'])
+                upload_key = res.json()['upload_key']
+                namespace_logger.info(f"Number of chunks: {number_of_chunks}")
+                with open(filePath, "rb") as image:
+                    image_base64 = image.read()
+                    split_image = [image_base64[i:i+chunk_size] for i in range(0, len(image_base64), chunk_size)]
+                    for i in range(number_of_chunks):
+                        payload = {
+                            'upload_key': upload_key,
+                            'upload_data': image_base64,
+                            'chunk_id': i,
+                        }
+                        namespace_logger.info(f"Upload key: {upload_key}")
+                        namespace_logger.info(f"Chunk size: {len(split_image[i])}")
+                        namespace_logger.info(f"Chunk number: {i}")
+
+                        res = requests.post('https://sparc.biolucida.net/api/v1/upload/continue', data=payload)
+                        namespace_logger.info(f"Chunk upload response: {res.json()}")
+                
+
+                finish_payload = {
+                    'upload_key': upload_key,
+                }
+
+                res = requests.post('https://sparc.biolucida.net/api/v1/upload/finish', data=finish_payload)
+                namespace_logger.info(f"Finish response: {res.json()}")
         except Exception as e:
             namespace_logger.error(f"Error uploading image to Biolucida: {str(e)}")
             api.abort(500, str(e))

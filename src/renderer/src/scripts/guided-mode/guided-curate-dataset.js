@@ -1517,6 +1517,10 @@ const savePageChanges = async (pageBeingLeftID) => {
       // Get the images selected to be uploaded to BioLucida from the global store and add them to the JSON
       const microscopyImagesSelectedToBeUploadedToBioLucida =
         useGlobalStore.getState().microscopyImagesSelectedToBeUploadedToBioLucida;
+      console.log(
+        "microscopyImagesSelectedToBeUploadedToBioLucida",
+        microscopyImagesSelectedToBeUploadedToBioLucida
+      );
       if (microscopyImagesSelectedToBeUploadedToBioLucida.length === 0) {
         errorArray.push({
           type: "notyf",
@@ -1557,11 +1561,19 @@ const savePageChanges = async (pageBeingLeftID) => {
         // console log how many minutes are left before the token expires
         const minutesLeft = Math.floor((BioLucidaAuthTokenExpiration - Date.now()) / 60000);
         console.log("Minutes left before BioLucida token expires:", minutesLeft);
+        const microscopyImagesSelectedToBeUploadedToBioLucida = window.sodaJSONObj[
+          "microscopy-images-selected-to-be-uploaded-to-biolucida"
+        ].map((imageObj) => imageObj["filePath"]);
+
+        console.log("bioLucidaAuthToken", bioLucidaAuthToken);
+        console.log("collection_name", "SODA Integration testing");
+        console.log("files_to_upload", microscopyImagesSelectedToBeUploadedToBioLucida);
+
         try {
           const res = await client.post("/image_processing/biolucida_image_upload", {
             token: bioLucidaAuthToken,
-            collection_name: "SODA",
-            files_to_upload: [],
+            collection_name: "SODA Integration testing",
+            files_to_upload: microscopyImagesSelectedToBeUploadedToBioLucida,
           });
           console.log("BioLucida upload response", res);
         } catch (error) {
