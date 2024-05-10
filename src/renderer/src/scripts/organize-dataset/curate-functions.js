@@ -359,9 +359,7 @@ window.addManifestDetailsToDatasetStructure = async (
               console.log(keys);
               for (let key of keys) {
                 if (currentFolder["files"][key]["action"].includes("renamed")) {
-                  if (
-                    currentFolder["files"][key]["original-name"] == filename[0]
-                  ) {
+                  if (currentFolder["files"][key]["original-name"] == filename[0]) {
                     // The file has been renamed
                     // Get the new file name
                     filename[0] = currentFolder["files"][key]["new-name"];
