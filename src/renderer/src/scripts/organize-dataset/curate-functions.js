@@ -356,14 +356,13 @@ window.addManifestDetailsToDatasetStructure = async (
             let additionalMetadata = manifest["Additional Metadata"] || "";
             let description = manifest["description"] || "";
             let timestamp = manifest["timestamp"] || "";
-            let type = manifest["file type"] || "";
             datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]] = {
               action: ["new"],
               "additional-metadata": String(additionalMetadata),
               description: String(description),
               timestamp: String(timestamp),
               type: "local",
-              extention: metadata.extension,
+              extension: metadata.extension,
               path: metadata.path,
               extension: metadata.extension,
             };
@@ -476,13 +475,16 @@ window.addManifestDetailsToDatasetStructure = async (
             }
             let metadata = currentFolder?.["files"]?.[filename[filename.length - 1]];
             if (currentFolder != undefined) {
+              let additionalMetadata = manifest["Additional Metadata"] || "";
+              let description = manifest["description"] || "";
+              let timestamp = manifest["timestamp"] || "";
               currentFolder["files"][filename[filename.length - 1]] = {
                 action: metadata.action,
-                "additional-metadata": manifest["Additional Metadata"],
-                description: manifest["description"],
-                timestamp: manifest["timestamp"],
+                "additional-metadata": String(additionalMetadata),
+                description: String(description),
+                timestamp: String(timestamp),
                 type: "local",
-                extention: metadata.extension,
+                extension: metadata.extension,
                 path: metadata.path,
                 extension: metadata.extension,
               };
@@ -499,7 +501,7 @@ window.addManifestDetailsToDatasetStructure = async (
                     key !== "Additional Metadata"
                   ) {
                     currentFolder["files"][filename[filename.length - 1]]["extra_columns"] = {
-                      [key]: manifest[key],
+                      [key]: String(manifest[key]),
                     };
                   }
                 }
