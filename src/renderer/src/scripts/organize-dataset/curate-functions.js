@@ -342,6 +342,7 @@ window.addManifestDetailsToDatasetStructure = async (
         jsonManifest.shift();
         console.log(jsonManifest);
         console.log(datasetStructure);
+        let currentFolder = datasetStructure?.["dataset-structure"]?.["folders"]?.[folder];
         for (let manifest of jsonManifest) {
           // console.log(manifest);
           let filename = manifest["filename"].split("/");
@@ -350,22 +351,42 @@ window.addManifestDetailsToDatasetStructure = async (
             // get the metadata already stored in the dataset structure
             console.log(folder);
             console.log(filename[0]);
-            let metadata =
-              datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]];
+            let temp = currentFolder?.["files"]?.[filename[0]];
+            if (temp == undefined) {
+              // File might have been renamed
+              // Check subfolders of currentFolder and see if any of the keys' value, action, includes "renamed"
+              let keys = Object.keys(currentFolder["files"]);
+              console.log(keys);
+              for (let key of keys) {
+                if (currentFolder["files"][key]["action"].includes("renamed")) {
+                  if (
+                    currentFolder["files"][key]["original-name"] == filename[0]
+                  ) {
+                    // The file has been renamed
+                    // Get the new file name
+                    filename[0] = currentFolder["files"][key]["new-name"];
+                    break;
+                  }
+                }
+              }
+            }
+            let metadata = currentFolder?.["files"]?.[filename[0]];
             console.log(metadata);
-            let additionalMetadata = manifest["Additional Metadata"] || "";
-            let description = manifest["description"] || "";
-            let timestamp = manifest["timestamp"] || "";
-            datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]] = {
-              action: ["new"],
-              "additional-metadata": String(additionalMetadata),
-              description: String(description),
-              timestamp: String(timestamp),
-              type: "local",
-              extension: metadata.extension,
-              path: metadata.path,
-              extension: metadata.extension,
-            };
+            if (metadata !== undefined) {
+              let additionalMetadata = manifest["Additional Metadata"] || "";
+              let description = manifest["description"] || "";
+              let timestamp = manifest["timestamp"] || "";
+              datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]] = {
+                action: ["new"],
+                "additional-metadata": String(additionalMetadata),
+                description: String(description),
+                timestamp: String(timestamp),
+                type: "local",
+                extension: metadata.extension,
+                path: metadata.path,
+                extension: metadata.extension,
+              };
+            }
 
             if (Object.keys(manifest).length > 4) {
               // extra columns are present, ensure to preserve them in the data structure
@@ -461,20 +482,27 @@ window.addManifestDetailsToDatasetStructure = async (
               let keys = Object.keys(currentFolder["files"]);
               console.log(keys);
               for (let key of keys) {
-                if (currentFolder["files"][key]["action"].includes("renamed")) {
+                console.log(key);
+                console.log(currentFolder["files"]?.[key]?.["action"] !== undefined);
+                if (
+                  currentFolder["files"]?.[key]?.["action"] !== undefined &&
+                  currentFolder["files"]?.[key]?.["action"].includes("renamed")
+                ) {
                   if (
                     currentFolder["files"][key]["original-name"] == filename[filename.length - 1]
                   ) {
                     // The file has been renamed
                     // Get the new file name
-                    filename[filename.length - 1] = currentFolder["files"][key]["new-name"];
+                    filename[filename.length - 1] = currentFolder["files"]?.[key]?.["new-name"];
+                    console.log("DOING WORK HERE");
                     break;
                   }
                 }
               }
             }
+            console.log("filename", filename);
             let metadata = currentFolder?.["files"]?.[filename[filename.length - 1]];
-            if (currentFolder != undefined) {
+            if (currentFolder != undefined && metadata != undefined) {
               let additionalMetadata = manifest["Additional Metadata"] || "";
               let description = manifest["description"] || "";
               let timestamp = manifest["timestamp"] || "";
