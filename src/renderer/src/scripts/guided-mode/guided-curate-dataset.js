@@ -5030,23 +5030,12 @@ const getImagesInDatasetStructure = (datasetStructureObj) => {
       const fileExtension = fileObj?.["extension"];
       if (checkIfFileTypeIsImage(fileExtension)) {
         const filePath = fileObj["path"];
-        const filePathInDatasetStructure = `${currentRelativePath}${fileName}`;
-        // Check if the file path already exists in the imageData array
-        const existingImageDataIndex = imageData.findIndex(
-          (imageObj) => imageObj.filePath === filePath
-        );
-
-        if (existingImageDataIndex !== -1) {
-          imageData[existingImageDataIndex]["filePathsInDatasetStructure"].push(
-            filePathInDatasetStructure
-          );
-        } else {
-          imageData.push({
-            fileName: fileName,
-            filePath: filePath,
-            filePathsInDatasetStructure: [filePathInDatasetStructure],
-          });
-        }
+        const relativeDatasetStructurePath = `${currentRelativePath}${fileName}`;
+        imageData.push({
+          fileName: fileName,
+          filePath: filePath,
+          relativeDatasetStructurePath: relativeDatasetStructurePath,
+        });
       }
     }
 
@@ -5531,7 +5520,9 @@ window.openPage = async (targetPageID) => {
     if (targetPageID === "guided-microscopy-image-confirmation-tab") {
       // Get the potential microscopy images and the confirmed microscopy images (if they were previously set)
       // and update the zustand store state to update the React components
-      const potentialMicroscopyImages = getImagesInDatasetStructure(window.datasetStructureJSONObj);
+      const potentialMicroscopyImages = getImagesInDatasetStructure(
+        window.datasetStructureJSONObj["folders"]["primary"]
+      );
       const confirmedMicroscopyImages = window.sodaJSONObj["confirmed-microscopy-images"] || [];
       setPotentialMicroscopyImages(potentialMicroscopyImages);
       setConfirmedMicroscopyImages(confirmedMicroscopyImages);

@@ -34,7 +34,7 @@ const BioLucidaImageListSelectPage = () => {
   const tableRows = confirmedMicroscopyImages.map((imageObj) => {
     const filePath = imageObj["filePath"];
     const fileName = imageObj["fileName"];
-    const filePathsInDatasetStructure = imageObj["filePathsInDatasetStructure"];
+    const relativeDatasetStructurePath = imageObj["relativeDatasetStructurePath"];
     // Check if the image is already selected to be uploaded to BioLucida
     const isImageSelectedToBeUploadedToBioLucida =
       filePathsSelectedToBeUploadedToBioLucida.includes(filePath);
@@ -63,9 +63,8 @@ const BioLucidaImageListSelectPage = () => {
                 <Text ta="left">Local file path:</Text>
                 <Text ta="left">{filePath}</Text>
                 <Text ta="left">Paths in organized dataset structure:</Text>
-                {filePathsInDatasetStructure.map((imagePath) => (
-                  <Text key={imagePath}>{imagePath}</Text>
-                ))}
+                <Text ta="left">Path in organized dataset structure:</Text>
+                <Text>{relativeDatasetStructurePath}</Text>
               </Stack>
             }
           >
