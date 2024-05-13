@@ -160,6 +160,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 5) {
+    console.log("Woooooow");
     $("#nextBtn").css("display", "none");
     $("#prevBtn").css("display", "none");
     // $("#nextBtn").html("Continue");
@@ -177,6 +178,8 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     document.getElementById("documentation-view").style.pointerEvents = "";
     // disable contact us view to be clicked again
     document.getElementById("contact-us-view").style.pointerEvents = "";
+    $("#validate-upload-status-tab").show();
+    $("#validate-upload-status-tab").css("display", "flex");
   }
 };
 
@@ -3437,7 +3440,6 @@ window.resetCurationTabs = () => {
   $(".getting-started").removeClass("test2");
   $("#Question-getting-started-1").addClass("show");
   $("#generate-dataset-progress-tab").css("display", "none");
-  $("#validate-upload-status-tab").css("display", "none");
 
   // step 1
   $("#org-dataset-folder-path").text("");
