@@ -72,6 +72,7 @@ const createEventData = (value, destination, origin, dataset_name) => {
       dataset_name: dataset_name,
       origin: origin,
       destination: destination,
+      dataset_int_id: window.defaultBfDatasetIntId,
     };
   }
 

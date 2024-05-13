@@ -171,6 +171,7 @@ $(document).ready(function () {
             value: whiteListTags.length + newTags.length - removeTags.length,
             dataset_name: window.defaultBfDataset,
             dataset_id: window.defaultBfDatasetId,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
       } else {
@@ -193,6 +194,7 @@ $(document).ready(function () {
             value: 1,
             dataset_name: window.defaultBfDataset,
             dataset_id: window.defaultBfDatasetId,
+            dataset_int_id: window.defaultBfDatasetIntId,
           }
         );
       }

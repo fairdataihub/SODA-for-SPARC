@@ -1,4 +1,23 @@
 {
+  "14.1.1": {
+    "announcements": {
+      "bug-fixes": [
+        "Fixed an issue in 'Upload Dataset' where the folder and file merge options did not always appear for user selection."
+      ],
+      "features": []
+    }
+  },
+  "14.1.0": {
+    "announcements": {
+      "bug-fixes": [
+        "SODA returns more informative error messages from the Pennsieve API when an error occurs in the 'Upload Dataset' feature.",
+        "SODA appropriately shows and hides the `Return` and `Exit` buttons that appear when a dataset upload fails in the 'Upload Dataset' feature."
+      ],
+      "features": [
+        "In addition to the prior set of invalid characters in dataset titles, SODA additionally disallows the following characters: .,\\"
+      ]
+    }
+  },
   "14.0.0": {
     "announcements": {
       "bug-fixes": [],

@@ -1396,6 +1396,7 @@ const initiate_generate_manifest_bf = async () => {
     {
       value: high_level_folder_num,
       dataset_id: window.defaultBfDatasetId,
+      dataset_int_id: window.defaultBfDatasetIntId,
       origin: origin,
       destination: destination,
     }
