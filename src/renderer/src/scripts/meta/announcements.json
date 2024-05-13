@@ -1,4 +1,11 @@
 {
+  "14.1.1": {
+    "announcements": {
+      "bug-fixes": [
+        "Fixed an issue in 'Upload Dataset' where the folder and file merge options did not always appear for user selection." 
+      ],
+      "features": []
+  },
   "14.1.0": {
     "announcements": {
       "bug-fixes": [
