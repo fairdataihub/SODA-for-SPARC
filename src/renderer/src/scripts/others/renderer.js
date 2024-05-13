@@ -7517,6 +7517,7 @@ const initiate_generate = async (e) => {
 
       // hide the retry button
       $("#button-retry").hide();
+      $("#button-generate-validate").show();
 
       // update dataset list; set the dataset id and int id
       try {
@@ -7551,7 +7552,9 @@ const initiate_generate = async (e) => {
         progressStatus.innerHTML = `Upload Failed`;
       }
 
+      // show the retry button and hide the verify file status button
       $("#button-retry").show();
+      $("#button-generate-validate").hide();
 
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
