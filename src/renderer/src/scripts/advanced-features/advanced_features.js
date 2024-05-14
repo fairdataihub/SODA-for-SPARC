@@ -101,6 +101,15 @@ $("#advanced-back-button").on("click", () => {
     document.getElementById("advanced_mode-section").classList.remove("fullShown");
     document.getElementById("advanced_mode-section").classList.add("hidden");
     document.getElementById("advanced-footer").classList.add("hidden");
+    document.getElementById("advanced-start-over-button").classList.add("hidden");
+
+    // Ensure all sections are hidden and buttons are deselected
+    document.getElementById("validate-dataset-feature").classList.add("hidden");
+    document.getElementById("validate-dataset-feature").classList.remove("is-shown");
+    document.getElementById("banner-image-feature").classList.add("hidden");
+    document.getElementById("banner-image-feature").classList.remove("is-shown");
+    document.getElementById("manifest-creation-feature").classList.add("hidden");
+    document.getElementById("manifest-creation-feature").classList.remove("is-shown");
 
     // Add the lotties back to the home screen
     lottie.loadAnimation({

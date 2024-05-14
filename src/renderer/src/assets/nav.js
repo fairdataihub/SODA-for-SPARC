@@ -219,6 +219,14 @@ const handleSectionTrigger = async (event) => {
     document.getElementById("advanced_mode-section").classList.add("hidden");
     document.getElementById("advanced-footer").classList.add("hidden");
 
+    // Ensure all sections are hidden and buttons are deselected
+    document.getElementById("validate-dataset-feature").classList.add("hidden");
+    document.getElementById("validate-dataset-feature").classList.remove("is-shown");
+    document.getElementById("banner-image-feature").classList.add("hidden");
+    document.getElementById("banner-image-feature").classList.remove("is-shown");
+    document.getElementById("manifest-creation-feature").classList.add("hidden");
+    document.getElementById("manifest-creation-feature").classList.remove("is-shown");
+
     // Remove lotties from the home screen to prevent double lotties
     if (document.getElementById("existing-dataset-lottie").innerHTML == "") {
       // Add the lotties back to the home screen
@@ -336,7 +344,7 @@ document.querySelector("#shortcut-navigate-to-create_submission").addEventListen
 });
 
 document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
-  //Free form mode will open through here
+  //Free form mode will open through here (FROM HOME TO UPLOAD DATASET NOW)
   window.guidedPrepareHomeScreen();
 
   // guidedResetSkippedPages();
