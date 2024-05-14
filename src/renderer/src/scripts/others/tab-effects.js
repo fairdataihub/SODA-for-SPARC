@@ -76,19 +76,23 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 2) {
-    // check if the user is creating a new ds and confirm button is hidden
-    if (
-      $("#dataset-upload-new-dataset").hasClass("checked") &&
-      $("#inputNewNameDataset-upload-dataset").val().trim() !== "" &&
-      $("#upload-dataset-btn-confirm-new-dataset-name").hasClass("hidden")
-    ) {
-      $("#nextBtn").prop("disabled", false);
+    if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
+      // If merge options are selected, enable the continue button
+      if (
+        $('input[name="generate-5"]:checked').length === 1 &&
+        $('input[name="generate-6"]:checked').length === 1
+      ) {
+        console.log("Merge options selected");
+        $("#nextBtn").prop("disabled", false);
+      }
     }
-    // check if the user is updating an existing dataset and has selected their merge options
-    else if (
-      $("#dataset-upload-existing-dataset").hasClass("checked") &&
-      $('input[name="generate-5"]:checked').length === 2
+
+    if (
+      document.getElementById("dataset-upload-new-dataset").classList.contains("checked") &&
+      document.getElementById("inputNewNameDataset-upload-dataset").value !== ""
     ) {
+      // If new dataset is selected and name confirmed, enable the continue button
+      console.log("test")
       $("#nextBtn").prop("disabled", false);
     }
   }
@@ -97,6 +101,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     if (nextOrPrev === -1) {
       return;
     }
+    console.log("ON THIRD TAB")
 
     // enable continue button
     $("#nextBtn").prop("disabled", false);
@@ -115,24 +120,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     } else {
       $("#manifest-creation-prohibited").hide();
       $("#generate-manifest-curate").prop("disabled", false);
-    }
-
-    if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
-      // If merge options are selected, enable the continue button
-      if (
-        $('input[name="generate-5"]:checked').length === 1 &&
-        $('input[name="generate-5"]:checked').length === 1
-      ) {
-        $("#nextBtn").prop("disabled", false);
-      }
-    }
-
-    if (
-      document.getElementById("dataset-upload-new-dataset").classList.contains("checked") &&
-      document.getElementById("inputNewNameDataset-upload-dataset").value !== ""
-    ) {
-      // If new dataset is selected and name confirmed, enable the continue button
-      $("#nextBtn").prop("disabled", false);
     }
 
     if (document.getElementById("generate-manifest-curate").checked) {

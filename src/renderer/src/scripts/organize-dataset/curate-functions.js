@@ -684,11 +684,19 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
 
     // get every input with name="generate-5" and remove the checked property
     // TODO: REset sodaJSONObj here too
-    let inputs = document.querySelectorAll('input[name="generate-5"]');
-    inputs.forEach((input) => {
-      input.checked = false;
-      input.classList.remove("checked");
+    document.getElementsByName("generate-5").forEach((element) => {
+      element.checked = false;
     });
+
+    document.getElementsByName("generate-6").forEach((element) => {
+      element.checked = false;
+    });
+    document.getElementById("skip-folder-card").classList.remove("checked");
+    document.getElementById("skip-folder-card").classList.remove("non-selected");
+    document.getElementById("merge-folder-card").classList.remove("checked");
+    document.getElementById("merge-folder-card").classList.remove("non-selected");
+    document.getElementById("replace-folder-card").classList.remove("checked");
+    document.getElementById("replace-folder-card").classList.remove("non-selected");
   }
   document.getElementById("dataset-upload-new-dataset").classList.add("checked");
   document.getElementById("existing-dataset-upload").classList.add("hidden");
