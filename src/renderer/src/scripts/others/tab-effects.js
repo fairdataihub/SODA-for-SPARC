@@ -3482,33 +3482,33 @@ window.resetCurationTabs = () => {
 
 window.exitCurate = async (resetProgressTabs, start_over = false) => {
   $("#dataset-loaded-message").hide();
+  $("#guided_mode_view").click();
   // if exit Btn is clicked after Generate
-  if (resetProgressTabs) {
-    let message = "Are you sure you want to exit?";
+  // if (resetProgressTabs) {
+  //   let message = "Are you sure you want to exit?";
 
-    var res = await raiseWarningExit(message);
+  //   var res = await raiseWarningExit(message);
 
-    if (res) {
-      window.resetCurationTabs();
+  //   if (res) {
+  //     window.resetCurationTabs();
 
-      if (start_over) {
-        $("#organize_dataset_btn").click();
-      } else {
-        // window.returnToGuided();
-        if ($("#nextBtn").prop("disabled") === true) {
-          window.nextBtnDisabledVariable = true;
-        } else {
-          window.nextBtnDisabledVariable = false;
-        }
-        // $("#guided_mode_view").click();
-      }
-    } else {
-      window.globalGettingStarted1stQuestionBool = false;
-      return;
-    }
-  } else {
-    window.wipeOutCurateProgress();
-  }
+  //     if (start_over) {
+  //       $("#organize_dataset_btn").click();
+  //     } else {
+  //       // window.returnToGuided();
+  //       if ($("#nextBtn").prop("disabled") === true) {
+  //         window.nextBtnDisabledVariable = true;
+  //       } else {
+  //         window.nextBtnDisabledVariable = false;
+  //       }
+  //     }
+  //   } else {
+  //     window.globalGettingStarted1stQuestionBool = false;
+  //     return;
+  //   }
+  // } else {
+  //   window.wipeOutCurateProgress();
+  // }
 };
 
 window.wipeOutCurateProgress = () => {
