@@ -92,7 +92,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       document.getElementById("inputNewNameDataset-upload-dataset").value !== ""
     ) {
       // If new dataset is selected and name confirmed, enable the continue button
-      console.log("test")
+      console.log("test");
       $("#nextBtn").prop("disabled", false);
     }
   }
@@ -101,7 +101,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     if (nextOrPrev === -1) {
       return;
     }
-    console.log("ON THIRD TAB")
+    console.log("ON THIRD TAB");
 
     // enable continue button
     $("#nextBtn").prop("disabled", false);
