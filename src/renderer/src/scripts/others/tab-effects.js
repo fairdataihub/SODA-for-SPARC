@@ -108,7 +108,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
 
     // if the user has files already on their dataset when starting from new/local and merging to existing pennsieve then
     // show them a message detailing why they cannot create manifest files
-    if (window.hasFiles) {
+    if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
       $("#manifest-creation-prohibited").show();
       if ($("#generate-manifest-curate").prop("checked")) {
         console.log("something happening here?\nclicking when checked");
