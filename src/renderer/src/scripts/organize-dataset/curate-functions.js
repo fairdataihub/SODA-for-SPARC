@@ -682,21 +682,29 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
     // reset the dataset name input field
     document.getElementById("current-bf-dataset-generate").textContent = "None";
 
-    // get every input with name="generate-5" and remove the checked property
     // TODO: REset sodaJSONObj here too
+    // Remove checked state from all checkbox cards (input field inside the cards)
     document.getElementsByName("generate-5").forEach((element) => {
+      // Reset state for folder cards
       element.checked = false;
     });
 
     document.getElementsByName("generate-6").forEach((element) => {
+      // Reset state for file cards
       element.checked = false;
     });
+    // Reset the merge option cards
     document.getElementById("skip-folder-card").classList.remove("checked");
     document.getElementById("skip-folder-card").classList.remove("non-selected");
     document.getElementById("merge-folder-card").classList.remove("checked");
     document.getElementById("merge-folder-card").classList.remove("non-selected");
     document.getElementById("replace-folder-card").classList.remove("checked");
     document.getElementById("replace-folder-card").classList.remove("non-selected");
+
+    document.getElementById("replace-file-card").classList.remove("non-selected");
+    document.getElementById("replace-file-card").classList.remove("checked");
+    document.getElementById("skip-file-card").classList.remove("checked");
+    document.getElementById("skip-file-card").classList.remove("non-selected");
   }
   document.getElementById("dataset-upload-new-dataset").classList.add("checked");
   document.getElementById("existing-dataset-upload").classList.add("hidden");
@@ -747,6 +755,7 @@ document
   .getElementById("upload-dataset-btn-confirm-new-dataset-name")
   .addEventListener("click", async function () {
     // Once clicked, verify if the dataset name exists, if not warn the user that they need to choose a different name
+    document.getElementById("upload-dataset-btn-confirm-new-dataset-name").style.color = "transparent";
     document.getElementById("upload-dataset-btn-confirm-new-dataset-name").classList.add("loading");
     let datasetName = document.getElementById("inputNewNameDataset-upload-dataset").value;
     let invalidName = window.check_forbidden_characters_ps(datasetName);
@@ -771,6 +780,7 @@ document
     document
       .getElementById("upload-dataset-btn-confirm-new-dataset-name")
       .classList.remove("loading");
+    document.getElementById("upload-dataset-btn-confirm-new-dataset-name").style.color = "white";
   });
 
 document.getElementById("change-account-btn").addEventListener("click", async function () {

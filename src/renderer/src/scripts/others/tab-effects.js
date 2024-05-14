@@ -3474,12 +3474,18 @@ window.resetCurationTabs = () => {
   document.getElementsByName("generate-6").forEach((element) => {
     element.checked = false;
   });
+  // Remove checks from all the cards in step 3 (merge option cards)
   document.getElementById("skip-folder-card").classList.remove("checked");
   document.getElementById("skip-folder-card").classList.remove("non-selected");
   document.getElementById("merge-folder-card").classList.remove("checked");
   document.getElementById("merge-folder-card").classList.remove("non-selected");
   document.getElementById("replace-folder-card").classList.remove("checked");
   document.getElementById("replace-folder-card").classList.remove("non-selected");
+
+  document.getElementById("replace-file-card").classList.remove("non-selected");
+  document.getElementById("replace-file-card").classList.remove("checked");
+  document.getElementById("skip-file-card").classList.remove("checked");
+  document.getElementById("skip-file-card").classList.remove("non-selected");
 
   // Step 4
   if (document.getElementById("generate-manifest-curate").checked) {
