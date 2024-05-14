@@ -53,11 +53,11 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     $(x[tabNow]).css("overflow", "auto");
   }, 1200);
 
-  var inActiveTabArray = [0, 1, 2, 3, 4, 5].filter((element) => {
+  const inActiveTabArray = [0, 1, 2, 3, 4, 5].filter((element) => {
     return ![tabNow].includes(element);
   });
 
-  for (var i of inActiveTabArray) {
+  for (const i of inActiveTabArray) {
     $(x[i]).removeClass("tab-active");
     $(x[tabNow]).css("overflow", "hidden");
   }
@@ -115,6 +115,18 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     } else {
       $("#manifest-creation-prohibited").hide();
       $("#generate-manifest-curate").prop("disabled", false);
+    }
+
+    if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
+      // If merge options are selected, enable the continue button
+      if ($('input[name="generate-5"]:checked').length === 1 && $('input[name="generate-5"]:checked').length === 1) {
+        $("#nextBtn").prop("disabled", false);
+      }
+    }
+
+    if (document.getElementById("dataset-upload-new-dataset").classList.contains("checked") && document.getElementById("inputNewNameDataset-upload-dataset").value !== "") {
+      // If new dataset is selected and name confirmed, enable the continue button
+      $("#nextBtn").prop("disabled", false);
     }
 
     if (document.getElementById("generate-manifest-curate").checked) {
@@ -3462,6 +3474,20 @@ window.resetCurationTabs = () => {
   document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
   document.getElementById("inputNewNameDataset-upload-dataset").value = "";
   document.getElementById("button-confirm-bf-dataset").parentNode.style.display = "flex";
+  document.getElementsByName("generate-5").forEach((element) => {
+    element.checked = false;
+  });
+  
+  document.getElementsByName("generate-6").forEach((element) => {
+    element.checked = false;
+  });
+  document.getElementById("skip-folder-card").classList.remove("checked");
+  document.getElementById("skip-folder-card").classList.remove("non-selected");
+  document.getElementById("merge-folder-card").classList.remove("checked");
+  document.getElementById("merge-folder-card").classList.remove("non-selected");
+  document.getElementById("replace-folder-card").classList.remove("checked");
+  document.getElementById("replace-folder-card").classList.remove("non-selected");
+
 
   // Step 4
   if (document.getElementById("generate-manifest-curate").checked) {
