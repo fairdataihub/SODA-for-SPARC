@@ -2622,6 +2622,12 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                     # add the files to the manifest
                     ps.manifest.add(manifest_file, ps_folder, manifest_id)
 
+            
+            # set rename files to ums for upload resuming if this upload fails
+            if renamed_files_counter > 0:
+                ums.set_list_of_files_to_rename(list_of_files_to_rename)
+                ums.set_rename_total_files(renamed_files_counter)
+
             # upload the manifest files
             try: 
                 ps.manifest.upload(manifest_id)
@@ -2827,9 +2833,18 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
 
         # if files were uploaded but later receive the 'Failed' status in the Pennsieve manifest we allow users to retry the upload; set the pre-requisite information for the upload to 
         # be retried in that case
+        # NOTE: We do not need to store the rename information here. Rationale: If the upload for a file failed the rename could not succeed and we would not reach this point. 
+        #       What would happen instead is as follows(in an optimistic case where the upload doesnt keep being marked as Failed): 
+        #      1. The upload for a file fails
+        #      2. The upload information gets (including rename information ) stored in the catchall error handling block 
+        #      3. The user retries the upload
+        #      4. The manifest counts the Failed file as a file to be retried 
+        #      5. The manifest is uploaded again and the file is uploaded again
+        #      6. The file is renamed successfully this time
         ums.set_main_total_generate_dataset_size(main_total_generate_dataset_size)
         ums.set_total_files_to_upload(total_files)
-        ums.set_elapsed_time(elapsed_time)
+        ums.set_elapsed_time(elapsed_time)        
+        
 
         main_curate_progress_message = "Success: COMPLETED!"
         main_curate_status = "Done"
@@ -2843,6 +2858,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
         ums.set_main_total_generate_dataset_size(main_total_generate_dataset_size)
         ums.set_total_files_to_upload(total_files)
         ums.set_elapsed_time(elapsed_time)
+        # store the renaming files information in case the upload fails and we need to rename files during the retry
+        ums.set_renaming_files_flow(renaming_files_flow) # this determines if we failed while renaming files after the upload is complete
+        ums.set_rename_total_files(renamed_files_counter)
+        ums.set_list_of_files_to_rename(list_of_files_to_rename)
         raise e
 
 main_curate_status = ""
@@ -3344,6 +3363,10 @@ def reset_upload_session_environment(resume):
         ums.set_elapsed_time(None)
         ums.set_total_files_to_upload(0)
         ums.set_main_total_generate_dataset_size(0)
+        # reset the rename information back to default
+        ums.set_renaming_files_flow(False) # this determines if we failed while renaming files after the upload is complete
+        ums.set_rename_total_files(None)
+        ums.set_list_of_files_to_rename(None)
         # reset the calculated values for the upload session
         bytes_file_path_dict = {}
 

@@ -15,6 +15,11 @@ class UploadManifestSession:
     total_files_to_upload = None 
     elapsed_time = None
 
+    # rename values
+    renaming_files_flow = False
+    rename_total_files = None
+    list_of_files_to_rename = None
+
     def __init__(self):
         self.df_mid = None
 
@@ -41,6 +46,24 @@ class UploadManifestSession:
 
     def get_total_files_to_upload(self):
         return self.total_files_to_upload
+
+    def set_rename_total_files(self, count):
+        self.rename_total_files = count
+
+    def get_rename_total_files(self):
+        return self.rename_total_files
+    
+    def set_list_of_files_to_rename(self, list):
+        self.list_of_files_to_rename = list
+
+    def get_list_of_files_to_rename(self):
+        return self.list_of_files_to_rename
+    
+    def set_renaming_files_flow(self, value):
+        self.renaming_files_flow = value
+
+    def get_renaming_files_flow(self):
+        return self.renaming_files_flow
 
     def df_mid_has_progress(self):
         if self.ps is None:
