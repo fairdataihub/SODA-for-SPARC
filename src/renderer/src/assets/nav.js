@@ -26,9 +26,7 @@ const leavingUploadDatasets = () => {
 };
 
 const uploadComplete = () => {
-  return (
-    $("#wrapper-wrap").hasClass("show") || $("#validate-upload-status-tab").hasClass("tab-active")
-  );
+  return $("#wrapper-wrap").is(":visible") && $("#validate-upload-status-tab").is(":visible");
 };
 
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
@@ -38,7 +36,7 @@ document.body.addEventListener("click", async (event) => {
       let leaveUploadDataset = await swalConfirmAction(
         "warning",
         "Are you sure you want to exit?",
-        "Progress will not be saved in SODA. Do you want to continue?",
+        "Any progress made importing your dataset and creating manifest files will not be saved. Do you want to continue?",
         "Yes",
         "Cancel"
       );
