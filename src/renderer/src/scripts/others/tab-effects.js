@@ -3481,8 +3481,9 @@ window.resetCurationTabs = () => {
 };
 
 window.exitCurate = async (resetProgressTabs, start_over = false) => {
+  console.log("Exit curate called");
   $("#dataset-loaded-message").hide();
-  $("#guided_mode_view").click();
+  document.getElementById("guided_mode_view").click();
   // if exit Btn is clicked after Generate
   // if (resetProgressTabs) {
   //   let message = "Are you sure you want to exit?";
