@@ -2493,7 +2493,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
         start_generate = 1
 
         
-        if resume and ums.df_mid_has_progress():
+        # resuming a dataset that had no files to rename or that failed before renaming any files
+        if resume and ums.df_mid_has_progress() and not ums.get_renaming_files_flow():
             main_curate_progress_message = ("Preparing to retry upload. Progress on partially uploaded files will be reset.")
             # reset necessary variables that were used in the failed upload session and cannot be reliably cached
             bytes_uploaded_per_file = {}
@@ -2512,6 +2513,11 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             namespace_logger.info(f"Bytes per file dict values: {bytes_file_path_dict}")
             total_bytes_uploaded["value"] = ums.calculate_completed_upload_size(manifest_id, bytes_file_path_dict, total_files )
             namespace_logger.info("Total bytes uploaded value is: " + str(total_bytes_uploaded["value"]))
+
+            # rename file information 
+            list_of_files_to_rename = ums.get_list_of_files_to_rename()
+            renamed_files_counter = ums.get_rename_total_files()
+            
             time.sleep(5)
 
 
@@ -2525,6 +2531,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 namespace_logger.error("Error uploading dataset files")
                 namespace_logger.error(e)
                 raise PennsieveUploadException("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent then click the retry button.")
+        elif resume and ums.df_mid_has_progress() and ums.get_renaming_files_flow():
+            # setup for rename files flow
+            list_of_files_to_rename = ums.get_list_of_files_to_rename()
+            renamed_files_counter = ums.get_rename_total_files()
         # create a manifest for files - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
         elif len(list_upload_files) > 0:
             main_curate_progress_message = ("Queuing dataset files for upload with the Pennsieve Agent..." + "<br>" + "This may take some time.")
