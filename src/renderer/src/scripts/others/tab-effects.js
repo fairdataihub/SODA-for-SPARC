@@ -111,8 +111,10 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     if (window.hasFiles) {
       $("#manifest-creation-prohibited").show();
       if ($("#generate-manifest-curate").prop("checked")) {
+        console.log("something happening here?\nclicking when checked");
         $("#generate-manifest-curate").click();
       }
+      console.log("disabling here");
       $("#generate-manifest-curate").prop("disabled", true);
       $("#nextBtn").prop("disabled", false);
       // disable the manifest file checkbox
@@ -138,14 +140,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   // preview dataset tab
   if (tabNow == 4) {
     console.log("last step here");
-    let step5Bubble = document.getElementsByClassName("vertical-progress-bar-step")[4];
-    // if (step5Bubble.classList.contains("is-current")) {
-    //   step5Bubble.classList.remove("is-current");
-    // }
-    // step5Bubble.classList.add("done");
-    // If in step 6, show the generate button and the preview tab
     $("#nextBtn").css("display", "none");
-
     let dataset_name = fill_info_details();
     window.datasetStructureJSONObj["files"] = window.sodaJSONObj["metadata-files"];
     window.datasetStructureJSONObj["folders"] = window.sodaJSONObj["dataset-structure"]["folders"];
@@ -161,7 +156,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     $("#Question-preview-dataset-details").children().show();
     $("#Question-generate-dataset-generate-div").show();
     $("#Question-generate-dataset-generate-div").children().show();
-    //$("#preview-dataset-structure-btn").show();
   }
 
   if (tabNow == 5) {
