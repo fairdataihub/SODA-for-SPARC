@@ -25,14 +25,30 @@ const leavingUploadDatasets = () => {
   return false;
 };
 
+const uploadComplete = () => {
+  return (
+    $("#wrapper-wrap").hasClass("show") || $("#validate-upload-status-tab").hasClass("tab-active")
+  );
+};
+
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 document.body.addEventListener("click", async (event) => {
   if (event.target.dataset.section) {
-    if (leavingUploadDatasets() && window.sodaJSONHasProgress()) {
+    if (leavingUploadDatasets() && window.sodaJSONHasProgress() && !uploadComplete()) {
       let leaveUploadDataset = await swalConfirmAction(
         "warning",
-        "Exit Upload Dataset?",
+        "Are you sure you want to exit?",
         "Progress will not be saved in SODA. Do you want to continue?",
+        "Yes",
+        "Cancel"
+      );
+      if (!leaveUploadDataset) return;
+      window.resetCurationTabs();
+    } else if (leavingUploadDatasets() && window.sodaJSONHasProgress() && uploadComplete()) {
+      let leaveUploadDataset = await swalConfirmAction(
+        "warning",
+        "Are you sure you want to exit?",
+        "",
         "Yes",
         "Cancel"
       );
