@@ -3259,9 +3259,10 @@ window.updateJSONStructureGenerate = (progress = false, sodaJSONObject) => {
 };
 
 const updateJSONStructureBfDestination = () => {
-  console.log($("#Question-new-dataset-upload-name").hasClass("checked"));
+  console.log("In this place appropriately");
+  console.log($("#dataset-upload-new-dataset").hasClass("checked"));
   // check which option-card is selected in the upload destination selection tab
-  if ($("#Question-new-dataset-upload-name").hasClass("checked")) {
+  if ($("#dataset-upload-new-dataset").hasClass("checked")) {
     window.sodaJSONObj["generate-dataset"] = {
       destination: "bf",
       "generate-option": "new",
