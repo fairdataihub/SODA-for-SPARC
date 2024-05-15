@@ -2040,11 +2040,18 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
             # Check if the current folder has any subfolders that already exist on Pennsieve. Important step to appropriately handle replacing and merging folders.
             if len(my_tracking_folder["children"]["folders"]) == 0 and my_tracking_folder["content"]["id"].find("N:dataset") == -1:
-                r = requests.get(f"{PENNSIEVE_URL}/packages/{my_tracking_folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"})
-                r.raise_for_status()
-                ps_folder = r.json()
+                limit = 100
+                offset = 0
+                ps_folder = []
+                while True: 
+                    r = requests.get(f"{PENNSIEVE_URL}/packages/{my_tracking_folder['content']['id']}?limit={limit}&offset={offset}", headers=create_request_headers(ps), json={"include": "files"})
+                    r.raise_for_status()
+                    page = r.json()["children"]
+                    ps_folder.extend(page)
+                    if len(page) < limit:
+                        break
                 normalize_tracking_folder(ps_folder)
-                my_tracking_folder["children"] = ps_folder["children"]
+                my_tracking_folder["children"] = ps_folder
 
             # create/replace/skip folder
             if "folders" in my_folder.keys():
