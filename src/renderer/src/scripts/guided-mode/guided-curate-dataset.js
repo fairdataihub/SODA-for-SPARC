@@ -1422,17 +1422,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         //Skip the samples metadata page
         guidedSkipPage(`guided-create-samples-metadata-tab`);
       }
-
-      const userSelectedDatasetIsReJoinFunded = document
-        .getElementById("guided-button-dataset-is-re-join-funded")
-        .classList.contains("selected");
-
-      if (userSelectedDatasetIsReJoinFunded) {
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
-          "HEAL";
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
-          "REJOIN-HEAL";
-      }
     }
 
     if (pageBeingLeftID === "guided-subject-structure-spreadsheet-importation-tab") {
@@ -4397,6 +4386,18 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
       }
     }
   }
+
+  if (highLevelFolder === "derivative") {
+    // If there are microscopy images added to the primary folder
+    const confirmedMicroscopyImages = window.sodaJSONObj["confirmed-microscopy-images"];
+    if (confirmedMicroscopyImages.length > 0) {
+      for (const imageObj of confirmedMicroscopyImages) {
+        console.log("file name", imageObj.fileName);
+        console.log("file path", imageObj.filePath);
+        console.log("relativeDatasetStructurePath", imageObj.relativeDatasetStructurePath);
+      }
+    }
+  }
 };
 
 const guidedTestResetPennsievePage = (tabID) => {
@@ -5047,7 +5048,7 @@ const getImagesInDatasetStructure = (datasetStructureObj) => {
     }
   };
 
-  getImagesInDatasetStructureHelper(datasetStructureObj, "");
+  getImagesInDatasetStructureHelper(datasetStructureObj, "primary/");
 
   console.log("Image data extracted from dataset structure:", imageData);
   return imageData;
@@ -5541,6 +5542,16 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-derivative-data-organization-tab") {
+      const microScopyImages = window.sodaJSONObj["confirmed-microscopy-images"];
+      for (const image of microScopyImages) {
+        const imageRelativeDatasetStructurePath = image["relativeDatasetStructurePath"];
+        const imageIsInsideASampleFolder = imageRelativeDatasetStructurePath.includes("sam-");
+        console.log("Image is inside a sample folder:", imageIsInsideASampleFolder);
+        /*const folderContentsAtRelativePath = window.getRecursivePath(
+          imageRelativeDatasetStructurePath.split("/"),
+          window.datasetStructureJSONObj
+        );*/
+      }
       openSubPageNavigation(targetPageID);
     }
 
@@ -7257,6 +7268,7 @@ const renderSamplesTable = () => {
 };
 
 const setActiveSubPage = (pageIdToActivate) => {
+  console.log("setActiveSubPage called with pageIdToActivate: ", pageIdToActivate);
   const pageElementToActivate = document.getElementById(pageIdToActivate);
 
   //create a switch statement for pageIdToActivate to load data from sodaJSONObj

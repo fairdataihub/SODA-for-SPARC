@@ -694,25 +694,25 @@ window.loadFileFolder = (myPath) => {
   return [folder_elem, file_elem];
 };
 
-window.getRecursivePath = (filteredList, inputObj) => {
-  let myPath = inputObj;
-  for (let item of filteredList) {
-    if (item.trim() !== "") {
-      myPath = myPath["folders"][item];
-    }
-  }
-  if (myPath === undefined) {
-    myPath = inputObj;
-    filteredList.pop();
-    for (let item of filteredList) {
-      if (item.trim() !== "") {
-        myPath = myPath["folders"][item];
+window.getRecursivePath = (pathArray, rootObject) => {
+  const traversePath = (currentObject, segments) => {
+    for (let segment of segments) {
+      if (segment.trim() !== "") {
+        currentObject = currentObject["folders"][segment];
       }
     }
-    return [myPath, filteredList];
-  } else {
-    return myPath;
+    return currentObject;
+  };
+
+  let currentPath = traversePath(rootObject, pathArray);
+
+  if (currentPath === undefined) {
+    pathArray.pop();
+    currentPath = traversePath(rootObject, pathArray);
+    return [currentPath, pathArray];
   }
+
+  return currentPath;
 };
 
 /// check if an array contains another array
