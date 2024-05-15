@@ -39,7 +39,7 @@ const BioLucidaImageListSelectPage = () => {
     const isImageSelectedToBeUploadedToBioLucida =
       filePathsSelectedToBeUploadedToBioLucida.includes(filePath);
     return (
-      <Table.Tr key={filePath}>
+      <Table.Tr key={relativeDatasetStructurePath}>
         <Table.Td className={styles.selectCell}>
           {isImageSelectedToBeUploadedToBioLucida ? (
             <Checkbox
