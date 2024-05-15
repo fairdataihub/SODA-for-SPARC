@@ -415,6 +415,10 @@
   visibility: visible;
 }
 
+.loading-text {
+  color: transparent !important
+}
+
 .loading-tabs {
   display: none;
 }

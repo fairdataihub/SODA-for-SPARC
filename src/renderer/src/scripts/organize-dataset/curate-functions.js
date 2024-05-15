@@ -755,8 +755,7 @@ document
   .getElementById("upload-dataset-btn-confirm-new-dataset-name")
   .addEventListener("click", async function () {
     // Once clicked, verify if the dataset name exists, if not warn the user that they need to choose a different name
-    document.getElementById("upload-dataset-btn-confirm-new-dataset-name").style.color =
-      "transparent !important";
+    document.getElementById("upload-dataset-btn-confirm-new-dataset-name").classList.add("loading-text");
     document.getElementById("upload-dataset-btn-confirm-new-dataset-name").classList.add("loading");
     let datasetName = document.getElementById("inputNewNameDataset-upload-dataset").value;
     let invalidName = window.check_forbidden_characters_ps(datasetName);
@@ -781,8 +780,7 @@ document
     document
       .getElementById("upload-dataset-btn-confirm-new-dataset-name")
       .classList.remove("loading");
-    document.getElementById("upload-dataset-btn-confirm-new-dataset-name").style.color =
-      "white !important";
+    document.getElementById("upload-dataset-btn-confirm-new-dataset-name").classList.remove("loading-text");
   });
 
 document.getElementById("change-account-btn").addEventListener("click", async function () {

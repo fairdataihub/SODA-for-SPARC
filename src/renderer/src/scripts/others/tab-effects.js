@@ -122,6 +122,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     } else {
       console.log("enabling manifest creation here");
       $("#manifest-creation-prohibited").hide();
+      document.getElementById("generate-manifest-curate").disabled = false;
       $("#generate-manifest-curate").prop("disabled", false);
     }
 
