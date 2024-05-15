@@ -120,7 +120,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       // disable the manifest file checkbox
       $("#generate-manifest-curate").prop("disabled", true);
     } else {
-      console.log("enabling manifest creation here")
+      console.log("enabling manifest creation here");
       $("#manifest-creation-prohibited").hide();
       $("#generate-manifest-curate").prop("disabled", false);
     }
