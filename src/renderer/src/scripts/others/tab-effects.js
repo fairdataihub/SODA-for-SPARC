@@ -2605,6 +2605,7 @@ async function switchMetadataManifestQuestion() {
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
       cancelButtonText: "No",
+      icon: "warning",
       reverseButtons: window.reverseSwalButtons,
     });
     if (continueProgressManifest) {
