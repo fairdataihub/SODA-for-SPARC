@@ -740,18 +740,19 @@ window.nextPrev = async (pageIndex) => {
     // Display the correct tab:
     window.showParentTab(window.currentTab, pageIndex);
     // hide/show prohibited manifest warning based on if the dataset already has files
-    if (window.hasFiles) {
-      $("#manifest-creation-prohibited").show();
-      // uncheck the manifest file checkbox if it is currently checked
-      if ($("#generate-manifest-curate").prop("checked")) {
-        $("#generate-manifest-curate").click();
-      }
-      $("#generate-manifest-curate").prop("disabled", true);
-      $("#nextBtn").prop("disabled", false);
-    } else {
-      $("#manifest-creation-prohibited").hide();
-      $("#generate-manifest-curate").prop("disabled", false);
-    }
+    // if (window.hasFiles) {
+
+    //   $("#manifest-creation-prohibited").show();
+    //   // uncheck the manifest file checkbox if it is currently checked
+    //   if ($("#generate-manifest-curate").prop("checked")) {
+    //     $("#generate-manifest-curate").click();
+    //   }
+    //   $("#generate-manifest-curate").prop("disabled", true);
+    //   $("#nextBtn").prop("disabled", false);
+    // } else {
+    //   $("#manifest-creation-prohibited").hide();
+    //   $("#generate-manifest-curate").prop("disabled", false);
+    // }
   } else {
     console.log("Going to last page default");
     // Hide the current tab:
