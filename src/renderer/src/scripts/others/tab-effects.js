@@ -2630,6 +2630,7 @@ async function switchMetadataManifestQuestion() {
           type: "",
         };
         $("#bf_dataset_create_manifest").text("None");
+        document.getElementById("Question-prepare-manifest-5").classList.remove("show");
         window.defaultBfDataset = "Select dataset";
         $("#input-manifest-local-folder-dataset").val("");
         $("#input-manifest-local-folder-dataset").attr("placeholder", "Browse here");

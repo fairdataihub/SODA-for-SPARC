@@ -85,6 +85,7 @@ $(document).ready(async function () {
         document.getElementById("input-manifest-local-folder-dataset").placeholder = folderPath[0];
         localDatasetFolderPath = folderPath[0];
         $("#div-confirm-manifest-local-folder-dataset").css("display", "flex");
+        document.getElementById("confirm-local-manifest-folder-adv-feature").classList.remove('hidden');
         $($("#div-confirm-manifest-local-folder-dataset button")[0]).show();
       } else {
         document.getElementById("input-manifest-local-folder-dataset").placeholder = "Browse here";
@@ -2046,9 +2047,6 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
     window.exitCurate();
   }
 
-  if (ev.id === "confirm-local-manifest-folder-adv-feature") {
-    document.getElementById("confirm-local-manifest-folder-adv-feature").children[0].style.display = flex;
-  }
   window.sodaJSONObj["starting-point"] = {};
   window.sodaJSONObj["dataset-structure"] = {};
   window.datasetStructureJSONObj = { folders: {}, files: {} };
@@ -2060,6 +2058,7 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
     Swal.fire({
       title: "Preparing manifest files",
       allowOutsideClick: false,
+      icon: "info",
       allowEscapeKey: false,
       allowEnterKey: false,
       heightAuto: false,
@@ -2119,6 +2118,10 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
       return;
     }
     createManifestLocally("local", true, "");
+    if (ev.id === "confirm-local-manifest-folder-adv-feature") {
+      document.getElementById("confirm-local-manifest-folder-adv-feature").children[0].style.display = "block";
+      document.getElementById("confirm-local-manifest-folder-adv-feature").classList.add("hidden");
+    }
   } else {
     // Case 2: bf dataset
     window.sodaJSONObj["bf-account-selected"] = { "account-name": window.defaultBfAccount };
