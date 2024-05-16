@@ -3216,7 +3216,7 @@ def generate_dataset(soda_json_structure, resume, ps):
         ]
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
 
-        if uploading_to_existing_ps_dataset(soda_json_structure):
+        if uploading_to_existing_ps_dataset(soda_json_structure) and soda_json_structure["starting-point"]["type"] != "new":
             selected_dataset_id = get_dataset_id(
                 soda_json_structure["bf-dataset-selected"]["dataset-name"]
             )
@@ -3230,7 +3230,7 @@ def generate_dataset(soda_json_structure, resume, ps):
             else:
                 ps_update_existing_dataset(soda_json_structure, myds, ps, resume)
 
-        elif generate_option == "new":
+        elif generate_option == "new" or generate_option == "existing-bf" and soda_json_structure["starting-point"]["type"] == "new":
             # if dataset name is in the generate-dataset section, we are generating a new dataset
             if "dataset-name" in soda_json_structure["generate-dataset"]:
                 dataset_name = soda_json_structure["generate-dataset"][
