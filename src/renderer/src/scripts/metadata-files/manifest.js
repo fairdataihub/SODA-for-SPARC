@@ -2037,7 +2037,7 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
     document.querySelector("#generate_step_5-manifest").style.display = "block";
   }
 
-  console.log(ev.id)
+  console.log(ev.id);
 
   if (!ev.id != "btn-pull-ds-manifest" || !ev.id != "div-confirm-manifest-local-folder-dataset") {
     window.exitCurate();
