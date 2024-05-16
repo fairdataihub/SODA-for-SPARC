@@ -1850,6 +1850,7 @@ def normalize_tracking_folder(tracking_folder):
     
     temp_children = {"folders": {}, "files": {}}
 
+
     # add the files and folders to the temp_children structure 
     for child in tracking_folder["children"]:
         if child["content"]["packageType"] == "Collection":
@@ -2062,12 +2063,24 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 my_tracking_folder: Tracks what folders have been created on Pennsieve thus far. Starts as an empty dictionary.
                 existing_folder_option: Dictates whether to merge, duplicate, replace, or skip existing folders.
             """
-
             # Check if the current folder has any subfolders that already exist on Pennsieve. Important step to appropriately handle replacing and merging folders.
             if len(my_tracking_folder["children"]["folders"]) == 0 and my_tracking_folder["content"]["id"].find("N:dataset") == -1:
-                r = requests.get(f"{PENNSIEVE_URL}/packages/{my_tracking_folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"})
-                r.raise_for_status()
-                ps_folder = r.json()
+                limit = 100
+                offset = 0
+                ps_folder = {}
+                ps_folder_children = []
+                while True: 
+                    r = requests.get(f"{PENNSIEVE_URL}/packages/{my_tracking_folder['content']['id']}?limit={limit}&offset={offset}", headers=create_request_headers(ps), json={"include": "files"})
+                    r.raise_for_status()
+                    ps_folder = r.json()
+                    page = ps_folder["children"]
+                    ps_folder_children.extend(page)
+                    if len(page) < limit:
+                        break
+                    offset += limit
+                    time.sleep(1)
+                    
+                ps_folder["children"] = ps_folder_children
                 normalize_tracking_folder(ps_folder)
                 my_tracking_folder["children"] = ps_folder["children"]
 
@@ -2417,6 +2430,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 list_upload_files,
                 relative_path,
             )
+
+
 
             # 3. Add high-level metadata files to a list
             if "metadata-files" in soda_json_structure.keys():
