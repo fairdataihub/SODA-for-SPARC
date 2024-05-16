@@ -859,24 +859,24 @@ window.run_pre_flight_checks = async (check_update = true) => {
       }
       const { value: rerunPreFlightChecks } = await Swal.fire({
         icon: "info",
-        title: "Installed Pennsieve agent out of date",
+        title: "Installed Pennsieve agent does not match Pennsieve's latest agent release",
         html: `
           Your Pennsieve agent version: <b>${usersPennsieveAgentVersion}</b>
           <br />
           Latest Pennsieve agent version: <b>${latestPennsieveAgentVersion}</b>
           <br />
           <br />
-          To update your Pennsieve Agent, please visit the link below and follow the instructions.
+          To download Pennsieve's latest agent release, please visit the link below and follow the instructions.
           <br />
           <br />
           <a href="${agentDownloadUrl}" target="_blank" rel="noopener noreferrer">Download the latest Pennsieve agent</a>
           <br />
           <br />
-          Once you have updated your Pennsieve agent, please click the button below to ensure that the Pennsieve agent was updated correctly.
+          Once you have downloaded the latest Pennsieve agent, please click the button below to ensure that the Pennsieve agent was updated correctly.
         `,
         width: 800,
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
+        backdrop: "rgba(0, 0, 0, 0.4)",
         allowOutsideClick: false,
         allowEscapeKey: false,
         showCancelButton: true,
