@@ -2039,8 +2039,15 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
 
   console.log(ev.id);
 
-  if (!ev.id != "btn-pull-ds-manifest" || !ev.id != "div-confirm-manifest-local-folder-dataset") {
+  console.log("before id check");
+  console.log(!["btn-pull-ds-manifest", "confirm-local-manifest-folder-adv-feature"].includes(ev.id))
+  if (!["btn-pull-ds-manifest", "confirm-local-manifest-folder-adv-feature"].includes(ev.id)) {
+    console.log("should not be executing");
     window.exitCurate();
+  }
+
+  if (ev.id === "confirm-local-manifest-folder-adv-feature") {
+    document.getElementById("confirm-local-manifest-folder-adv-feature").children[0].style.display = flex;
   }
   window.sodaJSONObj["starting-point"] = {};
   window.sodaJSONObj["dataset-structure"] = {};
