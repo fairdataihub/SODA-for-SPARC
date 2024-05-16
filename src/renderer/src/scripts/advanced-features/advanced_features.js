@@ -65,6 +65,7 @@ const transitionToAdvancedPage = () => {
   document.getElementById("advanced-features-selection-page").classList.add("is-shown");
   document.getElementById("advanced-features-selection-page").classList.add("full-shown");
   document.getElementById("advanced-footer").classList.remove("hidden");
+  document.getElementById("advanced-start-over-button").classList.add("hidden");
 
   // Remove lotties from the home screen to preserve memory
   document.getElementById("existing-dataset-lottie").innerHTML = "";
@@ -135,13 +136,13 @@ $("#advanced-back-button").on("click", () => {
     current_advanced_page === "validate_dataset_btn"
   ) {
     // Hide the advanced features to return to the selection page
-    document.getElementById("banner-image-feature").classList.add("hidden");
+    document.getElementById("banner-image-feature").classList.add("hidden");                // Banner image feature
     document.getElementById("banner-image-feature").classList.remove("is-shown");
 
-    document.getElementById("validate-dataset-feature").classList.add("hidden");
+    document.getElementById("validate-dataset-feature").classList.add("hidden");           // Validate dataset feature   
     document.getElementById("validate-dataset-feature").classList.remove("is-shown");
 
-    document.getElementById("manifest-creation-feature").classList.add("hidden");
+    document.getElementById("manifest-creation-feature").classList.add("hidden");         // Manifest creation feature
     document.getElementById("manifest-creation-feature").classList.remove("is-shown");
 
     let localDatasetButton = document.getElementById("validate_dataset-1-local");

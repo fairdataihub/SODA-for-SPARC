@@ -2037,7 +2037,11 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
     document.querySelector("#generate_step_5-manifest").style.display = "block";
   }
 
-  window.exitCurate();
+  console.log(ev.id)
+
+  if (!ev.id != "btn-pull-ds-manifest" || !ev.id != "div-confirm-manifest-local-folder-dataset") {
+    window.exitCurate();
+  }
   window.sodaJSONObj["starting-point"] = {};
   window.sodaJSONObj["dataset-structure"] = {};
   window.datasetStructureJSONObj = { folders: {}, files: {} };
