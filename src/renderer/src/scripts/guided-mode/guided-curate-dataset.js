@@ -14650,7 +14650,10 @@ window.electron.ipcRenderer.on(
             const main_curate_progress_message = data["main_curate_progress_message"];
             const main_curate_status = data["main_curate_status"];
             console.log(main_curate_progress_message);
-            if (main_curate_progress_message === "Success: COMPLETED!" || main_curate_status === "Done") {
+            if (
+              main_curate_progress_message === "Success: COMPLETED!" ||
+              main_curate_status === "Done"
+            ) {
               break; // Exit the loop when generation is done
             }
             const elapsed_time_formatted = data["elapsed_time_formatted"];

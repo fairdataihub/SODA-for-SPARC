@@ -15,7 +15,11 @@ import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
 // import * as path from "path";
-import { swalConfirmAction, swalFileListSingleAction, swalFileListTripleAction } from "../utils/swal-utils";
+import {
+  swalConfirmAction,
+  swalFileListSingleAction,
+  swalFileListTripleAction,
+} from "../utils/swal-utils";
 // const path = require("path");
 
 while (!window.htmlPagesAdded) {
@@ -565,7 +569,7 @@ window.handleLocalDatasetImport = async (path) => {
   // window.sodaJSONObj["dataset-structure"]["files"] = list.files;
   // Check for probelematic files in the metadata files
   for (let file in list.files) {
-    console.log("CHECK HERE!!!!!")
+    console.log("CHECK HERE!!!!!");
     console.log(file);
     const filesIsForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
       file,
@@ -574,15 +578,18 @@ window.handleLocalDatasetImport = async (path) => {
     if (filesIsForbiddenFilesList) {
       forbiddenFileNames.push(file);
     } else {
-      const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(file, "folder-and-file-name-is-valid");
+      const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
+        file,
+        "folder-and-file-name-is-valid"
+      );
 
-      if(!fileNameIsValid) {
+      if (!fileNameIsValid) {
         problematicFiles.push(file);
       }
 
       const fileIsHidden = window.evaluateStringAgainstSdsRequirements("file", "file-is-hidden");
       if (fileIsHidden) {
-        hiddenItems.push(file)
+        hiddenItems.push(file);
       }
     }
   }
@@ -754,7 +761,9 @@ document
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
   const dsName = document.getElementById("current-bf-dataset-generate").innerText;
-  const existingCardChecked = document.getElementById("dataset-upload-existing-dataset").classList.contains("checked");
+  const existingCardChecked = document
+    .getElementById("dataset-upload-existing-dataset")
+    .classList.contains("checked");
   if (!["None", ""].includes(dsName) && existingCardChecked) {
     // confirm with the user if they want to lose their progress by switching to the other workflow
     const confirmSwitch = await swalConfirmAction(

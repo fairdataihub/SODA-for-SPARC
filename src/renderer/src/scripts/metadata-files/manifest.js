@@ -85,7 +85,9 @@ $(document).ready(async function () {
         document.getElementById("input-manifest-local-folder-dataset").placeholder = folderPath[0];
         localDatasetFolderPath = folderPath[0];
         $("#div-confirm-manifest-local-folder-dataset").css("display", "flex");
-        document.getElementById("confirm-local-manifest-folder-adv-feature").classList.remove('hidden');
+        document
+          .getElementById("confirm-local-manifest-folder-adv-feature")
+          .classList.remove("hidden");
         $($("#div-confirm-manifest-local-folder-dataset button")[0]).show();
       } else {
         document.getElementById("input-manifest-local-folder-dataset").placeholder = "Browse here";
@@ -2041,7 +2043,9 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
   console.log(ev.id);
 
   console.log("before id check");
-  console.log(!["btn-pull-ds-manifest", "confirm-local-manifest-folder-adv-feature"].includes(ev.id))
+  console.log(
+    !["btn-pull-ds-manifest", "confirm-local-manifest-folder-adv-feature"].includes(ev.id)
+  );
   if (!["btn-pull-ds-manifest", "confirm-local-manifest-folder-adv-feature"].includes(ev.id)) {
     console.log("should not be executing");
     window.exitCurate();
@@ -2119,7 +2123,9 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
     }
     createManifestLocally("local", true, "");
     if (ev.id === "confirm-local-manifest-folder-adv-feature") {
-      document.getElementById("confirm-local-manifest-folder-adv-feature").children[0].style.display = "block";
+      document.getElementById(
+        "confirm-local-manifest-folder-adv-feature"
+      ).children[0].style.display = "block";
       document.getElementById("confirm-local-manifest-folder-adv-feature").classList.add("hidden");
     }
   } else {
