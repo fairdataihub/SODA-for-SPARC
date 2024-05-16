@@ -4558,7 +4558,7 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
     }
   }
 };
-const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
+window.replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
     const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
@@ -4577,9 +4577,11 @@ const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
       delete datasetStructure["files"][fileKey];
     }
   }
-  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
-  for (const folderKey of currentFoldersAtPath) {
-    replaceProblematicFilesWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
+  if (datasetStructure?.["folders"]) {
+    const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+    for (const folderKey of currentFoldersAtPath) {
+      window.replaceProblematicFilesWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
+    }
   }
 };
 
@@ -4835,7 +4837,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
       "What would you like to do with the files with special characters?"
     );
     if (userResponse === "confirm") {
-      replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
+      window.replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
     }
     // If the userResponse is "deny", nothing needs to be done
     if (userResponse === "cancel") {

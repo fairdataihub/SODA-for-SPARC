@@ -15,7 +15,7 @@ import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
 // import * as path from "path";
-import { swalConfirmAction } from "../utils/swal-utils";
+import { swalConfirmAction, swalFileListSingleAction, swalFileListTripleAction } from "../utils/swal-utils";
 // const path = require("path");
 
 while (!window.htmlPagesAdded) {
@@ -558,8 +558,95 @@ window.handleLocalDatasetImport = async (path) => {
   );
 
   window.sodaJSONObj["dataset-structure"] = buildDatasetStructure[0];
-  // window.sodaJSONObj["dataset-structure"]["files"] = list.files;
   window.sodaJSONObj["metadata-files"] = list.files;
+  const forbiddenFileNames = [];
+  const problematicFiles = [];
+  const hiddenItems = [];
+  // window.sodaJSONObj["dataset-structure"]["files"] = list.files;
+  // Check for probelematic files in the metadata files
+  for (let file in list.files) {
+    console.log("CHECK HERE!!!!!")
+    console.log(file);
+    const filesIsForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
+      file,
+      "file-is-in-forbidden-files-list"
+    );
+    if (filesIsForbiddenFilesList) {
+      forbiddenFileNames.push(file);
+    } else {
+      const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(file, "folder-and-file-name-is-valid");
+
+      if(!fileNameIsValid) {
+        problematicFiles.push(file);
+      }
+
+      const fileIsHidden = window.evaluateStringAgainstSdsRequirements("file", "file-is-hidden");
+      if (fileIsHidden) {
+        hiddenItems.push(file)
+      }
+    }
+  }
+
+  if (forbiddenFileNames.length > 0) {
+    await swalFileListSingleAction(
+      forbiddenFileNames.map((file) => `dataset_root/${file}`),
+      "Forbidden file names detected",
+      "The files listed below do not comply with the SPARC data standards and will not be imported",
+      false
+    );
+
+    const metadataFiles = Object.keys(window.sodaJSONObj["metadata-files"]);
+    for (let file of metadataFiles) {
+      if (forbiddenFileNames.includes(file)) {
+        delete window.sodaJSONObj["metadata-files"][file];
+      }
+    }
+  }
+
+  if (problematicFiles.length > 0) {
+    const userResponse = await swalFileListTripleAction(
+      problematicFiles.map((file) => `dataset_root/${file}`),
+      "<p>File name modifications</p>",
+      `The files listed below contain the special characters "#", "&", "%", or "+"
+      which are typically not recommended per the SPARC data standards.
+      You may choose to either keep them as is, or replace the characters with '-'.
+      `,
+      "Replace the special characters with '-'",
+      "Keep the file names as they are",
+      "Cancel import",
+      "What would you like to do with the files with special characters?"
+    );
+
+    if (userResponse === "confirm") {
+      window.replaceProblematicFilesCharacters(window.sodaJSONObj["metadata-files"]);
+    }
+
+    if (userResponse === "cancel") {
+      throw new Error("Importation cancelled");
+    }
+  }
+
+  if (hiddenItems.length > 0) {
+    const userResponse = await swalFileListTripleAction(
+      hidden.map((file) => `dataset_root/${file}`),
+      "<p>Hidden files detected</p>",
+      `Hidden files are typically not recommend per the SPARC data standards, but you can choose to keep them if you wish.`,
+      "Import the hidden files into SODA",
+      "Do not import the hidden files",
+      "Cancel import",
+      "What would you like to do with the hidden files?"
+    );
+
+    if (userResponse === "deny") {
+      window.removeHiddenFiles(window.sodaJSONObj["metadata-files"]);
+    }
+
+    if (userResponse === "cancel") {
+      throw new Error("Importation cancelled");
+    }
+  }
+
+  // window.sodaJSONObj["metadata-files"] = list.files;
   window.sodaJSONObj["starting-point"]["local-path"] = path;
   window.sodaJSONObj = await window.addManifestDetailsToDatasetStructure(
     window.sodaJSONObj,
@@ -666,10 +753,11 @@ document
   });
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
-  let dsName = document.getElementById("current-bf-dataset-generate").innerText;
-  if (!["None", ""].includes(dsName)) {
+  const dsName = document.getElementById("current-bf-dataset-generate").innerText;
+  const existingCardChecked = document.getElementById("dataset-upload-existing-dataset").classList.contains("checked");
+  if (!["None", ""].includes(dsName) && existingCardChecked) {
     // confirm with the user if they want to lose their progress by switching to the other workflow
-    let confirmSwitch = await swalConfirmAction(
+    const confirmSwitch = await swalConfirmAction(
       "warning",
       "Are you sure you want to switch to the new dataset upload workflow?",
       "You will lose the progress you have made in the current workflow.",
