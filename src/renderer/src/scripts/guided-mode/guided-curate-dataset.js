@@ -15583,6 +15583,8 @@ const guidedUploadDatasetToPennsieve = async () => {
       { timeout: 0 }
     )
     .then(async (curationRes) => {
+      // if the upload succeeds reset the retry guided mode flag
+      window.retryGuidedMode = false;
       guidedSetNavLoadingState(false);
 
       $("#sidebarCollapse").prop("disabled", false);
