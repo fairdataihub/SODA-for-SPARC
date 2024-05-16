@@ -773,131 +773,131 @@ window.run_pre_flight_checks = async (check_update = true) => {
     }
 
     // Get the version of the Pennsieve agent
-    // let usersPennsieveAgentVersion;
-    // try {
-    //   const versionObj = await getPennsieveAgentVersion();
-    //   usersPennsieveAgentVersion = versionObj["Agent Version"];
-    // } catch (error) {
-    //   clientError(error);
-    //   const emessage = userErrorMessage(error);
-    //   const { value: rerunPreFlightChecks } = await Swal.fire({
-    //     icon: "info",
-    //     title: "Soda was unable to get the Pennsieve Agent Version",
-    //     html: `
-    //       <br />
-    //       <div class="div--code-block-error">${emessage}</div>
-    //       <br />
-    //       Please view the <a href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda" target="_blank">SODA documentation</a>
-    //       to troubleshoot this issue. Then click the "Try again" button below to ensure the issue has been fixed.
-    //     `,
-    //     width: 800,
-    //     heightAuto: false,
-    //     backdrop: "rgba(0,0,0, 0.4)",
-    //     allowOutsideClick: false,
-    //     allowEscapeKey: false,
-    //     showCancelButton: true,
-    //     showCloseButton: true,
-    //     reverseButtons: window.reverseSwalButtons,
-    //     confirmButtonText: "Try again",
-    //     cancelButtonText: "Skip for now",
-    //   });
-    //   // If the user clicks the retry button, rerun the pre flight checks
-    //   if (rerunPreFlightChecks) {
-    //     return await window.run_pre_flight_checks();
-    //   }
+    let usersPennsieveAgentVersion;
+    try {
+      const versionObj = await getPennsieveAgentVersion();
+      usersPennsieveAgentVersion = versionObj["Agent Version"];
+    } catch (error) {
+      clientError(error);
+      const emessage = userErrorMessage(error);
+      const { value: rerunPreFlightChecks } = await Swal.fire({
+        icon: "info",
+        title: "Soda was unable to get the Pennsieve Agent Version",
+        html: `
+          <br />
+          <div class="div--code-block-error">${emessage}</div>
+          <br />
+          Please view the <a href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda" target="_blank">SODA documentation</a>
+          to troubleshoot this issue. Then click the "Try again" button below to ensure the issue has been fixed.
+        `,
+        width: 800,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showCancelButton: true,
+        showCloseButton: true,
+        reverseButtons: window.reverseSwalButtons,
+        confirmButtonText: "Try again",
+        cancelButtonText: "Skip for now",
+      });
+      // If the user clicks the retry button, rerun the pre flight checks
+      if (rerunPreFlightChecks) {
+        return await window.run_pre_flight_checks();
+      }
 
-    //   // Dismiss the preflight check notification if it is still open
-    //   if (preFlightCheckNotyf) {
-    //     window.notyf.dismiss(preFlightCheckNotyf);
-    //     preFlightCheckNotyf = null;
-    //   }
-    //   // If the user clicks the skip button, return false which will cause the pre flight checks to fail
-    //   return false;
-    // }
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        window.notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
+      }
+      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
+      return false;
+    }
 
     let agentDownloadUrl;
     let latestPennsieveAgentVersion;
 
     // Note: We only want to check the Pennsieve agent version if the user has not already selected that they are ok with an outdated agent
-    // if (!userHasSelectedTheyAreOkWithOutdatedAgent) {
-    //   // First get the latest Pennsieve agent version on GitHub
-    //   // This is to ensure the user has the latest version of the agent
-    //   try {
-    //     [agentDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
-    //   } catch (error) {
-    //     const emessage = userErrorMessage(error);
-    //     const retryAgentVersionCheck = await swalConfirmAction(
-    //       "warning",
-    //       "",
-    //       `
-    //         <br />
-    //         <b>${emessage}</b>
-    //         <br /><br />
-    //         Would you like to retry or continue with the currently installed version of the Pennsieve agent?
-    //       `,
-    //       "Retry",
-    //       "Contrinue with current version"
-    //     );
-    //     if (retryAgentVersionCheck) {
-    //       return await run_pre_flight_checks();
-    //     } else {
-    //       userHasSelectedTheyAreOkWithOutdatedAgent = true;
-    //     }
-    //   }
-    // }
+    if (!userHasSelectedTheyAreOkWithOutdatedAgent) {
+      // First get the latest Pennsieve agent version on GitHub
+      // This is to ensure the user has the latest version of the agent
+      try {
+        [agentDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
+      } catch (error) {
+        const emessage = userErrorMessage(error);
+        const retryAgentVersionCheck = await swalConfirmAction(
+          "warning",
+          "",
+          `
+            <br />
+            <b>${emessage}</b>
+            <br /><br />
+            Would you like to retry or continue with the currently installed version of the Pennsieve agent?
+          `,
+          "Retry",
+          "Contrinue with current version"
+        );
+        if (retryAgentVersionCheck) {
+          return await run_pre_flight_checks();
+        } else {
+          userHasSelectedTheyAreOkWithOutdatedAgent = true;
+        }
+      }
+    }
 
-    // if (
-    //   !userHasSelectedTheyAreOkWithOutdatedAgent &&
-    //   usersPennsieveAgentVersion !== latestPennsieveAgentVersion
-    // ) {
-    //   // Stop the Pennsieve agent if it is running to prevent any issues when updating while the agent is running
-    //   try {
-    //     await stopPennsieveAgent();
-    //   } catch (error) {
-    //     // Note: This error is not critical so we do not need to throw it
-    //     clientError(error);
-    //   }
-    //   const { value: rerunPreFlightChecks } = await Swal.fire({
-    //     icon: "info",
-    //     title: "Installed Pennsieve agent out of date",
-    //     html: `
-    //       Your Pennsieve agent version: <b>${usersPennsieveAgentVersion}</b>
-    //       <br />
-    //       Latest Pennsieve agent version: <b>${latestPennsieveAgentVersion}</b>
-    //       <br />
-    //       <br />
-    //       To update your Pennsieve Agent, please visit the link below and follow the instructions.
-    //       <br />
-    //       <br />
-    //       <a href="${agentDownloadUrl}" target="_blank" rel="noopener noreferrer">Download the latest Pennsieve agent</a>
-    //       <br />
-    //       <br />
-    //       Once you have updated your Pennsieve agent, please click the button below to ensure that the Pennsieve agent was updated correctly.
-    //     `,
-    //     width: 800,
-    //     heightAuto: false,
-    //     backdrop: "rgba(0,0,0, 0.4)",
-    //     allowOutsideClick: false,
-    //     allowEscapeKey: false,
-    //     showCancelButton: true,
-    //     showCloseButton: true,
-    //     reverseButtons: window.reverseSwalButtons,
-    //     confirmButtonText: "Check updated Pennsieve agent version",
-    //     cancelButtonText: "Skip for now",
-    //   });
-    //   // If the user clicks the retry button, rerun the pre flight checks
-    //   if (rerunPreFlightChecks) {
-    //     return await window.run_pre_flight_checks();
-    //   }
-    //   // Dismiss the preflight check notification if it is still open
-    //   if (preFlightCheckNotyf) {
-    //     window.notyf.dismiss(preFlightCheckNotyf);
-    //     preFlightCheckNotyf = null;
-    //   }
+    if (
+      !userHasSelectedTheyAreOkWithOutdatedAgent &&
+      usersPennsieveAgentVersion !== latestPennsieveAgentVersion
+    ) {
+      // Stop the Pennsieve agent if it is running to prevent any issues when updating while the agent is running
+      try {
+        await stopPennsieveAgent();
+      } catch (error) {
+        // Note: This error is not critical so we do not need to throw it
+        clientError(error);
+      }
+      const { value: rerunPreFlightChecks } = await Swal.fire({
+        icon: "info",
+        title: "Installed Pennsieve agent out of date",
+        html: `
+          Your Pennsieve agent version: <b>${usersPennsieveAgentVersion}</b>
+          <br />
+          Latest Pennsieve agent version: <b>${latestPennsieveAgentVersion}</b>
+          <br />
+          <br />
+          To update your Pennsieve Agent, please visit the link below and follow the instructions.
+          <br />
+          <br />
+          <a href="${agentDownloadUrl}" target="_blank" rel="noopener noreferrer">Download the latest Pennsieve agent</a>
+          <br />
+          <br />
+          Once you have updated your Pennsieve agent, please click the button below to ensure that the Pennsieve agent was updated correctly.
+        `,
+        width: 800,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showCancelButton: true,
+        showCloseButton: true,
+        reverseButtons: window.reverseSwalButtons,
+        confirmButtonText: "Check updated Pennsieve agent version",
+        cancelButtonText: "Skip for now",
+      });
+      // If the user clicks the retry button, rerun the pre flight checks
+      if (rerunPreFlightChecks) {
+        return await window.run_pre_flight_checks();
+      }
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        window.notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
+      }
 
-    //   // If the user clicks the skip button, return false which will cause the pre flight checks to fail
-    //   return false;
-    // }
+      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
+      return false;
+    }
 
     if (check_update) {
       checkNewAppVersion();
