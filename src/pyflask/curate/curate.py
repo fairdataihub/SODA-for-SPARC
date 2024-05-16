@@ -1077,10 +1077,20 @@ def create_high_lvl_manifest_files_existing_ps(
         """
 
         if len(folder['children']) == 0:
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"})
-            r.raise_for_status()
-            ps_folder = r.json()
-            normalize_tracking_folder(ps_folder)
+            limit = 100
+            offset = 0 
+            ps_folder = {"children": []}
+            while True: 
+                r = requests.get(f"{PENNSIEVE_URL}/packages/{folder['content']['id']}?limit={limit}&offset={offset}", headers=create_request_headers(ps), json={"include": "files"})
+                r.raise_for_status()
+                page = r.json()
+                normalize_tracking_folder(page)
+                ps_folder["children"].extend(page)
+
+                if len(page) < limit:
+                    break
+                offset += limit
+
             folder['children'] = ps_folder['children']
 
         for _, folder_item in folder["children"]["folders"].items():
@@ -2669,17 +2679,35 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     # subfolder_amount will be the amount of subfolders we need to call until we can get the file ID to rename
 
                     high_lvl_folder_id = collection_ids[high_lvl_folder_name]["id"]
-                    r = requests.get(f"{PENNSIEVE_URL}/packages/{high_lvl_folder_id}", headers=create_request_headers(ps))
-                    r.raise_for_status()
-                    dataset_content = r.json()["children"]
+                    limit = 100
+                    offset = 0
+                    dataset_content = []
+                    while True:
+                        r = requests.get(f"{PENNSIEVE_URL}/packages/{high_lvl_folder_id}?limit={limit}&offset={offset}", headers=create_request_headers(ps))
+                        r.raise_for_status()
+                        page = r.json()["children"]
+                        dataset_content.extend(page)
+
+                        if len(page) < limit:
+                            break
+                        offset += limit
 
                     if dataset_content == []:
                         # request until there is no children content, (folder is empty so files have not been processed yet)
                         while dataset_content == []:
                             time.sleep(3)
-                            r = requests.get(f"{PENNSIEVE_URL}/packages/{high_lvl_folder_id}", headers=create_request_headers(ps))
-                            r.raise_for_status()
-                            dataset_content = r.json()["children"]
+                            limit = 100 
+                            offset = 0 
+
+                            while True:
+                                r = requests.get(f"{PENNSIEVE_URL}/packages/{high_lvl_folder_id}?limit={limit}&offset={offset}", headers=create_request_headers(ps))
+                                r.raise_for_status()
+                                page = r.json()["children"]
+                                dataset_content.extend(page)
+                                if len(page) < limit:
+                                    break
+                                offset += limit
+                            
 
                     if subfolder_amount == 0:
                         # the file is in the high level folder
@@ -2705,9 +2733,17 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                 # subfolder has no content so request again
                                 while dataset_content == []:
                                     time.sleep(3)
-                                    r = requests.get(f"{PENNSIEVE_URL}/packages/{subfolder_id}", headers=create_request_headers(ps))
-                                    r.raise_for_status()
-                                    dataset_content = r.json()["children"]
+                                    limit = 100 
+                                    offset = 0
+                                    while True: 
+                                        r = requests.get(f"{PENNSIEVE_URL}/packages/{subfolder_id}", headers=create_request_headers(ps))
+                                        r.raise_for_status()
+                                        page = r.json()["children"]
+                                        dataset_content.extend(page)
+                                        if len(page) < limit:
+                                            break
+                                        offset += limit
+                        
 
                             for item in dataset_content:
                                 if item["content"]["packageType"] == "Collection":
@@ -2717,18 +2753,36 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                     if folder_name in relative_path:
                                         # we have found the folder we need to iterate through
                                         subfolder_level += 1
-                                        r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps))
-                                        r.raise_for_status()
+
+                                        limit = 100
+                                        offset = 0 
+                                        children = []
+                                        while True: 
+                                            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}?limit={limit}&offset={offset}", headers=create_request_headers(ps))
+                                            r.raise_for_status()
+                                            page = r.json()["children"]
+                                            children.extend(page)
+                                            if len(page) < limit:
+                                                break
+                                            offset += limit
 
                                         if subfolder_level != subfolder_amount:
-                                            dataset_content = r.json()["children"]
+                                            dataset_content = children
                                             if dataset_content == []:
                                                 while dataset_content == []:
                                                     # subfolder has no content so request again
                                                     time.sleep(3)
-                                                    r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps))
-                                                    r.raise_for_status()
-                                                    dataset_content = r.json()["children"]
+                                                    limit = 100
+                                                    offset = 0 
+                                                    while True: 
+                                                        r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps))
+                                                        r.raise_for_status()
+                                                        page = r.json()["children"]
+                                                        dataset_content.extend(page)
+                                                        if len(page) < limit:
+                                                            break
+                                                        offset += limit
+                                                    
                                             subfolder_id = folder_id
                                             break
                                         else:
@@ -2736,7 +2790,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                             if "id" not in list_of_files_to_rename[key]:
                                                 # store the id of the last folder to directly call later in case not all files get an id
                                                 list_of_files_to_rename[key]["id"] = folder_id
-                                            for item in r.json()["children"]:
+                                            for item in children:
                                                 if item["content"]["packageType"] != "Collection":
                                                     file_name = item["content"]["name"]
                                                     file_id = item["content"]["nodeId"]
@@ -2776,9 +2830,20 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                             if file == "id":
                                 continue
 
-                            r = requests.put(f"{PENNSIEVE_URL}/packages/{collection_id}?updateStorage=true", headers=create_request_headers(ps))
-                            r.raise_for_status()
-                            dataset_content = r.json()["children"]
+                            
+                            limit = 100
+                            offset = 0
+                            dataset_content = []
+
+                            while True: 
+                                r = requests.put(f"{PENNSIEVE_URL}/packages/{collection_id}?updateStorage=true&limit={limit}&offset={offset}", headers=create_request_headers(ps))
+                                r.raise_for_status()
+                                page = r.json()["children"]
+                                dataset_content.extend(page)
+                                if len(dataset_content) < limit:
+                                    break
+                                offset += limit
+                            
                             for item in dataset_content:
                                 if item["content"]["packageType"] != "Collection":
                                     file_name = item["content"]["name"]
@@ -2845,9 +2910,17 @@ def ps_check_dataset_files_validity(soda_json_structure):
         """
         global PENNSIEVE_URL
         # get the folder content through Pennsieve api
-        r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(get_access_token()))
-        r.raise_for_status()
-        folder_content = r.json()["children"]
+        limit = 100
+        offset = 0
+        folder_content = []
+        while True: 
+            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}?offset={offset}&limit={limit}", headers=create_request_headers(get_access_token()))
+            r.raise_for_status()
+            page = r.json()["children"]
+            folder_content.extend(page)
+            if len(page) < limit:
+                break
+            offset += limit
 
         # check that the subfolders and files specified in the dataset are valid
         if "files" in folder_dict.keys():
