@@ -3419,9 +3419,13 @@ def main_curate_function(soda_json_structure, resume):
     # 2] Generate
     main_curate_progress_message = "Generating dataset"
     try:
-        accountname = soda_json_structure["bf-account-selected"]["account-name"]
-        ps = connect_pennsieve_client(accountname)
-        generate_dataset(soda_json_structure, resume, ps)
+        print(soda_json_structure["generate-dataset"]["destination"])
+        if (soda_json_structure["generate-dataset"]["destination"] == "local"):
+            generate_dataset(soda_json_structure, resume, ps=None)
+        else:
+            accountname = soda_json_structure["bf-account-selected"]["account-name"]
+            ps = connect_pennsieve_client(accountname)
+            generate_dataset(soda_json_structure, resume, ps)
     except Exception as e:
         main_curate_status = "Done"
         raise e
