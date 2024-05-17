@@ -1168,8 +1168,12 @@ const getPlatformSpecificAgentDownloadURL = async () => {
 };
 
 const findDownloadURL = (extension, assets) => {
+  console.log("assets", assets);
+  console.log("extension", extension);
   for (const asset of assets) {
+    console.log("asset", asset);
     const fileName = asset.name;
+    console.log("fileName", fileName);
     if (window.path.extname(fileName) === extension) {
       return asset.browser_download_url;
     }
@@ -1197,6 +1201,9 @@ const getLatestPennsieveAgentVersion = async () => {
   let platformSpecificAgentDownloadURL;
   switch (usersPlatform) {
     case "darwin":
+      // The Pennsieve has different agent releases for different architectures on MacOS
+      const systemArchitecture = window.process.architecture();
+      console.log("systemArchitecture", systemArchitecture);
       platformSpecificAgentDownloadURL = findDownloadURL(".pkg", latestReleaseAssets);
       break;
     case "win32":
