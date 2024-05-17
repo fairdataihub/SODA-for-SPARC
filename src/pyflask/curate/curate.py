@@ -3316,7 +3316,20 @@ def generate_dataset(soda_json_structure, resume, ps):
                 namespace_logger.info("Retrying prior upload")
                 generate_new_ds_ps_resume(soda_json_structure, dataset_name, ps)
             else: 
-                generate_new_ds_ps(soda_json_structure, dataset_name, ps)
+                try: 
+                    selected_dataset_id = get_dataset_id(dataset_name)
+                except Exception as e:
+                    if e.code == 404:
+                        generate_new_ds_ps(soda_json_structure, dataset_name, ps)
+                        return
+                    else:
+                        abort(e.status_code, e.message)
+
+                myds = get_dataset_with_backoff(selected_dataset_id)
+                ps_upload_to_dataset(soda_json_structure, ps, myds, resume)
+
+                        
+                
 
 
 def validate_dataset_structure(soda_json_structure, resume):
