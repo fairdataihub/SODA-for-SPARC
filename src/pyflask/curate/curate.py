@@ -3304,15 +3304,19 @@ def generate_dataset(soda_json_structure, resume, ps):
                 ps_update_existing_dataset(soda_json_structure, myds, ps, resume)
 
         elif generate_option == "new" or generate_option == "existing-bf" and soda_json_structure["starting-point"]["type"] == "new":
+            namespace_logger.info("Generating new track")
             # if dataset name is in the generate-dataset section, we are generating a new dataset
             if "dataset-name" in soda_json_structure["generate-dataset"]:
                 dataset_name = soda_json_structure["generate-dataset"][
                     "dataset-name"
                 ]
-                if resume: 
-                    generate_new_ds_ps_resume(soda_json_structure, dataset_name, ps)
-                else: 
-                    generate_new_ds_ps(soda_json_structure, dataset_name, ps)
+            elif "name" in soda_json_structure["digital-metadata"]:
+                dataset_name = soda_json_structure["digital-metadata"]["name"]
+            if resume: 
+                namespace_logger.info("Retrying prior upload")
+                generate_new_ds_ps_resume(soda_json_structure, dataset_name, ps)
+            else: 
+                generate_new_ds_ps(soda_json_structure, dataset_name, ps)
 
 
 def validate_dataset_structure(soda_json_structure, resume):
