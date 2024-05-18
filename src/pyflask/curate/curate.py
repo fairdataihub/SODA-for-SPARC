@@ -3310,8 +3310,11 @@ def generate_dataset(soda_json_structure, resume, ps):
                 dataset_name = soda_json_structure["generate-dataset"][
                     "dataset-name"
                 ]
-            elif "name" in soda_json_structure["digital-metadata"]:
+            elif "digital-metadata" in soda_json_structure and "name" in soda_json_structure["digital-metadata"]:
                 dataset_name = soda_json_structure["digital-metadata"]["name"]
+            elif "bf-dataset-selected" in soda_json_structure and "dataset-name" in soda_json_structure["bf-dataset-selected"]:
+                dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+            
             if resume: 
                 namespace_logger.info("Retrying prior upload")
                 generate_new_ds_ps_resume(soda_json_structure, dataset_name, ps)
