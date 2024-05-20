@@ -1224,9 +1224,7 @@ const getLatestPennsieveAgentVersion = async () => {
       }
       break;
     case "win32":
-      platformSpecificAgentDownloadURL =
-        findDownloadURL(".msi", latestReleaseAssets) ||
-        findDownloadURL(".exe", latestReleaseAssets);
+      platformSpecificAgentDownloadURL = findDownloadURL(".msi", latestReleaseAssets);
       break;
     case "linux":
       platformSpecificAgentDownloadURL = findDownloadURL(".deb", latestReleaseAssets);
