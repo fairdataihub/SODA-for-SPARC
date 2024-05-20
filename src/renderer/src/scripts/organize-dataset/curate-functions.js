@@ -776,6 +776,8 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
 
     if (!confirmSwitch) return;
 
+    $("#inputNewNameDataset-upload-dataset").val("");
+
     // reset the dataset name input field
     document.getElementById("current-bf-dataset-generate").textContent = "None";
 
