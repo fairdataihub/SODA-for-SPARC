@@ -625,7 +625,7 @@ window.handleLocalDatasetImport = async (path) => {
     );
 
     if (userResponse === "confirm") {
-      window.replaceProblematicFilesCharacters(window.sodaJSONObj["metadata-files"]);
+      window.replaceProblematicFilesWithSDSCompliantNames(window.sodaJSONObj["metadata-files"]);
     }
 
     if (userResponse === "cancel") {
