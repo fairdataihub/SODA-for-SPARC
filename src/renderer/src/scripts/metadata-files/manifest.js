@@ -768,7 +768,10 @@ window.generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   pennsievePreview = false;
   const type = determineStandaloneManifestGeneratorOrigin();
 
-  window.exitCurate();
+  if (!["generate_step_5-manifest", "generate-local-preview-manifest"].includes(ev.id)) {
+    console.log("should not be executing");
+    window.exitCurate();
+  }
   window.sodaJSONObj["starting-point"] = {};
   window.sodaJSONObj["dataset-structure"] = {};
   window.datasetStructureJSONObj = { folders: {}, files: {} };
