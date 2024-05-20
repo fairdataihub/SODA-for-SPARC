@@ -1210,10 +1210,17 @@ const getLatestPennsieveAgentVersion = async () => {
       // The Pennsieve has different agent releases for different architectures on MacOS
       const systemArchitecture = window.process.architecture();
       console.log("systemArchitecture", systemArchitecture);
-      if (systemArchitecture !== "x64") {
-        platformSpecificAgentDownloadURL = findDownloadURL(".pkg", latestReleaseAssets);
-      } else {
-        platformSpecificAgentDownloadURL = findDownloadURL(".pkg", latestReleaseAssets);
+      if (systemArchitecture === "x64") {
+        platformSpecificAgentDownloadURL = findDownloadURL(
+          ".string-for-non-m-chip-release",
+          latestReleaseAssets
+        );
+      }
+      if (systemArchitecture === "arm64") {
+        platformSpecificAgentDownloadURL = findDownloadURL(
+          ".string-for-m-chip-release",
+          latestReleaseAssets
+        );
       }
       break;
     case "win32":
