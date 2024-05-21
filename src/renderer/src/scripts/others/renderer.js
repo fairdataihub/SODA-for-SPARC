@@ -103,12 +103,6 @@ window.introStatus = {
 window.log.setupRendererLogOptions();
 window.homeDirectory = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 
-// set to true once the SODA server has been connected to
-// TODO: Fix this since we removed updating this variable in the startup logic
-let sodaIsConnected = false;
-// set to true once the API version has been confirmed
-let apiVersionChecked = false;
-
 //log user's OS version //
 window.log.info(
   "User OS:",
@@ -299,100 +293,149 @@ window.wait = async (delay) => {
   return new Promise((resolve) => setTimeout(resolve, delay));
 };
 
+const showErrorAndRestart = async (errorMessage) => {
+  trackEvent("Error", "Establishing Python Connection");
+  await swalShowError(
+    "Error connecting to SODA's background services",
+    `Something went wrong while initializing SODA's background services. Please restart SODA and try again. If this issue occurs multiple times, please email <a target="_blank" href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`
+  );
+  await window.electron.ipcRenderer.invoke("relaunch-soda");
+};
+
+const checkApiVersions = async () => {
+  try {
+    await apiVersionsMatch();
+  } catch (e) {
+    await window.electron.ipcRenderer.invoke("exit-soda");
+  }
+};
+
+const launchAnnouncements = async () => {
+  if (launchAnnouncement) {
+    await Swal.close();
+    await checkForAnnouncements("announcements");
+    launchAnnouncement = false;
+    await window.electron.ipcRenderer.invoke("set-nodestorage-key", "announcements", false);
+  }
+};
+const ensureUsernameExists = async () => {
+  let usernameExists = await window.electron.ipcRenderer.invoke("get-nodestorage-item", username);
+  if (!usernameExists) {
+    const { username } = window.os.userInfo();
+    const uuid = uuidv4();
+    const uuidShort = uuid.substring(0, 4);
+    await window.electron.ipcRenderer.invoke("set-nodestorage-key", username, uuidShort);
+  }
+};
+
+const connectToServer = async () => {
+  const maxWaitTime = 300000; // 5 minutes in milliseconds
+  const retryInterval = 3000; // 3 seconds in milliseconds
+  const totalNumberOfRetries = Math.floor(maxWaitTime / retryInterval);
+  for (let i = 0; i < totalNumberOfRetries; i++) {
+    try {
+      const res = await client.get("/startup/echo?arg=server ready");
+      console.log("Server connected, res: ", res);
+      trackEvent("Success", "Establishing Python Connection");
+      await ensureUsernameExists();
+      console.log("Connected to server successfully", res);
+      return;
+    } catch (e) {
+      console.log("Error connecting to server: ", e);
+      await window.wait(retryInterval);
+    }
+  }
+  throw new Error("Unable to connect to server within the max wait time.");
+};
+
+const startupServerAndApiChecks = async () => {
+  try {
+    await connectToServer();
+  } catch (error) {
+    await showErrorAndRestart(error.message);
+  }
+  await checkApiVersions();
+  await handleAnnouncements();
+  trackEvent("Success", "Setting Templates Path");
+};
+
 // check that the client connected to the server using exponential backoff
 // verify the api versions match
 const startupServerAndApiCheck = async () => {
-  // wait for SWAL to be loaded in
-  await window.wait(2000);
+  // Restart the app
+  //await window.electron.ipcRenderer.invoke("relaunch-soda");
+  const maxWaitTime = 300000; // 5 minutes in milliseconds
+  const retryInterval = 3000; // 3 seconds in milliseconds
+  const totalNumberOfRetries = Math.floor(maxWaitTime / retryInterval);
 
-  // notify the user that the application is starting connecting to the server
-  Swal.fire({
-    icon: "info",
-    title: `Initializing SODA's background services<br /><br />This may take several minutes...`,
-    heightAuto: true,
-    backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "Restart now",
-    allowOutsideClick: false,
-    allowEscapeKey: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
+  let serverConnectErrorMessage = null;
 
-  // Darwin executable starts slowly
-  // use an exponential backoff to wait for the app server to be ready
-  // this will give Mac users more time before receiving a backend server error message
-  // ( during the wait period the server should start )
-  // Bonus:  doesn't stop Windows and Linux users from starting right away
-  // NOTE: backOff is bad at surfacing errors to the console
-  //while variable is false keep requesting, if time exceeds two minutes break
-  let status = false;
-  let time_start = new Date();
-  let error = "";
-  while (true) {
+  for (let i = 0; i < totalNumberOfRetries; i++) {
     try {
-      status = await serverIsLiveStartup();
-    } catch (e) {
-      error = e;
-      status = false;
-    }
-    let time_pass = new Date() - time_start;
-    if (status) {
-      break;
-    }
-    if (time_pass > 300000) {
-      break;
-    } //break after five minutes
-    await window.wait(2000);
-  }
+      const res = await client.get("/startup/echo?arg=server ready");
+      console.log("Server connected, res: ", res);
+      window.log.info("Connected to Python back-end successfully");
+      window.electron.ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
+      window.electron.ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.STARTUP,
+        kombuchaEnums.Action.APP_LAUNCHED,
+        kombuchaEnums.Label.PYTHON_CONNECTION,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+        }
+      );
+      console.log("Doing other stuff");
+      let usernameExists = await window.electron.ipcRenderer.invoke(
+        "get-nodestorage-item",
+        username
+      );
+      // check if a shortened uuid exists in local storage
+      if (!usernameExists) {
+        // get the current user profile name using electron
+        const { username } = window.os.userInfo();
+        // generate a UUID
+        const uuid = uuidv4();
 
-  if (!status) {
-    //two minutes pass then handle connection error
-    // SWAL that the server needs to be restarted for the app to work
-    clientError(error);
-    window.electron.ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
-    window.electron.ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.STARTUP,
-      kombuchaEnums.Action.APP_LAUNCHED,
-      kombuchaEnums.Label.PYTHON_CONNECTION,
-      kombuchaEnums.Status.FAIL,
-      {
-        value: 1,
+        // get the first 4 characters of the UUID
+        const uuidShort = uuid.substring(0, 4);
+
+        // store the shortened uuid in local storage
+        // RATIONALE: this is used as a prefix that is unique per each client machine + profile name combination
+        await window.electron.ipcRenderer.invoke("set-nodestorage-key", username, uuidShort);
       }
-    );
 
-    await Swal.fire({
-      icon: "error",
-      html: `Something went wrong while initializing SODA's background services. Please restart SODA and try again. If this issue occurs multiple times, please email <a target="_blank" href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Restart now",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    });
-
-    // Restart the app
-    await window.electron.ipcRenderer.invoke("relaunch-soda");
+      console.log("Connected to server successfully", res);
+      return; // Server connected, safe to return from the functions
+    } catch (e) {
+      console.log("Error connecting to server: ", e);
+      serverConnectErrorMessage = e;
+      await window.wait(retryInterval);
+    }
   }
 
-  sodaIsConnected = true;
-
-  window.log.info("Connected to Python back-end successfully");
-  window.electron.ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
+  // If we get to this point, it means we were unable to connect to the server
+  // within the max wait time. An error message will be displayed to the user
+  // and the app will be restarted
+  window.electron.ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
   window.electron.ipcRenderer.send(
     "track-kombucha",
     kombuchaEnums.Category.STARTUP,
     kombuchaEnums.Action.APP_LAUNCHED,
     kombuchaEnums.Label.PYTHON_CONNECTION,
-    kombuchaEnums.Status.SUCCESS,
+    kombuchaEnums.Status.FAIL,
     {
       value: 1,
     }
   );
+  await swalShowError(
+    "Error connecting to SODA's background services",
+    `Something went wrong while initializing SODA's background services. Please restart SODA and try again. If this issue occurs multiple times, please email <a target="_blank" href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`
+  );
 
-  // dismiss the Swal
-  Swal.close();
+  // Restart the app
+  await window.electron.ipcRenderer.invoke("relaunch-soda");
 
   // check if the API versions match
   try {
@@ -409,47 +452,10 @@ const startupServerAndApiCheck = async () => {
     window.electron.ipcRenderer.invoke("set-nodestorage-key", "announcements", false);
   }
 
-  apiVersionChecked = true;
-
-  // get apps base path
-  const basepath = await window.electron.ipcRenderer.invoke("get-app-path", undefined);
-  const resourcesPath = window.process.resourcesPath();
-  // set the templates path
-  try {
-    await client.put("prepare_metadata/template_paths", {
-      basepath: basepath,
-      resourcesPath: resourcesPath,
-    });
-  } catch (error) {
-    clientError(error);
-
-    window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");
-    return;
-  }
-
   window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 };
-startupServerAndApiCheck().then(async () => {
-  // get the current user profile name using electron
-  const { username } = window.os.userInfo();
 
-  let usernameExists = await window.electron.ipcRenderer.invoke("get-nodestorage-item", username);
-
-  // check if a shortened uuid exists in local storage
-  if (usernameExists) {
-    return;
-  }
-
-  // generate a UUID
-  const uuid = uuidv4();
-
-  // get the first 4 characters of the UUID
-  const uuidShort = uuid.substring(0, 4);
-
-  // store the shortened uuid in local storage
-  // RATIONALE: this is used as a prefix that is unique per each client machine + profile name combination
-  await window.electron.ipcRenderer.invoke("set-nodestorage-key", username, uuidShort);
-});
+startupServerAndApiCheck();
 
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
@@ -4265,7 +4271,8 @@ var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve ac
 (async () => {
   // wait until soda is connected to the backend server
   while (!sodaIsConnected) {
-    await window.wait(1000);
+    console.log("Waiting for sodaIsConnected to be true");
+    await window.wait(10000);
   }
 
   retrieveBFAccounts();
