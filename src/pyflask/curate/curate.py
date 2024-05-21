@@ -3455,6 +3455,7 @@ def reset_upload_session_environment(resume):
     global myds
     global generated_dataset_id
     global bytes_file_path_dict
+    global renaming_files_flow
 
     start_generate = 0
     myds = ""
@@ -3485,6 +3486,7 @@ def reset_upload_session_environment(resume):
         ums.set_renaming_files_flow(False) # this determines if we failed while renaming files after the upload is complete
         ums.set_rename_total_files(None)
         ums.set_list_of_files_to_rename(None)
+        renaming_files_flow = False
         # reset the calculated values for the upload session
         bytes_file_path_dict = {}
 
