@@ -12,7 +12,7 @@ import Editor from "@toast-ui/editor";
 // const remote = require("@electron/remote");
 import { Notyf } from "notyf";
 import { v4 as uuidv4 } from "uuid";
-import Tagify from "@yaireo/tagify/dist/tagify.esm";
+import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
 // const https = require("https");
 // const electron = require("electron");
 import jQuery from "jquery";
