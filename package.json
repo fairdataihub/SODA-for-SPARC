@@ -45,7 +45,7 @@
     "axios": "^1.6.0",
     "bootbox": "5.5.2",
     "bootstrap": "4.0.0",
-    "bootstrap-icons": "1.5.0",
+    "bootstrap-icons": "1.11.3",
     "bootstrap-select": "^1.13.18",
     "check-disk-space": "^3.4.0",
     "convert-csv-to-json": "^2.0.0",
