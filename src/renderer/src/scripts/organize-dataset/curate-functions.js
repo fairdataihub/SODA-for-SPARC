@@ -186,10 +186,10 @@ window.uploadDatasetDropHandler = async (ev) => {
       } else {
         Swal.fire({
           icon: "warning",
-          html: `This folder seem to have non-SPARC folders. Please select a folder that has a valid SPARC dataset structure.
+          html: `This dataset is not following the SPARC Data Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
           <br/>
-          See the "Data Organization" section of the SPARC documentation for more
-          <a target="_blank" href="https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT#top"> details</a>`,
+          See the "Data Organization" section of the SPARC documentation for more 
+          <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           showConfirmButton: false,
@@ -691,10 +691,10 @@ window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (eve
     } else {
       Swal.fire({
         icon: "warning",
-        html: `This folder seem to have non-SPARC folders. Please select a folder that has a valid SPARC dataset structure.
+        html: `This dataset is not following the SPARC Data Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
         <br/>
-        See the "Data Organization" section of the SPARC documentation for more
-        <a target="_blank" href="https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT#top"> details</a>`,
+        See the "Data Organization" section of the SPARC documentation for more 
+        <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showConfirmButton: false,
