@@ -66,6 +66,14 @@ import {
 import canSmiley from "/img/can-smiley.png";
 import canSad from "/img/can-sad.png";
 
+import useGlobalStore from "../../stores/globalStore";
+import {
+  setInternetConnectionStatus,
+  setPennsieveAgentInstalled,
+  setPennsieveAgentDownloadURL,
+  setPennsieveAgentUpToDate,
+} from "../../stores/slices/backgroundServicesSlice";
+
 // add jquery to the window object
 window.$ = jQuery;
 window.jQuery = jQuery;
@@ -381,7 +389,7 @@ const startBackgroundServices = async () => {
     }
 
     notyf.open({
-      duration: "9000",
+      duration: "2000",
       type: "success",
       message: `Connected to SODA's background services successfully.`,
     });
@@ -551,16 +559,47 @@ const getPennsieveAgentVersion = async () => {
 
 let preFlightCheckNotyf = null;
 
-const agent_installed = async () => {
+window.checkIfPennsieveAgentIsInstalled = async () => {
   try {
     let agentStartSpawn = await window.spawn.startPennsieveAgent();
+    console.log("Agent installed: ", agentStartSpawn);
     return agentStartSpawn;
   } catch (e) {
+    console.log("Error starting the Pennsieve agent: ", e);
     window.log.info(e);
     throw e;
   }
 };
 let userHasSelectedTheyAreOkWithOutdatedAgent = false;
+
+// Function that checks the background services required for the Pennsieve agent to run
+// This function does not handle authentication
+// Checks include:
+// 1. Internet connection
+// 2. Pennsieve agent installed
+// 3. Pennsieve agent up to date
+// 4. Pennsieve agent running in the background
+
+window.checkPennsieveBackgroundServices = async () => {
+  try {
+    const userConnectedToInternet = await window.checkInternetConnection();
+    console.log("User connected to internet: ", userConnectedToInternet);
+    setInternetConnectionStatus(userConnectedToInternet);
+
+    const pennsieveAgentInstalled = await window.checkIfPennsieveAgentIsInstalled();
+    console.log("Pennsieve agent installed: ", pennsieveAgentInstalled);
+    setPennsieveAgentInstalled(pennsieveAgentInstalled);
+
+    const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
+    console.log("Pennsieve agent download URL: ", pennsieveAgentDownloadURL);
+    setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
+
+    const pennsieveAgentUpToDate = await window.checkIfPennsieveAgentIsUpToDate();
+    setPennsieveAgentUpToDate(pennsieveAgentUpToDate);
+  } catch (error) {
+    console.log("Error checking Pennsieve background services: ", error);
+  }
+};
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 window.run_pre_flight_checks = async (check_update = true) => {
@@ -577,7 +616,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
     }
 
     // Check the internet connection and if available check the rest.
-    const userConnectedToInternet = await checkInternetConnection();
+    const userConnectedToInternet = await window.checkInternetConnection();
     if (!userConnectedToInternet) {
       throw new Error(
         "It seems that you are not connected to the internet. Please check your connection and try again."
@@ -644,8 +683,8 @@ window.run_pre_flight_checks = async (check_update = true) => {
 
     // check if the Pennsieve agent is installed [ here ]
     try {
-      let installed = await agent_installed();
-      if (!installed) {
+      const pennsieveAgentIsInstalled = await window.checkIfPennsieveAgentIsInstalled();
+      if (!pennsieveAgentIsInstalled) {
         const downloadUrl = await getPlatformSpecificAgentDownloadURL();
         const { value: restartSoda } = await Swal.fire({
           icon: "info",
@@ -1126,12 +1165,11 @@ const apiVersionsMatch = async () => {
   checkNewAppVersion(); // Added so that version will be displayed for new users
 };
 
-const checkInternetConnection = async () => {
+window.checkInternetConnection = async () => {
   try {
     await axios.get("https://www.google.com");
     return true;
   } catch (error) {
-    console.error("No internet connection");
     window.log.error("No internet connection");
     return false;
   }
@@ -1146,7 +1184,6 @@ window.check_api_key = async () => {
   await window.wait(800);
   // If no accounts are found, return false.
   let responseObject;
-
   if (!hasConnectedAccountWithPennsieve()) {
     window.notyf.dismiss(notification);
     window.notyf.open({

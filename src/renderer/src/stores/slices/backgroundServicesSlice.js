@@ -1,31 +1,50 @@
 import useGlobalStore from "../globalStore";
 import { produce } from "immer";
+
 export const backgroundServicesSlice = (set) => ({
-  currentGuidedModePage: null,
-  guidedDatasetName: "",
-  guidedDatasetSubtitle: "",
+  internetConnectionStatus: false,
+  pennsieveAgentInstalled: false,
+  pennsieveAgentDownloadURL: null,
+  pennsieveAgentUpToDate: false,
+  pennsieveAgentRunning: false,
 });
 
-export const setGuidedModePage = (guidedModePageName) => {
+export const setInternetConnectionStatus = (connectionStatus) => {
   useGlobalStore.setState(
     produce((state) => {
-      state.currentGuidedModePage = guidedModePageName;
+      state.internetConnectionStatus = connectionStatus;
     })
   );
 };
 
-export const setGuidedDatasetName = (datasetName) => {
+export const setPennsieveAgentInstalled = (installed) => {
   useGlobalStore.setState(
     produce((state) => {
-      state.guidedDatasetName = datasetName;
+      state.pennsieveAgentInstalled = installed;
     })
   );
 };
 
-export const setGuidedDatasetSubtitle = (datasetSubtitle) => {
+export const setPennsieveAgentDownloadURL = (downloadURL) => {
   useGlobalStore.setState(
     produce((state) => {
-      state.guidedDatasetSubtitle = datasetSubtitle;
+      state.pennsieveAgentDownloadURL = downloadURL;
+    })
+  );
+};
+
+export const setPennsieveAgentUpToDate = (upToDate) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.pennsieveAgentUpToDate = upToDate;
+    })
+  );
+};
+
+export const setPennsieveAgentRunning = (running) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.pennsieveAgentRunning = running;
     })
   );
 };
