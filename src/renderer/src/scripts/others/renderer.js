@@ -112,6 +112,11 @@ window.log.info(
   window.os.release()
 );
 
+// utility function for async style set timeout
+window.wait = async (delay) => {
+  return new Promise((resolve) => setTimeout(resolve, delay));
+};
+
 // // Check current app version //
 const appVersion = await window.electron.ipcRenderer.invoke("app-version");
 window.log.info("Current SODA version:", appVersion);
@@ -288,44 +293,12 @@ let connected_to_internet = false;
 let update_available_notification = "";
 let update_downloaded_notification = "";
 
-// utility function for async style set timeout
-window.wait = async (delay) => {
-  return new Promise((resolve) => setTimeout(resolve, delay));
-};
-
 const showErrorAndRestart = async (errorMessage) => {
-  trackEvent("Error", "Establishing Python Connection");
   await swalShowError(
     "Error connecting to SODA's background services",
     `Something went wrong while initializing SODA's background services. Please restart SODA and try again. If this issue occurs multiple times, please email <a target="_blank" href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`
   );
   await window.electron.ipcRenderer.invoke("relaunch-soda");
-};
-
-const checkApiVersions = async () => {
-  try {
-    await apiVersionsMatch();
-  } catch (e) {
-    await window.electron.ipcRenderer.invoke("exit-soda");
-  }
-};
-
-const launchAnnouncements = async () => {
-  if (launchAnnouncement) {
-    await Swal.close();
-    await checkForAnnouncements("announcements");
-    launchAnnouncement = false;
-    await window.electron.ipcRenderer.invoke("set-nodestorage-key", "announcements", false);
-  }
-};
-const ensureUsernameExists = async () => {
-  let usernameExists = await window.electron.ipcRenderer.invoke("get-nodestorage-item", username);
-  if (!usernameExists) {
-    const { username } = window.os.userInfo();
-    const uuid = uuidv4();
-    const uuidShort = uuid.substring(0, 4);
-    await window.electron.ipcRenderer.invoke("set-nodestorage-key", username, uuidShort);
-  }
 };
 
 const connectToServer = async () => {
@@ -336,16 +309,106 @@ const connectToServer = async () => {
     try {
       const res = await client.get("/startup/echo?arg=server ready");
       console.log("Server connected, res: ", res);
-      trackEvent("Success", "Establishing Python Connection");
-      await ensureUsernameExists();
-      console.log("Connected to server successfully", res);
+
+      // Log the successful connection to the server
+      window.log.info("Connected to Python back-end successfully");
+      window.electron.ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
+      window.electron.ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.STARTUP,
+        kombuchaEnums.Action.APP_LAUNCHED,
+        kombuchaEnums.Label.PYTHON_CONNECTION,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+        }
+      );
       return;
     } catch (e) {
       console.log("Error connecting to server: ", e);
       await window.wait(retryInterval);
     }
   }
+
+  // If we get to this point, it means we were unable to connect to the server
+  // Report the event and throw an error
+  window.electron.ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
+  window.electron.ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.STARTUP,
+    kombuchaEnums.Action.APP_LAUNCHED,
+    kombuchaEnums.Label.PYTHON_CONNECTION,
+    kombuchaEnums.Status.FAIL,
+    {
+      value: 1,
+    }
+  );
   throw new Error("Unable to connect to server within the max wait time.");
+};
+
+const ensureUsernameExists = async () => {
+  try {
+    // get the current user profile name using electron
+    const { username } = window.os.userInfo();
+
+    // check if a shortened uuid exists in local storage
+    let usernameExists = await window.electron.ipcRenderer.invoke("get-nodestorage-item", username);
+
+    // if the username does not exist in local storage, create a shortened uuid and store it
+    if (!usernameExists) {
+      const shortenedUUID = uuidv4().substring(0, 4);
+      await window.electron.ipcRenderer.invoke("set-nodestorage-key", username, shortenedUUID);
+    }
+  } catch (error) {
+    console.log("Error creating a new user profile name: ", error);
+    const errorMessage = "Error creating a new user profile name.";
+    clientError(errorMessage);
+    throw new Error(errorMessage);
+  }
+};
+
+const startBackgroundServices = async () => {
+  console.log("Starting background services");
+  try {
+    await connectToServer();
+    await checkApiVersions();
+    await ensureUsernameExists();
+
+    try {
+      retrieveBFAccounts();
+    } catch (error) {
+      console.log("Error retrieving BF accounts: ", error);
+    }
+
+    notyf.open({
+      duration: "9000",
+      type: "success",
+      message: `Connected to SODA's background services successfully.`,
+    });
+  } catch (error) {
+    console.log("Error connecting to server: ", error);
+    await showErrorAndRestart(error);
+  }
+};
+
+startBackgroundServices();
+
+const checkApiVersions = async () => {
+  try {
+    await apiVersionsMatch();
+  } catch (error) {
+    console.log("API versions do not match: (throwing this)", error);
+    throw new Error("API versions do not match");
+  }
+};
+
+const launchAnnouncements = async () => {
+  if (launchAnnouncement) {
+    await Swal.close();
+    await checkForAnnouncements("announcements");
+    launchAnnouncement = false;
+    await window.electron.ipcRenderer.invoke("set-nodestorage-key", "announcements", false);
+  }
 };
 
 const startupServerAndApiChecks = async () => {
@@ -374,6 +437,8 @@ const startupServerAndApiCheck = async () => {
     try {
       const res = await client.get("/startup/echo?arg=server ready");
       console.log("Server connected, res: ", res);
+      const ress = await apiVersionsMatch();
+      console.log("API versions match: ", ress);
       window.log.info("Connected to Python back-end successfully");
       window.electron.ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
       window.electron.ipcRenderer.send(
@@ -387,24 +452,7 @@ const startupServerAndApiCheck = async () => {
         }
       );
       console.log("Doing other stuff");
-      let usernameExists = await window.electron.ipcRenderer.invoke(
-        "get-nodestorage-item",
-        username
-      );
-      // check if a shortened uuid exists in local storage
-      if (!usernameExists) {
-        // get the current user profile name using electron
-        const { username } = window.os.userInfo();
-        // generate a UUID
-        const uuid = uuidv4();
-
-        // get the first 4 characters of the UUID
-        const uuidShort = uuid.substring(0, 4);
-
-        // store the shortened uuid in local storage
-        // RATIONALE: this is used as a prefix that is unique per each client machine + profile name combination
-        await window.electron.ipcRenderer.invoke("set-nodestorage-key", username, uuidShort);
-      }
+      ensureUsernameExists();
 
       console.log("Connected to server successfully", res);
       return; // Server connected, safe to return from the functions
@@ -429,17 +477,11 @@ const startupServerAndApiCheck = async () => {
       value: 1,
     }
   );
-  await swalShowError(
-    "Error connecting to SODA's background services",
-    `Something went wrong while initializing SODA's background services. Please restart SODA and try again. If this issue occurs multiple times, please email <a target="_blank" href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`
-  );
-
-  // Restart the app
-  await window.electron.ipcRenderer.invoke("relaunch-soda");
 
   // check if the API versions match
   try {
-    await apiVersionsMatch();
+    const res = await apiVersionsMatch();
+    console.log("API versions match: ", res);
   } catch (e) {
     // api versions do not match
     await window.electron.ipcRenderer.invoke("exit-soda");
@@ -454,8 +496,11 @@ const startupServerAndApiCheck = async () => {
 
   window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 };
-
-startupServerAndApiCheck();
+try {
+  startupServerAndApiCheck();
+} catch (error) {
+  showErrorAndRestart(error);
+}
 
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
@@ -975,21 +1020,6 @@ window.run_pre_flight_checks = async (check_update = true) => {
     // If the user clicks skip for now, then return false
     return false;
   }
-};
-
-// Check if the Pysoda server is live
-const serverIsLiveStartup = async () => {
-  let echoResponseObject;
-
-  try {
-    echoResponseObject = await client.get("/startup/echo?arg=server ready");
-  } catch (error) {
-    throw error;
-  }
-
-  let echoResponse = echoResponseObject.data;
-
-  return !!(echoResponse === "server ready");
 };
 
 // Check if the Pysoda server API version and the package.json versions match
@@ -4266,17 +4296,6 @@ var bfAddAccountBootboxMessage = `<form>
   </form>`;
 
 var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve account using an API key</h3>`;
-
-// once connected to SODA get the user's accounts
-(async () => {
-  // wait until soda is connected to the backend server
-  while (!sodaIsConnected) {
-    console.log("Waiting for sodaIsConnected to be true");
-    await window.wait(10000);
-  }
-
-  retrieveBFAccounts();
-})();
 
 // // this function is called in the beginning to load bf accounts to a list
 // // which will be fed as dropdown options
