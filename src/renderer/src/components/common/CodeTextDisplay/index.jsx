@@ -1,9 +1,10 @@
-import { Text, Container } from "@mantine/core";
+import { Text } from "@mantine/core";
+import FullWidthContainer from "../../containers/FullWidthContainer";
 
 const CodeTextDisplay = ({ text }) => (
-  <Container fluid style={{ backgroundColor: "black" }}>
-    <Text c="white">{text}</Text>
-  </Container>
+  <FullWidthContainer backgroundColor="black" padding="sm">
+    <Text c="red">{text}</Text>
+  </FullWidthContainer>
 );
 
 export default CodeTextDisplay;

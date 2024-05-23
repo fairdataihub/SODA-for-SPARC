@@ -93,7 +93,7 @@ const componentRenderActions = {
   "internet-connection-status": (componentSlot) => {
     const root = createRoot(componentSlot);
     root.render(
-      <SodaComponentWrapper>
+      <SodaComponentWrapper layout="container">
         <InternetConnectionStatus />
       </SodaComponentWrapper>
     );
@@ -101,7 +101,7 @@ const componentRenderActions = {
   "pennsieve-agent-status": (componentSlot) => {
     const root = createRoot(componentSlot);
     root.render(
-      <SodaComponentWrapper>
+      <SodaComponentWrapper layout="container">
         <PennsieveAgentStatus />
       </SodaComponentWrapper>
     );

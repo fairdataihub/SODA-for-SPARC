@@ -1,7 +1,8 @@
-import { Text, Stack, Button, Group } from "@mantine/core";
+import { Text, Stack, Button, Group, Container } from "@mantine/core";
 import ExternalLink from "../../buttons/ExternalLink";
 import CodeTextDisplay from "../../common/CodeTextDisplay";
 import useGlobalStore from "../../../stores/globalStore";
+import GuidedModeSection from "../../containers/GuidedModeSection";
 
 const PennsieveAgentStatus = () => {
   const pennsieveAgentInstalled = useGlobalStore((state) => state.pennsieveAgentInstalled);
@@ -24,10 +25,10 @@ const PennsieveAgentStatus = () => {
 
   if (pennsieveAgentErrorMessage) {
     return (
-      <Stack>
+      <Container>
         <Text>Pennsieve Agent error</Text>
         <CodeTextDisplay text={pennsieveAgentErrorMessage} />
-      </Stack>
+      </Container>
     );
   }
 
