@@ -7189,11 +7189,9 @@ const preGenerateSetup = async (e, elementContext) => {
       document.getElementById("div-vertical-progress-bar").style.display = "flex";
       document.getElementById("div-generate-comeback").style.display = "flex";
       document.getElementById("generate-dataset-progress-tab").style.display = "none";
-      $("#generate-dataset-progress-tab").removeClass("tab-active")
+      $("#generate-dataset-progress-tab").removeClass("tab-active");
       document.getElementById("preview-dataset-tab").style.display = "flex";
-      $("#preview-dataset-tab").addClass("tab-active")
-
-
+      $("#preview-dataset-tab").addClass("tab-active");
 
       document.getElementById("guided_mode_view").style.pointerEvents = "";
       // Allow documentation view to be clicked again
