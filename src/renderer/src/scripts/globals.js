@@ -1655,7 +1655,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
                 let packages = await api.getNumberOfPackagesInDataset(bfDataset);
                 let fileCount = 0;
 
-
                 for (const packageKey in packages) {
                   if (packageKey !== "Collection") {
                     fileCount += packages[packageKey];

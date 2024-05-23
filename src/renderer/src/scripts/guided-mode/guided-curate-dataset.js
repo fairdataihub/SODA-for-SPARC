@@ -67,8 +67,7 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-window.logZustandStoreState = () => {
-};
+window.logZustandStoreState = () => {};
 
 window.returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
@@ -14576,7 +14575,6 @@ window.electron.ipcRenderer.on(
       updateDatasetUploadProgressTable("local", {
         "Current action": `Preparing dataset for local generation`,
       });
-
 
       // Start the local dataset generation process
       client.post(

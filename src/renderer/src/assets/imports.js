@@ -40,7 +40,6 @@ const waitForReactRenderedSectionsToInsertIntoDOM = async () => {
   ) {
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-
 };
 
 document.addEventListener("DOMContentLoaded", async function () {

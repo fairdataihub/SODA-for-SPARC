@@ -62,7 +62,6 @@ document.body.addEventListener("click", async (event) => {
 });
 
 document.body.addEventListener("custom-back", (e) => {
-
   handleSectionTrigger(e);
 });
 // Variable used to determine the disabled status of the organize datasets next button
@@ -153,7 +152,6 @@ const handleSectionTrigger = async (event) => {
   }
 
   if (sectionId === "guided_mode-section") {
-
     // check if the
     // Disallow the transition if an upload is in progress
     if (document.getElementById("returnButton") !== null) {
@@ -173,7 +171,6 @@ const handleSectionTrigger = async (event) => {
       document.getElementById("main_tabs_view").click();
       document.getElementById("organize_dataset_btn").click();
     }
-
 
     if (sectionRenderFileExplorer != "file-explorer") {
       window.sodaJSONObj = {};

@@ -60,7 +60,6 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
         templateItem[i]
       );
 
-
       // Verify if templateItem[i] is a high level folder
       if (templateHighLvlFolders.includes(templateItem[i])) {
         let destinationPath = window.path.join(templatesFolderPath, templateItem[i]);

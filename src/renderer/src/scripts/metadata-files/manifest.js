@@ -2042,7 +2042,6 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
     document.querySelector("#generate_step_5-manifest").style.display = "block";
   }
 
-
   if (!["btn-pull-ds-manifest", "confirm-local-manifest-folder-adv-feature"].includes(ev.id)) {
     window.exitCurate();
   }

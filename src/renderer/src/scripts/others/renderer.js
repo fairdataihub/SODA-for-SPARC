@@ -4530,7 +4530,6 @@ const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
 const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
   const currentFoldersAtPath = Object.keys(datasetStructure.folders);
   for (const folderKey of currentFoldersAtPath) {
-
     const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
       folderKey,
       "folder-and-file-name-is-valid"
@@ -5165,7 +5164,6 @@ window.replaceIrregularFolders = (pathElement) => {
 };
 
 window.removeIrregularFolders = (pathElement) => {
-
   const reg = /[^a-zA-Z0-9-]/g;
   const str = window.path.basename(pathElement);
   const newFolderName = str.replace(reg, "");
@@ -7457,7 +7455,6 @@ const initiate_generate = async (e) => {
       window.pennsieveAgentManifestId = data["local_manifest_id"];
       window.pennsieveManifestId = data["origin_manifest_id"];
 
-
       window.totalFilesCount = uploadedFiles;
 
       $("#sidebarCollapse").prop("disabled", false);
@@ -7832,7 +7829,6 @@ const initiate_generate = async (e) => {
 
       divGenerateProgressBar.style.display = "block";
 
-
       if (main_curate_progress_message.includes("Success: COMPLETED!")) {
         clearInterval(timerProgress);
         generateProgressBar.value = 100;
@@ -7864,8 +7860,6 @@ const initiate_generate = async (e) => {
       statusText.innerHTML = `Renaming files...<br>Elapsed time: ${elapsed_time_formatted}<br>
       Progress: ${value.toFixed(2)}%`;
     }
-
-
 
     if (main_curate_status === "Done") {
       $("#please-wait-new-curate-div").hide();

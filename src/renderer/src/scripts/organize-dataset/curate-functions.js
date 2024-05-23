@@ -305,7 +305,6 @@ window.addManifestDetailsToDatasetStructure = async (
     });
   }
 
-
   // Open the manifest file and read the contents
   for (let folder in manifestFiles) {
     if (Object.keys(datasetStructure["dataset-structure"]["folders"]).includes(folder)) {
@@ -374,9 +373,7 @@ window.addManifestDetailsToDatasetStructure = async (
               // extra columns are present, ensure to preserve them in the data structure
               // iterate through the keys in manifest
 
-
               for (let key in manifest) {
-
                 if (
                   key !== "filename" &&
                   key !== "timestamp" &&
@@ -390,7 +387,6 @@ window.addManifestDetailsToDatasetStructure = async (
                 }
               }
             }
-
           } else {
             // within a subfolder
             // depending on the length of filename will determine how many folders deep to traverse
@@ -402,8 +398,7 @@ window.addManifestDetailsToDatasetStructure = async (
             ) {
               // Therer is a problematic file in this primary folder
               // Handle if there was a change to the file
-              for (let i = 0; i < problematicFilesObj[folder].length; i++) {
-              }
+              for (let i = 0; i < problematicFilesObj[folder].length; i++) {}
             }
 
             if (
@@ -412,15 +407,13 @@ window.addManifestDetailsToDatasetStructure = async (
             ) {
               // There is a problematic folder in this primary folder
 
-              for (let i = 0; i < problematicFoldersObj[folder].length; i++) {
-              }
+              for (let i = 0; i < problematicFoldersObj[folder].length; i++) {}
             }
 
             let currentFolder = datasetStructure?.["dataset-structure"]?.["folders"]?.[folder];
             let currentFolderProblematicFolders = problematicFoldersObj?.[folder];
 
             for (let i = 0; i < filename.length - 1; i++) {
-
               // console.log(currentFolder?.["folders"]?.[filename[i]]);
               let fileName = filename[i];
               let temp = currentFolder?.["folders"]?.[fileName];
@@ -617,7 +610,6 @@ window.handleLocalDatasetImport = async (path) => {
     list.manifestFiles,
     buildDatasetStructure
   );
-
 
   return true;
 };

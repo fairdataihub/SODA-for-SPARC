@@ -286,7 +286,6 @@ const fill_info_details = () => {
     //     "input-destination-generate-dataset-locally",
     //     true
     //   );
-
     //   new_dataset_name = $("#inputNewNameDataset").val().trim();
     //   if (window.manifestFileCheck.checked) {
     //     addCardDetail(
@@ -306,9 +305,7 @@ const fill_info_details = () => {
     //       window.sodaJSONObj["starting-point"]["local-path"]
     //     );
     //   }
-
     //   addCardDetail("New dataset location", "Pennsieve", 1, "Question-generate-dataset", true);
-
     //   if ($('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing") {
     //     addCardDetail(
     //       "Dataset name",
@@ -495,7 +492,6 @@ window.hasEmptyFolders = (currentFolder) => {
 window.nextPrev = async (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
   let parentTabs = document.getElementsByClassName("parent-tabs");
-
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
     window.returnToGuided();
