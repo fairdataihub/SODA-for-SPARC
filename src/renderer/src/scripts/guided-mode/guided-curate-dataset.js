@@ -14576,10 +14576,13 @@ window.electron.ipcRenderer.on(
       // Remove unnecessary key from sodaJSONObjCopy since we don't need to
       // check if the account details are valid during local generation
       delete sodaJSONObjCopy["bf-account-selected"];
+      delete sodaJSONObjCopy["bf-dataset-selected"];
 
       updateDatasetUploadProgressTable("local", {
         "Current action": `Preparing dataset for local generation`,
       });
+
+      console.log(JSON.stringify(sodaJSONObjCopy));
 
       // Start the local dataset generation process
       client.post(
@@ -14601,7 +14604,12 @@ window.electron.ipcRenderer.on(
             const response = await client.get(`/curate_datasets/curation/progress`);
             const { data } = response;
             const main_curate_progress_message = data["main_curate_progress_message"];
-            if (main_curate_progress_message === "Success: COMPLETED!") {
+            const main_curate_status = data["main_curate_status"];
+            console.log(main_curate_progress_message);
+            if (
+              main_curate_progress_message === "Success: COMPLETED!" ||
+              main_curate_status === "Done"
+            ) {
               break; // Exit the loop when generation is done
             }
             const elapsed_time_formatted = data["elapsed_time_formatted"];
@@ -15531,6 +15539,8 @@ const guidedUploadDatasetToPennsieve = async () => {
       { timeout: 0 }
     )
     .then(async (curationRes) => {
+      // if the upload succeeds reset the retry guided mode flag
+      window.retryGuidedMode = false;
       guidedSetNavLoadingState(false);
 
       $("#sidebarCollapse").prop("disabled", false);

@@ -15,6 +15,11 @@ class UploadManifestSession:
     total_files_to_upload = None 
     elapsed_time = None
 
+    # rename values
+    renaming_files_flow = False
+    rename_total_files = None
+    list_of_files_to_rename = None
+
     def __init__(self):
         self.df_mid = None
 
@@ -42,8 +47,30 @@ class UploadManifestSession:
     def get_total_files_to_upload(self):
         return self.total_files_to_upload
 
+    def set_rename_total_files(self, count):
+        self.rename_total_files = count
+
+    def get_rename_total_files(self):
+        return self.rename_total_files
+    
+    def set_list_of_files_to_rename(self, list):
+        self.list_of_files_to_rename = list
+
+    def get_list_of_files_to_rename(self):
+        return self.list_of_files_to_rename
+    
+    def set_renaming_files_flow(self, value):
+        self.renaming_files_flow = value
+
+    def get_renaming_files_flow(self):
+        return self.renaming_files_flow
+
     def df_mid_has_progress(self):
-        return self.manifest_has_progress(self.df_mid)
+        if self.ps is None:
+            self.ps = Pennsieve()
+        self.ps.manifest.sync(self.df_mid)
+        mfs = self.ps.list_manifests()
+        return any(mf.id == self.df_mid and mf.status == "Initiated" for mf in mfs)
     
     def get_remaining_file_count(self, mid, total_files):
         if self.ps is None:
@@ -56,8 +83,8 @@ class UploadManifestSession:
                 offset += 1000
             file_page = self.ps.manifest.list_files(mid, offset , 1000)
             # if there is no node_id then an upload hasn't started yet - all files are remaining 
-            # regular expression that searches and counts for every string that has "status: LOCAL" or "status: REGISTERED" in the string
-            remaining_files +=  len(re.findall(r'status: REGISTERED|status: LOCAL' , str(file_page)))
+            # regular expression that searches and counts for every string that has "status: LOCAL" or "status: REGISTERED" or "status: FAILED" in the string
+            remaining_files +=  len(re.findall(r'status: REGISTERED|status: LOCAL|status: FAILED' , str(file_page)))
         return remaining_files
     
     def create_obj_from_string(self,s):
@@ -89,7 +116,12 @@ class UploadManifestSession:
             for obj in parsed_objects:
                 if 'status' not in obj:
                     total_bytes_uploaded += 0
-                if obj['status'] == 'UPLOADED' or obj['status'] == 'IMPORTED' or obj['status'] == 'FINALIZED' or obj['status'] == 'VERIFIED':
+                elif obj['status'] in [
+                    'UPLOADED',
+                    'IMPORTED',
+                    'FINALIZED',
+                    'VERIFIED',
+                ]:
                     file_path = obj['source_path']
                     # remove the first and last characer of file_path - these are quotation marks
                     file_path = file_path[1:-1]
@@ -102,3 +134,5 @@ class UploadManifestSession:
 
 
 
+# ums = UploadManifestSession()
+# ums.df_mid_has_progress()

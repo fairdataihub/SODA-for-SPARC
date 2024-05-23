@@ -1,6 +1,7 @@
 # Add constants here
 # Add imports for constants
 PENNSIEVE_URL = "https://api.pennsieve.io"
+PENNSIEVE_2_URL = "https://api2.pennsieve.io"
 # userpath = expanduser("~")
 # configpath = join(userpath, ".pennsieve", "config.ini")
 # metadatapath = join(userpath, "SODA", "SODA_metadata")

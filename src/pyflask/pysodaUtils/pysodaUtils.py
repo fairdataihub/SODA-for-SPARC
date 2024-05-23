@@ -3,6 +3,7 @@ from flask import abort
 import sys
 from os.path import exists 
 import os
+import re
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
 
