@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - New workflow created for uploading datasets to Pennsieve. This workflow is designed to be more streamlined and user-friendly for datasets that just need to be upload to Pennsieve.
 - An option to validate the dataset content after uploading to Pennsieve has been added to the new workflow. It will verify that all files have been uploaded correctly and allow the user to retry any failed uploads.
+- Added React/Zustand components and created an architecture for rendering individual components into the dom that can subscribe to Zustand store states.
 
 ## v14.1.1 - 2024-05-13
 
