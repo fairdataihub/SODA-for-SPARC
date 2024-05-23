@@ -828,6 +828,7 @@ window.resetFFMUI = (ev) => {
     // if (ev.parentNode.parentNode.classList.contains("prepare-validation")) {
     //   resetValidation = false;
     // }
+    console.log(ev.parentNode.parentNode);
     if (ev.parentNode.parentNode.classList.contains("organize-dataset")) {
       resetOrganizationTab = false;
       if (ev.parentNode.parentNode.id === "bf-organization-curate-first-question-container") {
@@ -1340,6 +1341,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
 
 var dropdownEventID = "";
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
+  console.log("Open dropdown prompt called");
   // if users edit current account
   if (dropdown === "bf") {
     await window.addBfAccount(ev, false);
@@ -1646,12 +1648,24 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               return;
             }
 
-            if (dropdownEventID === "organize-ds-step-6-ds-select") {
+            if (
+              dropdownEventID === "organize-ds-step-6-ds-select" ||
+              dropdownEventID === "current-bf-dataset-generate"
+            ) {
               try {
                 // get the amount of files in the existing dataset and skip the Merge/Skip/Replace step if there are no files in the existing dataset
                 let packages = await api.getNumberOfPackagesInDataset(bfDataset);
+                let fileCount = 0;
 
-                window.hasFiles = Object.keys(packages).length > 0;
+                console.log(packages);
+
+                for (const packageKey in packages) {
+                  if (packageKey !== "Collection") {
+                    fileCount += packages[packageKey];
+                  }
+                }
+
+                window.hasFiles = fileCount > 0;
               } catch (e) {
                 clientError(e);
                 window.hasFiles = true;
@@ -1898,6 +1912,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     //datasets do exist so display popup with dataset options
     //else datasets have been created
     if (window.organizationList.length > 0) {
+      console.log("Organizations do exist");
       const { value: result } = await Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         cancelButtonText: "Cancel",

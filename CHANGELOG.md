@@ -5,6 +5,24 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v15.0.0 - 2024-05-23
+
+## Bug fixes:
+
+- Test
+
+## Feature Additions:
+
+- New workflow created for uploading datasets to Pennsieve. This workflow is designed to be more streamlined and user-friendly for datasets that just need to be upload to Pennsieve.
+- An option to validate the dataset content after uploading to Pennsieve has been added to the new workflow. It will verify that all files have been uploaded correctly and allow the user to retry any failed uploads.
+- Added React/Zustand components and created an architecture for rendering individual components into the dom that can subscribe to Zustand store states.
+
+## v14.1.1 - 2024-05-13
+
+## Bug fixes:
+
+- Fixed an issue in 'Upload Dataset' where the folder and file merge options did not always appear for user selection
+
 ## v14.1.0 - 2024-04-01
 
 ## Feature Additions:

@@ -4,6 +4,27 @@ button:focus {
   outline: none;
 }
 
+.success-validation-lottie {
+  --lottie-animation-container-width: 20px;
+  --lottie-animation-container-height: 20px;
+  --lottie-animation-container-background-color: transparent;
+  width: var(--lottie-animation-container-width);
+  height: var(--lottie-animation-container-height);
+  background: var(--lottie-animation-container-background-color);
+  overflow: hidden;
+  margin: 0 !important;
+  height: 300px;
+  width: 300px;
+}
+
+#div-validate-dataset-success {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 1rem;
+}
+
 .checkbox-design {
   -webkit-appearance: none;
   margin: 0;
