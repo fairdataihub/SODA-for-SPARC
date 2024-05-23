@@ -4530,9 +4530,7 @@ const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
 const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
   const currentFoldersAtPath = Object.keys(datasetStructure.folders);
   for (const folderKey of currentFoldersAtPath) {
-    console.log("TEST");
-    console.log(folderKey);
-    console.log("TEST");
+
     const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
       folderKey,
       "folder-and-file-name-is-valid"
@@ -5167,12 +5165,10 @@ window.replaceIrregularFolders = (pathElement) => {
 };
 
 window.removeIrregularFolders = (pathElement) => {
-  console.log(pathElement);
-  console.log(window.path.basename(pathElement));
+
   const reg = /[^a-zA-Z0-9-]/g;
   const str = window.path.basename(pathElement);
   const newFolderName = str.replace(reg, "");
-  console.log(newFolderName);
   return newFolderName;
 };
 
@@ -7461,12 +7457,7 @@ const initiate_generate = async (e) => {
       window.pennsieveAgentManifestId = data["local_manifest_id"];
       window.pennsieveManifestId = data["origin_manifest_id"];
 
-      console.log(
-        "Manifest ids are: ",
-        window.pennsieveAgentManifestId,
-        window.pennsieveManifestId
-      );
-      console.log("Data is: ", data);
+
       window.totalFilesCount = uploadedFiles;
 
       $("#sidebarCollapse").prop("disabled", false);
@@ -7841,7 +7832,6 @@ const initiate_generate = async (e) => {
 
       divGenerateProgressBar.style.display = "block";
 
-      console.log("Main curate progress message: " + main_curate_progress_message);
 
       if (main_curate_progress_message.includes("Success: COMPLETED!")) {
         clearInterval(timerProgress);
@@ -7875,8 +7865,7 @@ const initiate_generate = async (e) => {
       Progress: ${value.toFixed(2)}%`;
     }
 
-    console.log("The main curate status is: " + main_curate_status);
-    console.log("THe success status is: ", successful);
+
 
     if (main_curate_status === "Done") {
       $("#please-wait-new-curate-div").hide();
@@ -8051,7 +8040,6 @@ const show_curation_shortcut = async () => {
       $("#Question-getting-started-1").addClass("show");
       $("#generate-dataset-progress-tab").css("display", "none");
 
-      console.log("Resetting current tab value");
       window.currentTab = 0;
       window.wipeOutCurateProgress();
       $("#guided-button-start-modify-component").click();
@@ -8958,7 +8946,6 @@ window.scaleBannerImage = async (imagePath) => {
 };
 
 document.getElementById("button-gather-logs").addEventListener("click", () => {
-  console.log("Gather logs button clicked");
   //function will be used to gather all logs on all OS's
   let homedir = window.os.homedir();
   let file_path = "";

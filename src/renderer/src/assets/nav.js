@@ -62,7 +62,6 @@ document.body.addEventListener("click", async (event) => {
 });
 
 document.body.addEventListener("custom-back", (e) => {
-  console.log("Pre-section trigger 2?");
 
   handleSectionTrigger(e);
 });
@@ -113,8 +112,6 @@ const handleSectionTriggerOrganize = async (
 ) => {};
 
 const handleSectionTrigger = async (event) => {
-  console.log("Calling section trigger");
-  console.log(event);
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
   const itemsContainer = document.getElementById("items");
@@ -142,7 +139,6 @@ const handleSectionTrigger = async (event) => {
 
   // check if we are entering the organize datasets section
   if (sectionId === "organize-section") {
-    console.log("Entering organize section");
     //reset lazyloading values
     resetLazyLoading();
     window.hasFiles = false;
@@ -157,23 +153,8 @@ const handleSectionTrigger = async (event) => {
   }
 
   if (sectionId === "guided_mode-section") {
-    // let activeTab = document.querySelectorAll(".tab-active");
-    // console.log(activeTab)
-    // for(const tab of activeTab) {
-    //   console.log(tab)
-    //   if(tab.id === "getting-started-tab" && JSON.stringify(window.sodaJSONObj) !== "{}" && window.sodaJSONObj) {
-    //     Swal.fire({
-    //       icon: "warning",
-    //       text: "You cannot curate another dataset while an upload is in progress but you can still modify dataset components.",
-    //       confirmButtonText: "OK",
-    //     })
-
-    //     window.exitCurate(true)
-    //   }
-    // }
 
     // check if the
-    console.log("Guided Mode section");
     // Disallow the transition if an upload is in progress
     if (document.getElementById("returnButton") !== null) {
       Swal.fire({
@@ -193,7 +174,6 @@ const handleSectionTrigger = async (event) => {
       document.getElementById("organize_dataset_btn").click();
     }
 
-    console.log(sectionRenderFileExplorer);
 
     if (sectionRenderFileExplorer != "file-explorer") {
       window.sodaJSONObj = {};

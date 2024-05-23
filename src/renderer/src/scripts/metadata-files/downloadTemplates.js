@@ -31,7 +31,6 @@ let templateHighLvlFolders = ["code", "derivative", "docs", "primary", "protocol
 
 const downloadTemplates = async (templateItem, destinationFolder) => {
   let currentDirectory = await window.electron.ipcRenderer.invoke("get-current-directory");
-  console.log(currentDirectory);
 
   if (Array.isArray(templateItem)) {
     // Verify if SDS Templates folder exists
@@ -61,8 +60,6 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
         templateItem[i]
       );
 
-      console.log("TEMPLATE PATH");
-      console.log(templatePath);
 
       // Verify if templateItem[i] is a high level folder
       if (templateHighLvlFolders.includes(templateItem[i])) {
@@ -118,11 +115,6 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
       "file_templates",
       templateItem
     );
-
-    console.log("___________");
-    console.log(currentDirectory);
-    console.log("TEMPLASTE PATH");
-    console.log(templatePath);
 
     if (window.fs.existsSync(destinationPath)) {
       let emessage = "File '" + templateItem + "' already exists in " + destinationFolder;

@@ -8,7 +8,6 @@ import GenericButton from "../buttons/Generic";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
-  console.log("Waiting for HTML sections to load...");
   await new Promise((resolve) => setTimeout(resolve, 5));
 }
 
