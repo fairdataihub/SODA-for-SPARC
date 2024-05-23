@@ -22,7 +22,7 @@ import {
 } from "../utils/swal-utils";
 // const path = require("path");
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 

@@ -27,13 +27,6 @@ a {
   outline: none;
 }
 
-/* New window (target) + external links */
-a[target],
-a[href^="https://"],
-a[href^="http://"]
-{
-  border-bottom: 1px solid;
-}
 /* For YouTube Video links */
 a[href^="https://www.youtube.com"]
 {

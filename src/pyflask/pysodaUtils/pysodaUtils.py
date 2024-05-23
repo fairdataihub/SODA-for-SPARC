@@ -1,5 +1,5 @@
 import subprocess
-import re
+from flask import abort
 import sys
 from os.path import exists 
 import os
@@ -66,7 +66,12 @@ def get_agent_version():
         Get the version of the Pennsieve agent installed on the computer.
     """
     # start the agent if it is not running
-    start_agent()
+    try: 
+        start_agent()
+    except Exception as e:
+        if str(e) == "Pennsieve agent not installed. Please install the agent before running this function.":
+            abort(400, str(e))
+        raise e
 
 
     command = [get_agent_installation_location(), "version"]

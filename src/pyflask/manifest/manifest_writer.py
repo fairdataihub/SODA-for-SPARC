@@ -15,12 +15,11 @@ import pandas as pd
 import requests 
 
 from utils import create_request_headers, column_check, returnFileURL, remove_high_level_folder_from_path, get_name_extension, get_dataset_id, TZLOCAL
-
+from constants import PENNSIEVE_URL
 userpath = expanduser("~")
 
 
 
-PENNSIEVE_URL = "https://api.pennsieve.io"
 
 
 def get_auto_generated_manifest_files(soda_json_structure):

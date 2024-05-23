@@ -4,7 +4,7 @@ import { heartLottie } from "./overview-lotties";
 import { existingDataset, modifyDataset, successValidatedFiles } from "./lotties";
 import { docu_lottie } from "./documentation-lotties";
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 

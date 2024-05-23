@@ -36,8 +36,15 @@ class DatasetRole(Resource):
       return get_role(dataset_name) 
     except Exception as e:
       if notBadRequestException(e):
+        # general exception that was unexpected and caused by our code
         api.abort(500, str(e))
-      raise e
+      if e.response is not None:
+          # requests exeption
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
+      else:
+          # custom werkzeug.exception that we raised
+          api.abort(e.code, e.description)
 
 
 @api.route('/<string:dataset_name_or_id>')
