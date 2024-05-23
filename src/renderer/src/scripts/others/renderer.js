@@ -1408,8 +1408,6 @@ const bfWithdrawReviewDatasetBtn = document.querySelector("#btn-withdraw-review-
 // const blackColor = "#000";
 // const redColor = "#ff1a1a";
 // const sparcFolderNames = ["code", "derivative", "docs", "primary", "protocol", "source"];
-window.smileyCan = `<img class="message-icon" src=${canSmiley}>`;
-window.sadCan = `<img class="message-icon" src=${canSad}>`;
 window.delayAnimation = 250;
 
 //////////////////////////////////
@@ -7146,6 +7144,10 @@ const preGenerateSetup = async (e, elementContext) => {
   document.getElementById("div-generate-comeback").style.display = "none";
   document.getElementById("wrapper-wrap").style.display = "none";
   document.getElementById("generate-dataset-progress-tab").style.display = "flex";
+  $("#party-lottie").hide();
+  $("#please-wait-new-curate-div").hide()
+
+
   $("#sidebarCollapse").prop("disabled", false);
   // disable guided_mode_view
   document.getElementById("guided_mode_view").style.pointerEvents = "none";
@@ -7247,6 +7249,7 @@ const preGenerateSetup = async (e, elementContext) => {
         initiate_generate(e);
       } else {
         $("#sidebarCollapse").prop("disabled", false);
+        $("#please-wait-new-curate-div").show()
         document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
         document.getElementById("div-generate-comeback").style.display = "flex";
         document.getElementById("guided_mode_view").style.pointerEvents = "";
@@ -7454,6 +7457,9 @@ const initiate_generate = async (e) => {
       let time = (end - start) / 1000;
       let { data } = response;
 
+      $("#party-lottie").show();
+
+
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
       uploadedFiles = data["main_curation_uploaded_files"];
       window.pennsieveAgentManifestId = data["local_manifest_id"];
@@ -7547,6 +7553,9 @@ const initiate_generate = async (e) => {
     })
     .catch(async (error) => {
       clearInterval(timerProgress);
+
+      $("#party-lottie").hide();
+
 
       // set the first line of progressStatus to 'Upload Failed'
       if (progressStatus.innerHTML.split("<br>").length > 1) {
@@ -7843,8 +7852,8 @@ const initiate_generate = async (e) => {
         clearInterval(timerProgress);
         generateProgressBar.value = 100;
         statusMeter.value = 100;
-        progressStatus.innerHTML = main_curate_status + window.smileyCan;
-        statusText.innerHTML = main_curate_status + window.smileyCan;
+        progressStatus.innerHTML = main_curate_status;
+        statusText.innerHTML = main_curate_status;
         successful = true;
       }
     } else {
@@ -7875,6 +7884,11 @@ const initiate_generate = async (e) => {
     console.log("THe success status is: ", successful);
 
     if (main_curate_status === "Done") {
+
+      $("#please-wait-new-curate-div").hide()
+
+      $("#party-lottie").show();
+
       $("#sidebarCollapse").prop("disabled", false);
       window.log.info("Done curate track");
       statusBarClone.remove();

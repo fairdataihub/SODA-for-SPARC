@@ -3560,6 +3560,8 @@ window.wipeOutCurateProgress = () => {
   // hide the existing folder/files options
   $("#Question-generate-dataset-existing-folders-options").addClass("hidden");
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");
+  $("#please-wait-new-curate-div").show()
+
 
   // reset manifest color
   document.getElementById("label-manifest").style.color = "#303030";
