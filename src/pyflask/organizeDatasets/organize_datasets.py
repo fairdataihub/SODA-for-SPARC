@@ -1005,12 +1005,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}?limit={limit}&offset={offset}", headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             page = r.json()["children"]
-            namespace_logger.info(f"Folder is: {r.json()['content']['name']}")
-
-            namespace_logger.info(f"Length of page: {len(page)}")
-            namespace_logger.info(f"Length of subfolder: {len(subfolder)}")
             subfolder.extend(page)
-            namespace_logger.info(f"Length of subfolder after extension: {len(subfolder)}")
             if len(page) < limit:
                 break
             offset += limit
