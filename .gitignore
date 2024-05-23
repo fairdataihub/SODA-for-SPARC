@@ -4,6 +4,7 @@
 # Ignore node_modules folder
 out
 node_modules
+/public/
 build/api
 pysodadist
 pyflaskdist

@@ -134,14 +134,16 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
 .button_container_contact {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   margin-top: 0.5rem;
+  width: 500px;
 }
 
 .sodaVideo-button {

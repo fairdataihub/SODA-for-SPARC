@@ -415,6 +415,10 @@
   visibility: visible;
 }
 
+.loading-text {
+  color: transparent !important;
+}
+
 .loading-tabs {
   display: none;
 }
@@ -1061,6 +1065,10 @@
   width: 100%;
 }
 
+.card-container.organize-dataset div {
+  width: 100%;
+}
+
 .card-left {
   color: #808080;
   font-size: 15px;
@@ -1070,6 +1078,10 @@
 }
 
 .card-container.manage-dataset div .card-left {
+  float: left;
+}
+
+.card-conteiner.organize-dataset div .card-left {
   float: left;
 }
 
@@ -1084,6 +1096,10 @@
 }
 
 .card-container.manage-dataset .card-right.bf-dataset-span {
+  width: fit-content;
+}
+
+.card-container.organize-dataset .card-right.bf-dataset-span {
   width: fit-content;
 }
 

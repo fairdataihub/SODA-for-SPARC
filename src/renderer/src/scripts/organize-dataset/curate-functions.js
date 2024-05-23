@@ -1,5 +1,6 @@
 import Swal from "sweetalert2";
 import { updateDatasetList } from "../globals";
+import api from "../others/api/api";
 import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 import { successCheck } from "../../assets/lotties/lotties";
@@ -13,9 +14,15 @@ import fileDoc from "/img/doc-file.png";
 import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
-import { swalConfirmAction } from "../utils/swal-utils";
+// import * as path from "path";
+import {
+  swalConfirmAction,
+  swalFileListSingleAction,
+  swalFileListTripleAction,
+} from "../utils/swal-utils";
+// const path = require("path");
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
@@ -31,22 +38,22 @@ document
   });
 
 document
-  .querySelector("#Question-getting-started-BF-dataset .change-current-account")
+  .querySelector("#Question-generate-dataset-BF-dataset .change-current-account")
   .addEventListener("click", function () {
     window.openDropdownPrompt(this, "dataset", false);
   });
 
-document
-  .querySelector("#Question-generate-dataset-BF-dataset .change-current-account:not(.organization)")
-  .addEventListener("click", function (event) {
-    window.openDropdownPrompt(event.target, "dataset", false);
-  });
+// document
+//   .querySelector("#Question-generate-dataset-BF-dataset .change-current-account:not(.organization)")
+//   .addEventListener("click", function (event) {
+//     window.openDropdownPrompt(event.target, "dataset", false);
+//   });
 
-document
-  .querySelector("#Question-generate-dataset-BF-account .change-current-account")
-  .addEventListener("click", function () {
-    window.openDropdownPrompt(this, "bf");
-  });
+// document
+//   .querySelector("#Question-generate-dataset-BF-account .change-current-account")
+//   .addEventListener("click", function () {
+//     window.openDropdownPrompt(this, "bf");
+//   });
 
 $(".button-individual-metadata.remove").click(function () {
   let metadataFileStatus = $($(this).parents()[1]).find(".para-metadata-file-status");
@@ -144,6 +151,757 @@ $(".button-individual-metadata.go-back").click(function () {
     $(metadataFile).removeClass("done");
     $(metadataFileStatus).text("");
   }
+});
+
+window.uploadDatasetDropHandler = async (ev) => {
+  // Drag and drop handler for upload dataset
+  ev.preventDefault();
+  console.log(ev);
+
+  if (ev.dataTransfer.items) {
+    const itemDropped = ev.dataTransfer.items[0];
+    const folderPath = itemDropped.getAsFile().path;
+    const { isDirectory } = fs.statSync(folderPath);
+
+    if (isDirectory) {
+      window.sodaJSONObj = {
+        "bf-account-selected": {},
+        "bf-dataset-selected": {},
+        "dataset-structure": {},
+        "metadata-files": {},
+        "manifest-files": {},
+        "generate-dataset": {},
+        "starting-point": {
+          type: "local",
+          "local-path": "",
+        },
+      };
+
+      let moveForward = false;
+      document.getElementById("para-org-dataset-path").classList.add("hidden");
+      let valid_dataset = window.verify_sparc_folder(folderPath, "local");
+
+      if (valid_dataset) {
+        moveForward = await window.handleLocalDatasetImport(folderPath);
+      } else {
+        Swal.fire({
+          icon: "warning",
+          html: `This dataset is not following the SPARC Data Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
+          <br/>
+          See the "Data Organization" section of the SPARC documentation for more 
+          <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showConfirmButton: false,
+          showCancelButton: true,
+          focusCancel: true,
+          cancelButtonText: "Okay",
+          reverseButtons: window.reverseSwalButtons,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        });
+      }
+
+      if (moveForward) {
+        document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
+        document.getElementById("nextBtn").disabled = false;
+      }
+    } else {
+      document.getElementById("para-org-dataset-path").classList.remove("hidden");
+    }
+  }
+};
+
+const getFilesAndFolders = async (directoryPath) => {
+  try {
+    // Read the contents of the directory
+    const contents = fs.readdirSync(directoryPath);
+
+    // Separate files and folders
+    const files = {};
+    const folders = [];
+    console.log(directoryPath);
+    contents.forEach((item) => {
+      // Get the full path of the item
+      const itemPath = path.join(directoryPath, item);
+
+      // Check if it's a file or a folder
+      const stats = fs.statSync(itemPath);
+      if (stats.isFile) {
+        files[item] = {
+          path: itemPath,
+          action: ["new"],
+          type: "local",
+        };
+      } else if (stats.isDirectory) {
+        folders.push(itemPath);
+      }
+    });
+
+    // itereate through the folders and get the files. If any of the files are names "manifest.csv" or "manifest.xlsx", save them to the variable manifestFiles
+    let manifestFiles = {};
+    for (let i = 0; i < folders.length; i++) {
+      let folder = folders[i];
+      let folderName = path.basename(folder);
+      let files = fs.readdirSync(folder);
+      for (let j = 0; j < files.length; j++) {
+        let file = files[j];
+        console.log("______");
+        console.log(file);
+        console.log("______");
+        if (file === "manifest.csv" || file === "manifest.xlsx") {
+          manifestFiles[folderName] = path.join(folder, file);
+          // Create a copy of the manifest files in the root directory
+        }
+      }
+    }
+    console.log("MANIFESTFILES");
+    console.log(manifestFiles);
+    return { files, folders, manifestFiles };
+  } catch (err) {
+    // Handle any errors
+    console.error("Error reading directory:", err);
+    return null;
+  }
+};
+
+window.addManifestDetailsToDatasetStructure = async (
+  datasetStructure,
+  manifestFiles,
+  problematicItems
+) => {
+  // Add the manifest files to the dataset structure
+  if (manifestFiles.length == 0) {
+    return datasetStructure;
+  }
+
+  const problematicFolders = problematicItems[1];
+  const problematicFiles = problematicItems[2];
+
+  let problematicFoldersObj = {};
+  let problematicFilesObj = {};
+
+  for (let folder of problematicFolders) {
+    // console.log(folder);
+    let primaryFolder = folder.split("/")[1];
+    if (!problematicFoldersObj[primaryFolder]) {
+      // There is already a problematic folder in this primary folder
+      // Handle if there was a change to the folder
+      problematicFoldersObj[primaryFolder] = [];
+    }
+    problematicFoldersObj[primaryFolder].push({
+      path: folder,
+      folder_name: path.basename(folder),
+    });
+  }
+
+  for (let file of problematicFiles) {
+    console.log("HERE MATE");
+    console.log(file);
+    let primaryFolder = file["relativePath"].split("/")[1];
+    let fileName = file["fileName"];
+    if (!problematicFilesObj[primaryFolder]) {
+      // There is already a problematic file in this primary folder
+      // Handle if there was a change to the file
+      problematicFilesObj[primaryFolder] = [];
+    }
+    problematicFilesObj[primaryFolder].push({
+      path: file,
+      file_name: fileName,
+    });
+  }
+
+  console.log(problematicFoldersObj);
+  console.log(problematicFilesObj);
+
+  // Open the manifest file and read the contents
+  for (let folder in manifestFiles) {
+    // console.log(folder);
+    // console.log(datasetStructure);
+    if (Object.keys(datasetStructure["dataset-structure"]["folders"]).includes(folder)) {
+      // Get the manifest file path
+      let manifestFilePath = manifestFiles[folder];
+
+      // Read the contents of the manifest file
+      try {
+        let jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
+          sourceFile: manifestFilePath,
+          columnToKey: {
+            "*": "{{columnHeader}}",
+          },
+        });
+
+        // console.log(datasetStructure["dataset-structure"]["folders"][folder]["files"])
+        for (let file in datasetStructure["dataset-structure"]["folders"][folder]["files"]) {
+          if (file.includes("manifest.xlsx") || file.includes("manifest.csv")) {
+            // delete key
+            delete datasetStructure["dataset-structure"]["folders"][folder]["files"][file];
+          }
+        }
+
+        jsonManifest.shift();
+        console.log(jsonManifest);
+        console.log(datasetStructure);
+        let currentFolder = datasetStructure?.["dataset-structure"]?.["folders"]?.[folder];
+        for (let manifest of jsonManifest) {
+          // console.log(manifest);
+          let filename = manifest["filename"].split("/");
+          if (filename.length == 1) {
+            // update the dataset structure key
+            // get the metadata already stored in the dataset structure
+            console.log(folder);
+            console.log(filename[0]);
+            let temp = currentFolder?.["files"]?.[filename[0]];
+            if (temp == undefined) {
+              // File might have been renamed
+              // Check subfolders of currentFolder and see if any of the keys' value, action, includes "renamed"
+              let keys = Object.keys(currentFolder["files"]);
+              console.log(keys);
+              for (let key of keys) {
+                if (currentFolder["files"][key]["action"].includes("renamed")) {
+                  if (currentFolder["files"][key]["original-name"] == filename[0]) {
+                    // The file has been renamed
+                    // Get the new file name
+                    filename[0] = currentFolder["files"][key]["new-name"];
+                    break;
+                  }
+                }
+              }
+            }
+            let metadata = currentFolder?.["files"]?.[filename[0]];
+            console.log(metadata);
+            if (metadata !== undefined) {
+              let additionalMetadata = manifest["Additional Metadata"] || "";
+              let description = manifest["description"] || "";
+              let timestamp = manifest["timestamp"] || "";
+              datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]] = {
+                action: ["new"],
+                "additional-metadata": String(additionalMetadata),
+                description: String(description),
+                timestamp: String(timestamp),
+                type: "local",
+                extension: metadata.extension,
+                path: metadata.path,
+                extension: metadata.extension,
+              };
+            }
+
+            if (Object.keys(manifest).length > 4) {
+              // extra columns are present, ensure to preserve them in the data structure
+              // iterate through the keys in manifest
+              console.log(manifest);
+              console.log("SHOULD BE ABOVE");
+
+              for (let key in manifest) {
+                console.log("AS:LDKJASLKDJA:LSKDJA:LSKJD");
+                console.log(key);
+                if (
+                  key !== "filename" &&
+                  key !== "timestamp" &&
+                  key !== "description" &&
+                  key !== "file type" &&
+                  key !== "Additional Metadata"
+                ) {
+                  datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]][
+                    "extra_columns"
+                  ] = { [key]: String(manifest[key]) };
+                }
+              }
+            }
+            console.log(
+              datasetStructure["dataset-structure"]["folders"][folder]["files"][filename[0]]
+            );
+            console.log(filename);
+          } else {
+            // within a subfolder
+            // depending on the length of filename will determine how many folders deep to traverse
+            // get the metadata already stored in the dataset structure
+            console.log("AS:DLKJAW");
+            console.log(folder);
+            console.log(filename);
+            console.log("AS:DLKJAW");
+            if (
+              Object.keys(problematicFilesObj).length > 0 &&
+              Object.keys(problematicFilesObj).includes(folder)
+            ) {
+              // Therer is a problematic file in this primary folder
+              // Handle if there was a change to the file
+              for (let i = 0; i < problematicFilesObj[folder].length; i++) {
+                console.log(problematicFilesObj[folder][i]);
+              }
+            }
+
+            if (
+              Object.keys(problematicFoldersObj).length > 0 &&
+              Object.keys(problematicFoldersObj).includes(folder)
+            ) {
+              // There is a problematic folder in this primary folder
+              console.log(problematicFoldersObj[folder]);
+              console.log(problematicFoldersObj[folder].length);
+              for (let i = 0; i < problematicFoldersObj[folder].length; i++) {
+                console.log(problematicFoldersObj[folder][i]);
+              }
+            }
+
+            console.log(JSON.stringify(datasetStructure["dataset-structure"]));
+            let currentFolder = datasetStructure?.["dataset-structure"]?.["folders"]?.[folder];
+            let currentFolderProblematicFolders = problematicFoldersObj?.[folder];
+            console.log(problematicFoldersObj?.[folder]);
+            console.log(JSON.stringify(currentFolder));
+            for (let i = 0; i < filename.length - 1; i++) {
+              console.log("HEHEHEHEHE");
+              console.log(filename[i]);
+              // console.log(currentFolder?.["folders"]?.[filename[i]]);
+              let fileName = filename[i];
+              let temp = currentFolder?.["folders"]?.[fileName];
+              if (temp == undefined) {
+                // Folder might have been renamed
+                // Check subfolders of currentFolder and see if any of the keys' value, action, includes "renamed"
+                let keys = Object.keys(currentFolder["folders"]);
+                console.log(keys);
+                for (let key of keys) {
+                  if (currentFolder["folders"][key]["action"].includes("renamed")) {
+                    if (currentFolder["folders"][key]["original-name"] == filename[i]) {
+                      // The folder has been renamed
+                      // Get the new folder name
+                      fileName = currentFolder["folders"][key]["new-name"];
+                      break;
+                    }
+                  }
+                }
+              }
+              console.log("fileName", fileName);
+              currentFolder = currentFolder?.["folders"]?.[fileName];
+            }
+            let temp = currentFolder?.["files"]?.[filename[filename.length - 1]];
+            if (temp == undefined) {
+              // File might have been renamed
+              // Check subfolders of currentFolder and see if any of the keys' value, action, includes "renamed"
+              let keys = Object.keys(currentFolder["files"]);
+              console.log(keys);
+              for (let key of keys) {
+                console.log(key);
+                console.log(currentFolder["files"]?.[key]?.["action"] !== undefined);
+                if (
+                  currentFolder["files"]?.[key]?.["action"] !== undefined &&
+                  currentFolder["files"]?.[key]?.["action"].includes("renamed")
+                ) {
+                  if (
+                    currentFolder["files"][key]["original-name"] == filename[filename.length - 1]
+                  ) {
+                    // The file has been renamed
+                    // Get the new file name
+                    filename[filename.length - 1] = currentFolder["files"]?.[key]?.["new-name"];
+                    console.log("DOING WORK HERE");
+                    break;
+                  }
+                }
+              }
+            }
+            console.log("filename", filename);
+            let metadata = currentFolder?.["files"]?.[filename[filename.length - 1]];
+            if (currentFolder != undefined && metadata != undefined) {
+              let additionalMetadata = manifest["Additional Metadata"] || "";
+              let description = manifest["description"] || "";
+              let timestamp = manifest["timestamp"] || "";
+              currentFolder["files"][filename[filename.length - 1]] = {
+                action: metadata.action,
+                "additional-metadata": String(additionalMetadata),
+                description: String(description),
+                timestamp: String(timestamp),
+                type: "local",
+                extension: metadata.extension,
+                path: metadata.path,
+                extension: metadata.extension,
+              };
+
+              if (Object.keys(manifest).length > 4) {
+                // extra columns are present, ensure to preserve them in the data structure
+                // iterate through the keys in manifest
+                for (let key in manifest) {
+                  if (
+                    key !== "filename" &&
+                    key !== "timestamp" &&
+                    key !== "description" &&
+                    key !== "file type" &&
+                    key !== "Additional Metadata"
+                  ) {
+                    currentFolder["files"][filename[filename.length - 1]]["extra_columns"] = {
+                      [key]: String(manifest[key]),
+                    };
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Error reading manifest file:", e);
+      }
+    }
+  }
+
+  return datasetStructure;
+};
+
+window.uploadDatasetClickHandler = async (ev) => {
+  window.electron.ipcRenderer.send("open-file-dialog-upload-dataset");
+};
+
+window.handleLocalDatasetImport = async (path) => {
+  const list = await getFilesAndFolders(path);
+  const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
+  const buildDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
+    list.folders,
+    currentFileExplorerPath,
+    true
+  );
+
+  window.sodaJSONObj["dataset-structure"] = buildDatasetStructure[0];
+  window.sodaJSONObj["metadata-files"] = list.files;
+  const forbiddenFileNames = [];
+  const problematicFiles = [];
+  const hiddenItems = [];
+  // window.sodaJSONObj["dataset-structure"]["files"] = list.files;
+  // Check for probelematic files in the metadata files
+  for (let file in list.files) {
+    console.log("CHECK HERE!!!!!");
+    console.log(file);
+    const filesIsForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
+      file,
+      "file-is-in-forbidden-files-list"
+    );
+    if (filesIsForbiddenFilesList) {
+      forbiddenFileNames.push(file);
+    } else {
+      const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
+        file,
+        "folder-and-file-name-is-valid"
+      );
+
+      if (!fileNameIsValid) {
+        problematicFiles.push(file);
+      }
+
+      const fileIsHidden = window.evaluateStringAgainstSdsRequirements("file", "file-is-hidden");
+      if (fileIsHidden) {
+        hiddenItems.push(file);
+      }
+    }
+  }
+
+  if (forbiddenFileNames.length > 0) {
+    await swalFileListSingleAction(
+      forbiddenFileNames.map((file) => `dataset_root/${file}`),
+      "Forbidden file names detected",
+      "The files listed below do not comply with the SPARC data standards and will not be imported",
+      false
+    );
+
+    const metadataFiles = Object.keys(window.sodaJSONObj["metadata-files"]);
+    for (let file of metadataFiles) {
+      if (forbiddenFileNames.includes(file)) {
+        delete window.sodaJSONObj["metadata-files"][file];
+      }
+    }
+  }
+
+  if (problematicFiles.length > 0) {
+    const userResponse = await swalFileListTripleAction(
+      problematicFiles.map((file) => `dataset_root/${file}`),
+      "<p>File name modifications</p>",
+      `The files listed below contain the special characters "#", "&", "%", or "+"
+      which are typically not recommended per the SPARC data standards.
+      You may choose to either keep them as is, or replace the characters with '-'.
+      `,
+      "Replace the special characters with '-'",
+      "Keep the file names as they are",
+      "Cancel import",
+      "What would you like to do with the files with special characters?"
+    );
+
+    if (userResponse === "confirm") {
+      window.replaceProblematicFilesWithSDSCompliantNames(window.sodaJSONObj["metadata-files"]);
+    }
+
+    if (userResponse === "cancel") {
+      throw new Error("Importation cancelled");
+    }
+  }
+
+  if (hiddenItems.length > 0) {
+    const userResponse = await swalFileListTripleAction(
+      hidden.map((file) => `dataset_root/${file}`),
+      "<p>Hidden files detected</p>",
+      `Hidden files are typically not recommend per the SPARC data standards, but you can choose to keep them if you wish.`,
+      "Import the hidden files into SODA",
+      "Do not import the hidden files",
+      "Cancel import",
+      "What would you like to do with the hidden files?"
+    );
+
+    if (userResponse === "deny") {
+      window.removeHiddenFiles(window.sodaJSONObj["metadata-files"]);
+    }
+
+    if (userResponse === "cancel") {
+      throw new Error("Importation cancelled");
+    }
+  }
+
+  // window.sodaJSONObj["metadata-files"] = list.files;
+  window.sodaJSONObj["starting-point"]["local-path"] = path;
+  window.sodaJSONObj = await window.addManifestDetailsToDatasetStructure(
+    window.sodaJSONObj,
+    list.manifestFiles,
+    buildDatasetStructure
+  );
+
+  console.log("COMEFKJASKLDJ");
+  console.log(window.sodaJSONObj);
+  return true;
+};
+
+window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (event, path) => {
+  if (path.length > 0) {
+    // Get the path of the first index
+    let folderPath = path[0];
+    let moveForward = false;
+    window.sodaJSONObj = {
+      "bf-account-selected": {},
+      "bf-dataset-selected": {},
+      "dataset-structure": {},
+      "metadata-files": {},
+      "manifest-files": {},
+      "generate-dataset": {},
+      "starting-point": {
+        type: "local",
+        "local-path": "",
+      },
+    };
+
+    let valid_dataset = window.verify_sparc_folder(folderPath, "local");
+
+    if (valid_dataset) {
+      moveForward = await window.handleLocalDatasetImport(folderPath);
+    } else {
+      Swal.fire({
+        icon: "warning",
+        html: `This dataset is not following the SPARC Data Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
+        <br/>
+        See the "Data Organization" section of the SPARC documentation for more 
+        <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showConfirmButton: false,
+        showCancelButton: true,
+        focusCancel: true,
+        cancelButtonText: "Okay",
+        reverseButtons: window.reverseSwalButtons,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+    }
+
+    if (moveForward) {
+      document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
+      document.getElementById("nextBtn").disabled = false;
+    }
+  }
+});
+
+// Event listeners for buttons in step 2 of Organize Dataset
+document.getElementById("confirm-account-workspace").addEventListener("click", async function () {
+  // If the user confirms the workspace and account, proceed to the next step
+  document.getElementById("confirm-account-workspace").classList.remove("soda-green-border");
+  document.getElementById("confirm-account-workspace").classList.add("soda-green-background");
+  document.getElementById("nextBtn").disabled = false;
+});
+
+document
+  .getElementById("dataset-upload-existing-dataset")
+  .addEventListener("click", async function () {
+    // EVENT CLICKER FOR EXISTING DATASET UPLOAD (UPLOAD DATASET WORKFLOW)
+    // check if the user has already entered a dataset name in the input field
+    let datasetName = document.getElementById("inputNewNameDataset-upload-dataset").value;
+    if (datasetName !== "") {
+      // confirm with the user if they want to lose their progress by switching to the other workflow
+      let confirmSwitch = await swalConfirmAction(
+        "warning",
+        "Are you sure you want to switch to the existing dataset upload workflow?",
+        "You will lose the progress you have made in the current workflow.",
+        "Yes",
+        "No"
+      );
+
+      if (!confirmSwitch) return;
+    }
+
+    // reset the dataset name input field
+    document.getElementById("inputNewNameDataset-upload-dataset").value = "";
+    //hide the confirm button
+    $("#upload-dataset-btn-confirm-new-dataset-name").addClass("hidden");
+
+    document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
+    document.getElementById("existing-dataset-upload").classList.remove("hidden");
+
+    document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
+    document.getElementById("dataset-upload-existing-dataset").classList.add("checked");
+
+    $("#nextBtn").prop("disabled", true);
+  });
+
+document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
+  const dsName = document.getElementById("current-bf-dataset-generate").innerText;
+  const existingCardChecked = document
+    .getElementById("dataset-upload-existing-dataset")
+    .classList.contains("checked");
+  if (!["None", ""].includes(dsName) && existingCardChecked) {
+    // confirm with the user if they want to lose their progress by switching to the other workflow
+    const confirmSwitch = await swalConfirmAction(
+      "warning",
+      "Are you sure you want to switch to the new dataset upload workflow?",
+      "You will lose the progress you have made in the current workflow.",
+      "Yes",
+      "No"
+    );
+
+    if (!confirmSwitch) return;
+
+    $("#inputNewNameDataset-upload-dataset").val("");
+
+    // reset the dataset name input field
+    document.getElementById("current-bf-dataset-generate").textContent = "None";
+
+    // TODO: REset sodaJSONObj here too
+    // Remove checked state from all checkbox cards (input field inside the cards)
+    document.getElementsByName("generate-5").forEach((element) => {
+      // Reset state for folder cards
+      element.checked = false;
+    });
+
+    document.getElementsByName("generate-6").forEach((element) => {
+      // Reset state for file cards
+      element.checked = false;
+    });
+    // Reset the merge option cards
+    document.getElementById("skip-folder-card").classList.remove("checked");
+    document.getElementById("skip-folder-card").classList.remove("non-selected");
+    document.getElementById("merge-folder-card").classList.remove("checked");
+    document.getElementById("merge-folder-card").classList.remove("non-selected");
+    document.getElementById("replace-folder-card").classList.remove("checked");
+    document.getElementById("replace-folder-card").classList.remove("non-selected");
+
+    document.getElementById("replace-file-card").classList.remove("non-selected");
+    document.getElementById("replace-file-card").classList.remove("checked");
+    document.getElementById("skip-file-card").classList.remove("checked");
+    document.getElementById("skip-file-card").classList.remove("non-selected");
+  }
+  document.getElementById("dataset-upload-new-dataset").classList.add("checked");
+  document.getElementById("existing-dataset-upload").classList.add("hidden");
+  document.getElementById("Question-new-dataset-upload-name").classList.remove("hidden");
+
+  document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
+  document.getElementById("Question-new-dataset-upload-name").classList.add("checked");
+
+  // hide the existing folder options
+  $("#Question-generate-dataset-existing-folders-options").addClass("hidden");
+  $("#Question-generate-dataset-existing-files-options").addClass("hidden");
+
+  // disable the continue btn
+  $("#nextBtn").prop("disabled", true);
+});
+
+document
+  .getElementById("inputNewNameDataset-upload-dataset")
+  .addEventListener("input", function (event) {
+    console.log(event.target.value);
+    document.getElementById("para-new-name-dataset-message").innerText = "";
+    if (event.target.value != "") {
+      let invalidName = window.check_forbidden_characters_ps(event.target.value);
+      if (invalidName) {
+        console.log("Not valid");
+        document.querySelector("#para-new-name-dataset-message").style.display = "flex";
+        document.querySelector("#para-new-name-dataset-message").textContent =
+          "A Pennsieve dataset name cannot contain any of the following characters: <>:/\\|?*";
+        document
+          .getElementById("upload-dataset-btn-confirm-new-dataset-name")
+          .classList.add("hidden");
+        return;
+      }
+      // Show the confirm button
+      document
+        .getElementById("upload-dataset-btn-confirm-new-dataset-name")
+        .classList.remove("hidden");
+      // document.querySelector("#para-new-name-dataset-message").style.display = "none";
+    } else {
+      document
+        .getElementById("upload-dataset-btn-confirm-new-dataset-name")
+        .classList.add("hidden");
+      // document.querySelector("#para-new-name-dataset-message").style.display = "none";
+    }
+  });
+
+document
+  .getElementById("upload-dataset-btn-confirm-new-dataset-name")
+  .addEventListener("click", async function () {
+    // Once clicked, verify if the dataset name exists, if not warn the user that they need to choose a different name
+    document
+      .getElementById("upload-dataset-btn-confirm-new-dataset-name")
+      .classList.add("loading-text");
+    document.getElementById("upload-dataset-btn-confirm-new-dataset-name").classList.add("loading");
+    let datasetName = document.getElementById("inputNewNameDataset-upload-dataset").value;
+    let invalidName = window.check_forbidden_characters_ps(datasetName);
+    if (invalidName) {
+      document.querySelector("#para-new-name-dataset-message").style.display = "flex";
+      document.querySelector("#para-new-name-dataset-message").textContent =
+        "A Pennsieve dataset name cannot contain any of the following characters: <>:/\\|?*";
+    }
+
+    let datasetExists = await api.checkDatasetNameExists(datasetName);
+    console.log(datasetExists);
+    if (datasetExists) {
+      document.querySelector("#para-new-name-dataset-message").style.display = "flex";
+      document.querySelector("#para-new-name-dataset-message").textContent =
+        "A dataset with this name already exists. Please choose a different name.";
+    } else {
+      document
+        .getElementById("upload-dataset-btn-confirm-new-dataset-name")
+        .classList.add("hidden");
+      document.getElementById("nextBtn").disabled = false;
+    }
+    document
+      .getElementById("upload-dataset-btn-confirm-new-dataset-name")
+      .classList.remove("loading");
+    document
+      .getElementById("upload-dataset-btn-confirm-new-dataset-name")
+      .classList.remove("loading-text");
+  });
+
+document.getElementById("change-account-btn").addEventListener("click", async function () {
+  // If the user changes the account, show the dropdown prompt
+  document.getElementById("confirm-account-workspace").classList.add("soda-green-border");
+  document.getElementById("confirm-account-workspace").classList.remove("soda-green-background");
+  await window.openDropdownPrompt(this, "bf");
+  document.getElementById("change-account-btn").classList.add("basic");
+  document.getElementById("change-account-btn").classList.remove("selected");
+});
+
+document.getElementById("change-workspace-btn").addEventListener("click", async function () {
+  // If the user changes the workspace, show the dropdown prompt
+  document.getElementById("confirm-account-workspace").classList.add("soda-green-border");
+  document.getElementById("confirm-account-workspace").classList.remove("soda-green-background");
+  await window.openDropdownPrompt(this, "organization");
+  document.getElementById("change-workspace-btn").classList.add("basic");
+  document.getElementById("change-workspace-btn").classList.remove("selected");
 });
 
 const metadataFileExtensionObject = {
@@ -363,8 +1121,8 @@ const checkAvailableSpace = async () => {
     clientError(error);
   }
 };
-const btnConfirmLocalDatasetGeneration = document.getElementById("btn-confirm-local-destination");
-btnConfirmLocalDatasetGeneration.addEventListener("click", checkAvailableSpace, false);
+// const btnConfirmLocalDatasetGeneration = document.getElementById("btn-confirm-local-destination");
+// btnConfirmLocalDatasetGeneration.addEventListener("click", checkAvailableSpace, false);
 
 //////////////// IMPORT EXISTING PROGRESS FILES ////////////////////////////////
 window.progressFileDropdown = document.getElementById("progress-files-dropdown");
@@ -446,7 +1204,7 @@ const importDatasetStructure = (object) => {
   if ("dataset-structure" in object) {
     datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
     recursive_check_for_missing_files(datasetStructureJSONObj);
-    window.highLevelFoldersDisableOptions();
+    // window.highLevelFoldersDisableOptions();
   } else {
     datasetStructureJSONObj = { folders: {}, files: {}, type: "" };
   }
@@ -1969,6 +2727,7 @@ window.ffmCreateManifest = async (sodaJson) => {
   try {
     // used for imported local datasets and pennsieve datasets
     // filters out deleted files/folders before creating manifest data again
+    console.log(JSON.stringify(window.sodaCopy));
     const cleanJson = await client.post(
       `/curate_datasets/clean-dataset`,
       { soda_json_structure: window.sodaCopy },
@@ -2082,6 +2841,9 @@ $("#generate-manifest-curate").change(async function () {
     document
       .getElementById("ffm-container-local-manifest-file-generation")
       .classList.remove("hidden");
+
+    document.getElementById("manifest-selected").classList.remove("hidden");
+    document.getElementById("manifest-not-selected").classList.add("hidden");
   } else {
     $("#ffm-manifest-generator").hide();
     $("#manifest-creating-loading").addClass("hidden");
@@ -2093,5 +2855,7 @@ $("#generate-manifest-curate").change(async function () {
       delete window.sodaJSONObj["manifest-files"]["auto-generated"];
     }
     document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
+    document.getElementById("manifest-not-selected").classList.remove("hidden");
+    document.getElementById("manifest-selected").classList.add("hidden");
   }
 });
