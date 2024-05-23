@@ -121,7 +121,7 @@
               </svg>
             </span>
           </div>
-          <div class="vertical-progress-bar-step">
+          <div class="vertical-progress-bar-step last">
             <span>5</span>
             <span>
               <svg style="width: 16.41px; height: 12.12px" viewBox="0 0 24 24">
@@ -129,7 +129,7 @@
               </svg>
             </span>
           </div>
-          <div class="vertical-progress-bar-step last">
+          <div class="vertical-progress-bar-step hidden">
             <span>6</span>
             <span>
               <svg style="width: 16.41px; height: 12.12px" viewBox="0 0 24 24">
@@ -971,6 +971,10 @@
                   Yes
                 </label>
               </div>
+              <div id="manifest-information-container" class="hidden" style="margin-left: 1rem; margin-right: 1rem;">
+                <p id="manifest-not-selected" class="hidden">Manifest files are metadata files required in each of the high-level SDS folders. SODA can automatically generate them for your dataset.</p>
+                <p id="manifest-selected" class="hidden">You can preview below the manifest files that will be automatically included by SODA in each of the SDS folders. You can also suggest edits that will be incorporated by SODA</p>
+              </div>
               <div class="guided--panel mt-0 hidden" id="manifest-creating-loading">
                 <div class="lds-roller">
                   <div></div>
@@ -1016,8 +1020,9 @@
                     class="ui primary button dataset-card-button-confirm"
                     id="ffm-button-generate-manifest-files-locally"
                     style="
-                      width: 295px !important;
-                      height: 3rem;
+                      width: 263px !important;
+                      height: 2.5rem;
+                      font-weight: 600;
                     "
                   >
                     Generate manifest files locally
@@ -1204,7 +1209,7 @@
                   border: none !important;
                 "
                 onclick="window.nextPrev(1)">
-                <p style="color: white;">Verify Dataset Upload</p>
+                <p style="color: white;">Verify dataset upload</p>
               </button>
               <button onclick="window.exitCurate(true)" class="btn_animated skip exit" style="
                   display: flex;
