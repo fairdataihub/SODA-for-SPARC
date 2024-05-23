@@ -111,15 +111,21 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
       $("#manifest-creation-prohibited").show();
       if ($("#generate-manifest-curate").prop("checked")) {
-        console.log("something happening here?\nclicking when checked");
         $("#generate-manifest-curate").click();
       }
-      console.log("disabling here");
       $("#generate-manifest-curate").prop("disabled", true);
       $("#nextBtn").prop("disabled", false);
-      // disable the manifest file checkbox
       $("#generate-manifest-curate").prop("disabled", true);
+      document.getElementById("manifest-information-container").classList.add("hidden");
     } else {
+      document.getElementById("manifest-information-container").classList.remove("hidden");
+      if (document.getElementById("generate-manifest-curate").checked) {
+        document.getElementById("manifest-selected").classList.remove("hidden");
+        document.getElementById("manifest-selected").classList.add("hidden");
+      } else {
+        document.getElementById("manifest-not-selected").classList.remove("hidden");
+        document.getElementById("manifest-selected").classList.add("hidden");
+      }
       console.log("enabling manifest creation here");
       $("#manifest-creation-prohibited").hide();
       document.getElementById("generate-manifest-curate").disabled = false;
