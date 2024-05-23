@@ -1,7 +1,7 @@
 import lottie from "lottie-web";
 import { contact_lottie } from "./contact-us-lotties";
 import { heartLottie } from "./overview-lotties";
-import { existingDataset, modifyDataset, successValidatedFiles } from "./lotties";
+import { existingDataset, modifyDataset, successValidatedFiles, partyLottie } from "./lotties";
 import { docu_lottie } from "./documentation-lotties";
 
 while (!window.baseHtmlLoaded) {
@@ -141,3 +141,32 @@ successValidatedFiles_lottie_observer.observe(successValidatedFilesSewction, {
   attributes: true,
   attributeFilter: ["class"],
 });
+
+
+let partyLottieContainer = document.getElementById("party-lottie");
+let partyLottieAnimation = lottie.loadAnimation({
+  container: partyLottieContainer,
+  animationData: partyLottie,
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+});
+
+let partyLottieObserver = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    let attributeValue = $(mutation.target).prop(mutation.attributeName);
+    if (attributeValue.includes("is-shown") == true) {
+      //play lottie
+      partyLottieAnimation.play();
+    } else {
+      // stop lottie to preserve memory
+      partyLottieAnimation.stop();
+    }
+  });
+});
+let partyLottieSection = document.getElementById("party-lottie-section");
+partyLottieObserver.observe(partyLottieSection, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+
