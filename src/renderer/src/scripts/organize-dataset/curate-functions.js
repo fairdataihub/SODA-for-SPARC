@@ -2842,8 +2842,8 @@ $("#generate-manifest-curate").change(async function () {
       .getElementById("ffm-container-local-manifest-file-generation")
       .classList.remove("hidden");
 
-    document.getElementById("manifest-selected").classList.remove("hidden");
-    document.getElementById("manifest-not-selected").classList.add("hidden");
+    document.getElementById("manifest-information-container").classList.remove("hidden");
+    // document.getElementById("manifest-not-selected").classList.add("hidden");
   } else {
     $("#ffm-manifest-generator").hide();
     $("#manifest-creating-loading").addClass("hidden");
@@ -2855,7 +2855,7 @@ $("#generate-manifest-curate").change(async function () {
       delete window.sodaJSONObj["manifest-files"]["auto-generated"];
     }
     document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
-    document.getElementById("manifest-not-selected").classList.remove("hidden");
-    document.getElementById("manifest-selected").classList.add("hidden");
+    document.getElementById("manifest-information-container").classList.add("hidden");
+    // document.getElementById("manifest-selected").classList.add("hidden");
   }
 });
