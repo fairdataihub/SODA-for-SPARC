@@ -112,14 +112,12 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       $("#nextBtn").prop("disabled", false);
       $("#generate-manifest-curate").prop("disabled", true);
       document.getElementById("manifest-information-container").classList.add("hidden");
+      document.getElementById("manifest-intro-info").classList.add("hidden");
     } else {
       document.getElementById("manifest-information-container").classList.remove("hidden");
-      if (document.getElementById("generate-manifest-curate").checked) {
-        document.getElementById("manifest-selected").classList.remove("hidden");
-        document.getElementById("manifest-selected").classList.add("hidden");
-      } else {
-        document.getElementById("manifest-not-selected").classList.remove("hidden");
-        document.getElementById("manifest-selected").classList.add("hidden");
+      document.getElementById("manifest-intro-info").classList.remove("hidden");
+      if (!document.getElementById("generate-manifest-curate").checked) {
+        document.getElementById("manifest-information-container").classList.add("hidden");
       }
       $("#manifest-creation-prohibited").hide();
       document.getElementById("generate-manifest-curate").disabled = false;
