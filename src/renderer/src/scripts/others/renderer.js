@@ -68,10 +68,12 @@ import canSad from "/img/can-sad.png";
 
 import useGlobalStore from "../../stores/globalStore";
 import {
+  resetBackgroundServicesState,
   setInternetConnectionStatus,
   setPennsieveAgentInstalled,
   setPennsieveAgentDownloadURL,
   setPennsieveAgentUpToDate,
+  setPennsieveAgentErrorMessage,
 } from "../../stores/slices/backgroundServicesSlice";
 
 // add jquery to the window object
@@ -582,18 +584,43 @@ let userHasSelectedTheyAreOkWithOutdatedAgent = false;
 
 window.checkPennsieveBackgroundServices = async () => {
   try {
+    // Step 0: Reset the background services state in the store
+    resetBackgroundServicesState();
+
+    // Step 1: Check the internet connection
     const userConnectedToInternet = await window.checkInternetConnection();
     console.log("User connected to internet: ", userConnectedToInternet);
     setInternetConnectionStatus(userConnectedToInternet);
 
+    // Step 2: Check if the Pennsieve agent is installed
     const pennsieveAgentInstalled = await window.checkIfPennsieveAgentIsInstalled();
     console.log("Pennsieve agent installed: ", pennsieveAgentInstalled);
     setPennsieveAgentInstalled(pennsieveAgentInstalled);
 
-    const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
-    console.log("Pennsieve agent download URL: ", pennsieveAgentDownloadURL);
-    setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
+    if (!pennsieveAgentInstalled) {
+      // If the Pennsieve agent is not installed, get the download URL and set it in the store
+      const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
+      console.log("Pennsieve agent download URL: ", pennsieveAgentDownloadURL);
+      setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
+      return;
+    }
 
+    // Stop the Pennsieve agent if it is running
+    // This is to ensure that the agent is not running when we try to start it so no funny business happens
+    try {
+      await stopPennsieveAgent();
+    } catch (error) {
+      // Note: This error is not critical so we do not need to throw it
+      clientError(error);
+    }
+
+    // Start the Pennsieve agent
+    try {
+      await startPennsieveAgent();
+    } catch (error) {
+      setPennsieveAgentErrorMessage(error);
+    }
+    setPennsieveAgentErrorMessage("Testing to see what happens");
     const pennsieveAgentUpToDate = await window.checkIfPennsieveAgentIsUpToDate();
     setPennsieveAgentUpToDate(pennsieveAgentUpToDate);
   } catch (error) {

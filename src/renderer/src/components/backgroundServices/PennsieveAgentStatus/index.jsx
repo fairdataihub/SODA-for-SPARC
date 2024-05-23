@@ -1,11 +1,13 @@
 import { Text, Stack, Button, Group } from "@mantine/core";
 import ExternalLink from "../../buttons/ExternalLink";
+import CodeTextDisplay from "../../common/CodeTextDisplay";
 import useGlobalStore from "../../../stores/globalStore";
 
 const PennsieveAgentStatus = () => {
   const pennsieveAgentInstalled = useGlobalStore((state) => state.pennsieveAgentInstalled);
   const pennsieveAgentUpToDate = useGlobalStore((state) => state.pennsieveAgentUpToDate);
   const pennsieveAgentDownloadURL = useGlobalStore((state) => state.pennsieveAgentDownloadURL);
+  const pennsieveAgentErrorMessage = useGlobalStore((state) => state.pennsieveAgentErrorMessage);
 
   if (!pennsieveAgentInstalled) {
     return (
@@ -16,6 +18,15 @@ const PennsieveAgentStatus = () => {
           buttonText="Download the Pennsieve Agent"
           buttonType="button"
         />
+      </Stack>
+    );
+  }
+
+  if (pennsieveAgentErrorMessage) {
+    return (
+      <Stack>
+        <Text>Pennsieve Agent error</Text>
+        <CodeTextDisplay text={pennsieveAgentErrorMessage} />
       </Stack>
     );
   }

@@ -1,13 +1,27 @@
+import { all } from "axios";
 import useGlobalStore from "../globalStore";
 import { produce } from "immer";
 
-export const backgroundServicesSlice = (set) => ({
+const initialState = {
   internetConnectionStatus: false,
   pennsieveAgentInstalled: false,
   pennsieveAgentDownloadURL: null,
   pennsieveAgentUpToDate: false,
   pennsieveAgentRunning: false,
+  pennsieveAgentErrorMessage: null,
+};
+
+export const backgroundServicesSlice = (set) => ({
+  ...initialState,
 });
+
+export const resetBackgroundServicesState = () => {
+  useGlobalStore.setState(
+    produce((state) => {
+      Object.assign(state, initialState);
+    })
+  );
+};
 
 export const setInternetConnectionStatus = (connectionStatus) => {
   useGlobalStore.setState(
@@ -45,6 +59,14 @@ export const setPennsieveAgentRunning = (running) => {
   useGlobalStore.setState(
     produce((state) => {
       state.pennsieveAgentRunning = running;
+    })
+  );
+};
+
+export const setPennsieveAgentErrorMessage = (errorMessage) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.pennsieveAgentErrorMessage = errorMessage;
     })
   );
 };
