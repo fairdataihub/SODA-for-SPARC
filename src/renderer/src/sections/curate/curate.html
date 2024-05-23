@@ -956,6 +956,10 @@
           <!-- 4. Manifest files -->
           <div class="parent-tabs condensed" id="manifest-file-tab" style="grid-template-rows: 10% 90%">
             <label class="w-100 text-center" style="margin-top: 2.5rem; font-weight: 700; font-size: 17px; color: var(--color-bg-plum)">Would you like SODA to auto-generate your manifest files?</label>
+            <div id="manifest-information-container" class="hidden" style="padding-left: 2rem; padding-right: 2rem; margin-top: 1rem;">
+              <p id="manifest-not-selected" class="hidden guided--help-text">Manifest files are metadata files required in each of the high-level SDS folders. SODA can automatically generate them for your dataset.</p>
+              <p id="manifest-selected" class="hidden guided--help-text">You can preview below the manifest files that will be automatically included by SODA in each of the SDS folders. You can also suggest edits that will be incorporated by SODA</p>
+            </div>
 
             <div style="height: 150px; text-align: center">
               <div style="margin-top: 30px; margin-bottom: 50px" id="pulse-manifest-checkbox">
@@ -971,10 +975,7 @@
                   Yes
                 </label>
               </div>
-              <div id="manifest-information-container" class="hidden" style="margin-left: 1rem; margin-right: 1rem;">
-                <p id="manifest-not-selected" class="hidden">Manifest files are metadata files required in each of the high-level SDS folders. SODA can automatically generate them for your dataset.</p>
-                <p id="manifest-selected" class="hidden">You can preview below the manifest files that will be automatically included by SODA in each of the SDS folders. You can also suggest edits that will be incorporated by SODA</p>
-              </div>
+
               <div class="guided--panel mt-0 hidden" id="manifest-creating-loading">
                 <div class="lds-roller">
                   <div></div>
