@@ -142,7 +142,6 @@ successValidatedFiles_lottie_observer.observe(successValidatedFilesSewction, {
   attributeFilter: ["class"],
 });
 
-
 let partyLottieContainer = document.getElementById("party-lottie");
 let partyLottieAnimation = lottie.loadAnimation({
   container: partyLottieContainer,
@@ -169,4 +168,3 @@ partyLottieObserver.observe(partyLottieSection, {
   attributes: true,
   attributeFilter: ["class"],
 });
-
