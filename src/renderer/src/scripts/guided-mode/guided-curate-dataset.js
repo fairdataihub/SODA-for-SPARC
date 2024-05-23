@@ -12414,7 +12414,7 @@ const getGuidedDatasetName = () => {
 };
 
 const getGuidedDatasetSubtitle = () => {
-  return window.sodaJSONObj["digital-metadata"]["subtitle"];
+  return window.sodaJSONObj["digital-metadata"]["subtitle"] || "";
 };
 
 const guidedShowBannerImagePreview = (imagePath, imported) => {
