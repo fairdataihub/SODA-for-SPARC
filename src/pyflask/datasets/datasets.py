@@ -9,9 +9,9 @@ from utils import create_request_headers, connect_pennsieve_client, authenticate
 from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
 from authentication import get_access_token
 from utils.getDataset import get_dataset
+from constants import PENNSIEVE_URL
 
 
-PENNSIEVE_URL = "https://api.pennsieve.io"
 
 def get_role(dataset):
     selected_dataset_id = get_dataset_id(dataset)
@@ -22,9 +22,7 @@ def get_role(dataset):
         role = r.json()["role"]
         return {"role": role}
     except Exception as e:
-        if type(e).__name__ == "HTTPError":
-            abort(400, e.response.json()["message"])
-        abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
+        abort(e.response.status_code,  e.response.json().get('message'))
 
 
 def get_dataset_by_id(dataset_name_or_id):
@@ -130,9 +128,8 @@ def reserve_dataset_doi(dataset):  # sourcery skip: extract-method
         return {"doi": doi_request.json()["doi"]}
     except Exception as e:
         print(e)
-        if type(e).__name__ == "HTTPError":
-            abort(400, e.response.json()["message"])
-        abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
+        abort(e.response.status_code,  e.response.json().get('message'))
+
 
 def get_dataset_doi(dataset):
     """
@@ -158,9 +155,8 @@ def get_dataset_doi(dataset):
         doi_request.raise_for_status()
         return {"doi": doi_request.json()["doi"]}
     except Exception as e:
-        if type(e).__name__ == "HTTPError":
-            abort(400, e.response.json()["message"])
-        abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
+        abort(e.response.status_code,  e.response.json().get('message'))
+        
 
 
 def get_package_type_counts(dataset_name):

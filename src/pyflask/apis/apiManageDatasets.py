@@ -89,9 +89,17 @@ class PennsieveAPIKeyAndSecret(Resource):
       results = create_pennsieve_api_key_secret(username, password, machine_username_specifier)
       return results
     except Exception as e:
+      api.logger.exception(e)
       if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+          # general exception that was unexpected and caused by our code
+          api.abort(500, str(e))
+      if e.response is not None:
+          # requests exeption
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
+      else:
+          # custom werkzeug.exception that we raised
+          api.abort(e.code, e.description)
 
 
 
@@ -125,7 +133,17 @@ class GetNumberOfFilesAndFoldersLocally(Resource):
     try:
       return get_number_of_files_and_folders_locally(filepath)
     except Exception as e:
-      api.abort(500, e.args[0])
+      api.logger.exception(e)
+      if notBadRequestException(e):
+          # general exception that was unexpected and caused by our code
+          api.abort(500, str(e))
+      if e.response is not None:
+          # requests exeption
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
+      else:
+          # custom werkzeug.exception that we raised
+          api.abort(e.code, e.description)
     
 
 
@@ -178,9 +196,17 @@ class BfChangeDatasetStatus(Resource):
       return bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status)
     except Exception as e:
       # something unexpected happened so abort with a 500
+      api.logger.exception(e)
       if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+          # general exception that was unexpected and caused by our code
+          api.abort(500, str(e))
+      if e.response is not None:
+          # requests exeption
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
+      else:
+          # custom werkzeug.exception that we raised
+          api.abort(e.code, e.description)
 
 
   parser_dataset_status = reqparse.RequestParser(bundle_errors=True)
@@ -202,9 +228,17 @@ class BfChangeDatasetStatus(Resource):
       return bf_get_dataset_status(selected_bfaccount, selected_bfdataset)
     except Exception as e:
       # something unexpected happened so abort with a 500
+      api.logger.exception(e)
       if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+          # general exception that was unexpected and caused by our code
+          api.abort(500, str(e))
+      if e.response is not None:
+          # requests exeption
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
+      else:
+          # custom werkzeug.exception that we raised
+          api.abort(e.code, e.description)
 
 
 
@@ -224,10 +258,17 @@ class BfAccountList(Resource):
     try:
       return bf_account_list()
     except Exception as e:
-      # TODO: Refine error handling
+      api.logger.exception(e)
       if notBadRequestException(e):
-        api.abort(500, str(e))
-      api.abort(401, str(e))
+          # general exception that was unexpected and caused by our code
+          api.abort(500, str(e))
+      if e.response is not None:
+          # requests exeption
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
+      else:
+          # custom werkzeug.exception that we raised
+          api.abort(e.code, e.description)
       
 
 
@@ -248,7 +289,17 @@ class BfDefaultAccountLoad(Resource):
     try:
       return bf_default_account_load()
     except Exception as e:
-      api.abort(500, str(e))
+      api.logger.exception(e)
+      if notBadRequestException(e):
+          # general exception that was unexpected and caused by our code
+          api.abort(500, str(e))
+      if e.response is not None:
+          # requests exeption
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
+      else:
+          # custom werkzeug.exception that we raised
+          api.abort(e.code, e.description)
 
 
 
@@ -279,10 +330,17 @@ class BfGetUsers(Resource):
 
       return ps_get_users(selected_account)
     except Exception as e:
-      # TODO: Refine this app wide to handle requests errors more appropriately
+      api.logger.exception(e)
       if notBadRequestException(e):
-        api.abort(500, str(e))
-      api.abort(401, str(e))
+          # general exception that was unexpected and caused by our code
+          api.abort(500, str(e))
+      if e.response is not None:
+          # requests exeption
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
+      else:
+          # custom werkzeug.exception that we raised
+          api.abort(e.code, e.description)
 
 
 
@@ -303,9 +361,17 @@ class BfGetTeams(Resource):
       
       return ps_get_teams(selected_account)
     except Exception as e:
+      api.logger.exception(e)
       if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+          # general exception that was unexpected and caused by our code
+          api.abort(500, str(e))
+      if e.response is not None:
+          # requests exeption
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
+      else:
+          # custom werkzeug.exception that we raised
+          api.abort(e.code, e.description)
 
 
 
@@ -332,9 +398,17 @@ class BfAccountDetails(Resource):
       selected_account = self.parser_account_details.parse_args().get('selected_account')
       return bf_account_details(selected_account)
     except Exception as e:
+      api.logger.exception(e)
       if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+          # general exception that was unexpected and caused by our code
+          api.abort(500, str(e))
+      if e.response is not None:
+          # requests exeption
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
+      else:
+          # custom werkzeug.exception that we raised
+          api.abort(e.code, e.description)
 
 
 
@@ -354,8 +428,17 @@ class CheckAgentInstall(Resource):
     try:
       return get_agent_version()
     except Exception as e:
-      # if the exception is an AgentError, then return a 500 
-      api.abort(500, str(e))
+      api.logger.exception(e)
+      if notBadRequestException(e):
+          # general exception that was unexpected and caused by our code
+          api.abort(500, str(e))
+      if e.response is not None:
+          # requests exeption
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
+      else:
+          # custom werkzeug.exception that we raised
+          api.abort(e.code, e.description)
 
 
 
@@ -390,9 +473,17 @@ class BfDatasetAccount(Resource):
       selected_account = self.parser_dataset_account.parse_args().get('selected_account')
       return bf_dataset_account(selected_account)
     except Exception as e:
+      api.logger.exception(e)
       if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+          # general exception that was unexpected and caused by our code
+          api.abort(500, str(e))
+      if e.response is not None:
+          # requests exeption
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
+      else:
+          # custom werkzeug.exception that we raised
+          api.abort(e.code, e.description)
 
 
 
@@ -424,12 +515,17 @@ class DatasetSubtitle(Resource):
     try:
       return bf_get_subtitle(selected_account, selected_dataset)
     except Exception as e:
-      # if exception is an HTTPError then check if 400 or 500
-      if type(e).__name__ == "HTTPError":
-        handle_http_error(e)
+      api.logger.exception(e)
       if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+          # general exception that was unexpected and caused by our code
+          api.abort(500, str(e))
+      if e.response is not None:
+          # requests exeption
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
+      else:
+          # custom werkzeug.exception that we raised
+          api.abort(e.code, e.description)
 
   parser_add_dataset_subtitle = parser_dataset_subtitle.copy()
   parser_add_dataset_subtitle.add_argument('input_subtitle', type=str, required=True, location='json', help='The subtitle to add to the dataset.')
@@ -448,9 +544,17 @@ class DatasetSubtitle(Resource):
     try:
       return bf_add_subtitle(selected_account, selected_dataset, input_subtitle)
     except Exception as e:
+      api.logger.exception(e)
       if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+          # general exception that was unexpected and caused by our code
+          api.abort(500, str(e))
+      if e.response is not None:
+          # requests exeption
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
+      else:
+          # custom werkzeug.exception that we raised
+          api.abort(e.code, e.description)
 
 
 
@@ -877,10 +981,17 @@ class BfCreateDatasetFolder(Resource):
     try:
       return bf_submit_dataset(selected_account, selected_dataset, filepath)
     except Exception as e:
-      if notBadRequestException(e): 
-        api.abort(500, str(e))
+      api.logger.exception(e)
+      if notBadRequestException(e):
+          # general exception that was unexpected and caused by our code
+          api.abort(500, str(e))
+      if e.response is not None:
+          # requests exeption
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
       else:
-        raise e
+          # custom werkzeug.exception that we raised
+          api.abort(e.code, e.description)
 
 
 

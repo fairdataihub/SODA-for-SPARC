@@ -8,6 +8,7 @@ on:
       - staging
       - pre-staging
       - org-dataset-redesign
+      - init-react
 
 jobs:
   deploy-on-mac:

@@ -2,9 +2,9 @@ from flask import abort
 import requests
 
 from utils import create_request_headers
+from constants import PENNSIEVE_URL
 from authentication import get_access_token
 
-PENNSIEVE_URL = "https://api.pennsieve.io"
 
 def get_dataset(ps, selected_dataset):
     """
