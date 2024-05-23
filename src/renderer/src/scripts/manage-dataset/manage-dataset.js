@@ -2925,7 +2925,7 @@ $("#button-submit-dataset").click(async () => {
           "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
 
         $("#para-progress-bar-error-status").html(
-          "<span style='color: red;'>" + emessage  + "</span>"
+          "<span style='color: red;'>" + emessage + "</span>"
         );
         Swal.fire({
           icon: "error",
