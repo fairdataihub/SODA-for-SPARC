@@ -44,6 +44,10 @@ jobs:
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
 
+      - name: Install macOS-specific dependencies
+        run: |
+          npm install dmg-license --save-dev
+
       - uses: apple-actions/import-codesign-certs@v1
         with:
           p12-file-base64: ${{ secrets.MACOS_CERTIFICATE }}
