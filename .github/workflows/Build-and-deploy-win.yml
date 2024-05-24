@@ -37,7 +37,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "lts"
+          node-version: "latest"
 
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
