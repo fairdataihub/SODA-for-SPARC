@@ -70,7 +70,7 @@ All our releases are also accessible in the [releases tab](https://github.com/fa
 
 ## Documentation
 
-See the [our dedicated webpage]() for the full documentation, including details about each features and how to use them.
+See the [our dedicated webpage](https://docs.sodaforsparc.io/) for the full documentation, including details about each features and how to use them.
 
 ## Issues and Feedback
 

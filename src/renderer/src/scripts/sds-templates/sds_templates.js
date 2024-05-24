@@ -5,7 +5,7 @@ import { existingDataset, modifyDataset } from "../../assets/lotties/lotties";
 import fs from "fs";
 import path from "path";
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 

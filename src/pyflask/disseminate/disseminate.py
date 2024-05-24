@@ -8,6 +8,7 @@ from permissions import pennsieve_get_current_user_permissions, has_edit_permiss
 from utils import connect_pennsieve_client, get_dataset_id, authenticate_user_with_client, create_request_headers
 from errorHandlers import handle_http_error
 from authentication import get_access_token
+from constants import PENNSIEVE_URL
 from namespaces import NamespaceEnum, get_namespace_logger
 
 namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
@@ -15,7 +16,6 @@ namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
 
 
 
-PENNSIEVE_URL = "https://api.pennsieve.io"
 
 
 def bf_get_doi(selected_bfaccount, selected_bfdataset):

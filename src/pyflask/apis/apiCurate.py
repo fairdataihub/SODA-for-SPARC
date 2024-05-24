@@ -14,7 +14,7 @@ from curate import (
     main_curate_function_progress,
     generate_manifest_file_locally,
     generate_manifest_file_data,
-    check_JSON_size,
+    check_json_size,
     clean_json_structure,
     check_server_access_to_files,
 )
@@ -47,7 +47,17 @@ class CheckEmptyFilesFolders(Resource):
         try:
             return check_empty_files_folders(soda_json_structure)
         except Exception as e:
-            api.abort(500, str(e))
+            api.logger.exception(e)
+            if notBadRequestException(e):
+                # general exception that was unexpected and caused by our code
+                api.abort(500, str(e))
+            if e.response is not None:
+                # requests exeption
+                api.logger.info("Error message details: ", e.response.json().get('message'))
+                api.abort(e.response.status_code, e.response.json().get('message'))
+            else:
+                # custom werkzeug.exception that we raised
+                api.abort(e.code, e.description)
 
 
 
@@ -64,7 +74,17 @@ class Curation(Resource):
         try:
             return check_server_access_to_files(file_list_to_check)
         except Exception as e:
-            api.abort(500, str(e))
+            api.logger.exception(e)
+            if notBadRequestException(e):
+                # general exception that was unexpected and caused by our code
+                api.abort(500, str(e))
+            if e.response is not None:
+                # requests exeption
+                api.logger.info("Error message details: ", e.response.json().get('message'))
+                api.abort(e.response.status_code, e.response.json().get('message'))
+            else:
+                # custom werkzeug.exception that we raised
+                api.abort(e.code, e.description)
 
 
 @api.route("/clean-dataset")
@@ -82,9 +102,17 @@ class Curation(Resource):
         try:
             return clean_json_structure(soda_json_structure)
         except Exception as e:
+            api.logger.exception(e)
             if notBadRequestException(e):
+                # general exception that was unexpected and caused by our code
                 api.abort(500, str(e))
-            raise e
+            if e.response is not None:
+                # requests exeption
+                api.logger.info("Error message details: ", e.response.json().get('message'))
+                api.abort(e.response.status_code, e.response.json().get('message'))
+            else:
+                # custom werkzeug.exception that we raised
+                api.abort(e.code, e.description)
 
 
 
@@ -92,6 +120,8 @@ model_main_curation_function_response = api.model( "MainCurationFunctionResponse
     "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
     "main_total_generate_dataset_size": fields.String(description="Total size of the dataset"),
     "main_curation_uploaded_files": fields.Integer(description="Number of files that are being generated. "), 
+    "local_manifest_id": fields.String(description="ID of the local manifest file created by the Pennsieve Agent for the upload."),
+    "origin_manifest_id": fields.String(description="ID of the manifest file created on Pennsieve for the upload."),
 })
 
 # TODO: Add example JSON structures for upload
@@ -108,12 +138,16 @@ class Curation(Resource):
         if "soda_json_structure" not in data:
             api.abort(400, "Missing parameter: soda_json_structure")
 
+        if "resume" not in data:
+            api.abort(400, "Missing parameter: resume")
+
         soda_json_structure = data["soda_json_structure"]
+        resume = data["resume"]
 
         api.logger.info('/curation POST request')
 
         try:
-            return main_curate_function(soda_json_structure)
+            return main_curate_function(soda_json_structure, resume)
         except Exception as e:
             api.logger.exception(e)
             if notBadRequestException(e):
@@ -273,6 +307,6 @@ class DatasetSize(Resource):
         soda_json_structure = data["soda_json_structure"]
 
         try:
-            return check_JSON_size(soda_json_structure)
+            return check_json_size(soda_json_structure)
         except Exception as e:
             api.abort(500, str(e))

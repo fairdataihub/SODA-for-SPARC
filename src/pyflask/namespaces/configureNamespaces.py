@@ -18,6 +18,7 @@ class NamespaceEnum(Enum):
     SKELETON_DATASET = "skeleton_dataset"
     PYSODA_UTILS = "pysoda_utils"
     AUTHENTICATE = "authenticate"
+    UPLOAD_MANIFESTS = "upload_manifests"
 
 
 # namespaces dictionary that is given a namespace name as a key and returns the corresponding namespace object as a value
@@ -63,6 +64,9 @@ def configure_namespaces():
 
     pysoda_utils_namespace = Namespace(NamespaceEnum.PYSODA_UTILS.value, description='Utility functions for pysoda')
     namespaces[NamespaceEnum.PYSODA_UTILS] = pysoda_utils_namespace
+
+    upload_manifests_namespace = Namespace(NamespaceEnum.UPLOAD_MANIFESTS.value, description='Routes for viewing upload manifests and verifying upload file statuses')
+    namespaces[NamespaceEnum.UPLOAD_MANIFESTS] = upload_manifests_namespace
 
 
 

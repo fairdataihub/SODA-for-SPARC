@@ -15,12 +15,11 @@ import pandas as pd
 import requests 
 
 from utils import create_request_headers, column_check, returnFileURL, remove_high_level_folder_from_path, get_name_extension, get_dataset_id, TZLOCAL
-
+from constants import PENNSIEVE_URL
 userpath = expanduser("~")
 
 
 
-PENNSIEVE_URL = "https://api.pennsieve.io"
 
 
 def get_auto_generated_manifest_files(soda_json_structure):
@@ -58,13 +57,22 @@ def update_existing_pennsieve_manifest_files(soda_json_structure, high_level_fol
             "protocol",
             "source",
         ]:
+            
+
+            limit = 100
+            offset = 0
             # request the packages of that folder
             folder_name = i["content"]["name"]
             folder_collection_id = i["content"]["nodeId"]
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_collection_id}", headers=create_request_headers(get_access_token()))
-            r.raise_for_status()
-
-            packageItems = r.json()["children"]
+            packageItems = []
+            while True: 
+                r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_collection_id}?limit={limit}&offset={offset}", headers=create_request_headers(get_access_token()))
+                r.raise_for_status()
+                page = r.json()["children"]
+                packageItems.extend(page)
+                if len(page) < limit:
+                    break
+                offset += limit
 
             for j in packageItems:
                 if j["content"]["name"] == "manifest.xlsx":

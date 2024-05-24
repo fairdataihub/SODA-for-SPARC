@@ -31,6 +31,7 @@ from namespaces import NamespaceEnum, get_namespace_logger
 from openpyxl.styles import PatternFill
 from openpyxl import load_workbook
 from utils import load_metadata_to_dataframe
+from constants import PENNSIEVE_URL
 
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
 from authentication import get_access_token
@@ -67,7 +68,6 @@ initial_bfdataset_size_submit = 0
 forbidden_characters = '<>:"/\|?*'
 forbidden_characters_bf = '\/:*?"<>'
 
-PENNSIEVE_URL = "https://api.pennsieve.io"
 
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
@@ -583,7 +583,6 @@ def create_dataset(recursivePath, jsonStructure, listallfiles):
 
                 mycopyfile_with_metadata(srcfile, distfile)
 
-
 def create_soda_json_object_backend(
     soda_json_structure, root_folder_path, irregularFolders, replaced
 ):
@@ -999,9 +998,17 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         
         collection_id = subfolder_json["path"]
 
-        r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=create_request_headers(get_access_token()))
-        r.raise_for_status()
-        subfolder = r.json()["children"]
+        limit = 100
+        offset = 0
+        subfolder = []
+        while True: 
+            r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}?limit={limit}&offset={offset}", headers=create_request_headers(get_access_token()))
+            r.raise_for_status()
+            page = r.json()["children"]
+            subfolder.extend(page)
+            if len(page) < limit:
+                break
+            offset += limit
 
         for items in subfolder:
             folder_item_name = items["content"]["name"]
@@ -1165,7 +1172,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             curatestatus = "Done"
             raise Exception("You don't have permissions for uploading to this Pennsieve dataset")
     except Exception as e:
-        abort(401, "You do not have permissions to edit upload this Pennsieve dataset.")
+        abort(403, "You do not have permissions to edit upload this Pennsieve dataset.")
 
 
     # surface layer of dataset is pulled. then go through through the children to get information on subfolders

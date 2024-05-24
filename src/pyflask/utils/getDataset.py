@@ -2,9 +2,9 @@ from flask import abort
 import requests
 
 from utils import create_request_headers
+from constants import PENNSIEVE_URL
 from authentication import get_access_token
 
-PENNSIEVE_URL = "https://api.pennsieve.io"
 
 def get_dataset(ps, selected_dataset):
     """
@@ -100,5 +100,5 @@ def get_dataset_id(dataset_name_or_id):
             return dataset["content"]["id"]
     
     # If no matching dataset is found, abort with a 400 status and a specific error message
-    abort(400, "Please select a valid Pennsieve dataset.")
+    abort(404, "Please select a valid Pennsieve dataset.")
     

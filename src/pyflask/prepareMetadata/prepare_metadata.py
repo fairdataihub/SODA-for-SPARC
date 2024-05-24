@@ -36,6 +36,7 @@ from openpyxl.styles import PatternFill, Font
 from docx import Document
 
 from flask import abort 
+from constants import PENNSIEVE_URL
 
 from manifest import update_existing_pennsieve_manifest_files, create_high_lvl_manifest_files_existing_ps_starting_point, recursive_item_path_create
 
@@ -45,7 +46,6 @@ namespace_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
 userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
 TEMPLATE_PATH = ""
-PENNSIEVE_URL = "https://api.pennsieve.io"
 manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
 ### Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find
