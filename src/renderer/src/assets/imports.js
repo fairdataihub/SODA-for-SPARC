@@ -38,11 +38,8 @@ const waitForReactRenderedSectionsToInsertIntoDOM = async () => {
       (section) => section.innerHTML === ""
     )
   ) {
-    console.log("Waiting for react to render");
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-
-  console.log("All sections have been rendered");
 };
 
 document.addEventListener("DOMContentLoaded", async function () {

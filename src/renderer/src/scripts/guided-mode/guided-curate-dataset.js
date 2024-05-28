@@ -66,9 +66,7 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-window.logZustandStoreState = () => {
-  console.log(useGlobalStore.getState());
-};
+window.logZustandStoreState = () => {};
 
 window.returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
@@ -989,7 +987,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         const selectedFuncingSourceFromDropdown =
           useGlobalStore.getState()["dropDownState"]["guided-select-sparc-funding-consortium"]
             .selectedValue;
-        console.log("selected funding source from react", selectedFuncingSourceFromDropdown);
 
         // Throw an error if the user did not select a funding source from the dropdown
         if (!selectedFuncingSourceFromDropdown) {
@@ -12856,10 +12853,7 @@ const renderSubjectsMetadataAsideItems = async () => {
       let previousSubject = document.getElementById("guided-bootbox-subject-id").value;
       //check to see if previousSubject is empty
       if (previousSubject) {
-        console.log(window.subjectsTableData[1]);
         window.addSubject("guided");
-        console.log(window.subjectsTableData[1]);
-
         await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
       }
 
@@ -14583,8 +14577,6 @@ window.electron.ipcRenderer.on(
         "Current action": `Preparing dataset for local generation`,
       });
 
-      console.log(JSON.stringify(sodaJSONObjCopy));
-
       // Start the local dataset generation process
       client.post(
         `/curate_datasets/curation`,
@@ -14606,7 +14598,6 @@ window.electron.ipcRenderer.on(
             const { data } = response;
             const main_curate_progress_message = data["main_curate_progress_message"];
             const main_curate_status = data["main_curate_status"];
-            console.log(main_curate_progress_message);
             if (
               main_curate_progress_message === "Success: COMPLETED!" ||
               main_curate_status === "Done"

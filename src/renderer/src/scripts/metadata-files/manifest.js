@@ -769,7 +769,6 @@ window.generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   const type = determineStandaloneManifestGeneratorOrigin();
 
   if (!["generate_step_5-manifest", "generate-local-preview-manifest"].includes(ev.id)) {
-    console.log("should not be executing");
     window.exitCurate();
   }
   window.sodaJSONObj["starting-point"] = {};
@@ -2043,14 +2042,7 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
     document.querySelector("#generate_step_5-manifest").style.display = "block";
   }
 
-  console.log(ev.id);
-
-  console.log("before id check");
-  console.log(
-    !["btn-pull-ds-manifest", "confirm-local-manifest-folder-adv-feature"].includes(ev.id)
-  );
   if (!["btn-pull-ds-manifest", "confirm-local-manifest-folder-adv-feature"].includes(ev.id)) {
-    console.log("should not be executing");
     window.exitCurate();
   }
 

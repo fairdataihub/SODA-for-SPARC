@@ -33,8 +33,7 @@ const delay = 250;
 window.showParentTab = async (tabNow, nextOrPrev) => {
   // tabNow represent the current tab
   // nextOrPrev represent the direction of the tab (1 or -1)
-  console.log("Tab after addition", tabNow);
-  console.log(nextOrPrev);
+
   $("#nextBtn").prop("disabled", true);
   if (tabNow == -1) {
     // When exiting upload dataset workflow, the tabNow state changes to -1 which will cause an error
@@ -67,7 +66,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   $("#nextBtn").html("Continue");
 
   if (nextOrPrev === -1) {
-    console.log("going back");
     $("#nextBtn").prop("disabled", false);
   }
 
@@ -82,7 +80,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
         $('input[name="generate-5"]:checked').length === 1 &&
         $('input[name="generate-6"]:checked').length === 1
       ) {
-        console.log("Merge options selected");
         $("#nextBtn").prop("disabled", false);
       }
     }
@@ -92,7 +89,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       document.getElementById("inputNewNameDataset-upload-dataset").value !== ""
     ) {
       // If new dataset is selected and name confirmed, enable the continue button
-      console.log("test");
       $("#nextBtn").prop("disabled", false);
     }
   }
@@ -101,7 +97,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     if (nextOrPrev === -1) {
       return;
     }
-    console.log("ON THIRD TAB");
 
     // enable continue button
     $("#nextBtn").prop("disabled", false);
@@ -117,16 +112,13 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       $("#nextBtn").prop("disabled", false);
       $("#generate-manifest-curate").prop("disabled", true);
       document.getElementById("manifest-information-container").classList.add("hidden");
+      document.getElementById("manifest-intro-info").classList.add("hidden");
     } else {
       document.getElementById("manifest-information-container").classList.remove("hidden");
-      if (document.getElementById("generate-manifest-curate").checked) {
-        document.getElementById("manifest-selected").classList.remove("hidden");
-        document.getElementById("manifest-selected").classList.add("hidden");
-      } else {
-        document.getElementById("manifest-not-selected").classList.remove("hidden");
-        document.getElementById("manifest-selected").classList.add("hidden");
+      document.getElementById("manifest-intro-info").classList.remove("hidden");
+      if (!document.getElementById("generate-manifest-curate").checked) {
+        document.getElementById("manifest-information-container").classList.add("hidden");
       }
-      console.log("enabling manifest creation here");
       $("#manifest-creation-prohibited").hide();
       document.getElementById("generate-manifest-curate").disabled = false;
       $("#generate-manifest-curate").prop("disabled", false);
@@ -147,7 +139,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
 
   // preview dataset tab
   if (tabNow == 4) {
-    console.log("last step here");
     $("#nextBtn").css("display", "none");
     if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
       $("#inputNewNameDataset-upload-dataset").val(defaultBfDataset);
@@ -170,7 +161,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 5) {
-    console.log("Woooooow");
     $("#nextBtn").css("display", "none");
     $("#prevBtn").css("display", "none");
     // $("#nextBtn").html("Continue");
@@ -261,7 +251,6 @@ const fill_info_details = () => {
     window.sodaJSONObj["starting-point"]["type"] === "new"
   ) {
     // replace existing dataset when starting from local
-    console.log("Add updated code to get UI elements for perview here");
     // TODO: Add updated code to get UI elements for perview here
     // if ($('input[name="generate-1"]:checked')[0].id === "generate-local-existing") {
     //   addCardDetail(
@@ -297,7 +286,6 @@ const fill_info_details = () => {
     //     "input-destination-generate-dataset-locally",
     //     true
     //   );
-
     //   new_dataset_name = $("#inputNewNameDataset").val().trim();
     //   if (window.manifestFileCheck.checked) {
     //     addCardDetail(
@@ -317,9 +305,7 @@ const fill_info_details = () => {
     //       window.sodaJSONObj["starting-point"]["local-path"]
     //     );
     //   }
-
     //   addCardDetail("New dataset location", "Pennsieve", 1, "Question-generate-dataset", true);
-
     //   if ($('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing") {
     //     addCardDetail(
     //       "Dataset name",
@@ -480,7 +466,6 @@ const checkHighLevelFoldersInput = () => {
 };
 
 window.hasEmptyFolders = (currentFolder) => {
-  console.log("current folder: ", currentFolder);
   if (
     !Object.keys(currentFolder["folders"]).length &&
     !Object.keys(currentFolder["files"]).length
@@ -491,7 +476,6 @@ window.hasEmptyFolders = (currentFolder) => {
   let emptyFolders = false;
   for (const folder in currentFolder["folders"]) {
     emptyFolders = emptyFolders || window.hasEmptyFolders(currentFolder["folders"][folder]);
-    console.log(emptyFolders);
   }
   return emptyFolders;
 };
@@ -508,11 +492,8 @@ window.hasEmptyFolders = (currentFolder) => {
 window.nextPrev = async (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
   let parentTabs = document.getElementsByClassName("parent-tabs");
-  console.log("current tab: ", window.currentTab);
-  console.log("Page is: ", parentTabs[window.currentTab].id);
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
-    console.log("exiting?");
     window.returnToGuided();
   }
 
@@ -553,7 +534,6 @@ window.nextPrev = async (pageIndex) => {
     // traverse the dataset structure key of sodaJSONObj depth first to see if there are any empty folders
     // if there are empty folders, show a warning message to the user
     let emptyFolders = window.hasEmptyFolders(window.sodaJSONObj["dataset-structure"]);
-    console.log(emptyFolders);
 
     if (emptyFolders) {
       Swal.fire({
@@ -686,7 +666,6 @@ window.nextPrev = async (pageIndex) => {
     (window.sodaJSONObj["starting-point"]["type"] === "new" ||
       window.sodaJSONObj["starting-point"]["type"] === "local")
   ) {
-    console.log("Nailed it again");
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     window.currentTab = window.currentTab + pageIndex;
     $("#Question-generate-dataset").show();
@@ -743,7 +722,6 @@ window.nextPrev = async (pageIndex) => {
     parentTabs[window.currentTab].id === "upload-destination-selection-tab" &&
     pageIndex === 1
   ) {
-    console.log("Nailed it");
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     window.currentTab = window.currentTab + pageIndex;
     // Display the correct tab:
@@ -763,7 +741,6 @@ window.nextPrev = async (pageIndex) => {
     //   $("#generate-manifest-curate").prop("disabled", false);
     // }
   } else {
-    console.log("Going to last page default");
     // Hide the current tab:
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
@@ -782,7 +759,6 @@ const fixStepIndicator = (pageIndex) => {
   let progressSteps = document.getElementsByClassName("vertical-progress-bar-step");
   if (progressSteps != undefined) {
     for (let step of progressSteps) {
-      console.log(step);
       step.className = step.className.replace(" is-current", "");
     }
     progressSteps[pageIndex].className += " is-current";
@@ -1979,7 +1955,6 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
 
   // Step 6 - The Merge/Skip/Replace options for selecting how to upload data to an existing Pennsieve dataset
   if (ev.getAttribute("data-next") === "Question-generate-dataset-existing-folders-options") {
-    console.log("We will show the folders");
     if (!window.hasFiles) {
       // select the Merge option for Folders
       document.getElementById("existing-folders-merge").checked = true;
@@ -3149,7 +3124,6 @@ const updateJSONStructureMetadataFiles = () => {
 // Step 5: Manifest file
 // update JSON object with manifest file information
 const updateJSONStructureManifest = () => {
-  console.log("Manifest stuff: ", window.manifestFileCheck.checked);
   if (window.manifestFileCheck.checked) {
     if ("manifest-files" in window.sodaJSONObj) {
       // cj this might need to be changed
@@ -3272,8 +3246,6 @@ window.updateJSONStructureGenerate = (progress = false, sodaJSONObject) => {
 };
 
 const updateJSONStructureBfDestination = () => {
-  console.log("In this place appropriately");
-  console.log($("#dataset-upload-new-dataset").hasClass("checked"));
   // check which option-card is selected in the upload destination selection tab
   if ($("#dataset-upload-new-dataset").hasClass("checked")) {
     window.sodaJSONObj["generate-dataset"] = {
@@ -3330,9 +3302,7 @@ const updateJSONStructureBfDestination = () => {
 
 // function to call when users click on Continue at each step
 const updateOverallJSONStructure = (id) => {
-  console.log(id);
   if (id === allParentStepsJSON["high-level-folders"]) {
-    console.log("Not setting things");
     // set bf-account-selected
     if ("bf-account-selected" in window.sodaJSONObj) {
       window.sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfAccount;
@@ -3342,10 +3312,8 @@ const updateOverallJSONStructure = (id) => {
       };
     }
   } else if (id === allParentStepsJSON["getting-started"]) {
-    console.log("Getting startef");
     updateJSONStructureGettingStarted();
   } else if (id === allParentStepsJSON["metadata-files"]) {
-    console.log("Impkement metadata search");
     // updateJSONStructureMetadataFiles();
   } else if (id === allParentStepsJSON["manifest-file"]) {
     updateJSONStructureManifest();
@@ -3399,7 +3367,6 @@ window.resetCuration = () => {
   $("#Question-getting-started-1").addClass("show");
   $("#generate-dataset-progress-tab").css("display", "none");
 
-  console.log("Resetting current tab value");
   window.currentTab = 0;
   // uncheck all radio buttons and checkboxes
   $("#organize-section").find(".option-card").removeClass("checked");
@@ -3504,7 +3471,6 @@ window.resetCurationTabs = () => {
   $("#nextBtn").prop("disabled", true);
 
   window.hasFiles = false;
-  console.log("Resetting current tab value");
 
   window.currentTab = 0;
   window.wipeOutCurateProgress();

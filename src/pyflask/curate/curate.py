@@ -1840,7 +1840,6 @@ def get_origin_manifest_id(dataset_id):
     max_attempts = 3
     for _ in range(max_attempts):
         manifests = get_upload_manifests(dataset_id)
-        namespace_logger.info(f"manifests: {manifests}")
         if manifests and "manifests" in manifests and manifests["manifests"]:
             return manifests["manifests"][0]["id"]
         time.sleep(5)  # Wait for 5 seconds before the next attempt
@@ -2535,9 +2534,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
 
             main_curation_uploaded_files = total_files - ums.get_remaining_file_count(manifest_id, total_files)
             files_uploaded = main_curation_uploaded_files
-            namespace_logger.info(f"Bytes per file dict values: {bytes_file_path_dict}")
             total_bytes_uploaded["value"] = ums.calculate_completed_upload_size(manifest_id, bytes_file_path_dict, total_files )
-            namespace_logger.info("Total bytes uploaded value is: " + str(total_bytes_uploaded["value"]))
 
             # rename file information 
             list_of_files_to_rename = ums.get_list_of_files_to_rename()
@@ -2587,7 +2584,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                     renamed_files_counter += 1
 
             manifest_data = ps.manifest.create(first_file_local_path, folder_name)
-            namespace_logger.info(f"Manifest created with {manifest_data}")
             manifest_id = manifest_data.manifest_id
 
 
@@ -2672,7 +2668,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 # subscribe to the manifest upload so we wait until it has finished uploading before moving on
                 ps.subscribe(10, False, monitor_subscriber_progress)
 
-                namespace_logger.info("THE UPLOAD HAS FINISHED")
             except Exception as e:
                 namespace_logger.error("Error uploading dataset files")
                 namespace_logger.error(e)
@@ -2919,7 +2914,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
         
                 
         origin_manifest_id = get_origin_manifest_id(selected_id)
-        namespace_logger.info(f"Origin manifest id: {origin_manifest_id}")
 
         # if files were uploaded but later receive the 'Failed' status in the Pennsieve manifest we allow users to retry the upload; set the pre-requisite information for the upload to 
         # be retried in that case
@@ -3302,7 +3296,6 @@ def generate_dataset(soda_json_structure, resume, ps):
                 ps_update_existing_dataset(soda_json_structure, myds, ps, resume)
 
         elif generate_option == "new" or generate_option == "existing-bf" and soda_json_structure["starting-point"]["type"] == "new":
-            namespace_logger.info("Generating new track")
             # if dataset name is in the generate-dataset section, we are generating a new dataset
             if "dataset-name" in soda_json_structure["generate-dataset"]:
                 dataset_name = soda_json_structure["generate-dataset"][
@@ -3314,7 +3307,6 @@ def generate_dataset(soda_json_structure, resume, ps):
                 dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
             
             if resume: 
-                namespace_logger.info("Retrying prior upload")
                 generate_new_ds_ps_resume(soda_json_structure, dataset_name, ps)
             else: 
                 try: 
@@ -3366,7 +3358,6 @@ def validate_dataset_structure(soda_json_structure, resume):
                 "Checking that the selected Pennsieve account is valid"
             )
             accountname = soda_json_structure["bf-account-selected"]["account-name"]
-            namespace_logger.info("accountname: " + accountname)
             connect_pennsieve_client(accountname)
         except Exception as e:
             main_curate_status = "Done"
@@ -3512,7 +3503,6 @@ def main_curate_function(soda_json_structure, resume):
     # 2] Generate
     main_curate_progress_message = "Generating dataset"
     try:
-        print(soda_json_structure["generate-dataset"]["destination"])
         if (soda_json_structure["generate-dataset"]["destination"] == "local"):
             generate_dataset(soda_json_structure, resume, ps=None)
         else:

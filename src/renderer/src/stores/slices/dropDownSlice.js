@@ -16,10 +16,7 @@ export const setDropdownState = (id, selectedValue) => {
   useGlobalStore.setState(
     produce((state) => {
       const dropDownOptions = useGlobalStore.getState().dropDownState[id].options;
-      console.log("Drop down options for ", id, " are: ", dropDownOptions);
-      console.log("New selected value: ", selectedValue);
       if (!dropDownOptions.includes(selectedValue)) {
-        console.log("Invalid value selected: ", selectedValue);
         return;
       }
       state.dropDownState[id].selectedValue = selectedValue || "";
