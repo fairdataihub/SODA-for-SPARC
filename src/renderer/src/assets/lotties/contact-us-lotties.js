@@ -5,7 +5,7 @@ export const contact_lottie = {
   op: 200,
   w: 1000,
   h: 1000,
-  nm: "Work frome Home Mailing F 2",
+  nm: "Work from Home Mailing F 2",
   ddd: 0,
   assets: [],
   layers: [
