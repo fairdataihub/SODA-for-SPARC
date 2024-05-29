@@ -69,12 +69,12 @@ import canSad from "/img/can-sad.png";
 import useGlobalStore from "../../stores/globalStore";
 import {
   resetBackgroundServicesState,
-  setInternetConnectionStatus,
+  setBackgroundServicesChecksSuccessful,
+  setInternetConnectionCheckSuccessful,
   setPennsieveAgentInstalled,
   setPennsieveAgentDownloadURL,
   setPennsieveAgentUpToDate,
-  setPennsieveAgentErrorMessage,
-  setPennsieveAgentRunning,
+  setPennsieveAgentOutputErrorMessage,
 } from "../../stores/slices/backgroundServicesSlice";
 
 // add jquery to the window object
@@ -588,10 +588,17 @@ window.checkPennsieveBackgroundServices = async () => {
     // Step 0: Reset the background services state in the store
     resetBackgroundServicesState();
 
+    await window.wait(2000);
+
     // Step 1: Check the internet connection
     const userConnectedToInternet = await window.checkInternetConnection();
-    console.log("User connected to internet: ", userConnectedToInternet);
-    setInternetConnectionStatus(userConnectedToInternet);
+    console.log("User connected to the internet: ", userConnectedToInternet);
+    setInternetConnectionCheckSuccessful(userConnectedToInternet);
+    if (!userConnectedToInternet) {
+      console.log("User not connected to the internet");
+      setBackgroundServicesChecksSuccessful(false);
+      return;
+    }
 
     // Step 2: Check if the Pennsieve agent is installed
     const pennsieveAgentInstalled = await window.checkIfPennsieveAgentIsInstalled();
@@ -600,9 +607,8 @@ window.checkPennsieveBackgroundServices = async () => {
     if (!pennsieveAgentInstalled) {
       // If the Pennsieve agent is not installed, get the download URL and set it in the store
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
-      console.log("Pennsieve agent download URL: ", pennsieveAgentDownloadURL);
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
-      sesePennsie;
+      setBackgroundServicesChecksSuccessful(false);
       return;
     }
 
@@ -618,12 +624,13 @@ window.checkPennsieveBackgroundServices = async () => {
     // Start the Pennsieve agent
     try {
       await startPennsieveAgent();
-      setPennsieveAgentRunning(true);
     } catch (error) {
       const emessage = userErrorMessage(error);
-      setPennsieveAgentErrorMessage(emessage);
+      setPennsieveAgentOutputErrorMessage(emessage);
     }
-    setPennsieveAgentErrorMessage("NotAuthorizedException: Incorrect username or password.");
+    setPennsieveAgentOutputErrorMessage("UNIQUE constraint failed:");
+    setBackgroundServicesChecksSuccessful(false);
+    return;
 
     const pennsieveAgentUpToDate = await window.checkIfPennsieveAgentIsUpToDate();
     setPennsieveAgentUpToDate(pennsieveAgentUpToDate);

@@ -4734,6 +4734,7 @@
                 data-next-element="guided-section-background-services-check"
                 data-button-config-value="organization-has-been-confirmed"
                 data-button-config-value-state="yes"
+                onclick="window.checkPennsieveBackgroundServices()"
               >
                 Yes, this is the organization
               </button>
@@ -4748,8 +4749,10 @@
             </div>
           </div>
           <div class="guided--section" id="guided-section-background-services-check">
-            <div data-component-type="internet-connection-status" class="guided--section"></div>
-            <div data-component-type="pennsieve-agent-status" class="guided--section"></div>
+            <div
+              data-component-type="pennsieve-agent-background-services-status-display"
+              class="guided--section"
+            ></div>
           </div>
         </div>
 

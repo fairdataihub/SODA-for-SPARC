@@ -5,8 +5,7 @@ import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 import DropdownSelect from "../common/DropdownSelect";
 import GenericButton from "../buttons/Generic";
-import InternetConnectionStatus from "../backgroundServices/InternetConnectionStatus";
-import PennsieveAgentStatus from "../backgroundServices/PennsieveAgentStatus";
+import PennsieveAgentBackgroundServicesStatus from "../backgroundServices/PennsieveAgentBackgroundServicesStatus";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
@@ -89,19 +88,11 @@ const componentRenderActions = {
       </SodaComponentWrapper>
     );
   },
-  "internet-connection-status": (componentSlot) => {
+  "pennsieve-agent-background-services-status-display": (componentSlot) => {
     const root = createRoot(componentSlot);
     root.render(
       <SodaComponentWrapper layout="container">
-        <InternetConnectionStatus />
-      </SodaComponentWrapper>
-    );
-  },
-  "pennsieve-agent-status": (componentSlot) => {
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper layout="container">
-        <PennsieveAgentStatus />
+        <PennsieveAgentBackgroundServicesStatus />
       </SodaComponentWrapper>
     );
   },

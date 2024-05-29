@@ -1,20 +1,36 @@
-import { all } from "axios";
 import useGlobalStore from "../globalStore";
 import { produce } from "immer";
 
 const initialState = {
-  internetConnectionStatus: false,
+  backgroundServicesChecksInProgress: true,
+  backgroundServicesChecksSuccessful: false,
+  internetConnectionCheckSuccessful: false,
   pennsieveAgentInstalled: false,
   pennsieveAgentDownloadURL: null,
   pennsieveAgentUpToDate: true,
-  pennsieveAgentRunning: false,
-  pennsieveAgentErrorMessage: null,
-  allServicesPassing: false,
+  pennsieveAgentOutputErrorMessage: null,
 };
 
 export const backgroundServicesSlice = (set) => ({
   ...initialState,
 });
+
+export const setBackgroundServicesChecksInProgress = (inProgress) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.backgroundServicesChecksInProgress = inProgress;
+    })
+  );
+};
+
+export const setBackgroundServicesChecksSuccessful = (successful) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.backgroundServicesChecksInProgress = false;
+      state.backgroundServicesChecksSuccessful = successful;
+    })
+  );
+};
 
 export const resetBackgroundServicesState = () => {
   useGlobalStore.setState(
@@ -24,10 +40,10 @@ export const resetBackgroundServicesState = () => {
   );
 };
 
-export const setInternetConnectionStatus = (connectionStatus) => {
+export const setInternetConnectionCheckSuccessful = (connectionStatus) => {
   useGlobalStore.setState(
     produce((state) => {
-      state.internetConnectionStatus = connectionStatus;
+      state.internetConnectionCheckSuccessful = connectionStatus;
     })
   );
 };
@@ -56,18 +72,10 @@ export const setPennsieveAgentUpToDate = (upToDate) => {
   );
 };
 
-export const setPennsieveAgentRunning = (running) => {
+export const setPennsieveAgentOutputErrorMessage = (errorMessage) => {
   useGlobalStore.setState(
     produce((state) => {
-      state.pennsieveAgentRunning = running;
-    })
-  );
-};
-
-export const setPennsieveAgentErrorMessage = (errorMessage) => {
-  useGlobalStore.setState(
-    produce((state) => {
-      state.pennsieveAgentErrorMessage = errorMessage;
+      state.pennsieveAgentOutputErrorMessage = errorMessage;
     })
   );
 };
