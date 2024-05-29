@@ -5998,16 +5998,28 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-pennsieve-intro-tab") {
+      const elementsToShowWhenLoggedInToPennsieve =
+        document.querySelectorAll(".show-when-logged-in");
+      const elementsToShowWhenNotLoggedInToPennsieve =
+        document.querySelectorAll(".show-when-logged-out");
       const confirmPennsieveAccountDiv = document.getElementById(
         "guided-confirm-pennsieve-account"
       );
       const selectPennsieveAccountDiv = document.getElementById("guided-select-pennsieve-account");
       if (!window.defaultBfAccount) {
-        confirmPennsieveAccountDiv.classList.add("hidden");
-        selectPennsieveAccountDiv.classList.remove("hidden");
+        elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
+          element.classList.add("hidden");
+        });
+        elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
+          element.classList.remove("hidden");
+        });
       } else {
-        confirmPennsieveAccountDiv.classList.remove("hidden");
-        selectPennsieveAccountDiv.classList.add("hidden");
+        elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
+          element.classList.remove("hidden");
+        });
+        elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
+          element.classList.add("hidden");
+        });
 
         const pennsieveIntroText = document.getElementById("guided-pennsive-intro-bf-account");
         // fetch the user's email and set that as the account field's value

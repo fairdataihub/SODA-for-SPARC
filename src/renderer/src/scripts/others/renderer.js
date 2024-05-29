@@ -74,6 +74,7 @@ import {
   setPennsieveAgentDownloadURL,
   setPennsieveAgentUpToDate,
   setPennsieveAgentErrorMessage,
+  setPennsieveAgentRunning,
 } from "../../stores/slices/backgroundServicesSlice";
 
 // add jquery to the window object
@@ -594,7 +595,6 @@ window.checkPennsieveBackgroundServices = async () => {
 
     // Step 2: Check if the Pennsieve agent is installed
     const pennsieveAgentInstalled = await window.checkIfPennsieveAgentIsInstalled();
-    console.log("Pennsieve agent installed: ", pennsieveAgentInstalled);
     setPennsieveAgentInstalled(pennsieveAgentInstalled);
 
     if (!pennsieveAgentInstalled) {
@@ -602,6 +602,7 @@ window.checkPennsieveBackgroundServices = async () => {
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
       console.log("Pennsieve agent download URL: ", pennsieveAgentDownloadURL);
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
+      sesePennsie;
       return;
     }
 
@@ -617,12 +618,23 @@ window.checkPennsieveBackgroundServices = async () => {
     // Start the Pennsieve agent
     try {
       await startPennsieveAgent();
+      setPennsieveAgentRunning(true);
     } catch (error) {
-      setPennsieveAgentErrorMessage(error);
+      const emessage = userErrorMessage(error);
+      setPennsieveAgentErrorMessage(emessage);
     }
-    setPennsieveAgentErrorMessage("Testing to see what happens");
+    setPennsieveAgentErrorMessage("NotAuthorizedException: Incorrect username or password.");
+
     const pennsieveAgentUpToDate = await window.checkIfPennsieveAgentIsUpToDate();
     setPennsieveAgentUpToDate(pennsieveAgentUpToDate);
+
+    if (!pennsieveAgentUpToDate) {
+      // If the Pennsieve agent is not up to date, get the download URL and set it in the store
+      const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
+      console.log("Pennsieve agent download URL: ", pennsieveAgentDownloadURL);
+      setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
+      return;
+    }
   } catch (error) {
     console.log("Error checking Pennsieve background services: ", error);
   }

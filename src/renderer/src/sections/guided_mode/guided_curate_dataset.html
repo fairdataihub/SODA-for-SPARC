@@ -4647,7 +4647,19 @@
             </p>
           </div>
 
-          <div class="guided--section" id="guided-confirm-pennsieve-account">
+          <div class="guided--section show-when-logged-out" id="guided-select-pennsieve-account">
+            <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
+            <button
+              class="ui positive button mt-md"
+              data-reset-guided-mode-page="true"
+              onclick="window.openDropdownPrompt(this, 'bf')"
+              style="background-color: var(--color-light-green) !important; width: 200px !important"
+            >
+              Log in to Pennsieve
+            </button>
+          </div>
+
+          <div class="guided--section show-when-logged-in" id="guided-confirm-pennsieve-account">
             <div class="guided--input-container">
               <h2 class="text-sub-step-title">
                 Is this the Pennsieve account you would like to work with?
@@ -4689,18 +4701,8 @@
               </button>
             </div>
           </div>
-          <div class="guided--section" id="guided-select-pennsieve-account">
-            <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
-            <button
-              class="ui positive button mt-md"
-              data-reset-guided-mode-page="true"
-              onclick="window.openDropdownPrompt(this, 'bf')"
-              style="background-color: var(--color-light-green) !important; width: 200px !important"
-            >
-              Log in to Pennsieve
-            </button>
-          </div>
-          <div class="guided--section" id="guided-section-select-organization">
+
+          <div class="guided--section show-when-logged-in" id="guided-section-select-organization">
             <div class="guided--input-container">
               <h2 class="text-sub-step-title">
                 Is this the Pennsieve workspace you want to upload your dataset to?

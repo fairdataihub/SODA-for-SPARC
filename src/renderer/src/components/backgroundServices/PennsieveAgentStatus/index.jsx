@@ -1,14 +1,35 @@
-import { Text, Stack, Button, Group, Container } from "@mantine/core";
+import { Text, Stack, Button, Group, Container, Center } from "@mantine/core";
 import ExternalLink from "../../buttons/ExternalLink";
 import CodeTextDisplay from "../../common/CodeTextDisplay";
 import useGlobalStore from "../../../stores/globalStore";
 import GuidedModeSection from "../../containers/GuidedModeSection";
+import FullWidthContainer from "../../containers/FullWidthContainer";
 
+const RetryElement = () => {
+  return (
+    <Button
+      onClick={async () => {
+        await window.checkPennsieveBackgroundServices();
+      }}
+    >
+      Retry
+    </Button>
+  );
+};
 const PennsieveAgentStatus = () => {
-  const pennsieveAgentInstalled = useGlobalStore((state) => state.pennsieveAgentInstalled);
-  const pennsieveAgentUpToDate = useGlobalStore((state) => state.pennsieveAgentUpToDate);
-  const pennsieveAgentDownloadURL = useGlobalStore((state) => state.pennsieveAgentDownloadURL);
-  const pennsieveAgentErrorMessage = useGlobalStore((state) => state.pennsieveAgentErrorMessage);
+  const {
+    pennsieveAgentInstalled,
+    pennsieveAgentUpToDate,
+    pennsieveAgentDownloadURL,
+    pennsieveAgentErrorMessage,
+    pennsieveAgentRunning,
+  } = useGlobalStore((state) => ({
+    pennsieveAgentInstalled: state.pennsieveAgentInstalled,
+    pennsieveAgentUpToDate: state.pennsieveAgentUpToDate,
+    pennsieveAgentDownloadURL: state.pennsieveAgentDownloadURL,
+    pennsieveAgentErrorMessage: state.pennsieveAgentErrorMessage,
+    pennsieveAgentRunning: state.pennsieveAgentRunning,
+  }));
 
   if (!pennsieveAgentInstalled) {
     return (
@@ -19,16 +40,29 @@ const PennsieveAgentStatus = () => {
           buttonText="Download the Pennsieve Agent"
           buttonType="button"
         />
+        <Text>Once installed, click the button below to start the Pennsieve Agent</Text>
+        <Button
+          onClick={async () => {
+            await window.checkPennsieveBackgroundServices();
+          }}
+        >
+          Start Pennsieve Agent
+        </Button>
       </Stack>
     );
   }
 
   if (pennsieveAgentErrorMessage) {
     return (
-      <Container>
-        <Text>Pennsieve Agent error</Text>
+      <FullWidthContainer>
+        <Text>An error occurred while starting the Pennsieve agent.</Text>
         <CodeTextDisplay text={pennsieveAgentErrorMessage} />
-      </Container>
+        <Stack mt="sm" align="center">
+          Please check the Pennsieve Agent logs for more information. Once you have resolved the
+          issue, click the button below.
+          <RetryElement />
+        </Stack>
+      </FullWidthContainer>
     );
   }
 

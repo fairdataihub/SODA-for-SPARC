@@ -6,9 +6,10 @@ const initialState = {
   internetConnectionStatus: false,
   pennsieveAgentInstalled: false,
   pennsieveAgentDownloadURL: null,
-  pennsieveAgentUpToDate: false,
+  pennsieveAgentUpToDate: true,
   pennsieveAgentRunning: false,
   pennsieveAgentErrorMessage: null,
+  allServicesPassing: false,
 };
 
 export const backgroundServicesSlice = (set) => ({
