@@ -12420,7 +12420,7 @@ $("#guided-submission-completion-date-manual").change(function () {
 /////////////////////////////////////////////////////////
 
 const getGuidedDatasetName = () => {
-  return window.sodaJSONObj["digital-metadata"]["name"];
+  return window.sodaJSONObj["digital-metadata"]["name"] || "";
 };
 
 const getGuidedDatasetSubtitle = () => {

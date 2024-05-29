@@ -15,11 +15,23 @@ export const dropDownSlice = (set) => ({
 export const setDropdownState = (id, selectedValue) => {
   useGlobalStore.setState(
     produce((state) => {
-      const dropDownOptions = useGlobalStore.getState().dropDownState[id].options;
+      // Get the options for the dropdown related to the id passed in
+      const dropDownOptions = useGlobalStore
+        .getState()
+        .dropDownState[id].options.filter((option) => option !== "");
+
+      // If the selected value is not in the dropdown options, set the value
+      // to an empty string and add an empty string to the dropdown options
       if (!dropDownOptions.includes(selectedValue)) {
-        return;
+        state.dropDownState[id].options = ["", ...dropDownOptions];
+        state.dropDownState[id].selectedValue = "";
+      } else {
+        // If the selected value is in the dropdown options, set the selected value
+        // to the selected value passed in and set the dropdown options to the
+        // dropdown options (To remove the empty string if it exists)
+        state.dropDownState[id].options = dropDownOptions;
+        state.dropDownState[id].selectedValue = selectedValue;
       }
-      state.dropDownState[id].selectedValue = selectedValue || "";
     })
   );
 };
