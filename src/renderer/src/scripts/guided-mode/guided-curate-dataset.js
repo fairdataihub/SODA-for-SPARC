@@ -5203,7 +5203,7 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-name-subtitle-tab") {
       // Get the dataset name and subtitle from the JSON obj
-      const datasetName = getGuidedDatasetName();
+      const datasetName = getGuidedDatasetName() || "";
 
       // Set the zustand datasetName state value to the dataset name
       setGuidedDatasetName(datasetName);
@@ -12407,7 +12407,7 @@ $("#guided-submission-completion-date-manual").change(function () {
 /////////////////////////////////////////////////////////
 
 const getGuidedDatasetName = () => {
-  return window.sodaJSONObj["digital-metadata"]["name"];
+  return window.sodaJSONObj["digital-metadata"]["name"] || "";
 };
 
 const getGuidedDatasetSubtitle = () => {

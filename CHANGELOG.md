@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## v15.0.1 - 2024-05-30
 
+## Feature Additions:
+
+- Manifest generation text is less prominent.
+
 ## Bug fixes:
 
 - Fixed an issue wherre uploads fail for fresh Pennsieve Agent installs.
