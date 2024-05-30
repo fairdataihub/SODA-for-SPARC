@@ -68,16 +68,8 @@ class UploadManifestSession:
     def df_mid_has_progress(self):
         if self.ps is None:
             self.ps = Pennsieve()
-        try: 
-            self.ps.manifest.sync(self.df_mid)
-        except Exception as e:
-            return False
-        
-        try: 
-            mfs = self.ps.list_manifests()
-        except Exception as e:
-            # there are no manifests created yet
-            return False
+        self.ps.manifest.sync(self.df_mid)
+        mfs = self.ps.list_manifests()
         return any(mf.id == self.df_mid and mf.status == "Initiated" for mf in mfs)
     
     def get_remaining_file_count(self, mid, total_files):
