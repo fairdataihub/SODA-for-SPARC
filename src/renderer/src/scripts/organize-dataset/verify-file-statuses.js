@@ -63,6 +63,7 @@ const getVerifiedFilesFromManifest = async (targetPennsieveManifestId) => {
     continuationToken
   );
   let files = filesBatchResponse["files"];
+  console.log("Files: ", files);
   continuationToken = filesBatchResponse["continuation_token"];
   processFilesPage(files, finalizedFiles, failedFilesPathsList);
   while (continuationToken !== "") {
@@ -72,6 +73,7 @@ const getVerifiedFilesFromManifest = async (targetPennsieveManifestId) => {
       continuationToken
     );
     files = filesBatchResponse["files"];
+    console.log("Files: ", files);
     continuationToken = filesBatchResponse["continuation_token"];
     processFilesPage(files, finalizedFiles, failedFilesPathsList);
   }
