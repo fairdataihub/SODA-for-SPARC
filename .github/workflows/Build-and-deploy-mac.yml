@@ -37,7 +37,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "lts"
+          node-version: "lts/hydrogen"
 
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
