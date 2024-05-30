@@ -42,7 +42,7 @@ window.generateRCFilesHelper = (type) => {
   if (textValue === "") {
     Swal.fire({
       title: "Incomplete information",
-      text: "Plase fill in the textarea.",
+      text: "Please fill in the textarea.",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       icon: "error",
