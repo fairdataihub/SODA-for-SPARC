@@ -4,7 +4,7 @@ import { produce } from "immer";
 const initialState = {
   backgroundServicesChecksInProgress: true,
   backgroundServicesChecksSuccessful: false,
-  internetConnectionCheckSuccessful: false,
+  backgroundServicesError: null,
   pennsieveAgentInstalled: false,
   pennsieveAgentDownloadURL: null,
   pennsieveAgentUpToDate: true,
@@ -23,6 +23,16 @@ export const setBackgroundServicesChecksInProgress = (inProgress) => {
   );
 };
 
+export const setBackgroundServicesError = (title, message) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.backgroundServicesChecksInProgress = false;
+      state.backgroundServicesChecksSuccessful = false;
+      state.backgroundServicesError = { title, message };
+    })
+  );
+};
+
 export const setBackgroundServicesChecksSuccessful = (successful) => {
   useGlobalStore.setState(
     produce((state) => {
@@ -36,14 +46,6 @@ export const resetBackgroundServicesState = () => {
   useGlobalStore.setState(
     produce((state) => {
       Object.assign(state, initialState);
-    })
-  );
-};
-
-export const setInternetConnectionCheckSuccessful = (connectionStatus) => {
-  useGlobalStore.setState(
-    produce((state) => {
-      state.internetConnectionCheckSuccessful = connectionStatus;
     })
   );
 };

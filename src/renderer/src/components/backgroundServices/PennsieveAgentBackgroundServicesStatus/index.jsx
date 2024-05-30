@@ -1,5 +1,5 @@
-import { Text, Stack, Button, Group, Container, Center, Alert } from "@mantine/core";
-import { IconBroadcastOff, IconTool, IconAlertCircle } from "@tabler/icons-react";
+import { Text, Stack, Button, Group, Container, Center, Alert, Loader } from "@mantine/core";
+import { IconBroadcastOff, IconTool, IconAlertCircle, IconRocket } from "@tabler/icons-react";
 import ExternalLink from "../../buttons/ExternalLink";
 import CodeTextDisplay from "../../common/CodeTextDisplay";
 import useGlobalStore from "../../../stores/globalStore";
@@ -13,7 +13,7 @@ const RetryElement = () => {
         await window.checkPennsieveBackgroundServices();
       }}
     >
-      Retry
+      Retry Pennsieve Agent check
     </Button>
   );
 };
@@ -32,38 +32,40 @@ const PennsieveAgentBackgroundServicesStatus = () => {
     pennsieveAgentUpToDate,
     pennsieveAgentDownloadURL,
     pennsieveAgentOutputErrorMessage,
-    pennsieveAgentRunning,
-    internetConnectionCheckSuccessful,
     backgroundServicesChecksInProgress,
+    backgroundServicesError,
   } = useGlobalStore((state) => ({
     pennsieveAgentInstalled: state.pennsieveAgentInstalled,
     pennsieveAgentUpToDate: state.pennsieveAgentUpToDate,
     pennsieveAgentDownloadURL: state.pennsieveAgentDownloadURL,
     pennsieveAgentOutputErrorMessage: state.pennsieveAgentOutputErrorMessage,
-    pennsieveAgentRunning: state.pennsieveAgentRunning,
-    internetConnectionCheckSuccessful: state.internetConnectionCheckSuccessful,
     backgroundServicesChecksInProgress: state.backgroundServicesChecksInProgress,
+    backgroundServicesError: state.backgroundServicesError,
   }));
 
+  /* Display a loading div while the background checks are being performed */
   if (backgroundServicesChecksInProgress) {
     return (
-      <Center>
-        <Text>Checking Pennsieve Agent status</Text>
-      </Center>
+      <Stack mt="sm" align="center">
+        <Text size="lg" fw={700}>
+          Ensuring you are ready to upload to Pennsieve
+        </Text>
+        <Loader color="orange" type="bars" />
+      </Stack>
     );
   }
 
-  if (!internetConnectionCheckSuccessful) {
+  /* The backgroundServicesError is true when a non-agent issue occurs such as no internet */
+  if (backgroundServicesError) {
     return (
       <Stack mt="sm" align="center">
         <Alert
           variant="light"
           color="blue"
-          title="You are not connected to the internet"
-          icon={<IconBroadcastOff />}
+          title={backgroundServicesError.title}
+          icon={<IconAlertCircle />}
         >
-          An internet connection is required to upload to pennsieve. Please connect to the internet
-          and click the try again button below.
+          {backgroundServicesError.message}
         </Alert>
         <RetryElement />
       </Stack>
@@ -125,7 +127,14 @@ const PennsieveAgentBackgroundServicesStatus = () => {
     );
   }
 
-  return <Text>Installed</Text>;
+  return (
+    <Stack mt="sm" align="center">
+      <Text size="lg" fw={700}>
+        The Pennsieve Agent is running and ready to upload
+      </Text>
+      <IconRocket />
+    </Stack>
+  );
 };
 
 export default PennsieveAgentBackgroundServicesStatus;

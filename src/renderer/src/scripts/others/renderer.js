@@ -70,11 +70,11 @@ import useGlobalStore from "../../stores/globalStore";
 import {
   resetBackgroundServicesState,
   setBackgroundServicesChecksSuccessful,
-  setInternetConnectionCheckSuccessful,
   setPennsieveAgentInstalled,
   setPennsieveAgentDownloadURL,
   setPennsieveAgentUpToDate,
   setPennsieveAgentOutputErrorMessage,
+  setBackgroundServicesError,
 } from "../../stores/slices/backgroundServicesSlice";
 
 // add jquery to the window object
@@ -588,15 +588,15 @@ window.checkPennsieveBackgroundServices = async () => {
     // Step 0: Reset the background services state in the store
     resetBackgroundServicesState();
 
-    await window.wait(2000);
+    await window.wait(3000);
 
     // Step 1: Check the internet connection
     const userConnectedToInternet = await window.checkInternetConnection();
-    console.log("User connected to the internet: ", userConnectedToInternet);
-    setInternetConnectionCheckSuccessful(userConnectedToInternet);
     if (!userConnectedToInternet) {
-      console.log("User not connected to the internet");
-      setBackgroundServicesChecksSuccessful(false);
+      setBackgroundServicesError(
+        "No Internet Connection",
+        "It seems that you are not connected to the internet. Please check your connection and try again."
+      );
       return;
     }
 
@@ -628,12 +628,39 @@ window.checkPennsieveBackgroundServices = async () => {
       const emessage = userErrorMessage(error);
       setPennsieveAgentOutputErrorMessage(emessage);
     }
-    setPennsieveAgentOutputErrorMessage("UNIQUE constraint failed:");
-    setBackgroundServicesChecksSuccessful(false);
-    return;
 
-    const pennsieveAgentUpToDate = await window.checkIfPennsieveAgentIsUpToDate();
-    setPennsieveAgentUpToDate(pennsieveAgentUpToDate);
+    // Get the version of the Pennsieve agent
+    let usersPennsieveAgentVersion;
+    try {
+      const versionObj = await getPennsieveAgentVersion();
+      usersPennsieveAgentVersion = versionObj["Agent Version"];
+    } catch (error) {
+      const emessage = userErrorMessage(error);
+      setPennsieveAgentOutputErrorMessage(emessage);
+      setBackgroundServicesChecksSuccessful(false);
+      return;
+    }
+
+    let agentDownloadUrl;
+    let latestPennsieveAgentVersion;
+
+    try {
+      [agentDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
+    } catch (error) {}
+
+    if (usersPennsieveAgentVersion !== latestPennsieveAgentVersion) {
+      // Stop the Pennsieve agent if it is running to prevent any issues when updating while the agent is running
+      try {
+        await stopPennsieveAgent();
+      } catch (error) {
+        // Note: This error is not critical so we do not need to throw it
+        clientError(error);
+      }
+    }
+
+    console.log("Users Pennsieve agent version: ", usersPennsieveAgentVersion);
+
+    const pennsieveAgentUpToDate = 4;
 
     if (!pennsieveAgentUpToDate) {
       // If the Pennsieve agent is not up to date, get the download URL and set it in the store
@@ -642,6 +669,9 @@ window.checkPennsieveBackgroundServices = async () => {
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
       return;
     }
+    console.log("Pennsieve Agent checks complete");
+    // If we get to this point, it means all the background services are operational
+    setBackgroundServicesChecksSuccessful(true);
   } catch (error) {
     console.log("Error checking Pennsieve background services: ", error);
   }
