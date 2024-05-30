@@ -195,9 +195,9 @@ const fill_info_details = () => {
     true
   );
   let workspace = $("#bf-organization-curate-first-question").text();
-  addCardDetail("Selected workspace", workspace, 1, "Question-generate-dataset-BF-account", true);
+  addCardDetail("Pennsieve workspace", workspace, 1, "Question-generate-dataset-BF-account", true);
   addCardDetail(
-    "Dataset name",
+    "Pennsieve dataset name",
     $("#inputNewNameDataset-upload-dataset").val().trim(),
     1,
     "inputNewNameDataset",
