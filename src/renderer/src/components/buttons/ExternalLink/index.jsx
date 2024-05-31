@@ -1,7 +1,7 @@
 import { Button, Anchor, Text } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
 
-const ExternalLink = ({ href, buttonText, buttonType }) => {
+const ExternalLink = ({ href, buttonText, buttonType, buttonSize }) => {
   if (buttonType === "button") {
     return (
       <Button
@@ -9,10 +9,30 @@ const ExternalLink = ({ href, buttonText, buttonType }) => {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        size="lg"
+        size={buttonSize || "lg"}
         radius="md"
         variant="light"
         rightSection={<IconExternalLink size={20} />}
+      >
+        {buttonText}
+      </Button>
+    );
+  }
+  if (buttonType === "inline") {
+    return (
+      <Button
+        component="a"
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        size={"xs"}
+        pl="xs"
+        pr="xs"
+        ml="xs"
+        mr="xs"
+        radius="md"
+        variant="light"
+        rightSection={<IconExternalLink size={15} />}
       >
         {buttonText}
       </Button>

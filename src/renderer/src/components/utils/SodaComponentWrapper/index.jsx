@@ -18,6 +18,13 @@ const theme = createTheme({
     ],
   },
   primaryColor: "SodaGreen",
+  fontSizes: {
+    xs: "0.75rem",
+    sm: "0.875rem",
+    md: "1rem", // (default)
+    lg: "1.125rem",
+    xl: "1.25rem",
+  },
 });
 
 const SodaComponentWrapper = ({ children, layout }) => {

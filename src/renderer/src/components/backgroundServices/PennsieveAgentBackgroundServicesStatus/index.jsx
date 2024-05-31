@@ -6,6 +6,8 @@ import useGlobalStore from "../../../stores/globalStore";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 
+const retryButtonText = "Retry Pennsieve Agent check";
+
 const RetryElement = () => {
   return (
     <Button
@@ -13,19 +15,74 @@ const RetryElement = () => {
         await window.checkPennsieveBackgroundServices();
       }}
     >
-      Retry Pennsieve Agent check
+      {retryButtonText}
     </Button>
   );
 };
 
-const KnownPennsieveAgentOutputErrorHelper = ({ pennsieveAgentErrorMessage }) => {
+const KnownIssueFixerDisplay = () => {
+  return (
+    <Stack mt="sm" align="center">
+      <Text size="xl" fw={700}>
+        asdf
+      </Text>
+      <Button>asdf</Button>
+    </Stack>
+  );
+};
+
+const PennsieveAgentErrorMessageDisplay = ({ pennsieveAgentErrorMessage }) => {
   const knownErrorMessages = [
     "UNIQUE constraint failed:",
     "NotAuthorizedException: Incorrect username or password.",
     "401 Error Creating new UserSettings",
   ];
-  return <Text>{knownErrorMessages.includes(pennsieveAgentErrorMessage) && "Known error"}</Text>;
+  const isKnownError = knownErrorMessages.some((message) =>
+    pennsieveAgentErrorMessage.includes(message)
+  );
+  return (
+    <Stack mt="sm" align="center">
+      <Alert
+        variant="light"
+        color="blue"
+        title={
+          isKnownError
+            ? "A known error occured while starting the Pennsieve agent"
+            : "The Pennsieve Agent failed to start"
+        }
+        icon={<IconAlertCircle />}
+        style={{ width: "100%" }}
+      >
+        <CodeTextDisplay text={pennsieveAgentErrorMessage} />
+
+        {isKnownError ? (
+          <Stack mt="sm" align="center">
+            <Text>
+              This is a known issue that can be fixed by following the instructions below. After
+              troubleshooting, click the {retryButtonText} button to check if the issue has been
+              resolved.
+            </Text>
+            <KnownIssueFixerDisplay />
+          </Stack>
+        ) : (
+          <Text my="sm">
+            Please view the
+            <ExternalLink
+              href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda"
+              buttonText="SODA documentation"
+              buttonType="inline"
+            />
+            to troubleshoot this issue. After troubleshooting, click the {retryButtonText}
+            button to check if the issue has been resolved.
+          </Text>
+        )}
+        {isKnownError && <KnownIssueFixerDisplay />}
+      </Alert>
+      <RetryElement />
+    </Stack>
+  );
 };
+
 const PennsieveAgentBackgroundServicesStatus = () => {
   const {
     pennsieveAgentInstalled,
@@ -47,8 +104,8 @@ const PennsieveAgentBackgroundServicesStatus = () => {
   if (backgroundServicesChecksInProgress) {
     return (
       <Stack mt="sm" align="center">
-        <Text size="lg" fw={700}>
-          Ensuring you are ready to upload to Pennsieve
+        <Text size="xl" fw={700}>
+          Ensuring the Pennsieve Agent is running
         </Text>
         <Loader color="orange" type="bars" />
       </Stack>
@@ -78,15 +135,19 @@ const PennsieveAgentBackgroundServicesStatus = () => {
         <Alert
           variant="light"
           color="blue"
-          title="You do not have the Pennsieve Agent installed"
+          title="Pennsieve Agent not installed"
           icon={<IconTool />}
         >
-          please download and install the Pennsieve Agent. Once the Pennsieve Agent is installed,
-          click the button below to ensure it is installed properly.
+          Please download and install the Pennsieve Agent by clicking the button below. After
+          installing the agent, click the {retryButtonText} button to ensure the agent was installed
+          properly.
+          <br />
+          <br />
           <ExternalLink
             href={pennsieveAgentDownloadURL}
-            buttonText="Download the Pennsieve Agent"
+            buttonText="Download the Pennsieve Agent here"
             buttonType="button"
+            buttonSize="md"
           />
         </Alert>
         <RetryElement />
@@ -96,25 +157,9 @@ const PennsieveAgentBackgroundServicesStatus = () => {
 
   if (pennsieveAgentOutputErrorMessage) {
     return (
-      <Stack mt="sm" align="center">
-        <Alert
-          variant="light"
-          color="blue"
-          title="An error occurred while starting the Pennsieve Agent"
-          icon={<IconAlertCircle />}
-          style={{ width: "100%" }}
-        >
-          <Text my="sm">
-            An internet connection is required to upload to pennsieve. Please connect to the
-            internet and click the try again button below.
-          </Text>
-          <CodeTextDisplay text={pennsieveAgentOutputErrorMessage} />
-          <KnownPennsieveAgentOutputErrorHelper
-            pennsieveAgentErrorMessage={pennsieveAgentOutputErrorMessage}
-          />
-        </Alert>
-        <RetryElement />
-      </Stack>
+      <PennsieveAgentErrorMessageDisplay
+        pennsieveAgentErrorMessage={pennsieveAgentOutputErrorMessage}
+      />
     );
   }
 
@@ -129,10 +174,12 @@ const PennsieveAgentBackgroundServicesStatus = () => {
 
   return (
     <Stack mt="sm" align="center">
-      <Text size="lg" fw={700}>
-        The Pennsieve Agent is running and ready to upload
+      <Text size="xl" fw={700}>
+        The Pennsieve Agent is running and ready to upload!
       </Text>
-      <IconRocket />
+      <Text size="lg" fw={600}>
+        Click the "Save and Continue" button below to start uploading your data to Pennsieve.
+      </Text>
     </Stack>
   );
 };
