@@ -1,4 +1,12 @@
 {
+  "15.0.1": {
+    "announcements": {
+      "bug-fixes": [
+        "Fixed a bug where the 'Upload Dataset' feature would fail for fresh Pennsieve Agent installs."
+      ],
+      "features": []
+    }
+  },
   "15.0.0": {
     "announcements": {
       "bug-fixes": [],

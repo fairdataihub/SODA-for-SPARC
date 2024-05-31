@@ -5,6 +5,17 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v15.0.1 - 2024-05-30
+
+## Feature Additions:
+
+- Manifest generation text is less prominent.
+
+## Bug fixes:
+
+- Fixed an issue wherre uploads fail for fresh Pennsieve Agent installs.
+- Fixed an issue where react components were not reinitializing and old values were not reset in the UI.
+
 ## v15.0.0 - 2024-05-23
 
 ## Feature Additions:
