@@ -5536,7 +5536,7 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-derivative-data-organization-tab") {
-      const microScopyImages = window.sodaJSONObj["confirmed-microscopy-images"];
+      const microScopyImages = window.sodaJSONObj["confirmed-microscopy-images"] || [];
       for (const image of microScopyImages) {
         const imageRelativeDatasetStructurePath = image["relativeDatasetStructurePath"];
         console.log("Creating derivative preview for image:", imageRelativeDatasetStructurePath);
