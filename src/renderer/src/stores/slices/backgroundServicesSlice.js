@@ -9,6 +9,8 @@ const initialState = {
   pennsieveAgentDownloadURL: null,
   pennsieveAgentUpToDate: true,
   pennsieveAgentOutputErrorMessage: null,
+  usersPennsieveAgentVersion: null,
+  latestPennsieveAgentVersion: null,
 };
 
 export const backgroundServicesSlice = (set) => ({
@@ -66,10 +68,29 @@ export const setPennsieveAgentDownloadURL = (downloadURL) => {
   );
 };
 
-export const setPennsieveAgentUpToDate = (upToDate) => {
+export const setPennsieveAgentOutOfDate = (usersAgentVersion, latestAgentVersion) => {
   useGlobalStore.setState(
     produce((state) => {
-      state.pennsieveAgentUpToDate = upToDate;
+      state.pennsieveAgentUpToDate = false;
+      state.usersPennsieveAgentVersion = usersAgentVersion;
+      state.latestPennsieveAgentVersion = latestAgentVersion;
+      state.backgroundServicesChecksInProgress = false;
+    })
+  );
+};
+
+export const setUsersPennsieveAgentVersion = (usersAgentVersion) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.usersPennsieveAgentVersion = usersAgentVersion;
+    })
+  );
+};
+
+export const setLatestPennsieveAgentVersion = (latestAgentVersion) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.latestPennsieveAgentVersion = latestAgentVersion;
     })
   );
 };

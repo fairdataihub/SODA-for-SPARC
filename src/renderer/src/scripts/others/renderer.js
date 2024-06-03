@@ -72,9 +72,9 @@ import {
   setBackgroundServicesChecksSuccessful,
   setPennsieveAgentInstalled,
   setPennsieveAgentDownloadURL,
-  setPennsieveAgentUpToDate,
   setPennsieveAgentOutputErrorMessage,
   setBackgroundServicesError,
+  setPennsieveAgentOutOfDate,
 } from "../../stores/slices/backgroundServicesSlice";
 
 // add jquery to the window object
@@ -643,6 +643,7 @@ window.checkPennsieveBackgroundServices = async () => {
     try {
       const versionObj = await getPennsieveAgentVersion();
       usersPennsieveAgentVersion = versionObj["Agent Version"];
+      console.log("Set usersPennsieveAgentVersion: ", usersPennsieveAgentVersion);
     } catch (error) {
       const emessage = userErrorMessage(error);
       setPennsieveAgentOutputErrorMessage(
@@ -658,19 +659,26 @@ window.checkPennsieveBackgroundServices = async () => {
 
     try {
       [agentDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
-    } catch (error) {}
+    } catch (error) {
+      const emessage = userErrorMessage(error);
+      setBackgroundServicesError(
+        "Unable to get information about the latest Pennsieve Agent release",
+        emessage
+      );
+      return;
+    }
+    usersPennsieveAgentVersion = "0.0.0";
+    latestPennsieveAgentVersion = "1.0.0";
 
     if (usersPennsieveAgentVersion !== latestPennsieveAgentVersion) {
-      setUsersPennsieveAgentVersion(usersPennsieveAgentVersion);
-      setLatestPennsieveAgentVersion(latestPennsieveAgentVersion);
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
+      setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
       setBackgroundServicesChecksSuccessful(false);
+      return;
     }
 
     console.log("Users Pennsieve agent version: ", usersPennsieveAgentVersion);
-
-    const pennsieveAgentUpToDate = 4;
 
     if (!pennsieveAgentUpToDate) {
       // If the Pennsieve agent is not up to date, get the download URL and set it in the store
@@ -689,6 +697,306 @@ window.checkPennsieveBackgroundServices = async () => {
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 window.run_pre_flight_checks = async (check_update = true) => {
+  try {
+    window.log.info("Running pre flight checks");
+
+    if (!preFlightCheckNotyf) {
+      preFlightCheckNotyf = window.notyf.open({
+        duration: 25000,
+        type: "info",
+        duration: "15000",
+        message: "Checking SODA's connection to Pennsieve...",
+      });
+    }
+
+    // Start the Pennsieve agent
+    try {
+      await startPennsieveAgent();
+    } catch (error) {
+      clientError(error);
+      const emessage = userErrorMessage(error);
+
+      // check if the Agent is failing to start due to Unique constraint violation or due to the Agent caching an outdated username and password after the user updates their Key + Secret
+      // if so then we prompt the user to allow us to remove the pennsieve Agent DB files and try again
+      if (
+        emessage.includes("UNIQUE constraint failed:") ||
+        emessage.includes("NotAuthorizedException: Incorrect username or password.") ||
+        emessage.includes("401 Error Creating new UserSettings")
+      ) {
+        const { value: deleteFilesRerunChecks } = await Swal.fire({
+          icon: "error",
+          title: "The Pennsieve Agent Failed to Start",
+          html: `
+                <br />
+                <div class="div--code-block-error">${emessage}</div>
+                <br />
+                <p style="text-align: left">This is a known issue with the Pennsieve Agent and is typically resolved by deleting the local Pennsieve Agent database files from your computer. Would you like SODA to do that and restart the Agent?</p>`,
+          width: 800,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showCancelButton: true,
+          showCloseButton: true,
+          reverseButtons: reverseSwalButtons,
+          confirmButtonText: "Yes",
+          cancelButtonText: "No",
+        });
+
+        if (!deleteFilesRerunChecks) {
+          return false;
+        }
+
+        // wait for the Agent to stop using the db files so they may be deleted
+        await wait(1000);
+        // delete any db files that exist
+        if (window.fs.existsSync(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db`))
+          await window.fs.unlink(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db`);
+        if (window.fs.existsSync(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db-shm`))
+          await window.fs.unlink(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db-shm`);
+        if (window.fs.existsSync(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db-wal`))
+          await window.fs.unlink(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db-wal`);
+
+        // rerun checks
+        return await run_pre_flight_checks();
+      }
+
+      const { value: rerunPreFlightChecks } = await Swal.fire({
+        icon: "info",
+        title: "The Pennsieve Agent failed to start",
+        html: `
+          <br />
+          <div class="div--code-block-error">${emessage}</div>
+          <br />
+          Please view the <a href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda" target="_blank">SODA documentation</a>
+          to troubleshoot this issue. Then click the "Try again" button below to ensure the issue has been fixed.
+        `,
+        width: 800,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showCancelButton: true,
+        showCloseButton: true,
+        reverseButtons: window.reverseSwalButtons,
+        confirmButtonText: "Try again",
+        cancelButtonText: "Skip for now",
+      });
+      // If the user clicks the retry button, rerun the pre flight checks
+      if (rerunPreFlightChecks) {
+        return await window.run_pre_flight_checks();
+      }
+
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        window.notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
+      }
+      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
+      return false;
+    }
+
+    // Get the version of the Pennsieve agent
+    let usersPennsieveAgentVersion;
+    try {
+      const versionObj = await getPennsieveAgentVersion();
+      usersPennsieveAgentVersion = versionObj["Agent Version"];
+    } catch (error) {
+      clientError(error);
+      const emessage = userErrorMessage(error);
+      const { value: rerunPreFlightChecks } = await Swal.fire({
+        icon: "info",
+        title: "Soda was unable to get the Pennsieve Agent Version",
+        html: `
+          <br />
+          <div class="div--code-block-error">${emessage}</div>
+          <br />
+          Please view the <a href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda" target="_blank">SODA documentation</a>
+          to troubleshoot this issue. Then click the "Try again" button below to ensure the issue has been fixed.
+        `,
+        width: 800,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showCancelButton: true,
+        showCloseButton: true,
+        reverseButtons: window.reverseSwalButtons,
+        confirmButtonText: "Try again",
+        cancelButtonText: "Skip for now",
+      });
+      // If the user clicks the retry button, rerun the pre flight checks
+      if (rerunPreFlightChecks) {
+        return await window.run_pre_flight_checks();
+      }
+
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        window.notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
+      }
+      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
+      return false;
+    }
+
+    let agentDownloadUrl;
+    let latestPennsieveAgentVersion;
+
+    // Note: We only want to check the Pennsieve agent version if the user has not already selected that they are ok with an outdated agent
+    if (!userHasSelectedTheyAreOkWithOutdatedAgent) {
+      // First get the latest Pennsieve agent version on GitHub
+      // This is to ensure the user has the latest version of the agent
+      try {
+        [agentDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
+      } catch (error) {
+        const emessage = userErrorMessage(error);
+        const retryAgentVersionCheck = await swalConfirmAction(
+          "warning",
+          "",
+          `
+            <br />
+            <b>${emessage}</b>
+            <br /><br />
+            Would you like to retry or continue with the currently installed version of the Pennsieve agent?
+          `,
+          "Retry",
+          "Contrinue with current version"
+        );
+        if (retryAgentVersionCheck) {
+          return await run_pre_flight_checks();
+        } else {
+          userHasSelectedTheyAreOkWithOutdatedAgent = true;
+        }
+      }
+    }
+
+    if (
+      !userHasSelectedTheyAreOkWithOutdatedAgent &&
+      usersPennsieveAgentVersion !== latestPennsieveAgentVersion
+    ) {
+      // Stop the Pennsieve agent if it is running to prevent any issues when updating while the agent is running
+      try {
+        await stopPennsieveAgent();
+      } catch (error) {
+        // Note: This error is not critical so we do not need to throw it
+        clientError(error);
+      }
+      const { value: rerunPreFlightChecks } = await Swal.fire({
+        icon: "info",
+        title: "Installed Pennsieve agent does not match Pennsieve's latest agent release",
+        html: `
+          Your Pennsieve agent version: <b>${usersPennsieveAgentVersion}</b>
+          <br />
+          Latest Pennsieve agent version: <b>${latestPennsieveAgentVersion}</b>
+          <br />
+          <br />
+          To download Pennsieve's latest agent release, please visit the link below and follow the instructions.
+          <br />
+          <br />
+          <a href="${agentDownloadUrl}" target="_blank" rel="noopener noreferrer">Download the latest Pennsieve agent</a>
+          <br />
+          <br />
+          Once you have downloaded the latest Pennsieve agent, please click the button below to ensure that the Pennsieve agent was updated correctly.
+        `,
+        width: 800,
+        heightAuto: false,
+        backdrop: "rgba(0, 0, 0, 0.4)",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showCancelButton: true,
+        showCloseButton: true,
+        reverseButtons: window.reverseSwalButtons,
+        confirmButtonText: "Check updated Pennsieve agent version",
+        cancelButtonText: "Skip for now",
+      });
+      // If the user clicks the retry button, rerun the pre flight checks
+      if (rerunPreFlightChecks) {
+        return await window.run_pre_flight_checks();
+      }
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        window.notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
+      }
+
+      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
+      return false;
+    }
+
+    if (check_update) {
+      checkNewAppVersion();
+    }
+
+    // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
+    //           under the default profile does not mean that key is associated with the user's current workspace.
+    let matching = await window.defaultProfileMatchesCurrentWorkspace();
+    if (!matching) {
+      log.info("Default api key is for a different workspace");
+      await window.switchToCurrentWorkspace();
+      return false;
+    }
+
+    if (launchAnnouncement) {
+      await checkForAnnouncements("announcements");
+      launchAnnouncement = false;
+    }
+
+    // Dismiss the preflight check notification if it is still open
+    if (preFlightCheckNotyf) {
+      window.notyf.dismiss(preFlightCheckNotyf);
+      preFlightCheckNotyf = null;
+    }
+
+    window.notyf.open({
+      type: "final",
+      message: "SODA connected to Pennsieve successfully!",
+    });
+
+    window.log.info("All pre flight checks passed");
+
+    // All pre flight checks passed, return true
+    return true;
+  } catch (error) {
+    clientError(error);
+    // Dismiss the preflight check notification if it is still open
+    if (preFlightCheckNotyf) {
+      window.notyf.dismiss(preFlightCheckNotyf);
+      preFlightCheckNotyf = null;
+    }
+    // Stop the Pennsieve agent if it is running
+    try {
+      await stopPennsieveAgent();
+    } catch (error) {
+      // Note: This error is not critical so we do not need to throw it
+      clientError(error);
+    }
+
+    const emessage = userErrorMessage(error);
+    const { value: retryChecks } = await Swal.fire({
+      icon: "info",
+      title: `Error checking SODA's connection to Pennsieve`,
+      html: `${emessage}`,
+      width: 600,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      confirmButtonText: "Retry",
+      cancelButtonText: "Skip for now",
+      reverseButtons: window.reverseSwalButtons,
+    });
+    // If the user clicks retry, then run the preflight checks again
+    if (retryChecks) {
+      return await window.run_pre_flight_checks();
+    }
+    // If the user clicks skip for now, then return false
+    return false;
+  }
+};
+
+// Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
+window.run_pre_flight_checks_old = async (check_update = true) => {
   try {
     window.log.info("Running pre flight checks");
 
