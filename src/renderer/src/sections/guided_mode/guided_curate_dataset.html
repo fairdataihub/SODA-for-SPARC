@@ -5794,6 +5794,18 @@
               Would you like to verify your dataset files before continuing on to the last step of
               the data curation and sharing process?
             </h2>
+
+            <div id="manifest-creation-prohibited" class="info-dropdown mt-lg" style="justify-content: center; display: none;">
+              <i class="fas fa-info-circle"></i><p class="info-dropdown-text" data-dropdown-type="info" style="font-weight: 600; font-size: 16px;">Understanding file verification</p>
+             <i class="fas fa-chevron-right"></i>
+           </div>
+
+           <div class="info-container" style="max-width: 740px; margin: auto;">
+            <p class="help-text mb-0">
+              If you want to verify that the files you uploaded are on Pennsieve and that no file failed to be processed click 'Verify Files.' This is an optional step and you can skip it. 
+            </p>
+          </div>
+
             <div class="guided--radio-button-container">
               <button
                 class="ui primary basic button button-starts-local-dataset-copy-generation"
@@ -5808,6 +5820,114 @@
                 Skip and continue
               </button>
             </div>
+            
+            <div class="individual-question" id="Question-validate-dataset-upload" style="width: 70%">
+              <div class="ui form" style="width: 100%">
+                <div class="grouped fields">
+                  <!-- <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Confirm details for dataset generation</label> -->
+                  <div class="field" style="margin: 5px 0; width: auto">
+                    <div style="
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                        margin-top: 15px;
+                        height: auto;
+                        box-shadow: 0px 0px 10px #d5d5d5;
+                        padding: 15px 25px;
+                        border-radius: 5px;
+                      " id="div-validate-dataset-upload-header">
+                      <div>
+                        <p style="font-weight: 500; font-size: large;">Verified Dataset Files</p>
+                      </div>
+                      <div>
+                        <p id="verify-dataset-upload-files-count" style="font-weight: 500; font-size: large;">XX/XX Files</p>
+                      </div>
+                    </div>
+                    <p id="verify-dataset-upload-files-progress-para" style="margin-top: 9px; margin-left: 3px;"></p>     
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="individual-question" id="Question-validate-dataset-upload-2" style="width: 70%">
+              <div class="ui form" style="width: 100%">
+                <div class="grouped fields">
+                  <div class="field" style="margin: 5px 0; width: auto" id="div-validate-dataset-failed">
+                    <h4 style="text-align: center; font-size: large; font-weight: 800; color: black;">Files that failed to be uploaded to Pennsieve</h4>
+                    <p>The files below were uploaded to Pennsieve, but for an unknown reason were unable to be kept on the platform. Please take note of the failed 
+                      files below and try to upload them again. If this keeps happening reach out to someone@gamil.com.
+                    </p>
+
+                    <div style="width: 100%; height: 300px; overflow: auto;">
+                    <table id="validate-dataset-failed-table" style="background-color: lightgray;">
+                      <tr id="validate-dataset-failed-table-header" style="border-bottom: solid black 1px; padding-top: 10px; padding-left: 10px;">
+                        <th style="color: black; text-align: left; font-size: large; font-weight: 500;">File Path</th>
+                      </tr>
+                      <tbody style="padding-top: 10px; padding-left: 10px;  overflow-y: scroll;">
+                      </tbody>
+                    </table>
+                    </div>
+
+                    <div style="display: flex; flex-direction: row; margin-top: 15px; justify-content: center; width: 100%;">
+                      <button 
+                      id="verify-file-status-retry-upload"
+                      class="btn_animated return-btn" style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: center;
+                      font-size: 15px;
+                      margin: 0 10px;
+                      width: 180px;
+                      height: 40px;
+                      border: none !important;
+                    ">Retry Upload</button>
+                      <button id="verify-file-status-download-list" class="ui basic positive button guided--radio-button" style="margin-top: 0px !important; width: 180px; height: 40px;">Download list</button>
+                      <button class="btn_animated skip exit" style="
+                          display: flex;
+                          flex-direction: row;
+                          justify-content: center;
+                          font-size: 15px;
+                          cursor: pointer;
+                          
+                          margin: 0 10px;
+                          width: 180px;
+                          height: 40px;
+                          background: #fff;
+                          color: green;
+                          font-weight: 600;
+                          border: 1px solid green;
+                        ">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-arrow-right false"><path d="M5 12l14 0"></path><path d="M13 18l6 -6"></path><path d="M13 6l6 6"></path></svg>
+                        Save and Continue
+                    </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="individual-question" id="Question-validate-dataset-upload-3" style="width: 70%">
+              <div class="ui form" style="width: 100%">
+                <div class="grouped fields">
+                  <div id="div-validate-dataset-success">
+                    <h4 style="text-align: center; font-size: large; font-weight: 800; color: black;">All files have been successfully verified and should be viewable on Pennsieve</h4>
+                    <div id="success-validated-files-lottie" class="success-validation-lottie"></div>
+                    <button onclick="window.exitCurate(true)" class="btn_animated return-btn" style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    font-size: 15px;
+                    margin: 50px 10px;
+                    width: 180px;
+                    height: 40px;
+                    border: none !important;
+                  ">Exit</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <h2 class="guided--text-user-directions" id="guided-dataset-upload-complete-message">
               Click "<span class="next-button-span"></span>" to go to the last step of the data
               curation and sharing process
