@@ -6708,7 +6708,8 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-dataset-generation-tab") {
-      document.getElementById("guided-dataset-upload-complete-message").classList.add("hidden");
+      // document.getElementById("guided-dataset-upload-complete-message").classList.add("hidden");
+      document.getElementById("guided--verify-files").classList.add("hidden");
     }
 
     if (targetPageID === "guided-dataset-dissemination-tab") {
@@ -15627,7 +15628,8 @@ const guidedUploadDatasetToPennsieve = async () => {
       await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
 
       //Display the click next text
-      document.getElementById("guided-dataset-upload-complete-message").classList.remove("hidden");
+      // document.getElementById("guided-dataset-upload-complete-message").classList.remove("hidden");
+      document.getElementById("guided--verify-files").classList.remove("hidden")
 
       scrollToBottomOfGuidedBody();
 
