@@ -15629,7 +15629,7 @@ const guidedUploadDatasetToPennsieve = async () => {
 
       //Display the click next text
       // document.getElementById("guided-dataset-upload-complete-message").classList.remove("hidden");
-      document.getElementById("guided--verify-files").classList.remove("hidden")
+      document.getElementById("guided--verify-files").classList.remove("hidden");
 
       scrollToBottomOfGuidedBody();
 
