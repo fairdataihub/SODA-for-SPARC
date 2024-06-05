@@ -2,12 +2,12 @@ import useGlobalStore from "../globalStore";
 import { produce } from "immer";
 
 const initialState = {
-  backgroundServicesChecksInProgress: true,
-  backgroundServicesChecksSuccessful: false,
+  backgroundServicesChecksInProgress: false,
+  backgroundServicesChecksSuccessful: null,
   backgroundServicesError: null,
-  pennsieveAgentInstalled: false,
+  pennsieveAgentInstalled: null,
   pennsieveAgentDownloadURL: null,
-  pennsieveAgentUpToDate: true,
+  pennsieveAgentUpToDate: null,
   pennsieveAgentOutputErrorMessage: null,
   usersPennsieveAgentVersion: null,
   latestPennsieveAgentVersion: null,
@@ -17,20 +17,18 @@ export const backgroundServicesSlice = (set) => ({
   ...initialState,
 });
 
-export const setBackgroundServicesChecksInProgress = (inProgress) => {
-  useGlobalStore.setState(
-    produce((state) => {
-      state.backgroundServicesChecksInProgress = inProgress;
-    })
-  );
-};
-
 export const setBackgroundServicesError = (title, message) => {
   useGlobalStore.setState(
     produce((state) => {
       state.backgroundServicesError = { title, message };
-      state.backgroundServicesChecksInProgress = false;
-      state.backgroundServicesChecksSuccessful = false;
+    })
+  );
+};
+
+export const setBackgroundServicesChecksInProgress = (inProgress) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.backgroundServicesChecksInProgress = inProgress;
     })
   );
 };
@@ -74,8 +72,6 @@ export const setPennsieveAgentOutOfDate = (usersAgentVersion, latestAgentVersion
       state.pennsieveAgentUpToDate = false;
       state.usersPennsieveAgentVersion = usersAgentVersion;
       state.latestPennsieveAgentVersion = latestAgentVersion;
-      state.backgroundServicesChecksInProgress = false;
-      state.backgroundServicesChecksSuccessful = false;
     })
   );
 };
@@ -100,8 +96,6 @@ export const setPennsieveAgentOutputErrorMessage = (errorMessage) => {
   useGlobalStore.setState(
     produce((state) => {
       state.pennsieveAgentOutputErrorMessage = errorMessage;
-      state.backgroundServicesChecksInProgress = false;
-      state.backgroundServicesChecksSuccessful = false;
     })
   );
 };

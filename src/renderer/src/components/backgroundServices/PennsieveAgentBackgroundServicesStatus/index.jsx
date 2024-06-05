@@ -102,7 +102,7 @@ const PennsieveAgentBackgroundServicesStatus = () => {
     latestPennsieveAgentVersion: state.latestPennsieveAgentVersion,
   }));
 
-  if (backgroundServicesChecksInProgress) {
+  if (backgroundServicesChecksInProgress === true) {
     return (
       <Stack mt="sm" align="center">
         <Text size="xl" fw={700}>
@@ -113,7 +113,7 @@ const PennsieveAgentBackgroundServicesStatus = () => {
     );
   }
 
-  if (backgroundServicesError) {
+  if (backgroundServicesError === true) {
     return (
       <Stack mt="sm" align="center">
         <Alert
@@ -130,7 +130,7 @@ const PennsieveAgentBackgroundServicesStatus = () => {
     );
   }
 
-  if (!pennsieveAgentInstalled) {
+  if (pennsieveAgentInstalled === false) {
     return (
       <Stack mt="sm" align="center">
         <Alert
@@ -163,11 +163,11 @@ const PennsieveAgentBackgroundServicesStatus = () => {
     );
   }
 
-  if (pennsieveAgentOutputErrorMessage) {
+  if (pennsieveAgentOutputErrorMessage !== null) {
     return <PennsieveAgentErrorMessageDisplay errorMessage={pennsieveAgentOutputErrorMessage} />;
   }
 
-  if (!pennsieveAgentUpToDate) {
+  if (pennsieveAgentUpToDate === false) {
     return (
       <Stack mt="sm" align="center">
         <Alert
@@ -202,6 +202,7 @@ const PennsieveAgentBackgroundServicesStatus = () => {
     );
   }
 
+  /* Pennsieve Agent is installed and up to date if we reach this point */
   return (
     <Stack mt="sm" align="center">
       <Text size="xl" fw={700}>

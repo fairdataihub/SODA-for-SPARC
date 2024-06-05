@@ -6040,8 +6040,6 @@ window.openPage = async (targetPageID) => {
           pennsieveIntroAccountDetailsText.innerHTML = "Error loading account details";
         }
       }
-
-      window.checkPennsieveBackgroundServices();
     }
 
     if (targetPageID === "guided-banner-image-tab") {
