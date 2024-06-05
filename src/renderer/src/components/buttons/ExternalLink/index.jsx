@@ -18,38 +18,18 @@ const ExternalLink = ({ href, buttonText, buttonType, buttonSize }) => {
       </Button>
     );
   }
-  if (buttonType === "inline") {
-    return (
-      <Button
-        component="a"
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        size={"xs"}
-        pl="xs"
-        pr="xs"
-        ml="xs"
-        mr="xs"
-        radius="md"
-        variant="light"
-        rightSection={<IconExternalLink size={15} />}
-      >
-        {buttonText}
-      </Button>
-    );
-  }
   if (buttonType === "anchor") {
     return (
       <Anchor
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        size="lg"
+        size="md"
         ml={6}
         style={{ whiteSpace: "nowrap", color: "#0070f3" }}
       >
         {buttonText}
-        <IconExternalLink size={18} style={{ marginLeft: "3px" }} />
+        <IconExternalLink size={18} style={{ marginLeft: "3px", marginRight: "3px" }} />
       </Anchor>
     );
   }

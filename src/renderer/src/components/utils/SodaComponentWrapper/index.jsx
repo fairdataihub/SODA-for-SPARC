@@ -19,11 +19,11 @@ const theme = createTheme({
   },
   primaryColor: "SodaGreen",
   fontSizes: {
-    xs: "0.75rem",
-    sm: "0.875rem",
+    xs: "0.8rem",
+    sm: "0.9rem",
     md: "1rem", // (default)
-    lg: "1.125rem",
-    xl: "1.25rem",
+    lg: "1.2rem",
+    xl: "1.4rem",
   },
 });
 

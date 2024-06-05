@@ -28,9 +28,9 @@ export const setBackgroundServicesChecksInProgress = (inProgress) => {
 export const setBackgroundServicesError = (title, message) => {
   useGlobalStore.setState(
     produce((state) => {
+      state.backgroundServicesError = { title, message };
       state.backgroundServicesChecksInProgress = false;
       state.backgroundServicesChecksSuccessful = false;
-      state.backgroundServicesError = { title, message };
     })
   );
 };
@@ -75,6 +75,7 @@ export const setPennsieveAgentOutOfDate = (usersAgentVersion, latestAgentVersion
       state.usersPennsieveAgentVersion = usersAgentVersion;
       state.latestPennsieveAgentVersion = latestAgentVersion;
       state.backgroundServicesChecksInProgress = false;
+      state.backgroundServicesChecksSuccessful = false;
     })
   );
 };
@@ -99,6 +100,8 @@ export const setPennsieveAgentOutputErrorMessage = (errorMessage) => {
   useGlobalStore.setState(
     produce((state) => {
       state.pennsieveAgentOutputErrorMessage = errorMessage;
+      state.backgroundServicesChecksInProgress = false;
+      state.backgroundServicesChecksSuccessful = false;
     })
   );
 };
