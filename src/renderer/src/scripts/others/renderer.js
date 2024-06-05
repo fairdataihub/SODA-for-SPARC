@@ -383,7 +383,6 @@ const startBackgroundServices = async () => {
   console.log("Starting background services");
   try {
     await connectToServer();
-    await checkApiVersions();
     await ensureUsernameExists();
 
     try {
@@ -405,52 +404,41 @@ const startBackgroundServices = async () => {
 
 startBackgroundServices();
 
-const checkApiVersions = async () => {
-  try {
-    await apiVersionsMatch();
-  } catch (error) {
-    console.log("API versions do not match: (throwing this)", error);
-    throw new Error("API versions do not match");
-  }
-};
-
 const launchAnnouncements = async () => {
   if (launchAnnouncement) {
-    await Swal.close();
     await checkForAnnouncements("announcements");
     launchAnnouncement = false;
     await window.electron.ipcRenderer.invoke("set-nodestorage-key", "announcements", false);
   }
 };
 
-const startupServerAndApiChecks = async () => {
-  try {
-    await connectToServer();
-  } catch (error) {
-    await showErrorAndRestart(error.message);
-  }
-  await checkApiVersions();
-  await handleAnnouncements();
-  trackEvent("Success", "Setting Templates Path");
-};
-
 // check that the client connected to the server using exponential backoff
 // verify the api versions match
 const startupServerAndApiCheck = async () => {
+  // notify the user that the application is starting connecting to the server
+  Swal.fire({
+    icon: "info",
+    title: `Initializing SODA's background services<br /><br />This may take several minutes...`,
+    heightAuto: true,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "Restart now",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+  await window.wait(3000);
+
   // Restart the app
   //await window.electron.ipcRenderer.invoke("relaunch-soda");
   const maxWaitTime = 300000; // 5 minutes in milliseconds
   const retryInterval = 3000; // 3 seconds in milliseconds
   const totalNumberOfRetries = Math.floor(maxWaitTime / retryInterval);
 
-  let serverConnectErrorMessage = null;
-
   for (let i = 0; i < totalNumberOfRetries; i++) {
     try {
-      const res = await client.get("/startup/echo?arg=server ready");
-      console.log("Server connected, res: ", res);
-      const ress = await apiVersionsMatch();
-      console.log("API versions match: ", ress);
+      await client.get("/startup/echo?arg=server ready");
       window.log.info("Connected to Python back-end successfully");
       window.electron.ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
       window.electron.ipcRenderer.send(
@@ -463,10 +451,9 @@ const startupServerAndApiCheck = async () => {
           value: 1,
         }
       );
-      console.log("Doing other stuff");
       ensureUsernameExists();
 
-      console.log("Connected to server successfully", res);
+      Swal.close();
       return; // Server connected, safe to return from the functions
     } catch (e) {
       console.log("Error connecting to server: ", e);
@@ -489,44 +476,51 @@ const startupServerAndApiCheck = async () => {
       value: 1,
     }
   );
+  Swal.close();
+  await Swal.fire({
+    icon: "error",
+    html: `Something went wrong while initializing SODA's background services. SODA will relaunch to try to fix the problem. If this issue occurs multiple times, please email <a target="_blank" href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "Restart now",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+  });
 
-  // check if the API versions match
-  try {
-    const res = await apiVersionsMatch();
-    console.log("API versions match: ", res);
-  } catch (e) {
-    // api versions do not match
-    await window.electron.ipcRenderer.invoke("exit-soda");
-  }
-
-  if (launchAnnouncement) {
-    await Swal.close();
-    await checkForAnnouncements("announcements");
-    launchAnnouncement = false;
-    window.electron.ipcRenderer.invoke("set-nodestorage-key", "announcements", false);
-  }
-
-  window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+  // Restart the app
+  await window.electron.ipcRenderer.invoke("relaunch-soda");
 };
-try {
-  startupServerAndApiCheck();
-} catch (error) {
-  showErrorAndRestart(error);
-}
 
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
 // Also check the core systems to make sure they are all operational
 const initializeSODARenderer = async () => {
   // check that the server is live and the api versions match
+  // If this fails after the allotted time, the app will restart
   await startupServerAndApiCheck();
 
-  window.log.info("Server is live and API versions match");
+  // check if the API versions match
+  // If they do not match, the app will restart to attempt to fix the issue
+  await ensureServerVersionMatchesClientVersion();
 
-  // check integrity of all the core systems
-  await window.run_pre_flight_checks();
+  //Refresh the Pennsieve account list if the user has connected their Pennsieve account in the past
+  if (hasConnectedAccountWithPennsieve()) {
+    try {
+      window.updateBfAccountList();
+    } catch (error) {
+      clientError(error);
+    }
+  }
 
-  window.log.info("Pre flight checks finished");
+  setSidebarAppVersion();
+
+  // Launch announcements if the user has not seen them yet
+  await launchAnnouncements();
+
+  // Set the template paths for dataset metadata generation
+  await setTemplatePaths();
+
+  window.log.info("Successfully initialized SODA renderer process");
 };
 
 initializeSODARenderer();
@@ -575,14 +569,6 @@ window.checkIfPennsieveAgentIsInstalled = async () => {
   }
 };
 let userHasSelectedTheyAreOkWithOutdatedAgent = false;
-
-// Function that checks the background services required for the Pennsieve agent to run
-// This function does not handle authentication
-// Checks include:
-// 1. Internet connection
-// 2. Pennsieve agent installed
-// 3. Pennsieve agent up to date
-// 4. Pennsieve agent running in the background
 
 const abortPennsieveAgentCheck = (curationMode) => {
   setBackgroundServicesChecksSuccessful(false);
@@ -932,7 +918,7 @@ window.run_pre_flight_checks = async (check_update = true) => {
     }
 
     if (check_update) {
-      checkNewAppVersion();
+      setSidebarAppVersion();
     }
 
     // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
@@ -1039,7 +1025,7 @@ window.run_pre_flight_checks_old = async (check_update = true) => {
       }
 
       if (check_update) {
-        checkNewAppVersion();
+        setSidebarAppVersion();
       }
 
       // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
@@ -1392,7 +1378,7 @@ window.run_pre_flight_checks_old = async (check_update = true) => {
     }
 
     if (check_update) {
-      checkNewAppVersion();
+      setSidebarAppVersion();
     }
 
     // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
@@ -1464,13 +1450,7 @@ window.run_pre_flight_checks_old = async (check_update = true) => {
 };
 
 // Check if the Pysoda server API version and the package.json versions match
-const apiVersionsMatch = async () => {
-  // window.notyf that tells the user that the server is checking the versions
-  let notification = window.notyf.open({
-    message: "Checking API Version",
-    type: "checking_server_api_version",
-  });
-
+const ensureServerVersionMatchesClientVersion = async () => {
   let responseObject;
 
   try {
@@ -1485,23 +1465,16 @@ const apiVersionsMatch = async () => {
       userErrorMessage(e)
     );
 
-    await Swal.fire({
-      icon: "error",
-      html: `Something went wrong while initializing SODA's background services. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a target="_blank" href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Close now",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    });
-
-    throw e;
+    await swalShowError(
+      "Unable to verify Server API Version",
+      `SODA will restart to attempt to fix the issue. If the issue persists, please contact the SODA team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>`
+    );
+    await window.electron.ipcRenderer.invoke("relaunch-soda");
   }
 
   let serverAppVersion = responseObject.data.version;
 
   window.log.info(`Server version is ${serverAppVersion}`);
-  const apiVersionMismatchDocsLink = `https://docs.sodaforsparc.io/docs/common-errors/api-version-mismatch`;
 
   if (serverAppVersion !== appVersion) {
     window.log.info("Server version does not match client version");
@@ -1513,58 +1486,34 @@ const apiVersionsMatch = async () => {
       "Server version does not match client version"
     );
 
-    await Swal.fire({
-      icon: "error",
-      title: "Minimum App Version Mismatch",
-      html: `
-          Your API version: <b>${appVersion}</b>
-          <br />
-          Latest API version: <b>${serverAppVersion}</b>
-          <br />
-          <br />
-          To resolve this issue, please visit the link below and follow the instructions.
-          <br />
-          <br />
-          <a href="${apiVersionMismatchDocsLink}" target="_blank">API Version Mismatch</a>
-          <br />
-          <br />
-          Once you have updated the SODA Server, please restart SODA.
-        `,
-      width: 800,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      showCancelButton: false,
-      showCloseButton: false,
-      reverseButtons: window.reverseSwalButtons,
-      confirmButtonText: "Close Application",
-    });
-
-    //await checkForAnnouncements("update")
-
-    throw new Error();
+    await swalShowError(
+      "SODA Server version and Client version mismatch",
+      `SODA will restart to attempt to fix the issue. If the issue persists, please contact the SODA team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>`
+    );
+    await window.electron.ipcRenderer.invoke("relaunch-soda");
   }
 
   window.electron.ipcRenderer.send("track-event", "Success", "Verifying App Version");
+};
 
-  window.notyf.dismiss(notification);
-
-  // create a success window.notyf for api version check
-  window.notyf.open({
-    message: "API Versions match",
-    type: "success",
-  });
-
-  //Load Default/global Pennsieve account if available
-  if (hasConnectedAccountWithPennsieve()) {
-    try {
-      window.updateBfAccountList();
-    } catch (error) {
-      clientError(error);
-    }
+const setTemplatePaths = async () => {
+  try {
+    // get apps base path
+    const basepath = await window.electron.ipcRenderer.invoke("get-app-path", undefined);
+    const resourcesPath = window.process.resourcesPath();
+    await client.put("prepare_metadata/template_paths", {
+      basepath: basepath,
+      resourcesPath: resourcesPath,
+    });
+    window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+  } catch (error) {
+    window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");\
+    await swalShowError(
+      "Error setting template paths",
+      `SODA will restart to attempt to fix the issue. If the issue persists, please contact the SODA team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>`
+    );
+    await window.electron.ipcRenderer.invoke("relaunch-soda");
   }
-  checkNewAppVersion(); // Added so that version will be displayed for new users
 };
 
 window.checkInternetConnection = async () => {
@@ -1696,7 +1645,7 @@ const getLatestPennsieveAgentVersion = async () => {
   return [platformSpecificAgentDownloadURL, latestPennsieveAgentVersion];
 };
 
-const checkNewAppVersion = async () => {
+const setSidebarAppVersion = async () => {
   let currentAppVersion = await window.electron.ipcRenderer.invoke("app-version");
   const version = document.getElementById("version");
   version.innerText = currentAppVersion;

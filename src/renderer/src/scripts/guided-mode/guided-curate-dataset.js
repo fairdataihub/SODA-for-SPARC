@@ -15325,22 +15325,6 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
     const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
     const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]["banner-image-path"];
 
-    // get apps base path
-    const basepath = await window.electron.ipcRenderer.invoke("get-app-path", undefined);
-    const resourcesPath = window.process.resourcesPath();
-
-    // set the templates path
-    try {
-      await client.put("prepare_metadata/template_paths", {
-        basepath: basepath,
-        resourcesPath: resourcesPath,
-      });
-    } catch (error) {
-      clientError(error);
-      window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");
-      throw "Error setting templates path";
-    }
-
     //Hide the upload tables
     document.querySelectorAll(".guided-upload-table").forEach((table) => {
       table.classList.add("hidden");
