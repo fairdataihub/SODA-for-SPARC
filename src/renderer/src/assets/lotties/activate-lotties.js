@@ -142,8 +142,9 @@ successValidatedFiles_lottie_observer.observe(successValidatedFilesSewction, {
   attributeFilter: ["class"],
 });
 
-
-let successValidatedFilesContainerGuided = document.getElementById("guided--success-validated-files-lottie")
+let successValidatedFilesContainerGuided = document.getElementById(
+  "guided--success-validated-files-lottie"
+);
 let successValidatedFiles_lottieGuided = lottie.loadAnimation({
   container: successValidatedFilesContainerGuided,
   animationData: successValidatedFiles /*(json js variable, (view src/assets/lotties)*/,
@@ -164,13 +165,13 @@ let successValidatedFiles_lottie_observerGuided = new MutationObserver(function 
   });
 });
 
-let successValidatedFilesSectionGuided = document.getElementById("guided--div-validate-dataset-success");
+let successValidatedFilesSectionGuided = document.getElementById(
+  "guided--div-validate-dataset-success"
+);
 successValidatedFiles_lottie_observerGuided.observe(successValidatedFilesSectionGuided, {
   attributes: true,
   attributeFilter: ["class"],
 });
-
-
 
 let partyLottieContainer = document.getElementById("party-lottie");
 let partyLottieAnimation = lottie.loadAnimation({

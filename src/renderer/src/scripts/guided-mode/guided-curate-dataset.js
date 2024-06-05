@@ -15535,13 +15535,11 @@ const guidedUploadDatasetToPennsieve = async () => {
       window.retryGuidedMode = false;
       guidedSetNavLoadingState(false);
 
-      let {data} = curationRes
+      let { data } = curationRes;
       window.pennsieveManifestId = data["origin_manifest_id"];
       window.totalFilesCount = data["main_curation_uploaded_files"];
 
-
       console.log("Pennsieve manifest id should be set now: ", window.pennsieveManifestId);
-
 
       $("#sidebarCollapse").prop("disabled", false);
       window.log.info("Completed curate function");

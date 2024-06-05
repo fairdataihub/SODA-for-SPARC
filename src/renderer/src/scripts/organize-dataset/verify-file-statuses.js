@@ -19,7 +19,7 @@ document.querySelector("#guided--verify-files-button").addEventListener("click",
   await window.monitorUploadFileVerificationProgressGuided();
 
   // TODO: enable the save and exit buttons
-})
+});
 
 document.querySelector("#verify-file-status-download-list").addEventListener("click", async () => {
   const savePath = await window.electron.ipcRenderer.invoke(
@@ -231,7 +231,7 @@ window.monitorUploadFileVerificationProgressGuided = async () => {
   // TODO: Show success Lottie and show exit buttons
   $("#guided--question-validate-dataset-upload-3").removeClass("hidden");
   $("#guided--success-validated-files-lottie").addClass("is-shown");
-}
+};
 
 const populateFailedFilePaths = (targetTableElement, failedFilesPathsList) => {
   let tableBody = targetTableElement.getElementsByTagName("tbody")[0];
