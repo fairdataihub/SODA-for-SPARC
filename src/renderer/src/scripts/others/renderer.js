@@ -1507,7 +1507,7 @@ const setTemplatePaths = async () => {
     });
     window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
   } catch (error) {
-    window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");\
+    window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");
     await swalShowError(
       "Error setting template paths",
       `SODA will restart to attempt to fix the issue. If the issue persists, please contact the SODA team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>`
