@@ -11,6 +11,16 @@ while (!window.baseHtmlLoaded) {
 
 let failedFilesPathsList = [];
 
+document.querySelector("#guided--verify-files-button").addEventListener("click", async () => {
+  document.querySelector("#guided--validate-dataset-upload").classList.remove("hidden");
+
+  // TODO: disable the save and exit buttons so the user needs to wait until file verification is completed
+
+  await window.monitorUploadFileVerificationProgressGuided();
+
+  // TODO: enable the save and exit buttons
+})
+
 document.querySelector("#verify-file-status-download-list").addEventListener("click", async () => {
   const savePath = await window.electron.ipcRenderer.invoke(
     "open-folder-path-select",
@@ -158,6 +168,70 @@ window.monitorUploadFileVerificationProgress = async () => {
   $("#Question-validate-dataset-upload-3").show();
   $("#success-validated-files-lottie").addClass("is-shown");
 };
+
+window.monitorUploadFileVerificationProgressGuided = async () => {
+  let manifestId = window.pennsieveManifestId;
+  let verifiedFilesCount = 0;
+  failedFilesPathsList = [];
+  let finalizedFiles = [];
+
+  // initalize the UI with the total files count
+  document.getElementById("guided--verify-dataset-upload-files-count").innerText =
+    `${verifiedFilesCount} / ${window.totalFilesCount} Files`;
+
+  // loop until all files are verified
+  while (true) {
+    document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText =
+      "Determining if all local files have been successfully imported by Pennsieve...";
+    let verifiedFiles = await getVerifiedFilesFromManifest(manifestId);
+    finalizedFiles = verifiedFiles["finalizedFiles"];
+    failedFilesPathsList = verifiedFiles["failedFilesPathsList"];
+    let updatedVerifiedFilesCount = finalizedFiles.length + failedFilesPathsList.length;
+
+    if (updatedVerifiedFilesCount > verifiedFilesCount) {
+      // update the UI with the verified files count
+      let difference = updatedVerifiedFilesCount - verifiedFilesCount;
+      verifiedFilesCount = updatedVerifiedFilesCount;
+      document.getElementById("guided--verify-dataset-upload-files-count").innerText =
+        `${verifiedFilesCount} / ${window.totalFilesCount} Files`;
+      document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText =
+        `Pennsieve imported ${difference} more local files.`;
+    } else {
+      document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText =
+        "Pennsieve imported 0 more local files.";
+    }
+
+    if (verifiedFilesCount === window.totalFilesCount) {
+      break;
+    }
+
+    // allow the prior status to be read
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    // wait 55 seconds before checking again so we are not spamming the Pennsieve API for large datasets + to give files time to process
+    for (let time = 60; time > 0; time--) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText =
+        `Waiting ${time} seconds for Pennsieve to import more local files...`;
+    }
+  }
+
+  // all file statuses fetched
+  document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText = "";
+
+  if (failedFilesPathsList.length) {
+    $("#guided--question-validate-dataset-upload-2").removeClass("hidden");
+    populateFailedFilePaths(
+      document.getElementById("guided--validate-dataset-failed-table"),
+      failedFilesPathsList
+    );
+    return;
+  }
+
+  // TODO: Show success Lottie and show exit buttons
+  $("#guided--question-validate-dataset-upload-3").removeClass("hidden");
+  $("#guided--success-validated-files-lottie").addClass("is-shown");
+}
 
 const populateFailedFilePaths = (targetTableElement, failedFilesPathsList) => {
   let tableBody = targetTableElement.getElementsByTagName("tbody")[0];

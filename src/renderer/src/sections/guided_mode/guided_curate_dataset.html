@@ -5814,7 +5814,7 @@
               <i class="fas fa-chevron-right"></i>
             </div>
 
-            <div class="info-container" style="max-width: 740px; margin: auto">
+            <div class="guided--section info-container" style="max-width: 740px; margin: auto">
               <p class="help-text mb-0">
                 If you want to verify that the files you uploaded are on Pennsieve and that no file
                 failed to be processed click 'Verify Files.' This is an optional step and you can
@@ -5824,8 +5824,9 @@
 
             <div class="guided--radio-button-container">
               <button
-                class="ui primary basic button button-starts-local-dataset-copy-generation"
+                class="ui primary basic button"
                 style="margin: 5px 7px !important"
+                id="guided--verify-files-button"
               >
                 Verify Files
               </button>
@@ -5838,8 +5839,8 @@
             </div>
 
             <div
-              class="individual-question hidden"
-              id="Question-validate-dataset-upload"
+              class="guided--section hidden"
+              id="guided--validate-dataset-upload"
               style="width: 70%"
             >
               <div class="ui form" style="width: 100%">
@@ -5857,14 +5858,13 @@
                         padding: 15px 25px;
                         border-radius: 5px;
                       "
-                      id="div-validate-dataset-upload-header"
                     >
                       <div>
                         <p style="font-weight: 500; font-size: large">Verified Dataset Files</p>
                       </div>
                       <div>
                         <p
-                          id="verify-dataset-upload-files-count"
+                          id="guided--verify-dataset-upload-files-count"
                           style="font-weight: 500; font-size: large"
                         >
                           XX/XX Files
@@ -5872,7 +5872,7 @@
                       </div>
                     </div>
                     <p
-                      id="verify-dataset-upload-files-progress-para"
+                      id="guided--verify-dataset-upload-files-progress-para"
                       style="margin-top: 9px; margin-left: 3px"
                     ></p>
                   </div>
@@ -5881,8 +5881,8 @@
             </div>
 
             <div
-              class="individual-question hidden"
-              id="Question-validate-dataset-upload-2"
+              class="guided--section hidden"
+              id="guided--question-validate-dataset-upload-2"
               style="width: 70%"
             >
               <div class="ui form" style="width: 100%">
@@ -5890,7 +5890,7 @@
                   <div
                     class="field"
                     style="margin: 5px 0; width: auto"
-                    id="div-validate-dataset-failed"
+                    
                   >
                     <h4
                       style="text-align: center; font-size: large; font-weight: 800; color: black"
@@ -5905,9 +5905,8 @@
                     </p>
 
                     <div style="width: 100%; height: 300px; overflow: auto">
-                      <table id="validate-dataset-failed-table" style="background-color: lightgray">
+                      <table id="guided--validate-dataset-failed-table" style="background-color: lightgray">
                         <tr
-                          id="validate-dataset-failed-table-header"
                           style="
                             border-bottom: solid black 1px;
                             padding-top: 10px;
@@ -6006,38 +6005,26 @@
             </div>
 
             <div
-              class="individual-question hidden"
-              id="Question-validate-dataset-upload-3"
+              class="guided--section hidden"
+              id="guided--question-validate-dataset-upload-3"
               style="width: 70%"
             >
               <div class="ui form" style="width: 100%">
                 <div class="grouped fields">
-                  <div id="div-validate-dataset-success">
+                  <div id="guided--div-validate-dataset-success">
                     <h4
                       style="text-align: center; font-size: large; font-weight: 800; color: black"
                     >
                       All files have been successfully verified and should be viewable on Pennsieve
                     </h4>
                     <div
-                      id="success-validated-files-lottie"
+                      id="guided--success-validated-files-lottie"
                       class="success-validation-lottie"
                     ></div>
-                    <button
-                      onclick="window.exitCurate(true)"
-                      class="btn_animated return-btn"
-                      style="
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: center;
-                        font-size: 15px;
-                        margin: 50px 10px;
-                        width: 180px;
-                        height: 40px;
-                        border: none !important;
-                      "
-                    >
-                      Exit
-                    </button>
+                    <h2 class="guided--text-user-directions" id="guided-dataset-upload-complete-message">
+                      Click "<span class="next-button-span"></span>" to go to the last step of the data
+                      curation and sharing process
+                    </h2>
                   </div>
                 </div>
               </div>

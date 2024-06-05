@@ -142,6 +142,36 @@ successValidatedFiles_lottie_observer.observe(successValidatedFilesSewction, {
   attributeFilter: ["class"],
 });
 
+
+let successValidatedFilesContainerGuided = document.getElementById("guided--success-validated-files-lottie")
+let successValidatedFiles_lottieGuided = lottie.loadAnimation({
+  container: successValidatedFilesContainerGuided,
+  animationData: successValidatedFiles /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+let successValidatedFiles_lottie_observerGuided = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    let attributeValue = $(mutation.target).prop(mutation.attributeName);
+    if (attributeValue.includes("is-shown") == true) {
+      //play lottie
+      successValidatedFiles_lottieGuided.play();
+    } else {
+      // stop lottie to preserve memory
+      successValidatedFiles_lottieGuided.stop();
+    }
+  });
+});
+
+let successValidatedFilesSectionGuided = document.getElementById("guided--div-validate-dataset-success");
+successValidatedFiles_lottie_observerGuided.observe(successValidatedFilesSectionGuided, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+
+
+
 let partyLottieContainer = document.getElementById("party-lottie");
 let partyLottieAnimation = lottie.loadAnimation({
   container: partyLottieContainer,
