@@ -1841,6 +1841,10 @@ def get_origin_manifest_id(dataset_id):
     for _ in range(max_attempts):
         manifests = get_upload_manifests(dataset_id)
         if manifests and "manifests" in manifests and manifests["manifests"]:
+            namespace_logger.info(f"Manifests returned: {manifests}")
+            # sort the manifests list by date_created timestamp field in descending order
+            manifests["manifests"].sort(key=lambda x: x["date_created"], reverse=True)
+            namespace_logger.info(f"Manifests sorted: {manifests}")
             return manifests["manifests"][0]["id"]
         time.sleep(5)  # Wait for 5 seconds before the next attempt
 
