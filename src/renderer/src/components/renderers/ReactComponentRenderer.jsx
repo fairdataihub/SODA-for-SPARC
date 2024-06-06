@@ -5,7 +5,7 @@ import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 import DropdownSelect from "../common/DropdownSelect";
 import GenericButton from "../buttons/Generic";
-import PennsieveAgentBackgroundServicesStatus from "../backgroundServices/PennsieveAgentBackgroundServicesStatus";
+import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
@@ -88,11 +88,11 @@ const componentRenderActions = {
       </SodaComponentWrapper>
     );
   },
-  "pennsieve-agent-background-services-status-display": (componentSlot) => {
+  "pennsieve-agent-check-display": (componentSlot) => {
     const root = createRoot(componentSlot);
     root.render(
       <SodaComponentWrapper layout="container">
-        <PennsieveAgentBackgroundServicesStatus />
+        <PennsieveAgentCheckDisplay />
       </SodaComponentWrapper>
     );
   },

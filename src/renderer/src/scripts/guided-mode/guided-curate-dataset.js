@@ -1826,6 +1826,17 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
+      const pennsieveAgentChecksPassed = await window.getPennsieveAgentStatus();
+      console.log("pennsieveAgentChecksPassed", pennsieveAgentChecksPassed);
+      if (!pennsieveAgentChecksPassed) {
+        window.unHideAndSmoothScrollToElement("guided-mode-pennsieve-agent-check");
+        errorArray.push({
+          type: "notyf",
+          message: "Please make sure the Pennsieve Agent is running before continuing",
+        });
+        throw errorArray;
+      }
+
       window.sodaJSONObj["last-confirmed-bf-account-details"] = window.defaultBfAccount;
       window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] = userSelectedWorkSpace;
     }

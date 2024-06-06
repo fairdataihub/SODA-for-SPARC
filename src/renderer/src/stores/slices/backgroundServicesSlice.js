@@ -2,9 +2,9 @@ import useGlobalStore from "../globalStore";
 import { produce } from "immer";
 
 const initialState = {
-  backgroundServicesChecksInProgress: false,
-  backgroundServicesChecksSuccessful: null,
-  backgroundServicesError: null,
+  pennsieveAgentCheckInProgress: false,
+  pennsieveAgentCheckSuccessful: null,
+  pennsieveAgentCheckError: null,
   pennsieveAgentInstalled: null,
   pennsieveAgentDownloadURL: null,
   pennsieveAgentUpToDate: null,
@@ -17,32 +17,32 @@ export const backgroundServicesSlice = (set) => ({
   ...initialState,
 });
 
-export const setBackgroundServicesError = (title, message) => {
+export const setPennsieveAgentCheckError = (title, message) => {
   useGlobalStore.setState(
     produce((state) => {
-      state.backgroundServicesError = { title, message };
+      state.pennsieveAgentCheckError = { title, message };
     })
   );
 };
 
-export const setBackgroundServicesChecksInProgress = (inProgress) => {
+export const setPennsieveAgentCheckInProgress = (inProgress) => {
   useGlobalStore.setState(
     produce((state) => {
-      state.backgroundServicesChecksInProgress = inProgress;
+      state.pennsieveAgentCheckInProgress = inProgress;
     })
   );
 };
 
-export const setBackgroundServicesChecksSuccessful = (successful) => {
+export const setPennsieveAgentCheckSuccessful = (successful) => {
   useGlobalStore.setState(
     produce((state) => {
-      state.backgroundServicesChecksInProgress = false;
-      state.backgroundServicesChecksSuccessful = successful;
+      state.pennsieveAgentCheckInProgress = false;
+      state.pennsieveAgentCheckSuccessful = successful;
     })
   );
 };
 
-export const resetBackgroundServicesState = () => {
+export const resetPennsieveAgentCheckState = () => {
   useGlobalStore.setState(
     produce((state) => {
       Object.assign(state, initialState);

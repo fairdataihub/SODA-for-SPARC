@@ -26,12 +26,10 @@ const deletePennsieveAgentDBFilesAndRestart = async () => {
     }
   }
 
-  await window.checkPennsieveBackgroundServices();
+  await window.checkPennsieveAgent();
 };
 
-const RetryButton = () => (
-  <Button onClick={window.checkPennsieveBackgroundServices}>{retryButtonText}</Button>
-);
+const RetryButton = () => <Button onClick={window.checkPennsieveAgent}>{retryButtonText}</Button>;
 
 const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
   const isKnownError = knownErrorMessages.some((message) => errorMessage.includes(message));
@@ -81,14 +79,14 @@ const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
   );
 };
 
-const PennsieveAgentBackgroundServicesStatus = () => {
+const PennsieveAgentCheckDisplay = () => {
   const {
     pennsieveAgentInstalled,
     pennsieveAgentUpToDate,
     pennsieveAgentDownloadURL,
     pennsieveAgentOutputErrorMessage,
-    backgroundServicesChecksInProgress,
-    backgroundServicesError,
+    pennsieveAgentCheckInProgress,
+    pennsieveAgentCheckError,
     usersPennsieveAgentVersion,
     latestPennsieveAgentVersion,
   } = useGlobalStore((state) => ({
@@ -96,13 +94,13 @@ const PennsieveAgentBackgroundServicesStatus = () => {
     pennsieveAgentUpToDate: state.pennsieveAgentUpToDate,
     pennsieveAgentDownloadURL: state.pennsieveAgentDownloadURL,
     pennsieveAgentOutputErrorMessage: state.pennsieveAgentOutputErrorMessage,
-    backgroundServicesChecksInProgress: state.backgroundServicesChecksInProgress,
-    backgroundServicesError: state.backgroundServicesError,
+    pennsieveAgentCheckInProgress: state.pennsieveAgentCheckInProgress,
+    pennsieveAgentCheckError: state.pennsieveAgentCheckError,
     usersPennsieveAgentVersion: state.usersPennsieveAgentVersion,
     latestPennsieveAgentVersion: state.latestPennsieveAgentVersion,
   }));
 
-  if (backgroundServicesChecksInProgress === true) {
+  if (pennsieveAgentCheckInProgress === true) {
     return (
       <Stack mt="sm" align="center">
         <Text size="xl" fw={700}>
@@ -113,19 +111,21 @@ const PennsieveAgentBackgroundServicesStatus = () => {
     );
   }
 
-  if (backgroundServicesError === true) {
+  if (pennsieveAgentCheckError?.["title"] && pennsieveAgentCheckError?.["message"]) {
     return (
       <Stack mt="sm" align="center">
         <Alert
           variant="light"
           color="blue"
-          title={backgroundServicesError.title}
+          title={pennsieveAgentCheckError.title}
           icon={<IconAlertCircle />}
           style={{ width: "100%" }}
         >
-          <Text>{backgroundServicesError.message}</Text>
+          <Text>{pennsieveAgentCheckError.message}</Text>
+          <Center>
+            <RetryButton />
+          </Center>
         </Alert>
-        <RetryButton />
       </Stack>
     );
   }
@@ -196,8 +196,10 @@ const PennsieveAgentBackgroundServicesStatus = () => {
             After installing the agent, click the {retryButtonText} button to ensure the agent was
             installed properly.
           </Text>
+          <Center>
+            <RetryButton />
+          </Center>
         </Alert>
-        <RetryButton />
       </Stack>
     );
   }
@@ -215,4 +217,4 @@ const PennsieveAgentBackgroundServicesStatus = () => {
   );
 };
 
-export default PennsieveAgentBackgroundServicesStatus;
+export default PennsieveAgentCheckDisplay;
