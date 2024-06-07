@@ -104,7 +104,7 @@ const PennsieveAgentCheckDisplay = () => {
     return (
       <Stack mt="sm" align="center">
         <Text size="xl" fw={700}>
-          Ensuring the Pennsieve Agent is running
+          Checking the status of the Pennsieve agent
         </Text>
         <Loader color="orange" type="bars" />
       </Stack>

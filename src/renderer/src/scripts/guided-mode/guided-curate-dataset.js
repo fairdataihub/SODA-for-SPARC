@@ -6727,6 +6727,11 @@ window.openPage = async (targetPageID) => {
         window.sodaJSONObj["digital-metadata"]["name"],
         "guided-folder-structure-review-generate"
       );
+
+      // Hide the Pennsieve agent check section (unhidden if it requires user action)
+      document
+        .getElementById("guided-mode-pre-generate-pennsieve-agent-check")
+        .classList.add("hidden");
     }
 
     if (targetPageID === "guided-dataset-generation-tab") {
@@ -16261,7 +16266,7 @@ document.getElementById("guided-generate-dataset-button").addEventListener("clic
     return;
   }
   //run pre flight checks and abort if any fail
-  let supplementary_checks = await window.run_pre_flight_checks(false);
+  let supplementary_checks = await window.run_pre_flight_checks(true);
   if (!supplementary_checks) {
     return;
   }

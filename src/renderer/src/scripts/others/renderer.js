@@ -386,7 +386,7 @@ const startBackgroundServices = async () => {
     await ensureUsernameExists();
 
     try {
-      retrieveBFAccounts();
+      initializePennsieveAccountList();
     } catch (error) {
       console.log("Error retrieving BF accounts: ", error);
     }
@@ -506,7 +506,7 @@ const initializeSODARenderer = async () => {
   //Refresh the Pennsieve account list if the user has connected their Pennsieve account in the past
   if (hasConnectedAccountWithPennsieve()) {
     try {
-      window.updateBfAccountList();
+      // window.updateBfAccountList();
     } catch (error) {
       clientError(error);
     }
@@ -547,10 +547,11 @@ let preFlightCheckNotyf = null;
 
 let userHasSelectedTheyAreOkWithOutdatedAgent = false;
 
-const abortPennsieveAgentCheck = (divIdToDisplayAgentCheckResults) => {
+const abortPennsieveAgentCheck = (agentCheckDiv) => {
   setPennsieveAgentCheckSuccessful(false);
-  if (divIdToDisplayAgentCheckResults) {
-    window.unHideAndSmoothScrollToElement(divIdToDisplayAgentCheckResults);
+  if (agentCheckDiv) {
+    console.log("agentCheckDiv: ", agentCheckDiv);
+    window.unHideAndSmoothScrollToElement(agentCheckDiv);
   }
 };
 
@@ -561,7 +562,7 @@ window.getPennsieveAgentStatus = async () => {
   return useGlobalStore.getState()["pennsieveAgentCheckSuccessful"];
 };
 
-window.checkPennsieveAgent = async (divIdToDisplayAgentCheckResults) => {
+window.checkPennsieveAgent = async (agentCheckDiv) => {
   try {
     // Step 0: abort if the background services are already running
     if (useGlobalStore.getState()["pennsieveAgentCheckInProgress"] === true) {
@@ -583,7 +584,7 @@ window.checkPennsieveAgent = async (divIdToDisplayAgentCheckResults) => {
         "No Internet Connection",
         "An internet connection is required to upload to Pennsieve. Please connect to the internet and try again."
       );
-      abortPennsieveAgentCheck(divIdToDisplayAgentCheckResults);
+      abortPennsieveAgentCheck(agentCheckDiv);
       return false;
     }
 
@@ -596,7 +597,7 @@ window.checkPennsieveAgent = async (divIdToDisplayAgentCheckResults) => {
       // If the Pennsieve agent is not installed, get the download URL and set it in the store
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
-      abortPennsieveAgentCheck(divIdToDisplayAgentCheckResults);
+      abortPennsieveAgentCheck(agentCheckDiv);
       return false;
     }
 
@@ -615,7 +616,7 @@ window.checkPennsieveAgent = async (divIdToDisplayAgentCheckResults) => {
     } catch (error) {
       const emessage = userErrorMessage(error);
       setPennsieveAgentOutputErrorMessage(emessage);
-      abortPennsieveAgentCheck(divIdToDisplayAgentCheckResults);
+      abortPennsieveAgentCheck(agentCheckDiv);
       return false;
     }
 
@@ -630,7 +631,7 @@ window.checkPennsieveAgent = async (divIdToDisplayAgentCheckResults) => {
         "Unable to verify the Pennsieve Agent version",
         "Please check the Pennsieve Agent logs for more information."
       );
-      abortPennsieveAgentCheck(divIdToDisplayAgentCheckResults);
+      abortPennsieveAgentCheck(agentCheckDiv);
 
       return false;
     }
@@ -646,7 +647,7 @@ window.checkPennsieveAgent = async (divIdToDisplayAgentCheckResults) => {
         "Unable to get information about the latest Pennsieve Agent release",
         emessage
       );
-      abortPennsieveAgentCheck(divIdToDisplayAgentCheckResults);
+      abortPennsieveAgentCheck(agentCheckDiv);
 
       return false;
     }
@@ -655,7 +656,7 @@ window.checkPennsieveAgent = async (divIdToDisplayAgentCheckResults) => {
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
       setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
-      abortPennsieveAgentCheck(divIdToDisplayAgentCheckResults);
+      abortPennsieveAgentCheck(agentCheckDiv);
       return false;
     }
 
@@ -668,13 +669,13 @@ window.checkPennsieveAgent = async (divIdToDisplayAgentCheckResults) => {
   } catch (error) {
     console.log("Error checking Pennsieve background services: ", error);
     setPennsieveAgentCheckError("Error checking Pennsieve background services", error.message);
-    abortPennsieveAgentCheck(divIdToDisplayAgentCheckResults);
+    abortPennsieveAgentCheck(agentCheckDiv);
     return false;
   }
 };
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
-window.run_pre_flight_checks = async (check_update = true) => {
+window.run_pre_flight_checks = async (checkPennsieveAgent) => {
   try {
     window.log.info("Running pre flight checks");
 
@@ -683,241 +684,11 @@ window.run_pre_flight_checks = async (check_update = true) => {
         duration: 25000,
         type: "info",
         duration: "15000",
-        message: "Checking SODA's connection to Pennsieve...",
+        message: "Making sure you're ready to upload...",
       });
     }
 
-    // Start the Pennsieve agent
-    try {
-      await startPennsieveAgent();
-    } catch (error) {
-      clientError(error);
-      const emessage = userErrorMessage(error);
-
-      // check if the Agent is failing to start due to Unique constraint violation or due to the Agent caching an outdated username and password after the user updates their Key + Secret
-      // if so then we prompt the user to allow us to remove the pennsieve Agent DB files and try again
-      if (
-        emessage.includes("UNIQUE constraint failed:") ||
-        emessage.includes("NotAuthorizedException: Incorrect username or password.") ||
-        emessage.includes("401 Error Creating new UserSettings")
-      ) {
-        const { value: deleteFilesRerunChecks } = await Swal.fire({
-          icon: "error",
-          title: "The Pennsieve Agent Failed to Start",
-          html: `
-                <br />
-                <div class="div--code-block-error">${emessage}</div>
-                <br />
-                <p style="text-align: left">This is a known issue with the Pennsieve Agent and is typically resolved by deleting the local Pennsieve Agent database files from your computer. Would you like SODA to do that and restart the Agent?</p>`,
-          width: 800,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          showCancelButton: true,
-          showCloseButton: true,
-          reverseButtons: reverseSwalButtons,
-          confirmButtonText: "Yes",
-          cancelButtonText: "No",
-        });
-
-        if (!deleteFilesRerunChecks) {
-          return false;
-        }
-
-        // wait for the Agent to stop using the db files so they may be deleted
-        await wait(1000);
-        // delete any db files that exist
-        if (window.fs.existsSync(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db`))
-          await window.fs.unlink(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db`);
-        if (window.fs.existsSync(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db-shm`))
-          await window.fs.unlink(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db-shm`);
-        if (window.fs.existsSync(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db-wal`))
-          await window.fs.unlink(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db-wal`);
-
-        // rerun checks
-        return await run_pre_flight_checks();
-      }
-
-      const { value: rerunPreFlightChecks } = await Swal.fire({
-        icon: "info",
-        title: "The Pennsieve Agent failed to start",
-        html: `
-          <br />
-          <div class="div--code-block-error">${emessage}</div>
-          <br />
-          Please view the <a href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda" target="_blank">SODA documentation</a>
-          to troubleshoot this issue. Then click the "Try again" button below to ensure the issue has been fixed.
-        `,
-        width: 800,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showCancelButton: true,
-        showCloseButton: true,
-        reverseButtons: window.reverseSwalButtons,
-        confirmButtonText: "Try again",
-        cancelButtonText: "Skip for now",
-      });
-      // If the user clicks the retry button, rerun the pre flight checks
-      if (rerunPreFlightChecks) {
-        return await window.run_pre_flight_checks();
-      }
-
-      // Dismiss the preflight check notification if it is still open
-      if (preFlightCheckNotyf) {
-        window.notyf.dismiss(preFlightCheckNotyf);
-        preFlightCheckNotyf = null;
-      }
-      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
-      return false;
-    }
-
-    // Get the version of the Pennsieve agent
-    let usersPennsieveAgentVersion;
-    try {
-      const versionObj = await getPennsieveAgentVersion();
-      usersPennsieveAgentVersion = versionObj["Agent Version"];
-    } catch (error) {
-      clientError(error);
-      const emessage = userErrorMessage(error);
-      const { value: rerunPreFlightChecks } = await Swal.fire({
-        icon: "info",
-        title: "Soda was unable to get the Pennsieve Agent Version",
-        html: `
-          <br />
-          <div class="div--code-block-error">${emessage}</div>
-          <br />
-          Please view the <a href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda" target="_blank">SODA documentation</a>
-          to troubleshoot this issue. Then click the "Try again" button below to ensure the issue has been fixed.
-        `,
-        width: 800,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showCancelButton: true,
-        showCloseButton: true,
-        reverseButtons: window.reverseSwalButtons,
-        confirmButtonText: "Try again",
-        cancelButtonText: "Skip for now",
-      });
-      // If the user clicks the retry button, rerun the pre flight checks
-      if (rerunPreFlightChecks) {
-        return await window.run_pre_flight_checks();
-      }
-
-      // Dismiss the preflight check notification if it is still open
-      if (preFlightCheckNotyf) {
-        window.notyf.dismiss(preFlightCheckNotyf);
-        preFlightCheckNotyf = null;
-      }
-      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
-      return false;
-    }
-
-    let agentDownloadUrl;
-    let latestPennsieveAgentVersion;
-
-    // Note: We only want to check the Pennsieve agent version if the user has not already selected that they are ok with an outdated agent
-    if (!userHasSelectedTheyAreOkWithOutdatedAgent) {
-      // First get the latest Pennsieve agent version on GitHub
-      // This is to ensure the user has the latest version of the agent
-      try {
-        [agentDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
-      } catch (error) {
-        const emessage = userErrorMessage(error);
-        const retryAgentVersionCheck = await swalConfirmAction(
-          "warning",
-          "",
-          `
-            <br />
-            <b>${emessage}</b>
-            <br /><br />
-            Would you like to retry or continue with the currently installed version of the Pennsieve agent?
-          `,
-          "Retry",
-          "Contrinue with current version"
-        );
-        if (retryAgentVersionCheck) {
-          return await run_pre_flight_checks();
-        } else {
-          userHasSelectedTheyAreOkWithOutdatedAgent = true;
-        }
-      }
-    }
-
-    if (
-      !userHasSelectedTheyAreOkWithOutdatedAgent &&
-      usersPennsieveAgentVersion !== latestPennsieveAgentVersion
-    ) {
-      // Stop the Pennsieve agent if it is running to prevent any issues when updating while the agent is running
-      try {
-        await stopPennsieveAgent();
-      } catch (error) {
-        // Note: This error is not critical so we do not need to throw it
-        clientError(error);
-      }
-      const { value: rerunPreFlightChecks } = await Swal.fire({
-        icon: "info",
-        title: "Installed Pennsieve agent does not match Pennsieve's latest agent release",
-        html: `
-          Your Pennsieve agent version: <b>${usersPennsieveAgentVersion}</b>
-          <br />
-          Latest Pennsieve agent version: <b>${latestPennsieveAgentVersion}</b>
-          <br />
-          <br />
-          To download Pennsieve's latest agent release, please visit the link below and follow the instructions.
-          <br />
-          <br />
-          <a href="${agentDownloadUrl}" target="_blank" rel="noopener noreferrer">Download the latest Pennsieve agent</a>
-          <br />
-          <br />
-          Once you have downloaded the latest Pennsieve agent, please click the button below to ensure that the Pennsieve agent was updated correctly.
-        `,
-        width: 800,
-        heightAuto: false,
-        backdrop: "rgba(0, 0, 0, 0.4)",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showCancelButton: true,
-        showCloseButton: true,
-        reverseButtons: window.reverseSwalButtons,
-        confirmButtonText: "Check updated Pennsieve agent version",
-        cancelButtonText: "Skip for now",
-      });
-      // If the user clicks the retry button, rerun the pre flight checks
-      if (rerunPreFlightChecks) {
-        return await window.run_pre_flight_checks();
-      }
-      // Dismiss the preflight check notification if it is still open
-      if (preFlightCheckNotyf) {
-        window.notyf.dismiss(preFlightCheckNotyf);
-        preFlightCheckNotyf = null;
-      }
-
-      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
-      return false;
-    }
-
-    if (check_update) {
-      setSidebarAppVersion();
-    }
-
-    // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
-    //           under the default profile does not mean that key is associated with the user's current workspace.
-    let matching = await window.defaultProfileMatchesCurrentWorkspace();
-    if (!matching) {
-      log.info("Default api key is for a different workspace");
-      await window.switchToCurrentWorkspace();
-      return false;
-    }
-
-    if (launchAnnouncement) {
-      await checkForAnnouncements("announcements");
-      launchAnnouncement = false;
-    }
+    await window.switchToCurrentWorkspace();
 
     // Dismiss the preflight check notification if it is still open
     if (preFlightCheckNotyf) {
@@ -3227,26 +2998,6 @@ window.displaySIze = 1000;
 window.curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
 window.curateOrganizationDropdown = document.getElementById("curatebforganizationlist");
 
-async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
-  window.defaultBfAccount = bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text;
-  try {
-    let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-      params: {
-        selected_account: window.defaultBfAccount,
-      },
-    });
-    window.datasetList = [];
-    window.datasetList = responseObject.data.datasets;
-    populateDatasetDropdownCurate(datasetDropdown, window.datasetList);
-    window.refreshDatasetList();
-  } catch (error) {
-    clientError(error);
-    curateBFAccountLoadStatus.innerHTML = `<span style='color: red'>${userErrorMessage(
-      error
-    )}</span>`;
-  }
-}
-
 //// De-populate dataset dropdowns to clear options for CURATE
 function populateDatasetDropdownCurate(datasetDropdown, datasetList) {
   window.removeOptions(datasetDropdown);
@@ -4125,8 +3876,8 @@ const populateOrganizationDropdowns = (organizations) => {
   }
 };
 // ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
-
 window.updateBfAccountList = async () => {
+  console.log("Updating bf account list");
   let responseObject;
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
@@ -4154,6 +3905,7 @@ window.updateBfAccountList = async () => {
 };
 
 window.loadDefaultAccount = async () => {
+  console.log("Loading default account");
   let responseObject;
 
   try {
@@ -4669,83 +4421,80 @@ var bfAddAccountBootboxMessage = `<form>
 
 var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve account using an API key</h3>`;
 
-// // this function is called in the beginning to load bf accounts to a list
-// // which will be fed as dropdown options
-const retrieveBFAccounts = async () => {
-  // remove all elements from the array
+const initializePennsieveAccountList = async () => {
+  // Clear the bfAccountOptions array
   bfAccountOptions.length = 0;
   window.bfAccountOptionsStatus = "";
 
-  if (hasConnectedAccountWithPennsieve()) {
-    client
-      .get("manage_datasets/bf_account_list")
-      .then((res) => {
-        let accounts = res.data;
-        for (const myitem in accounts) {
-          bfAccountOptions[accounts[myitem]] = accounts[myitem];
-        }
-
-        showDefaultBFAccount();
-      })
-      .catch((error) => {
-        bfAccountOptionsStatus = error;
-      });
-  } else {
-    bfAccountOptionsStatus = "No account connected";
+  if (!hasConnectedAccountWithPennsieve()) {
+    window.bfAccountOptionsStatus = "No account connected";
+    return;
   }
-  return [bfAccountOptions, bfAccountOptionsStatus];
+
+  try {
+    const res = await client.get("manage_datasets/bf_account_list");
+    const accounts = res.data;
+    console.log("BF accounts retrieved: ", accounts);
+    for (const myitem in accounts) {
+      bfAccountOptions[accounts[myitem]] = accounts[myitem];
+    }
+    await setDefaultPennsieveAccountUI();
+  } catch (error) {
+    window.bfAccountOptionsStatus = error;
+  }
 };
 
-let defaultAccountDetails = "";
-const showDefaultBFAccount = async () => {
+const setDefaultPennsieveAccountUI = async () => {
+  console.log("setDefaultPennsieveAccountUI");
+
   try {
-    let bf_default_acc_req = await client.get("manage_datasets/bf_default_account_load");
-    let accounts = bf_default_acc_req.data.defaultAccounts;
-    if (accounts.length > 0) {
-      let myitemselect = accounts[0];
-      window.defaultBfAccount = myitemselect;
-      try {
-        let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
-          params: {
-            selected_account: window.defaultBfAccount,
-          },
-        });
-        let user_email = bf_account_details_req.data.email;
-        $("#current-bf-account").text(user_email);
-        $("#current-bf-account-generate").text(user_email);
-        $("#create_empty_dataset_BF_account_span").text(user_email);
-        $(".bf-account-span").text(user_email);
+    const bfDefaultAccRes = await client.get("manage_datasets/bf_default_account_load");
+    const accounts = bfDefaultAccRes.data.defaultAccounts;
 
-        // show the preferred organization
-        let organization = bf_account_details_req.data.organization;
-        $(".bf-organization-span").text(organization);
+    if (accounts.length === 0) {
+      return;
+    }
 
-        $("#div-bf-account-load-progress").css("display", "none");
-        showHideDropdownButtons("account", "show");
-        window.refreshDatasetList();
-        updateDatasetList();
-        window.updateOrganizationList();
-      } catch (error) {
-        clientError(error);
+    const defaultAccount = accounts[0];
+    window.defaultBfAccount = defaultAccount;
 
-        $("#para-account-detail-curate").html("None");
-        $("#current-bf-account").text("None");
-        $("#current-bf-account-generate").text("None");
-        $("#create_empty_dataset_BF_account_span").text("None");
-        $(".bf-account-span").text("None");
-        $("#para-account-detail-curate-generate").html("None");
-        $("#para_create_empty_dataset_BF_account").html("None");
-        $(".bf-account-details-span").html("None");
+    try {
+      const bfAccountDetailsRes = await client.get("/manage_datasets/bf_account_details", {
+        params: { selected_account: defaultAccount },
+      });
 
-        $("#div-bf-account-load-progress").css("display", "none");
-        showHideDropdownButtons("account", "hide");
-      }
+      const { email, organization } = bfAccountDetailsRes.data;
+
+      $("#current-bf-account").text(email);
+      $("#current-bf-account-generate").text(email);
+      $("#create_empty_dataset_BF_account_span").text(email);
+      $(".bf-account-span").text(email);
+      $(".bf-organization-span").text(organization);
+
+      $("#div-bf-account-load-progress").hide();
+      showHideDropdownButtons("account", "show");
+      window.refreshDatasetList();
+      updateDatasetList();
+      window.updateOrganizationList();
+    } catch (error) {
+      clientError(error);
+
+      $("#para-account-detail-curate").text("None");
+      $("#current-bf-account").text("None");
+      $("#current-bf-account-generate").text("None");
+      $("#create_empty_dataset_BF_account_span").text("None");
+      $(".bf-account-span").text("None");
+      $("#para-account-detail-curate-generate").text("None");
+      $("#para_create_empty_dataset_BF_account").text("None");
+      $(".bf-account-details-span").text("None");
+
+      $("#div-bf-account-load-progress").hide();
+      showHideDropdownButtons("account", "hide");
     }
   } catch (error) {
     clientError(error);
   }
 };
-
 ////// function to trigger action for each context menu option
 window.hideMenu = (category, menu1, menu2, menu3) => {
   if (category === "folder") {
