@@ -21,26 +21,29 @@ document.querySelector("#guided--verify-files-button").addEventListener("click",
   // TODO: enable the save and exit buttons
 });
 
-document.querySelector("#verify-file-status-download-list").addEventListener("click", async () => {
-  const savePath = await window.electron.ipcRenderer.invoke(
-    "open-folder-path-select",
-    "Select a folder to save your failed files list"
-  );
+document.querySelectorAll(".verify-file-status-download-list").forEach((element) => {
+  element.addEventListener("click", async () => {
+    console.log("Activated save download list");
+    const savePath = await window.electron.ipcRenderer.invoke(
+      "open-folder-path-select",
+      "Select a folder to save your failed files list"
+    );
 
-  if (!savePath) {
-    // If no path selected, exit the function
-    return;
-  }
+    if (!savePath) {
+      // If no path selected, exit the function
+      return;
+    }
 
-  const csvData = failedFilesPathsList.join("\n");
+    const csvData = failedFilesPathsList.join("\n");
 
-  const csvFilePath = `${savePath}/failed_files_list.csv`;
+    const csvFilePath = `${savePath}/failed_files_list.csv`;
 
-  // make a csv with the csvData and save it to the csvFilePath
-  window.fs.writeFileSync(csvFilePath, csvData);
+    // make a csv with the csvData and save it to the csvFilePath
+    window.fs.writeFileSync(csvFilePath, csvData);
 
-  // open the file in the default CSV viewer
-  window.electron.ipcRenderer.send("open-file-at-path", csvFilePath);
+    // open the file in the default CSV viewer
+    window.electron.ipcRenderer.send("open-file-at-path", csvFilePath);
+  });
 });
 
 document.querySelector("#verify-file-status-retry-upload").addEventListener("click", async () => {
@@ -218,6 +221,8 @@ window.monitorUploadFileVerificationProgressGuided = async () => {
 
   // all file statuses fetched
   document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText = "";
+
+  failedFilesPathsList = ["Path one", "Path Two"];
 
   if (failedFilesPathsList.length) {
     $("#guided--question-validate-dataset-upload-2").removeClass("hidden");

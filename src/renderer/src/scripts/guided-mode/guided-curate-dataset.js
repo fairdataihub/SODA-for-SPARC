@@ -15449,6 +15449,25 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
   }
   guidedSetNavLoadingState(false);
 };
+
+document
+  .querySelector("#guided--verify-file-status-retry-upload")
+  .addEventListener("click", async () => {
+    window.retryGuidedMode = true; //set the retry flag to true
+    let supplementary_checks = await window.run_pre_flight_checks(false);
+    if (!supplementary_checks) {
+      return;
+    }
+
+    // hide the verify files sections
+    document.querySelector("#guided--verify-files").classList.add("hidden");
+    document.querySelector("#guided--question-validate-dataset-upload-2").classList.add("hidden");
+    document.querySelector("#guided--validate-dataset-upload").classList.add("hidden");
+
+    // hide the verify files section
+    guidedPennsieveDatasetUpload();
+  });
+
 const openGuidedDatasetRenameSwal = async () => {
   const currentDatasetUploadName = window.sodaJSONObj["digital-metadata"]["name"];
 
