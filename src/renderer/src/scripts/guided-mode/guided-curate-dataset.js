@@ -15653,8 +15653,10 @@ const guidedUploadDatasetToPennsieve = async () => {
       await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
 
       //Display the click next text
-      // document.getElementById("guided-dataset-upload-complete-message").classList.remove("hidden");
       document.getElementById("guided--verify-files").classList.remove("hidden");
+
+      // enable the verify files button
+      document.querySelector("#guided--verify-files-button").disabled = false;
 
       scrollToBottomOfGuidedBody();
 

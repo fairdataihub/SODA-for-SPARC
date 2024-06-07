@@ -14,6 +14,14 @@ let failedFilesPathsList = [];
 document.querySelector("#guided--verify-files-button").addEventListener("click", async () => {
   document.querySelector("#guided--validate-dataset-upload").classList.remove("hidden");
 
+  // disable self so verification cannot be re-ran without a retry
+  document.querySelector("#guided--verify-files-button").disabled = true;
+
+  // reset the failed files table
+  document
+    .getElementById("guided--validate-dataset-failed-table")
+    .getElementsByTagName("tbody")[0].innerHTML = "";
+
   // TODO: disable the save and exit buttons so the user needs to wait until file verification is completed
 
   await window.monitorUploadFileVerificationProgressGuided();
