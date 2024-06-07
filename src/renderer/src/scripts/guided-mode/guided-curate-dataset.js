@@ -1829,10 +1829,10 @@ const savePageChanges = async (pageBeingLeftID) => {
       const pennsieveAgentChecksPassed = await window.getPennsieveAgentStatus();
       console.log("pennsieveAgentChecksPassed", pennsieveAgentChecksPassed);
       if (!pennsieveAgentChecksPassed) {
-        window.unHideAndSmoothScrollToElement("guided-mode-pennsieve-agent-check");
+        window.unHideAndSmoothScrollToElement("guided-mode-post-log-in-pennsieve-agent-check");
         errorArray.push({
           type: "notyf",
-          message: "Please make sure the Pennsieve Agent is running before continuing",
+          message: "The Pennsieve Agent must be installed and running to continue.",
         });
         throw errorArray;
       }
@@ -16173,7 +16173,7 @@ $("#guided-generate-changes-file").on("click", () => {
   guidedSaveRCFile("changes");
 });
 
-$("#guided-generate-dataset-button").on("click", async function () {
+document.getElementById("guided-generate-dataset-button").addEventListener("click", async () => {
   // Ensure that the current workspace is the workspace the user confirmed
   const currentWorkspace = guidedGetCurrentUserWorkSpace();
   const datasetWorkspace = window.sodaJSONObj["digital-metadata"]["dataset-workspace"];
@@ -16250,6 +16250,14 @@ $("#guided-generate-dataset-button").on("click", async function () {
         allowOutsideClick: false,
       });
     }
+    return;
+  }
+
+  // Make sure the Pennsieve Agent is running properly
+  await window.checkPennsieveAgent("guided-mode-pre-generate-pennsieve-agent-check");
+  const agentStartedSuccessfully = await window.getPennsieveAgentStatus();
+  if (!agentStartedSuccessfully) {
+    console.log("Abort");
     return;
   }
   //run pre flight checks and abort if any fail

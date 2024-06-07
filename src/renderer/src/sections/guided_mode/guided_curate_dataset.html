@@ -4734,7 +4734,7 @@
                 data-next-element="guided-section-background-services-check"
                 data-button-config-value="organization-has-been-confirmed"
                 data-button-config-value-state="yes"
-                onclick="window.checkPennsieveAgent('guided-mode-pennsieve-agent-check')"
+                onclick="window.checkPennsieveAgent('guided-mode-post-log-in-pennsieve-agent-check')"
               >
                 Yes, this is the organization
               </button>
@@ -4752,7 +4752,7 @@
             <div
               data-component-type="pennsieve-agent-check-display"
               class="guided--section"
-              id="guided-mode-pennsieve-agent-check"
+              id="guided-mode-post-log-in-pennsieve-agent-check"
             ></div>
           </div>
         </div>
@@ -5495,13 +5495,19 @@
               </div>
             </div>
           </div>
-          <button
-            class="ui positive button guided--button mb-md"
-            id="guided-generate-dataset-button"
-            style="background-color: var(--color-light-green) !important; width: 290px !important"
-          >
-            Generate
-          </button>
+          <div
+            data-component-type="pennsieve-agent-check-display"
+            class="guided--section"
+            id="guided-mode-pre-generate-pennsieve-agent-check"
+          ></div>
+          <div
+            data-component-type="generic-button"
+            data-button-id="guided-generate-dataset-button"
+            data-variant="filled"
+            data-size="md"
+            data-text="Generate Dataset on Pennsieve"
+            class="mb-md"
+          ></div>
         </div>
 
         <div

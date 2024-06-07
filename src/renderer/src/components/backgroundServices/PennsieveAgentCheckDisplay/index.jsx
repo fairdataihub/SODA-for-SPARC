@@ -50,7 +50,7 @@ const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
               the local Pennsieve Agent database files from your computer. Would you like SODA to do
               that and restart the Agent?
             </Text>
-            <Group justify="center">
+            <Group justify="center" mt="sm">
               <Button onClick={deletePennsieveAgentDBFilesAndRestart}>
                 Have SODA try to fix the issue
               </Button>
@@ -69,7 +69,7 @@ const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
               to troubleshoot this issue. After troubleshooting, click the {retryButtonText} button
               to check if the issue has been resolved.
             </Text>
-            <Center>
+            <Center mt="sm">
               <RetryButton />
             </Center>
           </Stack>
@@ -122,7 +122,7 @@ const PennsieveAgentCheckDisplay = () => {
           style={{ width: "100%" }}
         >
           <Text>{pennsieveAgentCheckError.message}</Text>
-          <Center>
+          <Center mt="sm">
             <RetryButton />
           </Center>
         </Alert>
@@ -155,7 +155,7 @@ const PennsieveAgentCheckDisplay = () => {
             After installing the agent, click the {retryButtonText} button to ensure the agent was
             installed properly.
           </Text>
-          <Center>
+          <Center mt="sm">
             <RetryButton />
           </Center>
         </Alert>
@@ -196,7 +196,7 @@ const PennsieveAgentCheckDisplay = () => {
             After installing the agent, click the {retryButtonText} button to ensure the agent was
             installed properly.
           </Text>
-          <Center>
+          <Center mt="sm">
             <RetryButton />
           </Center>
         </Alert>
