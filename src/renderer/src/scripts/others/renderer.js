@@ -390,7 +390,7 @@ const startBackgroundServices = async () => {
     try {
       initializePennsieveAccountList();
     } catch (error) {
-      console.log("Error retrieving BF accounts: ", error);
+      console.error("Error retrieving BF accounts: ", error);
     }
 
     notyf.open({
@@ -514,6 +514,7 @@ const initializeSODARenderer = async () => {
     }
   }
 
+  // Set the app version in the sidebar for the user to see
   setSidebarAppVersion();
 
   // Launch announcements if the user has not seen them yet
@@ -526,28 +527,6 @@ const initializeSODARenderer = async () => {
 };
 
 initializeSODARenderer();
-
-const stopPennsieveAgent = async () => {
-  try {
-    let agentStopSpawn = await window.spawn.stopPennsieveAgent();
-  } catch (error) {
-    window.log.info(error);
-    throw error;
-  }
-};
-const startPennsieveAgent = async () => {
-  try {
-    let agentStartSpawn = await window.spawn.startPennsieveAgent();
-    return agentStartSpawn;
-  } catch (e) {
-    window.log.error(e);
-    throw e;
-  }
-};
-
-let preFlightCheckNotyf = null;
-
-let userHasSelectedTheyAreOkWithOutdatedAgent = false;
 
 const abortPennsieveAgentCheck = (pennsieveAgentStatusDiv) => {
   setPennsieveAgentCheckSuccessful(false);
@@ -689,6 +668,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDiv) => {
     return false;
   }
 };
+let preFlightCheckNotyf = null;
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 window.run_pre_flight_checks = async (pennsieveAgentStatusDiv) => {
