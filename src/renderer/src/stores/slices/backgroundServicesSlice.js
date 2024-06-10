@@ -11,6 +11,7 @@ const initialState = {
   pennsieveAgentOutputErrorMessage: null,
   usersPennsieveAgentVersion: null,
   latestPennsieveAgentVersion: null,
+  postPennsieveAgentCheckAction: null,
 };
 
 export const backgroundServicesSlice = (set) => ({
@@ -96,6 +97,14 @@ export const setPennsieveAgentOutputErrorMessage = (errorMessage) => {
   useGlobalStore.setState(
     produce((state) => {
       state.pennsieveAgentOutputErrorMessage = errorMessage;
+    })
+  );
+};
+
+export const setPostPennsieveAgentCheckAction = (action) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.postPennsieveAgentCheckAction = action;
     })
   );
 };

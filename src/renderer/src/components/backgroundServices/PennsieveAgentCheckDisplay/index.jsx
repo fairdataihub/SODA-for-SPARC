@@ -1,12 +1,12 @@
 import { Text, Stack, Group, Button, Alert, Loader, Center } from "@mantine/core";
-import { IconTool, IconAlertCircle } from "@tabler/icons-react";
+import { IconTool, IconAlertCircle, IconCheck } from "@tabler/icons-react";
 import ExternalLink from "../../buttons/ExternalLink";
 import CodeTextDisplay from "../../common/CodeTextDisplay";
 import useGlobalStore from "../../../stores/globalStore";
 
 // Constants
-const retryButtonText = "Retry Pennsieve Agent check";
-const knownErrorMessages = [
+const RETRY_BUTTON_TEXT = "Retry Pennsieve Agent check";
+const KNOWN_ERROR_MESSAGES = [
   "UNIQUE constraint failed:",
   "NotAuthorizedException: Incorrect username or password.",
   "401 Error Creating new UserSettings",
@@ -21,18 +21,20 @@ const deletePennsieveAgentDBFilesAndRestart = async () => {
   ];
 
   for (const file of filesToDelete) {
-    if (window.fs.existsSync(`${window.homeDirectory}${file}`)) {
-      await window.fs.unlink(`${window.homeDirectory}${file}`);
+    const filePath = `${window.homeDirectory}${file}`;
+    if (window.fs.existsSync(filePath)) {
+      await window.fs.unlink(filePath);
     }
   }
 
   await window.checkPennsieveAgent();
 };
 
-const RetryButton = () => <Button onClick={window.checkPennsieveAgent}>{retryButtonText}</Button>;
+const RetryButton = () => <Button onClick={window.checkPennsieveAgent}>{RETRY_BUTTON_TEXT}</Button>;
 
 const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
-  const isKnownError = knownErrorMessages.some((message) => errorMessage.includes(message));
+  const isKnownError = KNOWN_ERROR_MESSAGES.some((msg) => errorMessage.includes(msg));
+
   return (
     <Stack mt="sm" align="center">
       <Alert
@@ -43,37 +45,39 @@ const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
         style={{ width: "100%" }}
       >
         <CodeTextDisplay text={errorMessage} />
-        {isKnownError ? (
-          <Stack mt="sm" align="center">
-            <Text>
-              This is a known issue with the Pennsieve Agent and is typically resolved by deleting
-              the local Pennsieve Agent database files from your computer. Would you like SODA to do
-              that and restart the Agent?
-            </Text>
-            <Group justify="center" mt="sm">
-              <Button onClick={deletePennsieveAgentDBFilesAndRestart}>
-                Have SODA try to fix the issue
-              </Button>
-              <RetryButton />
-            </Group>
-          </Stack>
-        ) : (
-          <Stack mt="sm" align="center">
-            <Text my="sm">
-              Please view the
-              <ExternalLink
-                href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda"
-                buttonText="SODA documentation"
-                buttonType="anchor"
-              />
-              to troubleshoot this issue. After troubleshooting, click the {retryButtonText} button
-              to check if the issue has been resolved.
-            </Text>
-            <Center mt="sm">
-              <RetryButton />
-            </Center>
-          </Stack>
-        )}
+        <Stack mt="sm" align="center">
+          {isKnownError ? (
+            <>
+              <Text>
+                This is a known issue with the Pennsieve Agent. It can typically be resolved by
+                deleting the local Pennsieve Agent database files. Would you like SODA to do this
+                and restart the Agent?
+              </Text>
+              <Group justify="center" mt="sm">
+                <Button onClick={deletePennsieveAgentDBFilesAndRestart}>
+                  Have SODA try to fix the issue
+                </Button>
+                <RetryButton />
+              </Group>
+            </>
+          ) : (
+            <>
+              <Text my="sm">
+                Please view the
+                <ExternalLink
+                  href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda"
+                  buttonText="SODA documentation"
+                  buttonType="anchor"
+                />
+                to troubleshoot this issue. After troubleshooting, click the {RETRY_BUTTON_TEXT}{" "}
+                button to check if the issue has been resolved.
+              </Text>
+              <Center mt="sm">
+                <RetryButton />
+              </Center>
+            </>
+          )}
+        </Stack>
       </Alert>
     </Stack>
   );
@@ -89,6 +93,7 @@ const PennsieveAgentCheckDisplay = () => {
     pennsieveAgentCheckError,
     usersPennsieveAgentVersion,
     latestPennsieveAgentVersion,
+    postPennsieveAgentCheckAction,
   } = useGlobalStore((state) => ({
     pennsieveAgentInstalled: state.pennsieveAgentInstalled,
     pennsieveAgentUpToDate: state.pennsieveAgentUpToDate,
@@ -98,6 +103,7 @@ const PennsieveAgentCheckDisplay = () => {
     pennsieveAgentCheckError: state.pennsieveAgentCheckError,
     usersPennsieveAgentVersion: state.usersPennsieveAgentVersion,
     latestPennsieveAgentVersion: state.latestPennsieveAgentVersion,
+    postPennsieveAgentCheckAction: state.postPennsieveAgentCheckAction,
   }));
 
   if (pennsieveAgentCheckInProgress === true) {
@@ -111,7 +117,7 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
-  if (pennsieveAgentCheckError?.["title"] && pennsieveAgentCheckError?.["message"]) {
+  if (pennsieveAgentCheckError?.title && pennsieveAgentCheckError?.message) {
     return (
       <Stack mt="sm" align="center">
         <Alert
@@ -144,7 +150,6 @@ const PennsieveAgentCheckDisplay = () => {
             The Pennsieve agent is required to upload data to Pennsieve from SODA. Please download
             and install the Pennsieve Agent by clicking the button below.
           </Text>
-
           <ExternalLink
             href={pennsieveAgentDownloadURL}
             buttonText="Download the Pennsieve Agent"
@@ -152,7 +157,7 @@ const PennsieveAgentCheckDisplay = () => {
             buttonSize="md"
           />
           <Text mt="sm">
-            After installing the agent, click the {retryButtonText} button to ensure the agent was
+            After installing the agent, click the {RETRY_BUTTON_TEXT} button to ensure the agent was
             installed properly.
           </Text>
           <Center mt="sm">
@@ -163,7 +168,7 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
-  if (pennsieveAgentOutputErrorMessage !== null) {
+  if (pennsieveAgentOutputErrorMessage === true) {
     return <PennsieveAgentErrorMessageDisplay errorMessage={pennsieveAgentOutputErrorMessage} />;
   }
 
@@ -184,7 +189,7 @@ const PennsieveAgentCheckDisplay = () => {
             Latest Pennsieve Agent version: <b>{latestPennsieveAgentVersion}</b>
           </Text>
           <Text mt="sm" mb="sm">
-            Please install the latest version of the Pennsieve Agent below.
+            Please download and install the latest version of the Pennsieve Agent below.
           </Text>
           <ExternalLink
             href={pennsieveAgentDownloadURL}
@@ -193,7 +198,7 @@ const PennsieveAgentCheckDisplay = () => {
             buttonSize="md"
           />
           <Text mt="sm">
-            After installing the agent, click the {retryButtonText} button to ensure the agent was
+            After installing the agent, click the {RETRY_BUTTON_TEXT} button to ensure the agent was
             installed properly.
           </Text>
           <Center mt="sm">
@@ -204,14 +209,13 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
-  /* Pennsieve Agent is installed and up to date if we reach this point */
   return (
-    <Stack mt="sm" align="center">
+    <Stack mt="sm" align="center" mx="sm">
       <Text size="xl" fw={700}>
         The Pennsieve Agent is running and ready to upload!
       </Text>
       <Text size="lg" fw={600}>
-        Click the "Save and Continue" button below to start uploading your data to Pennsieve.
+        {postPennsieveAgentCheckAction}
       </Text>
     </Stack>
   );

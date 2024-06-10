@@ -66,8 +66,6 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-window.logZustandStoreState = () => {};
-
 window.returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
@@ -15321,7 +15319,7 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
   }
 };
 
-const guidedPennsieveDatasetUpload = async (generationDestination) => {
+const guidedPennsieveDatasetUpload = async () => {
   guidedSetNavLoadingState(true);
   try {
     const guidedBfAccount = window.defaultBfAccount;
@@ -15441,7 +15439,9 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
 
     if (res.isConfirmed) {
       window.retryGuidedMode = true; //set the retry flag to true
-      let supplementary_checks = await window.run_pre_flight_checks(false);
+      let supplementary_checks = await window.run_pre_flight_checks(
+        "guided-mode-pre-generate-pennsieve-agent-check"
+      );
       if (!supplementary_checks) {
         return;
       }
@@ -15816,7 +15816,9 @@ const guidedUploadDatasetToPennsieve = async () => {
 
       if (res.isConfirmed) {
         window.retryGuidedMode = true; //set the retry flag to true
-        let supplementary_checks = await window.run_pre_flight_checks(false);
+        let supplementary_checks = await window.run_pre_flight_checks(
+          "guided-mode-pre-generate-pennsieve-agent-check"
+        );
         if (!supplementary_checks) {
           return;
         }
@@ -16258,20 +16260,15 @@ document.getElementById("guided-generate-dataset-button").addEventListener("clic
     return;
   }
 
-  // Make sure the Pennsieve Agent is running properly
-  await window.checkPennsieveAgent("guided-mode-pre-generate-pennsieve-agent-check");
-  const agentStartedSuccessfully = await window.getPennsieveAgentStatus();
-  if (!agentStartedSuccessfully) {
-    console.log("Abort");
-    return;
-  }
   //run pre flight checks and abort if any fail
-  let supplementary_checks = await window.run_pre_flight_checks(true);
+  let supplementary_checks = await window.run_pre_flight_checks(
+    "guided-mode-pre-generate-pennsieve-agent-check"
+  );
   if (!supplementary_checks) {
     return;
   }
   await window.openPage("guided-dataset-generation-tab");
-  guidedPennsieveDatasetUpload("pennsieve");
+  guidedPennsieveDatasetUpload();
 });
 
 const guidedSaveBannerImage = async () => {
