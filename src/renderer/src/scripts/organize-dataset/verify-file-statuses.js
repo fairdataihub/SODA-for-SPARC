@@ -17,6 +17,8 @@ document.querySelector("#guided--verify-files-button").addEventListener("click",
   // disable self so verification cannot be re-ran without a retry
   document.querySelector("#guided--verify-files-button").disabled = true;
   document.querySelector("#guided--skip-verify-btn").disabled = true;
+  document.querySelector("#guided-next-button").disabled = true;
+  document.querySelector("#guided-button-save-and-exit").disabled = true;
 
   // reset the failed files table
   document
@@ -28,6 +30,8 @@ document.querySelector("#guided--verify-files-button").addEventListener("click",
   await window.monitorUploadFileVerificationProgressGuided();
 
   // TODO: enable the save and exit buttons
+  document.querySelector("#guided-next-button").disabled = false;
+  document.querySelector("#guided-button-save-and-exit").disabled = false;
 });
 
 document.querySelectorAll(".verify-file-status-download-list").forEach((element) => {
