@@ -7,7 +7,6 @@ on:
       - main
       - staging
       - pre-staging
-      - startup-checks-redesign
 
 jobs:
   deploy-on-mac:
