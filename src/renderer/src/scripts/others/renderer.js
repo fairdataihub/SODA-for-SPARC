@@ -417,7 +417,10 @@ const launchAnnouncements = async () => {
 // check that the client connected to the server using exponential backoff
 // verify the api versions match
 const startupServerAndApiCheck = async () => {
-  // notify the user that the application is starting connecting to the server
+  const maxWaitTime = 300000; // 5 minutes in milliseconds
+  const retryInterval = 3000; // 3 seconds in milliseconds
+  const totalNumberOfRetries = Math.floor(maxWaitTime / retryInterval);
+
   Swal.fire({
     icon: "info",
     title: `Initializing SODA's background services<br /><br />This may take several minutes...`,
@@ -426,17 +429,9 @@ const startupServerAndApiCheck = async () => {
     confirmButtonText: "Restart now",
     allowOutsideClick: false,
     allowEscapeKey: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
+    didOpen: () => Swal.showLoading(),
   });
   await window.wait(3000);
-
-  // Restart the app
-  //await window.electron.ipcRenderer.invoke("relaunch-soda");
-  const maxWaitTime = 300000; // 5 minutes in milliseconds
-  const retryInterval = 3000; // 3 seconds in milliseconds
-  const totalNumberOfRetries = Math.floor(maxWaitTime / retryInterval);
 
   for (let i = 0; i < totalNumberOfRetries; i++) {
     try {
@@ -449,24 +444,17 @@ const startupServerAndApiCheck = async () => {
         kombuchaEnums.Action.APP_LAUNCHED,
         kombuchaEnums.Label.PYTHON_CONNECTION,
         kombuchaEnums.Status.SUCCESS,
-        {
-          value: 1,
-        }
+        { value: 1 }
       );
       ensureUsernameExists();
-
       Swal.close();
-      return; // Server connected, safe to return from the functions
+      return;
     } catch (e) {
       console.log("Error connecting to server: ", e);
-      serverConnectErrorMessage = e;
       await window.wait(retryInterval);
     }
   }
 
-  // If we get to this point, it means we were unable to connect to the server
-  // within the max wait time. An error message will be displayed to the user
-  // and the app will be restarted
   window.electron.ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
   window.electron.ipcRenderer.send(
     "track-kombucha",
@@ -474,10 +462,9 @@ const startupServerAndApiCheck = async () => {
     kombuchaEnums.Action.APP_LAUNCHED,
     kombuchaEnums.Label.PYTHON_CONNECTION,
     kombuchaEnums.Status.FAIL,
-    {
-      value: 1,
-    }
+    { value: 1 }
   );
+
   Swal.close();
   await Swal.fire({
     icon: "error",
@@ -488,8 +475,6 @@ const startupServerAndApiCheck = async () => {
     allowOutsideClick: false,
     allowEscapeKey: false,
   });
-
-  // Restart the app
   await window.electron.ipcRenderer.invoke("relaunch-soda");
 };
 
