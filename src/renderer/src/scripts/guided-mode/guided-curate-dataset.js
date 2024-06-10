@@ -15657,6 +15657,7 @@ const guidedUploadDatasetToPennsieve = async () => {
 
       // enable the verify files button
       document.querySelector("#guided--verify-files-button").disabled = false;
+      document.querySelector("#guided--skip-verify-btn").disabled = false;
 
       scrollToBottomOfGuidedBody();
 
