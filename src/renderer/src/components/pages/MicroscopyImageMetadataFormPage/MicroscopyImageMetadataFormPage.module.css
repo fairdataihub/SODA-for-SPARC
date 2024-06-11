@@ -1,0 +1,13 @@
+.selectCell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.toggleButton {
+  width: 110px !important;
+}
+
+.selectHeader {
+  width: 125px;
+}
