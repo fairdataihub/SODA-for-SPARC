@@ -7,6 +7,9 @@ import {
 import { Table, Checkbox, Text, Tooltip, Button, Stack } from "@mantine/core";
 import GuidedModePage from "../../containers/GuidedModePage";
 import styles from "./MicroscopyImageConfirmationPage.module.css";
+import GuidedModeSection from "../../containers/GuidedModeSection";
+import ExternalLink from "../../buttons/ExternalLink";
+import DropDownNote from "../../utils/ui/DropDownNote";
 
 const MicroscopyImageConfirmationPage = () => {
   // Get the required zustand store state variables
@@ -72,8 +75,11 @@ const MicroscopyImageConfirmationPage = () => {
 
   return (
     <GuidedModePage
-      pageHeader="Microscopy Image Selection"
-      pageDescription="Check the box for all images in your dataset that are microscopy images. The images you select will be processed by MicroFile+."
+      pageHeader="Microscopy Image Confirmation"
+      pageDescriptionArray={[
+        "SODA has identified the images below as potential microscopy images. Please check the boxes next to the images that are microscopy images. You can use the button below to select or deselect all images at once.",
+        "The selected images will be converted with MicroFile+ and processed to ensure they are SDS compliant.",
+      ]}
     >
       <Table withTableBorder>
         <Table.Thead>

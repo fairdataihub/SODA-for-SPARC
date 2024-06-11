@@ -68,7 +68,9 @@ const BioLucidaLogin = () => {
   return (
     <GuidedModePage
       pageHeader="BioLucida sign in"
-      pageDescription="Log in to BioLucida to upload the images you selected to the BioLucida SPARC repository."
+      pageDescriptionArray={[
+        "Log in to BioLucida to upload the images you selected to the BioLucida SPARC repository.",
+      ]}
     >
       <GuidedModeSection>
         <Center>

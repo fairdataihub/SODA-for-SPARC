@@ -78,7 +78,9 @@ const BioLucidaImageListSelectPage = () => {
   return (
     <GuidedModePage
       pageHeader="BioLucida Image Selection"
-      pageDescription="Select the microscopy images you would like to upload to BioLucida (Up to 50)."
+      pageDescriptionArray={[
+        "Select the microscopy images you would like to upload to BioLucida (Up to 50). The selected images will be uploaded to BioLucida at the end of the guided process.",
+      ]}
     >
       <Table withTableBorder>
         <Table.Thead>
