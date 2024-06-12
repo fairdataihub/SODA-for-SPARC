@@ -1212,13 +1212,13 @@ const getLatestPennsieveAgentVersion = async () => {
       console.log("systemArchitecture", systemArchitecture);
       if (systemArchitecture === "x64") {
         platformSpecificAgentDownloadURL = findDownloadURL(
-          ".string-for-non-m-chip-release",
+          ".string-for-non-m-chip-release" /* TODO: Add the correct string for the Intel release */,
           latestReleaseAssets
         );
       }
       if (systemArchitecture === "arm64") {
         platformSpecificAgentDownloadURL = findDownloadURL(
-          ".string-for-m-chip-release",
+          ".string-for-m-chip-release" /* TODO: Add the correct string for the M-chip release */,
           latestReleaseAssets
         );
       }
