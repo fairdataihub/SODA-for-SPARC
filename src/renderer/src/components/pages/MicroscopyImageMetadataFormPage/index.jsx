@@ -2,6 +2,8 @@ import useGlobalStore from "../../../stores/globalStore";
 import {
   setSelectedImageFileName,
   setMagnification,
+  setChannelName,
+  setChannelColor,
   setSpacingX,
   setSpacingY,
 } from "../../../stores/slices/microscopyImageMetadataSlice";
@@ -10,7 +12,7 @@ import {
   undesignateImageAsMicroscopyImage,
   setConfirmedMicroscopyImages,
 } from "../../../stores/slices/microscopyImageSlice";
-import { Table, Checkbox, Text, Tooltip, Button, Stack, Grid, TextInput } from "@mantine/core";
+import { Text, Button, Stack, Grid, TextInput } from "@mantine/core";
 import GuidedModePage from "../../containers/GuidedModePage";
 import styles from "./MicroscopyImageMetadataFormPage.module.css";
 import GuidedModeSection from "../../containers/GuidedModeSection";
@@ -19,7 +21,14 @@ import DropDownNote from "../../utils/ui/DropDownNote";
 
 const MicroscopyImageMetadataFormPage = () => {
   // Get the required zustand store state variables
-  const { confirmedMicroscopyImages, magnification, spacingX, spacingY } = useGlobalStore();
+  const {
+    confirmedMicroscopyImages,
+    magnification,
+    channelName,
+    channelColor,
+    spacingX,
+    spacingY,
+  } = useGlobalStore();
 
   const confirmedMicroscopyImagefileNames = confirmedMicroscopyImages.map(
     (imageObj) => imageObj["fileName"]
@@ -30,11 +39,11 @@ const MicroscopyImageMetadataFormPage = () => {
     <GuidedModePage
       pageHeader="Microscopy Image Metadata"
       pageDescriptionArray={[
-        "SODA has identified the images below as potential microscopy images. Please check the boxes next to the images that are microscopy images. You can use the button below to select or deselect all images at once.",
-        "The selected images will be converted with MicroFile+ and processed to ensure they are SDS compliant.",
+        "The SDS requires certain metadata fields to be provided for your microsocpy images.",
+        "Plase fill in any missing metadata fields for the images below. Images with complete metadata will appear green in the left column.",
       ]}
     >
-      <Grid>
+      <Grid gutter="xl">
         <Grid.Col span={3}>
           <Stack
             h={300}
@@ -44,24 +53,90 @@ const MicroscopyImageMetadataFormPage = () => {
             gap="xs"
           >
             {confirmedMicroscopyImagefileNames.map((fileName) => {
-              return <Button variant="default">{fileName}</Button>;
+              const stringContainsAnEvenNumber = (str) => {
+                // Regular expression to match any even digit (0, 2, 4, 6, 8)
+                const evenDigitRegex = /[02468]/;
+                // Loop through each character
+                for (let char of str) {
+                  // Check if the character matches the even digit regex
+                  if (evenDigitRegex.test(char)) {
+                    return true; // Even number found, return true
+                  }
+                }
+                // No even numbers found, return false
+                return false;
+              };
+
+              return (
+                <Button
+                  variant={fileName === "sub-a-img-1.tiff" ? "filled" : "outline"}
+                  color={stringContainsAnEvenNumber(fileName) ? "green" : "yellow"}
+                  key={fileName}
+                >
+                  {fileName}
+                </Button>
+              );
             })}
           </Stack>
         </Grid.Col>
         <Grid.Col span={9}>
           <Stack gap="md">
+            <Text>
+              <b>Image name:</b> sub-a-image-1.tiff
+            </Text>
+            <TextInput
+              label="Channel Name"
+              placeholder="Enter the image's channel name"
+              value={channelName}
+              onChange={(event) => setChannelName(event.target.value)}
+              rightSectionWidth={165}
+              rightSection={
+                <Button
+                  variant="outline"
+                  color="blue"
+                  size="xs"
+                  onClick={() => navigator.clipboard.writeText(channelName)}
+                  p="2px"
+                >
+                  Copy value to all images
+                </Button>
+              }
+            />
+
+            <TextInput
+              label="Channel Color"
+              placeholder="Enter the image's channel color"
+              value={channelColor}
+              onChange={(event) => setChannelColor(event.target.value)}
+              rightSectionWidth={165}
+              rightSection={
+                <Button
+                  variant="outline"
+                  color="blue"
+                  size="xs"
+                  onClick={() => navigator.clipboard.writeText(channelName)}
+                  p="2px"
+                >
+                  Copy value to all images
+                </Button>
+              }
+            />
+
             <TextInput
               label="Magnification"
               placeholder="Enter the image's magnification"
               value={magnification}
               onChange={(event) => setMagnification(event.target.value)}
+              rightSectionWidth={165}
               rightSection={
                 <Button
                   variant="outline"
+                  color="blue"
                   size="xs"
-                  onClick={() => navigator.clipboard.writeText(magnification)}
+                  onClick={() => navigator.clipboard.writeText(channelName)}
+                  p="2px"
                 >
-                  Copy
+                  Copy value to all images
                 </Button>
               }
             />
@@ -70,13 +145,16 @@ const MicroscopyImageMetadataFormPage = () => {
               placeholder="Enter the image's spacing X"
               value={spacingX}
               onChange={(event) => setSpacingX(event.target.value)}
+              rightSectionWidth={165}
               rightSection={
                 <Button
                   variant="outline"
+                  color="blue"
                   size="xs"
-                  onClick={() => navigator.clipboard.writeText(spacingX)}
+                  onClick={() => navigator.clipboard.writeText(channelName)}
+                  p="2px"
                 >
-                  Copy
+                  Copy value to all images
                 </Button>
               }
             />
@@ -85,13 +163,16 @@ const MicroscopyImageMetadataFormPage = () => {
               placeholder="Enter the image's spacing Y"
               value={spacingY}
               onChange={(event) => setSpacingY(event.target.value)}
+              rightSectionWidth={165}
               rightSection={
                 <Button
                   variant="outline"
+                  color="blue"
                   size="xs"
-                  onClick={() => navigator.clipboard.writeText(spacingY)}
+                  onClick={() => navigator.clipboard.writeText(channelName)}
+                  p="2px"
                 >
-                  Copy
+                  Copy value to all images
                 </Button>
               }
             />
