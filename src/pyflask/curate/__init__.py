@@ -4,7 +4,7 @@ from .curate import (
     main_curate_function,
     main_curate_function_progress,
     generate_manifest_file_locally,
-    check_JSON_size,
+    check_json_size,
     create_high_lvl_manifest_files_existing_ps_starting_point,
     generate_manifest_file_data,
     clean_json_structure,

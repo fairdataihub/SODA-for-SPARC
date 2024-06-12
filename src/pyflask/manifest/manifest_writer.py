@@ -15,12 +15,11 @@ import pandas as pd
 import requests 
 
 from utils import create_request_headers, column_check, returnFileURL, remove_high_level_folder_from_path, get_name_extension, get_dataset_id, TZLOCAL
-
+from constants import PENNSIEVE_URL
 userpath = expanduser("~")
 
 
 
-PENNSIEVE_URL = "https://api.pennsieve.io"
 
 
 def get_auto_generated_manifest_files(soda_json_structure):
@@ -58,13 +57,22 @@ def update_existing_pennsieve_manifest_files(soda_json_structure, high_level_fol
             "protocol",
             "source",
         ]:
+            
+
+            limit = 100
+            offset = 0
             # request the packages of that folder
             folder_name = i["content"]["name"]
             folder_collection_id = i["content"]["nodeId"]
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_collection_id}", headers=create_request_headers(get_access_token()))
-            r.raise_for_status()
-
-            packageItems = r.json()["children"]
+            packageItems = []
+            while True: 
+                r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_collection_id}?limit={limit}&offset={offset}", headers=create_request_headers(get_access_token()))
+                r.raise_for_status()
+                page = r.json()["children"]
+                packageItems.extend(page)
+                if len(page) < limit:
+                    break
+                offset += limit
 
             for j in packageItems:
                 if j["content"]["name"] == "manifest.xlsx":
@@ -481,7 +489,7 @@ def create_high_level_manifest_files(soda_json_structure, manifest_path):
                 unused_file_name, fileextension = get_name_extension(file_key)
                 # fileextension = name_split[1]
             dict_folder_manifest["file type"].append(fileextension)
-            # addtional metadata
+            # additional metadata
             if "additional-metadata" in file.keys():
                 dict_folder_manifest["Additional Metadata"].append(
                     file["additional-metadata"]
@@ -491,7 +499,7 @@ def create_high_level_manifest_files(soda_json_structure, manifest_path):
 
             return dict_folder_manifest
 
-        # create local folder to save manifest files temporarly (delete any existing one first)
+        # create local folder to save manifest files temporarily (delete any existing one first)
         if "auto-generated" in soda_json_structure["manifest-files"]:
             if soda_json_structure["manifest-files"]["auto-generated"] == True:
                 manifest_files_structure = (

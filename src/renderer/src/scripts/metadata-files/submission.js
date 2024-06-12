@@ -13,7 +13,7 @@ import determineDatasetLocation, { Destinations } from "../analytics/analytics-u
 import api from "../others/api/api";
 import { successCheck } from "../../assets/lotties/lotties";
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 

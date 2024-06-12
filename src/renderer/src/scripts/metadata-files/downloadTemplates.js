@@ -3,7 +3,7 @@
 import kombuchaEnums from "../analytics/analytics-enums";
 import Swal from "sweetalert2";
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
@@ -18,7 +18,6 @@ let templateArray = [
   "subjects.xlsx",
   "samples.xlsx",
   "manifest.xlsx",
-  "DataDeliverablesDocument-template.docx",
   "code_description.xlsx",
   "resources.xlsx",
   "performances.xlsx",

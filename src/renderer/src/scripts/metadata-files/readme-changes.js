@@ -6,7 +6,7 @@ import { clientError, userErrorMessage } from "../others/http-error-handler/erro
 import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
@@ -42,7 +42,7 @@ window.generateRCFilesHelper = (type) => {
   if (textValue === "") {
     Swal.fire({
       title: "Incomplete information",
-      text: "Plase fill in the textarea.",
+      text: "Please fill in the textarea.",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       icon: "error",

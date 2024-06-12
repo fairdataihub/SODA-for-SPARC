@@ -622,6 +622,7 @@
             style="display: none; flex-direction: row; justify-content: center; margin: 10px auto"
           >
             <button
+              id="confirm-local-manifest-folder-adv-feature"
               onclick="window.generateManifestFolderLocallyForEdit(this)"
               class="btn_animated"
               style="
@@ -1480,13 +1481,13 @@
   </div>
   <footer class="footer-container hidden" id="advanced-footer" style="width: calc(100% - 1.5rem)">
     <div class="guided--container-footer-buttons" style="margin-left: 1rem; width: 100%">
-      <button
-        class="ui secondary basic button"
-        id="advanced-back-button"
-        style="width: 200px !important; font-family: Poppins"
-      >
-        <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-      </button>
+      <div
+        data-component-type="navigation-button"
+        data-button-id="advanced-back-button"
+        data-button-text="Back"
+        data-nav-icon="left-arrow"
+        data-button-size="md"
+      ></div>
       <button id="advanced-start-over-button" class="start-over hidden" style="margin-right: 1rem">
         <i class="fas fa-sync-alt" style="margin-right: 10px; font-size: inherit"></i>
         Start over

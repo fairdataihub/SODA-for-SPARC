@@ -5,6 +5,26 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v15.0.1 - 2024-05-30
+
+## Feature Additions:
+
+- Manifest generation text is less prominent.
+
+## Bug fixes:
+
+- Fixed an issue wherre uploads fail for fresh Pennsieve Agent installs.
+- Fixed an issue where react components were not reinitializing and old values were not reset in the UI.
+
+## v15.0.0 - 2024-05-23
+
+## Feature Additions:
+
+- New workflow created for uploading datasets to Pennsieve. This workflow is designed to be more streamlined and user-friendly for datasets that just need to be upload to Pennsieve.
+- An option to validate the dataset content after uploading to Pennsieve has been added to the new workflow. It will verify that all files have been uploaded correctly and allow the user to retry any failed uploads.
+- Enhanced the feature that allows users to retry/resume a failed upload.
+- Added React/Zustand components and created an architecture for rendering individual components into the dom that can subscribe to Zustand store states.
+
 ## v14.1.1 - 2024-05-13
 
 ## Bug fixes:
@@ -464,7 +484,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Bug fixes:
 
 - In organize dataset: When moving files/folders to another location there will be a check if any duplicates are there already.
-- On startup the server will try to connect continuosly. (backOff was replaced)
+- On startup the server will try to connect continuously. (backOff was replaced)
 - Organize dataset: import dataset will correctly check manifest details.
 - Guided Mode: Fixed the automatically generated headers for manifest files
 - Guided Mode: Changed the generated filepath from the filepath on the user's local machine to the path relative to the
@@ -607,7 +627,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Hidden files can now be imported except .DS_Store and Thumbs.db files.
 - The input for renaming or creating a new dataset no longer references undefined function in its HTML.
 - The navigation buttons in each individual Prepare Metadata section have been updated to match the perceived flow from the Prepare Metadata tab.
-- The Add/edit subtitle feature has been updated so that the chracter limit matches the SDS 2.0 specification. This fixes a bug that would cause an error if a user met the character limit enforced by SODA and then tried to add or edit their subtitle.
+- The Add/edit subtitle feature has been updated so that the character limit matches the SDS 2.0 specification. This fixes a bug that would cause an error if a user met the character limit enforced by SODA and then tried to add or edit their subtitle.
 
 ### Known Issues:
 
@@ -860,7 +880,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed an issue where libraries were being loaded out of order leading to errors when opening SODA for the first time.
 - When uploading a dataset, we have now locked the sidebar to prevent accidental clicks that would take you out of the UI.
 - Fixed a bug where loading an award from Airtable would require two attempts.
-- Fixed a bug where macOS version of SODA would run the pre-check message everytime the app lost focus.
+- Fixed a bug where macOS version of SODA would run the pre-check message every time the app lost focus.
 
 ### Known issues:
 
@@ -886,7 +906,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed a bug where manifest file data wasn't being pulled down correctly on Windows.
 - Fixed a bug where .tiff images were not being converted by SODA.
 - Fixed an issue where multiple sample id imports from the primary folder would not work.
-- Fixed a bug where the import primary folder button would dissapear when starting over.
+- Fixed a bug where the import primary folder button would disappear when starting over.
 
 ### Known issues:
 
@@ -930,7 +950,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Fixed a bug where certain message input boxes would take accidental clicks outside the clickable area and clear the input
 - The dataset_description file will no longer enforce a 5 keyword limit.
-- Fixed a bug where the siebar would open up when exiting a datset curation workflow.
+- Fixed a bug where the siebar would open up when exiting a dataset curation workflow.
 
 ### Known issues:
 

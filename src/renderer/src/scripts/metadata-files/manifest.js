@@ -16,7 +16,7 @@ import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
 
-while (!window.htmlPagesAdded) {
+while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
@@ -85,6 +85,9 @@ $(document).ready(async function () {
         document.getElementById("input-manifest-local-folder-dataset").placeholder = folderPath[0];
         localDatasetFolderPath = folderPath[0];
         $("#div-confirm-manifest-local-folder-dataset").css("display", "flex");
+        document
+          .getElementById("confirm-local-manifest-folder-adv-feature")
+          .classList.remove("hidden");
         $($("#div-confirm-manifest-local-folder-dataset button")[0]).show();
       } else {
         document.getElementById("input-manifest-local-folder-dataset").placeholder = "Browse here";
@@ -765,7 +768,9 @@ window.generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   pennsievePreview = false;
   const type = determineStandaloneManifestGeneratorOrigin();
 
-  window.exitCurate();
+  if (!["generate_step_5-manifest", "generate-local-preview-manifest"].includes(ev.id)) {
+    window.exitCurate();
+  }
   window.sodaJSONObj["starting-point"] = {};
   window.sodaJSONObj["dataset-structure"] = {};
   window.datasetStructureJSONObj = { folders: {}, files: {} };
@@ -1285,6 +1290,7 @@ const initiate_generate_manifest_bf = async () => {
       `/curate_datasets/curation`,
       {
         soda_json_structure: window.sodaJSONObj,
+        resume: false,
       },
       {
         timeout: 0,
@@ -2036,7 +2042,10 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
     document.querySelector("#generate_step_5-manifest").style.display = "block";
   }
 
-  window.exitCurate();
+  if (!["btn-pull-ds-manifest", "confirm-local-manifest-folder-adv-feature"].includes(ev.id)) {
+    window.exitCurate();
+  }
+
   window.sodaJSONObj["starting-point"] = {};
   window.sodaJSONObj["dataset-structure"] = {};
   window.datasetStructureJSONObj = { folders: {}, files: {} };
@@ -2048,6 +2057,7 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
     Swal.fire({
       title: "Preparing manifest files",
       allowOutsideClick: false,
+      icon: "info",
       allowEscapeKey: false,
       allowEnterKey: false,
       heightAuto: false,
@@ -2107,6 +2117,12 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
       return;
     }
     createManifestLocally("local", true, "");
+    if (ev.id === "confirm-local-manifest-folder-adv-feature") {
+      document.getElementById(
+        "confirm-local-manifest-folder-adv-feature"
+      ).children[0].style.display = "block";
+      document.getElementById("confirm-local-manifest-folder-adv-feature").classList.add("hidden");
+    }
   } else {
     // Case 2: bf dataset
     window.sodaJSONObj["bf-account-selected"] = { "account-name": window.defaultBfAccount };

@@ -1,9 +1,9 @@
 import requests
 from configUtils import format_agent_profile_name
+from constants import PENNSIEVE_URL
 def create_unique_profile_name(token, machine_username_specifier):
     try:
         # get the users email
-        PENNSIEVE_URL = "https://api.pennsieve.io"
 
         headers = {
             "Content-Type": "application/json",

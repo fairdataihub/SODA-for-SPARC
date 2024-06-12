@@ -70,16 +70,10 @@
     <div id="guided-body" class="guided--body">
       <div id="guided-home" class="guided--main-tab justify-center">
         <div class="guided--panel">
-          <div class="front-page_logo hidden" style="margin-top: -1.3rem">
-            <img
-              id="curate-and-share-logo"
-              style="width: 30%; height: 100%; margin-top: 3px"
-              src="./img/logo-soda1024.png"
-            />
-          </div>
           <h2
             class="justify-center"
             style="
+              font-size: 19px;
               width: 75%;
               word-break: break-word;
               text-align: center;
@@ -128,51 +122,27 @@
           </div>
           <div
             id="additional-option-buttons"
-            style="gap: 100px; margin-top: 2rem; display: flex; flex-direction: row"
-            class="justify-center"
+            style="flex-direction: row; justify-content: space-between; max-width: 600px"
+            class="guided--section mt-md"
           >
             <div
-              style="padding: 0.8rem; border-radius: 4px; padding-left: 2rem; padding-right: 2rem"
-              class="additonal-container"
-            >
-              <button
-                id="sds-templates"
-                style="
-                  font-size: 16px;
-                  font-weight: bold;
-                  color: rgba(0, 0, 0, 0.87);
-                  font-size: 17px;
-                  color: rgba(0, 0, 0, 0.87);
-                  background: none;
-                  outline: none;
-                  border: none;
-                  padding: 0;
-                "
-                class="additional-home-buttons"
-              >
-                Download SDS template <i class="fas fa-arrow-right" style="margin-left: 5px"></i>
-              </button>
-            </div>
+              data-component-type="navigation-button"
+              data-button-id="sds-templates"
+              data-button-text="Download SDS template"
+              data-nav-icon="right-arrow"
+              data-button-size="md"
+              data-button-color="black"
+              data-button-custom-width="250px"
+            ></div>
             <div
-              style="padding: 0.8rem; border-radius: 4px; padding-left: 2rem; padding-right: 2rem"
-              class="additonal-container"
-            >
-              <button
-                id="direct-to-advanced-features"
-                style="
-                  font-size: 17px;
-                  font-weight: bold;
-                  color: rgba(0, 0, 0, 0.87);
-                  background: none;
-                  outline: none;
-                  border: none;
-                  padding: 0;
-                "
-                class="additional-home-buttons"
-              >
-                Advanced features <i class="fas fa-arrow-right" style="margin-left: 5px"></i>
-              </button>
-            </div>
+              data-component-type="navigation-button"
+              data-button-id="direct-to-advanced-features"
+              data-button-text="Advanced features"
+              data-nav-icon="right-arrow"
+              data-button-size="md"
+              data-button-color="black"
+              data-button-custom-width="250px"
+            ></div>
           </div>
         </div>
       </div>
@@ -608,20 +578,11 @@
             <h2 class="text-sub-step-title">
               Select the specific SPARC consortium that funded this dataset:
             </h2>
-
-            <select
-              class="w-100 mb-sm SODA-select-picker"
+            <div
+              class="w-100"
               id="guided-select-sparc-funding-consortium"
-              data-live-search="true"
-              name="Dataset funding source"
-            ></select>
-
-            <div class="guided--section" id="guided-section-confirm-funding-consortium">
-              <h2 class="guided--text-user-directions">
-                Click "<span class="next-button-span"></span>" to confirm your dataset is funded by
-                <span id="span-continue-sparc-funding-consortium-name"></span>.
-              </h2>
-            </div>
+              data-component-type="dropdown-select"
+            ></div>
           </div>
 
           <div class="guided--section" id="guided-section-dataset-re-join-funded">
@@ -1011,71 +972,13 @@
           </div>
         </div>
 
-        <div id="guided-name-subtitle-tab" class="guided--page" data-page-name="Name and subtitle">
-          <h1 class="text-sub-step-title">Dataset name and subtitle</h1>
-          <div class="guided--section">
-            <label class="guided--form-label">Dataset name: </label>
-            <input
-              class="guided--input"
-              id="guided-dataset-name-input"
-              data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
-              data-alert-type="danger"
-              type="text"
-              name="guided-dataset-name"
-              placeholder="Enter dataset name here"
-            />
-            <div class="info-dropdown">
-              <p class="info-dropdown-text" data-dropdown-type="info">
-                What is the dataset name used for?
-              </p>
-              <i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="info-container">
-              <p class="help-text">
-                This field will be displayed in public as the title of the dataset once it is
-                published on the
-                <a target="_blank" href="https://sparc.science/">SPARC Data Portal</a>. Please make
-                sure that your dataset name is unique and relatively informative.
-              </p>
-            </div>
-          </div>
-          <div class="guided--section">
-            <label class="guided--form-label">Dataset subtitle:</label>
-            <p style="height: 0px; margin: 0px">
-              <span
-                id="guided-subtitle-char-count"
-                style="position: relative; top: 100px; color: rgb(117, 107, 107)"
-              >
-                255 characters left
-              </span>
-            </p>
-            <textarea
-              class="guided--input guided--text-area"
-              id="guided-dataset-subtitle-input"
-              type="text"
-              name="guided-dataset-subtitle"
-              placeholder="Enter dataset subtitle here"
-              style="height: 7.5em; padding-bottom: 20px"
-              maxlength="255"
-            ></textarea>
-            <p class="guided--text-input-instructions mb-0">
-              Enter two or three sentences that describe the content of your dataset.
-            </p>
-            <div class="info-dropdown">
-              <p class="info-dropdown-text" data-dropdown-type="info">
-                What is the dataset subtitle used for?
-              </p>
-              <i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="info-container">
-              <p class="help-text">
-                This field will become the short description visible immediately under the title of
-                your dataset once it is published on the
-                <a target="_blank" href="https://sparc.science/">SPARC Data Portal</a>.
-              </p>
-            </div>
-          </div>
-        </div>
+        <div
+          id="guided-name-subtitle-tab"
+          class="guided--page"
+          data-component-type="guided-mode-page"
+          data-page-header="Dataset name and subtitle"
+          data-page-name="Name and subtitle"
+        ></div>
       </div>
 
       <div
@@ -6193,63 +6096,60 @@
     </div>
     <footer class="footer-container hidden" id="guided-footer-div">
       <div class="guided--container-footer-buttons flex-end">
-        <button
-          class="ui secondary basic button"
-          id="guided-back-button"
-          style="width: 200px !important; font-family: Poppins"
-        >
-          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-        </button>
+        <div
+          data-component-type="navigation-button"
+          data-button-id="guided-back-button"
+          data-button-text="Back"
+          data-nav-icon="left-arrow"
+          data-button-size="md"
+          data-button-custom-width="215px"
+        ></div>
       </div>
       <div class="guided--container-footer-buttons flex-between">
-        <button
-          class="ui positive button soda-green-background"
-          id="guided-next-button"
-          style="
-            background-color: var(--color-light-green) !important;
-            width: 200px !important;
-            font-family: Poppins;
-          "
-        >
-          Save and Continue
-        </button>
-        <button
-          class="ui secondary basic button save-and-exit-button"
-          id="guided-button-save-and-exit"
-          style="width: 200px !important; font-family: Poppins"
-          onclick="window.guidedSaveAndExit()"
-        >
-          <i class="far fa-save" style="margin-right: 10px"></i>
-          Save and Exit
-        </button>
+        <div
+          data-component-type="navigation-button"
+          data-button-id="guided-next-button"
+          data-button-text="Save and Continue"
+          data-nav-icon="right-arrow"
+          data-button-size="md"
+          data-button-custom-width="215px"
+        ></div>
+        <div
+          data-component-type="navigation-button"
+          data-button-id="guided-button-save-and-exit"
+          data-button-text="Save and Exit"
+          data-nav-icon="save"
+          data-button-size="md"
+        ></div>
       </div>
     </footer>
     <footer class="footer-container hidden" id="guided-sub-page-navigation-footer-div">
       <div class="guided--container-footer-buttons flex-end">
-        <button
-          class="ui secondary basic button"
-          id="guided-button-sub-page-back"
-          style="width: 130px !important; font-family: Poppins"
-        >
-          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-        </button>
+        <div
+          data-component-type="navigation-button"
+          data-button-id="guided-button-sub-page-back"
+          data-button-text="Back"
+          data-nav-icon="left-arrow"
+          data-button-size="md"
+          data-button-custom-width="120px"
+        ></div>
       </div>
       <div class="guided--container-footer-buttons flex-between">
-        <button
-          class="ui secondary basic button green-hollow-button"
-          id="guided-button-sub-page-continue"
-          style="width: 130px !important; font-family: Poppins"
-        >
-          Next</button
-        ><button
-          class="ui secondary basic button save-and-exit-button"
-          id="guided-button-sub-page-save-and-exit"
-          style="width: 165px !important; font-family: Poppins"
-          onclick="window.guidedSaveAndExit()"
-        >
-          <i class="far fa-save" style="margin-right: 10px"></i>
-          Save and Exit
-        </button>
+        <div
+          data-component-type="navigation-button"
+          data-button-id="guided-button-sub-page-continue"
+          data-button-text="Next"
+          data-nav-icon="right-arrow"
+          data-button-size="md"
+          data-button-custom-width="120px"
+        ></div>
+        <div
+          data-component-type="navigation-button"
+          data-button-id="guided-button-sub-page-save-and-exit"
+          data-button-text="Save and Exit"
+          data-nav-icon="save"
+          data-button-size="md"
+        ></div>
       </div>
     </footer>
   </div>
