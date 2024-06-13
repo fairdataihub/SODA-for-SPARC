@@ -29,7 +29,7 @@ let contactHeartLottie = lottie.loadAnimation({
 let contact_us_lottie_observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     let attributeValue = mutation.target.getAttribute(mutation.attributeName);
-    if (attributeValue.includes("is-shown") == true) {
+    if (attributeValue.includes("is-shown")) {
       //play lottie
       contact_lottie_animation.play();
       contactHeartLottie.play();
@@ -74,7 +74,7 @@ let sectionObserver = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     let attributeValue = $(mutation.target).prop(mutation.attributeName);
 
-    if (attributeValue.includes("is-shown") == true) {
+    if (attributeValue.includes("is-shown")) {
       //add lotties
       existingDatasetLottie.play();
       editDatasetLottie.play();
@@ -99,7 +99,7 @@ let documentation_lottie = lottie.loadAnimation({
 let documentation_lottie_observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     let attributeValue = $(mutation.target).prop(mutation.attributeName);
-    if (attributeValue.includes("is-shown") == true) {
+    if (attributeValue.includes("is-shown")) {
       //play lottie
       documentation_lottie.play();
     } else {
@@ -127,7 +127,7 @@ let successValidatedFiles_lottie = lottie.loadAnimation({
 let successValidatedFiles_lottie_observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     let attributeValue = $(mutation.target).prop(mutation.attributeName);
-    if (attributeValue.includes("is-shown") == true) {
+    if (attributeValue.includes("is-shown")) {
       //play lottie
       successValidatedFiles_lottie.play();
     } else {
@@ -155,7 +155,7 @@ let successValidatedFiles_lottieGuided = lottie.loadAnimation({
 let successValidatedFiles_lottie_observerGuided = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     let attributeValue = $(mutation.target).prop(mutation.attributeName);
-    if (attributeValue.includes("is-shown") == true) {
+    if (attributeValue.includes("is-shown")) {
       //play lottie
       successValidatedFiles_lottieGuided.play();
     } else {
@@ -185,7 +185,7 @@ let partyLottieAnimation = lottie.loadAnimation({
 let partyLottieObserver = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     let attributeValue = $(mutation.target).prop(mutation.attributeName);
-    if (attributeValue.includes("is-shown") == true) {
+    if (attributeValue.includes("is-shown")) {
       //play lottie
       partyLottieAnimation.play();
     } else {
