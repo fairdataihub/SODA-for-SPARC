@@ -5,6 +5,9 @@
 .guided--body *:not(i) {
   font-family: "Poppins", sans-serif;
 }
+.guided--body div[data-component-type] {
+  font-family: inherit;
+}
 
 .guided--container-file-import {
   display: flex;

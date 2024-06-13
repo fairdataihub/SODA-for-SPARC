@@ -907,6 +907,7 @@ window.resetFFMUI = (ev) => {
 };
 
 window.addBfAccount = async (ev, verifyingOrganization = False) => {
+  console.log("Running window.addBfAccount");
   var resolveMessage = "";
   let footerMessage = "No existing accounts to load. Please add an account.";
   if (bfAccountOptionsStatus === "") {

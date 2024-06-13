@@ -5,6 +5,7 @@ import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 import DropdownSelect from "../common/DropdownSelect";
 import GenericButton from "../buttons/Generic";
+import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
@@ -84,6 +85,14 @@ const componentRenderActions = {
     root.render(
       <SodaComponentWrapper>
         <GenericButton id={id} variant={variant} size={size} color={color} text={text} />
+      </SodaComponentWrapper>
+    );
+  },
+  "pennsieve-agent-check-display": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper layout="container">
+        <PennsieveAgentCheckDisplay />
       </SodaComponentWrapper>
     );
   },

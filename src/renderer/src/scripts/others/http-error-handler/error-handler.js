@@ -119,6 +119,7 @@ window.defaultProfileMatchesCurrentWorkspace = async () => {
 
 window.switchToCurrentWorkspace = async () => {
   let workspacesMatch = await window.defaultProfileMatchesCurrentWorkspace();
+  console.log("workspacesMatch: ", workspacesMatch);
 
   if (workspacesMatch) {
     // obsolete/invalid api key and secret needs to be replaced
