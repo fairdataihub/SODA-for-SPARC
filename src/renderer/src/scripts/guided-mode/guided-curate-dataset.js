@@ -15496,7 +15496,6 @@ document
     } else {
       // restart the whole process
       await guidedPennsieveDatasetUpload();
-      return;
     }
   });
 
