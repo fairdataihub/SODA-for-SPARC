@@ -6708,7 +6708,6 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-dataset-generation-tab") {
-      // document.getElementById("guided-dataset-upload-complete-message").classList.add("hidden");
       document.getElementById("guided--verify-files").classList.add("hidden");
     }
 
