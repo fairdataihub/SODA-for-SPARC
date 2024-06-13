@@ -25,11 +25,9 @@ document.querySelector("#guided--verify-files-button").addEventListener("click",
     .getElementById("guided--validate-dataset-failed-table")
     .getElementsByTagName("tbody")[0].innerHTML = "";
 
-  // TODO: disable the save and exit buttons so the user needs to wait until file verification is completed
 
   await window.monitorUploadFileVerificationProgressGuided();
 
-  // TODO: enable the save and exit buttons
   document.querySelector("#guided-next-button").disabled = false;
   document.querySelector("#guided-button-save-and-exit").disabled = false;
 });
