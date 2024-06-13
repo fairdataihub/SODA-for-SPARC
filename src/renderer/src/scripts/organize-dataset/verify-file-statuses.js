@@ -4,6 +4,8 @@
  * NOTE: For a list of possible statuses, see the Pennsieve API documentation link: https://docs.pennsieve.io/docs/uploading-files-programmatically
  */
 import api from "../others/api/api";
+import { clientError } from "../others/http-error-handler/error-handler";
+import { swalConfirmAction, swalShowError } from "../utils/swal-utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -25,7 +27,18 @@ document.querySelector("#guided--verify-files-button").addEventListener("click",
     .getElementById("guided--validate-dataset-failed-table")
     .getElementsByTagName("tbody")[0].innerHTML = "";
 
-  await window.monitorUploadFileVerificationProgressGuided();
+  try {
+    await window.monitorUploadFileVerificationProgressGuided();
+  } catch (err) {
+    clientError(err)
+    await swalShowError("Could Not Verify Files", "An error occurred while verifying the files. You may try again by clicking 'Verify Files' again or move on by clicking 'Save and continue.'")
+
+    document.querySelector("#guided-next-button").disabled = false;
+    document.querySelector("#guided-button-save-and-exit").disabled = false;
+    document.querySelector("#guided--verify-files-button").disabled = false;
+    document.querySelector("#guided--skip-verify-btn").disabled = false;
+    return
+  }
 
   document.querySelector("#guided-next-button").disabled = false;
   document.querySelector("#guided-button-save-and-exit").disabled = false;
