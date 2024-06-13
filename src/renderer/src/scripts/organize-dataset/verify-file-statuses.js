@@ -25,7 +25,6 @@ document.querySelector("#guided--verify-files-button").addEventListener("click",
     .getElementById("guided--validate-dataset-failed-table")
     .getElementsByTagName("tbody")[0].innerHTML = "";
 
-
   await window.monitorUploadFileVerificationProgressGuided();
 
   document.querySelector("#guided-next-button").disabled = false;
