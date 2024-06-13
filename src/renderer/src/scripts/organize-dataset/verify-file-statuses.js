@@ -30,14 +30,17 @@ document.querySelector("#guided--verify-files-button").addEventListener("click",
   try {
     await window.monitorUploadFileVerificationProgressGuided();
   } catch (err) {
-    clientError(err)
-    await swalShowError("Could Not Verify Files", "An error occurred while verifying the files. You may try again by clicking 'Verify Files' again or move on by clicking 'Save and continue.'")
+    clientError(err);
+    await swalShowError(
+      "Could Not Verify Files",
+      "An error occurred while verifying the files. You may try again by clicking 'Verify Files' again or move on by clicking 'Save and continue.'"
+    );
 
     document.querySelector("#guided-next-button").disabled = false;
     document.querySelector("#guided-button-save-and-exit").disabled = false;
     document.querySelector("#guided--verify-files-button").disabled = false;
     document.querySelector("#guided--skip-verify-btn").disabled = false;
-    return
+    return;
   }
 
   document.querySelector("#guided-next-button").disabled = false;
