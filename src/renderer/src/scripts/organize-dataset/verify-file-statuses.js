@@ -5,7 +5,7 @@
  */
 import api from "../others/api/api";
 import { clientError } from "../others/http-error-handler/error-handler";
-import { swalConfirmAction, swalShowError } from "../utils/swal-utils";
+import { swalShowError } from "../utils/swal-utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
