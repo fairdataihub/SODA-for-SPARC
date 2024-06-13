@@ -232,7 +232,6 @@ window.monitorUploadFileVerificationProgressGuided = async () => {
   // all file statuses fetched
   document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText = "";
 
-  failedFilesPathsList = ["Path one", "Path Two"];
 
   if (failedFilesPathsList.length) {
     $("#guided--question-validate-dataset-upload-2").removeClass("hidden");
