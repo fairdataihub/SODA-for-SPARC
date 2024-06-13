@@ -2401,16 +2401,14 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
         starting_point = soda_json_structure["starting-point"]["type"]
         relative_path = ds["content"]["name"]
-        
-
-
-
 
 
         # 1. Scan the dataset structure and create a list of files/folders to be uploaded with the desired renaming
         if generate_option == "new" and starting_point == "new":
             vs = ums.df_mid_has_progress()
+            namespace_logger.info(f"Line 2413. Progress found? {vs}")
             if resume == False or resume == True and not vs:
+                namespace_logger.info("NO progress found so we will start from scratch and construct the manifest")
                 main_curate_progress_message = "Preparing a list of files to upload"
                 # we can assume no files/folders exist in the dataset since the generate option is new and starting point is also new
                 # therefore, we can assume the dataset structure is the same as the tracking structure
@@ -2509,8 +2507,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                         main_total_generate_dataset_size += getsize(manifestpath)
 
 
-        # 2. Count how many files will be uploaded to inform frontend - do not count if we are resuming a previous upload
-        if not resume:
+        # 2. Count how many files will be uploaded to inform frontend - do not count if we are resuming a previous upload that has made progress
+        if not resume or resume and not ums.df_mid_has_progress():
             for folderInformation in list_upload_files:
                 file_paths_count = len(folderInformation[0])
                 total_files += file_paths_count
