@@ -180,7 +180,6 @@ window.monitorUploadFileVerificationProgress = async () => {
     return;
   }
 
-  // TODO: Show success Lottie and show exit buttons
   $("#Question-validate-dataset-upload-3").show();
   $("#success-validated-files-lottie").addClass("is-shown");
 };
@@ -246,7 +245,6 @@ window.monitorUploadFileVerificationProgressGuided = async () => {
     return;
   }
 
-  // TODO: Show success Lottie and show exit buttons
   $("#guided--question-validate-dataset-upload-3").removeClass("hidden");
   $("#guided--success-validated-files-lottie").addClass("is-shown");
 };
