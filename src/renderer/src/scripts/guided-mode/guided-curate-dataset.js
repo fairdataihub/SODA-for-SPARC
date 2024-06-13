@@ -6733,7 +6733,7 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-dataset-generation-tab") {
-      document.getElementById("guided-dataset-upload-complete-message").classList.add("hidden");
+      document.getElementById("guided--verify-files").classList.add("hidden");
     }
 
     if (targetPageID === "guided-dataset-dissemination-tab") {
@@ -15443,10 +15443,27 @@ const guidedPennsieveDatasetUpload = async () => {
         "guided-mode-pre-generate-pennsieve-agent-check"
       );
       if (!supplementary_checks) {
+        console.log("Failed supplementary checks");
+
         return;
       }
-      guidedPennsieveDatasetUpload();
-      return;
+
+      // check if the user made it to the last step
+      if (
+        !document
+          .querySelector("#guided-div-dataset-upload-status-table")
+          .classList.contains("hidden")
+      ) {
+        console.log("WOrking this flow");
+        // scroll to the upload status table
+        window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
+        // upload on the last step
+        await guidedUploadDatasetToPennsieve();
+      } else {
+        // restart the whole process
+        await guidedPennsieveDatasetUpload();
+        return;
+      }
     }
 
     const currentPageID = window.CURRENT_PAGE.id;
@@ -15459,6 +15476,39 @@ const guidedPennsieveDatasetUpload = async () => {
   }
   guidedSetNavLoadingState(false);
 };
+
+document
+  .querySelector("#guided--verify-file-status-retry-upload")
+  .addEventListener("click", async () => {
+    window.retryGuidedMode = true; //set the retry flag to true
+    let supplementary_checks = await window.run_pre_flight_checks(false);
+    if (!supplementary_checks) {
+      console.log("Failed supplementary checks");
+      return;
+    }
+
+    // hide the verify files sections
+    document.querySelector("#guided--verify-files").classList.add("hidden");
+    document.querySelector("#guided--question-validate-dataset-upload-2").classList.add("hidden");
+    document.querySelector("#guided--validate-dataset-upload").classList.add("hidden");
+
+    // check if the user made it to the last step
+    if (
+      !document
+        .querySelector("#guided-div-dataset-upload-status-table")
+        .classList.contains("hidden")
+    ) {
+      console.log("No working this flow");
+      // scroll to the upload status table
+      window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
+      // upload on the last step
+      await guidedUploadDatasetToPennsieve();
+    } else {
+      // restart the whole process
+      await guidedPennsieveDatasetUpload();
+    }
+  });
+
 const openGuidedDatasetRenameSwal = async () => {
   const currentDatasetUploadName = window.sodaJSONObj["digital-metadata"]["name"];
 
@@ -15544,6 +15594,12 @@ const guidedUploadDatasetToPennsieve = async () => {
       // if the upload succeeds reset the retry guided mode flag
       window.retryGuidedMode = false;
       guidedSetNavLoadingState(false);
+
+      let { data } = curationRes;
+      window.pennsieveManifestId = data["origin_manifest_id"];
+      window.totalFilesCount = data["main_curation_uploaded_files"];
+
+      console.log("Pennsieve manifest id should be set now: ", window.pennsieveManifestId);
 
       $("#sidebarCollapse").prop("disabled", false);
       window.log.info("Completed curate function");
@@ -15638,7 +15694,11 @@ const guidedUploadDatasetToPennsieve = async () => {
       await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
 
       //Display the click next text
-      document.getElementById("guided-dataset-upload-complete-message").classList.remove("hidden");
+      document.getElementById("guided--verify-files").classList.remove("hidden");
+
+      // enable the verify files button
+      document.querySelector("#guided--verify-files-button").disabled = false;
+      document.querySelector("#guided--skip-verify-btn").disabled = false;
 
       scrollToBottomOfGuidedBody();
 
@@ -15822,8 +15882,25 @@ const guidedUploadDatasetToPennsieve = async () => {
         if (!supplementary_checks) {
           return;
         }
-        guidedPennsieveDatasetUpload();
-        return;
+
+        // check if the user made it to the last step
+        if (
+          !document
+            .querySelector("#guided-div-dataset-upload-status-table")
+            .classList.contains("hidden")
+        ) {
+          console.log("Happening here");
+          // scroll to the upload status table
+          window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
+          // upload on the last step
+          await guidedUploadDatasetToPennsieve();
+          return;
+        } else {
+          console.log("Happening here");
+          // restart the whole process
+          await guidedPennsieveDatasetUpload();
+          return;
+        }
       }
 
       const currentPageID = window.CURRENT_PAGE.id;
