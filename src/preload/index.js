@@ -163,6 +163,9 @@ if (process.contextIsolated) {
       resourcesPath: () => {
         return process.resourcesPath;
       },
+      architecture: () => {
+        return process.arch;
+      },
     });
     contextBridge.exposeInMainWorld("path", {
       join: (...paths) => {
