@@ -1167,11 +1167,17 @@ const getPlatformSpecificAgentDownloadURL = async () => {
   }
 };
 
-const findDownloadURL = (extension, assets) => {
-  for (const asset of assets) {
-    const fileName = asset.name;
-    if (window.path.extname(fileName) === extension) {
-      return asset.browser_download_url;
+/**
+ *
+ * @param {*} partialStringToSearch - The partial string to search for in the release name
+ * @param {*} releaseList - The list of Pennsieve agent releases to search for the partial string
+ * @returns - The download URL for the Pennsieve agent release that contains the partial string
+ */
+const findDownloadURL = (partialStringToSearch, releaseList) => {
+  for (const release of releaseList) {
+    const releaseName = release.name;
+    if (releaseName.includes(partialStringToSearch)) {
+      return release.browser_download_url;
     }
   }
   return undefined;
@@ -1197,12 +1203,20 @@ const getLatestPennsieveAgentVersion = async () => {
   let platformSpecificAgentDownloadURL;
   switch (usersPlatform) {
     case "darwin":
-      platformSpecificAgentDownloadURL = findDownloadURL(".pkg", latestReleaseAssets);
+      // The Pennsieve has different agent releases for different architectures on MacOS
+      const systemArchitecture = window.process.architecture();
+      if (systemArchitecture === "x64") {
+        platformSpecificAgentDownloadURL = findDownloadURL("x86_64.pkg", latestReleaseAssets);
+      }
+      if (systemArchitecture === "arm64") {
+        platformSpecificAgentDownloadURL = findDownloadURL("arm64.pkg", latestReleaseAssets);
+      }
+      if (!platformSpecificAgentDownloadURL) {
+        platformSpecificAgentDownloadURL = findDownloadURL(".pkg", latestReleaseAssets);
+      }
       break;
     case "win32":
-      platformSpecificAgentDownloadURL =
-        findDownloadURL(".msi", latestReleaseAssets) ||
-        findDownloadURL(".exe", latestReleaseAssets);
+      platformSpecificAgentDownloadURL = findDownloadURL(".msi", latestReleaseAssets);
       break;
     case "linux":
       platformSpecificAgentDownloadURL = findDownloadURL(".deb", latestReleaseAssets);

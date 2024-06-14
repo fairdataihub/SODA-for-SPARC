@@ -1,4 +1,13 @@
 {
+  "15.0.2": {
+    "announcements": {
+      "bug-fixes": [
+        "Fixed a bug where the 'Upload Dataset' feature would fail for fresh Pennsieve Agent installs.",
+        "Fixed an issue that was causing the `Create manifest.xlsx` feature to fail to generate manifest files. "
+      ],
+      "features": []
+    }
+  },
   "15.0.1": {
     "announcements": {
       "bug-fixes": [

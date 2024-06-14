@@ -3465,6 +3465,12 @@ window.resetCurationTabs = () => {
   // Step 4
   if (document.getElementById("generate-manifest-curate").checked) {
     document.getElementById("generate-manifest-curate").click();
+    // if the manifest_files folder exists in ~/SODA delete it
+    if (window.fs.existsSync(window.path.join(window.os.homedir(), "SODA", "manifest_files"))) {
+      window.fs.rmdirSync(window.path.join(window.os.homedir(), "SODA", "manifest_files"), {
+        recursive: true,
+      });
+    }
   }
 
   // Disable continue button
