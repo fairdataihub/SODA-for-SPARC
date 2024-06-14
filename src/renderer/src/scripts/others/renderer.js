@@ -1216,6 +1216,10 @@ const getLatestPennsieveAgentVersion = async () => {
       if (systemArchitecture === "arm64") {
         platformSpecificAgentDownloadURL = findDownloadURL("arm64.pkg", latestReleaseAssets);
       }
+      if (!platformSpecificAgentDownloadURL) {
+        console.log("Doing this code");
+        platformSpecificAgentDownloadURL = findDownloadURL(".pkg", latestReleaseAssets);
+      }
       break;
     case "win32":
       platformSpecificAgentDownloadURL = findDownloadURL(".msi", latestReleaseAssets);
