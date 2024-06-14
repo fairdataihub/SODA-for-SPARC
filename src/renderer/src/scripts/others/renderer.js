@@ -1174,12 +1174,8 @@ const getPlatformSpecificAgentDownloadURL = async () => {
  * @returns - The download URL for the Pennsieve agent release that contains the partial string
  */
 const findDownloadURL = (partialStringToSearch, releaseList) => {
-  console.log("partialStringToSearch", partialStringToSearch);
-  console.log("releaseList", releaseList);
   for (const release of releaseList) {
-    console.log("release", release);
     const releaseName = release.name;
-    console.log("releaseName", releaseName);
     if (releaseName.includes(partialStringToSearch)) {
       return release.browser_download_url;
     }
@@ -1209,7 +1205,6 @@ const getLatestPennsieveAgentVersion = async () => {
     case "darwin":
       // The Pennsieve has different agent releases for different architectures on MacOS
       const systemArchitecture = window.process.architecture();
-      console.log("systemArchitecture", systemArchitecture);
       if (systemArchitecture === "x64") {
         platformSpecificAgentDownloadURL = findDownloadURL("x86_64.pkg", latestReleaseAssets);
       }
@@ -1217,7 +1212,6 @@ const getLatestPennsieveAgentVersion = async () => {
         platformSpecificAgentDownloadURL = findDownloadURL("arm64.pkg", latestReleaseAssets);
       }
       if (!platformSpecificAgentDownloadURL) {
-        console.log("Doing this code");
         platformSpecificAgentDownloadURL = findDownloadURL(".pkg", latestReleaseAssets);
       }
       break;
