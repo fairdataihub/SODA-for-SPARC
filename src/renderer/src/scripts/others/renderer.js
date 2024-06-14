@@ -1191,8 +1191,10 @@ const getLatestPennsieveAgentVersion = async () => {
     "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases/latest"
   );
 
+
   const latestReleaseAssets = res.data?.assets;
   const latestPennsieveAgentVersion = res.data?.tag_name;
+
 
   if (!latestReleaseAssets) {
     throw new Error("Failed to extract assets from the latest Pennsieve agent release");
@@ -1212,13 +1214,13 @@ const getLatestPennsieveAgentVersion = async () => {
       console.log("systemArchitecture", systemArchitecture);
       if (systemArchitecture === "x64") {
         platformSpecificAgentDownloadURL = findDownloadURL(
-          ".string-for-non-m-chip-release" /* TODO: Add the correct string for the Intel release */,
+          "x86_64.pkg",
           latestReleaseAssets
         );
       }
       if (systemArchitecture === "arm64") {
         platformSpecificAgentDownloadURL = findDownloadURL(
-          ".string-for-m-chip-release" /* TODO: Add the correct string for the M-chip release */,
+          "arm64.pkg",
           latestReleaseAssets
         );
       }
