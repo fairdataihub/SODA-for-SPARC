@@ -1191,10 +1191,8 @@ const getLatestPennsieveAgentVersion = async () => {
     "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases/latest"
   );
 
-
   const latestReleaseAssets = res.data?.assets;
   const latestPennsieveAgentVersion = res.data?.tag_name;
-
 
   if (!latestReleaseAssets) {
     throw new Error("Failed to extract assets from the latest Pennsieve agent release");
@@ -1213,16 +1211,10 @@ const getLatestPennsieveAgentVersion = async () => {
       const systemArchitecture = window.process.architecture();
       console.log("systemArchitecture", systemArchitecture);
       if (systemArchitecture === "x64") {
-        platformSpecificAgentDownloadURL = findDownloadURL(
-          "x86_64.pkg",
-          latestReleaseAssets
-        );
+        platformSpecificAgentDownloadURL = findDownloadURL("x86_64.pkg", latestReleaseAssets);
       }
       if (systemArchitecture === "arm64") {
-        platformSpecificAgentDownloadURL = findDownloadURL(
-          "arm64.pkg",
-          latestReleaseAssets
-        );
+        platformSpecificAgentDownloadURL = findDownloadURL("arm64.pkg", latestReleaseAssets);
       }
       break;
     case "win32":
