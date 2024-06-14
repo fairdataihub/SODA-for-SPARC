@@ -307,6 +307,9 @@ def create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structur
         high_level_folders_present.append(high_level_folder)
 
         folderpath = join(manifest_path, high_level_folder)
+        # remove any stale manifest files for this high level folder should they exist
+        if exists(folderpath):
+            shutil.rmtree(folderpath)
         makedirs(folderpath)
         manifestfilepath = join(folderpath, "manifest.xlsx")
 
