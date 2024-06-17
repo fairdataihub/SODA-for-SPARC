@@ -14,6 +14,7 @@ import {
 } from "../../../stores/slices/microscopyImageSlice";
 import { Text, Button, Stack, Grid, TextInput } from "@mantine/core";
 import GuidedModePage from "../../containers/GuidedModePage";
+import { IconCheck, IconDots } from "@tabler/icons-react";
 import styles from "./MicroscopyImageMetadataFormPage.module.css";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import ExternalLink from "../../buttons/ExternalLink";
@@ -50,7 +51,7 @@ const MicroscopyImageMetadataFormPage = () => {
             bg="var(--mantine-color-body)"
             align="stretch"
             justify="flex-start"
-            gap="xs"
+            gap="0px"
           >
             {confirmedMicroscopyImagefileNames.map((fileName) => {
               const stringContainsAnEvenNumber = (str) => {
@@ -69,9 +70,16 @@ const MicroscopyImageMetadataFormPage = () => {
 
               return (
                 <Button
-                  variant={fileName === "sub-a-img-1.tiff" ? "filled" : "outline"}
-                  color={stringContainsAnEvenNumber(fileName) ? "green" : "yellow"}
+                  variant={fileName === "sub-a-img-1.tif" ? "filled" : "subtle"}
                   key={fileName}
+                  size="compact-md"
+                  rightSection={
+                    stringContainsAnEvenNumber(fileName) ? (
+                      <IconCheck />
+                    ) : (
+                      <IconDots color="orange" />
+                    )
+                  }
                 >
                   {fileName}
                 </Button>

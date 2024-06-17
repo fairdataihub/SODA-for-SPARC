@@ -1525,7 +1525,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("source");
     }
 
-    if (pageBeingLeftID === "guided-biolucida-login-tab") {
+    /*if (pageBeingLeftID === "guided-biolucida-login-tab") {
       // Check if the user is authenticated to BioLucida
       const userIsAuthenticatedToBioLucida = useGlobalStore.getState().userAuthenticatedToBioLucida;
       if (!userIsAuthenticatedToBioLucida) {
@@ -1579,7 +1579,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
       }
-    }
+    }*/
 
     if (pageBeingLeftID === "guided-derivative-data-organization-tab") {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("derivative");
