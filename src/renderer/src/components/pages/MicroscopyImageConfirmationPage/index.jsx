@@ -32,7 +32,6 @@ const MicroscopyImageConfirmationPage = () => {
     const filePath = imageObj["filePath"];
     const fileName = imageObj["fileName"];
     const relativeDatasetStructurePath = imageObj["relativeDatasetStructurePath"];
-    console.log("relativeDatasetStructurePath", relativeDatasetStructurePath);
 
     // Check if the image is already confirmed as a microscopy image
     const isImageDesignatedAsMicroscopyImage = confirmedMicroscopyImagePathPaths.includes(filePath);

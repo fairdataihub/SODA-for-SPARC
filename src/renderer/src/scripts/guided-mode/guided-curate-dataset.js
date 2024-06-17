@@ -5519,6 +5519,30 @@ window.openPage = async (targetPageID) => {
         window.datasetStructureJSONObj["folders"]["primary"]
       );
       const confirmedMicroscopyImages = window.sodaJSONObj["confirmed-microscopy-images"] || [];
+
+      const confirmedMicroscopyImageFilePaths = confirmedMicroscopyImages.map(
+        (image) => image["filePath"]
+      );
+      // Create a directory to store the guided image thumbnails if it doesn't exist
+      const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
+      if (!window.fs.existsSync(guidedThumbnailsPath)) {
+        window.fs.mkdirSync(guidedThumbnailsPath, { recursive: true });
+      }
+
+      console.log("guidedThumbnailsPath:", guidedThumbnailsPath);
+
+      try {
+        const res = await client.post("/image_processing/create_image_thumbnails", {
+          image_paths: confirmedMicroscopyImageFilePaths,
+          output_directory: guidedThumbnailsPath,
+        });
+        console.log("Image thumbnails created successfully");
+      } catch (error) {
+        console.error(error);
+      }
+
+      console.log("confirmedMicroscopyImages:", confirmedMicroscopyImages);
+
       setPotentialMicroscopyImages(potentialMicroscopyImages);
       setConfirmedMicroscopyImages(confirmedMicroscopyImages);
     }

@@ -9,7 +9,6 @@ import requests
 api = get_namespace(NamespaceEnum.IMAGE_PROCESSING)
 namespace_logger = get_namespace_logger(NamespaceEnum.IMAGE_PROCESSING)
 
-
 @api.route('/biolucida_login')
 class BiolucidaLogin(Resource):
     global namespace_logger
@@ -47,7 +46,6 @@ class BiolucidaLogin(Resource):
         except Exception as e:
             namespace_logger.error(f"Error logging in to Biolucida: {str(e)}")
             api.abort(500, str(e))
-
 
 @api.route('/biolucida_image_upload')
 class BiolucidaImageUpload(Resource):
@@ -130,9 +128,6 @@ class BiolucidaImageUpload(Resource):
             namespace_logger.error(f"Error uploading image to Biolucida: {str(e)}")
             api.abort(500, str(e))
 
-
-
-
 @api.route('/biolucida_create_collection')
 class BiolucidaLogin(Resource):
     global namespace_logger
@@ -175,7 +170,6 @@ class BiolucidaLogin(Resource):
             namespace_logger.error(f"Error creating collection in Biolucida: {str(e)}")
             api.abort(500, str(e))
 
-
 @api.route('/biolucida_create_folder')
 class BiolucidaCreateFolder(Resource):
     global namespace_logger
@@ -210,4 +204,42 @@ class BiolucidaCreateFolder(Resource):
             namespace_logger.error(f"Error creating folder in Biolucida: {str(e)}")
             api.abort(500, str(e))
     
-    
+@api.route('/create_image_thumbnails')
+class CreateImageThumbnails(Resource):
+    global namespace_logger
+    request_model = {
+        'image_paths': fields.List(fields.String, required=True, description="The paths to the images to create thumbnails for"),
+        'output_directory': fields.String(required=True, description="The directory to save the thumbnails to"),
+    }
+    response_model = {
+        'converted_image_paths': fields.List(fields.String, required=True, description="The paths to the thumbnails created"),
+    }
+
+    parser = reqparse.RequestParser(bundle_errors=True)
+    parser.add_argument('image_paths', type=list, location='json', required=True, help="The path to the image to create thumbnails for")
+    parser.add_argument('output_directory', type=str, required=True, help="The directory to save the thumbnails to")
+
+    @api.expect(request_model)
+    @api.response(200, 'Thumbnails created', response_model)
+    @api.response(400, 'Bad request')
+    @api.response(500, 'Internal server error')
+    def post(self):
+        try:
+            data = self.parser.parse_args()
+            image_paths = data['image_paths']
+            output_directory = data['output_directory']
+            namespace_logger.info(f"Creating thumbnails for images: {image_paths}")
+            namespace_logger.info(f"Output directory: {output_directory}")
+            for image_path in image_paths:
+                # Convert the image to a thumbnail with the name of the image_path + _thumbnail.jpg
+                # and save it to the output directory
+                image = Image.open(image_path)
+                image.thumbnail((128, 128))
+                thumbnail_path = os.path.join(output_directory, image_path + "_thumbnail.jpg")
+                namespace_logger.info(f"image_path: {image_path}")
+                image.save(thumbnail_path)
+                namespace_logger.info(f"Thumbnail saved to: {thumbnail_path}")
+            return {'converted_image_paths': []}
+        except Exception as e:
+            namespace_logger.error(f"Error creating thumbnails: {str(e)}")
+            api.abort(500, str(e))
