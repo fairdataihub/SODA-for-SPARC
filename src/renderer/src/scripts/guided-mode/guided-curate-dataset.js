@@ -5523,6 +5523,9 @@ window.openPage = async (targetPageID) => {
       const confirmedMicroscopyImageFilePaths = confirmedMicroscopyImages.map(
         (image) => image["filePath"]
       );
+      const potentialMicroscopyImageFilePaths = potentialMicroscopyImages.map(
+        (image) => image["filePath"]
+      );
       // Create a directory to store the guided image thumbnails if it doesn't exist
       const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
       if (!window.fs.existsSync(guidedThumbnailsPath)) {
@@ -5533,10 +5536,10 @@ window.openPage = async (targetPageID) => {
 
       try {
         const res = await client.post("/image_processing/create_image_thumbnails", {
-          image_paths: confirmedMicroscopyImageFilePaths,
+          image_paths: potentialMicroscopyImageFilePaths,
           output_directory: guidedThumbnailsPath,
         });
-        console.log("Image thumbnails created successfully");
+        console.log("Image thumbnails created successfully", res.data);
       } catch (error) {
         console.error(error);
       }

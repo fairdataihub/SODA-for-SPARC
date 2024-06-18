@@ -4,12 +4,24 @@ import {
   undesignateImageAsMicroscopyImage,
   setConfirmedMicroscopyImages,
 } from "../../../stores/slices/microscopyImageSlice";
-import { Table, Checkbox, Text, Tooltip, Button, Stack } from "@mantine/core";
+import {
+  Table,
+  Checkbox,
+  Text,
+  Tooltip,
+  Button,
+  Stack,
+  Image,
+  Center,
+  Overlay,
+  AspectRatio,
+} from "@mantine/core";
+import { IconX } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import styles from "./MicroscopyImageConfirmationPage.module.css";
-import GuidedModeSection from "../../containers/GuidedModeSection";
-import ExternalLink from "../../buttons/ExternalLink";
-import DropDownNote from "../../utils/ui/DropDownNote";
+
+const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
+const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
 
 const MicroscopyImageConfirmationPage = () => {
   // Get the required zustand store state variables
@@ -36,22 +48,43 @@ const MicroscopyImageConfirmationPage = () => {
     // Check if the image is already confirmed as a microscopy image
     const isImageDesignatedAsMicroscopyImage = confirmedMicroscopyImagePathPaths.includes(filePath);
 
+    const handleRowClick = (imageObj) => {
+      if (confirmedMicroscopyImagePathPaths.includes(imageObj.filePath)) {
+        undesignateImageAsMicroscopyImage(imageObj);
+      } else {
+        designateImageAsMicroscopyImage(imageObj);
+      }
+    };
+
     return (
-      <Table.Tr key={relativeDatasetStructurePath}>
-        <Table.Td className={styles.selectCell}>
-          {isImageDesignatedAsMicroscopyImage ? (
-            <Checkbox
-              aria-label={`Deselect ${imageObj.fileName}`}
-              checked={true}
-              onChange={() => undesignateImageAsMicroscopyImage(imageObj)}
+      <Table.Tr key={relativeDatasetStructurePath} onClick={() => handleRowClick(imageObj)}>
+        <Table.Td>
+          <Center>
+            {isImageDesignatedAsMicroscopyImage ? (
+              <Checkbox aria-label={`Deselect ${imageObj.fileName}`} checked={true} />
+            ) : (
+              <Checkbox aria-label={`Select ${imageObj.fileName}`} checked={false} />
+            )}
+          </Center>
+        </Table.Td>
+        <Table.Td>
+          <AspectRatio h={100} w={100}>
+            <Image
+              src={window.path.join(guidedThumbnailsPath, `${fileName}_thumbnail.jpg`)}
+              alt={window.path.join(guidedThumbnailsPath, `${fileName}_thumbnail.jpg`)}
+              className={styles.thumbnailImage}
+              radius="md"
+              withPlaceholder
+              fallbackSrc="https://placehold.co/10x10?text=Preview+unavailable"
             />
-          ) : (
-            <Checkbox
-              aria-label={`Select ${imageObj.fileName}`}
-              checked={false}
-              onChange={() => designateImageAsMicroscopyImage(imageObj)}
-            />
-          )}
+            {!isImageDesignatedAsMicroscopyImage && (
+              <Overlay opacity={0.5} color="gray" className={styles.thumbnailImage}>
+                <Center>
+                  <IconX size={"xl"} color="white" />
+                </Center>
+              </Overlay>
+            )}
+          </AspectRatio>
         </Table.Td>
         <Table.Td>
           <Tooltip
@@ -65,7 +98,9 @@ const MicroscopyImageConfirmationPage = () => {
               </Stack>
             }
           >
-            <Text ta="left">{fileName}</Text>
+            <Text ta="left" flexGrow={1}>
+              {fileName}
+            </Text>
           </Tooltip>
         </Table.Td>
       </Table.Tr>
@@ -80,7 +115,7 @@ const MicroscopyImageConfirmationPage = () => {
         "The selected images will be converted with MicroFile+ and processed to ensure they are SDS compliant.",
       ]}
     >
-      <Table withTableBorder>
+      <Table withTableBorder highlightOnHover>
         <Table.Thead>
           <Table.Tr>
             <Table.Th className={styles.selectHeader}>
@@ -94,6 +129,7 @@ const MicroscopyImageConfirmationPage = () => {
                 </Button>
               )}
             </Table.Th>
+            <Table.Th>Image thumb</Table.Th>
 
             <Table.Th>Image name</Table.Th>
           </Table.Tr>

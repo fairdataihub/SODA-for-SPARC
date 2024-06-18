@@ -11,3 +11,8 @@
 .selectHeader {
   width: 125px;
 }
+
+.thumbnailImage {
+  width: 80px !important;
+  height: 80px !important;
+}

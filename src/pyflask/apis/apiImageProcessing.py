@@ -230,16 +230,23 @@ class CreateImageThumbnails(Resource):
             output_directory = data['output_directory']
             namespace_logger.info(f"Creating thumbnails for images: {image_paths}")
             namespace_logger.info(f"Output directory: {output_directory}")
+            converted_image_paths = []
             for image_path in image_paths:
-                # Convert the image to a thumbnail with the name of the image_path + _thumbnail.jpg
-                # and save it to the output directory
                 image = Image.open(image_path)
-                image.thumbnail((128, 128))
-                thumbnail_path = os.path.join(output_directory, image_path + "_thumbnail.jpg")
-                namespace_logger.info(f"image_path: {image_path}")
-                image.save(thumbnail_path)
+                image.thumbnail((300, 300))
+                namespace_logger.info(f"Image_path: {image_path}")
+                
+                # Convert RGBA to RGB if necessary
+                if image.mode != 'RGB':
+                    image = image.convert('RGB')
+                
+                # Combine the output_directory with the image name and _thumbnail.jpg
+                thumbnail_path = os.path.join(output_directory, os.path.basename(image_path) + "_thumbnail.jpg")
+                namespace_logger.info(f"thumbnail_path: {thumbnail_path}")
+                image.save(thumbnail_path, "JPEG")
                 namespace_logger.info(f"Thumbnail saved to: {thumbnail_path}")
-            return {'converted_image_paths': []}
+                converted_image_paths.append(thumbnail_path)
+            return {'converted_image_paths': converted_image_paths}, 200
         except Exception as e:
             namespace_logger.error(f"Error creating thumbnails: {str(e)}")
             api.abort(500, str(e))
