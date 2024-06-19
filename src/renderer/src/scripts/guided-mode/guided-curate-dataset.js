@@ -1492,6 +1492,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     if (pageBeingLeftID === "guided-microscopy-image-confirmation-tab") {
       // Get the confirmed microscopy images from the global store and add them to the JSON
       const confirmedMicroscopyImages = useGlobalStore.getState().confirmedMicroscopyImages;
+      console.log("confirmedMicroscopyImages", confirmedMicroscopyImages);
       if (confirmedMicroscopyImages.length === 0) {
         errorArray.push({
           type: "notyf",

@@ -45,14 +45,22 @@ const MicroscopyImageMetadataFormPage = () => {
       ]}
     >
       <Grid gutter="xl">
-        <Grid.Col span={3}>
+        <Grid.Col span={5}>
           <Stack
             h={300}
             bg="var(--mantine-color-body)"
             align="stretch"
             justify="flex-start"
             gap="0px"
+            className={styles.scrollableStack}
           >
+            <TextInput
+              label="Channel Name"
+              placeholder="Enter the image's channel name"
+              value={channelName}
+              onChange={(event) => setChannelName(event.target.value)}
+              rightSectionWidth={165}
+            />
             {confirmedMicroscopyImagefileNames.map((fileName) => {
               const stringContainsAnEvenNumber = (str) => {
                 // Regular expression to match any even digit (0, 2, 4, 6, 8)
@@ -87,7 +95,7 @@ const MicroscopyImageMetadataFormPage = () => {
             })}
           </Stack>
         </Grid.Col>
-        <Grid.Col span={9}>
+        <Grid.Col span={7}>
           <Stack gap="md">
             <Text>
               <b>Image name:</b> sub-a-image-1.tiff

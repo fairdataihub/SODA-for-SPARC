@@ -4,6 +4,7 @@ import { produce } from "immer";
 export const microscopyImageSlice = (set) => ({
   potentialMicroscopyImages: [],
   confirmedMicroscopyImages: [],
+  confirmMicroscopySearchInput: "",
   microscopyImagesSelectedToBeUploadedToBioLucida: [],
 });
 
@@ -15,8 +16,15 @@ export const setPotentialMicroscopyImages = (potentialMicroscopyImages) => {
   );
 };
 
+export const setConfirmMicroscopySearchInput = (searchInput) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.confirmMicroscopySearchInput = searchInput;
+    })
+  );
+};
+
 export const setConfirmedMicroscopyImages = (confirmedMicroscopyImages) => {
-  console.log("setConfirmedMicroscopyImages", confirmedMicroscopyImages);
   useGlobalStore.setState(
     produce((state) => {
       state.confirmedMicroscopyImages = confirmedMicroscopyImages;
@@ -25,10 +33,13 @@ export const setConfirmedMicroscopyImages = (confirmedMicroscopyImages) => {
 };
 
 export const designateImageAsMicroscopyImage = (imageObj) => {
-  console.log("designateImageAsMicroscopyImage", imageObj);
   useGlobalStore.setState(
     produce((state) => {
-      state.confirmedMicroscopyImages = [...state.confirmedMicroscopyImages, imageObj];
+      if (!state.confirmedMicroscopyImages.some((img) => img.filePath === imageObj.filePath)) {
+        state.confirmedMicroscopyImages.push(imageObj);
+      } else {
+        console.log("Image already exists in confirmedMicroscopyImages");
+      }
     })
   );
 };
@@ -54,10 +65,7 @@ export const setMicroscopyImagesUploadableToBioLucida = (imageObjs) => {
 export const addImageToBioLucidaUploadList = (imageObj) => {
   useGlobalStore.setState(
     produce((state) => {
-      state.microscopyImagesSelectedToBeUploadedToBioLucida = [
-        ...state.microscopyImagesSelectedToBeUploadedToBioLucida,
-        imageObj,
-      ];
+      state.microscopyImagesSelectedToBeUploadedToBioLucida.push(imageObj);
     })
   );
 };

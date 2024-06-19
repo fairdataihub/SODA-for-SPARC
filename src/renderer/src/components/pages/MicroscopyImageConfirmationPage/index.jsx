@@ -1,12 +1,12 @@
+import React from "react";
 import useGlobalStore from "../../../stores/globalStore";
 import {
   designateImageAsMicroscopyImage,
   undesignateImageAsMicroscopyImage,
   setConfirmedMicroscopyImages,
+  setConfirmMicroscopySearchInput,
 } from "../../../stores/slices/microscopyImageSlice";
-import { useDisclosure } from "@mantine/hooks";
 import {
-  Table,
   Checkbox,
   Text,
   Tooltip,
@@ -18,8 +18,12 @@ import {
   AspectRatio,
   Modal,
   Group,
+  Card,
+  Badge,
+  Grid,
+  TextInput,
 } from "@mantine/core";
-import { IconX } from "@tabler/icons-react";
+import { IconMicroscope, IconX } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import styles from "./MicroscopyImageConfirmationPage.module.css";
@@ -28,108 +32,132 @@ const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home")
 const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
 
 const MicroscopyImageConfirmationPage = () => {
-  const [opened, { open, close }] = useDisclosure(false);
-  // Get the required zustand store state variables
-  const { potentialMicroscopyImages, confirmedMicroscopyImages } = useGlobalStore();
+  const { potentialMicroscopyImages, confirmedMicroscopyImages, confirmMicroscopySearchInput } =
+    useGlobalStore();
 
-  const confirmedMicroscopyImagePathPaths = confirmedMicroscopyImages.map(
-    (imageObj) => imageObj["filePath"]
+  const filteredImages = potentialMicroscopyImages.filter((image) =>
+    image.fileName.toLowerCase().includes(confirmMicroscopySearchInput.toLowerCase())
   );
-  const allImagesSelected = potentialMicroscopyImages.length === confirmedMicroscopyImages.length;
+  const allFilteredImagesAreMicroscopyImages = filteredImages.every((image) =>
+    confirmedMicroscopyImages.some((confirmedImage) => confirmedImage.filePath === image.filePath)
+  );
 
-  const toggleAllImages = (markAllImagesAsMicroscopy) => {
-    if (markAllImagesAsMicroscopy) {
-      setConfirmedMicroscopyImages(potentialMicroscopyImages);
-    } else {
-      setConfirmedMicroscopyImages([]);
+  const confirmedImagePaths = new Set(confirmedMicroscopyImages.map((image) => image.filePath));
+
+  const toggleAllImages = () => {
+    for (const image of filteredImages) {
+      if (allFilteredImagesAreMicroscopyImages) {
+        undesignateImageAsMicroscopyImage(image);
+      } else {
+        designateImageAsMicroscopyImage(image);
+      }
     }
   };
 
-  const tableRows = potentialMicroscopyImages.map((imageObj) => {
-    const filePath = imageObj["filePath"];
-    const fileName = imageObj["fileName"];
-    const relativeDatasetStructurePath = imageObj["relativeDatasetStructurePath"];
-
-    // Check if the image is already confirmed as a microscopy image
-    const isImageDesignatedAsMicroscopyImage = confirmedMicroscopyImagePathPaths.includes(filePath);
-
-    const handleRowClick = (imageObj) => {
-      if (confirmedMicroscopyImagePathPaths.includes(imageObj.filePath)) {
-        undesignateImageAsMicroscopyImage(imageObj);
-      } else {
-        designateImageAsMicroscopyImage(imageObj);
-      }
-    };
-
-    return (
-      <Table.Tr key={relativeDatasetStructurePath} onClick={() => handleRowClick(imageObj)}>
-        <Table.Td>
-          <AspectRatio h={100} w={100}>
-            <Image
-              src={window.path.join(guidedThumbnailsPath, `${fileName}_thumbnail.jpg`)}
-              alt={window.path.join(guidedThumbnailsPath, `${fileName}_thumbnail.jpg`)}
-              className={styles.thumbnailImage}
-              radius="md"
-              withPlaceholder
-              fallbackSrc="https://placehold.co/10x10?text=Preview+unavailable"
-            />
-            {!isImageDesignatedAsMicroscopyImage && (
-              <Overlay opacity={0.5} color="gray" className={styles.thumbnailImage}>
-                <Center>
-                  <IconX size={"xl"} color="white" />
-                </Center>
-              </Overlay>
-            )}
-          </AspectRatio>
-        </Table.Td>
-        <Table.Td>
-          <Tooltip
-            multiline
-            label={
-              <Stack gap="xs">
-                <Text ta="left">Local file path:</Text>
-                <Text ta="left">{filePath}</Text>
-                <Text ta="left">Path in organized dataset structure:</Text>
-                <Text>{relativeDatasetStructurePath}</Text>
-              </Stack>
-            }
-          >
-            <Text ta="left">{fileName}</Text>
-          </Tooltip>
-        </Table.Td>
-      </Table.Tr>
-    );
-  });
+  const handleCardClick = (image) => {
+    if (confirmedImagePaths.has(image.filePath)) {
+      undesignateImageAsMicroscopyImage(image);
+    } else {
+      designateImageAsMicroscopyImage(image);
+    }
+  };
 
   return (
     <GuidedModePage
       pageHeader="Microscopy Image Confirmation"
       pageDescriptionArray={[
-        "SODA has identified the images below as potential microscopy images. Please check the boxes next to the images that are microscopy images. You can use the button below to select or deselect all images at once.",
+        "SODA has identified the images below as potential microscopy images. Please check the cards of the images that are microscopy images. You can use the button below to select or deselect all images at once.",
         "The selected images will be converted with MicroFile+ and processed to ensure they are SDS compliant.",
       ]}
     >
-      <GuidedModeSection>
-        <Button
-          className={styles.toggleButton}
-          onClick={() => toggleAllImages(!allImagesSelected)}
-          variant="filled"
-        >
-          {allImagesSelected ? "Deselect all" : "Select all"}
+      <Group position="center">
+        <Button className={styles.toggleButton} onClick={toggleAllImages} variant="filled">
+          {allFilteredImagesAreMicroscopyImages
+            ? "Mark images as not microscopy images"
+            : "Mark images as microscopy images"}
         </Button>
-        <Button onClick={open}>Open modal</Button>
-      </GuidedModeSection>
-      <GuidedModeSection>
-        <Table withTableBorder highlightOnHover>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Image</Table.Th>
-              <Table.Th>Image name</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>{tableRows}</Table.Tbody>
-        </Table>
-      </GuidedModeSection>
+        <TextInput
+          label="Image search filter"
+          placeholder="Enter a search filter for example 'sub-01' or '.tiff'"
+          style={{ flexGrow: 1 }}
+          value={confirmMicroscopySearchInput}
+          onChange={(event) => setConfirmMicroscopySearchInput(event.target.value)}
+        />
+      </Group>
+      <Grid>
+        {filteredImages.length != 0 ? (
+          filteredImages.map((image) => (
+            <Grid.Col span={3} key={image.relativeDatasetStructurePath}>
+              <Card
+                className={styles.card}
+                onClick={() => handleCardClick(image)}
+                shadow="sm"
+                padding="lg"
+                radius="md"
+                withBorder
+              >
+                <Card.Section>
+                  <AspectRatio ratio={1} style={{ position: "relative" }}>
+                    <Image
+                      src={window.path.join(
+                        guidedThumbnailsPath,
+                        `${image.fileName}_thumbnail.jpg`
+                      )}
+                      alt={`${image.fileName}_thumbnail`}
+                      withPlaceholder
+                      className={styles.thumbnailImage}
+                      fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
+                    />
+                    {!confirmedImagePaths.has(image.filePath) ? (
+                      <Overlay className={styles.thumbnailImage}>
+                        <Center>
+                          <IconX size={60} color="white" />
+                        </Center>
+                      </Overlay>
+                    ) : (
+                      <Overlay
+                        opacity={0.2}
+                        style={{ backgroundColor: "lightblue" }}
+                        className={styles.thumbnailImage}
+                      >
+                        <Center>
+                          <IconMicroscope size={60} color="white" />
+                        </Center>
+                      </Overlay>
+                    )}
+                  </AspectRatio>
+                </Card.Section>
+                <Stack spacing="xs" mt="md">
+                  <Tooltip
+                    multiline
+                    label={
+                      <Stack spacing="xs">
+                        <Text>Local file path:</Text>
+                        <Text>{image.filePath}</Text>
+                        <Text>Path in organized dataset structure:</Text>
+                        <Text>{image.relativeDatasetStructurePath}</Text>
+                      </Stack>
+                    }
+                  >
+                    <Text weight={500} size="sm">
+                      {image.fileName}
+                    </Text>
+                  </Tooltip>
+                </Stack>
+              </Card>
+            </Grid.Col>
+          ))
+        ) : (
+          <Grid.Col span={12}>
+            <Text c="dimmed" size="lg" ta="center">
+              No images matching the search criteria
+            </Text>
+            <Text c="dimmed" ta="center">
+              Modify the search input to view more images
+            </Text>
+          </Grid.Col>
+        )}
+      </Grid>
     </GuidedModePage>
   );
 };
