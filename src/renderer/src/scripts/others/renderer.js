@@ -655,19 +655,19 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDiv) => {
 };
 
 /**
- *  Checks that the API key and secret belong to the user's current default workspace value. 
+ *  Checks that the API key and secret belong to the user's current default workspace value.
  *  Forces the user to login to the default workspace if not in order to synchronize the two.
- * 
+ *
  */
 window.synchronizePennsieveWorkspace = async () => {
-    // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
-    //           under the default profile does not mean that key is associated with the user's current workspace.
-    const profileMatches = await window.defaultProfileMatchesCurrentWorkspace();
-    if (!profileMatches) {
-      log.info("Default api key is for a different workspace");
-      await window.switchToCurrentWorkspace();
-    }
-}
+  // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
+  //           under the default profile does not mean that key is associated with the user's current workspace.
+  const profileMatches = await window.defaultProfileMatchesCurrentWorkspace();
+  if (!profileMatches) {
+    log.info("Default api key is for a different workspace");
+    await window.switchToCurrentWorkspace();
+  }
+};
 
 let preFlightCheckNotyf = null;
 
