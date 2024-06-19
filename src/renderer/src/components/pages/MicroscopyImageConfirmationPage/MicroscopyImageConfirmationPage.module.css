@@ -15,7 +15,7 @@
 .thumbnailImage {
   width: 180px !important;
   height: 180px !important;
-  border-radius: 8px;
+  border-radius: 8px !important;
 }
 
 .card {

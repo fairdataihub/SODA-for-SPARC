@@ -20,6 +20,20 @@ import GuidedModeSection from "../../containers/GuidedModeSection";
 import ExternalLink from "../../buttons/ExternalLink";
 import DropDownNote from "../../utils/ui/DropDownNote";
 
+const stringContainsAnEvenNumber = (str) => {
+  // Regular expression to match any even digit (0, 2, 4, 6, 8)
+  const evenDigitRegex = /[02468]/;
+  // Loop through each character
+  for (let char of str) {
+    // Check if the character matches the even digit regex
+    if (evenDigitRegex.test(char)) {
+      return true; // Even number found, return true
+    }
+  }
+  // No even numbers found, return false
+  return false;
+};
+
 const MicroscopyImageMetadataFormPage = () => {
   // Get the required zustand store state variables
   const {
@@ -46,40 +60,21 @@ const MicroscopyImageMetadataFormPage = () => {
     >
       <Grid gutter="xl">
         <Grid.Col span={5}>
-          <Stack
-            h={300}
-            bg="var(--mantine-color-body)"
-            align="stretch"
-            justify="flex-start"
-            gap="0px"
-            className={styles.scrollableStack}
-          >
+          <Stack gap="0px" p="4px" className={styles.scrollableStack}>
             <TextInput
-              label="Channel Name"
-              placeholder="Enter the image's channel name"
+              label="Image Search Filter"
+              placeholder="Enter a search term to filter images"
               value={channelName}
               onChange={(event) => setChannelName(event.target.value)}
               rightSectionWidth={165}
+              mb="md"
             />
             {confirmedMicroscopyImagefileNames.map((fileName) => {
-              const stringContainsAnEvenNumber = (str) => {
-                // Regular expression to match any even digit (0, 2, 4, 6, 8)
-                const evenDigitRegex = /[02468]/;
-                // Loop through each character
-                for (let char of str) {
-                  // Check if the character matches the even digit regex
-                  if (evenDigitRegex.test(char)) {
-                    return true; // Even number found, return true
-                  }
-                }
-                // No even numbers found, return false
-                return false;
-              };
-
               return (
                 <Button
                   variant={fileName === "sub-a-img-1.tif" ? "filled" : "subtle"}
                   key={fileName}
+                  justify="space-between"
                   size="compact-md"
                   rightSection={
                     stringContainsAnEvenNumber(fileName) ? (
@@ -89,7 +84,7 @@ const MicroscopyImageMetadataFormPage = () => {
                     )
                   }
                 >
-                  {fileName}
+                  <Text size="lg">{fileName}</Text>
                 </Button>
               );
             })}

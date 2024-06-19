@@ -22,8 +22,9 @@ import {
   Badge,
   Grid,
   TextInput,
+  Switch,
 } from "@mantine/core";
-import { IconMicroscope, IconX } from "@tabler/icons-react";
+import { IconMicroscope, IconMicroscopeOff, IconSearch, IconX } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import styles from "./MicroscopyImageConfirmationPage.module.css";
@@ -36,7 +37,9 @@ const MicroscopyImageConfirmationPage = () => {
     useGlobalStore();
 
   const filteredImages = potentialMicroscopyImages.filter((image) =>
-    image.fileName.toLowerCase().includes(confirmMicroscopySearchInput.toLowerCase())
+    image.relativeDatasetStructurePath
+      .toLowerCase()
+      .includes(confirmMicroscopySearchInput.toLowerCase())
   );
   const allFilteredImagesAreMicroscopyImages = filteredImages.every((image) =>
     confirmedMicroscopyImages.some((confirmedImage) => confirmedImage.filePath === image.filePath)
@@ -66,22 +69,29 @@ const MicroscopyImageConfirmationPage = () => {
     <GuidedModePage
       pageHeader="Microscopy Image Confirmation"
       pageDescriptionArray={[
-        "SODA has identified the images below as potential microscopy images. Please check the cards of the images that are microscopy images. You can use the button below to select or deselect all images at once.",
+        "SODA has identified the images below as potential microscopy images. Please check the cards of the images that are microscopy images. You can use the search filter to batch select/deselect images based on their file name or type.",
         "The selected images will be converted with MicroFile+ and processed to ensure they are SDS compliant.",
       ]}
     >
       <Group position="center">
-        <Button className={styles.toggleButton} onClick={toggleAllImages} variant="filled">
-          {allFilteredImagesAreMicroscopyImages
-            ? "Mark images as not microscopy images"
-            : "Mark images as microscopy images"}
-        </Button>
+        <Switch
+          checked={allFilteredImagesAreMicroscopyImages}
+          label="Toggle images"
+          onChange={() => {
+            toggleAllImages();
+          }}
+          size="lg"
+          onLabel={<IconMicroscope />}
+          offLabel={<IconMicroscopeOff />}
+        />
+
         <TextInput
           label="Image search filter"
           placeholder="Enter a search filter for example 'sub-01' or '.tiff'"
           style={{ flexGrow: 1 }}
           value={confirmMicroscopySearchInput}
           onChange={(event) => setConfirmMicroscopySearchInput(event.target.value)}
+          rightSection={<IconSearch size={20} />}
         />
       </Group>
       <Grid>
@@ -92,12 +102,13 @@ const MicroscopyImageConfirmationPage = () => {
                 className={styles.card}
                 onClick={() => handleCardClick(image)}
                 shadow="sm"
-                padding="lg"
+                p="lg"
+                pb="xs"
                 radius="md"
                 withBorder
               >
                 <Card.Section>
-                  <AspectRatio ratio={1} style={{ position: "relative" }}>
+                  <AspectRatio ratio="1" style={{ position: "relative" }}>
                     <Image
                       src={window.path.join(
                         guidedThumbnailsPath,
@@ -107,6 +118,7 @@ const MicroscopyImageConfirmationPage = () => {
                       withPlaceholder
                       className={styles.thumbnailImage}
                       fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
+                      loading="lazy"
                     />
                     {!confirmedImagePaths.has(image.filePath) ? (
                       <Overlay className={styles.thumbnailImage}>

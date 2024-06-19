@@ -5009,7 +5009,7 @@ const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
 
 const getImagesInDatasetStructure = (datasetStructureObj) => {
   // Supported image file extensions (lowercase for case-insensitive matching)
-  const imageFileTypes = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".jp2"];
+  const imageFileTypes = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".jp2", ".ome.tif"];
 
   const checkIfFileTypeIsImage = (fileType) => imageFileTypes.includes(fileType.toLowerCase());
 
