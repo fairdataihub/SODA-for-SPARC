@@ -4,6 +4,7 @@ import {
   undesignateImageAsMicroscopyImage,
   setConfirmedMicroscopyImages,
 } from "../../../stores/slices/microscopyImageSlice";
+import { useDisclosure } from "@mantine/hooks";
 import {
   Table,
   Checkbox,
@@ -15,15 +16,19 @@ import {
   Center,
   Overlay,
   AspectRatio,
+  Modal,
+  Group,
 } from "@mantine/core";
 import { IconX } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
+import GuidedModeSection from "../../containers/GuidedModeSection";
 import styles from "./MicroscopyImageConfirmationPage.module.css";
 
 const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
 
 const MicroscopyImageConfirmationPage = () => {
+  const [opened, { open, close }] = useDisclosure(false);
   // Get the required zustand store state variables
   const { potentialMicroscopyImages, confirmedMicroscopyImages } = useGlobalStore();
 
@@ -59,15 +64,6 @@ const MicroscopyImageConfirmationPage = () => {
     return (
       <Table.Tr key={relativeDatasetStructurePath} onClick={() => handleRowClick(imageObj)}>
         <Table.Td>
-          <Center>
-            {isImageDesignatedAsMicroscopyImage ? (
-              <Checkbox aria-label={`Deselect ${imageObj.fileName}`} checked={true} />
-            ) : (
-              <Checkbox aria-label={`Select ${imageObj.fileName}`} checked={false} />
-            )}
-          </Center>
-        </Table.Td>
-        <Table.Td>
           <AspectRatio h={100} w={100}>
             <Image
               src={window.path.join(guidedThumbnailsPath, `${fileName}_thumbnail.jpg`)}
@@ -98,9 +94,7 @@ const MicroscopyImageConfirmationPage = () => {
               </Stack>
             }
           >
-            <Text ta="left" flexGrow={1}>
-              {fileName}
-            </Text>
+            <Text ta="left">{fileName}</Text>
           </Tooltip>
         </Table.Td>
       </Table.Tr>
@@ -115,27 +109,27 @@ const MicroscopyImageConfirmationPage = () => {
         "The selected images will be converted with MicroFile+ and processed to ensure they are SDS compliant.",
       ]}
     >
-      <Table withTableBorder highlightOnHover>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th className={styles.selectHeader}>
-              {allImagesSelected ? (
-                <Button className={styles.toggleButton} onClick={() => toggleAllImages(false)}>
-                  Deselect all
-                </Button>
-              ) : (
-                <Button className={styles.toggleButton} onClick={() => toggleAllImages(true)}>
-                  Select all
-                </Button>
-              )}
-            </Table.Th>
-            <Table.Th>Image thumb</Table.Th>
-
-            <Table.Th>Image name</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>{tableRows}</Table.Tbody>
-      </Table>
+      <GuidedModeSection>
+        <Button
+          className={styles.toggleButton}
+          onClick={() => toggleAllImages(!allImagesSelected)}
+          variant="filled"
+        >
+          {allImagesSelected ? "Deselect all" : "Select all"}
+        </Button>
+        <Button onClick={open}>Open modal</Button>
+      </GuidedModeSection>
+      <GuidedModeSection>
+        <Table withTableBorder highlightOnHover>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Image</Table.Th>
+              <Table.Th>Image name</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>{tableRows}</Table.Tbody>
+        </Table>
+      </GuidedModeSection>
     </GuidedModePage>
   );
 };
