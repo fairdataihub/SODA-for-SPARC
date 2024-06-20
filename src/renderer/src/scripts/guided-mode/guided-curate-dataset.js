@@ -13665,7 +13665,7 @@ $(".guided--radio-button").on("click", async function () {
   const selectedButton = $(this);
   const notSelectedButton = $(this).siblings(".guided--radio-button");
 
-  if (selectedButton.data("warn-before-click") === true) {
+  if (selectedButton.data("requires-work-before-action") === true) {
     const buttonId = selectedButton.attr("id");
     if (buttonId === "guided-button-dataset-does-not-contain-code") {
       const dataInCodeFolder = window.datasetStructureJSONObj?.["folders"]?.["code"];
@@ -13753,20 +13753,9 @@ $(".guided--radio-button").on("click", async function () {
       await handleMultipleSubSectionDisplay(controlledSectionID);
     }
 
-    //slow scroll to the next question
-    //temp fix to prevent scrolling error
-    const elementsToNotScrollTo = [
-      "guided-add-samples-table",
-      "guided-add-pools-table",
-      "guided-div-add-subjects-table",
-      "guided-div-resume-progress-cards",
-      "guided-div-update-uploaded-cards",
-    ];
-    if (!elementsToNotScrollTo.includes(nextQuestionID)) {
-      nextQuestionElement.scrollIntoView({
-        behavior: "smooth",
-      });
-    }
+    nextQuestionElement.scrollIntoView({
+      behavior: "smooth",
+    });
   }
 });
 

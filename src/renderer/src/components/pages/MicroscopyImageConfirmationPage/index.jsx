@@ -103,43 +103,20 @@ const MicroscopyImageConfirmationPage = () => {
                 onClick={() => handleCardClick(image)}
                 shadow="sm"
                 p="lg"
-                pb="xs"
                 radius="md"
                 withBorder
               >
                 <Card.Section>
-                  <AspectRatio ratio="1" style={{ position: "relative" }}>
-                    <Image
-                      src={window.path.join(
-                        guidedThumbnailsPath,
-                        `${image.fileName}_thumbnail.jpg`
-                      )}
-                      alt={`${image.fileName}_thumbnail`}
-                      withPlaceholder
-                      className={styles.thumbnailImage}
-                      fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
-                      loading="lazy"
-                    />
-                    {!confirmedImagePaths.has(image.filePath) ? (
-                      <Overlay className={styles.thumbnailImage}>
-                        <Center>
-                          <IconX size={60} color="white" />
-                        </Center>
-                      </Overlay>
-                    ) : (
-                      <Overlay
-                        opacity={0.2}
-                        style={{ backgroundColor: "lightblue" }}
-                        className={styles.thumbnailImage}
-                      >
-                        <Center>
-                          <IconMicroscope size={60} color="white" />
-                        </Center>
-                      </Overlay>
-                    )}
-                  </AspectRatio>
+                  <Image
+                    src={window.path.join(guidedThumbnailsPath, `${image.fileName}_thumbnail.jpg`)}
+                    alt={`${image.fileName}_thumbnail`}
+                    withPlaceholder
+                    className={styles.thumbnailImage}
+                    fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
+                    loading="lazy"
+                  />
                 </Card.Section>
-                <Stack spacing="xs" mt="md">
+                <Card.Section p="6px" h="60px" mb="-3px">
                   <Tooltip
                     multiline
                     label={
@@ -151,11 +128,29 @@ const MicroscopyImageConfirmationPage = () => {
                       </Stack>
                     }
                   >
-                    <Text weight={500} size="sm">
+                    <Text
+                      weight={500}
+                      size="sm"
+                      style={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        wordBreak: "break-all",
+                      }}
+                    >
                       {image.fileName}
                     </Text>
                   </Tooltip>
-                </Stack>
+                  {confirmedImagePaths.has(image.filePath) && (
+                    <Overlay>
+                      <Badge color="blue" variant="filled" className={styles.badge}>
+                        Confirmed
+                      </Badge>
+                    </Overlay>
+                  )}
+                </Card.Section>
               </Card>
             </Grid.Col>
           ))
