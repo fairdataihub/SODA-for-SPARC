@@ -3928,6 +3928,7 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   const errorDiv = document.getElementById("guided-panel-pennsieve-dataset-import-error");
   const logInDiv = document.getElementById("guided-panel-log-in-before-resuming-pennsieve-dataset");
   const loadingDiv = document.getElementById("guided-panel-pennsieve-dataset-import-loading");
+  const loadingDivText = document.getElementById("guided-panel-pennsieve-dataset-import-loading-para")
   const pennsieveDatasetSelectDiv = document.getElementById(
     "guided-panel-pennsieve-dataset-select"
   );
@@ -3946,8 +3947,13 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   //Show the loading Div and hide the dropdown div while the datasets the user has access to are being retrieved
   loadingDiv.classList.remove("hidden");
 
+  loadingDivText.textContent = "Verifying account information"
   await verifyProfile()
+  loadingDivText.textContent = "Verifying workspace information"
   await window.synchronizePennsieveWorkspace()
+  loadingDivText.textContent = "Importing datasets from Pennsieve"
+
+
 
 
 
