@@ -121,9 +121,16 @@ const guidedCreateEventDataPrepareMetadata = (destination, value) => {
   };
 };
 
+document
+  .getElementById("guided-button-resume-pennsieve-dataset")
+  .addEventListener("click", async () => {
+    renderGuidedResumePennsieveDatasetSelectionDropdown();
+  });
+
 window.handleGuidedModeOrgSwitch = async (buttonClicked) => {
   const clickedButtonId = buttonClicked.id;
   if (clickedButtonId === "guided-button-change-workspace-dataset-import") {
+    console.log("Whats up")
     renderGuidedResumePennsieveDatasetSelectionDropdown();
   }
   if (buttonClicked.classList.contains("guided--progress-button-switch-workspace")) {
@@ -144,6 +151,20 @@ const guidedGetCurrentUserWorkSpace = () => {
   }
   return workSpaceFromUI;
 };
+
+const verifyProfile = async () => {
+  const accountValid = await window.check_api_key();
+
+  if(!accountValid) {
+    await window.addBfAccount(null, false);
+    return
+  }
+  
+}
+
+// document.querySelector("#guided-confirm-pennsieve-account-button").addEventListener("click", async () => {
+//   verifyProfile()
+// })
 
 const lowercaseFirstLetter = (string) => {
   if (!string) {
@@ -3559,11 +3580,7 @@ window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
   return returnObj;
 };
 
-document
-  .getElementById("guided-button-resume-pennsieve-dataset")
-  .addEventListener("click", async () => {
-    renderGuidedResumePennsieveDatasetSelectionDropdown();
-  });
+
 
 document
   .getElementById("guided-button-run-dataset-validation")
@@ -3928,6 +3945,11 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
 
   //Show the loading Div and hide the dropdown div while the datasets the user has access to are being retrieved
   loadingDiv.classList.remove("hidden");
+
+  await verifyProfile()
+  await window.synchronizePennsieveWorkspace()
+
+
 
   const datasetSelectionSelectPicker = $("#guided-select-pennsieve-dataset-to-resume");
   datasetSelectionSelectPicker.empty();
