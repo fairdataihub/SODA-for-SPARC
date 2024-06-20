@@ -32,7 +32,6 @@ import "./scripts/sds-templates/sds_templates";
 
 // Render React Components into the DOM
 import "./components/renderers/ExternalLinkRenderer";
-import "./components/renderers/GuidedModePageRenderer";
 
 // Application Lotties
 import "./assets/lotties/activate-lotties";
