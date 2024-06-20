@@ -130,7 +130,7 @@ document
 window.handleGuidedModeOrgSwitch = async (buttonClicked) => {
   const clickedButtonId = buttonClicked.id;
   if (clickedButtonId === "guided-button-change-workspace-dataset-import") {
-    console.log("Whats up")
+    console.log("Whats up");
     renderGuidedResumePennsieveDatasetSelectionDropdown();
   }
   if (buttonClicked.classList.contains("guided--progress-button-switch-workspace")) {
@@ -155,12 +155,11 @@ const guidedGetCurrentUserWorkSpace = () => {
 const verifyProfile = async () => {
   const accountValid = await window.check_api_key();
 
-  if(!accountValid) {
+  if (!accountValid) {
     await window.addBfAccount(null, false);
-    return
+    return;
   }
-  
-}
+};
 
 // document.querySelector("#guided-confirm-pennsieve-account-button").addEventListener("click", async () => {
 //   verifyProfile()
@@ -3580,8 +3579,6 @@ window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
   return returnObj;
 };
 
-
-
 document
   .getElementById("guided-button-run-dataset-validation")
   .addEventListener("click", async () => {
@@ -3946,10 +3943,8 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   //Show the loading Div and hide the dropdown div while the datasets the user has access to are being retrieved
   loadingDiv.classList.remove("hidden");
 
-  await verifyProfile()
-  await window.synchronizePennsieveWorkspace()
-
-
+  await verifyProfile();
+  await window.synchronizePennsieveWorkspace();
 
   const datasetSelectionSelectPicker = $("#guided-select-pennsieve-dataset-to-resume");
   datasetSelectionSelectPicker.empty();
