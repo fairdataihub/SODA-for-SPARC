@@ -696,7 +696,7 @@ window.run_pre_flight_checks = async (pennsieveAgentStatusDiv) => {
     // Check for an API key pair in the default profile and ensure it is not obsolete.
     // NOTE: Calling the agent startup command without a profile setup in the config.ini file causes it to crash.
     // TODO: Ensure we clear the cache here
-    const accountValid = await window.check_api_key();
+    const accountValid = await window.check_api_key(true);
 
     // Add a new api key and secret for validating the user's account in the current workspace.
     if (!accountValid) {
@@ -837,21 +837,26 @@ window.checkInternetConnection = async () => {
   }
 };
 
-window.check_api_key = async () => {
+window.check_api_key = async (showNotyfs = false) => {
   let notification = null;
-  notification = window.notyf.open({
-    type: "api_key_search",
-    message: "Checking for Pennsieve account...",
-  });
+
+  if (showNotyfs) {
+    notification = window.notyf.open({
+      type: "api_key_search",
+      message: "Checking for Pennsieve account...",
+    });
+  }
   await window.wait(800);
   // If no accounts are found, return false.
   let responseObject;
   if (!hasConnectedAccountWithPennsieve()) {
-    window.notyf.dismiss(notification);
-    window.notyf.open({
-      type: "error",
-      message: "No account was found",
-    });
+    if (showNotyfs) {
+      window.notyf.dismiss(notification);
+      window.notyf.open({
+        type: "error",
+        message: "No account was found",
+      });
+    }
     return false;
   }
 
@@ -860,11 +865,13 @@ window.check_api_key = async () => {
   } catch (e) {
     log.info("Current default profile API Key is obsolete");
     clientError(e);
-    window.notyf.dismiss(notification);
-    window.notyf.open({
-      type: "error",
-      message: "No account was found",
-    });
+    if (showNotyfs) {
+      window.notyf.dismiss(notification);
+      window.notyf.open({
+        type: "error",
+        message: "No account was found",
+      });
+    }
     return false;
   }
 
@@ -873,20 +880,24 @@ window.check_api_key = async () => {
   if (res[0] === "Select" && res.length === 1) {
     log.info("No api keys found");
     //no api key found
-    window.notyf.dismiss(notification);
-    window.notyf.open({
-      type: "error",
-      message: "No account was found",
-    });
+    if (showNotyfs) {
+      window.notyf.dismiss(notification);
+      window.notyf.open({
+        type: "error",
+        message: "No account was found",
+      });
+    }
     return false;
   } else {
     log.info("Found non obsolete api key in default profile");
 
-    window.notyf.dismiss(notification);
-    window.notyf.open({
-      type: "success",
-      message: "Connected to Pennsieve",
-    });
+    if (showNotyfs) {
+      window.notyf.dismiss(notification);
+      window.notyf.open({
+        type: "success",
+        message: "Connected to Pennsieve",
+      });
+    }
     return true;
   }
 };

@@ -153,7 +153,7 @@ const guidedGetCurrentUserWorkSpace = () => {
   return workSpaceFromUI;
 };
 
-window.verifyProfile = async () => {
+window.verifyProfile = async (showNotyfs = false) => {
   const accountValid = await window.check_api_key();
 
   if (!accountValid) {
