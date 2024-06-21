@@ -673,8 +673,13 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
     "#upload-dataset-synchronizing-workspace-loading-para"
   );
 
-  loadingDiv.classList.remove("hidden");
-  // await window.synchronizePennsieveWorkspace();
+  loadingDiv.classList.remove("invisible");
+  loadingDivText.textContent = "Verifying account...";
+  await window.verifyProfile();
+  loadingDivText.textContent = "Verifying workspace...";
+  await window.synchronizePennsieveWorkspace();
+
+  loadingDiv.classList.add("invisible");
 
   // If the user confirms the workspace and account, proceed to the next step
   document.getElementById("confirm-account-workspace").classList.remove("soda-green-border");

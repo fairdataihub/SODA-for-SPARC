@@ -153,7 +153,7 @@ const guidedGetCurrentUserWorkSpace = () => {
   return workSpaceFromUI;
 };
 
-const verifyProfile = async () => {
+window.verifyProfile = async () => {
   const accountValid = await window.check_api_key();
 
   if (!accountValid) {
@@ -3320,7 +3320,7 @@ const guidedRenderProgressCards = async () => {
     (window.defaultBfAccount === undefined && hasConnectedAccountWithPennsieve())
   ) {
     progressCardLoadingDivText.textContent = "Verifying account information";
-    await verifyProfile();
+    await window.verifyProfile();
     progressCardLoadingDivText.textContent = "Verifying workspace information";
     await window.synchronizePennsieveWorkspace();
     progressCardLoadingDivText.textContent = "guided-section-loading-progress-cards-para";
@@ -3963,7 +3963,7 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   loadingDiv.classList.remove("hidden");
 
   loadingDivText.textContent = "Verifying account information";
-  await verifyProfile();
+  await window.verifyProfile();
   loadingDivText.textContent = "Verifying workspace information";
   await window.synchronizePennsieveWorkspace();
   loadingDivText.textContent = "Importing datasets from Pennsieve";
