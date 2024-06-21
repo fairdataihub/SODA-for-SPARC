@@ -61,6 +61,7 @@ import fileDoc from "/img/doc-file.png";
 import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
+import hasConnectedAccountWithPennsieve from "../others/authentication/auth";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -121,9 +122,16 @@ const guidedCreateEventDataPrepareMetadata = (destination, value) => {
   };
 };
 
+document
+  .getElementById("guided-button-resume-pennsieve-dataset")
+  .addEventListener("click", async () => {
+    renderGuidedResumePennsieveDatasetSelectionDropdown();
+  });
+
 window.handleGuidedModeOrgSwitch = async (buttonClicked) => {
   const clickedButtonId = buttonClicked.id;
   if (clickedButtonId === "guided-button-change-workspace-dataset-import") {
+    console.log("Whats up");
     renderGuidedResumePennsieveDatasetSelectionDropdown();
   }
   if (buttonClicked.classList.contains("guided--progress-button-switch-workspace")) {
@@ -144,6 +152,19 @@ const guidedGetCurrentUserWorkSpace = () => {
   }
   return workSpaceFromUI;
 };
+
+window.verifyProfile = async (showNotyfs = false) => {
+  const accountValid = await window.check_api_key();
+
+  if (!accountValid) {
+    await window.addBfAccount(null, false);
+    return;
+  }
+};
+
+// document.querySelector("#guided-confirm-pennsieve-account-button").addEventListener("click", async () => {
+//   verifyProfile()
+// })
 
 const lowercaseFirstLetter = (string) => {
   if (!string) {
@@ -3285,10 +3306,35 @@ const generateProgressCardElement = (progressFileJSONObj) => {
 const guidedRenderProgressCards = async () => {
   const progressCardsContainer = document.getElementById("guided-container-progress-cards");
   const progressCardLoadingDiv = document.getElementById("guided-section-loading-progress-cards");
+  const progressCardLoadingDivText = document.getElementById(
+    "guided-section-loading-progress-cards-para"
+  );
 
   // Show the loading div and hide the progress cards container
   progressCardsContainer.classList.add("hidden");
   progressCardLoadingDiv.classList.remove("hidden");
+
+  // if the user has an account connected with Pennsieve then verify the profile and workspace
+  if (
+    window.defaultBfAccount !== undefined ||
+    (window.defaultBfAccount === undefined && hasConnectedAccountWithPennsieve())
+  ) {
+    try {
+      progressCardLoadingDivText.textContent = "Verifying account information";
+      await window.verifyProfile();
+      progressCardLoadingDivText.textContent = "Verifying workspace information";
+      await window.synchronizePennsieveWorkspace();
+      progressCardLoadingDivText.textContent = "guided-section-loading-progress-cards-para";
+    } catch (e) {
+      clientError(e);
+      await swalShowInfo(
+        "Something went wrong while verifying your profile",
+        "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
+      );
+      loadingDiv.classList.add("hidden");
+      return;
+    }
+  }
 
   //Check if Guided-Progress folder exists. If not, create it.
   if (!window.fs.existsSync(guidedProgressFilePath)) {
@@ -3558,12 +3604,6 @@ window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
   }
   return returnObj;
 };
-
-document
-  .getElementById("guided-button-resume-pennsieve-dataset")
-  .addEventListener("click", async () => {
-    renderGuidedResumePennsieveDatasetSelectionDropdown();
-  });
 
 document
   .getElementById("guided-button-run-dataset-validation")
@@ -3911,6 +3951,9 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   const errorDiv = document.getElementById("guided-panel-pennsieve-dataset-import-error");
   const logInDiv = document.getElementById("guided-panel-log-in-before-resuming-pennsieve-dataset");
   const loadingDiv = document.getElementById("guided-panel-pennsieve-dataset-import-loading");
+  const loadingDivText = document.getElementById(
+    "guided-panel-pennsieve-dataset-import-loading-para"
+  );
   const pennsieveDatasetSelectDiv = document.getElementById(
     "guided-panel-pennsieve-dataset-select"
   );
@@ -3928,6 +3971,22 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
 
   //Show the loading Div and hide the dropdown div while the datasets the user has access to are being retrieved
   loadingDiv.classList.remove("hidden");
+
+  try {
+    loadingDivText.textContent = "Verifying account information";
+    await window.verifyProfile();
+    loadingDivText.textContent = "Verifying workspace information";
+    await window.synchronizePennsieveWorkspace();
+    loadingDivText.textContent = "Importing datasets from Pennsieve";
+  } catch (e) {
+    clientError(e);
+    await swalShowInfo(
+      "Something went wrong while verifying your profile",
+      "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
+    );
+    loadingDiv.classList.add("hidden");
+    return;
+  }
 
   const datasetSelectionSelectPicker = $("#guided-select-pennsieve-dataset-to-resume");
   datasetSelectionSelectPicker.empty();
