@@ -668,6 +668,14 @@ window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (eve
 
 // Event listeners for buttons in step 2 of Organize Dataset
 document.getElementById("confirm-account-workspace").addEventListener("click", async function () {
+  const loadingDiv = document.querySelector("#upload-dataset-synchronizing-workspace-loading");
+  const loadingDivText = document.querySelector(
+    "#upload-dataset-synchronizing-workspace-loading-para"
+  );
+
+  loadingDiv.classList.remove("hidden");
+  // await window.synchronizePennsieveWorkspace();
+
   // If the user confirms the workspace and account, proceed to the next step
   document.getElementById("confirm-account-workspace").classList.remove("soda-green-border");
   document.getElementById("confirm-account-workspace").classList.add("soda-green-background");
