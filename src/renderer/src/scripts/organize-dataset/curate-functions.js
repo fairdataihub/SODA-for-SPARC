@@ -19,6 +19,7 @@ import {
   swalConfirmAction,
   swalFileListSingleAction,
   swalFileListTripleAction,
+  swalShowInfo,
 } from "../utils/swal-utils";
 // const path = require("path");
 
@@ -673,13 +674,22 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
     "#upload-dataset-synchronizing-workspace-loading-para"
   );
 
-  loadingDiv.classList.remove("invisible");
-  loadingDivText.textContent = "Verifying account...";
-  await window.verifyProfile();
-  loadingDivText.textContent = "Verifying workspace...";
-  await window.synchronizePennsieveWorkspace();
-
-  loadingDiv.classList.add("invisible");
+  try {
+    loadingDiv.classList.remove("invisible");
+    loadingDivText.textContent = "Verifying account...";
+    await window.verifyProfile();
+    loadingDivText.textContent = "Verifying workspace...";
+    await window.synchronizePennsieveWorkspace();
+    loadingDiv.classList.add("invisible");
+  } catch (e) {
+    clientError(e);
+    await swalShowInfo(
+      "Something went wrong while verifying your profile",
+      "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
+    );
+    loadingDiv.classList.add("invisible");
+    return;
+  }
 
   // If the user confirms the workspace and account, proceed to the next step
   document.getElementById("confirm-account-workspace").classList.remove("soda-green-border");

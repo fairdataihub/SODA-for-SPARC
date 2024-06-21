@@ -3319,11 +3319,21 @@ const guidedRenderProgressCards = async () => {
     window.defaultBfAccount !== undefined ||
     (window.defaultBfAccount === undefined && hasConnectedAccountWithPennsieve())
   ) {
-    progressCardLoadingDivText.textContent = "Verifying account information";
-    await window.verifyProfile();
-    progressCardLoadingDivText.textContent = "Verifying workspace information";
-    await window.synchronizePennsieveWorkspace();
-    progressCardLoadingDivText.textContent = "guided-section-loading-progress-cards-para";
+    try {
+      progressCardLoadingDivText.textContent = "Verifying account information";
+      await window.verifyProfile();
+      progressCardLoadingDivText.textContent = "Verifying workspace information";
+      await window.synchronizePennsieveWorkspace();
+      progressCardLoadingDivText.textContent = "guided-section-loading-progress-cards-para";
+    } catch (e) {
+      clientError(e);
+      await swalShowInfo(
+        "Something went wrong while verifying your profile",
+        "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
+      );
+      loadingDiv.classList.add("hidden");
+      return;
+    }
   }
 
   //Check if Guided-Progress folder exists. If not, create it.
@@ -3962,11 +3972,21 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   //Show the loading Div and hide the dropdown div while the datasets the user has access to are being retrieved
   loadingDiv.classList.remove("hidden");
 
-  loadingDivText.textContent = "Verifying account information";
-  await window.verifyProfile();
-  loadingDivText.textContent = "Verifying workspace information";
-  await window.synchronizePennsieveWorkspace();
-  loadingDivText.textContent = "Importing datasets from Pennsieve";
+  try {
+    loadingDivText.textContent = "Verifying account information";
+    await window.verifyProfile();
+    loadingDivText.textContent = "Verifying workspace information";
+    await window.synchronizePennsieveWorkspace();
+    loadingDivText.textContent = "Importing datasets from Pennsieve";
+  } catch (e) {
+    clientError(e);
+    await swalShowInfo(
+      "Something went wrong while verifying your profile",
+      "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
+    );
+    loadingDiv.classList.add("hidden");
+    return;
+  }
 
   const datasetSelectionSelectPicker = $("#guided-select-pennsieve-dataset-to-resume");
   datasetSelectionSelectPicker.empty();
