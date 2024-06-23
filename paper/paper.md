@@ -20,6 +20,8 @@ authors:
   - name: Sanjay Soundarajan
     orcid: 0000-0003-2829-8032
     affiliation: 1
+  - name: Tram Ngo
+    affiliation: 1
   - name: Bhavesh Patel
     orcid: 0000-0002-0307-262X
     corresponding: true 
@@ -51,7 +53,7 @@ Beta testing was conducted in 2020 after about one year of developing SODA to ev
 
 ![Results from testing of SODA by 10 beta testers during 2020.\label{fig:sodabetatesting}](soda-beta-testing.png)
 
-Given these advantages offered by SODA, it has been widely used (over 2,000 downloads) by SPARC researchers since 2020 and by researchers collecting ANS-related data outside of SPARC since 2022, when sparc.science became an open repository. Since the beginning of 2021, SODA has helped researchers all over the world process over 16TB of data corresponding to over 250k individual data files. The development of SODA is still on-going to further simplify the process of formatting datasets according to the SDS and publishing them on the SPARC data portal. Additionally, there are several software engineering improvements that neeed to be made, such as adding an authentication guard for the Flask server and removing duplicate constants. They are anticipated to be completed by the end of the next funding cycle in August 2025. 
+Given these advantages offered by SODA, it has been widely used (over 2,000 downloads) by SPARC researchers since 2020 and by researchers collecting ANS-related data outside of SPARC since 2022, when sparc.science became an open repository. Since the beginning of 2021, SODA has helped researchers all over the world process over 27TB of data corresponding to over 400k individual data files (as of May 2024). The development of SODA is still on-going to further simplify the process of formatting datasets according to the SDS and publishing them on the SPARC data portal. Additionally, there are several software engineering improvements that neeed to be made, such as adding an authentication guard for the Flask server and removing duplicate constants. They are anticipated to be completed by the end of the next funding cycle in August 2025. 
 
 There is a major push to make data FAIR in all fields of research, including biomedical research with the NIH's leadership. As a result, many standards, guidelines, and platforms to archive data are developed to achieve that. However, the burden of understanding, learning, and using these resources for making data FAIR is mostly left to the researchers. To our knowledge, SODA is the first researcher-oriented tool that guides step-by-step through all the requirements for making data FAIR from organizing files, creating metadata, validating, and uploading to a data repository. It has since inspired several other tools we are developing such as FAIRshare [@Soundarajan_FAIRshare_FAIR_data_2023] through support from the National Institute of Allergy and Infectious Diseases (NIAID) and fairhub.io [@Soundarajan_fairhub_2023] through support from the NIH Bridge2AI Program. The codebase of SODA was also forked by another team that is developing a tool called [NWB GUIDE](https://github.com/NeurodataWithoutBorders/nwb-guide) to simplify the process of preparing and sharing data from the NIH Brain Initiative Program. SODA has itself been made FAIR in line with the FAIR-BioRS guidelines [@patel2023making] to promote and facilitate such reuse of its source code outside of the developing team.
 
