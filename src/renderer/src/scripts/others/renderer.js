@@ -913,11 +913,11 @@ const getPlatformSpecificAgentDownloadURL = async () => {
   }
 };
 
-const findDownloadURL = (extension, assets) => {
-  for (const asset of assets) {
-    const fileName = asset.name;
-    if (window.path.extname(fileName) === extension) {
-      return asset.browser_download_url;
+const findDownloadURL = (partialStringToSearch, releaseList) => {
+  for (const release of releaseList) {
+    const releaseName = release.name;
+    if (releaseName.includes(partialStringToSearch)) {
+      return release.browser_download_url;
     }
   }
   return undefined;
@@ -943,7 +943,22 @@ const getLatestPennsieveAgentVersion = async () => {
   let platformSpecificAgentDownloadURL;
   switch (usersPlatform) {
     case "darwin":
-      platformSpecificAgentDownloadURL = findDownloadURL(".pkg", latestReleaseAssets);
+      const systemArchitecture = window.process.architecture();
+      console.log(systemArchitecture);
+      if (systemArchitecture === "x64") {
+        console.log("wo");
+        platformSpecificAgentDownloadURL = findDownloadURL("x86_64.pkg", latestReleaseAssets);
+      }
+      if (systemArchitecture === "arm64") {
+        console.log("wo");
+
+        platformSpecificAgentDownloadURL = findDownloadURL("arm64.pkg", latestReleaseAssets);
+      }
+      if (!platformSpecificAgentDownloadURL) {
+        console.log("wo");
+
+        platformSpecificAgentDownloadURL = findDownloadURL(".pkg", latestReleaseAssets);
+      }
       break;
     case "win32":
       platformSpecificAgentDownloadURL =
