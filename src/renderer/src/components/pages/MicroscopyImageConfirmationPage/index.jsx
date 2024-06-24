@@ -37,9 +37,9 @@ const MicroscopyImageConfirmationPage = () => {
     useGlobalStore();
 
   const filteredImages = potentialMicroscopyImages.filter((image) =>
-    image.relativeDatasetStructurePath
-      .toLowerCase()
-      .includes(confirmMicroscopySearchInput.toLowerCase())
+    image.relativeDatasetStructurePaths
+      .map((path) => path.toLowerCase())
+      .some((path) => path.includes(confirmMicroscopySearchInput.toLowerCase()))
   );
   const allFilteredImagesAreMicroscopyImages = filteredImages.every((image) =>
     confirmedMicroscopyImages.some((confirmedImage) => confirmedImage.filePath === image.filePath)
@@ -96,64 +96,72 @@ const MicroscopyImageConfirmationPage = () => {
       </Group>
       <Grid>
         {filteredImages.length != 0 ? (
-          filteredImages.map((image) => (
-            <Grid.Col span={3} key={image.relativeDatasetStructurePath}>
-              <Card
-                className={styles.card}
-                onClick={() => handleCardClick(image)}
-                shadow="sm"
-                p="lg"
-                radius="md"
-                withBorder
-              >
-                <Card.Section>
-                  <Image
-                    src={window.path.join(guidedThumbnailsPath, `${image.fileName}_thumbnail.jpg`)}
-                    alt={`${image.fileName}_thumbnail`}
-                    withPlaceholder
-                    className={styles.thumbnailImage}
-                    fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
-                    loading="lazy"
-                  />
-                </Card.Section>
-                <Card.Section p="6px" h="60px" mb="-3px">
-                  <Tooltip
-                    multiline
-                    label={
-                      <Stack spacing="xs">
-                        <Text>Local file path:</Text>
-                        <Text>{image.filePath}</Text>
-                        <Text>Path in organized dataset structure:</Text>
-                        <Text>{image.relativeDatasetStructurePath}</Text>
-                      </Stack>
-                    }
-                  >
-                    <Text
-                      weight={500}
-                      size="sm"
-                      style={{
-                        display: "-webkit-box",
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        wordBreak: "break-all",
-                      }}
+          filteredImages.map((image) => {
+            const imageIsConfirmed = confirmedImagePaths.has(image.filePath);
+            return (
+              <Grid.Col span={3} key={image.relativeDatasetStructurePaths.join()}>
+                <Card
+                  className={styles.card}
+                  onClick={() => handleCardClick(image)}
+                  shadow="sm"
+                  p="lg"
+                  radius="md"
+                  withBorder
+                >
+                  <Card.Section>
+                    <Image
+                      src={window.path.join(
+                        guidedThumbnailsPath,
+                        `${image.fileName}_thumbnail.jpg`
+                      )}
+                      alt={`${image.fileName}_thumbnail`}
+                      withPlaceholder
+                      className={styles.thumbnailImage}
+                      fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
+                      loading="lazy"
+                    />
+                  </Card.Section>
+                  <Card.Section p="6px" h="60px" mb="-3px">
+                    <Tooltip
+                      multiline
+                      label={
+                        <Stack spacing="xs">
+                          <Text>Local file path:</Text>
+                          <Text>{image.filePath}</Text>
+                          <Text>Path in organized dataset structure:</Text>
+                          {image.relativeDatasetStructurePaths.map((path) => (
+                            <Text key={path}>{path}</Text>
+                          ))}
+                        </Stack>
+                      }
                     >
-                      {image.fileName}
-                    </Text>
-                  </Tooltip>
-                  {confirmedImagePaths.has(image.filePath) && (
-                    <Overlay>
-                      <Badge color="blue" variant="filled" className={styles.badge}>
-                        Confirmed
-                      </Badge>
-                    </Overlay>
-                  )}
-                </Card.Section>
-              </Card>
-            </Grid.Col>
-          ))
+                      <Text
+                        weight={500}
+                        size="sm"
+                        style={{
+                          display: "-webkit-box",
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          wordBreak: "break-all",
+                        }}
+                      >
+                        {image.fileName}
+                      </Text>
+                    </Tooltip>
+                    {imageIsConfirmed && (
+                      <Overlay>
+                        <Badge m="sm" color="blue" variant="filled" p="md">
+                          Microscopy
+                        </Badge>
+                      </Overlay>
+                    )}
+                  </Card.Section>
+                </Card>
+              </Grid.Col>
+            );
+          })
         ) : (
           <Grid.Col span={12}>
             <Text c="dimmed" size="lg" ta="center">

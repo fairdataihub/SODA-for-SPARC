@@ -5027,11 +5027,20 @@ const getImagesInDatasetStructure = (datasetStructureObj) => {
       if (checkIfFileTypeIsImage(fileExtension)) {
         const filePath = fileObj["path"];
         const relativeDatasetStructurePath = `${currentRelativePath}${fileName}`;
-        imageData.push({
-          fileName: fileName,
-          filePath: filePath,
-          relativeDatasetStructurePath: relativeDatasetStructurePath,
-        });
+        // check and see if an image has alredy been added with the same filePath
+        // by getting the index
+
+        const index = imageData.findIndex((image) => image.filePath === filePath);
+        if (index !== -1) {
+          // Add it to the relativeDatasetStructurePaths array
+          imageData[index].relativeDatasetStructurePaths.push(relativeDatasetStructurePath);
+        } else {
+          imageData.push({
+            fileName: fileName,
+            filePath: filePath,
+            relativeDatasetStructurePaths: [relativeDatasetStructurePath],
+          });
+        }
       }
     }
 
