@@ -4440,29 +4440,16 @@ const cleanUpEmptyGuidedStructureFolders = async (
       }
 
       if (samplesWithEmptyFolders.length > 0) {
-        let result = await Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          title: "Missing data",
-          html: `${highLevelFolder} data was not added to the following samples:<br /><br />
-            <ul>
-              ${samplesWithEmptyFolders
-                .map(
-                  (sample) =>
-                    `<li class="text-left">${sample.subjectName}/${sample.sampleName}</li>`
-                )
-                .join("")}
-            </ul>`,
-          icon: "warning",
-          reverseButtons: true,
-          showCancelButton: true,
-          cancelButtonColor: "#6e7881",
-          cancelButtonText: `Finish adding ${highLevelFolder} data to samples`,
-          confirmButtonText: `Continue without adding ${highLevelFolder} data to all samples`,
-          allowOutsideClick: false,
-        });
+        const continueWithoutAddingDataForAllSamples = await swalFileListDoubleAction(
+          samplesWithEmptyFolders.map((sample) => sample.sampleName),
+          `${highLevelFolder} data missing for some samples`,
+          `The samples below did not have folders or files containing ${highLevelFolder} data added to them:`,
+          `Continue without adding ${highLevelFolder} data to all samples`,
+          `Finish adding ${highLevelFolder} data to samples`,
+          `Would you like to continue without adding ${highLevelFolder} data to all samples?`
+        );
 
-        if (result.isConfirmed) {
+        if (continueWithoutAddingDataForAllSamples) {
           //delete empty samples from the window.datasetStructureJSONObj
           for (const sample of samplesWithEmptyFolders) {
             if (sample.poolName) {
@@ -4560,25 +4547,16 @@ const cleanUpEmptyGuidedStructureFolders = async (
       }
 
       if (subjectsWithEmptyFolders.length > 0) {
-        let result = await Swal.fire({
-          heightAuto: false,
-          backdrop: "rgba(0,0,0,0.4)",
-          icon: "warning",
-          title: "Missing data",
-          html: `${highLevelFolder} data was not added to the following subjects:<br /><br />
-            <ul>
-              ${subjectsWithEmptyFolders
-                .map((subject) => `<li class="text-left">${subject.subjectName}</li>`)
-                .join("")}
-            </ul>`,
-          reverseButtons: true,
-          showCancelButton: true,
-          cancelButtonColor: "#6e7881",
-          cancelButtonText: `Finish adding ${highLevelFolder} data to subjects`,
-          confirmButtonText: `Continue without adding ${highLevelFolder} data to all subjects`,
-          allowOutsideClick: false,
-        });
-        if (result.isConfirmed) {
+        const continueWithoutAddingDataForAllSubjects = await swalFileListDoubleAction(
+          subjectsWithEmptyFolders.map((subject) => subject.subjectName),
+          `${highLevelFolder} data missing for some subjects`,
+          `The subjects below did not have folders or files containing ${highLevelFolder} data added to them:`,
+          `Continue without adding ${highLevelFolder} data to all subjects`,
+          `Finish adding ${highLevelFolder} data to subjects`,
+          `Would you like to continue without adding ${highLevelFolder} data to all subjects?`
+        );
+
+        if (continueWithoutAddingDataForAllSubjects) {
           for (const subject of subjectsWithEmptyFolders) {
             if (subject.poolName) {
               delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
@@ -4633,7 +4611,13 @@ const cleanUpEmptyGuidedStructureFolders = async (
       for (const pool of Object.keys(pools)) {
         const poolFolder =
           window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-        if (poolFolder && folderIsEmpty(poolFolder)) {
+        const poolFolderFolders = Object.keys(poolFolder["folders"]);
+        const nonSubjectFoldersInPool = poolFolderFolders.filter(
+          (folder) => !folder.startsWith("sub-")
+        );
+        const poolFolderFiles = Object.keys(poolFolder["files"]);
+
+        if (nonSubjectFoldersInPool.length === 0 && poolFolderFiles.length === 0) {
           poolsWithNoDataFiles.push(pool);
         }
       }
@@ -4643,37 +4627,24 @@ const cleanUpEmptyGuidedStructureFolders = async (
         return true;
       }
 
-      if (poolsWithNoDataFiles.length > 0) {
-        let result = await Swal.fire({
-          heightAuto: false,
-          backdrop: "rgba(0,0,0,0.4)",
-          icon: "warning",
-          title: "Missing data",
-          html: `
-          ${highLevelFolder} data was not added to the following pools:
-          <br />
-          <br />
-          <ul>
-            ${poolsWithNoDataFiles.map((pool) => `<li class="text-left">${pool}</li>`).join("")}
-          </ul>
-        `,
-          reverseButtons: true,
-          showCancelButton: true,
-          cancelButtonColor: "#6e7881",
-          cancelButtonText: `Finish adding ${highLevelFolder} data to pools`,
-          confirmButtonText: `Continue without adding ${highLevelFolder} data to all pools`,
-          allowOutsideClick: false,
-        });
-        if (result.isConfirmed) {
-          for (const pool of poolsWithNoDataFiles) {
-            delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-          }
-          //Empty pool folders have been deleted, return true
-          return true;
-        } else {
-          //User has chosen to finish adding data to pools, return false
-          return false;
+      const continueWithoutAddingDataForAllPools = await swalFileListDoubleAction(
+        poolsWithNoDataFiles,
+        `${highLevelFolder} data missing for some pools`,
+        `The pools below did not have folders or files containing ${highLevelFolder} data added to them:`,
+        `Continue without adding ${highLevelFolder} data to all pools`,
+        `Finish adding ${highLevelFolder} data to pools`,
+        `Would you like to continue without adding ${highLevelFolder} data to all pools?`
+      );
+
+      if (continueWithoutAddingDataForAllPools) {
+        for (const pool of poolsWithNoDataFiles) {
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
         }
+        //Empty pool folders have been deleted, return true
+        return true;
+      } else {
+        //User has chosen to finish adding data to pools, return false
+        return false;
       }
     }
   }
