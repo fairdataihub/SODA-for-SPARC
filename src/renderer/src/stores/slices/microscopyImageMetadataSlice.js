@@ -3,11 +3,11 @@ import { produce } from "immer";
 
 export const microscopyImageMetadataSlice = (set) => ({
   selectedImageFileName: "sub-a-img-1.tif",
-  magnification: null,
-  channelName: null,
-  channelColor: null,
-  spacingX: null,
-  spacingY: null,
+  magnification: "",
+  channelName: "",
+  channelColor: "",
+  spacingX: "",
+  spacingY: "",
 });
 
 export const setSelectedImageFileName = (selectedImageFileName) => {

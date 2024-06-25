@@ -12,20 +12,19 @@ import GenericButton from "../buttons/Generic";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
-  console.log("Waiting for HTML sections to load...");
   await new Promise((resolve) => setTimeout(resolve, 5));
 }
 
 // Helper function to create a React root and render the component inside SodaComponentWrapper
 const renderComponent = (componentSlot, component) => {
+  console.log("Component Slot: ", componentSlot);
   const root = createRoot(componentSlot);
   root.render(<SodaComponentWrapper>{component}</SodaComponentWrapper>);
 };
 
-// Define a mapping of component types to their render functions
-const componentRenderActions = {
+// Mapping of component types to their render functions
+const componentTypeRenderers = {
   "guided-mode-page": (componentSlot) => {
-    // Map of guided mode page IDs to their corresponding React components
     const pageIdToPageComponentMap = {
       "guided-name-subtitle-tab": <NameAndSubtitlePage />,
       "guided-biolucida-image-selection-tab": <BioLucidaImageListSelectPage />,
@@ -33,71 +32,58 @@ const componentRenderActions = {
       "guided-biolucida-login-tab": <BioLucidaLogin />,
       "guided-microscopy-image-metadata-form-tab": <MicroscopyImageMetadataFormPage />,
     };
-    const pageId = componentSlot.id;
-    const pageComponent = pageIdToPageComponentMap[pageId];
-    renderComponent(componentSlot, pageComponent);
+    const pageComponent = pageIdToPageComponentMap[componentSlot.id];
+    if (!pageComponent) {
+      console.error(`No page component found for page ID: ${componentSlot.id}`);
+    } else {
+      renderComponent(componentSlot, pageComponent);
+    }
   },
   "external-link": (componentSlot) => {
-    // Extract attributes for ExternalLink component
-    const url = componentSlot.getAttribute("data-url");
-    const buttonText = componentSlot.getAttribute("data-button-text");
-    const buttonType = componentSlot.getAttribute("data-button-type");
-    renderComponent(
-      componentSlot,
-      <ExternalLink href={url} buttonText={buttonText} buttonType={buttonType} />
-    );
+    const props = {
+      href: componentSlot.getAttribute("data-url"),
+      buttonText: componentSlot.getAttribute("data-button-text"),
+      buttonType: componentSlot.getAttribute("data-button-type"),
+    };
+    renderComponent(componentSlot, <ExternalLink {...props} />);
   },
   "dropdown-select": (componentSlot) => {
-    // Extract the ID for DropdownSelect component
-    const id = componentSlot.id;
-    renderComponent(componentSlot, <DropdownSelect id={id} />);
+    const props = {
+      id: componentSlot.id,
+    };
+    renderComponent(componentSlot, <DropdownSelect {...props} />);
   },
   "navigation-button": (componentSlot) => {
-    // Extract attributes for NavigationButton component
-    const buttonId = componentSlot.getAttribute("data-button-id");
-    const buttonTextNav = componentSlot.getAttribute("data-button-text");
-    const navIcon = componentSlot.getAttribute("data-nav-icon");
-    const buttonSize = componentSlot.getAttribute("data-button-size");
-    const buttonColor = componentSlot.getAttribute("data-button-color");
-    const buttonCustomWidth = componentSlot.getAttribute("data-button-custom-width");
-    const buttonCustomClass = componentSlot.getAttribute("data-button-custom-class");
-    renderComponent(
-      componentSlot,
-      <NavigationButton
-        buttonId={buttonId}
-        buttonText={buttonTextNav}
-        navIcon={navIcon}
-        buttonSize={buttonSize}
-        buttonColor={buttonColor}
-        buttonCustomWidth={buttonCustomWidth}
-        buttonCustomClass={buttonCustomClass}
-      />
-    );
+    const props = {
+      buttonId: componentSlot.getAttribute("data-button-id"),
+      buttonText: componentSlot.getAttribute("data-button-text"),
+      navIcon: componentSlot.getAttribute("data-nav-icon"),
+      buttonSize: componentSlot.getAttribute("data-button-size"),
+      buttonColor: componentSlot.getAttribute("data-button-color"),
+      buttonCustomWidth: componentSlot.getAttribute("data-button-custom-width"),
+      buttonCustomClass: componentSlot.getAttribute("data-button-custom-class"),
+    };
+    renderComponent(componentSlot, <NavigationButton {...props} />);
   },
   "generic-button": (componentSlot) => {
-    // Extract attributes for GenericButton component
-    const id = componentSlot.getAttribute("data-button-id");
-    const variant = componentSlot.getAttribute("data-variant");
-    const size = componentSlot.getAttribute("data-size");
-    const color = componentSlot.getAttribute("data-color");
-    const text = componentSlot.getAttribute("data-text");
-    renderComponent(
-      componentSlot,
-      <GenericButton id={id} variant={variant} size={size} color={color} text={text} />
-    );
+    const props = {
+      id: componentSlot.getAttribute("data-button-id"),
+      variant: componentSlot.getAttribute("data-variant"),
+      size: componentSlot.getAttribute("data-size"),
+      color: componentSlot.getAttribute("data-color"),
+      text: componentSlot.getAttribute("data-text"),
+    };
+    renderComponent(componentSlot, <GenericButton {...props} />);
   },
 };
 
-// Get all DOM nodes with the data attribute "data-component-type"
-const componentSlots = document.querySelectorAll("[data-component-type]");
-componentSlots.forEach((componentSlot) => {
-  // Get the component type and corresponding render function
+// Query all DOM nodes with the data attribute "data-component-type" and render the appropriate component
+document.querySelectorAll("[data-component-type]").forEach((componentSlot) => {
   const componentType = componentSlot.getAttribute("data-component-type");
-  const renderAction = componentRenderActions[componentType];
+  const renderAction = componentTypeRenderers[componentType];
 
-  // Check if a render function is defined for the component type
   if (renderAction) {
-    renderAction(componentSlot); // Render the component
+    renderAction(componentSlot);
   } else {
     console.error(`No render action found for component type: ${componentType}`);
   }
