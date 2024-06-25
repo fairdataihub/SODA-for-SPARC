@@ -1894,6 +1894,8 @@ current_files_in_subscriber_session = 0
 bytes_uploaded_per_file = {}
 total_bytes_uploaded = {"value": 0}
 current_files_in_subscriber_session = 0
+completed_file_id_map = {}
+events_hash_map = {}
 
 bytes_file_path_dict = {}
 
@@ -1923,6 +1925,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
     global manifest_id
     global origin_manifest_id
     global main_curate_status 
+    global events_hash_map
+    global completed_file_id_map
 
     total_files = 0
     total_dataset_files = 0
@@ -1933,6 +1937,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
     total_bytes_uploaded_per_file = {}
     files_uploaded = 0
     renamed_files_counter = 0
+    events_hash_map = {}
+    completed_file_id_map = {}
 
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
@@ -2349,11 +2355,32 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             global current_files_in_subscriber_session
             global bytes_uploaded_per_file
             global main_curation_uploaded_files
+            global completed_file_id_map
+            global events_hash_map 
+
+
 
             if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
                 file_id = events_dict["upload_status"].file_id
                 total_bytes_to_upload = events_dict["upload_status"].total
                 current_bytes_uploaded = events_dict["upload_status"].current
+
+                # keep track of each event to see if we receive it more than once - this could lead to our overcounting bytes and undercounting files 
+                # Step 1: Concatenate the values into a single string
+                concatenated_values = f"{file_id}{total_bytes_to_upload}{current_bytes_uploaded}"
+
+                # Step 2: Generate a hash of the concatenated string
+                hashed_event = hash(concatenated_values)
+
+                if hashed_event in events_hash_map:
+                    namespace_logger.info("[Counting Same Event Twice]: Event hash composed of File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
+                else: 
+                    events_hash_map[hashed_event] = True
+
+
+                # check if we are counting a completed file twice and og the file_id as a string
+                if(completed_file_id_map.get(file_id, True)):
+                    namespace_logger.info(f"[File Counted Twice]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
 
                 # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
                 previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
@@ -2367,18 +2394,21 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 # if current_bytes_uploaded > previous_bytes_uploaded:
                 # update the file id's current total bytes uploaded value 
                 bytes_uploaded_per_file[file_id] = current_bytes_uploaded
+                if bytes_uploaded_per_file[file_id] > total_bytes_to_upload:
+                    namespace_logger.info(f"[Bytes Uploaded Exceeds Total]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
 
                 # calculate the additional amount of bytes that have just been uploaded for the given file id
                 total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
 
-
-
+                namespace_logger.info("[Total Bytes Incremented]: From {file_id} - Total bytes uploaded: {total_bytes_uploaded['value']} - Incremented by {current_bytes_uploaded} - {previous_bytes_uploaded}")
 
 
                 # check if the given file has finished uploading
                 if current_bytes_uploaded == total_bytes_to_upload and  file_id != "":
                     files_uploaded += 1
                     main_curation_uploaded_files += 1
+                    completed_file_id_map[file_id] = True
+                    namespace_logger.info(f"[File uploaded]: {file_id} - Total Files Uploaded: {files_uploaded} - Total in subscriber session - {current_files_in_subscriber_session}")
 
 
                 # check if the upload has finished
@@ -2658,6 +2688,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             if renamed_files_counter > 0:
                 ums.set_list_of_files_to_rename(list_of_files_to_rename)
                 ums.set_rename_total_files(renamed_files_counter)
+
 
             # upload the manifest files
             try: 
