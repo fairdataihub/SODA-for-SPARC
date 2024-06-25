@@ -2373,7 +2373,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 hashed_event = hash(concatenated_values)
 
                 if hashed_event in events_hash_map:
-                    namespace_logger.info("[Counting Same Event Twice]: Event hash composed of File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
+                    namespace_logger.info(f"[Counting Same Event Twice]: Event hash composed of File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
                 else: 
                     events_hash_map[hashed_event] = True
 
@@ -2408,9 +2408,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                     namespace_logger.info(f"[Total Bytes Mismatch]: Total bytes uploaded: {total_bytes_uploaded['value']} - Sum of bytes uploaded per file: {sum(bytes_uploaded_per_file.values())}")
 
                 # calculate the additional amount of bytes that have just been uploaded for the given file id
-
-
-                namespace_logger.info("[Total Bytes Incremented]: From {file_id} - Total bytes uploaded: {total_bytes_uploaded['value']} - Incremented by {current_bytes_uploaded} - {previous_bytes_uploaded}")
 
 
                 # check if the given file has finished uploading
