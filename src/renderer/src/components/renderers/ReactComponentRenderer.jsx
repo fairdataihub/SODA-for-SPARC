@@ -74,29 +74,15 @@ const componentTypeRenderers = {
     renderComponent(componentSlot, <PennsieveAgentCheckDisplay {...props} />);
   },
 };
-const componentRenderActions = {
-  "guided-mode-page": (componentSlot) => {
-    // Map of guided mode page ids to their corresponding React components
-    const pageIdToPageComponentMap = {
-      "guided-name-subtitle-tab": <NameAndSubtitlePage />,
-    };
-    const pageId = componentSlot.id;
-    const pageComponent = pageIdToPageComponentMap[pageId];
-
-    // Create a React root and render the component
-    const root = createRoot(componentSlot);
-    root.render(<SodaComponentWrapper>{pageComponent}</SodaComponentWrapper>);
-  },
-};
 
 // Query all DOM nodes with the data attribute "data-component-type" and render the appropriate component
 document.querySelectorAll("[data-component-type]").forEach((componentSlot) => {
   const componentType = componentSlot.getAttribute("data-component-type");
-  const renderAction = componentTypeRenderers[componentType];
+  const renderFunction = componentTypeRenderers[componentType];
 
-  if (renderAction) {
-    renderAction(componentSlot);
+  if (renderFunction) {
+    renderFunction(componentSlot);
   } else {
-    console.error(`No render action found for component type: ${componentType}`);
+    console.error(`No render function found for component type: ${componentType}`);
   }
 });
