@@ -2388,6 +2388,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 # sometimes a user uploads the same file to multiple locations in the same session. Edge case. Handle it by resetting the value to 0 if it is equivalent to the 
                 # total bytes for that file 
                 if previous_bytes_uploaded == total_bytes_to_upload:
+                    namespace_logger.info(f"[Previous Bytes Being Reset]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
                     previous_bytes_uploaded = 0 
                 
                 # only update the byte count if the current bytes uploaded is greater than the previous bytes uploaded
