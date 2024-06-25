@@ -2394,8 +2394,14 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 # if current_bytes_uploaded > previous_bytes_uploaded:
                 # update the file id's current total bytes uploaded value 
                 bytes_uploaded_per_file[file_id] = current_bytes_uploaded
+
+                # check if somehow the current byte count is greater than total byte count from the Agent
                 if bytes_uploaded_per_file[file_id] > total_bytes_to_upload:
                     namespace_logger.info(f"[Bytes Uploaded Exceeds Total]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
+
+                # check if somehow the aggregate of all of the toal bytes is a different value than the current total_bytes_uploaded["value"] value 
+                if total_bytes_uploaded["value"] != sum(bytes_uploaded_per_file.values()):
+                    namespace_logger.info(f"[Total Bytes Mismatch]: Total bytes uploaded: {total_bytes_uploaded['value']} - Sum of bytes uploaded per file: {sum(bytes_uploaded_per_file.values())}")
 
                 # calculate the additional amount of bytes that have just been uploaded for the given file id
                 total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
