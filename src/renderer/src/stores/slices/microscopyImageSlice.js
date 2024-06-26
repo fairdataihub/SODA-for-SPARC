@@ -4,6 +4,7 @@ import { produce } from "immer";
 export const microscopyImageSlice = (set) => ({
   potentialMicroscopyImages: [],
   confirmedMicroscopyImages: [],
+  deniedMicroscopyImages: [],
   confirmMicroscopySearchInput: "",
   microscopyImagesSelectedToBeUploadedToBioLucida: [],
 });
@@ -16,10 +17,10 @@ export const setPotentialMicroscopyImages = (potentialMicroscopyImages) => {
   );
 };
 
-export const setConfirmMicroscopySearchInput = (searchInput) => {
+export const setDeniedMicroscopyImages = (deniedMicroscopyImages) => {
   useGlobalStore.setState(
     produce((state) => {
-      state.confirmMicroscopySearchInput = searchInput;
+      state.deniedMicroscopyImages = deniedMicroscopyImages;
     })
   );
 };
@@ -40,6 +41,9 @@ export const designateImageAsMicroscopyImage = (imageObj) => {
       } else {
         console.log("Image already exists in confirmedMicroscopyImages");
       }
+      state.deniedMicroscopyImages = state.deniedMicroscopyImages.filter(
+        (existingMicroscopyImageObj) => existingMicroscopyImageObj.filePath !== imageObj.filePath
+      );
     })
   );
 };
@@ -47,6 +51,12 @@ export const designateImageAsMicroscopyImage = (imageObj) => {
 export const undesignateImageAsMicroscopyImage = (imageObj) => {
   useGlobalStore.setState(
     produce((state) => {
+      if (!state.deniedMicroscopyImages.some((img) => img.filePath === imageObj.filePath)) {
+        state.deniedMicroscopyImages.push(imageObj);
+      } else {
+        console.log("Image already exists in deniedMicroscopyImages");
+      }
+
       state.confirmedMicroscopyImages = state.confirmedMicroscopyImages.filter(
         (existingMicroscopyImageObj) => existingMicroscopyImageObj.filePath !== imageObj.filePath
       );
@@ -78,6 +88,14 @@ export const removeImageFromBioLucidaUploadList = (imageObj) => {
           (existingMicroscopyImagePath) =>
             existingMicroscopyImagePath.filePath !== imageObj.filePath
         );
+    })
+  );
+};
+
+export const setConfirmMicroscopySearchInput = (searchInput) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.confirmMicroscopySearchInput = searchInput;
     })
   );
 };

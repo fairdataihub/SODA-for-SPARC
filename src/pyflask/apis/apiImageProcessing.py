@@ -236,13 +236,16 @@ class CreateImageThumbnails(Resource):
                     image = Image.open(image_path)
                     image.thumbnail((300, 300))
                     namespace_logger.info(f"Image_path: {image_path}")
-                    
+
                     # Convert RGBA to RGB if necessary
                     if image.mode != 'RGB':
                         image = image.convert('RGB')
-                    
+
                     # Combine the output_directory with the image name and _thumbnail.jpg
-                    thumbnail_path = os.path.join(output_directory, os.path.basename(image_path) + "_thumbnail.jpg")
+                    thumbnail_path = os.path.join(
+                        output_directory,
+                        f"{os.path.basename(image_path)}_thumbnail.jpg",
+                    )
                     namespace_logger.info(f"thumbnail_path: {thumbnail_path}")
                     image.save(thumbnail_path, "JPEG")
                     namespace_logger.info(f"Thumbnail saved to: {thumbnail_path}")

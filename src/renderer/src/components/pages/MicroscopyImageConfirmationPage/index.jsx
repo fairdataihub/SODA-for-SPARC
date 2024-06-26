@@ -5,9 +5,9 @@ import {
   undesignateImageAsMicroscopyImage,
   setConfirmedMicroscopyImages,
   setConfirmMicroscopySearchInput,
+  setDeniedMicroscopyImages,
 } from "../../../stores/slices/microscopyImageSlice";
 import {
-  Checkbox,
   Text,
   Tooltip,
   Button,
@@ -16,15 +16,21 @@ import {
   Center,
   Overlay,
   AspectRatio,
-  Modal,
   Group,
   Card,
-  Badge,
+  Box,
   Grid,
   TextInput,
   Switch,
 } from "@mantine/core";
-import { IconMicroscope, IconMicroscopeOff, IconSearch, IconX } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconMicroscope,
+  IconMicroscopeOff,
+  IconSearch,
+  IconSquareCheck,
+  IconSquareX,
+} from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import styles from "./MicroscopyImageConfirmationPage.module.css";
@@ -33,8 +39,12 @@ const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home")
 const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
 
 const MicroscopyImageConfirmationPage = () => {
-  const { potentialMicroscopyImages, confirmedMicroscopyImages, confirmMicroscopySearchInput } =
-    useGlobalStore();
+  const {
+    potentialMicroscopyImages,
+    confirmedMicroscopyImages,
+    deniedMicroscopyImages,
+    confirmMicroscopySearchInput,
+  } = useGlobalStore();
 
   const filteredImages = potentialMicroscopyImages.filter((image) =>
     image.relativeDatasetStructurePaths
@@ -46,6 +56,7 @@ const MicroscopyImageConfirmationPage = () => {
   );
 
   const confirmedImagePaths = new Set(confirmedMicroscopyImages.map((image) => image.filePath));
+  const deniedImagePaths = new Set(deniedMicroscopyImages.map((image) => image.filePath));
 
   const toggleAllImages = () => {
     for (const image of filteredImages) {
@@ -98,6 +109,7 @@ const MicroscopyImageConfirmationPage = () => {
         {filteredImages.length != 0 ? (
           filteredImages.map((image) => {
             const imageIsConfirmed = confirmedImagePaths.has(image.filePath);
+            const imageIsDenied = deniedImagePaths.has(image.filePath);
             return (
               <Grid.Col span={3} key={image.relativeDatasetStructurePaths.join()}>
                 <Card
@@ -109,17 +121,33 @@ const MicroscopyImageConfirmationPage = () => {
                   withBorder
                 >
                   <Card.Section>
-                    <Image
-                      src={window.path.join(
-                        guidedThumbnailsPath,
-                        `${image.fileName}_thumbnail.jpg`
+                    <AspectRatio>
+                      <Image
+                        src={window.path.join(
+                          guidedThumbnailsPath,
+                          `${image.fileName}_thumbnail.jpg`
+                        )}
+                        alt={`${image.fileName}_thumbnail`}
+                        withPlaceholder
+                        className={styles.thumbnailImage}
+                        fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
+                        loading="lazy"
+                      />
+                      {imageIsConfirmed && (
+                        <Overlay className={styles.thumbnailOverlay} backgroundOpacity={0}>
+                          <Box className={styles.checkBox}>
+                            <IconSquareCheck size={30} color={"green"} className={styles.check} />
+                          </Box>
+                        </Overlay>
                       )}
-                      alt={`${image.fileName}_thumbnail`}
-                      withPlaceholder
-                      className={styles.thumbnailImage}
-                      fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
-                      loading="lazy"
-                    />
+                      {imageIsDenied && (
+                        <Overlay className={styles.thumbnailOverlay} backgroundOpacity={0}>
+                          <Box className={styles.checkBox}>
+                            <IconSquareX size={30} color={"red"} className={styles.check} />
+                          </Box>
+                        </Overlay>
+                      )}
+                    </AspectRatio>
                   </Card.Section>
                   <Card.Section p="6px" h="60px" mb="-3px">
                     <Tooltip
@@ -150,13 +178,6 @@ const MicroscopyImageConfirmationPage = () => {
                         {image.fileName}
                       </Text>
                     </Tooltip>
-                    {imageIsConfirmed && (
-                      <Overlay>
-                        <Badge m="sm" color="blue" variant="filled" p="md">
-                          Microscopy
-                        </Badge>
-                      </Overlay>
-                    )}
                   </Card.Section>
                 </Card>
               </Grid.Col>
