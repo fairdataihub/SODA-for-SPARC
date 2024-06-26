@@ -1,27 +1,16 @@
-import React from "react";
-import useGlobalStore from "../../../stores/globalStore";
 import {
-  designateImageAsMicroscopyImage,
-  undesignateImageAsMicroscopyImage,
-  setConfirmedMicroscopyImages,
-  setConfirmMicroscopySearchInput,
-  setDeniedMicroscopyImages,
-} from "../../../stores/slices/microscopyImageSlice";
-import {
+  Button,
   Text,
   Tooltip,
-  Button,
   Stack,
   Image,
-  Center,
   Overlay,
   AspectRatio,
   Group,
   Card,
-  Box,
   Grid,
   TextInput,
-  Switch,
+  Box,
 } from "@mantine/core";
 import {
   IconCheck,
@@ -32,7 +21,12 @@ import {
   IconSquareX,
 } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
-import GuidedModeSection from "../../containers/GuidedModeSection";
+import {
+  undesignateImageAsMicroscopyImage,
+  designateImageAsMicroscopyImage,
+  setConfirmMicroscopySearchInput,
+} from "../../../stores/slices/microscopyImageSlice";
+import useGlobalStore from "../../../stores/globalStore";
 import styles from "./MicroscopyImageConfirmationPage.module.css";
 
 const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
@@ -51,14 +45,14 @@ const MicroscopyImageConfirmationPage = () => {
       .map((path) => path.toLowerCase())
       .some((path) => path.includes(confirmMicroscopySearchInput.toLowerCase()))
   );
-  const allFilteredImagesAreMicroscopyImages = filteredImages.every((image) =>
-    confirmedMicroscopyImages.some((confirmedImage) => confirmedImage.filePath === image.filePath)
-  );
-
   const confirmedImagePaths = new Set(confirmedMicroscopyImages.map((image) => image.filePath));
   const deniedImagePaths = new Set(deniedMicroscopyImages.map((image) => image.filePath));
 
   const toggleAllImages = () => {
+    const allFilteredImagesAreMicroscopyImages = filteredImages.every((image) =>
+      confirmedMicroscopyImages.some((confirmedImage) => confirmedImage.filePath === image.filePath)
+    );
+
     for (const image of filteredImages) {
       if (allFilteredImagesAreMicroscopyImages) {
         undesignateImageAsMicroscopyImage(image);
@@ -85,16 +79,18 @@ const MicroscopyImageConfirmationPage = () => {
       ]}
     >
       <Group position="center">
-        <Switch
-          checked={allFilteredImagesAreMicroscopyImages}
-          label="Toggle images"
-          onChange={() => {
-            toggleAllImages();
-          }}
-          size="lg"
-          onLabel={<IconMicroscope />}
-          offLabel={<IconMicroscopeOff />}
-        />
+        <Stack spacing="xs">
+          {!filteredImages.every((image) => confirmedImagePaths.has(image.filePath)) && (
+            <Button variant="light" color="cyan" w="275px" onClick={toggleAllImages}>
+              Select {confirmMicroscopySearchInput === "" ? "all" : "filtered"} as microscopy
+            </Button>
+          )}
+          {!filteredImages.every((image) => deniedImagePaths.has(image.filePath)) && (
+            <Button variant="light" color="orange" w="275px" onClick={toggleAllImages}>
+              Unselect {confirmMicroscopySearchInput === "" ? "all" : "filtered"} as microscopy
+            </Button>
+          )}
+        </Stack>
 
         <TextInput
           label="Image search filter"
@@ -106,7 +102,7 @@ const MicroscopyImageConfirmationPage = () => {
         />
       </Group>
       <Grid>
-        {filteredImages.length != 0 ? (
+        {filteredImages.length !== 0 ? (
           filteredImages.map((image) => {
             const imageIsConfirmed = confirmedImagePaths.has(image.filePath);
             const imageIsDenied = deniedImagePaths.has(image.filePath);

@@ -5557,7 +5557,8 @@ window.openPage = async (targetPageID) => {
       console.log("confirmedMicroscopyImages:", confirmedMicroscopyImages);
 
       setPotentialMicroscopyImages(potentialMicroscopyImages);
-      setConfirmedMicroscopyImages(confirmedMicroscopyImages);
+      // setConfirmedMicroscopyImages(confirmedMicroscopyImages);
+      setConfirmedMicroscopyImages([]);
     }
     if (targetPageID === "guided-biolucida-image-selection-tab") {
       // Get the confirmed microscopy images and the microscopy images selected to be uploaded to BioLucida (if they were previously set)
