@@ -2359,11 +2359,14 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             global events_hash_map 
 
 
-
             if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
                 file_id = events_dict["upload_status"].file_id
                 total_bytes_to_upload = events_dict["upload_status"].total
                 current_bytes_uploaded = events_dict["upload_status"].current
+
+                status = events_dict["upload_status"].status
+                if status == "2" or status == 2:
+                    namespace_logger.info(f"[UPLOAD COMPLETE EVENT RECEIVED]")
 
                 # keep track of each event to see if we receive it more than once - this could lead to our overcounting bytes and undercounting files 
                 # Step 1: Concatenate the values into a single string
@@ -2417,12 +2420,14 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                     completed_file_id_map[file_id] = True
                     namespace_logger.info(f"[File uploaded]: {file_id} - Total Files Uploaded: {files_uploaded} - Total in subscriber session - {current_files_in_subscriber_session}")
 
+                
 
-                # check if the upload has finished
+
+                # check if the upload has finished: TODO: Use status: complete 
                 if files_uploaded == current_files_in_subscriber_session:
                     namespace_logger.info("Upload complete")
                     # unsubscribe from the agent's upload messages since the upload has finished
-                    ps.unsubscribe(10)
+                    # ps.unsubscribe(10)
 
         # Set variables needed throughout generation flow
         list_upload_files = []
