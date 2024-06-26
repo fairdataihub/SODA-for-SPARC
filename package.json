@@ -38,7 +38,7 @@
     "@popperjs/core": "^2.11.8",
     "@rollup/plugin-inject": "^5.0.5",
     "@rollup/plugin-node-resolve": "^15.2.3",
-    "@tabler/icons-react": "^3.1.0",
+    "@tabler/icons-react": "^3.7.0",
     "@tarekraafat/autocomplete.js": "^10.2.7",
     "@toast-ui/editor": "^3.2.2",
     "@types/jstree": "^3.3.45",
