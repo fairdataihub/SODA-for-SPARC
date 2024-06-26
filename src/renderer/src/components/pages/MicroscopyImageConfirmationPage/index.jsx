@@ -11,6 +11,8 @@ import {
   Grid,
   TextInput,
   Box,
+  Flex,
+  Affix,
 } from "@mantine/core";
 import {
   IconCheck,
@@ -21,6 +23,7 @@ import {
   IconSquareX,
 } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
+import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 import {
   undesignateImageAsMicroscopyImage,
   designateImageAsMicroscopyImage,
@@ -48,16 +51,18 @@ const MicroscopyImageConfirmationPage = () => {
   const confirmedImagePaths = new Set(confirmedMicroscopyImages.map((image) => image.filePath));
   const deniedImagePaths = new Set(deniedMicroscopyImages.map((image) => image.filePath));
 
-  const toggleAllImages = () => {
-    const allFilteredImagesAreMicroscopyImages = filteredImages.every((image) =>
-      confirmedMicroscopyImages.some((confirmedImage) => confirmedImage.filePath === image.filePath)
-    );
-
+  const selectAllImagesAsMicroscopy = () => {
     for (const image of filteredImages) {
-      if (allFilteredImagesAreMicroscopyImages) {
-        undesignateImageAsMicroscopyImage(image);
-      } else {
+      if (!confirmedImagePaths.has(image.filePath)) {
         designateImageAsMicroscopyImage(image);
+      }
+    }
+  };
+
+  const unselectAllImagesAsMicroscopy = () => {
+    for (const image of filteredImages) {
+      if (confirmedImagePaths.has(image.filePath)) {
+        undesignateImageAsMicroscopyImage(image);
       }
     }
   };
@@ -78,15 +83,20 @@ const MicroscopyImageConfirmationPage = () => {
         "The selected images will be converted with MicroFile+ and processed to ensure they are SDS compliant.",
       ]}
     >
-      <Group position="center">
-        <Stack spacing="xs">
+      <Flex align="flex-end" gap="md">
+        <Stack spacing="xl" align="flex-start">
           {!filteredImages.every((image) => confirmedImagePaths.has(image.filePath)) && (
-            <Button variant="light" color="cyan" w="275px" onClick={toggleAllImages}>
+            <Button variant="light" color="cyan" w="275px" onClick={selectAllImagesAsMicroscopy}>
               Select {confirmMicroscopySearchInput === "" ? "all" : "filtered"} as microscopy
             </Button>
           )}
           {!filteredImages.every((image) => deniedImagePaths.has(image.filePath)) && (
-            <Button variant="light" color="orange" w="275px" onClick={toggleAllImages}>
+            <Button
+              variant="light"
+              color="orange"
+              w="275px"
+              onClick={unselectAllImagesAsMicroscopy}
+            >
               Unselect {confirmMicroscopySearchInput === "" ? "all" : "filtered"} as microscopy
             </Button>
           )}
@@ -100,7 +110,7 @@ const MicroscopyImageConfirmationPage = () => {
           onChange={(event) => setConfirmMicroscopySearchInput(event.target.value)}
           rightSection={<IconSearch size={20} />}
         />
-      </Group>
+      </Flex>
       <Grid>
         {filteredImages.length !== 0 ? (
           filteredImages.map((image) => {
@@ -169,6 +179,7 @@ const MicroscopyImageConfirmationPage = () => {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           wordBreak: "break-all",
+                          textAlign: "center",
                         }}
                       >
                         {image.fileName}

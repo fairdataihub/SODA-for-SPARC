@@ -12,7 +12,7 @@ import {
   undesignateImageAsMicroscopyImage,
   setConfirmedMicroscopyImages,
 } from "../../../stores/slices/microscopyImageSlice";
-import { Text, Button, Stack, Grid, TextInput } from "@mantine/core";
+import { Text, Button, Stack, Grid, TextInput, Group } from "@mantine/core";
 import GuidedModePage from "../../containers/GuidedModePage";
 import { IconCheck, IconDots } from "@tabler/icons-react";
 import styles from "./MicroscopyImageMetadataFormPage.module.css";
@@ -75,7 +75,7 @@ const MicroscopyImageMetadataFormPage = () => {
                   variant={fileName === "sub-a-img-1.tif" ? "filled" : "subtle"}
                   key={fileName}
                   justify="space-between"
-                  size="compact-md"
+                  size="compact-sm"
                   rightSection={
                     stringContainsAnEvenNumber(fileName) ? (
                       <IconCheck />
@@ -84,7 +84,7 @@ const MicroscopyImageMetadataFormPage = () => {
                     )
                   }
                 >
-                  <Text size="lg">{fileName}</Text>
+                  <Text size="sm">{fileName}</Text>
                 </Button>
               );
             })}
@@ -92,26 +92,19 @@ const MicroscopyImageMetadataFormPage = () => {
         </Grid.Col>
         <Grid.Col span={7}>
           <Stack gap="md">
-            <Text>
-              <b>Image name:</b> sub-a-image-1.tiff
-            </Text>
+            <Group>
+              <Text>
+                <b>Image name:</b> sub-a-image-1.tiff
+              </Text>
+              <Button variant="light" color="cyan" size="xs">
+                Copy Metadata from this Image
+              </Button>
+            </Group>
             <TextInput
               label="Channel Name"
               placeholder="Enter the image's channel name"
               value={channelName}
               onChange={(event) => setChannelName(event.target.value)}
-              rightSectionWidth={165}
-              rightSection={
-                <Button
-                  variant="outline"
-                  color="blue"
-                  size="xs"
-                  onClick={() => navigator.clipboard.writeText(channelName)}
-                  p="2px"
-                >
-                  Copy value to all images
-                </Button>
-              }
             />
 
             <TextInput
@@ -119,18 +112,6 @@ const MicroscopyImageMetadataFormPage = () => {
               placeholder="Enter the image's channel color"
               value={channelColor}
               onChange={(event) => setChannelColor(event.target.value)}
-              rightSectionWidth={165}
-              rightSection={
-                <Button
-                  variant="outline"
-                  color="blue"
-                  size="xs"
-                  onClick={() => navigator.clipboard.writeText(channelName)}
-                  p="2px"
-                >
-                  Copy value to all images
-                </Button>
-              }
             />
 
             <TextInput
@@ -138,54 +119,18 @@ const MicroscopyImageMetadataFormPage = () => {
               placeholder="Enter the image's magnification"
               value={magnification}
               onChange={(event) => setMagnification(event.target.value)}
-              rightSectionWidth={165}
-              rightSection={
-                <Button
-                  variant="outline"
-                  color="blue"
-                  size="xs"
-                  onClick={() => navigator.clipboard.writeText(channelName)}
-                  p="2px"
-                >
-                  Copy value to all images
-                </Button>
-              }
             />
             <TextInput
               label="Spacing X"
               placeholder="Enter the image's spacing X"
               value={spacingX}
               onChange={(event) => setSpacingX(event.target.value)}
-              rightSectionWidth={165}
-              rightSection={
-                <Button
-                  variant="outline"
-                  color="blue"
-                  size="xs"
-                  onClick={() => navigator.clipboard.writeText(channelName)}
-                  p="2px"
-                >
-                  Copy value to all images
-                </Button>
-              }
             />
             <TextInput
               label="Spacing Y"
               placeholder="Enter the image's spacing Y"
               value={spacingY}
               onChange={(event) => setSpacingY(event.target.value)}
-              rightSectionWidth={165}
-              rightSection={
-                <Button
-                  variant="outline"
-                  color="blue"
-                  size="xs"
-                  onClick={() => navigator.clipboard.writeText(channelName)}
-                  p="2px"
-                >
-                  Copy value to all images
-                </Button>
-              }
             />
           </Stack>
         </Grid.Col>
