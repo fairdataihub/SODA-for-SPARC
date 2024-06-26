@@ -1896,6 +1896,7 @@ total_bytes_uploaded = {"value": 0}
 current_files_in_subscriber_session = 0
 completed_file_id_map = {}
 events_hash_map = {}
+bytes_mismatch_occurred = False
 
 bytes_file_path_dict = {}
 
@@ -1927,6 +1928,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
     global main_curate_status 
     global events_hash_map
     global completed_file_id_map
+    global bytes_mismatch_occurred
 
     total_files = 0
     total_dataset_files = 0
@@ -1939,6 +1941,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
     renamed_files_counter = 0
     events_hash_map = {}
     completed_file_id_map = {}
+    bytes_mismatch_occurred = False
 
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
@@ -2357,6 +2360,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             global main_curation_uploaded_files
             global completed_file_id_map
             global events_hash_map 
+            global bytes_mismatch_occurred
 
 
             if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
@@ -2407,8 +2411,9 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
 
                 # check if somehow the aggregate of all of the toal bytes is a different value than the current total_bytes_uploaded["value"] value 
-                if total_bytes_uploaded["value"] != sum(bytes_uploaded_per_file.values()):
+                if total_bytes_uploaded["value"] != sum(bytes_uploaded_per_file.values()) and not bytes_mismatch_occurred:
                     namespace_logger.info(f"[Total Bytes Mismatch]: Total bytes uploaded: {total_bytes_uploaded['value']} - Sum of bytes uploaded per file: {sum(bytes_uploaded_per_file.values())}")
+                    bytes_mismatch_occurred = True
 
                 # calculate the additional amount of bytes that have just been uploaded for the given file id
 
