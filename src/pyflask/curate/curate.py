@@ -2361,6 +2361,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             global completed_file_id_map
             global events_hash_map 
             global bytes_mismatch_occurred
+            global main_total_generate_dataset_size
 
 
             if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
@@ -2371,6 +2372,12 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 status = events_dict["upload_status"].status
                 if status == "2" or status == 2:
                     namespace_logger.info(f"[UPLOAD COMPLETE EVENT RECEIVED]")
+                    namespace_logger.info(f"Amount of bytes uploaded via sum: {sum(bytes_uploaded_per_file.values())} vs total bytes uploaded via difference: {total_bytes_uploaded['value']}")
+                    namespace_logger.info(f"Amount of bytes Pennsieve Agent says via sum: {sum(bytes_uploaded_per_file.values())} vs amount of bytes we calculated before hand: {main_total_generate_dataset_size}")
+
+                if current_bytes_uploaded > total_bytes_to_upload: 
+                    namespace_logger.info(f"[Bytes Uploaded Exceeds Total]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
+
 
                 # keep track of each event to see if we receive it more than once - this could lead to our overcounting bytes and undercounting files 
                 # Step 1: Concatenate the values into a single string
@@ -2389,6 +2396,15 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 if(completed_file_id_map.get(file_id, False)):
                     namespace_logger.info(f"[File Counted Twice]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
 
+
+                previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
+
+                # only update the byte count if the current bytes uploaded is greater than the previous bytes uploaded
+                # if current_bytes_uploaded > previous_bytes_uploaded:
+                # update the file id's current total bytes uploaded value 
+                bytes_uploaded_per_file[file_id] = current_bytes_uploaded
+
+
                 # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
                 previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
 
@@ -2398,24 +2414,13 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                     namespace_logger.info(f"[Previous Bytes Being Reset]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
                     previous_bytes_uploaded = 0 
                 
-                # only update the byte count if the current bytes uploaded is greater than the previous bytes uploaded
-                # if current_bytes_uploaded > previous_bytes_uploaded:
-                # update the file id's current total bytes uploaded value 
-                bytes_uploaded_per_file[file_id] = current_bytes_uploaded
-
-                # check if somehow the current byte count is greater than total byte count from the Agent
-                if bytes_uploaded_per_file[file_id] > total_bytes_to_upload:
-                    namespace_logger.info(f"[Bytes Uploaded Exceeds Total]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
-
 
                 total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
 
                 # check if somehow the aggregate of all of the toal bytes is a different value than the current total_bytes_uploaded["value"] value 
-                if total_bytes_uploaded["value"] != sum(bytes_uploaded_per_file.values()) and not bytes_mismatch_occurred:
+                if total_bytes_uploaded["value"] != sum(bytes_uploaded_per_file.values()) and bytes_mismatch_occurred == False:
                     namespace_logger.info(f"[Total Bytes Mismatch]: Total bytes uploaded: {total_bytes_uploaded['value']} - Sum of bytes uploaded per file: {sum(bytes_uploaded_per_file.values())}")
                     bytes_mismatch_occurred = True
-
-                # calculate the additional amount of bytes that have just been uploaded for the given file id
 
 
                 # check if the given file has finished uploading
@@ -2426,8 +2431,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                     namespace_logger.info(f"[File uploaded]: {file_id} - Total Files Uploaded: {files_uploaded} - Total in subscriber session - {current_files_in_subscriber_session}")
 
                 
-
-
                 # check if the upload has finished: TODO: Use status: complete 
                 if files_uploaded == current_files_in_subscriber_session:
                     namespace_logger.info("Upload complete")
