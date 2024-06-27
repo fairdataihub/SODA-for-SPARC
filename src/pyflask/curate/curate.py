@@ -2405,9 +2405,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 bytes_uploaded_per_file[file_id] = current_bytes_uploaded
 
 
-                # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
-                previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
-
                 # sometimes a user uploads the same file to multiple locations in the same session. Edge case. Handle it by resetting the value to 0 if it is equivalent to the 
                 # total bytes for that file 
                 if previous_bytes_uploaded == total_bytes_to_upload:
