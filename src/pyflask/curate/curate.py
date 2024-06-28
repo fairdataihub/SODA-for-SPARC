@@ -2412,12 +2412,12 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                     previous_bytes_uploaded = 0 
                 
 
-                total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
+                total_bytes_uploaded["value"] = sum(bytes_uploaded_per_file.values())
 
                 # check if somehow the aggregate of all of the toal bytes is a different value than the current total_bytes_uploaded["value"] value 
-                if total_bytes_uploaded["value"] != sum(bytes_uploaded_per_file.values()) and bytes_mismatch_occurred == False:
-                    namespace_logger.info(f"[Total Bytes Mismatch]: Total bytes uploaded: {total_bytes_uploaded['value']} - Sum of bytes uploaded per file: {sum(bytes_uploaded_per_file.values())}")
-                    bytes_mismatch_occurred = True
+                # if total_bytes_uploaded["value"] != sum(bytes_uploaded_per_file.values()) and bytes_mismatch_occurred == False:
+                #     namespace_logger.info(f"[Total Bytes Mismatch]: Total bytes uploaded: {total_bytes_uploaded['value']} - Sum of bytes uploaded per file: {sum(bytes_uploaded_per_file.values())}")
+                #     bytes_mismatch_occurred = True
 
 
                 # check if the given file has finished uploading
@@ -2426,7 +2426,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                     main_curation_uploaded_files += 1
                     completed_file_id_map[file_id] = True
                     namespace_logger.info(f"[File uploaded]: {file_id} - Total Files Uploaded: {files_uploaded} - Total in subscriber session - {current_files_in_subscriber_session}")
+                    namespace_logger.info(f"[File Uploaded Details]: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
 
+                if current_bytes_uploaded == total_bytes_to_upload and file_id == "":
+                    namespace_logger.info(f"[File Upload Complete But No File ID]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
                 
                 # check if the upload has finished: TODO: Use status: complete 
                 if files_uploaded == current_files_in_subscriber_session:
