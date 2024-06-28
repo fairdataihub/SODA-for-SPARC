@@ -12,6 +12,7 @@ import styles from "./MicroscopyImageMetadataFormPage.module.css";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import ExternalLink from "../../buttons/ExternalLink";
 import DropDownNote from "../../utils/ui/DropDownNote";
+import { all } from "axios";
 
 const stringContainsAnEvenNumber = (str) => {
   // Regular expression to match any even digit (0, 2, 4, 6, 8)
@@ -40,6 +41,7 @@ const MicroscopyImageMetadataFormPage = () => {
     imageMetadataSearchValue,
     setImageMetadataSearchValue,
     imageMetadataFields,
+    imageHasRequiredMetadata,
   } = useGlobalStore();
 
   console.log("imageMetadataStore", imageMetadataStore);
@@ -80,7 +82,7 @@ const MicroscopyImageMetadataFormPage = () => {
                     justify="space-between"
                     size="compact-sm"
                     rightSection={
-                      stringContainsAnEvenNumber(fileName) ? (
+                      imageHasRequiredMetadata(fileName) ? (
                         <IconCheck />
                       ) : (
                         <IconDots color="orange" />
@@ -115,7 +117,7 @@ const MicroscopyImageMetadataFormPage = () => {
                     key={field.key}
                     label={field.label}
                     placeholder={`Enter the image's ${field.label}`}
-                    value={imageMetadataStore?.[selectedImageFileName]?.[field.key]}
+                    value={imageMetadataStore?.[selectedImageFileName]?.[field.key] || ""}
                     onChange={(event) =>
                       setImageMetadata(selectedImageFileName, field.key, event.target.value)
                     }

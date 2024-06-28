@@ -59,7 +59,6 @@ export const microscopyImageMetadataSlice = (set) => ({
   },
 
   imageMetadataStore: {},
-
   setImageMetadata: (imageFileName, imageMetadataKey, imageMetadataValue) => {
     set(
       produce((state) => {
@@ -68,10 +67,33 @@ export const microscopyImageMetadataSlice = (set) => ({
     );
   },
 
-  setImageMetadataJson: (imageMetadataJson) => {
-    set((state) => {
-      state.imageMetadataStore = imageMetadataJson;
-    });
+  imageHasRequiredMetadata: (fileName) => {
+    const state = useGlobalStore.getState();
+    const imageMetadata = state.imageMetadataStore[fileName];
+    if (!imageMetadata) {
+      return false;
+    }
+    for (let field of state.imageMetadataFields) {
+      if (!imageMetadata[field.key]) {
+        return false;
+      }
+    }
+    return true;
+  },
+
+  copyImageMetadata: (copyFromImageFileName, copyToImageFileNamesArray) => {
+    const state = useGlobalStore.getState();
+    const imageMetadata = state.imageMetadataStore[copyFromImageFileName];
+    if (!imageMetadata) {
+      return;
+    }
+    set(
+      produce((state) => {
+        for (let copyToImageFileName of copyToImageFileNamesArray) {
+          state.imageMetadataStore[copyToImageFileName] = { ...imageMetadata };
+        }
+      })
+    );
   },
 
   imageMetadataFields: [
@@ -95,5 +117,30 @@ export const microscopyImageMetadataSlice = (set) => ({
       key: "spacingY",
       label: "Spacing Y",
     },
+    {
+      key: "spacingZ",
+      label: "Spacing Z",
+    },
   ],
+
+  setImageMetadataJson: (imageMetadataJson) => {
+    set(
+      produce((state) => {
+        const imageMetadataFieldKeys = state.imageMetadataFields.map((field) => field.key);
+        const confirmedImages = state.confirmedMicroscopyImages.map((image) => image.fileName);
+        for (const fileName of confirmedImages) {
+          if (!imageMetadataJson[fileName]) {
+            imageMetadataJson[fileName] = {};
+          }
+          for (const fieldKey of imageMetadataFieldKeys) {
+            if (!imageMetadataJson[fileName][fieldKey]) {
+              imageMetadataJson[fileName][fieldKey] =
+                Math.floor(Math.random() * 5) + 1 > 3 ? "" : Math.floor(Math.random() * 5) + 1;
+            }
+          }
+        }
+        state.imageMetadataStore = imageMetadataJson;
+      })
+    );
+  },
 });

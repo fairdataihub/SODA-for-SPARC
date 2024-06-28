@@ -64,7 +64,7 @@ const BioLucidaImageListSelectPage = () => {
                 <Text ta="left">{filePath}</Text>
                 <Text ta="left">Paths in organized dataset structure:</Text>
                 <Text ta="left">Path in organized dataset structure:</Text>
-                {relativeDatasetStructurePaths.map((path) => (
+                {imageObj.relativeDatasetStructurePaths.map((path) => (
                   <Text key={path}>{path}</Text>
                 ))}
               </Stack>

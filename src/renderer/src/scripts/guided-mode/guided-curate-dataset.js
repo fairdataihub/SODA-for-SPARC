@@ -5577,30 +5577,9 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-microscopy-image-metadata-form-tab") {
       setConfirmedMicroscopyImages(window.sodaJSONObj["confirmed-microscopy-images"]);
-      const savedMicroscopyImageMetadata = window.sodaJSONObj["microscopy-image-metadata"] || {};
-      const imageMetadataFieldKeys = useGlobalStore
+      useGlobalStore
         .getState()
-        .imageMetadataFields.map((field) => field.key);
-      for (const fileName of window.sodaJSONObj["confirmed-microscopy-images"].map(
-        (file) => file.fileName
-      )) {
-        if (!savedMicroscopyImageMetadata[fileName]) {
-          savedMicroscopyImageMetadata[fileName] = {};
-        }
-        for (const fieldKey of imageMetadataFieldKeys) {
-          if (!savedMicroscopyImageMetadata[fileName][fieldKey]) {
-            // create random number 1 through 5 but it if it's 4 or 5, set it to an empty string
-            savedMicroscopyImageMetadata[fileName][fieldKey] = Math.floor(Math.random() * 5) + 1;
-            if (savedMicroscopyImageMetadata[fileName][fieldKey] >= 4) {
-              savedMicroscopyImageMetadata[fileName][fieldKey] = "";
-            }
-          }
-        }
-      }
-
-      console.log("savedMicroscopyImageMetadata:", savedMicroscopyImageMetadata);
-
-      useGlobalStore.getState().setImageMetadataJson(savedMicroscopyImageMetadata);
+        .setImageMetadataJson(window.sodaJSONObj["microscopy-image-metadata"] || {});
     }
 
     if (targetPageID === "guided-biolucida-image-selection-tab") {
