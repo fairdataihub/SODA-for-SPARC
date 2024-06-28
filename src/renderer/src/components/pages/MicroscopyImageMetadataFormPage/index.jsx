@@ -1,12 +1,5 @@
 import useGlobalStore from "../../../stores/globalStore";
-import {
-  setSelectedImageFileName,
-  setMagnification,
-  setChannelName,
-  setChannelColor,
-  setSpacingX,
-  setSpacingY,
-} from "../../../stores/slices/microscopyImageMetadataSlice";
+
 import {
   designateImageAsMicroscopyImage,
   undesignateImageAsMicroscopyImage,
@@ -37,18 +30,30 @@ const stringContainsAnEvenNumber = (str) => {
 const MicroscopyImageMetadataFormPage = () => {
   // Get the required zustand store state variables
   const {
+    selectedImageFileName,
+    setSelectedImageFileName,
     confirmedMicroscopyImages,
-    magnification,
-    channelName,
-    channelColor,
-    spacingX,
-    spacingY,
+    copyImageMetadataModeActive,
+    setCopyImageMetadataModeActive,
+    setImageMetadata,
+    imageMetadataStore,
+    imageMetadataSearchValue,
+    setImageMetadataSearchValue,
+    imageMetadataFields,
   } = useGlobalStore();
 
   const confirmedMicroscopyImagefileNames = confirmedMicroscopyImages.map(
     (imageObj) => imageObj["fileName"]
   );
 
+  console.log("ImageMetadataStore", imageMetadataStore);
+  console.log("selectedImageFileName", selectedImageFileName);
+  console.log("imageMetadataStoreKeys", Object.keys(imageMetadataStore));
+  console.log("selectedImageMetadata", imageMetadataStore?.[selectedImageFileName]);
+  console.log(
+    "SelectedImageChannelName",
+    imageMetadataStore?.[selectedImageFileName]?.["channelName"]
+  );
   console.log("confirmedMicroscopyImagefileNames", confirmedMicroscopyImagefileNames);
   return (
     <GuidedModePage
@@ -58,83 +63,76 @@ const MicroscopyImageMetadataFormPage = () => {
         "Plase fill in any missing metadata fields for the images below. Images with complete metadata will appear green in the left column.",
       ]}
     >
-      <Grid gutter="xl">
-        <Grid.Col span={5}>
-          <Stack gap="0px" p="4px" className={styles.scrollableStack}>
-            <TextInput
-              label="Image Search Filter"
-              placeholder="Enter a search term to filter images"
-              value={channelName}
-              onChange={(event) => setChannelName(event.target.value)}
-              rightSectionWidth={165}
-              mb="md"
-            />
-            {confirmedMicroscopyImagefileNames.map((fileName) => {
-              return (
+      {copyImageMetadataModeActive ? (
+        <Button onClick={() => setCopyImageMetadataModeActive(!copyImageMetadataModeActive)}>
+          Back to main form
+        </Button>
+      ) : (
+        <Grid gutter="xl">
+          <Grid.Col span={5}>
+            <Stack gap="0px" p="4px" className={styles.scrollableStack}>
+              <TextInput
+                label="Image Search Filter"
+                placeholder="Enter a search term to filter images"
+                value={imageMetadataSearchValue}
+                onChange={(event) => setImageMetadataSearchValue(event.target.value)}
+                rightSectionWidth={165}
+                mb="md"
+              />
+              {confirmedMicroscopyImagefileNames.map((fileName) => {
+                return (
+                  <Button
+                    variant={fileName === "sub-a-img-1.tif" ? "filled" : "subtle"}
+                    key={fileName}
+                    justify="space-between"
+                    size="compact-sm"
+                    rightSection={
+                      stringContainsAnEvenNumber(fileName) ? (
+                        <IconCheck />
+                      ) : (
+                        <IconDots color="orange" />
+                      )
+                    }
+                    onClick={() => setSelectedImageFileName(fileName)}
+                  >
+                    <Text size="sm">{fileName}</Text>
+                  </Button>
+                );
+              })}
+            </Stack>
+          </Grid.Col>
+          <Grid.Col span={7}>
+            <Stack gap="md">
+              <Group>
+                <Text>
+                  <b>Image name:</b> {selectedImageFileName}
+                </Text>
                 <Button
-                  variant={fileName === "sub-a-img-1.tif" ? "filled" : "subtle"}
-                  key={fileName}
-                  justify="space-between"
-                  size="compact-sm"
-                  rightSection={
-                    stringContainsAnEvenNumber(fileName) ? (
-                      <IconCheck />
-                    ) : (
-                      <IconDots color="orange" />
-                    )
-                  }
+                  variant="light"
+                  color="cyan"
+                  size="xs"
+                  onClick={() => setCopyImageMetadataModeActive(!copyImageMetadataModeActive)}
                 >
-                  <Text size="sm">{fileName}</Text>
+                  Copy Metadata from this Image
                 </Button>
-              );
-            })}
-          </Stack>
-        </Grid.Col>
-        <Grid.Col span={7}>
-          <Stack gap="md">
-            <Group>
-              <Text>
-                <b>Image name:</b> sub-a-image-1.tiff
-              </Text>
-              <Button variant="light" color="cyan" size="xs">
-                Copy Metadata from this Image
-              </Button>
-            </Group>
-            <TextInput
-              label="Channel Name"
-              placeholder="Enter the image's channel name"
-              value={channelName}
-              onChange={(event) => setChannelName(event.target.value)}
-            />
-
-            <TextInput
-              label="Channel Color"
-              placeholder="Enter the image's channel color"
-              value={channelColor}
-              onChange={(event) => setChannelColor(event.target.value)}
-            />
-
-            <TextInput
-              label="Magnification"
-              placeholder="Enter the image's magnification"
-              value={magnification}
-              onChange={(event) => setMagnification(event.target.value)}
-            />
-            <TextInput
-              label="Spacing X"
-              placeholder="Enter the image's spacing X"
-              value={spacingX}
-              onChange={(event) => setSpacingX(event.target.value)}
-            />
-            <TextInput
-              label="Spacing Y"
-              placeholder="Enter the image's spacing Y"
-              value={spacingY}
-              onChange={(event) => setSpacingY(event.target.value)}
-            />
-          </Stack>
-        </Grid.Col>
-      </Grid>
+              </Group>
+              {imageMetadataFields.map((field) => {
+                return (
+                  <TextInput
+                    key={field.key}
+                    label={field.label}
+                    placeholder={`Enter the image's ${field.label}`}
+                    value={imageMetadataStore?.[selectedImageFileName]?.[field.key]}
+                    onChange={(event) =>
+                      setImageMetadata(selectedImageFileName, field.key, event.target.value)
+                    }
+                  />
+                );
+              })}
+            </Stack>
+          </Grid.Col>
+        </Grid>
+      )}
     </GuidedModePage>
   );
 };

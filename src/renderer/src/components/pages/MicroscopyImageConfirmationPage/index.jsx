@@ -134,7 +134,6 @@ const MicroscopyImageConfirmationPage = () => {
                           `${image.fileName}_thumbnail.jpg`
                         )}
                         alt={`${image.fileName}_thumbnail`}
-                        withPlaceholder
                         className={styles.thumbnailImage}
                         fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
                         loading="lazy"
