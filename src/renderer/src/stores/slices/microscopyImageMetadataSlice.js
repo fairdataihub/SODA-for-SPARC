@@ -58,29 +58,7 @@ export const microscopyImageMetadataSlice = (set) => ({
     });
   },
 
-  imageMetadataStore: {
-    "sub-a-img-1.tif": {
-      channelName: "DAPI",
-      channelColor: "blue",
-      magnification: "20x",
-      spacingX: "0.1",
-      spacingY: "0.1",
-    },
-    "sub-a-img-2.tif": {
-      channelName: "GFP",
-      channelColor: "green",
-      magnification: "20x",
-      spacingX: "0.1",
-      spacingY: "0.1",
-    },
-    "sub-a-img-3.tif": {
-      channelName: "RFP",
-      channelColor: "red",
-      magnification: "20x",
-      spacingX: "0.1",
-      spacingY: "0.1",
-    },
-  },
+  imageMetadataStore: {},
 
   setImageMetadata: (imageFileName, imageMetadataKey, imageMetadataValue) => {
     set(
@@ -88,6 +66,12 @@ export const microscopyImageMetadataSlice = (set) => ({
         state.imageMetadataStore[imageFileName][imageMetadataKey] = imageMetadataValue;
       })
     );
+  },
+
+  setImageMetadataJson: (imageMetadataJson) => {
+    set((state) => {
+      state.imageMetadataStore = imageMetadataJson;
+    });
   },
 
   imageMetadataFields: [

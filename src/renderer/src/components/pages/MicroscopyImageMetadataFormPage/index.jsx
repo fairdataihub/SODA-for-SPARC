@@ -42,19 +42,12 @@ const MicroscopyImageMetadataFormPage = () => {
     imageMetadataFields,
   } = useGlobalStore();
 
+  console.log("imageMetadataStore", imageMetadataStore);
+
   const confirmedMicroscopyImagefileNames = confirmedMicroscopyImages.map(
     (imageObj) => imageObj["fileName"]
   );
 
-  console.log("ImageMetadataStore", imageMetadataStore);
-  console.log("selectedImageFileName", selectedImageFileName);
-  console.log("imageMetadataStoreKeys", Object.keys(imageMetadataStore));
-  console.log("selectedImageMetadata", imageMetadataStore?.[selectedImageFileName]);
-  console.log(
-    "SelectedImageChannelName",
-    imageMetadataStore?.[selectedImageFileName]?.["channelName"]
-  );
-  console.log("confirmedMicroscopyImagefileNames", confirmedMicroscopyImagefileNames);
   return (
     <GuidedModePage
       pageHeader="Microscopy Image Metadata"

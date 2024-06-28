@@ -1490,9 +1490,8 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-microscopy-image-confirmation-tab") {
-      // Get the confirmed microscopy images from the global store and add them to the JSON
       const confirmedMicroscopyImages = useGlobalStore.getState().confirmedMicroscopyImages;
-      console.log("confirmedMicroscopyImages", confirmedMicroscopyImages);
+
       if (confirmedMicroscopyImages.length === 0) {
         errorArray.push({
           type: "notyf",
@@ -1501,6 +1500,27 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
       window.sodaJSONObj["confirmed-microscopy-images"] = confirmedMicroscopyImages;
+    }
+
+    if (pageBeingLeftID === "guided-microscopy-image-metadata-form-tab") {
+      let allFieldsFilled = true;
+      const imageMetadataStore = useGlobalStore.getState().imageMetadataStore;
+      const imageMetadataFieldKeys = useGlobalStore
+        .getState()
+        .imageMetadataFields.map((field) => field.key);
+      for (const fileName of Object.keys(imageMetadataStore)) {
+        const imageMetadata = imageMetadataStore[fileName];
+        for (const field of imageMetadataFieldKeys) {
+          if (imageMetadata[field] === "") {
+            console.log("Image ", fileName, " is missing field ", field);
+            allFieldsFilled = false;
+          }
+        }
+      }
+      if (!allFieldsFilled) {
+        window.notyf.error("Please fill out all fields for each microscopy image");
+      }
+      window.sodaJSONObj["microscopy-image-metadata"] = imageMetadataStore;
     }
 
     if (pageBeingLeftID === "guided-biolucida-image-selection-tab") {
@@ -5523,16 +5543,11 @@ window.openPage = async (targetPageID) => {
       openSubPageNavigation(targetPageID);
     }
     if (targetPageID === "guided-microscopy-image-confirmation-tab") {
-      // Get the potential microscopy images and the confirmed microscopy images (if they were previously set)
-      // and update the zustand store state to update the React components
       const potentialMicroscopyImages = getImagesInDatasetStructure(
         window.datasetStructureJSONObj["folders"]["primary"]
       );
       const confirmedMicroscopyImages = window.sodaJSONObj["confirmed-microscopy-images"] || [];
 
-      const confirmedMicroscopyImageFilePaths = confirmedMicroscopyImages.map(
-        (image) => image["filePath"]
-      );
       const potentialMicroscopyImageFilePaths = potentialMicroscopyImages.map(
         (image) => image["filePath"]
       );
@@ -5557,17 +5572,45 @@ window.openPage = async (targetPageID) => {
       console.log("confirmedMicroscopyImages:", confirmedMicroscopyImages);
 
       setPotentialMicroscopyImages(potentialMicroscopyImages);
-      // setConfirmedMicroscopyImages(confirmedMicroscopyImages);
-      setConfirmedMicroscopyImages([]);
+      setConfirmedMicroscopyImages(confirmedMicroscopyImages);
     }
+
+    if (targetPageID === "guided-microscopy-image-metadata-form-tab") {
+      setConfirmedMicroscopyImages(window.sodaJSONObj["confirmed-microscopy-images"]);
+      const savedMicroscopyImageMetadata = window.sodaJSONObj["microscopy-image-metadata"] || {};
+      const imageMetadataFieldKeys = useGlobalStore
+        .getState()
+        .imageMetadataFields.map((field) => field.key);
+      for (const fileName of window.sodaJSONObj["confirmed-microscopy-images"].map(
+        (file) => file.fileName
+      )) {
+        if (!savedMicroscopyImageMetadata[fileName]) {
+          savedMicroscopyImageMetadata[fileName] = {};
+        }
+        for (const fieldKey of imageMetadataFieldKeys) {
+          if (!savedMicroscopyImageMetadata[fileName][fieldKey]) {
+            // create random number 1 through 5 but it if it's 4 or 5, set it to an empty string
+            savedMicroscopyImageMetadata[fileName][fieldKey] = Math.floor(Math.random() * 5) + 1;
+            if (savedMicroscopyImageMetadata[fileName][fieldKey] >= 4) {
+              savedMicroscopyImageMetadata[fileName][fieldKey] = "";
+            }
+          }
+        }
+      }
+
+      console.log("savedMicroscopyImageMetadata:", savedMicroscopyImageMetadata);
+
+      useGlobalStore.getState().setImageMetadataJson(savedMicroscopyImageMetadata);
+    }
+
     if (targetPageID === "guided-biolucida-image-selection-tab") {
       // Get the confirmed microscopy images and the microscopy images selected to be uploaded to BioLucida (if they were previously set)
       // and update the zustand store state to update the React components
-      const confirmedMicroscopyImages = window.sodaJSONObj["confirmed-microscopy-images"];
-      const microscopyImagesSelectedToBeUploadedToBioLucida =
-        window.sodaJSONObj["microscopy-images-selected-to-be-uploaded-to-biolucida"] || [];
-      setConfirmedMicroscopyImages(confirmedMicroscopyImages);
-      setMicroscopyImagesUploadableToBioLucida(microscopyImagesSelectedToBeUploadedToBioLucida);
+      setConfirmedMicroscopyImages(window.sodaJSONObj["confirmed-microscopy-images"]);
+
+      setMicroscopyImagesUploadableToBioLucida(
+        window.sodaJSONObj["microscopy-images-selected-to-be-uploaded-to-biolucida"] || []
+      );
     }
     if (targetPageID === "guided-source-data-organization-tab") {
       openSubPageNavigation(targetPageID);
