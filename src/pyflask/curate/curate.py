@@ -2375,8 +2375,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                     namespace_logger.info(f"Amount of bytes uploaded via sum: {sum(bytes_uploaded_per_file.values())} vs total bytes uploaded via difference: {total_bytes_uploaded['value']}")
                     namespace_logger.info(f"Amount of bytes Pennsieve Agent says via sum: {sum(bytes_uploaded_per_file.values())} vs amount of bytes we calculated before hand: {main_total_generate_dataset_size}")
 
-                if current_bytes_uploaded > total_bytes_to_upload: 
-                    namespace_logger.info(f"[Bytes Uploaded Exceeds Total]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
+                # if current_bytes_uploaded > total_bytes_to_upload: 
+                #     namespace_logger.info(f"[Bytes Uploaded Exceeds Total]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
 
 
                 # keep track of each event to see if we receive it more than once - this could lead to our overcounting bytes and undercounting files 
@@ -2386,15 +2386,15 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 # Step 2: Generate a hash of the concatenated string
                 hashed_event = hash(concatenated_values)
 
-                if hashed_event in events_hash_map:
-                    namespace_logger.info(f"[Counting Same Event Twice]: Event hash composed of File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
-                else: 
-                    events_hash_map[hashed_event] = True
+                # if hashed_event in events_hash_map:
+                    # namespace_logger.info(f"[Counting Same Event Twice]: Event hash composed of File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
+                # else:
+                    # events_hash_map[hashed_event] = True
 
 
                 # check if we are counting a completed file twice and og the file_id as a string
-                if(completed_file_id_map.get(file_id, False)):
-                    namespace_logger.info(f"[File Counted Twice]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
+                # if(completed_file_id_map.get(file_id, False)):
+                    # namespace_logger.info(f"[File Counted Twice]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
 
 
                 previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
@@ -2407,9 +2407,9 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
 
                 # sometimes a user uploads the same file to multiple locations in the same session. Edge case. Handle it by resetting the value to 0 if it is equivalent to the 
                 # total bytes for that file 
-                if previous_bytes_uploaded == total_bytes_to_upload:
-                    namespace_logger.info(f"[Previous Bytes Being Reset]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
-                    previous_bytes_uploaded = 0 
+                # if previous_bytes_uploaded == total_bytes_to_upload:
+                #     namespace_logger.info(f"[Previous Bytes Being Reset]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
+                #     previous_bytes_uploaded = 0 
                 
 
                 total_bytes_uploaded["value"] = sum(bytes_uploaded_per_file.values())
@@ -2425,11 +2425,11 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                     files_uploaded += 1
                     main_curation_uploaded_files += 1
                     completed_file_id_map[file_id] = True
-                    namespace_logger.info(f"[File uploaded]: {file_id} - Total Files Uploaded: {files_uploaded} - Total in subscriber session - {current_files_in_subscriber_session}")
-                    namespace_logger.info(f"[File Uploaded Details]: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
+                    # namespace_logger.info(f"[File uploaded]: {file_id} - Total Files Uploaded: {files_uploaded} - Total in subscriber session - {current_files_in_subscriber_session}")
+                    # namespace_logger.info(f"[File Uploaded Details]: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
 
-                if current_bytes_uploaded == total_bytes_to_upload and file_id == "":
-                    namespace_logger.info(f"[File Upload Complete But No File ID]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
+                # if current_bytes_uploaded == total_bytes_to_upload and file_id == "":
+                #     namespace_logger.info(f"[File Upload Complete But No File ID]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
                 
                 # check if the upload has finished: TODO: Use status: complete 
                 if files_uploaded == current_files_in_subscriber_session:
