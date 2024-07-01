@@ -143,4 +143,11 @@ export const microscopyImageMetadataSlice = (set) => ({
       })
     );
   },
+
+  imageMetadataCopyFilterValue: "",
+  setImageMetadataCopyFilterValue: (imageMetadataCopyFilterValue) => {
+    set((state) => {
+      state.imageMetadataCopyFilterValue = imageMetadataCopyFilterValue;
+    });
+  },
 });

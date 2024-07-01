@@ -1,11 +1,23 @@
 import useGlobalStore from "../../../stores/globalStore";
 
+import { useState } from "react";
+
 import {
   designateImageAsMicroscopyImage,
   undesignateImageAsMicroscopyImage,
   setConfirmedMicroscopyImages,
 } from "../../../stores/slices/microscopyImageSlice";
-import { Text, Button, Stack, Grid, TextInput, Group } from "@mantine/core";
+import {
+  Text,
+  Button,
+  Stack,
+  Grid,
+  TextInput,
+  Group,
+  ScrollArea,
+  Table,
+  Checkbox,
+} from "@mantine/core";
 import GuidedModePage from "../../containers/GuidedModePage";
 import { IconCheck, IconDots } from "@tabler/icons-react";
 import styles from "./MicroscopyImageMetadataFormPage.module.css";
@@ -42,12 +54,23 @@ const MicroscopyImageMetadataFormPage = () => {
     setImageMetadataSearchValue,
     imageMetadataFields,
     imageHasRequiredMetadata,
+    copyImageMetadata,
+    imageMetadataCopyFilterValue,
+    setImageMetadataCopyFilterValue,
   } = useGlobalStore();
 
   console.log("imageMetadataStore", imageMetadataStore);
 
   const confirmedMicroscopyImagefileNames = confirmedMicroscopyImages.map(
     (imageObj) => imageObj["fileName"]
+  );
+
+  const filteredMicroscopyImageFileNames = confirmedMicroscopyImagefileNames.filter((fileName) =>
+    fileName.toLowerCase().includes(imageMetadataSearchValue.toLowerCase())
+  );
+
+  const filteredMicroscopyImagesToCopyMetadataTo = confirmedMicroscopyImages.filter((imageObj) =>
+    imageObj.filePath.toLowerCase().includes(imageMetadataCopyFilterValue.toLowerCase())
   );
 
   return (
@@ -59,9 +82,44 @@ const MicroscopyImageMetadataFormPage = () => {
       ]}
     >
       {copyImageMetadataModeActive ? (
-        <Button onClick={() => setCopyImageMetadataModeActive(!copyImageMetadataModeActive)}>
-          Back to main form
-        </Button>
+        <Stack>
+          <Button onClick={() => setCopyImageMetadataModeActive(!copyImageMetadataModeActive)}>
+            Back to main form
+          </Button>
+          <TextInput
+            label="Image copy filter"
+            placeholder="Enter a search term to filter images to copy metadata to"
+            value={imageMetadataCopyFilterValue}
+            onChange={(event) => setImageMetadataCopyFilterValue(event.target.value)}
+          />
+          <ScrollArea height={300}>
+            <Table miw={800} verticalSpacing="sm">
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>
+                    <Checkbox />
+                  </Table.Th>
+                  <Table.Th>File name</Table.Th>
+                  <Table.Th>File path</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {filteredMicroscopyImagesToCopyMetadataTo.map((imageObj) => {
+                  console.log("imageObj", imageObj);
+                  return (
+                    <Table.Tr key={imageObj.filePath}>
+                      <Table.Td>
+                        <Checkbox />
+                      </Table.Td>
+                      <Table.Td>{imageObj.fileName}</Table.Td>{" "}
+                      <Table.Td>{imageObj.filePath}</Table.Td>
+                    </Table.Tr>
+                  );
+                })}
+              </Table.Tbody>
+            </Table>
+          </ScrollArea>
+        </Stack>
       ) : (
         <Grid gutter="xl">
           <Grid.Col span={5}>
@@ -74,10 +132,10 @@ const MicroscopyImageMetadataFormPage = () => {
                 rightSectionWidth={165}
                 mb="md"
               />
-              {confirmedMicroscopyImagefileNames.map((fileName) => {
+              {filteredMicroscopyImageFileNames.map((fileName) => {
                 return (
                   <Button
-                    variant={fileName === "sub-a-img-1.tif" ? "filled" : "subtle"}
+                    variant="subtle"
                     key={fileName}
                     justify="space-between"
                     size="compact-sm"
