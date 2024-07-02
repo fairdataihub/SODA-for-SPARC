@@ -1,7 +1,5 @@
 import useGlobalStore from "../../../stores/globalStore";
-
 import { useState } from "react";
-
 import {
   designateImageAsMicroscopyImage,
   undesignateImageAsMicroscopyImage,
@@ -17,28 +15,14 @@ import {
   ScrollArea,
   Table,
   Checkbox,
+  Center,
+  Title,
 } from "@mantine/core";
+import { IconSearch } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
+import NavigationButton from "../../buttons/Navigation";
 import { IconCheck, IconDots } from "@tabler/icons-react";
 import styles from "./MicroscopyImageMetadataFormPage.module.css";
-import GuidedModeSection from "../../containers/GuidedModeSection";
-import ExternalLink from "../../buttons/ExternalLink";
-import DropDownNote from "../../utils/ui/DropDownNote";
-import { all } from "axios";
-
-const stringContainsAnEvenNumber = (str) => {
-  // Regular expression to match any even digit (0, 2, 4, 6, 8)
-  const evenDigitRegex = /[02468]/;
-  // Loop through each character
-  for (let char of str) {
-    // Check if the character matches the even digit regex
-    if (evenDigitRegex.test(char)) {
-      return true; // Even number found, return true
-    }
-  }
-  // No even numbers found, return false
-  return false;
-};
 
 const MicroscopyImageMetadataFormPage = () => {
   // Get the required zustand store state variables
@@ -59,19 +43,17 @@ const MicroscopyImageMetadataFormPage = () => {
     setImageMetadataCopyFilterValue,
   } = useGlobalStore();
 
-  console.log("imageMetadataStore", imageMetadataStore);
-
   const confirmedMicroscopyImagefileNames = confirmedMicroscopyImages.map(
     (imageObj) => imageObj["fileName"]
   );
-
   const filteredMicroscopyImageFileNames = confirmedMicroscopyImagefileNames.filter((fileName) =>
     fileName.toLowerCase().includes(imageMetadataSearchValue.toLowerCase())
   );
-
   const filteredMicroscopyImagesToCopyMetadataTo = confirmedMicroscopyImages.filter((imageObj) =>
     imageObj.filePath.toLowerCase().includes(imageMetadataCopyFilterValue.toLowerCase())
   );
+  const allFilteredImagesSelected =
+    filteredMicroscopyImagesToCopyMetadataTo.length === confirmedMicroscopyImages.length;
 
   return (
     <GuidedModePage
@@ -83,9 +65,15 @@ const MicroscopyImageMetadataFormPage = () => {
     >
       {copyImageMetadataModeActive ? (
         <Stack>
-          <Button onClick={() => setCopyImageMetadataModeActive(!copyImageMetadataModeActive)}>
-            Back to main form
-          </Button>
+          <NavigationButton
+            buttonText="Back to main form"
+            navIcon="left-arrow"
+            buttonOnClick={() => setCopyImageMetadataModeActive(!copyImageMetadataModeActive)}
+          />
+
+          <Center>
+            <Title order={2}>Select the Images to copy metadata to</Title>
+          </Center>
           <TextInput
             label="Image copy filter"
             placeholder="Enter a search term to filter images to copy metadata to"
@@ -97,7 +85,18 @@ const MicroscopyImageMetadataFormPage = () => {
               <Table.Thead>
                 <Table.Tr>
                   <Table.Th>
-                    <Checkbox />
+                    {allFilteredImagesSelected ? (
+                      <Button
+                        className={styles.toggleButton}
+                        onClick={() => toggleAllImages(false)}
+                      >
+                        Deselect all
+                      </Button>
+                    ) : (
+                      <Button className={styles.toggleButton} onClick={() => toggleAllImages(true)}>
+                        Select all
+                      </Button>
+                    )}
                   </Table.Th>
                   <Table.Th>File name</Table.Th>
                   <Table.Th>File path</Table.Th>
@@ -111,7 +110,7 @@ const MicroscopyImageMetadataFormPage = () => {
                       <Table.Td>
                         <Checkbox />
                       </Table.Td>
-                      <Table.Td>{imageObj.fileName}</Table.Td>{" "}
+                      <Table.Td>{imageObj.fileName}</Table.Td>
                       <Table.Td>{imageObj.filePath}</Table.Td>
                     </Table.Tr>
                   );
@@ -123,35 +122,41 @@ const MicroscopyImageMetadataFormPage = () => {
       ) : (
         <Grid gutter="xl">
           <Grid.Col span={5}>
-            <Stack gap="0px" p="4px" className={styles.scrollableStack}>
+            <Stack className={styles.imageSidebar}>
               <TextInput
                 label="Image Search Filter"
                 placeholder="Enter a search term to filter images"
                 value={imageMetadataSearchValue}
                 onChange={(event) => setImageMetadataSearchValue(event.target.value)}
-                rightSectionWidth={165}
                 mb="md"
+                rightSection={<IconSearch size={20} />}
               />
-              {filteredMicroscopyImageFileNames.map((fileName) => {
-                return (
-                  <Button
-                    variant="subtle"
-                    key={fileName}
-                    justify="space-between"
-                    size="compact-sm"
-                    rightSection={
-                      imageHasRequiredMetadata(fileName) ? (
-                        <IconCheck />
-                      ) : (
-                        <IconDots color="orange" />
-                      )
-                    }
-                    onClick={() => setSelectedImageFileName(fileName)}
-                  >
-                    <Text size="sm">{fileName}</Text>
-                  </Button>
-                );
-              })}
+              <ScrollArea h={300}>
+                <Stack gap="2px">
+                  {filteredMicroscopyImageFileNames.length > 0 ? (
+                    filteredMicroscopyImageFileNames.map((fileName) => {
+                      return (
+                        <Button
+                          variant="subtle"
+                          key={fileName}
+                          justify="space-between"
+                          size="compact-sm"
+                          rightSection={
+                            imageHasRequiredMetadata(fileName) ? <IconCheck /> : <IconDots />
+                          }
+                          onClick={() => setSelectedImageFileName(fileName)}
+                        >
+                          <Text size="sm">{fileName}</Text>
+                        </Button>
+                      );
+                    })
+                  ) : (
+                    <Center>
+                      <Text>No microscopy images match the search.</Text>
+                    </Center>
+                  )}
+                </Stack>
+              </ScrollArea>
             </Stack>
           </Grid.Col>
           <Grid.Col span={7}>

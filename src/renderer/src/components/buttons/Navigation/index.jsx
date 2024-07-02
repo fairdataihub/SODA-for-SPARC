@@ -10,6 +10,7 @@ const NavigationButton = ({
   buttonSize,
   buttonColor,
   buttonCustomWidth,
+  buttonOnClick,
 }) => {
   const { hovered, ref } = useHover();
   return (
@@ -20,6 +21,7 @@ const NavigationButton = ({
       size={buttonSize}
       ref={ref}
       style={{ width: buttonCustomWidth }}
+      onClick={buttonOnClick}
     >
       <Group>
         {navIcon === "save" && <IconDeviceFloppy />}
