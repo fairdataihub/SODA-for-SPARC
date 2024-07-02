@@ -49,11 +49,10 @@ window.transitionToAdvancedFeature = (event) => {
     // Reveal the start over button
     document.getElementById("advanced-start-over-button").classList.remove("hidden");
   }
-  if(button_id === "compare_local_remote_btn") {
+  if (button_id === "compare_local_remote_btn") {
     document.getElementById("compare-local-remote-feature").classList.remove("hidden");
     document.getElementById("compare-local-remote-feature").classList.add("is-shown");
     document.getElementById("advanced-start-over-button").classList.remove("hidden");
-    
   }
 };
 
