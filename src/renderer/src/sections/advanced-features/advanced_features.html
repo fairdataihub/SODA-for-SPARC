@@ -190,10 +190,10 @@
         </button>
         <button
         class="content-button"
-        id="create_manifest_btn"
+        id="compare_local_remote_btn"
         data-original-title=""
         title=""
-        data-tippy-content="Prepare manifest files for all high-level folders"
+        data-tippy-content="Compare a local and remote dataset for differences."
         rel="popover"
         data-trigger="hover"
         data-tippy-placement="bottom"
@@ -1220,6 +1220,316 @@
                     <h2>I want to validate a Pennsieve dataset</h2>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question validate_dataset"
+          id="validate_dataset-question-2"
+          style="height: auto"
+        >
+          <div class="ui form">
+            <!--Validating a local dataset-->
+            <div
+              class="grouped fields"
+              id="validate_dataset-question-1-local-container"
+              style="margin-bottom: -2rem"
+            >
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Where is the local dataset located?</label
+              >
+              <div class="field" style="margin: 15px auto; display: flex; justify-content: center">
+                <input
+                  class="form-control"
+                  style="width: 450px !important"
+                  id="validate-local-dataset-path"
+                  type="text"
+                  readonly=""
+                  placeholder="Browse here"
+                />
+              </div>
+
+              <div class="field" style="margin: 15px auto; display: flex; justify-content: center">
+                <button
+                  style="width: 120px; display: none"
+                  class="btn_animated"
+                  id="validator-confirm-local-dataset-btn"
+                  data-next="validate_dataset-question-3"
+                  data-current="validate_dataset-question-2"
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+
+            <!--Selecting a Pennsieve dataset-->
+            <!--Shown when user transitions to this question by clicking the Pennsieve dataset radio card-->
+            <div class="grouped fields" id="pennsieve-question-2-container">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Which Pennsieve dataset would you like to validate?
+              </label>
+              <div class="field prepare-metadata-card-field">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                  "
+                >
+                  <div style="display: flex; flex-direction: row; justify-content: space-between">
+                    <div class="card-container prepare-validation prepare-metadata">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="text-align: left; padding-right: 5px">
+                          Current account:
+                        </h5>
+                        <div class="change-current-account">
+                          <h5
+                            class="card-right bf-account-span prepare-metadata-current-account-span"
+                          >
+                            SODA-Pennsieve
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            ></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: row; margin-bottom: 15px">
+                    <div class="card-container prepare-validation prepare-metadata">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="padding-right: 5px">Current workspace:</h5>
+                        <div
+                          class="change-current-account ds-dd organization"
+                          style="margin-left: 12px"
+                        >
+                          <h5
+                            class="card-right bf-organization-span prepare-metadata-organization-span"
+                          >
+                            None
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account organization bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div
+                        class="ui active green inline loader small organization-loader"
+                        style="display: none"
+                      ></div>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: row; justify-content: space-between">
+                    <div class="card-container prepare-validation prepare-metadata">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="text-align: left; padding-right: 5px">
+                          Current dataset:
+                        </h5>
+                        <div
+                          class="change-current-account"
+                          id="select-dataset-container--validator"
+                        >
+                          <h5
+                            id="bf_dataset_load_validator"
+                            class="card-right bf-dataset-span prepare-metadata-dataset-span"
+                          >
+                            None
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account dataset bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            ></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="ui active green inline loader small" style="display: none"></div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin-top: 30px;
+                  "
+                  id="div-check-bf-import-validator"
+                >
+                  <button
+                    style="width: 120px"
+                    id="confirm-dataset-selection--validator"
+                    data-next="validate_dataset-question-3"
+                    data-current="validate_dataset-question-2"
+                    class="btn_animated"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question validate_dataset"
+          id="validate_dataset-question-3"
+          style="height: auto; margin-bottom: 84px; margin-top: 0"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <div
+                id="div-confirm-validate_dataset"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                  margin: 0 auto;
+                "
+              >
+                <div style="display: flex; justify-content: center">
+                  <button
+                    id="run_validator_btn"
+                    class="btn_animated md"
+                    style="
+                      cursor: pointer;
+                      border-radius: 4px;
+                      margin: 0px auto;
+                      width: 190px;
+                      height: 40px;
+                      border: none !important;
+                      font-size: 15px;
+                      text-align: center;
+                      position: absolute;
+                      padding-left: 17px;
+                      margin-top: 1rem;
+                    "
+                    data-next="validate_dataset-question-4"
+                  >
+                    Validate Dataset
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question validate_dataset"
+          id="validate_dataset-question-4"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <div
+                id="validation-errors-container"
+                style="
+                  visibility: hidden;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                "
+              >
+                <label style="font-size: 17px; color: var(--color-bg-plum)">
+                  Validation Errors
+                </label>
+                <div
+                  style="border-radius: 0.5rem; margin-top: 10px; width: 550px; align-self: center"
+                >
+                  <p class="tip-content">
+                    The path column indicates where the errors occurred in your dataset. The message
+                    column provides an explanation of what the errors are. For updated validation
+                    results you can re-run validation. You can view your raw validation report by
+                    clicking <button class="validate-raw-report_btn">here</button>.
+                  </p>
+                </div>
+
+                <table class="ui celled padded table">
+                  <thead>
+                    <tr>
+                      <th>Path</th>
+                      <th>Message</th>
+                      <!-- <th>Fix Here</th> -->
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    id="compare-local-remote-feature"
+    class="advanced-section hidden"
+    style="width: 100%; display: flex; flex-direction: column; height: calc(100% - 5rem)"
+  >
+    <div class="main-tabs show" style="display: flex; overflow-y: hidden">
+      <header class="section-header">
+        <div class="container-tab-information-header" style="width: 97%; margin-left: 0">
+          <div class="need-help-div" style="margin-top: 0.6rem">
+            <h2>Compare Local and Remote Dataset</h2>
+            <a
+              target="_blank"
+              href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/validate-your-dataset"
+              >Need help?</a
+            >
+          </div>
+        </div>
+      </header>
+
+      <div id="compare_local_remote_dataset-tab" style="overflow-y: auto">
+        <div
+          class="individual-question compare_local_remote_dataset show"
+          id="validate_dataset-question-1"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <div class="about-container">
+                <label class="about-title" style="color: var(--color-bg-plum) !important"
+                  >About</label
+                >
+                <p class="about-text">
+                  This tool compare your local dataset with a dataset you have uploaded on to Pennsieve and show you the differences between the two datasets that exist, if any.
+                </p>
               </div>
             </div>
           </div>
