@@ -13,6 +13,8 @@ import {
   Box,
   Flex,
   Affix,
+  Title,
+  Center,
 } from "@mantine/core";
 import {
   IconCheck,
@@ -31,6 +33,7 @@ import {
 } from "../../../stores/slices/microscopyImageSlice";
 import useGlobalStore from "../../../stores/globalStore";
 import styles from "./MicroscopyImageConfirmationPage.module.css";
+import GuidedModeSection from "../../containers/GuidedModeSection";
 
 const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
@@ -83,123 +86,125 @@ const MicroscopyImageConfirmationPage = () => {
         "The selected images will be converted with MicroFile+ and processed to ensure they are SDS compliant.",
       ]}
     >
-      <Flex align="flex-end" gap="md">
-        <Stack spacing="xl" align="flex-start">
-          {!filteredImages.every((image) => confirmedImagePaths.has(image.filePath)) && (
-            <Button variant="light" color="cyan" w="275px" onClick={selectAllImagesAsMicroscopy}>
-              Select {confirmMicroscopySearchInput === "" ? "all" : "filtered"} as microscopy
-            </Button>
-          )}
-          {!filteredImages.every((image) => deniedImagePaths.has(image.filePath)) && (
-            <Button
-              variant="light"
-              color="orange"
-              w="275px"
-              onClick={unselectAllImagesAsMicroscopy}
-            >
-              Unselect {confirmMicroscopySearchInput === "" ? "all" : "filtered"} as microscopy
-            </Button>
-          )}
-        </Stack>
+      <GuidedModeSection bordered={true}>
+        <Flex align="flex-end" gap="md">
+          <Stack spacing="xl" align="flex-start">
+            {!filteredImages.every((image) => confirmedImagePaths.has(image.filePath)) && (
+              <Button variant="light" color="cyan" w="275px" onClick={selectAllImagesAsMicroscopy}>
+                Select {confirmMicroscopySearchInput === "" ? "all" : "filtered"} as microscopy
+              </Button>
+            )}
+            {!filteredImages.every((image) => deniedImagePaths.has(image.filePath)) && (
+              <Button
+                variant="light"
+                color="orange"
+                w="275px"
+                onClick={unselectAllImagesAsMicroscopy}
+              >
+                Unselect {confirmMicroscopySearchInput === "" ? "all" : "filtered"} as microscopy
+              </Button>
+            )}
+          </Stack>
 
-        <TextInput
-          label="Image search filter"
-          placeholder="Enter a search filter for example 'sub-01' or '.tiff'"
-          style={{ flexGrow: 1 }}
-          value={confirmMicroscopySearchInput}
-          onChange={(event) => setConfirmMicroscopySearchInput(event.target.value)}
-          rightSection={<IconSearch size={20} />}
-        />
-      </Flex>
-      <Grid>
-        {filteredImages.length !== 0 ? (
-          filteredImages.map((image) => {
-            const imageIsConfirmed = confirmedImagePaths.has(image.filePath);
-            const imageIsDenied = deniedImagePaths.has(image.filePath);
-            return (
-              <Grid.Col span={3} key={image.relativeDatasetStructurePaths.join()}>
-                <Card
-                  className={styles.card}
-                  onClick={() => handleCardClick(image)}
-                  shadow="sm"
-                  p="lg"
-                  radius="md"
-                  withBorder
-                >
-                  <Card.Section>
-                    <AspectRatio>
-                      <Image
-                        src={window.path.join(
-                          guidedThumbnailsPath,
-                          `${image.fileName}_thumbnail.jpg`
+          <TextInput
+            label="Image search filter"
+            placeholder="Enter a search filter for example 'sub-01' or '.tiff'"
+            style={{ flexGrow: 1 }}
+            value={confirmMicroscopySearchInput}
+            onChange={(event) => setConfirmMicroscopySearchInput(event.target.value)}
+            rightSection={<IconSearch size={20} />}
+          />
+        </Flex>
+        <Grid>
+          {filteredImages.length !== 0 ? (
+            filteredImages.map((image) => {
+              const imageIsConfirmed = confirmedImagePaths.has(image.filePath);
+              const imageIsDenied = deniedImagePaths.has(image.filePath);
+              return (
+                <Grid.Col span={3} key={image.relativeDatasetStructurePaths.join()}>
+                  <Card
+                    className={styles.card}
+                    onClick={() => handleCardClick(image)}
+                    shadow="sm"
+                    p="lg"
+                    radius="md"
+                    withBorder
+                  >
+                    <Card.Section>
+                      <AspectRatio>
+                        <Image
+                          src={window.path.join(
+                            guidedThumbnailsPath,
+                            `${image.fileName}_thumbnail.jpg`
+                          )}
+                          alt={`${image.fileName}_thumbnail`}
+                          className={styles.thumbnailImage}
+                          fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
+                          loading="lazy"
+                        />
+                        {imageIsConfirmed && (
+                          <Overlay className={styles.thumbnailOverlay} backgroundOpacity={0}>
+                            <Box className={styles.checkBox}>
+                              <IconSquareCheck size={30} color={"green"} className={styles.check} />
+                            </Box>
+                          </Overlay>
                         )}
-                        alt={`${image.fileName}_thumbnail`}
-                        className={styles.thumbnailImage}
-                        fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
-                        loading="lazy"
-                      />
-                      {imageIsConfirmed && (
-                        <Overlay className={styles.thumbnailOverlay} backgroundOpacity={0}>
-                          <Box className={styles.checkBox}>
-                            <IconSquareCheck size={30} color={"green"} className={styles.check} />
-                          </Box>
-                        </Overlay>
-                      )}
-                      {imageIsDenied && (
-                        <Overlay className={styles.thumbnailOverlay} backgroundOpacity={0}>
-                          <Box className={styles.checkBox}>
-                            <IconSquareX size={30} color={"red"} className={styles.check} />
-                          </Box>
-                        </Overlay>
-                      )}
-                    </AspectRatio>
-                  </Card.Section>
-                  <Card.Section p="6px" h="60px" mb="-3px">
-                    <Tooltip
-                      multiline
-                      label={
-                        <Stack spacing="xs">
-                          <Text>Local file path:</Text>
-                          <Text>{image.filePath}</Text>
-                          <Text>Path in organized dataset structure:</Text>
-                          {image.relativeDatasetStructurePaths.map((path) => (
-                            <Text key={path}>{path}</Text>
-                          ))}
-                        </Stack>
-                      }
-                    >
-                      <Text
-                        weight={500}
-                        size="sm"
-                        style={{
-                          display: "-webkit-box",
-                          WebkitLineClamp: 3,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          wordBreak: "break-all",
-                          textAlign: "center",
-                        }}
+                        {imageIsDenied && (
+                          <Overlay className={styles.thumbnailOverlay} backgroundOpacity={0}>
+                            <Box className={styles.checkBox}>
+                              <IconSquareX size={30} color={"red"} className={styles.check} />
+                            </Box>
+                          </Overlay>
+                        )}
+                      </AspectRatio>
+                    </Card.Section>
+                    <Card.Section p="6px" h="60px" mb="-3px">
+                      <Tooltip
+                        multiline
+                        label={
+                          <Stack spacing="xs">
+                            <Text>Local file path:</Text>
+                            <Text>{image.filePath}</Text>
+                            <Text>Path in organized dataset structure:</Text>
+                            {image.relativeDatasetStructurePaths.map((path) => (
+                              <Text key={path}>{path}</Text>
+                            ))}
+                          </Stack>
+                        }
                       >
-                        {image.fileName}
-                      </Text>
-                    </Tooltip>
-                  </Card.Section>
-                </Card>
-              </Grid.Col>
-            );
-          })
-        ) : (
-          <Grid.Col span={12}>
-            <Text c="dimmed" size="lg" ta="center">
-              No images matching the search criteria
-            </Text>
-            <Text c="dimmed" ta="center">
-              Modify the search input to view more images
-            </Text>
-          </Grid.Col>
-        )}
-      </Grid>
+                        <Text
+                          weight={500}
+                          size="sm"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 3,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            wordBreak: "break-all",
+                            textAlign: "center",
+                          }}
+                        >
+                          {image.fileName}
+                        </Text>
+                      </Tooltip>
+                    </Card.Section>
+                  </Card>
+                </Grid.Col>
+              );
+            })
+          ) : (
+            <Grid.Col span={12}>
+              <Text c="dimmed" size="lg" ta="center">
+                No images matching the search criteria
+              </Text>
+              <Text c="dimmed" ta="center">
+                Modify the search input to view more images
+              </Text>
+            </Grid.Col>
+          )}
+        </Grid>
+      </GuidedModeSection>
     </GuidedModePage>
   );
 };

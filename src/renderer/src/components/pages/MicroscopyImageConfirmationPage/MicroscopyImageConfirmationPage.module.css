@@ -13,14 +13,14 @@
 }
 
 .thumbnailImage {
-  width: 180px !important;
-  height: 180px !important;
+  width: 175px !important;
+  height: 175px !important;
   border-radius: 8px !important;
 }
 
 .thumbnailOverlay {
-  width: 180px !important;
-  height: 180px !important;
+  width: 175px !important;
+  height: 175px !important;
   border-radius: 8px !important;
   display: flex !important;
   align-items: flex-start !important;
