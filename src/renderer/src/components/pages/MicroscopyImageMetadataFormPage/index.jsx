@@ -46,6 +46,15 @@ const MicroscopyImageMetadataFormPage = () => {
   const confirmedMicroscopyImagefileNames = confirmedMicroscopyImages.map(
     (imageObj) => imageObj["fileName"]
   );
+
+  const microscopyImageFileNamesWithoutSelectedImage = confirmedMicroscopyImages.filter(
+    (imageObj) => imageObj.fileName !== selectedImageFileName
+  );
+
+  const filteredCopyToImages = microscopyImageFileNamesWithoutSelectedImage.filter((imageObj) =>
+    imageObj.filePath.toLowerCase().includes(imageMetadataCopyFilterValue.toLowerCase())
+  );
+
   const filteredMicroscopyImageFileNames = confirmedMicroscopyImagefileNames.filter((fileName) =>
     fileName.toLowerCase().includes(imageMetadataSearchValue.toLowerCase())
   );
@@ -66,16 +75,16 @@ const MicroscopyImageMetadataFormPage = () => {
       {copyImageMetadataModeActive ? (
         <Stack>
           <NavigationButton
-            buttonText="Back to main form"
+            buttonText="Cancel metadata copy"
             navIcon="left-arrow"
             buttonOnClick={() => setCopyImageMetadataModeActive(!copyImageMetadataModeActive)}
           />
-
-          <Center>
-            <Title order={2}>Select the Images to copy metadata to</Title>
+          <Center mt="xl">
+            <Title order={2}>
+              Select images to copy metadata from "{selectedImageFileName}" to
+            </Title>
           </Center>
           <TextInput
-            label="Image copy filter"
             placeholder="Enter a search term to filter images to copy metadata to"
             value={imageMetadataCopyFilterValue}
             onChange={(event) => setImageMetadataCopyFilterValue(event.target.value)}
@@ -103,8 +112,7 @@ const MicroscopyImageMetadataFormPage = () => {
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
-                {filteredMicroscopyImagesToCopyMetadataTo.map((imageObj) => {
-                  console.log("imageObj", imageObj);
+                {filteredCopyToImages.map((imageObj) => {
                   return (
                     <Table.Tr key={imageObj.filePath}>
                       <Table.Td>
@@ -118,6 +126,9 @@ const MicroscopyImageMetadataFormPage = () => {
               </Table.Tbody>
             </Table>
           </ScrollArea>
+          <Button color="cyan" onClick={() => copyImageMetadata(selectedImageFileName)}>
+            Copy metadata to selected images
+          </Button>
         </Stack>
       ) : (
         <Grid gutter="xl">
