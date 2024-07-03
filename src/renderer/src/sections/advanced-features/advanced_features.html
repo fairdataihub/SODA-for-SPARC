@@ -1570,7 +1570,7 @@
                   <input
                     class="form-control"
                     style="width: 450px !important"
-                    id="validate-local-dataset-path"
+                    id="compare-local-remote-dataset-local-path"
                     type="text"
                     readonly=""
                     placeholder="Browse here"
@@ -1597,42 +1597,142 @@
         </div>
 
         <div
-          class="individual-question validate_dataset"
+          class="individual-question"
           id="compare-local-remote-dataset-question-2"
           style="height: auto; margin-bottom: 84px; margin-top: 0"
         >
           <div class="ui form" style="width: 450px">
             <div class="grouped fields">
-              <div
-                id="div-confirm-validate_dataset"
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: center;
-                  align-items: center;
-                  margin: 0 auto;
-                "
-              >
-                <div style="display: flex; justify-content: center">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Select a Pennsieve dataset to compare your local dataset against
+              </label>
+              <div class="field prepare-metadata-card-field">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                  "
+                >
+                  <div style="display: flex; flex-direction: row; justify-content: space-between">
+                    <div class="card-container prepare-metadata">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="text-align: left; padding-right: 5px">
+                          Current account:
+                        </h5>
+                        <div class="change-current-account">
+                          <h5
+                            class="card-right bf-account-span prepare-metadata-current-account-span"
+                          >
+                            SODA-Pennsieve
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            ></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: row; margin-bottom: 15px">
+                    <div class="card-container prepare-metadata">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="padding-right: 5px">Current workspace:</h5>
+                        <div
+                          class="change-current-account ds-dd organization"
+                          style="margin-left: 12px"
+                        >
+                          <h5
+                            class="card-right bf-organization-span prepare-metadata-organization-span"
+                          >
+                            None
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account organization bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div
+                        class="ui active green inline loader small organization-loader"
+                        style="display: none"
+                      ></div>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: row; justify-content: space-between">
+                    <div class="card-container prepare-comparison prepare-metadata">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="text-align: left; padding-right: 5px" id="compare-local-remote-dataset-ds-name">
+                          Current dataset:
+                        </h5>
+                        <div
+                          onclick="window.openDropdownPrompt(this, 'dataset')"
+                        >
+                          <h5
+                            id="bf_dataset_load_compare_local_remote"
+                            class="card-right prepare-metadata-dataset-span"
+                          >
+                            None
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account dataset bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            ></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="ui active green inline loader small" style="display: none"></div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin-top: 30px;
+                  "
+                  id="div-compare-local-remote-dataset-ps-ds-confirm"
+                >
                   <button
-                    id="run_validator_btn"
-                    class="btn_animated md"
-                    style="
-                      cursor: pointer;
-                      border-radius: 4px;
-                      margin: 0px auto;
-                      width: 190px;
-                      height: 40px;
-                      border: none !important;
-                      font-size: 15px;
-                      text-align: center;
-                      position: absolute;
-                      padding-left: 17px;
-                      margin-top: 1rem;
-                    "
-                    data-next="validate_dataset-question-4"
+                    style="width: 120px"
+                    id="compare-local-remote-dataset-remote-btn"
+                    data-next="compare-local-remote-dataset-question-3"
+                    data-current="compare-local-reote-dataset-question-2"
+                    class="btn_animated"
                   >
-                    Validate Dataset
+                    Confirm
                   </button>
                 </div>
               </div>
@@ -1642,11 +1742,76 @@
 
         <div
           class="individual-question validate_dataset"
-          id="validate_dataset-question-4"
+          id="compare-local-remote-dataset-question-3"
           style="height: auto"
         >
           <div class="ui form" style="width: 450px">
             <div class="grouped fields">
+
+              <div>
+                <button>Compare Local and Remote Dataset</button>
+              </div>
+
+              <div class="guided--panel mt-0" id="comparing-local-remote-dataset-roller">
+                <div class="lds-roller">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+                Comparing Local and Remote Dataset
+              </div>
+
+              <div id="comparison-results-container" style="display: flex; flex-direction: row;">
+                <div id="comparison-results-only-on-pennsieve-table"  style="flex: 0 0 50%;">
+                  <label style="font-size: 17px; color: var(--color-bg-plum)">
+                    Files that are on Pennsieve and not in your local dataset
+                  </label>
+                  <div
+                    style="border-radius: 0.5rem; margin-top: 10px; align-self: center"
+                  >
+                    <p class="tip-content">
+                      These files are only on Pennsieve and not in your local dataset. You have the option of deleting these files from Pennsieveto make them match your local dataset. You can also 
+                      download the list of files so that you may manually delete them yourself. 
+                    </p>
+                  </div>
+                  <table class="ui celled padded table">
+                    <thead>
+                      <tr>
+                        <th>Path</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+                <div id="comparison-results-only-on-local-table" style="flex: 0 0 50%">
+                  <label style="font-size: 17px; color: var(--color-bg-plum)">
+                    Files that are in your local dataset and not in your Pennsieve dataset
+                  </label>
+                  <div
+                    style="border-radius: 0.5rem; margin-top: 10px; align-self: center"
+                  >
+                    <p class="tip-content">
+                      These files are only found locally and are not in your Pennsieve dataset. You may upload these files to Pennsieve to make them match your Pennsieve dataset. You can also
+                      download a list of the files that are only represented locally to manually upload them to Pennsieve.
+                    </p>
+                  </div>
+                  <table class="ui celled padded table">
+                    <thead>
+                      <tr>
+                        <th>Path</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+
+
               <div
                 id="validation-errors-container"
                 style="
