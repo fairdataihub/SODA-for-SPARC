@@ -260,7 +260,7 @@ const confirm_click_function = () => {
         $(".confirm-button").click();
       }
     } else {
-      console.log("Clicking here?")
+      console.log("Clicking here?");
       $(".confirm-button").click();
     }
   }

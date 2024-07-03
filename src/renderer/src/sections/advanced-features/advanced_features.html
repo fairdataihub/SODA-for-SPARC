@@ -1685,12 +1685,14 @@
                   <div style="display: flex; flex-direction: row; justify-content: space-between">
                     <div class="card-container prepare-comparison prepare-metadata">
                       <div style="width: 100%">
-                        <h5 class="card-left" style="text-align: left; padding-right: 5px" id="compare-local-remote-dataset-ds-name">
+                        <h5
+                          class="card-left"
+                          style="text-align: left; padding-right: 5px"
+                          id="compare-local-remote-dataset-ds-name"
+                        >
                           Current dataset:
                         </h5>
-                        <div
-                          onclick="window.openDropdownPrompt(this, 'dataset')"
-                        >
+                        <div onclick="window.openDropdownPrompt(this, 'dataset')">
                           <h5
                             id="bf_dataset_load_compare_local_remote"
                             class="card-right prepare-metadata-dataset-span"
@@ -1747,7 +1749,6 @@
         >
           <div class="ui form" style="width: 450px">
             <div class="grouped fields">
-
               <div>
                 <button>Compare Local and Remote Dataset</button>
               </div>
@@ -1766,17 +1767,17 @@
                 Comparing Local and Remote Dataset
               </div>
 
-              <div id="comparison-results-container" style="display: flex; flex-direction: row;">
-                <div id="comparison-results-only-on-pennsieve-table"  style="flex: 0 0 50%;">
+              <div id="comparison-results-container" style="display: flex; flex-direction: row">
+                <div id="comparison-results-only-on-pennsieve-table" style="flex: 0 0 50%">
                   <label style="font-size: 17px; color: var(--color-bg-plum)">
                     Files that are on Pennsieve and not in your local dataset
                   </label>
-                  <div
-                    style="border-radius: 0.5rem; margin-top: 10px; align-self: center"
-                  >
+                  <div style="border-radius: 0.5rem; margin-top: 10px; align-self: center">
                     <p class="tip-content">
-                      These files are only on Pennsieve and not in your local dataset. You have the option of deleting these files from Pennsieveto make them match your local dataset. You can also 
-                      download the list of files so that you may manually delete them yourself. 
+                      These files are only on Pennsieve and not in your local dataset. You have the
+                      option of deleting these files from Pennsieveto make them match your local
+                      dataset. You can also download the list of files so that you may manually
+                      delete them yourself.
                     </p>
                   </div>
                   <table class="ui celled padded table">
@@ -1792,12 +1793,12 @@
                   <label style="font-size: 17px; color: var(--color-bg-plum)">
                     Files that are in your local dataset and not in your Pennsieve dataset
                   </label>
-                  <div
-                    style="border-radius: 0.5rem; margin-top: 10px; align-self: center"
-                  >
+                  <div style="border-radius: 0.5rem; margin-top: 10px; align-self: center">
                     <p class="tip-content">
-                      These files are only found locally and are not in your Pennsieve dataset. You may upload these files to Pennsieve to make them match your Pennsieve dataset. You can also
-                      download a list of the files that are only represented locally to manually upload them to Pennsieve.
+                      These files are only found locally and are not in your Pennsieve dataset. You
+                      may upload these files to Pennsieve to make them match your Pennsieve dataset.
+                      You can also download a list of the files that are only represented locally to
+                      manually upload them to Pennsieve.
                     </p>
                   </div>
                   <table class="ui celled padded table">
@@ -1810,7 +1811,6 @@
                   </table>
                 </div>
               </div>
-
 
               <div
                 id="validation-errors-container"
