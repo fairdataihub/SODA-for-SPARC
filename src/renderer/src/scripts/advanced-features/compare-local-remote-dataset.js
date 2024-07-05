@@ -32,45 +32,46 @@ questionTwoDatasetSelectionObserver.observe(
   document.querySelector("#compare-local-remote-dataset-ds-name"),
   {
     childList: true,
+  }
+);
+
+document
+  .querySelector("#compare-local-remote-begin-comparison-btn")
+  .addEventListener("click", async () => {
+    // start the spinner
+    document.querySelector("#comparing-local-remote-dataset-roller").classList.remove("hidden");
+
+    await new Promise((resolve) => setTimeout(resolve, 4000));
+
+    // get results
+    await compareLocalRemoteDataset();
+
+    // hide the spinner
+    document.querySelector("#comparing-local-remote-dataset-roller").classList.add("hidden");
   });
 
-
-
-document.querySelector("#compare-local-remote-begin-comparison-btn").addEventListener("click", async () => {
-
-  // start the spinner 
-  document.querySelector("#comparing-local-remote-dataset-roller").classList.remove("hidden")
-
-  await new Promise((resolve) => setTimeout(resolve, 4000));
-
-  // get results
-  await compareLocalRemoteDataset();
-
-  // hide the spinner
-  document.querySelector("#comparing-local-remote-dataset-roller").classList.add("hidden")
-
-
-
-})
-
-
 const compareLocalRemoteDataset = async () => {
-    const localDatasetPath = document.querySelector("#compare-local-remote-dataset-local-path").value;
-    const remoteDatasetPath = window.defaultBfDatasetId; 
+  const localDatasetPath = document.querySelector("#compare-local-remote-dataset-local-path").value;
+  const remoteDatasetPath = window.defaultBfDatasetId;
 
-    const comparisonResults = await getComparisonResults(localDatasetPath, remoteDatasetPath);
+  const comparisonResults = await getComparisonResults(localDatasetPath, remoteDatasetPath);
 
-    // check if there are any results 
-    if (comparisonResults.onlyLocal.length === 0 && comparisonResults.onlyPennsieve.length === 0) {
-        // no differences 
-        document.querySelector("#compare-local-remote-dataset-no-differences").style.display = "flex";
-        return;
-    }
+  // check if there are any results
+  if (comparisonResults.onlyLocal.length === 0 && comparisonResults.onlyPennsieve.length === 0) {
+    // no differences
+    document.querySelector("#compare-local-remote-dataset-no-differences").style.display = "flex";
+    return;
+  }
 
-    populateFilePaths(document.querySelector("#comparison-results-only-on-pennsieve-table"), comparisonResults.onlyPennsieve);
-    populateFilePaths(document.querySelector("#comparison-results-only-on-local-table"), comparisonResults.onlyLocal);    
-}
-
+  populateFilePaths(
+    document.querySelector("#comparison-results-only-on-pennsieve-table"),
+    comparisonResults.onlyPennsieve
+  );
+  populateFilePaths(
+    document.querySelector("#comparison-results-only-on-local-table"),
+    comparisonResults.onlyLocal
+  );
+};
 
 const populateFilePaths = (targetTableElement, differenceResultsList) => {
   let tableBody = targetTableElement.getElementsByTagName("tbody")[0];
@@ -85,12 +86,11 @@ const populateFilePaths = (targetTableElement, differenceResultsList) => {
   }
 };
 
-
 const getComparisonResults = async () => {
-  // TOOD: Make request to server 
+  // TOOD: Make request to server
 
   return {
-    "onlyLocal": ["file/one", "file/two"],
-    "onlyPennsieve": ["file/three", "file/four"]
-  }
-}
+    onlyLocal: ["file/one", "file/two"],
+    onlyPennsieve: ["file/three", "file/four"],
+  };
+};
