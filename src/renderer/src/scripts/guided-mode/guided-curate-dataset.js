@@ -5546,7 +5546,15 @@ window.openPage = async (targetPageID) => {
       const potentialMicroscopyImages = getImagesInDatasetStructure(
         window.datasetStructureJSONObj["folders"]["primary"]
       );
+
+      const potentialMicroscopyImageFileNames = potentialMicroscopyImages.map(
+        (image) => image["fileName"]
+      );
       const confirmedMicroscopyImages = window.sodaJSONObj["confirmed-microscopy-images"] || [];
+
+      const filteredConfirmedMicroscopyImages = confirmedMicroscopyImages.filter((image) =>
+        potentialMicroscopyImageFileNames.includes(image["fileName"])
+      );
 
       const potentialMicroscopyImageFilePaths = potentialMicroscopyImages.map(
         (image) => image["filePath"]
@@ -5572,7 +5580,7 @@ window.openPage = async (targetPageID) => {
       console.log("confirmedMicroscopyImages:", confirmedMicroscopyImages);
 
       setPotentialMicroscopyImages(potentialMicroscopyImages);
-      setConfirmedMicroscopyImages(confirmedMicroscopyImages);
+      setConfirmedMicroscopyImages(filteredConfirmedMicroscopyImages);
     }
 
     if (targetPageID === "guided-microscopy-image-metadata-form-tab") {
@@ -5580,6 +5588,9 @@ window.openPage = async (targetPageID) => {
       useGlobalStore
         .getState()
         .setImageMetadataJson(window.sodaJSONObj["microscopy-image-metadata"] || {});
+
+      // Revert to the non-copy metadata UI state
+      useGlobalStore.getState().setCopyImageMetadataModeActive(false);
     }
 
     if (targetPageID === "guided-biolucida-image-selection-tab") {

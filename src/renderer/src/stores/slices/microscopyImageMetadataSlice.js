@@ -2,10 +2,10 @@ import useGlobalStore from "../globalStore";
 import { produce } from "immer";
 
 export const microscopyImageMetadataSlice = (set) => ({
-  selectedImageFileName: "sub-a-img-1.tif",
-  setSelectedImageFileName: (selectedImageFileName) => {
+  selectedImageFileObj: null,
+  setSelectedImageFileObj: (fileObject) => {
     set((state) => {
-      state.selectedImageFileName = selectedImageFileName;
+      state.selectedImageFileObj = fileObject;
     });
   },
 
@@ -59,10 +59,10 @@ export const microscopyImageMetadataSlice = (set) => ({
   },
 
   imageMetadataStore: {},
-  setImageMetadata: (imageFileName, imageMetadataKey, imageMetadataValue) => {
+  setImageMetadata: (imageFilePath, imageMetadataKey, imageMetadataValue) => {
     set(
       produce((state) => {
-        state.imageMetadataStore[imageFileName][imageMetadataKey] = imageMetadataValue;
+        state.imageMetadataStore[imageFilePath][imageMetadataKey] = imageMetadataValue;
       })
     );
   },
@@ -127,19 +127,31 @@ export const microscopyImageMetadataSlice = (set) => ({
     set(
       produce((state) => {
         const imageMetadataFieldKeys = state.imageMetadataFields.map((field) => field.key);
-        const confirmedImages = state.confirmedMicroscopyImages.map((image) => image.fileName);
-        for (const fileName of confirmedImages) {
-          if (!imageMetadataJson[fileName]) {
-            imageMetadataJson[fileName] = {};
+        const confirmedImagesFilePaths = state.confirmedMicroscopyImages.map(
+          (image) => image.filePath
+        );
+        console.log("confirmedImagesFilePaths", confirmedImagesFilePaths);
+
+        // Create a new object that only includes the confirmed images
+        const filteredImageMetadataJson = {};
+        for (const key of Object.keys(imageMetadataJson)) {
+          if (confirmedImagesFilePaths.includes(key)) {
+            filteredImageMetadataJson[key] = imageMetadataJson[key];
+          }
+        }
+
+        for (const filePath of confirmedImagesFilePaths) {
+          if (!filteredImageMetadataJson[filePath]) {
+            filteredImageMetadataJson[filePath] = {};
           }
           for (const fieldKey of imageMetadataFieldKeys) {
-            if (imageMetadataJson[fileName][fieldKey] === undefined) {
-              imageMetadataJson[fileName][fieldKey] =
+            if (filteredImageMetadataJson[filePath][fieldKey] === undefined) {
+              filteredImageMetadataJson[filePath][fieldKey] =
                 Math.floor(Math.random() * 5) + 1 > 3 ? "" : Math.floor(Math.random() * 5) + 1;
             }
           }
         }
-        state.imageMetadataStore = imageMetadataJson;
+        state.imageMetadataStore = filteredImageMetadataJson;
       })
     );
   },

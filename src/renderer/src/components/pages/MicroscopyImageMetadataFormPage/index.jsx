@@ -29,8 +29,8 @@ import GuidedModeSection from "../../containers/GuidedModeSection";
 const MicroscopyImageMetadataFormPage = () => {
   // Get the required zustand store state variables
   const {
-    selectedImageFileName,
-    setSelectedImageFileName,
+    selectedImageFileObj,
+    setSelectedImageFileObj,
     confirmedMicroscopyImages,
     copyImageMetadataModeActive,
     setCopyImageMetadataModeActive,
@@ -45,21 +45,18 @@ const MicroscopyImageMetadataFormPage = () => {
     setImageMetadataCopyFilterValue,
   } = useGlobalStore();
 
-  const confirmedMicroscopyImagefileNames = confirmedMicroscopyImages.map(
-    (imageObj) => imageObj["fileName"]
+  const filteredMicroscopyImageObjs = confirmedMicroscopyImages.filter((imageObj) =>
+    imageObj.fileName.toLowerCase().includes(imageMetadataSearchValue.toLowerCase())
   );
 
   const microscopyImageFileNamesWithoutSelectedImage = confirmedMicroscopyImages.filter(
-    (imageObj) => imageObj.fileName !== selectedImageFileName
+    (imageObj) => imageObj.fileName !== selectedImageFileObj?.fileName
   );
 
   const filteredCopyToImages = microscopyImageFileNamesWithoutSelectedImage.filter((imageObj) =>
     imageObj.filePath.toLowerCase().includes(imageMetadataCopyFilterValue.toLowerCase())
   );
 
-  const filteredMicroscopyImageFileNames = confirmedMicroscopyImagefileNames.filter((fileName) =>
-    fileName.toLowerCase().includes(imageMetadataSearchValue.toLowerCase())
-  );
   const filteredMicroscopyImagesToCopyMetadataTo = confirmedMicroscopyImages.filter((imageObj) =>
     imageObj.filePath.toLowerCase().includes(imageMetadataCopyFilterValue.toLowerCase())
   );
@@ -94,7 +91,7 @@ const MicroscopyImageMetadataFormPage = () => {
               onChange={(event) => setImageMetadataCopyFilterValue(event.target.value)}
             />
             <ScrollArea height={300}>
-              <Table miw={800} verticalSpacing="sm">
+              <Table miw={800} verticalSpacing="sm" withTableBorder>
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th>
@@ -149,30 +146,34 @@ const MicroscopyImageMetadataFormPage = () => {
                 />
 
                 <Text fw={700} size="lg">
-                  Micrscopy Images
+                  Microscopy Images
                 </Text>
                 <Divider my="-10px" />
                 <ScrollArea h={300}>
                   <Stack gap="2px">
-                    {filteredMicroscopyImageFileNames.length > 0 ? (
-                      filteredMicroscopyImageFileNames.map((fileName) => {
+                    {filteredMicroscopyImageObjs.length > 0 ? (
+                      filteredMicroscopyImageObjs.map((fileObj) => {
                         return (
                           <Button
                             variant="subtle"
-                            key={fileName}
+                            key={fileObj.path}
                             justify="flex-start"
                             size="compact-sm"
                             className={
-                              fileName === selectedImageFileName
+                              fileObj.filePath === selectedImageFileObj?.filePath
                                 ? styles.selectedImageInSidebar
                                 : ""
                             }
                             leftSection={
-                              imageHasRequiredMetadata(fileName) ? <IconCheck /> : <IconDots />
+                              imageHasRequiredMetadata(fileObj.filePath) ? (
+                                <IconCheck />
+                              ) : (
+                                <IconDots />
+                              )
                             }
-                            onClick={() => setSelectedImageFileName(fileName)}
+                            onClick={() => setSelectedImageFileObj(fileObj)}
                           >
-                            <Text size="sm">{fileName}</Text>
+                            <Text size="sm">{fileObj.fileName}</Text>
                           </Button>
                         );
                       })
@@ -189,7 +190,7 @@ const MicroscopyImageMetadataFormPage = () => {
               <Stack gap="md">
                 <Group>
                   <Text>
-                    <b>Image name:</b> {selectedImageFileName}
+                    <b>Image name:</b> {selectedImageFileObj?.fileName}
                   </Text>
                   <Button
                     variant="light"
@@ -206,9 +207,15 @@ const MicroscopyImageMetadataFormPage = () => {
                       key={field.key}
                       label={field.label}
                       placeholder={`Enter the image's ${field.label}`}
-                      value={imageMetadataStore?.[selectedImageFileName]?.[field.key] || ""}
+                      value={
+                        imageMetadataStore?.[selectedImageFileObj?.filePath]?.[field.key] || ""
+                      }
                       onChange={(event) =>
-                        setImageMetadata(selectedImageFileName, field.key, event.target.value)
+                        setImageMetadata(
+                          selectedImageFileObj?.filePath,
+                          field.key,
+                          event.target.value
+                        )
                       }
                     />
                   );
