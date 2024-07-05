@@ -5,6 +5,7 @@ import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 import DropdownSelect from "../common/DropdownSelect";
 import GenericButton from "../buttons/Generic";
+import SingleColumnTable from "../tables/singleColumn";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
@@ -87,6 +88,22 @@ const componentRenderActions = {
       </SodaComponentWrapper>
     );
   },
+  "single-column-table": (componentSlot) => {
+    const columnName = componentSlot.getAttribute("data-column-name")
+    const rowDataString = componentSlot.getAttribute("data-row-data")
+
+    // convert rowData to array based off comma separation
+    const rowDataList = rowDataString.split(",")
+
+    // Create a React root and render the component
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper>
+        <SingleColumnTable columnName={columnName} rowData={rowDataList} />
+      </SodaComponentWrapper>
+    );
+  
+  }
 };
 
 // Get all DOM nodes with the data attribute "data-component-type"
