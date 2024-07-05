@@ -89,11 +89,11 @@ const componentRenderActions = {
     );
   },
   "single-column-table": (componentSlot) => {
-    const columnName = componentSlot.getAttribute("data-column-name")
-    const rowDataString = componentSlot.getAttribute("data-row-data")
+    const columnName = componentSlot.getAttribute("data-column-name");
+    const rowDataString = componentSlot.getAttribute("data-row-data");
 
     // convert rowData to array based off comma separation
-    const rowDataList = rowDataString.split(",")
+    const rowDataList = rowDataString.split(",");
 
     // Create a React root and render the component
     const root = createRoot(componentSlot);
@@ -102,8 +102,7 @@ const componentRenderActions = {
         <SingleColumnTable columnName={columnName} rowData={rowDataList} />
       </SodaComponentWrapper>
     );
-  
-  }
+  },
 };
 
 // Get all DOM nodes with the data attribute "data-component-type"
