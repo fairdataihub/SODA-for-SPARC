@@ -66,34 +66,14 @@ const compareLocalRemoteDataset = async () => {
     return;
   }
 
-  addRows(comparisonResults.onlyLocal);
-
-  populateFilePaths(
-    document.querySelector("#comparison-results-only-on-pennsieve-table"),
-    comparisonResults.onlyPennsieve
-  );
-  populateFilePaths(
-    document.querySelector("#comparison-results-only-on-local-table"),
-    comparisonResults.onlyLocal
-  );
+  addRows("comparison-results-only-on-pennsieve-table", comparisonResults.onlyPennsieve);
+  addRows("comparison-results-only-on-local-table", comparisonResults.onlyLocal);
 };
 
-const populateFilePaths = (targetTableElement, differenceResultsList) => {
-  let tableBody = targetTableElement.getElementsByTagName("tbody")[0];
-  for (const filePath of differenceResultsList) {
-    let row = tableBody.insertRow(-1);
-    let cell = row.insertCell(0);
-    let newText = document.createTextNode(filePath);
-    // left align the text in the cell
-    cell.style.textAlign = "left";
-    cell.style.color = "black";
-    cell.appendChild(newText);
-  }
-};
+
 
 const getComparisonResults = async () => {
   // TOOD: Make request to server
-
   return {
     onlyLocal: ["file/one", "file/two"],
     onlyPennsieve: ["file/three", "file/four"],

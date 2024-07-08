@@ -90,16 +90,13 @@ const componentRenderActions = {
   },
   "single-column-table": (componentSlot) => {
     const columnName = componentSlot.getAttribute("data-column-name");
-    const rowDataString = componentSlot.getAttribute("data-row-data");
-
-    // convert rowData to array based off comma separation
-    const rowDataList = rowDataString.split(",");
+    const id = componentSlot.id; 
 
     // Create a React root and render the component
     const root = createRoot(componentSlot);
     root.render(
       <SodaComponentWrapper>
-        <SingleColumnTable columnName={columnName}  />
+        <SingleColumnTable id={id} columnName={columnName}  />
       </SodaComponentWrapper>
     );
   },
