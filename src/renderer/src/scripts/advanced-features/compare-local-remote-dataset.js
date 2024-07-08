@@ -3,7 +3,7 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-import api from "../others/api/api"
+import api from "../others/api/api";
 import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
 
 document.querySelector("#compare-local-remote-dataset-local-path").addEventListener("click", () => {
@@ -60,7 +60,10 @@ const compareLocalRemoteDataset = async () => {
   const comparisonResults = await getComparisonResults(localDatasetPath, remoteDatasetPath);
 
   // check if there are any results
-  if (comparisonResults.files_only_on_local.length === 0 && comparisonResults.files_only_on_pennsieve.length === 0) {
+  if (
+    comparisonResults.files_only_on_local.length === 0 &&
+    comparisonResults.files_only_on_pennsieve.length === 0
+  ) {
     // no differences
     document.querySelector("#compare-local-remote-dataset-no-differences").style.display = "flex";
     return;
@@ -71,6 +74,9 @@ const compareLocalRemoteDataset = async () => {
 };
 
 const getComparisonResults = async (localDatasetPath, remoteDatasetPath) => {
-  let comparisonReults = await api.getLocalRemoteComparisonResults(remoteDatasetPath, localDatasetPath);
-  return comparisonReults
+  let comparisonReults = await api.getLocalRemoteComparisonResults(
+    remoteDatasetPath,
+    localDatasetPath
+  );
+  return comparisonReults;
 };

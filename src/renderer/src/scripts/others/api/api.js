@@ -540,8 +540,7 @@ const getLocalRemoteComparisonResults = async (datasetId, localDatasetPath) => {
     `/datasets/${datasetId}/comparison_results?local_dataset_path=${localDatasetPath}`
   );
   return response.data;
-
-}
+};
 
 const api = {
   getUserInformation,
@@ -578,7 +577,7 @@ const api = {
   checkDatasetNameExists,
   getPennsieveUploadManifests,
   getPennsieveUploadManifestFiles,
-  getLocalRemoteComparisonResults
+  getLocalRemoteComparisonResults,
 };
 
 export default api;
