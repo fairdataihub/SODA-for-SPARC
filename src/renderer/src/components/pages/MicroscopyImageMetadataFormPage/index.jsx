@@ -80,15 +80,16 @@ const MicroscopyImageMetadataFormPage = () => {
               navIcon="left-arrow"
               buttonOnClick={() => setCopyImageMetadataModeActive(!copyImageMetadataModeActive)}
             />
-            <Center mt="xl">
+            <Center mt="md">
               <Title order={2}>
-                Select images to copy metadata from "{selectedImageFileName}" to
+                Select images to copy metadata from "{selectedImageFileObj["fileName"]}" to
               </Title>
             </Center>
             <TextInput
               placeholder="Filter images using a file name or file path"
               value={imageMetadataCopyFilterValue}
               onChange={(event) => setImageMetadataCopyFilterValue(event.target.value)}
+              rightSection={<IconSearch size={20} />}
             />
             <ScrollArea height={300}>
               <Table miw={800} verticalSpacing="sm" withTableBorder>
@@ -130,7 +131,10 @@ const MicroscopyImageMetadataFormPage = () => {
                 </Table.Tbody>
               </Table>
             </ScrollArea>
-            <Button color="cyan" onClick={() => copyImageMetadata(selectedImageFileName)}>
+            <Button
+              color="cyan"
+              onClick={() => copyImageMetadata(selectedImageFileObj["fileName"])}
+            >
               Copy metadata to selected images
             </Button>
           </Stack>

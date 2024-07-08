@@ -97,7 +97,7 @@ const MicroscopyImageConfirmationPage = () => {
             {!filteredImages.every((image) => deniedImagePaths.has(image.filePath)) && (
               <Button
                 variant="light"
-                color="orange"
+                color="indigo"
                 w="275px"
                 onClick={unselectAllImagesAsMicroscopy}
               >
@@ -129,6 +129,9 @@ const MicroscopyImageConfirmationPage = () => {
                     p="lg"
                     radius="md"
                     withBorder
+                    style={{
+                      opacity: imageIsDenied ? 0.5 : 1,
+                    }}
                   >
                     <Card.Section>
                       <AspectRatio>

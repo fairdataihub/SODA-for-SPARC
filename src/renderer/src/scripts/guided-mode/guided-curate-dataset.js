@@ -3557,6 +3557,9 @@ const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
   window.fs.emptyDirSync(window.guidedManifestFilePath);
 
   const guidedManifestData = window.sodaJSONObj["guided-manifest-files"];
+
+  console.log("Guided manifest data: ", guidedManifestData);
+
   for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
     //
     let manifestJSON = window.processManifestInfo(
