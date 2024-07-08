@@ -901,6 +901,7 @@ def generate_dataset_locally(soda_json_structure):
     list_copy_files = []
     list_move_files = []
     dataset_structure = soda_json_structure["dataset-structure"]
+    namespace_logger.info(f"dataset_structure: {dataset_structure['folders']['primary']['files']}")
     for folder_key, folder in dataset_structure["folders"].items():
         folderpath = join(datasetpath, folder_key)
         mkdir(folderpath)
@@ -908,6 +909,10 @@ def generate_dataset_locally(soda_json_structure):
             folder, folderpath, list_copy_files, list_move_files
         )
 
+    namespace_logger.info("Primary folder manifest file exists: ", isfile(join(datasetpath, "primary", "manifest.xlsx")))
+    # Open the manifest file for the primary folder
+    if isfile(join(datasetpath, "primary", "manifest.xlsx")):
+        open_file(join(datasetpath, "primary", "manifest.xlsx"))
 
     # 3. Add high-level metadata files in the list
     if "metadata-files" in soda_json_structure.keys():
@@ -3504,8 +3509,10 @@ def main_curate_function(soda_json_structure, resume):
     main_curate_progress_message = "Generating dataset"
     try:
         if (soda_json_structure["generate-dataset"]["destination"] == "local"):
+            namespace_logger.info("main_curate_function generating locally")
             generate_dataset(soda_json_structure, resume, ps=None)
         else:
+            namespace_logger.info("main_curate_function generating on Pennsieve")
             accountname = soda_json_structure["bf-account-selected"]["account-name"]
             ps = connect_pennsieve_client(accountname)
             generate_dataset(soda_json_structure, resume, ps)
