@@ -234,41 +234,14 @@ def run_comparison(dataset_id, local_dataset_path):
     else:
         print("No empty local folders on Pennsieve")
 
+    return { 
+        "folders_only_on_local": folders_in_local_dataset_but_not_on_pennsieve, 
+        "files_only_on_pennsieve": file_on_pennsieve_but_not_in_local_dataset,
+        "folders_only_on_pennsieve": folder_on_pennsieve_but_not_in_local_dataset, 
+        "empty_local_folders_on_pennsieve": empty_local_folders_on_pennsieve, 
+        "zero_kb_files_in_local_dataset_but_not_on_pennsieve": zero_kb_files_in_local_dataset_but_not_on_pennsieve
+        }
 
 
-    headers = ["Mismatch description", "Folder/file path"]
-    with open("source-mismatch-logs.csv", mode="w", newline="") as csv_file:
-        writer = csv.writer(csv_file)
-        writer.writerow(headers)
 
-        # Write the logs to the CSV file
-        logs = [
-            (
-                "Folder in local dataset but not on Pennsieve",
-                folders_in_local_dataset_but_not_on_pennsieve,
-            ),
-            (
-                "File in local dataset but not on Pennsieve",
-                files_in_local_dataset_but_not_on_pennsieve,
-            ),
-            (
-                "Folder on Pennsieve but not in local dataset",
-                folder_on_pennsieve_but_not_in_local_dataset,
-            ),
-            (
-                "File on Pennsieve but not in local dataset",
-                file_on_pennsieve_but_not_in_local_dataset,
-            ),
-            (
-                "0kb file in local dataset but not on Pennsieve",
-                zero_kb_files_in_local_dataset_but_not_on_pennsieve,
-            ),
-            (
-                "Empty local folder uploaded to Pennsieve",
-                empty_local_folders_on_pennsieve,
-            ),
-        ]
 
-        for log_type, log_data in logs:
-            for item in log_data:
-                writer.writerow([log_type, item])
