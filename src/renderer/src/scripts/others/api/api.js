@@ -535,6 +535,14 @@ const getPennsieveUploadManifestFiles = async (uploadManifestId, limit, continua
   return response.data;
 };
 
+const getLocalRemoteComparisonResults = async (datasetId, localDatasetPath) => {
+  const response = await client.get(
+    `/datasets/${datasetId}/comparison_results?local_dataset_path=${localDatasetPath}`
+  );
+  return response.data;
+
+}
+
 const api = {
   getUserInformation,
   getDataset,
@@ -570,6 +578,7 @@ const api = {
   checkDatasetNameExists,
   getPennsieveUploadManifests,
   getPennsieveUploadManifestFiles,
+  getLocalRemoteComparisonResults
 };
 
 export default api;

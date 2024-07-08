@@ -3,7 +3,7 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-import useGlobalStore from "../../stores/globalStore";
+import api from "../others/api/api"
 import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
 
 document.querySelector("#compare-local-remote-dataset-local-path").addEventListener("click", () => {
@@ -60,20 +60,17 @@ const compareLocalRemoteDataset = async () => {
   const comparisonResults = await getComparisonResults(localDatasetPath, remoteDatasetPath);
 
   // check if there are any results
-  if (comparisonResults.onlyLocal.length === 0 && comparisonResults.onlyPennsieve.length === 0) {
+  if (comparisonResults.files_only_on_local.length === 0 && comparisonResults.files_only_on_pennsieve.length === 0) {
     // no differences
     document.querySelector("#compare-local-remote-dataset-no-differences").style.display = "flex";
     return;
   }
 
-  addRows("comparison-results-only-on-pennsieve-table", comparisonResults.onlyPennsieve);
-  addRows("comparison-results-only-on-local-table", comparisonResults.onlyLocal);
+  addRows("comparison-results-only-on-pennsieve-table", comparisonResults.files_only_on_pennsieve);
+  addRows("comparison-results-only-on-local-table", comparisonResults.files_only_on_local);
 };
 
-const getComparisonResults = async () => {
-  // TOOD: Make request to server
-  return {
-    onlyLocal: ["file/one", "file/two"],
-    onlyPennsieve: ["file/three", "file/four"],
-  };
+const getComparisonResults = async (localDatasetPath, remoteDatasetPath) => {
+  let comparisonReults = await api.getLocalRemoteComparisonResults(remoteDatasetPath, localDatasetPath);
+  return comparisonReults
 };
