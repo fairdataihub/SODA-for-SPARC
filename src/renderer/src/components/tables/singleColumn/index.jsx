@@ -1,6 +1,8 @@
 import { Table } from "@mantine/core";
+import useGlobalStore from "../../../stores/globalStore";
 
-const SingleColumnTable = ({ columnName, rowData }) => {
+const SingleColumnTable = ({ columnName }) => {
+  const rowData = useGlobalStore((state) => state.tableRows)
   const rows = rowData.map((row, index) => {
     return (
       <Table.Tr key={index}>

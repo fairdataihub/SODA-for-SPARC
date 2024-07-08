@@ -3,6 +3,9 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
+import useGlobalStore from "../../stores/globalStore";
+import {addRows, removeRows} from "../../stores/slices/tableRowSlice";
+
 document.querySelector("#compare-local-remote-dataset-local-path").addEventListener("click", () => {
   console.log("Clicked");
 
@@ -62,6 +65,8 @@ const compareLocalRemoteDataset = async () => {
     document.querySelector("#compare-local-remote-dataset-no-differences").style.display = "flex";
     return;
   }
+
+  addRows(comparisonResults.onlyLocal);
 
   populateFilePaths(
     document.querySelector("#comparison-results-only-on-pennsieve-table"),

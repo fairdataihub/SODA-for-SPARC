@@ -99,7 +99,7 @@ const componentRenderActions = {
     const root = createRoot(componentSlot);
     root.render(
       <SodaComponentWrapper>
-        <SingleColumnTable columnName={columnName} rowData={rowDataList} />
+        <SingleColumnTable columnName={columnName}  />
       </SodaComponentWrapper>
     );
   },
