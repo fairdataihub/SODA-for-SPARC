@@ -2,7 +2,7 @@ import { Table } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
 
 const SingleColumnTable = ({ columnName, id }) => {
-  const rowData = useGlobalStore((state) => state.tableData[id]) || []
+  const rowData = useGlobalStore((state) => state.tableData[id]) || [];
   const rows = rowData.map((row, index) => {
     return (
       <Table.Tr key={index}>

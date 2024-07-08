@@ -4,7 +4,7 @@ while (!window.baseHtmlLoaded) {
 }
 
 import useGlobalStore from "../../stores/globalStore";
-import {addRows, removeRows} from "../../stores/slices/tableRowSlice";
+import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
 
 document.querySelector("#compare-local-remote-dataset-local-path").addEventListener("click", () => {
   console.log("Clicked");
@@ -69,8 +69,6 @@ const compareLocalRemoteDataset = async () => {
   addRows("comparison-results-only-on-pennsieve-table", comparisonResults.onlyPennsieve);
   addRows("comparison-results-only-on-local-table", comparisonResults.onlyLocal);
 };
-
-
 
 const getComparisonResults = async () => {
   // TOOD: Make request to server

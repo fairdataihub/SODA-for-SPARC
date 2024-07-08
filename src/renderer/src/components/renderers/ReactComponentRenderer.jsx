@@ -90,13 +90,13 @@ const componentRenderActions = {
   },
   "single-column-table": (componentSlot) => {
     const columnName = componentSlot.getAttribute("data-column-name");
-    const id = componentSlot.id; 
+    const id = componentSlot.id;
 
     // Create a React root and render the component
     const root = createRoot(componentSlot);
     root.render(
       <SodaComponentWrapper>
-        <SingleColumnTable id={id} columnName={columnName}  />
+        <SingleColumnTable id={id} columnName={columnName} />
       </SodaComponentWrapper>
     );
   },
