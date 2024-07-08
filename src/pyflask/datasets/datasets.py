@@ -198,3 +198,7 @@ def check_if_dataset_exists(dataset_name):
         if type(e).__name__ == "HTTPError":
             abort(400, e.response.json()["message"])
         abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
+
+
+def get_local_dataset_comparison(dataset_id, local_dataset_path):
+    return {"items_only_local": ["file/one", "file/two"], "items_only_on_pennsieve": ["file/three", "file/four"], "items_in_both": ["file/five", "file/six"]}

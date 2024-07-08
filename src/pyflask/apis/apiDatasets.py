@@ -13,7 +13,8 @@ from datasets import (
     reserve_dataset_doi,
     get_dataset_doi,
     get_package_type_counts,
-    get_total_items_in_local_dataset
+    get_total_items_in_local_dataset,
+    get_local_dataset_comparison
 )
 
 api = get_namespace(NamespaceEnum.DATASETS)
@@ -211,6 +212,26 @@ class PackageTypeCounts(Resource):
 
         try:
             return get_total_items_in_local_dataset(dataset_path)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+        
+
+@api.route('/<string:dataset_id>/comparison_results')
+class ComparisonResults(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('local_dataset_path', type=str, required=True, help='Path to the local dataset', location="args")
+    @api.doc(responses={200: 'Success', 400: 'Bad Request', 500: "Internal server error"})
+    @api.doc(params={"local_dataset_path": "Path of the local dataset to compare against the Pennsieve dataset"})
+
+    def get(self, dataset_id):
+        # get the dataset_path from the query string 
+        args = self.parser.parse_args()
+        local_dataset_path = args.get('local_dataset_path')
+
+        try:
+            return get_local_dataset_comparison(dataset_id, local_dataset_path)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
