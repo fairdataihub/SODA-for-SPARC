@@ -8,55 +8,58 @@ import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
 import { clientError } from "../others/http-error-handler/error-handler";
 import { swalShowError } from "../utils/swal-utils";
 
-
 document.querySelector(".prepare-comparison").addEventListener("click", async () => {
-  window.openDropdownPrompt("null", "dataset")
-})
-
-document.querySelector("#compare-local-remote-dataset-local-path").addEventListener("click", async () => {
-  console.log("Clicked");
-
-  window.electron.ipcRenderer.send("open-file-dialog-newdataset")
-  window.electron.ipcRenderer.on("selected-new-dataset", (event, path) => {
-    document.querySelector("#compare-local-remote-dataset-local-path").value = path;
-    document.querySelector("#compare-local-remote-confirm-local-dataset-btn").style.display = "flex";
-  })
+  window.openDropdownPrompt("null", "dataset");
 });
+
+document
+  .querySelector("#compare-local-remote-dataset-local-path")
+  .addEventListener("click", async () => {
+    console.log("Clicked");
+
+    window.electron.ipcRenderer.send("open-file-dialog-newdataset");
+    window.electron.ipcRenderer.on("selected-new-dataset", (event, path) => {
+      document.querySelector("#compare-local-remote-dataset-local-path").value = path;
+      document.querySelector("#compare-local-remote-confirm-local-dataset-btn").style.display =
+        "flex";
+    });
+  });
 
 document
   .querySelector("#compare-local-remote-confirm-local-dataset-btn")
   .addEventListener("click", (e) => {
-    document.querySelector("#compare-local-remote-confirm-local-dataset-btn").style.display = "none";
+    document.querySelector("#compare-local-remote-confirm-local-dataset-btn").style.display =
+      "none";
     let nextQuestion = document.querySelector("#compare-local-remote-confirm-local-dataset-btn")
       .dataset.next;
     document.querySelector(`#${nextQuestion}`).style.display = "flex";
   });
 
+document
+  .querySelector("#div-compare-local-remote-dataset-ps-ds-confirm")
+  .addEventListener("click", async function () {
+    // hide this children
+    this.style.display = "none";
 
-document.querySelector("#div-compare-local-remote-dataset-ps-ds-confirm").addEventListener("click", async function ()  {
-  // hide this children
-  this.style.display = "none";
-
-  window.transitionFreeFormMode(
-    this, 
-    "compare-local-remote-dataset-question-2",
+    window.transitionFreeFormMode(
+      this,
+      "compare-local-remote-dataset-question-2",
       "compare_local_remote_dataset_tab",
       "",
       "individual-question"
-  );
+    );
 
-  document.querySelector("#compare-local-remote-dataset-question-3").style.display = "flex";
-  // window.scroll
-
-})
-
+    document.querySelector("#compare-local-remote-dataset-question-3").style.display = "flex";
+    // window.scroll
+  });
 
 // observer for the selected dataset label in the dataset selection card in question 2
 const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
   // once a dataset has been selected show the run validator button if the current question is active
   if ($("#bf_dataset_load_compare_local_remote").text().trim() !== "None") {
-    console.log("We activated this here woo woo")
-    document.querySelector("#div-compare-local-remote-dataset-ps-ds-confirm").style.display = "flex";
+    console.log("We activated this here woo woo");
+    document.querySelector("#div-compare-local-remote-dataset-ps-ds-confirm").style.display =
+      "flex";
 
     // only show the whole question if the user is on the validate tab and they have selected the ps dataset flow
     if (
@@ -73,15 +76,18 @@ const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
 });
 
 // begin observing the dataset label in question 2
-questionTwoDatasetSelectionObserver.observe(document.querySelector("#bf_dataset_load_compare_local_remote"), {
-  childList: true,
-});
+questionTwoDatasetSelectionObserver.observe(
+  document.querySelector("#bf_dataset_load_compare_local_remote"),
+  {
+    childList: true,
+  }
+);
 
 document
   .querySelector("#compare-local-remote-begin-comparison-btn")
   .addEventListener("click", async function () {
-    // hide self 
-    this.style.display = "none"
+    // hide self
+    this.style.display = "none";
 
     // start the spinner
     document.querySelector("#comparing-local-remote-dataset-roller").classList.remove("hidden");
@@ -90,13 +96,16 @@ document
 
     // get results
     try {
-    await compareLocalRemoteDataset();
+      await compareLocalRemoteDataset();
     } catch (error) {
-      clientError(error)
-      await swalShowError("Error", "An error occurred while comparing the datasets. Please try again.")
+      clientError(error);
+      await swalShowError(
+        "Error",
+        "An error occurred while comparing the datasets. Please try again."
+      );
       // hide the spinner
       document.querySelector("#comparing-local-remote-dataset-roller").classList.add("hidden");
-      // show the confirm button 
+      // show the confirm button
       document.querySelector("#compare-local-remote-begin-comparison-btn").style.display = "flex";
     }
 
