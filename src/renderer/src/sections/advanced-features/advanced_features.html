@@ -1685,17 +1685,16 @@
                   <div style="display: flex; flex-direction: row; justify-content: space-between">
                     <div class="card-container prepare-comparison prepare-metadata">
                       <div style="width: 100%">
-                        <h5
-                          class="card-left"
-                          style="text-align: left; padding-right: 5px"
-                          id="compare-local-remote-dataset-ds-name"
-                        >
+                        <h5 class="card-left" style="text-align: left; padding-right: 5px">
                           Current dataset:
                         </h5>
-                        <div onclick="window.openDropdownPrompt(this, 'dataset')">
+                        <div
+                          class="change-current-account"
+                          
+                        >
                           <h5
                             id="bf_dataset_load_compare_local_remote"
-                            class="card-right prepare-metadata-dataset-span"
+                            class="card-right bf-dataset-span prepare-metadata-dataset-span"
                           >
                             None
                           </h5>
@@ -1731,7 +1730,7 @@
                     style="width: 120px"
                     id="compare-local-remote-dataset-remote-btn"
                     data-next="compare-local-remote-dataset-question-3"
-                    data-current="compare-local-reote-dataset-question-2"
+                    data-current="compare-local-remote-dataset-question-2"
                     class="btn_animated"
                   >
                     Confirm

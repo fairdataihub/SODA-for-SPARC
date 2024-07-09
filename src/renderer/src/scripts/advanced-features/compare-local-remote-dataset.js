@@ -6,6 +6,11 @@ while (!window.baseHtmlLoaded) {
 import api from "../others/api/api";
 import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
 
+
+document.querySelector(".prepare-comparison").addEventListener("click", async () => {
+  window.openDropdownPrompt("null", "dataset")
+})
+
 document.querySelector("#compare-local-remote-dataset-local-path").addEventListener("click", async () => {
   console.log("Clicked");
 
@@ -25,22 +30,50 @@ document
     document.querySelector(`#${nextQuestion}`).style.display = "flex";
   });
 
+
+document.querySelector("#div-compare-local-remote-dataset-ps-ds-confirm").addEventListener("click", async function ()  {
+  // hide this children
+  this.style.display = "none";
+
+  window.transitionFreeFormMode(
+    this, 
+    "compare-local-remote-dataset-question-2",
+      "compare_local_remote_dataset_tab",
+      "",
+      "individual-question"
+  );
+
+  document.querySelector("#compare-local-remote-dataset-question-3").style.display = "flex";
+  // window.scroll
+
+})
+
+
+// observer for the selected dataset label in the dataset selection card in question 2
 const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
+  // once a dataset has been selected show the run validator button if the current question is active
   if ($("#bf_dataset_load_compare_local_remote").text().trim() !== "None") {
-    $("#div-compare-local-remote-dataset-ps-ds-confirm").css("display", "flex");
-    //   $($("#div-check-bf-import-validator").children()[0]).show();
+    console.log("We activated this here woo woo")
+    document.querySelector("#div-compare-local-remote-dataset-ps-ds-confirm").style.display = "flex";
+
+    // only show the whole question if the user is on the validate tab and they have selected the ps dataset flow
+    if (
+      document.querySelector("#validate_dataset-question-2").classList.contains("show") &&
+      document.querySelector("#pennsieve-question-2-container").style.display === "flex"
+    ) {
+      document.querySelector("#validate_dataset-question-3").style.display = "flex";
+    } else {
+      document.querySelector("#validate_dataset-question-3").style.display = "none";
+    }
   } else {
     $("#div-compare-local-remote-dataset-ps-ds-confirm").css("display", "none");
   }
 });
 
-// begin observing the dataset label inn question 2
-questionTwoDatasetSelectionObserver.observe(
-  document.querySelector("#compare-local-remote-dataset-ds-name"),
-  {
-    childList: true,
-  }
-);
+// begin observing the dataset label in question 2
+questionTwoDatasetSelectionObserver.observe(document.querySelector("#bf_dataset_load_compare_local_remote"), {
+  childList: true,
+});
 
 document
   .querySelector("#compare-local-remote-begin-comparison-btn")
