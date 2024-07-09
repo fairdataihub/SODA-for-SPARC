@@ -1748,10 +1748,14 @@
         >
           <div class="ui form" style="width: 450px">
             <div class="grouped fields">
-              <div>
-                <button id="compare-local-remote-begin-comparison-btn">
-                  Compare Local and Remote Dataset
-                </button>
+              <div style="margin:auto;">
+                <div
+                  data-component-type="generic-button"
+                  id="compare-local-remote-begin-comparison-btn"
+                  variant="filled"
+                  color="green"
+                  data-text="Compare Local and Remote Dataset">
+                </div>
               </div>
 
               <div class="guided--panel mt-0 hidden" id="comparing-local-remote-dataset-roller">
@@ -1768,7 +1772,7 @@
                 Comparing Local and Remote Dataset
               </div>
 
-              <div id="comparison-results-container" style="display: flex; flex-direction: row">
+              <div id="comparison-results-container" style="display: flex; flex-direction: row; margin-top: 55px;">
                 <div id="comparison-results-only-on-pennsieve-table" style="flex: 0 0 50%">
                   <label style="font-size: 17px; color: var(--color-bg-plum)">
                     Files that are on Pennsieve and not in your local dataset

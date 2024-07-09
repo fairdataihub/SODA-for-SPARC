@@ -5,6 +5,8 @@ while (!window.baseHtmlLoaded) {
 
 import api from "../others/api/api";
 import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
+import { clientError } from "../others/http-error-handler/error-handler";
+import { swalShowError } from "../utils/swal-utils";
 
 
 document.querySelector(".prepare-comparison").addEventListener("click", async () => {
@@ -77,14 +79,26 @@ questionTwoDatasetSelectionObserver.observe(document.querySelector("#bf_dataset_
 
 document
   .querySelector("#compare-local-remote-begin-comparison-btn")
-  .addEventListener("click", async () => {
+  .addEventListener("click", async function () {
+    // hide self 
+    this.style.display = "none"
+
     // start the spinner
     document.querySelector("#comparing-local-remote-dataset-roller").classList.remove("hidden");
 
     await new Promise((resolve) => setTimeout(resolve, 4000));
 
     // get results
+    try {
     await compareLocalRemoteDataset();
+    } catch (error) {
+      clientError(error)
+      await swalShowError("Error", "An error occurred while comparing the datasets. Please try again.")
+      // hide the spinner
+      document.querySelector("#comparing-local-remote-dataset-roller").classList.add("hidden");
+      // show the confirm button 
+      document.querySelector("#compare-local-remote-begin-comparison-btn").style.display = "flex";
+    }
 
     // hide the spinner
     document.querySelector("#comparing-local-remote-dataset-roller").classList.add("hidden");
