@@ -6,16 +6,20 @@ while (!window.baseHtmlLoaded) {
 import api from "../others/api/api";
 import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
 
-document.querySelector("#compare-local-remote-dataset-local-path").addEventListener("click", () => {
+document.querySelector("#compare-local-remote-dataset-local-path").addEventListener("click", async () => {
   console.log("Clicked");
 
-  document.querySelector("#compare-local-remote-confirm-local-dataset-btn").style.display = "flex";
+  window.electron.ipcRenderer.send("open-file-dialog-newdataset")
+  window.electron.ipcRenderer.on("selected-new-dataset", (event, path) => {
+    document.querySelector("#compare-local-remote-dataset-local-path").value = path;
+    document.querySelector("#compare-local-remote-confirm-local-dataset-btn").style.display = "flex";
+  })
 });
 
 document
   .querySelector("#compare-local-remote-confirm-local-dataset-btn")
   .addEventListener("click", (e) => {
-    console.log("clicked");
+    document.querySelector("#compare-local-remote-confirm-local-dataset-btn").style.display = "none";
     let nextQuestion = document.querySelector("#compare-local-remote-confirm-local-dataset-btn")
       .dataset.next;
     document.querySelector(`#${nextQuestion}`).style.display = "flex";
