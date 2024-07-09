@@ -3405,27 +3405,13 @@ const updateManifestJson = async (highLvlFolderName, result) => {
   };
 };
 
-window.generateManifestFilesAtPath = async (path, manifestData) => {
-  for (const [highLevelFolder, manifestData] of Object.entries(manifestData)) {
-    const manifestJSON = window.processManifestInfo(manifestData["headers"], manifestData["data"]);
-
-    const stringifiedManifestJSON = JSON.stringify(manifestJSON);
-
-    const manifestPath = window.path.join(path, highLevelFolder, "manifest.xlsx");
-
-    window.fs.mkdirSync(window.path.join(path, highLevelFolder), { recursive: true });
-
-    window.convertJSONToXlsx(JSON.parse(stringifiedManifestJSON), manifestPath);
-  }
-};
 const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
   // First, empty the guided_manifest_files so we can add the new manifest files
-  window.fs.emptyDirSync(window.guidedManifestFilePath);
+  await window.fs.emptyDirSync(window.guidedManifestFilePath);
 
   const guidedManifestData = window.sodaJSONObj["guided-manifest-files"];
   console.log("guidedManifestData", guidedManifestData);
   for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
-    //
     let manifestJSON = window.processManifestInfo(
       guidedManifestData[highLevelFolder]["headers"],
       guidedManifestData[highLevelFolder]["data"]
@@ -3443,13 +3429,16 @@ const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
       recursive: true,
     });
 
-    window.convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
+    await window.convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
     window.datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
       action: ["new"],
       path: manifestPath,
       type: "local",
     };
   }
+
+  // wait for the manifest files to be created before continuing
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 };
 
 window.guidedOpenManifestEditSwal = async (highLevelFolderName) => {
@@ -14453,10 +14442,6 @@ document.querySelectorAll(".button-starts-local-dataset-copy-generation").forEac
     window.electron.ipcRenderer.send("guided-select-local-dataset-generation-path");
   });
 });
-
-const convertBytesToMb = (bytes) => {
-  return roundToHundredth(bytes / 1024 ** 2);
-};
 
 const convertBytesToGb = (bytes) => {
   return roundToHundredth(bytes / 1024 ** 3);

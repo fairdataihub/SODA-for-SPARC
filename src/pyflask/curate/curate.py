@@ -836,14 +836,15 @@ def generate_dataset_locally(soda_json_structure):
     global main_curation_uploaded_files
 
     main_curation_uploaded_files = 0
-
-
+    if os.path.exists('C:\\Users\\jacob\\SODA\\guided_manifest_files\\primary'):
+        namespace_logger.info(f"Guided manifest primary file exists")
+    else:
+        namespace_logger.info(f"Guided manifest primary file does not exist")
 
     def recursive_dataset_scan(
         my_folder, my_folderpath, list_copy_files, list_move_files
     ):
         global main_total_generate_dataset_size
-
         if "folders" in my_folder.keys():
             for folder_key, folder in my_folder["folders"].items():
                 folderpath = join(my_folderpath, folder_key)
@@ -854,12 +855,17 @@ def generate_dataset_locally(soda_json_structure):
                 )
 
         if "files" in my_folder.keys():
+            namespace_logger.info(f"files in my_folder: {my_folder['files'].items()}")
             for file_key, file in my_folder["files"].items():
+                namespace_logger.info(f"file_key: {file_key}")
                 if "deleted" not in file["action"]:
                     file_type = file["type"]
                     if file_type == "local":
                         file_path = file["path"]
+                        if "manifest.xlsx" in file_path:
+                            namespace_logger.info(f"MANIFEST.xlsx in file_path: {file_path}")
                         if isfile(file_path):
+                            namespace_logger.info(f"file_path exists: {file_path}")
                             destination_path = abspath(
                                 join(my_folderpath, file_key)
                             )
@@ -881,6 +887,8 @@ def generate_dataset_locally(soda_json_structure):
                                     list_copy_files.append(
                                         [file_path, destination_path]
                                     )
+                        else:
+                            namespace_logger.info(f"file_path does not exist: {file_path}")
         return list_copy_files, list_move_files
 
 
@@ -896,20 +904,22 @@ def generate_dataset_locally(soda_json_structure):
 
     namespace_logger.info("generate_dataset_locally step 2")
     # 2. Scan the dataset structure and:
-    # 2.1. Create all folders (with new name if renamed)
     # 2.2. Compile a list of files to be copied and a list of files to be moved (with new name recorded if renamed)
     list_copy_files = []
+    # 2.1. Create all folders (with new name if renamed)
     list_move_files = []
     dataset_structure = soda_json_structure["dataset-structure"]
-    namespace_logger.info(f"dataset_structure: {dataset_structure['folders']['primary']['files']}")
+
     for folder_key, folder in dataset_structure["folders"].items():
         folderpath = join(datasetpath, folder_key)
         mkdir(folderpath)
         list_copy_files, list_move_files = recursive_dataset_scan(
             folder, folderpath, list_copy_files, list_move_files
         )
-
-    namespace_logger.info("Primary folder manifest file exists: ", isfile(join(datasetpath, "primary", "manifest.xlsx")))
+    for file in list_copy_files:
+        namespace_logger.info(f"file to copy: {file}")
+    for file in list_move_files:
+        namespace_logger.info(f"file to move: {file}")
     # Open the manifest file for the primary folder
     if isfile(join(datasetpath, "primary", "manifest.xlsx")):
         open_file(join(datasetpath, "primary", "manifest.xlsx"))
@@ -964,8 +974,16 @@ def generate_dataset_locally(soda_json_structure):
         mycopyfile_with_metadata(srcfile, distfile)
         main_curation_uploaded_files += 1
 
+    #Print a tree of the folders and files inside of datasetpath
+    level = 0
+    for root, dirs, files in os.walk(datasetpath):
+        level = root.replace(datasetpath, '').count(os.sep)
+        indent = ' ' * 4 * (level)
+        namespace_logger.info(f"{indent}{os.path.basename(root)}/")
+        subindent = ' ' * 4 * (level + 1)
+        for f in files:
+            namespace_logger.info(f"{subindent}{f}")
 
-    namespace_logger.info("generate_dataset_locally step 7")
     # 7. Delete manifest folder and original folder if merge requested and rename new folder
     shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
     if if_existing == "merge":
@@ -3272,6 +3290,7 @@ def generate_dataset(soda_json_structure, resume, ps):
  
     # Generate dataset locally
     if generating_locally(soda_json_structure):
+        namespace_logger.info("generate_dataset generating_locally")
         main_generate_destination = soda_json_structure["generate-dataset"][
             "destination"
         ]
