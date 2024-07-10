@@ -8,6 +8,7 @@ import requests
 from utils import create_request_headers, connect_pennsieve_client, authenticate_user_with_client, get_dataset_id
 from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
 from authentication import get_access_token
+from utils.getDataset import get_dataset
 from constants import PENNSIEVE_URL
 
 
@@ -186,3 +187,14 @@ def get_total_items_in_local_dataset(dataset_path):
 
     return create_soda_json_total_items
 
+
+def check_if_dataset_exists(dataset_name):
+    """Function used to check if a dataset exists. Returns TRUE or FALSE"""
+    try:
+        dataset = get_dataset(dataset_name)
+        return {"exists": True,
+                "dataset": dataset}
+    except Exception as e:
+        if type(e).__name__ == "HTTPError":
+            abort(400, e.response.json()["message"])
+        abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")

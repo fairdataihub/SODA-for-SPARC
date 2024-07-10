@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import { swalConfirmAction } from "../scripts/utils/swal-utils";
 import lottie from "lottie-web";
 import { existingDataset, modifyDataset } from "../assets/lotties/lotties";
 
@@ -6,9 +7,52 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
+const leavingUploadDatasets = () => {
+  let activeTabs = document.querySelectorAll(".tab-active");
+  for (const tab of activeTabs) {
+    if (
+      tab.id === "getting-started-tab" ||
+      tab.id === "high-level-folders-tab" ||
+      tab.id === "upload-destination-selection-tab" ||
+      tab.id === "manifest-file-tab" ||
+      tab.id === "preview-dataset-tab" ||
+      tab.id === "generate-dataset-progress-tab" ||
+      tab.id === "validate-upload-status-tab"
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const uploadComplete = () => {
+  return $("#wrapper-wrap").is(":visible") && $("#validate-upload-status-tab").is(":visible");
+};
+
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
-document.body.addEventListener("click", (event) => {
+document.body.addEventListener("click", async (event) => {
   if (event.target.dataset.section) {
+    if (leavingUploadDatasets() && window.sodaJSONHasProgress() && !uploadComplete()) {
+      let leaveUploadDataset = await swalConfirmAction(
+        "warning",
+        "Are you sure you want to exit?",
+        "Any progress made importing your dataset and creating manifest files will not be saved. Do you want to continue?",
+        "Yes",
+        "Cancel"
+      );
+      if (!leaveUploadDataset) return;
+      window.resetCurationTabs();
+    } else if (leavingUploadDatasets() && window.sodaJSONHasProgress() && uploadComplete()) {
+      let leaveUploadDataset = await swalConfirmAction(
+        "warning",
+        "Are you sure you want to exit?",
+        "",
+        "Yes",
+        "Cancel"
+      );
+      if (!leaveUploadDataset) return;
+      window.resetCurationTabs();
+    }
     handleSectionTrigger(event);
   } else if (event.target.dataset.modal) {
     handleModalTrigger(event);
@@ -92,62 +136,6 @@ const handleSectionTrigger = async (event) => {
     }
   });
 
-  // check if we are leaving the organize datasets section
-  if (window.sodaJSONObj != undefined && boolRadioButtonsSelected === true) {
-    //get the element with data-next="Question-getting-started-BF-account"
-    const buttonContinueExistingPennsieve = document.querySelector(
-      '[data-next="Question-getting-started-BF-account"]'
-    );
-    const transitionWarningMessage = `
-          Going back home will wipe out the progress you have made organizing your dataset.
-          <br><br>
-          ${
-            buttonContinueExistingPennsieve.classList.contains("checked")
-              ? `To continue making modifications to your existing Pennsieve dataset, press Cancel.`
-              : `To save your progress, press Cancel${
-                  window.currentTab < 2 ? ", progress to the third step," : ""
-                } and press "Save Progress" in the Organize Dataset tab.`
-          }
-        `;
-
-    const warnBeforeExitCurate = await Swal.fire({
-      icon: "warning",
-      html: transitionWarningMessage,
-      showCancelButton: true,
-      focusCancel: true,
-      cancelButtonText: "Cancel",
-      confirmButtonText: "Go back Home",
-      reverseButtons: window.reverseSwalButtons,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-
-    if (warnBeforeExitCurate.isConfirmed) {
-      // Wipe out organize dataset progress before entering Guided Mode
-      $("#dataset-loaded-message").hide();
-      $(".vertical-progress-bar-step").removeClass("is-current");
-      $(".vertical-progress-bar-step").removeClass("done");
-      $(".getting-started").removeClass("prev");
-      $(".getting-started").removeClass("show");
-      $(".getting-started").removeClass("test2");
-      $("#Question-getting-started-1").addClass("show");
-      $("#generate-dataset-progress-tab").css("display", "none");
-      window.currentTab = 0;
-      window.wipeOutCurateProgress();
-      window.globalGettingStarted1stQuestionBool = false;
-      document.getElementById("nextBtn").disabled = true;
-    } else {
-      //Stay in Organize datasets section
-      return;
-    }
-  }
-
   // check if we are entering the organize datasets section
   if (sectionId === "organize-section") {
     //reset lazyloading values
@@ -164,6 +152,7 @@ const handleSectionTrigger = async (event) => {
   }
 
   if (sectionId === "guided_mode-section") {
+    // check if the
     // Disallow the transition if an upload is in progress
     if (document.getElementById("returnButton") !== null) {
       Swal.fire({
@@ -220,6 +209,14 @@ const handleSectionTrigger = async (event) => {
     document.getElementById("advanced_mode-section").classList.remove("fullShown");
     document.getElementById("advanced_mode-section").classList.add("hidden");
     document.getElementById("advanced-footer").classList.add("hidden");
+
+    // Ensure all sections are hidden and buttons are deselected
+    document.getElementById("validate-dataset-feature").classList.add("hidden");
+    document.getElementById("validate-dataset-feature").classList.remove("is-shown");
+    document.getElementById("banner-image-feature").classList.add("hidden");
+    document.getElementById("banner-image-feature").classList.remove("is-shown");
+    document.getElementById("manifest-creation-feature").classList.add("hidden");
+    document.getElementById("manifest-creation-feature").classList.remove("is-shown");
 
     // Remove lotties from the home screen to prevent double lotties
     if (document.getElementById("existing-dataset-lottie").innerHTML == "") {
@@ -338,7 +335,7 @@ document.querySelector("#shortcut-navigate-to-create_submission").addEventListen
 });
 
 document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
-  //Free form mode will open through here
+  //Free form mode will open through here (FROM HOME TO UPLOAD DATASET NOW)
   window.guidedPrepareHomeScreen();
 
   // guidedResetSkippedPages();

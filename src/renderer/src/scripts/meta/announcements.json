@@ -1,4 +1,39 @@
 {
+  "15.0.2": {
+    "announcements": {
+      "bug-fixes": [
+        "Fixed a bug where the 'Upload Dataset' feature would fail for fresh Pennsieve Agent installs.",
+        "Fixed an issue that was causing the `Create manifest.xlsx` feature to fail to generate manifest files. "
+      ],
+      "features": []
+    }
+  },
+  "15.0.1": {
+    "announcements": {
+      "bug-fixes": [
+        "Fixed a bug where the 'Upload Dataset' feature would fail for fresh Pennsieve Agent installs."
+      ],
+      "features": []
+    }
+  },
+  "15.0.0": {
+    "announcements": {
+      "bug-fixes": [],
+      "features": [
+        "Streamlined the Upload Dataset feature. Uploading datasets that have already been organized to Pennsieve is now easier.",
+        "Users can verify and validate that their datasets have been uploaded successfully in an optional final step of the Upload Dataset feature.",
+        "Retrying a failed dataset upload has been enhanced and streamlined. The retry will pick up where your upload left off without extra setup work and is easier to understand."
+      ]
+    }
+  },
+  "14.1.1": {
+    "announcements": {
+      "bug-fixes": [
+        "Fixed an issue in 'Upload Dataset' where the folder and file merge options did not always appear for user selection."
+      ],
+      "features": []
+    }
+  },
   "14.1.0": {
     "announcements": {
       "bug-fixes": [

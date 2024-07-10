@@ -787,7 +787,6 @@ const promptSpeciesAndStrainSelection = async () => {
   });
 
   // Log the final subjectArray and return it
-  console.log("subjectArray:", subjectArray);
   return subjectArray;
 };
 
@@ -1216,7 +1215,6 @@ window.populateForms = (subjectID, type, curationMode) => {
             field.name === "RRID for strain"
           ) {
             // Handle Species, Strain, and RRID for strain fields
-            console.log(`Setting ${field.name} value (species/strain/rrid):`, infoJson[i]);
             subjectSpeciesStrainValues[field.name] = infoJson[i];
           } else if (curationMode === "guided" && field.name === "protocol url or doi") {
             // Handle protocol URL or DOI field in guided mode

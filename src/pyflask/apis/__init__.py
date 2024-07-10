@@ -11,3 +11,4 @@ from .apiDatasets import api as datasets_resource
 from .apiCollections import api as collections_resource
 from .apiSkeleton import api as skeleton_resource
 from .apiImageProcessing import api as image_processing_resource
+from .apiUploadManifests import api as upload_manifest_resource

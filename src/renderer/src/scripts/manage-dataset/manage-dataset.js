@@ -2808,8 +2808,8 @@ $("#button-submit-dataset").click(async () => {
           cloneMeter.value = 100;
 
           $("#para-please-wait-manage-dataset").html("");
-          $("#para-progress-bar-status").html(statusMessage + window.smileyCan);
-          cloneStatus.innerHTML = statusMessage + window.smileyCan;
+          $("#para-progress-bar-status").html(statusMessage);
+          cloneStatus.innerHTML = statusMessage;
 
           // log the last batch of files uploaded if the difference between the last batch and the total files uploaded is not 0
           let finalFilesCount = totalFilesUploaded - filesOnPreviousLogPage;
@@ -2924,7 +2924,7 @@ $("#button-submit-dataset").click(async () => {
           "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
 
         $("#para-progress-bar-error-status").html(
-          "<span style='color: red;'>" + emessage + window.sadCan + "</span>"
+          "<span style='color: red;'>" + emessage + "</span>"
         );
         Swal.fire({
           icon: "error",

@@ -10,6 +10,7 @@ from apis import (
     datasets_resource,
     collections_resource,
     skeleton_resource,
+    upload_manifest_resource,
     image_processing_resource
 )
 
@@ -29,4 +30,5 @@ def configureRouteHandlers(api):
     api.add_namespace(datasets_resource)
     api.add_namespace(collections_resource)
     api.add_namespace(skeleton_resource)
+    api.add_namespace(upload_manifest_resource)
     api.add_namespace(image_processing_resource)

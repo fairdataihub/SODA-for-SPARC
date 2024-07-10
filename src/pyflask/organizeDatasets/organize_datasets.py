@@ -583,7 +583,6 @@ def create_dataset(recursivePath, jsonStructure, listallfiles):
 
                 mycopyfile_with_metadata(srcfile, distfile)
 
-
 def create_soda_json_object_backend(
     soda_json_structure, root_folder_path, irregularFolders, replaced
 ):
@@ -999,9 +998,17 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         
         collection_id = subfolder_json["path"]
 
-        r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=create_request_headers(get_access_token()))
-        r.raise_for_status()
-        subfolder = r.json()["children"]
+        limit = 100
+        offset = 0
+        subfolder = []
+        while True: 
+            r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}?limit={limit}&offset={offset}", headers=create_request_headers(get_access_token()))
+            r.raise_for_status()
+            page = r.json()["children"]
+            subfolder.extend(page)
+            if len(page) < limit:
+                break
+            offset += limit
 
         for items in subfolder:
             folder_item_name = items["content"]["name"]

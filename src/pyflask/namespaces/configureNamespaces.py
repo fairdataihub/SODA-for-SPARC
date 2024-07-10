@@ -18,6 +18,7 @@ class NamespaceEnum(Enum):
     SKELETON_DATASET = "skeleton_dataset"
     PYSODA_UTILS = "pysoda_utils"
     AUTHENTICATE = "authenticate"
+    UPLOAD_MANIFESTS = "upload_manifests"
     IMAGE_PROCESSING = "image_processing"
 
 
@@ -29,7 +30,7 @@ def configure_namespaces():
     Create namespaces for each pysoda file: pysoda ( now manage_datasets), prepare_metadata, etc
     """
 
-    manage_datasets_namespace = Namespace(NamespaceEnum.MANAGE_DATASETS.value, description='Routes for handling manage datsets functionality')
+    manage_datasets_namespace = Namespace(NamespaceEnum.MANAGE_DATASETS.value, description='Routes for handling manage datasets functionality')
     namespaces[NamespaceEnum.MANAGE_DATASETS] = manage_datasets_namespace
 
     curate_datasets_namespace = Namespace(NamespaceEnum.CURATE_DATASETS.value, description='Routes for handling dataset curation')
@@ -68,6 +69,9 @@ def configure_namespaces():
     image_processing_namespace = Namespace(NamespaceEnum.IMAGE_PROCESSING.value, description='Routes for handling image processing')
     namespaces[NamespaceEnum.IMAGE_PROCESSING] = image_processing_namespace
 
+
+    upload_manifests_namespace = Namespace(NamespaceEnum.UPLOAD_MANIFESTS.value, description='Routes for viewing upload manifests and verifying upload file statuses')
+    namespaces[NamespaceEnum.UPLOAD_MANIFESTS] = upload_manifests_namespace
 
 
 

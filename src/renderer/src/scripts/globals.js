@@ -1647,12 +1647,22 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               return;
             }
 
-            if (dropdownEventID === "organize-ds-step-6-ds-select") {
+            if (
+              dropdownEventID === "organize-ds-step-6-ds-select" ||
+              dropdownEventID === "current-bf-dataset-generate"
+            ) {
               try {
                 // get the amount of files in the existing dataset and skip the Merge/Skip/Replace step if there are no files in the existing dataset
                 let packages = await api.getNumberOfPackagesInDataset(bfDataset);
+                let fileCount = 0;
 
-                window.hasFiles = Object.keys(packages).length > 0;
+                for (const packageKey in packages) {
+                  if (packageKey !== "Collection") {
+                    fileCount += packages[packageKey];
+                  }
+                }
+
+                window.hasFiles = fileCount > 0;
               } catch (e) {
                 clientError(e);
                 window.hasFiles = true;

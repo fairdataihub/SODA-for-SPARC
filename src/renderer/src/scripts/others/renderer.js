@@ -859,24 +859,24 @@ window.run_pre_flight_checks = async (check_update = true) => {
       }
       const { value: rerunPreFlightChecks } = await Swal.fire({
         icon: "info",
-        title: "Installed Pennsieve agent out of date",
+        title: "Installed Pennsieve agent does not match Pennsieve's latest agent release",
         html: `
           Your Pennsieve agent version: <b>${usersPennsieveAgentVersion}</b>
           <br />
           Latest Pennsieve agent version: <b>${latestPennsieveAgentVersion}</b>
           <br />
           <br />
-          To update your Pennsieve Agent, please visit the link below and follow the instructions.
+          To download Pennsieve's latest agent release, please visit the link below and follow the instructions.
           <br />
           <br />
           <a href="${agentDownloadUrl}" target="_blank" rel="noopener noreferrer">Download the latest Pennsieve agent</a>
           <br />
           <br />
-          Once you have updated your Pennsieve agent, please click the button below to ensure that the Pennsieve agent was updated correctly.
+          Once you have downloaded the latest Pennsieve agent, please click the button below to ensure that the Pennsieve agent was updated correctly.
         `,
         width: 800,
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
+        backdrop: "rgba(0, 0, 0, 0.4)",
         allowOutsideClick: false,
         allowEscapeKey: false,
         showCancelButton: true,
@@ -1167,11 +1167,17 @@ const getPlatformSpecificAgentDownloadURL = async () => {
   }
 };
 
-const findDownloadURL = (extension, assets) => {
-  for (const asset of assets) {
-    const fileName = asset.name;
-    if (window.path.extname(fileName) === extension) {
-      return asset.browser_download_url;
+/**
+ *
+ * @param {*} partialStringToSearch - The partial string to search for in the release name
+ * @param {*} releaseList - The list of Pennsieve agent releases to search for the partial string
+ * @returns - The download URL for the Pennsieve agent release that contains the partial string
+ */
+const findDownloadURL = (partialStringToSearch, releaseList) => {
+  for (const release of releaseList) {
+    const releaseName = release.name;
+    if (releaseName.includes(partialStringToSearch)) {
+      return release.browser_download_url;
     }
   }
   return undefined;
@@ -1197,12 +1203,20 @@ const getLatestPennsieveAgentVersion = async () => {
   let platformSpecificAgentDownloadURL;
   switch (usersPlatform) {
     case "darwin":
-      platformSpecificAgentDownloadURL = findDownloadURL(".pkg", latestReleaseAssets);
+      // The Pennsieve has different agent releases for different architectures on MacOS
+      const systemArchitecture = window.process.architecture();
+      if (systemArchitecture === "x64") {
+        platformSpecificAgentDownloadURL = findDownloadURL("x86_64.pkg", latestReleaseAssets);
+      }
+      if (systemArchitecture === "arm64") {
+        platformSpecificAgentDownloadURL = findDownloadURL("arm64.pkg", latestReleaseAssets);
+      }
+      if (!platformSpecificAgentDownloadURL) {
+        platformSpecificAgentDownloadURL = findDownloadURL(".pkg", latestReleaseAssets);
+      }
       break;
     case "win32":
-      platformSpecificAgentDownloadURL =
-        findDownloadURL(".msi", latestReleaseAssets) ||
-        findDownloadURL(".exe", latestReleaseAssets);
+      platformSpecificAgentDownloadURL = findDownloadURL(".msi", latestReleaseAssets);
       break;
     case "linux":
       platformSpecificAgentDownloadURL = findDownloadURL(".deb", latestReleaseAssets);
@@ -1408,8 +1422,6 @@ const bfWithdrawReviewDatasetBtn = document.querySelector("#btn-withdraw-review-
 // const blackColor = "#000";
 // const redColor = "#ff1a1a";
 // const sparcFolderNames = ["code", "derivative", "docs", "primary", "protocol", "source"];
-window.smileyCan = `<img class="message-icon" src=${canSmiley}>`;
-window.sadCan = `<img class="message-icon" src=${canSad}>`;
 window.delayAnimation = 250;
 
 //////////////////////////////////
@@ -4536,6 +4548,8 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
       folderKey,
       "folder-and-file-name-is-valid"
     );
+    // If the folder name is not valid, replace it with a valid name and then recurse through the
+    // renamed folder to check for any other problematic folders
     if (!folderNameIsValid) {
       console.log("Folder name is not valid: ", folderKey);
       const newFolderName = folderKey.replace(sparcFolderAndFileRegex, "-");
@@ -4544,16 +4558,18 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
       if (!newFolderObj["action"].includes("renamed")) {
         newFolderObj["action"].push("renamed");
       }
+      newFolderObj["original-name"] = folderKey;
+      newFolderObj["new-name"] = newFolderName;
       datasetStructure["folders"][newFolderName] = newFolderObj;
       delete datasetStructure["folders"][folderKey];
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][newFolderName]);
     } else {
+      // If the folder name is valid, recurse through the folder to check for any problematic folders
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
     }
   }
 };
-
-const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
+window.replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
     const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
@@ -4566,13 +4582,17 @@ const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
       if (!newFileObj["action"].includes("renamed")) {
         newFileObj["action"].push("renamed");
       }
+      newFileObj["original-name"] = fileKey;
+      newFileObj["new-name"] = newFileName;
       datasetStructure["files"][newFileName] = newFileObj;
       delete datasetStructure["files"][fileKey];
     }
   }
-  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
-  for (const folderKey of currentFoldersAtPath) {
-    replaceProblematicFilesWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
+  if (datasetStructure?.["folders"]) {
+    const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+    for (const folderKey of currentFoldersAtPath) {
+      window.replaceProblematicFilesWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
+    }
   }
 };
 
@@ -4661,7 +4681,11 @@ const closeFileImportLoadingSweetAlert = () => {
   }
 };
 
-const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileExplorerPath) => {
+window.buildDatasetStructureJsonFromImportedData = async (
+  itemPaths,
+  currentFileExplorerPath,
+  datasetImport = false
+) => {
   const inaccessibleItems = [];
   const forbiddenFileNames = [];
   const problematicFolderNames = [];
@@ -4824,7 +4848,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
       "What would you like to do with the files with special characters?"
     );
     if (userResponse === "confirm") {
-      replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
+      window.replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
     }
     // If the userResponse is "deny", nothing needs to be done
     if (userResponse === "cancel") {
@@ -4857,6 +4881,10 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
     Object.keys(datasetStructure?.["files"]).length === 0
   ) {
     throw new Error("Error building dataset structure");
+  }
+
+  if (datasetImport) {
+    return [datasetStructure, problematicFolderNames, problematicFileNames];
   }
 
   return datasetStructure;
@@ -5007,7 +5035,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
     // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
     const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
 
-    const builtDatasetStructure = await buildDatasetStructureJsonFromImportedData(
+    const builtDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
       importedData,
       currentFileExplorerPath
     );
@@ -6563,6 +6591,7 @@ $("#inputNewNameDataset").keyup(function () {
       $("#btn-confirm-new-dataset-name").hide();
       document.getElementById("para-new-name-dataset-message").innerHTML =
         "Error: A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.,";
+
       // $("#nextBtn").prop("disabled", true)
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
       $("#div-confirm-inputNewNameDataset").css("display", "none");
@@ -6583,270 +6612,272 @@ $("#inputNewNameDataset").keyup(function () {
 });
 
 //// Select to choose a local dataset (getting started)
-document
-  .getElementById("input-destination-getting-started-locally")
-  .addEventListener("click", function () {
-    $("#Question-getting-started-locally-destination").nextAll().removeClass("show");
-    $("#Question-getting-started-locally-destination").nextAll().removeClass("test2");
-    $("#Question-getting-started-locally-destination").nextAll().removeClass("prev");
-    document.getElementById("input-destination-getting-started-locally").placeholder =
-      "Browse here";
-    $("#para-continue-location-dataset-getting-started").text("");
-    document.getElementById("nextBtn").disabled = true;
-    window.electron.ipcRenderer.send("open-file-dialog-local-destination-curate");
-  });
+// TODO: DELETE IF NOT NEEDED, CAUSING ERRORS
+// document
+//   .getElementById("input-destination-getting-started-locally")
+//   .addEventListener("click", function () {
+//     $("#Question-getting-started-locally-destination").nextAll().removeClass("show");
+//     $("#Question-getting-started-locally-destination").nextAll().removeClass("test2");
+//     $("#Question-getting-started-locally-destination").nextAll().removeClass("prev");
+//     document.getElementById("input-destination-getting-started-locally").placeholder =
+//       "Browse here";
+//     $("#para-continue-location-dataset-getting-started").text("");
+//     document.getElementById("nextBtn").disabled = true;
+//     window.electron.ipcRenderer.send("open-file-dialog-local-destination-curate");
+//   });
 
+// TODO: Possibly no longer needed after org dataset rework
 // Local dataset selected response
-window.electron.ipcRenderer.on(
-  "selected-local-destination-datasetCurate",
-  async (event, filepath) => {
-    let numb = document.getElementById("local_dataset_number");
-    let progressBar_rightSide = document.getElementById("left-side_less_than_50");
-    let progressBar_leftSide = document.getElementById("right-side_greater_than_50");
-    //create setInterval variable that will keep track of the iterated items
-    let local_progress;
+// window.electron.ipcRenderer.on(
+//   "selected-local-destination-datasetCurate",
+//   async (event, filepath) => {
+//     let numb = document.getElementById("local_dataset_number");
+//     let progressBar_rightSide = document.getElementById("left-side_less_than_50");
+//     let progressBar_leftSide = document.getElementById("right-side_greater_than_50");
+//     //create setInterval variable that will keep track of the iterated items
+//     let local_progress;
 
-    // Function to get the progress of the local dataset every 500ms
-    const progressReport = async () => {
-      try {
-        let monitorProgressResponse = await client.get(
-          `/organize_datasets/datasets/import/progress`
-        );
+//     // Function to get the progress of the local dataset every 500ms
+//     const progressReport = async () => {
+//       try {
+//         let monitorProgressResponse = await client.get(
+//           `/organize_datasets/datasets/import/progress`
+//         );
 
-        let { data } = monitorProgressResponse;
-        let percentage_amount = data["progress_percentage"].toFixed(2);
-        let finished = data["create_soda_json_completed"];
+//         let { data } = monitorProgressResponse;
+//         let percentage_amount = data["progress_percentage"].toFixed(2);
+//         let finished = data["create_soda_json_completed"];
 
-        numb.innerText = percentage_amount + "%";
-        if (percentage_amount <= 50) {
-          progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360}deg)`;
-        } else {
-          progressBar_rightSide.style.transition = "";
-          progressBar_rightSide.classList.add("notransition");
-          progressBar_rightSide.style.transform = `rotate(180deg)`;
-          progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180}deg)`;
-        }
+//         numb.innerText = percentage_amount + "%";
+//         if (percentage_amount <= 50) {
+//           progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360}deg)`;
+//         } else {
+//           progressBar_rightSide.style.transition = "";
+//           progressBar_rightSide.classList.add("notransition");
+//           progressBar_rightSide.style.transform = `rotate(180deg)`;
+//           progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180}deg)`;
+//         }
 
-        if (finished === 1) {
-          progressBar_leftSide.style.transform = `rotate(180deg)`;
-          numb.innerText = "100%";
-          clearInterval(local_progress);
-          progressBar_rightSide.classList.remove("notransition");
-          window.populate_existing_folders(window.datasetStructureJSONObj);
-          window.populate_existing_metadata(window.sodaJSONObj);
-          $("#para-continue-location-dataset-getting-started").text("Please continue below.");
-          $("#nextBtn").prop("disabled", false);
-          // log the success to analytics
-          window.logMetadataForAnalytics(
-            "Success",
-            window.PrepareDatasetsAnalyticsPrefix.CURATE,
-            window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            window.Actions.EXISTING,
-            Destinations.LOCAL
-          );
-          setTimeout(() => {
-            document.getElementById("loading_local_dataset").style.display = "none";
-          }, 1000);
-        }
-      } catch (error) {
-        clientError(error);
-        clearInterval(local_progress);
-      }
-    };
+//         if (finished === 1) {
+//           progressBar_leftSide.style.transform = `rotate(180deg)`;
+//           numb.innerText = "100%";
+//           clearInterval(local_progress);
+//           progressBar_rightSide.classList.remove("notransition");
+//           window.populate_existing_folders(window.datasetStructureJSONObj);
+//           window.populate_existing_metadata(window.sodaJSONObj);
+//           $("#para-continue-location-dataset-getting-started").text("Please continue below.");
+//           $("#nextBtn").prop("disabled", false);
+//           // log the success to analytics
+//           window.logMetadataForAnalytics(
+//             "Success",
+//             window.PrepareDatasetsAnalyticsPrefix.CURATE,
+//             window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+//             window.Actions.EXISTING,
+//             Destinations.LOCAL
+//           );
+//           setTimeout(() => {
+//             document.getElementById("loading_local_dataset").style.display = "none";
+//           }, 1000);
+//         }
+//       } catch (error) {
+//         clientError(error);
+//         clearInterval(local_progress);
+//       }
+//     };
 
-    // Function begins here
-    if (filepath.length > 0) {
-      if (filepath != null) {
-        window.sodaJSONObj["starting-point"]["local-path"] = "";
-        document.getElementById("input-destination-getting-started-locally").placeholder =
-          filepath[0];
-        if (
-          window.sodaJSONObj["starting-point"]["type"] === "local" &&
-          window.sodaJSONObj["starting-point"]["local-path"] == ""
-        ) {
-          let valid_dataset = window.verify_sparc_folder(
-            document.getElementById("input-destination-getting-started-locally").placeholder,
-            "local"
-          );
-          if (valid_dataset == true) {
-            // Reset variables
-            window.irregularFolderArray = [];
-            let replaced = {};
+//     // Function begins here
+//     if (filepath.length > 0) {
+//       if (filepath != null) {
+//         window.sodaJSONObj["starting-point"]["local-path"] = "";
+//         document.getElementById("input-destination-getting-started-locally").placeholder =
+//           filepath[0];
+//         if (
+//           window.sodaJSONObj["starting-point"]["type"] === "local" &&
+//           window.sodaJSONObj["starting-point"]["local-path"] == ""
+//         ) {
+//           let valid_dataset = window.verify_sparc_folder(
+//             document.getElementById("input-destination-getting-started-locally").placeholder,
+//             "local"
+//           );
+//           if (valid_dataset == true) {
+//             // Reset variables
+//             window.irregularFolderArray = [];
+//             let replaced = {};
 
-            window.detectIrregularFolders(window.path.basename(filepath[0]), filepath[0]);
+//             window.detectIrregularFolders(window.path.basename(filepath[0]), filepath[0]);
 
-            var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${window.nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-            if (window.irregularFolderArray.length > 0) {
-              Swal.fire({
-                title:
-                  "The following folders contain non-allowed characters in their names. How should we handle them?",
-                html:
-                  "<div style='max-height:300px; overflow-y:auto'>" +
-                  window.irregularFolderArray.join("</br>") +
-                  "</div>",
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-                showDenyButton: true,
-                showCancelButton: true,
-                confirmButtonText: "Replace characters with (-)",
-                denyButtonText: "Remove characters",
-                cancelButtonText: "Cancel",
-                didOpen: () => {
-                  $(".swal-popover").popover();
-                },
-                footer: footer,
-              }).then(async (result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                  action = "replace";
-                  if (window.irregularFolderArray.length > 0) {
-                    for (let i = 0; i < window.irregularFolderArray.length; i++) {
-                      renamedFolderName = window.replaceIrregularFolders(
-                        window.irregularFolderArray[i]
-                      );
-                      replaced[window.path.basename(window.irregularFolderArray[i])] =
-                        renamedFolderName;
-                    }
-                  }
-                } else if (result.isDenied) {
-                  action = "remove";
-                  if (window.irregularFolderArray.length > 0) {
-                    for (let i = 0; i < window.irregularFolderArray.length; i++) {
-                      renamedFolderName = window.removeIrregularFolders(
-                        window.irregularFolderArray[i]
-                      );
-                      replaced[window.irregularFolderArray[i]] = renamedFolderName;
-                    }
-                  }
-                } else {
-                  document.getElementById("input-destination-getting-started-locally").placeholder =
-                    "Browse here";
-                  window.sodaJSONObj["starting-point"]["local-path"] = "";
-                  $("#para-continue-location-dataset-getting-started").text("");
-                  return;
-                }
+//             var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${window.nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+//             if (window.irregularFolderArray.length > 0) {
+//               Swal.fire({
+//                 title:
+//                   "The following folders contain non-allowed characters in their names. How should we handle them?",
+//                 html:
+//                   "<div style='max-height:300px; overflow-y:auto'>" +
+//                   window.irregularFolderArray.join("</br>") +
+//                   "</div>",
+//                 heightAuto: false,
+//                 backdrop: "rgba(0,0,0, 0.4)",
+//                 showDenyButton: true,
+//                 showCancelButton: true,
+//                 confirmButtonText: "Replace characters with (-)",
+//                 denyButtonText: "Remove characters",
+//                 cancelButtonText: "Cancel",
+//                 didOpen: () => {
+//                   $(".swal-popover").popover();
+//                 },
+//                 footer: footer,
+//               }).then(async (result) => {
+//                 /* Read more about isConfirmed, isDenied below */
+//                 if (result.isConfirmed) {
+//                   action = "replace";
+//                   if (window.irregularFolderArray.length > 0) {
+//                     for (let i = 0; i < window.irregularFolderArray.length; i++) {
+//                       renamedFolderName = window.replaceIrregularFolders(
+//                         window.irregularFolderArray[i]
+//                       );
+//                       replaced[window.path.basename(window.irregularFolderArray[i])] =
+//                         renamedFolderName;
+//                     }
+//                   }
+//                 } else if (result.isDenied) {
+//                   action = "remove";
+//                   if (window.irregularFolderArray.length > 0) {
+//                     for (let i = 0; i < window.irregularFolderArray.length; i++) {
+//                       renamedFolderName = window.removeIrregularFolders(
+//                         window.irregularFolderArray[i]
+//                       );
+//                       replaced[window.irregularFolderArray[i]] = renamedFolderName;
+//                     }
+//                   }
+//                 } else {
+//                   document.getElementById("input-destination-getting-started-locally").placeholder =
+//                     "Browse here";
+//                   window.sodaJSONObj["starting-point"]["local-path"] = "";
+//                   $("#para-continue-location-dataset-getting-started").text("");
+//                   return;
+//                 }
 
-                //Reset the progress bar
-                progressBar_rightSide.style.transform = `rotate(0deg)`;
-                progressBar_leftSide.style.transform = `rotate(0deg)`;
-                numb.innerText = "0%";
+//                 //Reset the progress bar
+//                 progressBar_rightSide.style.transform = `rotate(0deg)`;
+//                 progressBar_leftSide.style.transform = `rotate(0deg)`;
+//                 numb.innerText = "0%";
 
-                // Show the progress bar
-                document.getElementById("loading_local_dataset").style.display = "block";
+//                 // Show the progress bar
+//                 document.getElementById("loading_local_dataset").style.display = "block";
 
-                // Show file path to user in the input box
-                window.sodaJSONObj["starting-point"]["local-path"] = filepath[0];
-                let root_folder_path = $("#input-destination-getting-started-locally").attr(
-                  "placeholder"
-                );
+//                 // Show file path to user in the input box
+//                 window.sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+//                 let root_folder_path = $("#input-destination-getting-started-locally").attr(
+//                   "placeholder"
+//                 );
 
-                //create setInterval variable that will keep track of the iterated items
-                local_progress = setInterval(progressReport, 500);
+//                 //create setInterval variable that will keep track of the iterated items
+//                 local_progress = setInterval(progressReport, 500);
 
-                try {
-                  let importLocalDatasetResponse = await client.post(
-                    `/organize_datasets/datasets/import`,
-                    {
-                      sodajsonobject: window.sodaJSONObj,
-                      root_folder_path: root_folder_path,
-                      irregular_folders: window.irregularFolderArray,
-                      replaced: replaced,
-                    },
-                    { timeout: 0 }
-                  );
-                  let { data } = importLocalDatasetResponse;
-                  window.sodaJSONObj = data;
-                  window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-                } catch (error) {
-                  clientError(error);
-                  clearInterval(local_progress);
-                }
-              });
-            } else {
-              // Reset the progress bar
-              progressBar_leftSide.style.transform = `rotate(0deg)`;
-              progressBar_rightSide.style.transform = `rotate(0deg)`;
-              numb.innerText = "0%";
+//                 try {
+//                   let importLocalDatasetResponse = await client.post(
+//                     `/organize_datasets/datasets/import`,
+//                     {
+//                       sodajsonobject: window.sodaJSONObj,
+//                       root_folder_path: root_folder_path,
+//                       irregular_folders: window.irregularFolderArray,
+//                       replaced: replaced,
+//                     },
+//                     { timeout: 0 }
+//                   );
+//                   let { data } = importLocalDatasetResponse;
+//                   window.sodaJSONObj = data;
+//                   window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
+//                 } catch (error) {
+//                   clientError(error);
+//                   clearInterval(local_progress);
+//                 }
+//               });
+//             } else {
+//               // Reset the progress bar
+//               progressBar_leftSide.style.transform = `rotate(0deg)`;
+//               progressBar_rightSide.style.transform = `rotate(0deg)`;
+//               numb.innerText = "0%";
 
-              // Show the progress bar
-              document.getElementById("loading_local_dataset").style.display = "block";
+//               // Show the progress bar
+//               document.getElementById("loading_local_dataset").style.display = "block";
 
-              // Show file path to user in the input box
-              window.sodaJSONObj["starting-point"]["local-path"] = filepath[0];
-              let root_folder_path = $("#input-destination-getting-started-locally").attr(
-                "placeholder"
-              );
+//               // Show file path to user in the input box
+//               window.sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+//               let root_folder_path = $("#input-destination-getting-started-locally").attr(
+//                 "placeholder"
+//               );
 
-              //create setInterval variable that will keep track of the iterated items
-              local_progress = setInterval(progressReport, 500);
+//               //create setInterval variable that will keep track of the iterated items
+//               local_progress = setInterval(progressReport, 500);
 
-              try {
-                let importLocalDatasetResponse = await client.post(
-                  `/organize_datasets/datasets/import`,
-                  {
-                    sodajsonobject: window.sodaJSONObj,
-                    root_folder_path: root_folder_path,
-                    irregular_folders: window.irregularFolderArray,
-                    replaced: replaced,
-                  },
-                  { timeout: 0 }
-                );
-                let { data } = importLocalDatasetResponse;
-                window.sodaJSONObj = data;
-                window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-              } catch (error) {
-                clientError(error);
-                clearInterval(local_progress);
-              }
-            }
-          } else {
-            // Invalid dataset due to non-SPARC folder structure
-            Swal.fire({
-              icon: "warning",
-              html: `This folder seem to have non-SPARC folders. Please select a folder that has a valid SPARC dataset structure.
-              <br/>
-              See the "Data Organization" section of the SPARC documentation for more
-              <a target="_blank" href="https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT#top"> details</a>`,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              showConfirmButton: false,
-              showCancelButton: true,
-              focusCancel: true,
-              cancelButtonText: "Okay",
-              reverseButtons: window.reverseSwalButtons,
-              showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
-            }).then((result) => {
-              if (result.isConfirmed) {
-              } else {
-                document.getElementById("input-destination-getting-started-locally").placeholder =
-                  "Browse here";
-                window.sodaJSONObj["starting-point"]["local-path"] = "";
-                $("#para-continue-location-dataset-getting-started").text("");
-              }
-            });
+//               try {
+//                 let importLocalDatasetResponse = await client.post(
+//                   `/organize_datasets/datasets/import`,
+//                   {
+//                     sodajsonobject: window.sodaJSONObj,
+//                     root_folder_path: root_folder_path,
+//                     irregular_folders: window.irregularFolderArray,
+//                     replaced: replaced,
+//                   },
+//                   { timeout: 0 }
+//                 );
+//                 let { data } = importLocalDatasetResponse;
+//                 window.sodaJSONObj = data;
+//                 window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
+//               } catch (error) {
+//                 clientError(error);
+//                 clearInterval(local_progress);
+//               }
+//             }
+//           } else {
+//             // Invalid dataset due to non-SPARC folder structure
+//             Swal.fire({
+//               icon: "warning",
+//               html: `This folder seem to have non-SPARC folders. Please select a folder that has a valid SPARC dataset structure.
+//               <br/>
+//               See the "Data Organization" section of the SPARC documentation for more
+//               <a target="_blank" href="https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT#top"> details</a>`,
+//               heightAuto: false,
+//               backdrop: "rgba(0,0,0, 0.4)",
+//               showConfirmButton: false,
+//               showCancelButton: true,
+//               focusCancel: true,
+//               cancelButtonText: "Okay",
+//               reverseButtons: window.reverseSwalButtons,
+//               showClass: {
+//                 popup: "animate__animated animate__zoomIn animate__faster",
+//               },
+//               hideClass: {
+//                 popup: "animate__animated animate__zoomOut animate__faster",
+//               },
+//             }).then((result) => {
+//               if (result.isConfirmed) {
+//               } else {
+//                 document.getElementById("input-destination-getting-started-locally").placeholder =
+//                   "Browse here";
+//                 window.sodaJSONObj["starting-point"]["local-path"] = "";
+//                 $("#para-continue-location-dataset-getting-started").text("");
+//               }
+//             });
 
-            // log the failure to select an appropriate folder to analytics
-            window.logMetadataForAnalytics(
-              "Error",
-              window.PrepareDatasetsAnalyticsPrefix.CURATE,
-              window.AnalyticsGranularity.ALL_LEVELS,
-              window.Actions.EXISTING,
-              Destinations.LOCAL
-            );
-          }
-        }
-      }
-    } else {
-      document.getElementById("nextBtn").disabled = true;
-      $("#para-continue-location-dataset-getting-started").text("");
-    }
-  }
-);
+//             // log the failure to select an appropriate folder to analytics
+//             window.logMetadataForAnalytics(
+//               "Error",
+//               window.PrepareDatasetsAnalyticsPrefix.CURATE,
+//               window.AnalyticsGranularity.ALL_LEVELS,
+//               window.Actions.EXISTING,
+//               Destinations.LOCAL
+//             );
+//           }
+//         }
+//       }
+//     } else {
+//       document.getElementById("nextBtn").disabled = true;
+//       $("#para-continue-location-dataset-getting-started").text("");
+//     }
+//   }
+// );
 
 window.electron.ipcRenderer.on(
   "guided-selected-local-destination-datasetCurate",
@@ -6950,15 +6981,15 @@ window.electron.ipcRenderer.on(
 );
 
 //// Select to choose a local dataset (generate dataset)
-document
-  .getElementById("input-destination-generate-dataset-locally")
-  .addEventListener("click", function () {
-    $("#Question-generate-dataset-locally-destination").nextAll().removeClass("show");
-    $("#Question-generate-dataset-locally-destination").nextAll().removeClass("test2");
-    $("#Question-generate-dataset-locally-destination").nextAll().removeClass("prev");
-    document.getElementById("nextBtn").disabled = true;
-    window.electron.ipcRenderer.send("open-file-dialog-local-destination-curate-generate");
-  });
+// document
+//   .getElementById("input-destination-generate-dataset-locally")
+//   .addEventListener("click", function () {
+//     $("#Question-generate-dataset-locally-destination").nextAll().removeClass("show");
+//     $("#Question-generate-dataset-locally-destination").nextAll().removeClass("test2");
+//     $("#Question-generate-dataset-locally-destination").nextAll().removeClass("prev");
+//     document.getElementById("nextBtn").disabled = true;
+//     window.electron.ipcRenderer.send("open-file-dialog-local-destination-curate-generate");
+//   });
 
 window.electron.ipcRenderer.on(
   "selected-local-destination-datasetCurate-generate",
@@ -6985,6 +7016,23 @@ window.electron.ipcRenderer.on(
     }
   }
 );
+
+document.getElementById("button-generate-validate").addEventListener("click", function () {
+  // setTimeout(function () {
+  //   document.getElementById("generate-dataset-progress-tab").style.display = "none";
+  //   document.getElementById("div-vertical-progress-bar").style.display = "flex";
+  //   document.getElementById("prevBtn").style.display = "inline";
+  //   document.getElementById("nextBtn").style.display = "inline";
+  //   document.getElementById("start-over-btn").style.display = "inline-block";
+  //   window.showParentTab(window.currentTab, 1);
+  //   if (
+  //     window.sodaJSONObj["starting-point"]["type"] == "new" &&
+  //     "local-path" in window.sodaJSONObj["starting-point"]
+  //   ) {
+  //     window.sodaJSONObj["starting-point"]["type"] = "local";
+  //   }
+  // }, window.delayAnimation);
+});
 
 // function to hide the sidebar and disable the sidebar expand button
 // function forceActionSidebar(action) {
@@ -7096,6 +7144,8 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
 
 const preGenerateSetup = async (e, elementContext) => {
   $($($(elementContext).parent()[0]).parents()[0]).removeClass("tab-active");
+  // set tab-active to generate-progress-tab
+  $("#generate-dataset-progress-tab").addClass("tab-active");
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   document.getElementById("prevBtn").style.display = "none";
@@ -7104,7 +7154,16 @@ const preGenerateSetup = async (e, elementContext) => {
   document.getElementById("div-generate-comeback").style.display = "none";
   document.getElementById("wrapper-wrap").style.display = "none";
   document.getElementById("generate-dataset-progress-tab").style.display = "flex";
+  $("#party-lottie").hide();
+  $("#please-wait-new-curate-div").hide();
+
   $("#sidebarCollapse").prop("disabled", false);
+  // disable guided_mode_view
+  document.getElementById("guided_mode_view").style.pointerEvents = "none";
+  // disable documentation view to be clicked again
+  document.getElementById("documentation-view").style.pointerEvents = "none";
+  // disable contact us view to be clicked again
+  document.getElementById("contact-us-view").style.pointerEvents = "none";
 
   // updateJSON structure after Generate dataset tab
   window.updateJSONStructureGenerate(false, sodaJSONObj);
@@ -7141,6 +7200,15 @@ const preGenerateSetup = async (e, elementContext) => {
       document.getElementById("div-vertical-progress-bar").style.display = "flex";
       document.getElementById("div-generate-comeback").style.display = "flex";
       document.getElementById("generate-dataset-progress-tab").style.display = "none";
+      $("#generate-dataset-progress-tab").removeClass("tab-active");
+      document.getElementById("preview-dataset-tab").style.display = "flex";
+      $("#preview-dataset-tab").addClass("tab-active");
+
+      document.getElementById("guided_mode_view").style.pointerEvents = "";
+      // Allow documentation view to be clicked again
+      document.getElementById("documentation-view").style.pointerEvents = "";
+      // Allow contact us view to be clicked again
+      document.getElementById("contact-us-view").style.pointerEvents = "";
       return;
     }
   }
@@ -7188,8 +7256,14 @@ const preGenerateSetup = async (e, elementContext) => {
         initiate_generate(e);
       } else {
         $("#sidebarCollapse").prop("disabled", false);
+        $("#please-wait-new-curate-div").show();
         document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
         document.getElementById("div-generate-comeback").style.display = "flex";
+        document.getElementById("guided_mode_view").style.pointerEvents = "";
+        // Allow documentation view to be clicked again
+        document.getElementById("documentation-view").style.pointerEvents = "";
+        // Allow contact us view to be clicked again
+        document.getElementById("contact-us-view").style.pointerEvents = "";
       }
     });
   } else {
@@ -7248,6 +7322,10 @@ const initiate_generate = async (e) => {
 
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
   document.getElementById("guided_mode_view").style.pointerEvents = "none";
+  // Disable the Docs sidebar button to prevent the sodaJSONObj from being modified
+  document.getElementById("documentation-view").style.pointerEvents = "none";
+  // Disable the Contact Us sidebar button to prevent the sodaJSONObj from being modified
+  document.getElementById("contact-us-view").style.pointerEvents = "none";
 
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
@@ -7386,8 +7464,14 @@ const initiate_generate = async (e) => {
       let time = (end - start) / 1000;
       let { data } = response;
 
+      $("#party-lottie").show();
+
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
       uploadedFiles = data["main_curation_uploaded_files"];
+      window.pennsieveAgentManifestId = data["local_manifest_id"];
+      window.pennsieveManifestId = data["origin_manifest_id"];
+
+      window.totalFilesCount = uploadedFiles;
 
       $("#sidebarCollapse").prop("disabled", false);
       window.log.info("Completed curate function");
@@ -7443,6 +7527,10 @@ const initiate_generate = async (e) => {
       // log folder and file options selected ( can be merge, skip, replace, duplicate)
       logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
+      // hide the retry button
+      $("#button-retry").hide();
+      $("#button-generate-validate").show();
+
       // update dataset list; set the dataset id and int id
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
@@ -7458,9 +7546,15 @@ const initiate_generate = async (e) => {
 
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
+      // Allow documentation view to be clicked again
+      document.getElementById("documentation-view").style.pointerEvents = "";
+      // Allow contact us view to be clicked again
+      document.getElementById("contact-us-view").style.pointerEvents = "";
     })
     .catch(async (error) => {
       clearInterval(timerProgress);
+
+      $("#party-lottie").hide();
 
       // set the first line of progressStatus to 'Upload Failed'
       if (progressStatus.innerHTML.split("<br>").length > 1) {
@@ -7472,8 +7566,16 @@ const initiate_generate = async (e) => {
         progressStatus.innerHTML = `Upload Failed`;
       }
 
+      // show the retry button and hide the verify file status button
+      $("#button-retry").show();
+      $("#button-generate-validate").hide();
+
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
+      // Allow documentation view to be clicked again
+      document.getElementById("documentation-view").style.pointerEvents = "";
+      // Allow contact us view to be clicked again
+      document.getElementById("contact-us-view").style.pointerEvents = "";
 
       clientError(error);
       let emessage = userErrorMessage(error);
@@ -7747,8 +7849,8 @@ const initiate_generate = async (e) => {
         clearInterval(timerProgress);
         generateProgressBar.value = 100;
         statusMeter.value = 100;
-        progressStatus.innerHTML = main_curate_status + window.smileyCan;
-        statusText.innerHTML = main_curate_status + window.smileyCan;
+        progressStatus.innerHTML = main_curate_status;
+        statusText.innerHTML = main_curate_status;
         successful = true;
       }
     } else {
@@ -7776,6 +7878,10 @@ const initiate_generate = async (e) => {
     }
 
     if (main_curate_status === "Done") {
+      $("#please-wait-new-curate-div").hide();
+
+      $("#party-lottie").show();
+
       $("#sidebarCollapse").prop("disabled", false);
       window.log.info("Done curate track");
       statusBarClone.remove();
@@ -7979,7 +8085,7 @@ const determineDatasetDestination = () => {
         } else {
           return [
             // get dataset name,
-            document.querySelector("#inputNewNameDataset").value,
+            document.querySelector("#inputNewNameDataset-upload-dataset").value,
             "Pennsieve",
           ];
         }
@@ -7989,12 +8095,12 @@ const determineDatasetDestination = () => {
           return [window.sodaJSONObj["generate-dataset"]["dataset-name"], "Local"];
         } else {
           // creating a new dataset from an existing local dataset
-          return [document.querySelector("#inputNewNameDataset").value, "Local"];
+          return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "Local"];
         }
       }
     }
   } else {
-    return [document.querySelector("#inputNewNameDataset").value, "Local"];
+    return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "Local"];
   }
 };
 
@@ -8850,7 +8956,6 @@ window.scaleBannerImage = async (imagePath) => {
 };
 
 document.getElementById("button-gather-logs").addEventListener("click", () => {
-  console.log("Gather logs button clicked");
   //function will be used to gather all logs on all OS's
   let homedir = window.os.homedir();
   let file_path = "";

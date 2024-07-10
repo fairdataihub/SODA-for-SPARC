@@ -7,6 +7,7 @@ on:
       - main
       - staging
       - base-react
+      - pre-staging
 
 jobs:
   deploy-on-linux:
@@ -37,7 +38,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "20.8.0"
+          node-version: "latest"
 
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
