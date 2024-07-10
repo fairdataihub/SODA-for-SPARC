@@ -5597,53 +5597,56 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-derivative-data-organization-tab") {
       const microScopyImages = window.sodaJSONObj["confirmed-microscopy-images"] || [];
+
+      const ensurePathArrayHasFoldersInDatasetStructure = (pathArray) => {
+        console.log("pathArray:", pathArray);
+        let currentFolder = window.datasetStructureJSONObj;
+        for (const folder of pathArray) {
+          if (!currentFolder["folders"][folder]) {
+            console.log("Folder does not exist, creating it");
+
+            currentFolder["folders"][folder] = newEmptyFolderObj();
+          }
+          currentFolder = currentFolder["folders"][folder];
+        }
+        console.log("currentFolder:", currentFolder);
+      };
+
       for (const image of microScopyImages) {
-        const imageRelativeDatasetStructurePath = image["relativeDatasetStructurePath"];
-        console.log("Creating derivative preview for image:", imageRelativeDatasetStructurePath);
-        const imageIsInsideASampleFolder = imageRelativeDatasetStructurePath.includes("sam-");
-        console.log("Image is inside a sample folder:", imageIsInsideASampleFolder);
-        try {
-          const derivativeTargetPath = imageRelativeDatasetStructurePath.replace(
-            "primary/",
-            "derivative/"
-          );
-          console.log("Derivative target path:", derivativeTargetPath);
-          const splitArray = derivativeTargetPath.split("/");
-          console.log("splitArray pre-pop:", splitArray);
-          // remove the last element (the image file name)
-          const targetFolderPathForConvertedImage = splitArray.slice(0, -1);
-          splitArray.pop();
-          console.log("Target folder path for converted image", targetFolderPathForConvertedImage);
+        const relativeDatasetStructurePaths = image["relativeDatasetStructurePaths"];
 
-          const ensurePathArrayHasFoldersInDatasetStructure = (pathArray) => {
-            console.log("pathArray:", pathArray);
-            let currentFolder = window.datasetStructureJSONObj;
-            for (const folder of pathArray) {
-              if (!currentFolder["folders"][folder]) {
-                console.log("Folder does not exist, creating it");
+        for (const relativePath of relativeDatasetStructurePaths) {
+          try {
+            const derivativeTargetPath = relativePath.replace("primary/", "derivative/");
+            console.log("derivativeTargetPath:", derivativeTargetPath);
+            const splitArray = derivativeTargetPath.split("/");
+            console.log("splitArray:", splitArray);
+            // remove the last element (the image file name)
+            const targetFolderPathForConvertedImage = splitArray.slice(0, -1);
+            splitArray.pop();
+            console.log(
+              "targetFolderPathForConvertedImage after slice:",
+              targetFolderPathForConvertedImage
+            );
+            console.log("splitArray after pop:", splitArray);
 
-                currentFolder["folders"][folder] = newEmptyFolderObj();
-              }
-              currentFolder = currentFolder["folders"][folder];
-            }
-            console.log("currentFolder:", currentFolder);
-          };
-          ensurePathArrayHasFoldersInDatasetStructure(targetFolderPathForConvertedImage);
-          console.log(
-            "Getting folder contents at relative path:",
-            targetFolderPathForConvertedImage
-          );
-          const folderContentsAtRelativePath = window.getRecursivePath(
-            targetFolderPathForConvertedImage,
-            window.datasetStructureJSONObj
-          );
+            ensurePathArrayHasFoldersInDatasetStructure(targetFolderPathForConvertedImage);
+            console.log(
+              "Getting folder contents at relative path:",
+              targetFolderPathForConvertedImage
+            );
+            const folderContentsAtRelativePath = window.getRecursivePath(
+              targetFolderPathForConvertedImage,
+              window.datasetStructureJSONObj
+            );
 
-          console.log(
-            "Folder contents at relative path: (Should be empty)",
-            folderContentsAtRelativePath
-          );
-        } catch (error) {
-          console.error(error);
+            console.log(
+              "Folder contents at relative path: (Should be empty)",
+              folderContentsAtRelativePath
+            );
+          } catch (error) {
+            console.error(error);
+          }
         }
       }
       openSubPageNavigation(targetPageID);
