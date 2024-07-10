@@ -29,17 +29,6 @@ ipcMain.handle("excelToJsonSheet1Options", (event, options) => {
 });
 
 ipcMain.handle("convertJSONToSxlsx", async (event, jsondata, excelfile) => {
-  return await convertJSONToXlsx(jsondata, excelfile);
-});
-
-const convertJSONToXlsx = async (jsondata, excelfile) => {
-  const requiredManifestHeaders = [
-    "filename",
-    "timestamp",
-    "description",
-    "file type",
-    "Additional Metadata",
-  ];
   const blueHeader = ["filename", "File Name", "file name"];
   const greenHeader = ["timestamp", "description", "file type"];
   const yellowHeader = ["Additional Metadata"];
@@ -89,8 +78,17 @@ const convertJSONToXlsx = async (jsondata, excelfile) => {
     });
     rowIndex++;
   });
-  wb.write(excelfile);
-};
+
+  await new Promise((resolve, reject) => {
+    wb.write(excelfile, (err, stats) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(stats);
+      }
+    });
+  });
+});
 
 const createWorkbookStyle = (wb, color) => {
   return wb.createStyle({
