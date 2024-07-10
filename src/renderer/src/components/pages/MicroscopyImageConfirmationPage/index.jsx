@@ -83,7 +83,7 @@ const MicroscopyImageConfirmationPage = () => {
       pageHeader="Microscopy Image Confirmation"
       pageDescriptionArray={[
         "SODA has identified the images below as potential microscopy images. Please check the cards of the images that are microscopy images. You can use the search filter to batch select/deselect images based on their file name or type.",
-        "The selected images will be converted with MicroFile+ and processed to ensure they are SDS compliant.",
+        "The selected images will be checked to ensure they have the SDS required file metadata requirements and then converted to SDS complient file types during the upload process.",
       ]}
     >
       <GuidedModeSection bordered={true}>
@@ -97,7 +97,7 @@ const MicroscopyImageConfirmationPage = () => {
             {!filteredImages.every((image) => deniedImagePaths.has(image.filePath)) && (
               <Button
                 variant="light"
-                color="orange"
+                color="indigo"
                 w="275px"
                 onClick={unselectAllImagesAsMicroscopy}
               >
@@ -129,6 +129,9 @@ const MicroscopyImageConfirmationPage = () => {
                     p="lg"
                     radius="md"
                     withBorder
+                    style={{
+                      opacity: imageIsDenied ? 0.5 : 1,
+                    }}
                   >
                     <Card.Section>
                       <AspectRatio>
