@@ -110,9 +110,11 @@ const compareLocalRemoteDataset = async () => {
 
   const comparisonResults = await getComparisonResults(localDatasetPath, remoteDatasetPath);
 
+  console.log(comparisonResults)
+
   // check if there are any results
   if (
-    comparisonResults.files_only_on_local.length === 0 &&
+    comparisonResults.folders_only_on_local.length === 0 &&
     comparisonResults.files_only_on_pennsieve.length === 0
   ) {
     // no differences
@@ -121,10 +123,12 @@ const compareLocalRemoteDataset = async () => {
   }
 
   addRows("comparison-results-only-on-pennsieve-table", comparisonResults.files_only_on_pennsieve);
-  addRows("comparison-results-only-on-local-table", comparisonResults.files_only_on_local);
+  addRows("comparison-results-only-on-local-table", comparisonResults.folders_only_on_local);
 };
 
 const getComparisonResults = async (localDatasetPath, remoteDatasetPath) => {
+  console.log("Local path: ", localDatasetPath);
+  console.log("Remote path: ", remoteDatasetPath);
   let comparisonReults = await api.getLocalRemoteComparisonResults(
     remoteDatasetPath,
     localDatasetPath

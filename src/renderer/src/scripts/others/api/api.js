@@ -539,6 +539,7 @@ const getLocalRemoteComparisonResults = async (datasetId, localDatasetPath) => {
   const response = await client.get(
     `/datasets/${datasetId}/comparison_results?local_dataset_path=${localDatasetPath}`
   );
+  console.log(response.data)
   return response.data;
 };
 

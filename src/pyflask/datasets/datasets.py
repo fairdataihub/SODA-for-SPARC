@@ -12,6 +12,10 @@ from utils.getDataset import get_dataset
 from constants import PENNSIEVE_URL
 from .compare_local_remote_files import run_comparison
 
+from namespaces import NamespaceEnum, get_namespace_logger
+
+namespace_logger = get_namespace_logger(NamespaceEnum.DATASETS)
+
 
 
 def get_role(dataset):
@@ -202,4 +206,9 @@ def check_if_dataset_exists(dataset_name):
 
 
 def get_local_dataset_comparison(dataset_id, local_dataset_path):
-    return run_comparison(dataset_id, local_dataset_path)
+    try: 
+        comp_results = run_comparison(dataset_id, local_dataset_path)
+        return comp_results
+    except Exception as e:
+        namespace_logger.error(f"Error occurred while comparing local dataset with remote dataset: {e}")
+        abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")

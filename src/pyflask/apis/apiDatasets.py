@@ -226,13 +226,19 @@ class ComparisonResults(Resource):
     @api.doc(params={"local_dataset_path": "Path of the local dataset to compare against the Pennsieve dataset"})
 
     def get(self, dataset_id):
+        api.logger.info("Comparing local dataset to Pennsieve dataset")
         # get the dataset_path from the query string 
         args = self.parser.parse_args()
         local_dataset_path = args.get('local_dataset_path')
 
         try:
-            return get_local_dataset_comparison(dataset_id, local_dataset_path)
+            v =  get_local_dataset_comparison(dataset_id, local_dataset_path)
+            # api.logger.info("FUn It Finished")
+            return v
+
         except Exception as e:
+            api.logger.info(f"Comparing local dataset to Pennsieve dataset error s{e}")
+            
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
