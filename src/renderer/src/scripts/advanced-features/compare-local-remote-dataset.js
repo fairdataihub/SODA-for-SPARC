@@ -119,7 +119,7 @@ const compareLocalRemoteDataset = async () => {
 
   const comparisonResults = await getComparisonResults(localDatasetPath, remoteDatasetPath);
 
-  console.log(comparisonResults)
+  console.log(comparisonResults);
 
   // check if there are any results
   if (
