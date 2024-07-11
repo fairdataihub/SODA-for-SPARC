@@ -68,6 +68,26 @@ def get_package_children(package_id):
         sys.exit(1)
 
 
+# recursively get all the files from the current folder and its subfolder
+def get_all_children_package_files(package_id):
+    # recursively get all the files from the current folder and its subfolder
+    try:
+        headers = create_request_headers(get_access_token())
+        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}", headers=headers)
+        r.raise_for_status()
+        response = r.json()
+        package_children = response["children"]
+        files = []
+        for child in package_children:
+            if child["content"]["packageType"] == "Collection":
+                files += get_all_children_package_files(child["content"]["id"])
+            else:
+                files.append(child["content"]["name"])
+        return files
+    except Exception as e:
+        print(f"Exception when calling API: {e}")
+        sys.exit(1)
+
 def verify_local_folders_and_files_exist_on_pennsieve(
     local_path, pennsieve_package_id, recursivePath
 ):  
@@ -97,73 +117,80 @@ def verify_local_folders_and_files_exist_on_pennsieve(
         file_names_on_pennsieve.append(file["name"])
 
     # Step 2: Get the children of the local path
-    local_path_children = os.listdir(local_path)
-    local_folders = []
-    local_files = []
-    empty_local_folders = []
-    local_zero_kb_files = []
-    for child in local_path_children:
-        child_path = os.path.join(local_path, child)
-        if os.path.isdir(child_path):
-            if os.listdir(child_path) == []:
-                empty_local_folders.append(child)
+    if not os.path.exists(local_path):
+        namespace_logger.info(f"Path {local_path} does not exist")
+        # TODO: Add recursive path to list
+        file_on_pennsieve_but_not_in_local_dataset += file_names_on_pennsieve
+        # TODO: FUnction that recursively imports all files from the current folder including from its subfolders
+        file_on_pennsieve_but_not_in_local_dataset += get_all_children_package_files(pennsieve_package_id)
+    else:
+        local_path_children = os.listdir(local_path)
+        local_folders = []
+        local_files = []
+        empty_local_folders = []
+        local_zero_kb_files = []
+        for child in local_path_children:
+            child_path = os.path.join(local_path, child)
+            if os.path.isdir(child_path):
+                if os.listdir(child_path) == []:
+                    empty_local_folders.append(child)
+                else:
+                    local_folders.append(child)
             else:
-                local_folders.append(child)
-        else:
-            if os.path.getsize(child_path) == 0:
-                local_zero_kb_files.append(child)
+                if os.path.getsize(child_path) == 0:
+                    local_zero_kb_files.append(child)
+                else:
+                    local_files.append(child)
+        folders_local_and_pennsieve = []
+        # Step 3: Add local folders that are not on Pennsieve to a list
+        for folder in local_folders:
+            if folder not in folder_names_on_pennsieve:
+                folders_in_local_dataset_but_not_on_pennsieve.append(
+                    f"{recursivePath}{folder}"
+                )
+            # If the folder is in both the local dataset and on Pennsieve, add it to a list
             else:
-                local_files.append(child)
-    folders_local_and_pennsieve = []
-    # Step 3: Add local folders that are not on Pennsieve to a list
-    for folder in local_folders:
-        if folder not in folder_names_on_pennsieve:
-            folders_in_local_dataset_but_not_on_pennsieve.append(
-                f"{recursivePath}{folder}"
+                for folder_on_pennsieve in folders_on_pennsieve:
+                    if folder_on_pennsieve["name"] == folder:
+                        folders_local_and_pennsieve.append(folder_on_pennsieve)
+
+        # Step 3 B: Add local empty folders that on Pennsieve to a list
+        for folder in empty_local_folders:
+            if folder in folder_names_on_pennsieve:
+                empty_local_folders_on_pennsieve.append(f"{recursivePath}{folder}")
+
+        # Step 4: Add local files that are not on Pennsieve to a list (excludes 0kb files)
+        for file in local_files:
+            if file not in file_names_on_pennsieve:
+                files_in_local_dataset_but_not_on_pennsieve.append(f"{recursivePath}{file}")
+
+        # Step 4 B: Add local 0kb files that are not on Pennsieve to a list
+        for file in local_zero_kb_files:
+            if file not in file_names_on_pennsieve:
+                zero_kb_files_in_local_dataset_but_not_on_pennsieve.append(
+                    f"{recursivePath}{file}"
+                )
+
+        # Step 5: Add Pennsieve folders that are not on the local dataset to a list
+        for folder in folder_names_on_pennsieve:
+            if folder not in local_folders:
+                folder_on_pennsieve_but_not_in_local_dataset.append(
+                    f"{recursivePath}{folder}"
+                )
+
+        # Step 6: Add Pennsieve files that are not on the local dataset to a list
+        for file in file_names_on_pennsieve:
+            if file not in local_files:
+                file_on_pennsieve_but_not_in_local_dataset.append(f"{recursivePath}{file}")
+
+        # Step 7: Recursively call this function on each folder in the local dataset that is on Pennsieve
+        for folder in folders_local_and_pennsieve:
+            local_folder_path_to_verify = os.path.join(local_path, folder["name"])
+            verify_local_folders_and_files_exist_on_pennsieve(
+                local_folder_path_to_verify,
+                folder["id"],
+                f"{recursivePath}{folder['name']}/",
             )
-        # If the folder is in both the local dataset and on Pennsieve, add it to a list
-        else:
-            for folder_on_pennsieve in folders_on_pennsieve:
-                if folder_on_pennsieve["name"] == folder:
-                    folders_local_and_pennsieve.append(folder_on_pennsieve)
-
-    # Step 3 B: Add local empty folders that on Pennsieve to a list
-    for folder in empty_local_folders:
-        if folder in folder_names_on_pennsieve:
-            empty_local_folders_on_pennsieve.append(f"{recursivePath}{folder}")
-
-    # Step 4: Add local files that are not on Pennsieve to a list (excludes 0kb files)
-    for file in local_files:
-        if file not in file_names_on_pennsieve:
-            files_in_local_dataset_but_not_on_pennsieve.append(f"{recursivePath}{file}")
-
-    # Step 4 B: Add local 0kb files that are not on Pennsieve to a list
-    for file in local_zero_kb_files:
-        if file not in file_names_on_pennsieve:
-            zero_kb_files_in_local_dataset_but_not_on_pennsieve.append(
-                f"{recursivePath}{file}"
-            )
-
-    # Step 5: Add Pennsieve folders that are not on the local dataset to a list
-    for folder in folder_names_on_pennsieve:
-        if folder not in local_folders:
-            folder_on_pennsieve_but_not_in_local_dataset.append(
-                f"{recursivePath}{folder}"
-            )
-
-    # Step 6: Add Pennsieve files that are not on the local dataset to a list
-    for file in file_names_on_pennsieve:
-        if file not in local_files:
-            file_on_pennsieve_but_not_in_local_dataset.append(f"{recursivePath}{file}")
-
-    # Step 7: Recursively call this function on each folder in the local dataset that is on Pennsieve
-    for folder in folders_local_and_pennsieve:
-        local_folder_path_to_verify = os.path.join(local_path, folder["name"])
-        verify_local_folders_and_files_exist_on_pennsieve(
-            local_folder_path_to_verify,
-            folder["id"],
-            f"{recursivePath}{folder['name']}/",
-        )
 
 
 
