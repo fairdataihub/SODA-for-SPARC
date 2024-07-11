@@ -136,8 +136,6 @@ const compareLocalRemoteDataset = async () => {
 };
 
 const getComparisonResults = async (localDatasetPath, remoteDatasetPath) => {
-  console.log("Local path: ", localDatasetPath);
-  console.log("Remote path: ", remoteDatasetPath);
   let comparisonReults = await api.getLocalRemoteComparisonResults(
     remoteDatasetPath,
     localDatasetPath
