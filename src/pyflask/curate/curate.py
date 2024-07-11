@@ -1889,14 +1889,11 @@ def build_create_folder_request(folder_name, folder_parent_id, dataset_id):
 
     return body
 
-current_files_in_subscriber_session = 0
 
 bytes_uploaded_per_file = {}
 total_bytes_uploaded = {"value": 0}
 current_files_in_subscriber_session = 0
-completed_file_id_map = {}
-events_hash_map = {}
-bytes_mismatch_occurred = False
+
 
 bytes_file_path_dict = {}
 
@@ -1926,9 +1923,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
     global manifest_id
     global origin_manifest_id
     global main_curate_status 
-    global events_hash_map
-    global completed_file_id_map
-    global bytes_mismatch_occurred
+
 
     total_files = 0
     total_dataset_files = 0
@@ -1939,9 +1934,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
     total_bytes_uploaded_per_file = {}
     files_uploaded = 0
     renamed_files_counter = 0
-    events_hash_map = {}
-    completed_file_id_map = {}
-    bytes_mismatch_occurred = False
 
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
@@ -2355,12 +2347,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             """
             global files_uploaded
             global total_bytes_uploaded
-            global current_files_in_subscriber_session
             global bytes_uploaded_per_file
             global main_curation_uploaded_files
-            global completed_file_id_map
-            global events_hash_map 
-            global bytes_mismatch_occurred
             global main_total_generate_dataset_size
 
 
@@ -2371,71 +2359,23 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
 
                 status = events_dict["upload_status"].status
                 if status == "2" or status == 2:
-                    namespace_logger.info(f"[UPLOAD COMPLETE EVENT RECEIVED]")
+                    ps.unsubscribe(10)
+                    namespace_logger.info("[UPLOAD COMPLETE EVENT RECEIVED]")
                     namespace_logger.info(f"Amount of bytes uploaded via sum: {sum(bytes_uploaded_per_file.values())} vs total bytes uploaded via difference: {total_bytes_uploaded['value']}")
                     namespace_logger.info(f"Amount of bytes Pennsieve Agent says via sum: {sum(bytes_uploaded_per_file.values())} vs amount of bytes we calculated before hand: {main_total_generate_dataset_size}")
 
-                # if current_bytes_uploaded > total_bytes_to_upload: 
-                #     namespace_logger.info(f"[Bytes Uploaded Exceeds Total]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
-
-
-                # keep track of each event to see if we receive it more than once - this could lead to our overcounting bytes and undercounting files 
-                # Step 1: Concatenate the values into a single string
-                concatenated_values = f"{file_id}{total_bytes_to_upload}{current_bytes_uploaded}"
-
-                # Step 2: Generate a hash of the concatenated string
-                hashed_event = hash(concatenated_values)
-
-                # if hashed_event in events_hash_map:
-                    # namespace_logger.info(f"[Counting Same Event Twice]: Event hash composed of File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
-                # else:
-                    # events_hash_map[hashed_event] = True
-
-
-                # check if we are counting a completed file twice and og the file_id as a string
-                # if(completed_file_id_map.get(file_id, False)):
-                    # namespace_logger.info(f"[File Counted Twice]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
-
-
-                previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
 
                 # only update the byte count if the current bytes uploaded is greater than the previous bytes uploaded
                 # if current_bytes_uploaded > previous_bytes_uploaded:
                 # update the file id's current total bytes uploaded value 
                 bytes_uploaded_per_file[file_id] = current_bytes_uploaded
-
-
-                # sometimes a user uploads the same file to multiple locations in the same session. Edge case. Handle it by resetting the value to 0 if it is equivalent to the 
-                # total bytes for that file 
-                # if previous_bytes_uploaded == total_bytes_to_upload:
-                #     namespace_logger.info(f"[Previous Bytes Being Reset]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
-                #     previous_bytes_uploaded = 0 
-                
-
                 total_bytes_uploaded["value"] = sum(bytes_uploaded_per_file.values())
-
-                # check if somehow the aggregate of all of the toal bytes is a different value than the current total_bytes_uploaded["value"] value 
-                # if total_bytes_uploaded["value"] != sum(bytes_uploaded_per_file.values()) and bytes_mismatch_occurred == False:
-                #     namespace_logger.info(f"[Total Bytes Mismatch]: Total bytes uploaded: {total_bytes_uploaded['value']} - Sum of bytes uploaded per file: {sum(bytes_uploaded_per_file.values())}")
-                #     bytes_mismatch_occurred = True
-
 
                 # check if the given file has finished uploading
                 if current_bytes_uploaded == total_bytes_to_upload and  file_id != "":
                     files_uploaded += 1
                     main_curation_uploaded_files += 1
-                    completed_file_id_map[file_id] = True
-                    # namespace_logger.info(f"[File uploaded]: {file_id} - Total Files Uploaded: {files_uploaded} - Total in subscriber session - {current_files_in_subscriber_session}")
-                    # namespace_logger.info(f"[File Uploaded Details]: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
 
-                # if current_bytes_uploaded == total_bytes_to_upload and file_id == "":
-                #     namespace_logger.info(f"[File Upload Complete But No File ID]: File id: {file_id} - Total bytes to upload: {total_bytes_to_upload} - Current bytes uploaded: {current_bytes_uploaded}")
-                
-                # check if the upload has finished: TODO: Use status: complete 
-                if files_uploaded == current_files_in_subscriber_session:
-                    namespace_logger.info("Upload complete")
-                    # unsubscribe from the agent's upload messages since the upload has finished
-                    # ps.unsubscribe(10)
 
         # Set variables needed throughout generation flow
         list_upload_files = []
