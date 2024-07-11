@@ -69,8 +69,34 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     $("#nextBtn").prop("disabled", false);
   }
 
+  if (tabNow === 1 && !$("#confirm-account-workspace").hasClass("selected")) {
+    if (!window.defaultBfAccount) {
+      $("#help-text-account-workspace").text(
+        "Please click the account field to sign in to your Pennsieve account"
+      );
+      $("#confirm-account-workspace").prop("disabled", true);
+    } else {
+      $("#help-text-account-workspace").text(
+        "Are these the Pennsieve account and workspace you would like to use for the upload?"
+      );
+
+      $("#nextBtn").prop("disabled", false);
+    }
+  }
+
   if (tabNow == 1 && $("#confirm-account-workspace").hasClass("selected")) {
-    $("#nextBtn").prop("disabled", false);
+    if (!window.defaultBfAccount) {
+      $("#help-text-account-workspace").text(
+        "Please click the account field to sign in to your Pennsieve account"
+      );
+      $("#confirm-account-workspace").prop("disabled", true);
+    } else {
+      $("#help-text-account-workspace").text(
+        "Are these the Pennsieve account and workspace you would like to use for the upload?"
+      );
+
+      $("#nextBtn").prop("disabled", false);
+    }
   }
 
   if (tabNow == 2) {

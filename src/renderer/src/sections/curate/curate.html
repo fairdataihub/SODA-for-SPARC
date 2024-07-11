@@ -448,14 +448,30 @@
               margin-right: 50px;
             ">
             <div class="container-body condensed" style="height: 40%; flex-direction: column; align-items: center;">
-              <label style="font-size: 17px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Are these the Pennsieve account and workspace you would like to use for the upload?</label>
+              <label id="help-text-account-workspace" style="font-size: 17px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Are these the Pennsieve account and workspace you would like to use for the upload?</label>
               <div id="top-level-card-container--upload-dataset" class="top-level-card-container"></div>
               <div style="display: flex; flex-direction: row; justify-content: space-evenly; width: 550px;">
-                <button class="ui positive basic soda-green-border button guided--radio-button" style="min-width: 10rem;" id="confirm-account-workspace">Yes</button>
+                <button class="ui positive basic soda-green-border button guided--radio-button" style="min-width: 10rem;" id="confirm-account-workspace">Confirm</button>
                 <button class="ui negative basic button guided--radio-button" id="change-account-btn">Change Account</button>
                 <button class="ui negative basic button guided--radio-button" id="change-workspace-btn">Change Workspace</button>
               </div>
             </div>
+
+            <div class="invisible" style="display: flex; flex-direction: column; align-items: center;" id="upload-dataset-synchronizing-workspace-loading">
+              <div class="lds-roller">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+              <p id="upload-dataset-synchronizing-workspace-loading-para">Verifying account information</p>
+            </div>
+
+            
           </div>
 
           <!-- 3. Upload Destination Selection Tab -->
@@ -1068,7 +1084,6 @@
             <div class="individual-question generate-dataset" id="Question-preview-dataset-details" style="width: 70%">
               <div class="ui form" style="width: 100%">
                 <div class="grouped fields">
-                  <!-- <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Confirm details for dataset generation</label> -->
                   <div class="field" style="margin: 5px 0; width: auto">
                     <div style="
                         display: flex;
@@ -1118,18 +1133,24 @@
               </div>
             </div>
 
-            <div class="individual-question generate-dataset" id="Question-generate-dataset-generate-div"
-              style="display: flex; flex-direction: row; justify-content: center">
-              <button id="button-generate" class="btn_animated generate-btn" style="
-                  padding-left: 0.7rem;
-                  margin: 5px;
-                  width: 160px;
-                  height: 40px;
-                  font-size: 15px;
-                  border: none !important;
-                ">
-                Upload
-              </button>
+            <div class="individual-question generate-dataset" id="Question-generate-dataset-generate-div">
+              <div class="guided--section" style="min-width: 100%">
+                <div
+                  data-component-type="pennsieve-agent-check-display"
+                  class="guided--section hidden"
+                  id="freeform-mode-pre-generate-pennsieve-agent-check"
+                ></div>
+                <button id="button-generate" class="btn_animated generate-btn" style="
+                    padding-left: 0.7rem;
+                    margin: 5px;
+                    width: 160px;
+                    height: 40px;
+                    font-size: 15px;
+                    border: none !important;
+                  ">
+                  Upload
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1269,7 +1290,6 @@
             <div class="individual-question" id="Question-validate-dataset-upload" style="width: 70%">
               <div class="ui form" style="width: 100%">
                 <div class="grouped fields">
-                  <!-- <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Confirm details for dataset generation</label> -->
                   <div class="field" style="margin: 5px 0; width: auto">
                     <div style="
                         display: flex;
@@ -1326,7 +1346,7 @@
                       height: 40px;
                       border: none !important;
                     ">Retry Upload</button>
-                      <button id="verify-file-status-download-list" class="ui basic positive button guided--radio-button" style="margin-top: 0px !important; width: 180px; height: 40px;">Download list</button>
+                      <button  class="ui basic positive button guided--radio-button verify-file-status-download-list" style="margin-top: 0px !important; width: 180px; height: 40px;">Download list</button>
                       <button onclick="window.exitCurate(true)" class="btn_animated skip exit" style="
                           display: flex;
                           flex-direction: row;

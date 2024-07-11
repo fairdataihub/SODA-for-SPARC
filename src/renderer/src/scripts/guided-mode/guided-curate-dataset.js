@@ -19,8 +19,7 @@ import lottie from "lottie-web";
 import { dragDrop, successCheck, errorMark } from "../../assets/lotties/lotties";
 import kombuchaEnums from "../analytics/analytics-enums";
 import Swal from "sweetalert2";
-import Tagify from "@yaireo/tagify/dist/tagify.esm";
-// const Tagify = require("@yaireo/tagify/dist/tagify.esm");
+import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
 import tippy from "tippy.js";
 import { v4 as uuid } from "uuid";
 import doiRegex from "doi-regex";
@@ -62,12 +61,11 @@ import fileDoc from "/img/doc-file.png";
 import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
+import hasConnectedAccountWithPennsieve from "../others/authentication/auth";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
-
-window.logZustandStoreState = () => {};
 
 window.returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
@@ -124,9 +122,16 @@ const guidedCreateEventDataPrepareMetadata = (destination, value) => {
   };
 };
 
+document
+  .getElementById("guided-button-resume-pennsieve-dataset")
+  .addEventListener("click", async () => {
+    renderGuidedResumePennsieveDatasetSelectionDropdown();
+  });
+
 window.handleGuidedModeOrgSwitch = async (buttonClicked) => {
   const clickedButtonId = buttonClicked.id;
   if (clickedButtonId === "guided-button-change-workspace-dataset-import") {
+    console.log("Whats up");
     renderGuidedResumePennsieveDatasetSelectionDropdown();
   }
   if (buttonClicked.classList.contains("guided--progress-button-switch-workspace")) {
@@ -147,6 +152,19 @@ const guidedGetCurrentUserWorkSpace = () => {
   }
   return workSpaceFromUI;
 };
+
+window.verifyProfile = async (showNotyfs = false) => {
+  const accountValid = await window.check_api_key();
+
+  if (!accountValid) {
+    await window.addBfAccount(null, false);
+    return;
+  }
+};
+
+// document.querySelector("#guided-confirm-pennsieve-account-button").addEventListener("click", async () => {
+//   verifyProfile()
+// })
 
 const lowercaseFirstLetter = (string) => {
   if (!string) {
@@ -1827,6 +1845,17 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
+      const pennsieveAgentChecksPassed = await window.getPennsieveAgentStatus();
+      console.log("pennsieveAgentChecksPassed", pennsieveAgentChecksPassed);
+      if (!pennsieveAgentChecksPassed) {
+        window.unHideAndSmoothScrollToElement("guided-mode-post-log-in-pennsieve-agent-check");
+        errorArray.push({
+          type: "notyf",
+          message: "The Pennsieve Agent must be installed and running to continue.",
+        });
+        throw errorArray;
+      }
+
       window.sodaJSONObj["last-confirmed-bf-account-details"] = window.defaultBfAccount;
       window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] = userSelectedWorkSpace;
     }
@@ -3277,10 +3306,35 @@ const generateProgressCardElement = (progressFileJSONObj) => {
 const guidedRenderProgressCards = async () => {
   const progressCardsContainer = document.getElementById("guided-container-progress-cards");
   const progressCardLoadingDiv = document.getElementById("guided-section-loading-progress-cards");
+  const progressCardLoadingDivText = document.getElementById(
+    "guided-section-loading-progress-cards-para"
+  );
 
   // Show the loading div and hide the progress cards container
   progressCardsContainer.classList.add("hidden");
   progressCardLoadingDiv.classList.remove("hidden");
+
+  // if the user has an account connected with Pennsieve then verify the profile and workspace
+  if (
+    window.defaultBfAccount !== undefined ||
+    (window.defaultBfAccount === undefined && hasConnectedAccountWithPennsieve())
+  ) {
+    try {
+      progressCardLoadingDivText.textContent = "Verifying account information";
+      await window.verifyProfile();
+      progressCardLoadingDivText.textContent = "Verifying workspace information";
+      await window.synchronizePennsieveWorkspace();
+      progressCardLoadingDivText.textContent = "guided-section-loading-progress-cards-para";
+    } catch (e) {
+      clientError(e);
+      await swalShowInfo(
+        "Something went wrong while verifying your profile",
+        "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
+      );
+      loadingDiv.classList.add("hidden");
+      return;
+    }
+  }
 
   //Check if Guided-Progress folder exists. If not, create it.
   if (!window.fs.existsSync(guidedProgressFilePath)) {
@@ -3550,12 +3604,6 @@ window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
   }
   return returnObj;
 };
-
-document
-  .getElementById("guided-button-resume-pennsieve-dataset")
-  .addEventListener("click", async () => {
-    renderGuidedResumePennsieveDatasetSelectionDropdown();
-  });
 
 document
   .getElementById("guided-button-run-dataset-validation")
@@ -3903,6 +3951,9 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   const errorDiv = document.getElementById("guided-panel-pennsieve-dataset-import-error");
   const logInDiv = document.getElementById("guided-panel-log-in-before-resuming-pennsieve-dataset");
   const loadingDiv = document.getElementById("guided-panel-pennsieve-dataset-import-loading");
+  const loadingDivText = document.getElementById(
+    "guided-panel-pennsieve-dataset-import-loading-para"
+  );
   const pennsieveDatasetSelectDiv = document.getElementById(
     "guided-panel-pennsieve-dataset-select"
   );
@@ -3920,6 +3971,22 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
 
   //Show the loading Div and hide the dropdown div while the datasets the user has access to are being retrieved
   loadingDiv.classList.remove("hidden");
+
+  try {
+    loadingDivText.textContent = "Verifying account information";
+    await window.verifyProfile();
+    loadingDivText.textContent = "Verifying workspace information";
+    await window.synchronizePennsieveWorkspace();
+    loadingDivText.textContent = "Importing datasets from Pennsieve";
+  } catch (e) {
+    clientError(e);
+    await swalShowInfo(
+      "Something went wrong while verifying your profile",
+      "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
+    );
+    loadingDiv.classList.add("hidden");
+    return;
+  }
 
   const datasetSelectionSelectPicker = $("#guided-select-pennsieve-dataset-to-resume");
   datasetSelectionSelectPicker.empty();
@@ -5999,16 +6066,28 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-pennsieve-intro-tab") {
+      const elementsToShowWhenLoggedInToPennsieve =
+        document.querySelectorAll(".show-when-logged-in");
+      const elementsToShowWhenNotLoggedInToPennsieve =
+        document.querySelectorAll(".show-when-logged-out");
       const confirmPennsieveAccountDiv = document.getElementById(
         "guided-confirm-pennsieve-account"
       );
       const selectPennsieveAccountDiv = document.getElementById("guided-select-pennsieve-account");
       if (!window.defaultBfAccount) {
-        confirmPennsieveAccountDiv.classList.add("hidden");
-        selectPennsieveAccountDiv.classList.remove("hidden");
+        elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
+          element.classList.add("hidden");
+        });
+        elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
+          element.classList.remove("hidden");
+        });
       } else {
-        confirmPennsieveAccountDiv.classList.remove("hidden");
-        selectPennsieveAccountDiv.classList.add("hidden");
+        elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
+          element.classList.remove("hidden");
+        });
+        elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
+          element.classList.add("hidden");
+        });
 
         const pennsieveIntroText = document.getElementById("guided-pennsive-intro-bf-account");
         // fetch the user's email and set that as the account field's value
@@ -6705,10 +6784,15 @@ window.openPage = async (targetPageID) => {
         window.sodaJSONObj["digital-metadata"]["name"],
         "guided-folder-structure-review-generate"
       );
+
+      // Hide the Pennsieve agent check section (unhidden if it requires user action)
+      document
+        .getElementById("guided-mode-pre-generate-pennsieve-agent-check")
+        .classList.add("hidden");
     }
 
     if (targetPageID === "guided-dataset-generation-tab") {
-      document.getElementById("guided-dataset-upload-complete-message").classList.add("hidden");
+      document.getElementById("guided--verify-files").classList.add("hidden");
     }
 
     if (targetPageID === "guided-dataset-dissemination-tab") {
@@ -15294,7 +15378,7 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
   }
 };
 
-const guidedPennsieveDatasetUpload = async (generationDestination) => {
+const guidedPennsieveDatasetUpload = async () => {
   guidedSetNavLoadingState(true);
   try {
     const guidedBfAccount = window.defaultBfAccount;
@@ -15313,22 +15397,6 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
     const guidedTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
     const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
     const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]["banner-image-path"];
-
-    // get apps base path
-    const basepath = await window.electron.ipcRenderer.invoke("get-app-path", undefined);
-    const resourcesPath = window.process.resourcesPath();
-
-    // set the templates path
-    try {
-      await client.put("prepare_metadata/template_paths", {
-        basepath: basepath,
-        resourcesPath: resourcesPath,
-      });
-    } catch (error) {
-      clientError(error);
-      window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");
-      throw "Error setting templates path";
-    }
 
     //Hide the upload tables
     document.querySelectorAll(".guided-upload-table").forEach((table) => {
@@ -15430,12 +15498,31 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
 
     if (res.isConfirmed) {
       window.retryGuidedMode = true; //set the retry flag to true
-      let supplementary_checks = await window.run_pre_flight_checks(false);
+      let supplementary_checks = await window.run_pre_flight_checks(
+        "guided-mode-pre-generate-pennsieve-agent-check"
+      );
       if (!supplementary_checks) {
+        console.log("Failed supplementary checks");
+
         return;
       }
-      guidedPennsieveDatasetUpload();
-      return;
+
+      // check if the user made it to the last step
+      if (
+        !document
+          .querySelector("#guided-div-dataset-upload-status-table")
+          .classList.contains("hidden")
+      ) {
+        console.log("WOrking this flow");
+        // scroll to the upload status table
+        window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
+        // upload on the last step
+        await guidedUploadDatasetToPennsieve();
+      } else {
+        // restart the whole process
+        await guidedPennsieveDatasetUpload();
+        return;
+      }
     }
 
     const currentPageID = window.CURRENT_PAGE.id;
@@ -15448,6 +15535,39 @@ const guidedPennsieveDatasetUpload = async (generationDestination) => {
   }
   guidedSetNavLoadingState(false);
 };
+
+document
+  .querySelector("#guided--verify-file-status-retry-upload")
+  .addEventListener("click", async () => {
+    window.retryGuidedMode = true; //set the retry flag to true
+    let supplementary_checks = await window.run_pre_flight_checks(false);
+    if (!supplementary_checks) {
+      console.log("Failed supplementary checks");
+      return;
+    }
+
+    // hide the verify files sections
+    document.querySelector("#guided--verify-files").classList.add("hidden");
+    document.querySelector("#guided--question-validate-dataset-upload-2").classList.add("hidden");
+    document.querySelector("#guided--validate-dataset-upload").classList.add("hidden");
+
+    // check if the user made it to the last step
+    if (
+      !document
+        .querySelector("#guided-div-dataset-upload-status-table")
+        .classList.contains("hidden")
+    ) {
+      console.log("No working this flow");
+      // scroll to the upload status table
+      window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
+      // upload on the last step
+      await guidedUploadDatasetToPennsieve();
+    } else {
+      // restart the whole process
+      await guidedPennsieveDatasetUpload();
+    }
+  });
+
 const openGuidedDatasetRenameSwal = async () => {
   const currentDatasetUploadName = window.sodaJSONObj["digital-metadata"]["name"];
 
@@ -15533,6 +15653,12 @@ const guidedUploadDatasetToPennsieve = async () => {
       // if the upload succeeds reset the retry guided mode flag
       window.retryGuidedMode = false;
       guidedSetNavLoadingState(false);
+
+      let { data } = curationRes;
+      window.pennsieveManifestId = data["origin_manifest_id"];
+      window.totalFilesCount = data["main_curation_uploaded_files"];
+
+      console.log("Pennsieve manifest id should be set now: ", window.pennsieveManifestId);
 
       $("#sidebarCollapse").prop("disabled", false);
       window.log.info("Completed curate function");
@@ -15627,7 +15753,11 @@ const guidedUploadDatasetToPennsieve = async () => {
       await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
 
       //Display the click next text
-      document.getElementById("guided-dataset-upload-complete-message").classList.remove("hidden");
+      document.getElementById("guided--verify-files").classList.remove("hidden");
+
+      // enable the verify files button
+      document.querySelector("#guided--verify-files-button").disabled = false;
+      document.querySelector("#guided--skip-verify-btn").disabled = false;
 
       scrollToBottomOfGuidedBody();
 
@@ -15805,12 +15935,31 @@ const guidedUploadDatasetToPennsieve = async () => {
 
       if (res.isConfirmed) {
         window.retryGuidedMode = true; //set the retry flag to true
-        let supplementary_checks = await window.run_pre_flight_checks(false);
+        let supplementary_checks = await window.run_pre_flight_checks(
+          "guided-mode-pre-generate-pennsieve-agent-check"
+        );
         if (!supplementary_checks) {
           return;
         }
-        guidedPennsieveDatasetUpload();
-        return;
+
+        // check if the user made it to the last step
+        if (
+          !document
+            .querySelector("#guided-div-dataset-upload-status-table")
+            .classList.contains("hidden")
+        ) {
+          console.log("Happening here");
+          // scroll to the upload status table
+          window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
+          // upload on the last step
+          await guidedUploadDatasetToPennsieve();
+          return;
+        } else {
+          console.log("Happening here");
+          // restart the whole process
+          await guidedPennsieveDatasetUpload();
+          return;
+        }
       }
 
       const currentPageID = window.CURRENT_PAGE.id;
@@ -16167,7 +16316,7 @@ $("#guided-generate-changes-file").on("click", () => {
   guidedSaveRCFile("changes");
 });
 
-$("#guided-generate-dataset-button").on("click", async function () {
+document.getElementById("guided-generate-dataset-button").addEventListener("click", async () => {
   // Ensure that the current workspace is the workspace the user confirmed
   const currentWorkspace = guidedGetCurrentUserWorkSpace();
   const datasetWorkspace = window.sodaJSONObj["digital-metadata"]["dataset-workspace"];
@@ -16246,13 +16395,16 @@ $("#guided-generate-dataset-button").on("click", async function () {
     }
     return;
   }
+
   //run pre flight checks and abort if any fail
-  let supplementary_checks = await window.run_pre_flight_checks(false);
+  let supplementary_checks = await window.run_pre_flight_checks(
+    "guided-mode-pre-generate-pennsieve-agent-check"
+  );
   if (!supplementary_checks) {
     return;
   }
   await window.openPage("guided-dataset-generation-tab");
-  guidedPennsieveDatasetUpload("pennsieve");
+  guidedPennsieveDatasetUpload();
 });
 
 const guidedSaveBannerImage = async () => {
