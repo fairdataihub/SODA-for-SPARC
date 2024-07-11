@@ -5,6 +5,13 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v15.0.2 - 2024-06-14
+
+## Bug fixes:
+
+- Fixed an issue where the standalone manifest generator fails to generate manifests due to the manifest_files directory not being cleared prior to generation.
+- Fixed an issue where the cod eto fixe the upload failing was reverted prior to release.
+
 ## v15.0.1 - 2024-05-30
 
 ## Feature Additions:

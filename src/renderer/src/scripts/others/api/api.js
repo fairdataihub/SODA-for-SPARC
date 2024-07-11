@@ -514,7 +514,6 @@ const getDatasetFileCount = async (datasetId) => {
 const checkDatasetNameExists = async (datasetName) => {
   try {
     let response = await client.get(`/datasets/${datasetName}`);
-    console.log(response);
     if (response.status === 200) {
       return true;
     } else {
