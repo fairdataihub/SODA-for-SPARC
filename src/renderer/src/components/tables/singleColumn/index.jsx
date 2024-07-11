@@ -6,13 +6,13 @@ const SingleColumnTable = ({ columnName, id }) => {
   const rows = rowData.map((row, index) => {
     return (
       <Table.Tr key={index}>
-        <Table.Td style={{textAlign: 'left'}}>{row}</Table.Td>
+        <Table.Td style={{ textAlign: "left" }}>{row}</Table.Td>
       </Table.Tr>
     );
   });
 
   return (
-    <Table withTableBorder highlightOnHover >
+    <Table withTableBorder highlightOnHover>
       <Table.Thead>
         <Table.Tr>
           <Table.Th>{columnName}</Table.Th>
