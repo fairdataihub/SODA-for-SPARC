@@ -26,21 +26,16 @@ empty_local_folders_on_pennsieve = []
 
 
 def get_sds_compliant_folders_package_ids(dataset_id):
-    global sds_compliant_folder_names
     global PENNSIEVE_URL
     try:
-        sds_compliant_folder_package_ids = {}
         headers = create_request_headers(get_access_token())
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=headers)
         r.raise_for_status()
         response = r.json()
         dataset_root_children = response["children"]
-        for child in dataset_root_children:
-            if child["content"]["name"] in sds_compliant_folder_names:
-                sds_compliant_folder_package_ids[child["content"]["name"]] = child["content"]["id"]
-        return sds_compliant_folder_package_ids
+        return get_all_children_package_files(dataset_root_children)
     except Exception as e:
-        print(f"Exception when calling API: {e}")
+        namespace_logger.error(f"Exception when calling API: {e}")
         raise e
 
 
