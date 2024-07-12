@@ -43,7 +43,6 @@ import useGlobalStore from "../../stores/globalStore";
 import {
   setConfirmedMicroscopyImages,
   setPotentialMicroscopyImages,
-  setMicroscopyImagesUploadableToBioLucida,
 } from "../../stores/slices/microscopyImageSlice";
 import { setDropdownState } from "../../stores/slices/dropDownSlice";
 import {
@@ -1523,7 +1522,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     if (pageBeingLeftID === "guided-biolucida-image-selection-tab") {
       // Get the images selected to be uploaded to BioLucida from the global store and add them to the JSON
       const microscopyImagesSelectedToBeUploadedToBioLucida =
-        useGlobalStore.getState().microscopyImagesSelectedToBeUploadedToBioLucida;
+        useGlobalStore.getState().bioLucidaImages;
       console.log(
         "microscopyImagesSelectedToBeUploadedToBioLucida",
         microscopyImagesSelectedToBeUploadedToBioLucida
@@ -5558,9 +5557,11 @@ window.openPage = async (targetPageID) => {
       // and update the zustand store state to update the React components
       setConfirmedMicroscopyImages(window.sodaJSONObj["confirmed-microscopy-images"]);
 
-      setMicroscopyImagesUploadableToBioLucida(
-        window.sodaJSONObj["microscopy-images-selected-to-be-uploaded-to-biolucida"] || []
-      );
+      useGlobalStore
+        .getState()
+        .setBioLucidaImages(
+          window.sodaJSONObj["microscopy-images-selected-to-be-uploaded-to-biolucida"] || []
+        );
     }
     if (targetPageID === "guided-source-data-organization-tab") {
       openSubPageNavigation(targetPageID);

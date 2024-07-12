@@ -7,7 +7,7 @@ const SodaGreenPaper = ({ children }) => {
       shadow="sm"
       withBorder
       style={{
-        backgroundColor: "var(--color-transparent-soda-green)",
+        backgroundColor: "#e7f1f0",
         border: "1px solid var(--color-light-green)",
       }}
     >

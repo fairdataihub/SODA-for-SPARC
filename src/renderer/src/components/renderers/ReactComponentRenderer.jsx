@@ -17,7 +17,6 @@ while (!window.htmlSectionsAdded) {
 
 // Helper function to create a React root and render the component inside SodaComponentWrapper
 const renderComponent = (componentSlot, component) => {
-  console.log("Component Slot: ", componentSlot);
   const root = createRoot(componentSlot);
   root.render(<SodaComponentWrapper>{component}</SodaComponentWrapper>);
 };
