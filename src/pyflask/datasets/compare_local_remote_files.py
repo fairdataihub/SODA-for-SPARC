@@ -188,6 +188,57 @@ def verify_local_folders_and_files_exist_on_pennsieve(
             )
 
 
+def import_subfolders(subfolder, path):
+    global PENNSIEVE_URL
+    folder_id = subfolder["content"]["id"]
+    try:
+        headers = create_request_headers(get_access_token())
+        r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=headers)
+        r.raise_for_status()
+        response = r.json()
+        folder_children = response["children"]
+        for child in folder_children:
+            if child["content"]["packageType"] == "Collection":
+                curr_folder = {"content": child["content"], "path": path}
+                subfolder["folders"][child["content"]["name"]] = curr_folder
+            else:
+                curr_file = {"content": child["content"], "path": path}
+                subfolder["files"][child["content"]["name"]] = curr_file
+        for folder_name, folder in pennsieve_dataset_structure["folders"].items():
+            import_subfolders(folder, f"{path}/{folder_name}")
+    except Exception as e:
+        print(f"Exception when calling API: {e}")
+        sys.exit(1)
+
+
+pennsieve_dataset_structure = {"folders": {}, "files": {}}
+pennsieve_dataset_paths = {}
+# import the pennsieve dataset and store the files and folder in a dictionary with the following recursive  structure: {"folders": [], "files": []}
+def import_pennsieve_dataset(dataset_id, path):
+    global PENNSIEVE_URL
+    global pennsieve_dataset_structure
+    try:
+        headers = create_request_headers(get_access_token())
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=headers)
+        r.raise_for_status()
+        response = r.json()
+        dataset_root_children = response["children"]
+
+
+        for child in dataset_root_children:
+            if child["content"]["packageType"] == "Collection":
+                curr_folder = {"content": child["content"], "path": path}
+                pennsieve_dataset_structure["folders"][child["content"]["name"]] = curr_folder
+            else:
+                curr_file = {"content": child["content"], "path": path}
+                pennsieve_dataset_structure["files"][child["content"]["name"]] = curr_file
+        
+        for folder_name, folder in pennsieve_dataset_structure["folders"].items():
+            import_subfolders(folder, f"{path}/{folder_name}")
+    except Exception as e:
+        print(f"Exception when calling API: {e}")
+        sys.exit(1)
+
 
 def run_comparison(dataset_id, local_dataset_path):
     global namespace_logger
