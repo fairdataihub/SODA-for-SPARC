@@ -197,10 +197,10 @@ def import_subfolders(subfolder, path):
         folder_children = response["children"]
         for child in folder_children:
             if child["content"]["packageType"] == "Collection":
-                curr_folder = {"folders": {}, "path": path, "name": child["content"]["name"], "id": child["content"]["id"], "files": {}}
+                curr_folder = {"folders": {}, "path": f"{path}/{child['content']['name']}", "name": child["content"]["name"], "id": child["content"]["id"], "files": {}}
                 subfolder["folders"][child["content"]["name"]] = curr_folder
             else:
-                curr_file = {"name": child["content"]["name"], "path": path}
+                curr_file = {"name": child["content"]["name"], "path": f"{path}/{child['content']['name']}"}
                 subfolder["files"][child["content"]["name"]] = curr_file
         for folder_name, folder in subfolder["folders"].items():
             namespace_logger.info(f"Importing subfolders for {folder_name}")
@@ -223,22 +223,18 @@ def import_pennsieve_dataset(dataset_id, path):
         response = r.json()
         dataset_root_children = response["children"]
 
-        print(f"Dataset root children: {dataset_root_children}")
-
-
-
 
         for child in dataset_root_children:
             if child["content"]["packageType"] == "Collection":
-                curr_folder = {"path": path, "name": child["content"]["name"], "id": child["content"]["id"], "folders": {}, "files": {}}
+                curr_folder = {"path": f"{path}{child['content']['name']}", "name": child["content"]["name"], "id": child["content"]["id"], "folders": {}, "files": {}}
                 pennsieve_dataset_structure["folders"][child["content"]["name"]] = curr_folder
             else:
-                curr_file = {"name": child["content"]["name"], "path": path}
+                curr_file = {"name": child['content']['name'], "path": f"{path}{child['content']['name']}"}
                 pennsieve_dataset_structure["files"][child["content"]["name"]] = curr_file
         
         for folder_name, folder in pennsieve_dataset_structure["folders"].items():
             namespace_logger.info(f"Importing subfolders for {folder_name}")
-            import_subfolders(folder, f"{path}/{folder_name}")
+            import_subfolders(folder, f"{folder_name}")
     except Exception as e:
         print(f"Exception when calling API: {e}")
         raise e
@@ -262,7 +258,7 @@ def run_comparison(dataset_id, local_dataset_path):
     namespace_logger.info("Finished path check")
 
 
-    import_pennsieve_dataset(dataset_id, "/")
+    import_pennsieve_dataset(dataset_id, "")
 
     print(f"pennsieve_dataset_structure: {pennsieve_dataset_structure}")
 
