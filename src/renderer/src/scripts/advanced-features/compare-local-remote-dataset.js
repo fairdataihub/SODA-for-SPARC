@@ -113,11 +113,15 @@ document
     document.querySelector("#comparing-local-remote-dataset-roller").classList.add("hidden");
   });
 
+
+
+let comparisonResults; 
+
 const compareLocalRemoteDataset = async () => {
   const localDatasetPath = document.querySelector("#compare-local-remote-dataset-local-path").value;
   const remoteDatasetPath = window.defaultBfDatasetId;
 
-  const comparisonResults = await getComparisonResults(localDatasetPath, remoteDatasetPath);
+  comparisonResults = await getComparisonResults(localDatasetPath, remoteDatasetPath);
 
   console.log(comparisonResults);
 
@@ -142,3 +146,49 @@ const getComparisonResults = async (localDatasetPath, remoteDatasetPath) => {
   );
   return comparisonReults;
 };
+
+
+document.querySelector("#only-on-pennsieve-get-list").addEventListener("click", async () => {
+  const savePath = await window.electron.ipcRenderer.invoke(
+    "open-folder-path-select",
+    "Select a location to save your list of files"
+  );
+
+  if (!savePath) {
+    // If no path selected, exit the function
+    return;
+  }
+
+  const csvData = comparisonResults.files_only_on_pennsieve.join("\n");
+
+  const csvFilePath = `${savePath}/files_only_on_pennsieve_dataset.csv`;
+
+  // make a csv with the csvData and save it to the csvFilePath
+  window.fs.writeFileSync(csvFilePath, csvData);
+
+  // open the file in the default CSV viewer
+  window.electron.ipcRenderer.send("open-file-at-path", csvFilePath);
+});
+
+
+document.querySelector("#only-on-local-get-list").addEventListener("click", async () => {
+  const savePath = await window.electron.ipcRenderer.invoke(
+    "open-folder-path-select",
+    "Select a location to save your list of files"
+  );
+
+  if (!savePath) {
+    // If no path selected, exit the function
+    return;
+  }
+
+  const csvData = comparisonResults.files_only_on_local.join("\n");
+
+  const csvFilePath = `${savePath}/files_only_on_local_drive.csv`;
+
+  // make a csv with the csvData and save it to the csvFilePath
+  window.fs.writeFileSync(csvFilePath, csvData);
+
+  // open the file in the default CSV viewer
+  window.electron.ipcRenderer.send("open-file-at-path", csvFilePath);
+});
