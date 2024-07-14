@@ -188,6 +188,7 @@ def verify_local_folders_and_files_exist_on_pennsieve(
 
 def import_subfolders(subfolder, path):
     global PENNSIEVE_URL
+    global pennsieve_dataset_paths
     folder_id = subfolder["id"]
     try:
         headers = create_request_headers(get_access_token())
@@ -197,10 +198,14 @@ def import_subfolders(subfolder, path):
         folder_children = response["children"]
         for child in folder_children:
             if child["content"]["packageType"] == "Collection":
-                curr_folder = {"folders": {}, "path": f"{path}/{child['content']['name']}", "name": child["content"]["name"], "id": child["content"]["id"], "files": {}}
+                curr_path = f"{path}/{child['content']['name']}"
+                pennsieve_dataset_paths[curr_path] = False
+                curr_folder = {"folders": {}, "path": curr_path, "name": child["content"]["name"], "id": child["content"]["id"], "files": {}}
                 subfolder["folders"][child["content"]["name"]] = curr_folder
             else:
-                curr_file = {"name": child["content"]["name"], "path": f"{path}/{child['content']['name']}"}
+                curr_path = f"{path}/{child['content']['name']}"
+                pennsieve_dataset_paths[curr_path] = False
+                curr_file = {"name": child["content"]["name"], "path": curr_path}
                 subfolder["files"][child["content"]["name"]] = curr_file
         for folder_name, folder in subfolder["folders"].items():
             namespace_logger.info(f"Importing subfolders for {folder_name}")
@@ -216,6 +221,7 @@ pennsieve_dataset_paths = {}
 def import_pennsieve_dataset(dataset_id, path):
     global PENNSIEVE_URL
     global pennsieve_dataset_structure
+    global pennsieve_dataset_paths
     try:
         headers = create_request_headers(get_access_token())
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=headers)
@@ -226,10 +232,14 @@ def import_pennsieve_dataset(dataset_id, path):
 
         for child in dataset_root_children:
             if child["content"]["packageType"] == "Collection":
-                curr_folder = {"path": f"{path}{child['content']['name']}", "name": child["content"]["name"], "id": child["content"]["id"], "folders": {}, "files": {}}
+                curr_path = f"{path}{child['content']['name']}"
+                pennsieve_dataset_paths[curr_path] = False
+                curr_folder = {"path": curr_path, "name": child["content"]["name"], "id": child["content"]["id"], "folders": {}, "files": {}}
                 pennsieve_dataset_structure["folders"][child["content"]["name"]] = curr_folder
             else:
-                curr_file = {"name": child['content']['name'], "path": f"{path}{child['content']['name']}"}
+                curr_path = f"{path}{child['content']['name']}"
+                pennsieve_dataset_paths[curr_path] = False
+                curr_file = {"name": child['content']['name'], "path": curr_path}
                 pennsieve_dataset_structure["files"][child["content"]["name"]] = curr_file
         
         for folder_name, folder in pennsieve_dataset_structure["folders"].items():
@@ -239,6 +249,87 @@ def import_pennsieve_dataset(dataset_id, path):
         print(f"Exception when calling API: {e}")
         raise e
 
+
+local_dataset_structure = {"folders": {}, "files": {}}
+local_dataset_path_in_ps_bool_dict = {}
+
+# replicate the logic of import_pennsieve_dataset and import_subfolders but for a dataset on the users computer at a given path
+def import_local_dataset(path):
+    global local_dataset_structure
+    global local_dataset_path_in_ps_bool_dict
+    try:
+        local_path_children = os.listdir(path)
+        for child in local_path_children:
+            child_path = os.path.join(path, child)
+            if os.path.isdir(child_path):
+                curr_path = f"{path}/{child}"
+                curr_folder = {"path": curr_path, "name": child, "folders": {}, "files": {}}
+                local_dataset_path_in_ps_bool_dict[curr_path] = False
+                local_dataset_structure["folders"][child] = curr_folder
+            else:
+                curr_path = f"{path}/{child}"
+                local_dataset_path_in_ps_bool_dict[curr_path] = False
+                curr_file = {"name": child, "path": curr_path}
+                local_dataset_structure["files"][child] = curr_file
+        for folder_name, folder in local_dataset_structure["folders"].items():
+            namespace_logger.info(f"Importing subfolders for {folder_name}")
+            import_local_subfolders(folder, f"{path}/{folder_name}")
+    except Exception as e:
+        print(f"Exception when calling API: {e}")
+        raise e
+
+
+# replicate the logic of import_subfolders for a local dataset
+def import_local_subfolders(subfolder, path):
+    global local_dataset_structure
+    global local_dataset_path_in_ps_bool_dict
+    try:
+        local_path_children = os.listdir(path)
+        for child in local_path_children:
+            child_path = os.path.join(path, child)
+            if os.path.isdir(child_path):
+                curr_path = f"{path}/{child}"
+                local_dataset_path_in_ps_bool_dict[curr_path] = False
+                curr_folder = {"path": curr_path, "name": child, "folders": {}, "files": {}}
+                subfolder["folders"][child] = curr_folder
+            else:
+                curr_path = f"{path}/{child}"
+                local_dataset_path_in_ps_bool_dict[curr_path] = False
+                curr_file = {"name": child, "path": curr_path}
+                subfolder["files"][child] = curr_file
+        for folder_name, folder in subfolder["folders"].items():
+            namespace_logger.info(f"Importing subfolders for {folder_name}")
+            import_local_subfolders(folder, f"{path}/{folder_name}")
+    except Exception as e:
+        print(f"Exception when calling API: {e}")
+        raise e
+
+
+def compare_datasets(local_dataset_path):
+    global local_dataset_path_in_ps_bool_dict
+    global pennsieve_dataset_paths
+
+
+    only_on_pennsieve = []
+    only_on_local = []
+
+    for path in pennsieve_dataset_paths.keys():
+        local_path = local_dataset_path + path
+        if local_path not in local_dataset_path_in_ps_bool_dict:
+            only_on_pennsieve.append(path)
+            print(f"Path {path} only exists on Pennsieve")
+
+        else:
+            local_dataset_path_in_ps_bool_dict[local_path] = True
+
+    for path, exists in local_dataset_path_in_ps_bool_dict.items():
+        if not exists:
+            only_on_local.append(path)
+            print(f"Path {path} only exists on local dataset")
+
+    return {"files_only_on_pennsieve": only_on_pennsieve, "files_only_on_local": only_on_local}
+
+    
 
 def run_comparison(dataset_id, local_dataset_path):
     global namespace_logger
@@ -250,6 +341,8 @@ def run_comparison(dataset_id, local_dataset_path):
     global file_on_pennsieve_but_not_in_local_dataset 
     global empty_local_folders_on_pennsieve
     global pennsieve_dataset_structure
+    global local_dataset_path_in_ps_bool_dict
+    global pennsieve_dataset_paths
 
     if not os.path.exists(local_dataset_path) and  not os.path.isdir(local_dataset_path):
         print(f"Path {local_dataset_path} does not exist or is not a directory")
@@ -259,100 +352,11 @@ def run_comparison(dataset_id, local_dataset_path):
 
 
     import_pennsieve_dataset(dataset_id, "")
+    import_local_dataset(local_dataset_path)
 
-    print(f"pennsieve_dataset_structure: {pennsieve_dataset_structure}")
-
-    # namespace_logger.info("finished importing Pennsieve dataset{pennsieve_dataset_structure}")
-    
-    
-
-    # # sds_compliant_folder_packages_obj = get_sds_compliant_folders_package_ids(dataset_id)
-    # namespace_logger.info("Getting compliant folders packages completed")
-    # namespace_logger.info(f"Compliant folders packages: {sds_compliant_folder_packages_obj}")
+    return compare_datasets(local_dataset_path)
 
 
-
-
-    # namespace_logger.info("Starting function that checks for differences in local dataset and Pennsieve...")
-    # namespace_logger.info("This may take a whie for large datasets...")
-
-    # # Iterate over all top-level folders in the Pennsieve dataset
-    # for folder_name, folder_id in sds_compliant_folder_packages_obj.items():
-    #     verify_local_folders_and_files_exist_on_pennsieve(os.path.join(local_dataset_path, folder_name), folder_id, f"{folder_name}/")
-
-    # # Check if there are folders in the local dataset that do not exist on Pennsieve
-    # if len(folders_in_local_dataset_but_not_on_pennsieve) != 0:
-    #     # Print the count and list of such folders
-    #     namespace_logger.info(
-    #         f"Number of folders in local dataset but not on Pennsieve: {len(folders_in_local_dataset_but_not_on_pennsieve)}"
-    #     )
-    #     for folder in folders_in_local_dataset_but_not_on_pennsieve:
-    #         namespace_logger.info(folder)
-    # else:
-    #     namespace_logger.info("All folders in local dataset exist on Pennsieve")
-
-    # # Check if there are files in the local dataset that do not exist on Pennsieve
-    # if len(files_in_local_dataset_but_not_on_pennsieve) != 0:
-    #     # Print the count and list of such files
-    #     namespace_logger.info(
-    #         f"Number of files in local dataset but not on Pennsieve: {len(files_in_local_dataset_but_not_on_pennsieve)}"
-    #     )
-    #     for file in files_in_local_dataset_but_not_on_pennsieve:
-    #         namespace_logger.info(file)
-    # else:
-    #     namespace_logger.info("All files in local dataset exist on Pennsieve")
-
-    # # Check if there are folders on Pennsieve that do not exist in the local dataset
-    # if len(folder_on_pennsieve_but_not_in_local_dataset) != 0:
-    #     # Print the count and list of such folders
-    #     namespace_logger.info(
-    #         f"Number of folders on Pennsieve but not in local dataset: {len(folder_on_pennsieve_but_not_in_local_dataset)}"
-    #     )
-    #     for folder in folder_on_pennsieve_but_not_in_local_dataset:
-    #         namespace_logger.info(folder)
-    # else:
-    #     namespace_logger.info("All folders on Pennsieve exist in the local dataset")
-
-    # # Check if there are files on Pennsieve that do not exist in the local dataset
-    # if len(file_on_pennsieve_but_not_in_local_dataset) != 0:
-    #     # Print the count and list of such files
-    #     namespace_logger.info(
-    #         f"Number of files on Pennsieve but not in local dataset: {len(file_on_pennsieve_but_not_in_local_dataset)}"
-    #     )
-    #     for file in file_on_pennsieve_but_not_in_local_dataset:
-    #         namespace_logger.info(file)
-    # else:
-    #     namespace_logger.info("All files on Pennsieve exist in the local dataset")
-
-    # # Check if there are zero-kb files in the local dataset that do not exist on Pennsieve
-    # if len(zero_kb_files_in_local_dataset_but_not_on_pennsieve) != 0:
-    #     # Print the count and list of such zero-kb files
-    #     namespace_logger.info(
-    #         f"Number of 0kb files in local dataset but not on Pennsieve: {len(zero_kb_files_in_local_dataset_but_not_on_pennsieve)}"
-    #     )
-    #     for file in zero_kb_files_in_local_dataset_but_not_on_pennsieve:
-    #         namespace_logger.info(file)
-    # else:
-    #     namespace_logger.info("No 0kb files in local dataset but not on Pennsieve")
-
-    # # Check if there are empty local folders on Pennsieve
-    # if len(empty_local_folders_on_pennsieve) != 0:
-    #     # Print the count and list of such empty folders
-    #     namespace_logger.info(
-    #         f"Number of empty local folders on Pennsieve: {len(empty_local_folders_on_pennsieve)} # Note: These folders may not be empty on Pennsieve"
-    #     )
-    #     for folder in empty_local_folders_on_pennsieve:
-    #         namespace_logger.info(folder)
-    # else:
-    #     namespace_logger.info("No empty local folders on Pennsieve")
-
-    # return { 
-    #     "folders_only_on_local": folders_in_local_dataset_but_not_on_pennsieve, 
-    #     "files_only_on_pennsieve": file_on_pennsieve_but_not_in_local_dataset,
-    #     "folders_only_on_pennsieve": folder_on_pennsieve_but_not_in_local_dataset, 
-    #     "empty_local_folders_on_pennsieve": empty_local_folders_on_pennsieve, 
-    #     "zero_kb_files_in_local_dataset_but_not_on_pennsieve": zero_kb_files_in_local_dataset_but_not_on_pennsieve
-    #     }
 
 
 
