@@ -1760,10 +1760,11 @@
                   </label>
                   <div style="border-radius: 0.5rem; margin-top: 10px; align-self: center">
                     <p class="tip-content">
-                      These files are only on Pennsieve and not in your local dataset. You have the
-                      option of deleting these files from Pennsieveto make them match your local
+                      These folders and files are only on Pennsieve and not in your local dataset. You have the
+                      option of deleting these files from Pennsieve to make them match your local
                       dataset. You can also download the list of files so that you may manually
-                      delete them yourself.
+                      delete them yourself. Note: If you do not see any results in the table it means this 
+                      Pennsieve dataset does not have any files or folders that are not in your local dataset.
                     </p>
                   </div>
                   <div
@@ -1776,7 +1777,10 @@
                   flex-direction: row;
                   margin-top: 2%;
                   justify-content: space-evenly;
-                ">
+                " 
+                  id="only-on-pennsieve-btn-div"
+                  
+                  >
                     <div
                         data-component-type="generic-button"
                         data-text="Get File List in CSV"
@@ -1796,10 +1800,11 @@
                   </label>
                   <div style="border-radius: 0.5rem; margin-top: 10px; align-self: center">
                     <p class="tip-content">
-                      These files are only found locally and are not in your Pennsieve dataset. You
+                      These folders and files are only found locally and are not in your Pennsieve dataset. You
                       may upload these files to Pennsieve to make them match your Pennsieve dataset.
                       You can also download a list of the files that are only represented locally to
-                      manually upload them to Pennsieve.
+                      manually upload them to Pennsieve. Note: If you do not see any results in the table it means this
+                      local dataset does not have any files or folders that are not in your Pennsieve dataset.
                     </p>
                   </div>
                   <div
