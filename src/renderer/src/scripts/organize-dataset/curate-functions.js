@@ -614,7 +614,6 @@ window.handleLocalDatasetImport = async (path) => {
   return true;
 };
 
-
 window.importLocalDataset = async (folderPath) => {
   window.sodaJSONObj = {
     "bf-account-selected": {},
@@ -629,7 +628,6 @@ window.importLocalDataset = async (folderPath) => {
     },
   };
   let moveForward = false;
-
 
   let valid_dataset = window.verify_sparc_folder(folderPath, "local");
 
@@ -662,16 +660,14 @@ window.importLocalDataset = async (folderPath) => {
     document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
     document.getElementById("nextBtn").disabled = false;
   }
-}
+};
 
 window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (event, path) => {
   if (path.length > 0) {
     // Get the path of the first index
     let folderPath = path[0];
-   
-    await window.importLocalDataset(folderPath)
 
-
+    await window.importLocalDataset(folderPath);
   }
 });
 

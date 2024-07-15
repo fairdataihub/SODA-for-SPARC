@@ -113,9 +113,7 @@ document
     document.querySelector("#comparing-local-remote-dataset-roller").classList.add("hidden");
   });
 
-
-
-let comparisonResults; 
+let comparisonResults;
 
 const compareLocalRemoteDataset = async () => {
   const localDatasetPath = document.querySelector("#compare-local-remote-dataset-local-path").value;
@@ -147,7 +145,6 @@ const getComparisonResults = async (localDatasetPath, remoteDatasetPath) => {
   return comparisonReults;
 };
 
-
 document.querySelector("#only-on-pennsieve-get-list").addEventListener("click", async () => {
   const savePath = await window.electron.ipcRenderer.invoke(
     "open-folder-path-select",
@@ -169,7 +166,6 @@ document.querySelector("#only-on-pennsieve-get-list").addEventListener("click", 
   // open the file in the default CSV viewer
   window.electron.ipcRenderer.send("open-file-at-path", csvFilePath);
 });
-
 
 document.querySelector("#only-on-local-get-list").addEventListener("click", async () => {
   const savePath = await window.electron.ipcRenderer.invoke(
@@ -193,20 +189,24 @@ document.querySelector("#only-on-local-get-list").addEventListener("click", asyn
   window.electron.ipcRenderer.send("open-file-at-path", csvFilePath);
 });
 
-
-
 document.querySelector("#only-on-local-upload-selected").addEventListener("click", async () => {
+  let res = await swalConfirmAction(
+    "warning",
+    "Navigate to Upload Dataset and Upload Files",
+    "Clicking this button will take you to the Upload Dataset feature where we will upload the listed files to the selected Pennsieve dataset for you. All steps will have the options pre-selected for you to corrctly upload only these files. Please note if some of your files are not SDS-compliant the dataset cannot be uploaded. Are you sure you want to do this?",
+    "yes",
+    "no"
+  );
 
-  let res = await swalConfirmAction("warning", "Navigate to Upload Dataset and Upload Files", "Clicking this button will take you to the Upload Dataset feature where we will upload the listed files to the selected Pennsieve dataset for you. All steps will have the options pre-selected for you to corrctly upload only these files. Please note if some of your files are not SDS-compliant the dataset cannot be uploaded. Are you sure you want to do this?", "yes", "no")
-  
-  if(!res) return 
+  if (!res) return;
 
-  document.querySelector("#button-homepage-freeform-mode").click()
-  
-  // get the local dataset path 
+  document.querySelector("#button-homepage-freeform-mode").click();
+
+  // get the local dataset path
   const localDatasetPath = document.querySelector("#compare-local-remote-dataset-local-path").value;
-  await window.importLocalDataset(localDatasetPath)
+  await window.importLocalDataset(localDatasetPath);
 
+  document.querySelector("#confirm-account-workspace").click();
 
   document.querySelector("#confirm-account-workspace").click()
 
