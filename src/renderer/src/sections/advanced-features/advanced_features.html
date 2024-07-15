@@ -1714,25 +1714,6 @@
                     <div class="ui active green inline loader small" style="display: none"></div>
                   </div>
                 </div>
-                <div
-                  style="
-                    display: none;
-                    flex-direction: row;
-                    justify-content: center;
-                    margin-top: 30px;
-                  "
-                  id="div-compare-local-remote-dataset-ps-ds-confirm"
-                >
-                  <button
-                    style="width: 120px"
-                    id="compare-local-remote-dataset-remote-btn"
-                    data-next="compare-local-remote-dataset-question-3"
-                    data-current="compare-local-remote-dataset-question-2"
-                    class="btn_animated"
-                  >
-                    Confirm
-                  </button>
-                </div>
               </div>
             </div>
           </div>
@@ -1790,11 +1771,23 @@
                     data-column-name="File Path"
                     id="comparison-results-only-on-pennsieve-table"
                   ></div>
-                  <div
-                    data-component-type="generic-button"
-                    data-text="Delete Files from Pennsieve"
-                    id="only-on-pennsieve-delete-selected"
-                  ></div>
+                  <div style="
+                  display: flex;
+                  flex-direction: row;
+                  margin-top: 2%;
+                  justify-content: space-evenly;
+                ">
+                    <div
+                        data-component-type="generic-button"
+                        data-text="Get File List in CSV"
+                        id="only-on-pennsieve-get-list"
+                      ></div>
+                    <div
+                      data-component-type="generic-button"
+                      data-text="Delete Files from Pennsieve"
+                      id="only-on-pennsieve-delete-selected"
+                    ></div>
+                  </div>  
                   </div>
                 </div>
                 <div id="comparison-results-only-on-local-table" style="margin-top: 15px">
