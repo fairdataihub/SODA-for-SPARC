@@ -6,7 +6,7 @@ while (!window.baseHtmlLoaded) {
 import api from "../others/api/api";
 import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
 import { clientError } from "../others/http-error-handler/error-handler";
-import { swalConfirmAction, swalShowError } from "../utils/swal-utils";
+import { swalConfirmAction, swalShowError, swalShowInfo } from "../utils/swal-utils";
 
 document.querySelector(".prepare-comparison").addEventListener("click", async () => {
   window.openDropdownPrompt("null", "dataset");
@@ -214,9 +214,22 @@ document.querySelector("#only-on-local-upload-selected").addEventListener("click
   document.querySelector("#Question-generate-dataset-existing-folders-options").style.display = "flex"
   document.querySelector("#merge-folder-card").click()
   document.querySelector("#replace-file-card").click()
+})
 
 
 
+document.querySelector("#only-on-pennsieve-delete-selected").addEventListener("click", async () => {
+  let filesToDelete = comparisonResults.files_only_on_pennsieve_ids
 
+  console.log(filesToDelete)
 
+  try {
+    await api.deleteFilesFromDataset(window.defaultBfDatasetId, filesToDelete)
+    // removeRows("comparison-results-only-on-pennsieve-table")
+    await swalShowInfo("Files Deleted", `${filesToDelete} files have been deleted from the dataset.`)
+  } catch(e) {
+    clientError(e)
+    await swalShowError("Error", "An error occurred while deleting the files. Please try again.")
+    return
+  }
 })

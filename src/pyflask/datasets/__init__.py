@@ -8,5 +8,6 @@ from .datasets import (
     get_dataset_doi,
     get_package_type_counts,
     get_total_items_in_local_dataset,
-    get_local_dataset_comparison
+    get_local_dataset_comparison,
+    delete_packages
 )

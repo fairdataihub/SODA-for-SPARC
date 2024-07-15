@@ -212,3 +212,16 @@ def get_local_dataset_comparison(dataset_id, local_dataset_path):
     except Exception as e:
         namespace_logger.error(f"Error occurred while comparing local dataset with remote dataset: {e}")
         abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
+
+
+def delete_packages(dataset_id, dataset_packages):
+    """
+    Function used to delete packages from a dataset
+    """
+    if not has_edit_permissions(get_access_token(), dataset_id):
+        abort(403, "You do not have permission to edit this dataset.")
+
+    for package in dataset_packages:
+        r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(get_access_token()), json={"things": [package]})
+        r.raise_for_status()
+    return {"deleted": "Packages deleted"}

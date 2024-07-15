@@ -199,12 +199,12 @@ def import_subfolders(subfolder, path):
         for child in folder_children:
             if child["content"]["packageType"] == "Collection":
                 curr_path = f"{path}/{child['content']['name']}"
-                pennsieve_dataset_paths[curr_path] = False
+                pennsieve_dataset_paths[curr_path] = {"present": False, "id": child["content"]["id"]}
                 curr_folder = {"folders": {}, "path": curr_path, "name": child["content"]["name"], "id": child["content"]["id"], "files": {}}
                 subfolder["folders"][child["content"]["name"]] = curr_folder
             else:
                 curr_path = f"{path}/{child['content']['name']}"
-                pennsieve_dataset_paths[curr_path] = False
+                pennsieve_dataset_paths[curr_path] = {"present": False, "id": child["content"]["id"]}
                 curr_file = {"name": child["content"]["name"], "path": curr_path}
                 subfolder["files"][child["content"]["name"]] = curr_file
         for folder_name, folder in subfolder["folders"].items():
@@ -233,12 +233,12 @@ def import_pennsieve_dataset(dataset_id, path):
         for child in dataset_root_children:
             if child["content"]["packageType"] == "Collection":
                 curr_path = f"{path}{child['content']['name']}"
-                pennsieve_dataset_paths[curr_path] = False
+                pennsieve_dataset_paths[curr_path] = {"present": False, "id": child["content"]["id"]}
                 curr_folder = {"path": curr_path, "name": child["content"]["name"], "id": child["content"]["id"], "folders": {}, "files": {}}
                 pennsieve_dataset_structure["folders"][child["content"]["name"]] = curr_folder
             else:
                 curr_path = f"{path}{child['content']['name']}"
-                pennsieve_dataset_paths[curr_path] = False
+                pennsieve_dataset_paths[curr_path] = {"present": False, "id": child["content"]["id"]}
                 curr_file = {"name": child['content']['name'], "path": curr_path}
                 pennsieve_dataset_structure["files"][child["content"]["name"]] = curr_file
         
@@ -268,7 +268,7 @@ def import_local_dataset(path):
                 local_dataset_structure["folders"][child] = curr_folder
             else:
                 curr_path = f"{path}/{child}"
-                local_dataset_path_in_ps_bool_dict[curr_path] = False
+                local_dataset_path_in_ps_bool_dict[curr_path] =  False
                 curr_file = {"name": child, "path": curr_path}
                 local_dataset_structure["files"][child] = curr_file
         for folder_name, folder in local_dataset_structure["folders"].items():
@@ -289,7 +289,7 @@ def import_local_subfolders(subfolder, path):
             child_path = os.path.join(path, child)
             if os.path.isdir(child_path):
                 curr_path = f"{path}/{child}"
-                local_dataset_path_in_ps_bool_dict[curr_path] = False
+                local_dataset_path_in_ps_bool_dict[curr_path] =  False
                 curr_folder = {"path": curr_path, "name": child, "folders": {}, "files": {}}
                 subfolder["folders"][child] = curr_folder
             else:
@@ -311,23 +311,25 @@ def compare_datasets(local_dataset_path):
 
 
     only_on_pennsieve = []
+    only_on_pennsieve_ids = []
     only_on_local = []
 
     for path in pennsieve_dataset_paths.keys():
         local_path = local_dataset_path + path
         if local_path not in local_dataset_path_in_ps_bool_dict:
             only_on_pennsieve.append(path)
+            only_on_pennsieve_ids.append(pennsieve_dataset_paths[path]["id"])
             print(f"Path {path} only exists on Pennsieve")
 
         else:
             local_dataset_path_in_ps_bool_dict[local_path] = True
 
-    for path, exists in local_dataset_path_in_ps_bool_dict.items():
-        if not exists:
+    for path, package in local_dataset_path_in_ps_bool_dict.items():
+        if not package:
             only_on_local.append(path)
             print(f"Path {path} only exists on local dataset")
 
-    return {"files_only_on_pennsieve": only_on_pennsieve, "files_only_on_local": only_on_local}
+    return {"files_only_on_pennsieve": only_on_pennsieve, "files_only_on_local": only_on_local, "files_only_on_pennsieve_ids": only_on_pennsieve_ids}
 
     
 

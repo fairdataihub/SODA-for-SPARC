@@ -1,4 +1,5 @@
 from flask_restx import Resource, reqparse, fields
+from flask import request
 from namespaces import get_namespace, NamespaceEnum
 from errorHandlers import notBadRequestException, handle_http_error
 import platform 
@@ -14,7 +15,8 @@ from datasets import (
     get_dataset_doi,
     get_package_type_counts,
     get_total_items_in_local_dataset,
-    get_local_dataset_comparison
+    get_local_dataset_comparison,
+    delete_packages,
 )
 
 api = get_namespace(NamespaceEnum.DATASETS)
@@ -239,6 +241,24 @@ class ComparisonResults(Resource):
         except Exception as e:
             api.logger.info(f"Comparing local dataset to Pennsieve dataset error s{e}")
             
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+        
+@api.route('/<string:dataset_id>/packages')
+class Packages(Resource):
+    @api.doc(responses={200: 'Success', 400: 'Bad Request', 500: "Internal server error"})
+    @api.doc(params={"dataset_id": "The id of the dataset to get package types for"})
+    def delete(self, dataset_id):
+        try:
+            data = request.get_json()
+            if "packages" not in data:
+                api.abort(400, "The packages key is required in the request body")
+                
+            files_to_delete = data.get('packages')
+
+            return delete_packages(dataset_id, files_to_delete)
+        except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
