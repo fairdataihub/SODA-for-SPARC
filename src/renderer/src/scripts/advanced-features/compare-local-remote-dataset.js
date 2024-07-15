@@ -35,7 +35,6 @@ document
     document.querySelector(`#${nextQuestion}`).style.display = "flex";
   });
 
-
 // observer for the selected dataset label in the dataset selection card in question 2
 const datasetChangedObserver = new MutationObserver(() => {
   console.log("We activated this here woo woo");
@@ -50,23 +49,19 @@ const datasetChangedObserver = new MutationObserver(() => {
     //   "",
     //   "individual-question"
     // );
-    let nextQuestion = document.querySelector("#compare-local-remote-dataset-question-3")
+    let nextQuestion = document.querySelector("#compare-local-remote-dataset-question-3");
     nextQuestion.style.display = "flex";
-    nextQuestion.scrollIntoView({ behavior: "smooth", block: "start"});
+    nextQuestion.scrollIntoView({ behavior: "smooth", block: "start" });
     document.querySelector("#comparison-results-container").style.display = "none";
-
   } else {
     $("#compare-local-remote-dataset-question-3").css("display", "none");
   }
 });
 
 // begin observing the dataset label in question 2
-datasetChangedObserver.observe(
-  document.querySelector("#bf_dataset_load_compare_local_remote"),
-  {
-    childList: true,
-  }
-);
+datasetChangedObserver.observe(document.querySelector("#bf_dataset_load_compare_local_remote"), {
+  childList: true,
+});
 
 document
   .querySelector("#compare-local-remote-begin-comparison-btn")
@@ -97,7 +92,6 @@ document
     // hide the spinner
     document.querySelector("#comparing-local-remote-dataset-roller").classList.add("hidden");
     document.querySelector("#comparison-results-container").style.display = "flex";
-
   });
 
 let comparisonResults;
@@ -118,10 +112,9 @@ const compareLocalRemoteDataset = async () => {
     // no differences
     document.querySelector("#compare-local-remote-dataset-no-differences").style.display = "flex";
     return;
-  } else if(comparisonResults.files_only_on_local.length === 0) {
+  } else if (comparisonResults.files_only_on_local.length === 0) {
     document.querySelector("#compare-local-remote-dataset-no-differences").style.display = "none";
     document.querySelector("#only-on-local-btn-div").style.display = "none";
-
   } else if (comparisonResults.files_only_on_pennsieve.length === 0) {
     document.querySelector("#compare-local-remote-dataset-no-differences").style.display = "none";
     document.querySelector("#only-on-pennsieve-btn-div").style.display = "none";
@@ -132,7 +125,7 @@ const compareLocalRemoteDataset = async () => {
 
   let normalizedPaths = comparisonResults.files_only_on_local.map((path) => {
     return window.path.normalize(path);
-  })
+  });
 
   addRows("comparison-results-only-on-pennsieve-table", comparisonResults.files_only_on_pennsieve);
   addRows("comparison-results-only-on-local-table", normalizedPaths);
@@ -181,7 +174,7 @@ document.querySelector("#only-on-local-get-list").addEventListener("click", asyn
 
   let normalizedPaths = comparisonResults.files_only_on_local.map((path) => {
     return window.path.normalize(path);
-  })
+  });
 
   const csvData = normalizedPaths.join("\n");
 

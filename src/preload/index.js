@@ -188,7 +188,7 @@ if (process.contextIsolated) {
       },
       normalize: (filepath) => {
         return path.normalize(filepath);
-      }
+      },
     });
     contextBridge.exposeInMainWorld("log", {
       info: (message) => {
