@@ -29,56 +29,103 @@ ipcMain.handle("excelToJsonSheet1Options", (event, options) => {
 });
 
 ipcMain.handle("convertJSONToSxlsx", async (event, jsondata, excelfile) => {
-  const blueHeader = ["filename", "File Name", "file name"];
-  const greenHeader = ["timestamp", "description", "file type"];
-  const yellowHeader = ["Additional Metadata"];
-  const wb = new excel4node.Workbook();
-  // create wb style that makes the background styling
-  const greenHeaderStyle = createWorkbookStyle(wb, "a8d08d");
-  const yellowHeaderStyle = createWorkbookStyle(wb, "ffd965");
-  const blueHeaderStyle = createWorkbookStyle(wb, "A0C2E6");
-  const standardCellStyle = wb.createStyle({
-    font: {
-      bold: false,
-      color: "#000000",
-      size: 12,
-      name: "Calibri",
-    },
-  });
+  // Helper function to create styles for workbook cells with specific background color
+  const createWorkbookStyle = (wb, color) => {
+    return wb.createStyle({
+      fill: {
+        type: "pattern",
+        patternType: "solid",
+        fgColor: color,
+      },
+      font: {
+        bold: true,
+        color: "#000000",
+        size: 12,
+        name: "Calibri",
+      },
+      border: {
+        left: {
+          style: "thin",
+          color: "#000000",
+        },
+        right: {
+          style: "thin",
+          color: "#000000",
+        },
+        top: {
+          style: "thin",
+          color: "#000000",
+        },
+        bottom: {
+          style: "thin",
+          color: "#000000",
+        },
+      },
+    });
+  };
 
+  // Define header categories with corresponding colors
+  const headers = {
+    blue: ["filename", "File Name", "file name"],
+    green: ["timestamp", "description", "file type"],
+    yellow: ["Additional Metadata"],
+  };
+
+  // Create a new workbook
+  const wb = new excel4node.Workbook();
+  // Define styles for headers and standard cells
+  const styles = {
+    blueHeaderStyle: createWorkbookStyle(wb, "A0C2E6"),
+    greenHeaderStyle: createWorkbookStyle(wb, "a8d08d"),
+    yellowHeaderStyle: createWorkbookStyle(wb, "ffd965"),
+    standardCellStyle: wb.createStyle({
+      font: {
+        bold: false,
+        color: "#000000",
+        size: 12,
+        name: "Calibri",
+      },
+    }),
+  };
+
+  // Worksheet options
   const wsOptions = {
     sheetFormat: {
       defaultColWidth: 20,
     },
   };
+
+  // Add a worksheet to the workbook
   const ws = wb.addWorksheet("Sheet1", wsOptions);
+  // Extract column names from the first JSON object
   const headingColumnNames = Object.keys(jsondata[0]);
-  //Write Column Title in Excel file
-  let headingColumnIndex = 1;
-  headingColumnNames.forEach((heading) => {
-    let styleObject = yellowHeaderStyle;
-    if (blueHeader.includes(heading)) {
-      styleObject = blueHeaderStyle;
-    }
-    if (yellowHeader.includes(heading)) {
-      styleObject = yellowHeaderStyle;
-    }
-    if (greenHeader.includes(heading)) {
-      styleObject = greenHeaderStyle;
+
+  // Write Column Titles in Excel file
+  headingColumnNames.forEach((heading, index) => {
+    const columnIndex = index + 1;
+    let styleObject = styles.yellowHeaderStyle;
+
+    // Determine header style based on its category
+    if (headers.blue.includes(heading)) {
+      styleObject = styles.blueHeaderStyle;
+    } else if (headers.green.includes(heading)) {
+      styleObject = styles.greenHeaderStyle;
     }
 
-    ws.cell(1, headingColumnIndex++).string(heading).style(styleObject);
+    // Write the header with the appropriate style
+    ws.cell(1, columnIndex).string(heading).style(styleObject);
   });
-  //Write Data in Excel file
-  let rowIndex = 2;
-  jsondata.forEach((record) => {
-    let columnIndex = 1;
-    Object.keys(record).forEach((columnName) => {
-      ws.cell(rowIndex, columnIndex++).string(record[columnName]).style(standardCellStyle);
+
+  // Write Data in Excel file
+  jsondata.forEach((record, rowIndex) => {
+    headingColumnNames.forEach((columnName, columnIndex) => {
+      ws.cell(rowIndex + 2, columnIndex + 1)
+        .string(record[columnName])
+        .style(styles.standardCellStyle);
     });
-    rowIndex++;
   });
 
+  // Save the workbook to the specified filepath
   await new Promise((resolve, reject) => {
     wb.write(excelfile, (err, stats) => {
       if (err) {
@@ -89,37 +136,3 @@ ipcMain.handle("convertJSONToSxlsx", async (event, jsondata, excelfile) => {
     });
   });
 });
-
-const createWorkbookStyle = (wb, color) => {
-  return wb.createStyle({
-    fill: {
-      type: "pattern",
-      patternType: "solid",
-      fgColor: color,
-    },
-    font: {
-      bold: true,
-      color: "#000000",
-      size: 12,
-      name: "Calibri",
-    },
-    border: {
-      left: {
-        style: "thin",
-        color: "#000000",
-      },
-      right: {
-        style: "thin",
-        color: "#000000",
-      },
-      top: {
-        style: "thin",
-        color: "#000000",
-      },
-      bottom: {
-        style: "thin",
-        color: "#000000",
-      },
-    },
-  });
-};
