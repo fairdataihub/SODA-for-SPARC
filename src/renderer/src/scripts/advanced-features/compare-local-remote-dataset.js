@@ -6,7 +6,7 @@ while (!window.baseHtmlLoaded) {
 import api from "../others/api/api";
 import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
 import { clientError } from "../others/http-error-handler/error-handler";
-import { swalShowError } from "../utils/swal-utils";
+import { swalConfirmAction, swalShowError } from "../utils/swal-utils";
 
 document.querySelector(".prepare-comparison").addEventListener("click", async () => {
   window.openDropdownPrompt("null", "dataset");
@@ -192,3 +192,31 @@ document.querySelector("#only-on-local-get-list").addEventListener("click", asyn
   // open the file in the default CSV viewer
   window.electron.ipcRenderer.send("open-file-at-path", csvFilePath);
 });
+
+
+
+document.querySelector("#only-on-local-upload-selected").addEventListener("click", async () => {
+
+  let res = await swalConfirmAction("warning", "Navigate to Upload Dataset and Upload Files", "Clicking this button will take you to the Upload Dataset feature where we will upload the listed files to the selected Pennsieve dataset for you. All steps will have the options pre-selected for you to corrctly upload only these files. Please note if some of your files are not SDS-compliant the dataset cannot be uploaded. Are you sure you want to do this?", "yes", "no")
+  
+  if(!res) return 
+
+  document.querySelector("#button-homepage-freeform-mode").click()
+  
+  // get the local dataset path 
+  const localDatasetPath = document.querySelector("#compare-local-remote-dataset-local-path").value;
+  await window.importLocalDataset(localDatasetPath)
+
+
+  document.querySelector("#confirm-account-workspace").click()
+
+  document.querySelector("#dataset-upload-existing-dataset").click()
+  document.querySelector("#Question-generate-dataset-existing-folders-options").style.display = "flex"
+  document.querySelector("#merge-folder-card").click()
+  document.querySelector("#replace-file-card").click()
+
+
+
+
+
+})

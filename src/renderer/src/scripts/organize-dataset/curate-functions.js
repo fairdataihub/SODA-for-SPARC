@@ -614,55 +614,64 @@ window.handleLocalDatasetImport = async (path) => {
   return true;
 };
 
+
+window.importLocalDataset = async (folderPath) => {
+  window.sodaJSONObj = {
+    "bf-account-selected": {},
+    "bf-dataset-selected": {},
+    "dataset-structure": {},
+    "metadata-files": {},
+    "manifest-files": {},
+    "generate-dataset": {},
+    "starting-point": {
+      type: "local",
+      "local-path": "",
+    },
+  };
+  let moveForward = false;
+
+
+  let valid_dataset = window.verify_sparc_folder(folderPath, "local");
+
+  if (valid_dataset) {
+    moveForward = await window.handleLocalDatasetImport(folderPath);
+  } else {
+    Swal.fire({
+      icon: "warning",
+      html: `This dataset is not following the SPARC Data Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
+      <br/>
+      See the "Data Organization" section of the SPARC documentation for more 
+      <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: false,
+      showCancelButton: true,
+      focusCancel: true,
+      cancelButtonText: "Okay",
+      reverseButtons: window.reverseSwalButtons,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+  }
+
+  if (moveForward) {
+    document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
+    document.getElementById("nextBtn").disabled = false;
+  }
+}
+
 window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (event, path) => {
   if (path.length > 0) {
     // Get the path of the first index
     let folderPath = path[0];
-    let moveForward = false;
-    window.sodaJSONObj = {
-      "bf-account-selected": {},
-      "bf-dataset-selected": {},
-      "dataset-structure": {},
-      "metadata-files": {},
-      "manifest-files": {},
-      "generate-dataset": {},
-      "starting-point": {
-        type: "local",
-        "local-path": "",
-      },
-    };
+   
+    await window.importLocalDataset(folderPath)
 
-    let valid_dataset = window.verify_sparc_folder(folderPath, "local");
 
-    if (valid_dataset) {
-      moveForward = await window.handleLocalDatasetImport(folderPath);
-    } else {
-      Swal.fire({
-        icon: "warning",
-        html: `This dataset is not following the SPARC Data Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
-        <br/>
-        See the "Data Organization" section of the SPARC documentation for more 
-        <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        showConfirmButton: false,
-        showCancelButton: true,
-        focusCancel: true,
-        cancelButtonText: "Okay",
-        reverseButtons: window.reverseSwalButtons,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-    }
-
-    if (moveForward) {
-      document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
-      document.getElementById("nextBtn").disabled = false;
-    }
   }
 });
 
