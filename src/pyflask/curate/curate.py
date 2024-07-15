@@ -825,7 +825,6 @@ def check_json_size(jsonStructure):
 
 def generate_dataset_locally(soda_json_structure):
     global namespace_logger
-
     namespace_logger.info("starting generate_dataset_locally")
 
     # Vars used for tracking progress on the frontend 
@@ -836,8 +835,6 @@ def generate_dataset_locally(soda_json_structure):
     global main_curation_uploaded_files
 
     main_curation_uploaded_files = 0
-
-
 
     def recursive_dataset_scan(
         my_folder, my_folderpath, list_copy_files, list_move_files
@@ -881,6 +878,8 @@ def generate_dataset_locally(soda_json_structure):
                                     list_copy_files.append(
                                         [file_path, destination_path]
                                     )
+                        else:
+                            namespace_logger.info(f"file_path {file_path} does not exist. Skipping.")
         return list_copy_files, list_move_files
 
 
@@ -901,14 +900,17 @@ def generate_dataset_locally(soda_json_structure):
     list_copy_files = []
     list_move_files = []
     dataset_structure = soda_json_structure["dataset-structure"]
+
     for folder_key, folder in dataset_structure["folders"].items():
         folderpath = join(datasetpath, folder_key)
         mkdir(folderpath)
         list_copy_files, list_move_files = recursive_dataset_scan(
             folder, folderpath, list_copy_files, list_move_files
         )
-
-
+    for file in list_copy_files:
+        namespace_logger.info(f"file to copy: {file}")
+    for file in list_move_files:
+        namespace_logger.info(f"file to move: {file}")
     # 3. Add high-level metadata files in the list
     if "metadata-files" in soda_json_structure.keys():
         namespace_logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
@@ -958,7 +960,6 @@ def generate_dataset_locally(soda_json_structure):
         # track amount of copied files for loggin purposes
         mycopyfile_with_metadata(srcfile, distfile)
         main_curation_uploaded_files += 1
-
 
     namespace_logger.info("generate_dataset_locally step 7")
     # 7. Delete manifest folder and original folder if merge requested and rename new folder
@@ -3260,6 +3261,7 @@ def generate_dataset(soda_json_structure, resume, ps):
  
     # Generate dataset locally
     if generating_locally(soda_json_structure):
+        namespace_logger.info("generate_dataset generating_locally")
         main_generate_destination = soda_json_structure["generate-dataset"][
             "destination"
         ]
@@ -3497,8 +3499,10 @@ def main_curate_function(soda_json_structure, resume):
     main_curate_progress_message = "Generating dataset"
     try:
         if (soda_json_structure["generate-dataset"]["destination"] == "local"):
+            namespace_logger.info("main_curate_function generating locally")
             generate_dataset(soda_json_structure, resume, ps=None)
         else:
+            namespace_logger.info("main_curate_function generating on Pennsieve")
             accountname = soda_json_structure["bf-account-selected"]["account-name"]
             ps = connect_pennsieve_client(accountname)
             generate_dataset(soda_json_structure, resume, ps)
