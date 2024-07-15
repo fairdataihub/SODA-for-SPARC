@@ -208,28 +208,30 @@ document.querySelector("#only-on-local-upload-selected").addEventListener("click
 
   document.querySelector("#confirm-account-workspace").click();
 
-  document.querySelector("#confirm-account-workspace").click()
+  document.querySelector("#confirm-account-workspace").click();
 
-  document.querySelector("#dataset-upload-existing-dataset").click()
-  document.querySelector("#Question-generate-dataset-existing-folders-options").style.display = "flex"
-  document.querySelector("#merge-folder-card").click()
-  document.querySelector("#replace-file-card").click()
-})
-
-
+  document.querySelector("#dataset-upload-existing-dataset").click();
+  document.querySelector("#Question-generate-dataset-existing-folders-options").style.display =
+    "flex";
+  document.querySelector("#merge-folder-card").click();
+  document.querySelector("#replace-file-card").click();
+});
 
 document.querySelector("#only-on-pennsieve-delete-selected").addEventListener("click", async () => {
-  let filesToDelete = comparisonResults.files_only_on_pennsieve_ids
+  let filesToDelete = comparisonResults.files_only_on_pennsieve_ids;
 
-  console.log(filesToDelete)
+  console.log(filesToDelete);
 
   try {
-    await api.deleteFilesFromDataset(window.defaultBfDatasetId, filesToDelete)
+    await api.deleteFilesFromDataset(window.defaultBfDatasetId, filesToDelete);
     // removeRows("comparison-results-only-on-pennsieve-table")
-    await swalShowInfo("Files Deleted", `${filesToDelete} files have been deleted from the dataset.`)
-  } catch(e) {
-    clientError(e)
-    await swalShowError("Error", "An error occurred while deleting the files. Please try again.")
-    return
+    await swalShowInfo(
+      "Files Deleted",
+      `${filesToDelete} files have been deleted from the dataset.`
+    );
+  } catch (e) {
+    clientError(e);
+    await swalShowError("Error", "An error occurred while deleting the files. Please try again.");
+    return;
   }
-})
+});

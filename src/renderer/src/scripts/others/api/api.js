@@ -543,13 +543,12 @@ const getLocalRemoteComparisonResults = async (datasetId, localDatasetPath) => {
   return response.data;
 };
 
-
 const deleteFilesFromDataset = async (datasetId, packages) => {
   const response = await client.delete(`/datasets/${datasetId}/packages`, {
-    data: {packages: packages},
+    data: { packages: packages },
   });
   return response.data;
-}
+};
 
 const api = {
   getUserInformation,
@@ -587,7 +586,7 @@ const api = {
   getPennsieveUploadManifests,
   getPennsieveUploadManifestFiles,
   getLocalRemoteComparisonResults,
-  deleteFilesFromDataset
+  deleteFilesFromDataset,
 };
 
 export default api;
