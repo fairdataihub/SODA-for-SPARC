@@ -53,6 +53,7 @@ const datasetChangedObserver = new MutationObserver(() => {
     let nextQuestion = document.querySelector("#compare-local-remote-dataset-question-3")
     nextQuestion.style.display = "flex";
     nextQuestion.scrollIntoView({ behavior: "smooth", block: "start"});
+    document.querySelector("#comparison-results-container").style.display = "none";
 
   } else {
     $("#compare-local-remote-dataset-question-3").css("display", "none");
@@ -95,6 +96,8 @@ document
 
     // hide the spinner
     document.querySelector("#comparing-local-remote-dataset-roller").classList.add("hidden");
+    document.querySelector("#comparison-results-container").style.display = "flex";
+
   });
 
 let comparisonResults;
@@ -115,10 +118,18 @@ const compareLocalRemoteDataset = async () => {
     // no differences
     document.querySelector("#compare-local-remote-dataset-no-differences").style.display = "flex";
     return;
-  }
+  } else if(comparisonResults.files_only_on_local.length === 0) {
+    console.log("Do something here")
+  } else if (comparisonResults.files_only_on_pennsieve.length === 0) {
+    console.log("Do something here")
+  } 
+
+  let normalizedPaths = comparisonResults.files_only_on_local.map((path) => {
+    return window.path.normalize(path);
+  })
 
   addRows("comparison-results-only-on-pennsieve-table", comparisonResults.files_only_on_pennsieve);
-  addRows("comparison-results-only-on-local-table", comparisonResults.files_only_on_local);
+  addRows("comparison-results-only-on-local-table", normalizedPaths);
 };
 
 const getComparisonResults = async (localDatasetPath, remoteDatasetPath) => {
@@ -162,7 +173,11 @@ document.querySelector("#only-on-local-get-list").addEventListener("click", asyn
     return;
   }
 
-  const csvData = comparisonResults.files_only_on_local.join("\n");
+  let normalizedPaths = comparisonResults.files_only_on_local.map((path) => {
+    return window.path.normalize(path);
+  })
+
+  const csvData = normalizedPaths.join("\n");
 
   const csvFilePath = `${savePath}/files_only_on_local_drive.csv`;
 

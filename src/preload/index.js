@@ -186,6 +186,9 @@ if (process.contextIsolated) {
       dirname: (filepath) => {
         return path.dirname(filepath);
       },
+      normalize: (filepath) => {
+        return path.normalize(filepath);
+      }
     });
     contextBridge.exposeInMainWorld("log", {
       info: (message) => {
