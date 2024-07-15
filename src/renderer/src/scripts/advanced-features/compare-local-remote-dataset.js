@@ -120,7 +120,10 @@ const compareLocalRemoteDataset = async () => {
     return;
   } else if(comparisonResults.files_only_on_local.length === 0) {
     console.log("Do something here")
+    document.querySelector("#compare-local-remote-dataset-no-differences").style.display = "none";
+
   } else if (comparisonResults.files_only_on_pennsieve.length === 0) {
+    document.querySelector("#compare-local-remote-dataset-no-differences").style.display = "none";
     console.log("Do something here")
   } 
 
