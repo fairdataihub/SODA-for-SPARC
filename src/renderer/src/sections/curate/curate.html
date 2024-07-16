@@ -457,7 +457,7 @@
               </div>
             </div>
 
-            <div class="invisible" style="display: flex; flex-direction: column; align-items: center;" id="upload-dataset-synchronizing-workspace-loading">
+            <div class="hidden" style="display: flex; flex-direction: column; align-items: center; justify-content: center;" id="upload-dataset-synchronizing-workspace-loading">
               <div class="lds-roller">
                 <div></div>
                 <div></div>
@@ -470,8 +470,17 @@
               </div>
               <p id="upload-dataset-synchronizing-workspace-loading-para">Verifying account information</p>
             </div>
-
-            
+            <div
+              class="freeform-mooe-post-account-confirmation-pennsieve-agent-check-container"
+              style="display: flex; justify-content: center; margin-top: 10px;"
+            >
+              <div
+              data-component-type="pennsieve-agent-check-display"
+              style="display: flex; justify-content: center; max-width: 700px;"
+              class="hidden"
+              id="freeform-mode-post-account-confirmation-pennsieve-agent-check"
+              ></div>
+            </div>        
           </div>
 
           <!-- 3. Upload Destination Selection Tab -->

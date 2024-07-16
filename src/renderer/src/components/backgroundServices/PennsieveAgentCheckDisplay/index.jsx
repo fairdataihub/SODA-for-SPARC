@@ -7,6 +7,7 @@ import useGlobalStore from "../../../stores/globalStore";
 
 // Constants
 const RETRY_BUTTON_TEXT = "Retry Pennsieve Agent check";
+const CLOSE_SODA_BUTTON_TEXT = "Close SODA";
 const KNOWN_ERROR_MESSAGES = [
   "UNIQUE constraint failed:",
   "NotAuthorizedException: Incorrect username or password.",
@@ -30,6 +31,14 @@ const deletePennsieveAgentDBFilesAndRestart = async () => {
 
   await window.checkPennsieveAgent();
 };
+
+const handleExitButtonClick = () => {
+  window.electron.ipcRenderer.invoke("exit-soda");
+};
+
+const RestartSodaButton = () => (
+  <Button onClick={handleExitButtonClick}>{CLOSE_SODA_BUTTON_TEXT}</Button>
+);
 
 const RetryButton = () => <Button onClick={window.checkPennsieveAgent}>{RETRY_BUTTON_TEXT}</Button>;
 
@@ -97,17 +106,7 @@ const PennsieveAgentCheckDisplay = () => {
     usersPennsieveAgentVersion,
     latestPennsieveAgentVersion,
     postPennsieveAgentCheckAction,
-  } = useGlobalStore((state) => ({
-    pennsieveAgentInstalled: state.pennsieveAgentInstalled,
-    pennsieveAgentUpToDate: state.pennsieveAgentUpToDate,
-    pennsieveAgentDownloadURL: state.pennsieveAgentDownloadURL,
-    pennsieveAgentOutputErrorMessage: state.pennsieveAgentOutputErrorMessage,
-    pennsieveAgentCheckInProgress: state.pennsieveAgentCheckInProgress,
-    pennsieveAgentCheckError: state.pennsieveAgentCheckError,
-    usersPennsieveAgentVersion: state.usersPennsieveAgentVersion,
-    latestPennsieveAgentVersion: state.latestPennsieveAgentVersion,
-    postPennsieveAgentCheckAction: state.postPennsieveAgentCheckAction,
-  }));
+  } = useGlobalStore();
 
   if (pennsieveAgentCheckInProgress === true) {
     return (
@@ -165,11 +164,11 @@ const PennsieveAgentCheckDisplay = () => {
               buttonSize="md"
             />
             <Text mt="sm">
-              After installing the agent, click the {RETRY_BUTTON_TEXT} button to ensure the agent
-              was installed properly.
+              After installing the agent, you must restart SODA using the {CLOSE_SODA_BUTTON_TEXT}{" "}
+              button below and return to this section to ensure the agent was installed properly.
             </Text>
             <Center mt="sm">
-              <RetryButton />
+              <RestartSodaButton />
             </Center>
           </Alert>
         </Stack>

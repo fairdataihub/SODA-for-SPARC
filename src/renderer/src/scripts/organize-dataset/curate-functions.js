@@ -673,22 +673,34 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
   const loadingDivText = document.querySelector(
     "#upload-dataset-synchronizing-workspace-loading-para"
   );
+  const pennsieveAgentCheckDivId = "freeform-mode-post-account-confirmation-pennsieve-agent-check";
+  const pennsieveAgentCheckDiv = document.getElementById(pennsieveAgentCheckDivId);
+  // Hide the Pennsieve Agent check div
+  pennsieveAgentCheckDiv.classList.add("hidden");
 
   try {
-    loadingDiv.classList.remove("invisible");
+    loadingDiv.classList.remove("hidden");
     loadingDivText.textContent = "Verifying account...";
     await window.verifyProfile();
     loadingDivText.textContent = "Verifying workspace...";
     await window.synchronizePennsieveWorkspace();
-    loadingDiv.classList.add("invisible");
+
+    loadingDiv.classList.add("hidden");
   } catch (e) {
     clientError(e);
     await swalShowInfo(
       "Something went wrong while verifying your profile",
       "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
     );
-    loadingDiv.classList.add("invisible");
+    loadingDiv.classList.add("hidden");
     return;
+  }
+  try {
+    pennsieveAgentCheckDiv.classList.remove("hidden");
+    // Check to make sure the Pennsieve agent is installed
+    await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
+  } catch (e) {
+    console.error("Error with agent" + e);
   }
 
   // If the user confirms the workspace and account, proceed to the next step

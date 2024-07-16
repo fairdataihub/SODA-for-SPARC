@@ -513,14 +513,14 @@ const initializeSODARenderer = async () => {
 
 initializeSODARenderer();
 
-const abortPennsieveAgentCheck = (pennsieveAgentStatusDiv) => {
+const abortPennsieveAgentCheck = (pennsieveAgentStatusDivId) => {
   setPennsieveAgentCheckSuccessful(false);
-  if (!pennsieveAgentStatusDiv) {
+  if (!pennsieveAgentStatusDivId) {
     return;
   }
-  const agentStatusDivToFocus = document.getElementById(pennsieveAgentStatusDiv);
+  const agentStatusDivToFocus = document.getElementById(pennsieveAgentStatusDivId);
   if (agentStatusDivToFocus) {
-    window.unHideAndSmoothScrollToElement(pennsieveAgentStatusDiv);
+    window.unHideAndSmoothScrollToElement(pennsieveAgentStatusDivId);
   }
 };
 
@@ -531,7 +531,7 @@ window.getPennsieveAgentStatus = async () => {
   return useGlobalStore.getState()["pennsieveAgentCheckSuccessful"];
 };
 
-window.checkPennsieveAgent = async (pennsieveAgentStatusDiv) => {
+window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
   try {
     // Step 0: abort if the background services are already running
     if (useGlobalStore.getState()["pennsieveAgentCheckInProgress"] === true) {
@@ -550,7 +550,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDiv) => {
         "No Internet Connection",
         "An internet connection is required to upload to Pennsieve. Please connect to the internet and try again."
       );
-      abortPennsieveAgentCheck(pennsieveAgentStatusDiv);
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
       return false;
     }
 
@@ -563,7 +563,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDiv) => {
       // If the Pennsieve agent is not installed, get the download URL and set it in the store
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
-      abortPennsieveAgentCheck(pennsieveAgentStatusDiv);
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
       return false;
     }
 
@@ -582,7 +582,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDiv) => {
     } catch (error) {
       const emessage = userErrorMessage(error);
       setPennsieveAgentOutputErrorMessage(emessage);
-      abortPennsieveAgentCheck(pennsieveAgentStatusDiv);
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
       return false;
     }
 
@@ -596,7 +596,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDiv) => {
         "Unable to verify the Pennsieve Agent version",
         "Please check the Pennsieve Agent logs for more information."
       );
-      abortPennsieveAgentCheck(pennsieveAgentStatusDiv);
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
 
       return false;
     }
@@ -612,7 +612,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDiv) => {
         "Unable to get information about the latest Pennsieve Agent release",
         emessage
       );
-      abortPennsieveAgentCheck(pennsieveAgentStatusDiv);
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
 
       return false;
     }
@@ -623,7 +623,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDiv) => {
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
       setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
-      abortPennsieveAgentCheck(pennsieveAgentStatusDiv);
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
       return false;
     }
 
@@ -633,15 +633,17 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDiv) => {
     // If we get to this point, it means all the background services are operational
     setPennsieveAgentCheckSuccessful(true);
 
-    console.log("pennsieveAgentStatusDiv: ", pennsieveAgentStatusDiv);
+    console.log("pennsieveAgentStatusDivId: ", pennsieveAgentStatusDivId);
     const postAgentCheckMessages = {
       "guided-mode-post-log-in-pennsieve-agent-check":
         "Click the 'Save and Continue' button below to finish preparing your dataset to be uploaded to Pennsieve.",
       "freeform-mode-pre-generate-pennsieve-agent-check":
         "Click the 'Upload' button below to upload your dataset to Pennsieve.",
+      "freeform-mode-post-account-confirmation-pennsieve-agent-check":
+        "Click the 'Continue' button below.",
     };
     setPostPennsieveAgentCheckAction(
-      postAgentCheckMessages[pennsieveAgentStatusDiv] ||
+      postAgentCheckMessages[pennsieveAgentStatusDivId] ||
         "You are ready to upload datasets to Pennsieve!"
     );
 
@@ -649,7 +651,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDiv) => {
   } catch (error) {
     console.log("Error checking Pennsieve background services: ", error);
     setPennsieveAgentCheckError("Error checking Pennsieve background services", error.message);
-    abortPennsieveAgentCheck(pennsieveAgentStatusDiv);
+    abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
     return false;
   }
 };
@@ -672,7 +674,7 @@ window.synchronizePennsieveWorkspace = async () => {
 let preFlightCheckNotyf = null;
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
-window.run_pre_flight_checks = async (pennsieveAgentStatusDiv) => {
+window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
   try {
     window.log.info("Running pre flight checks");
 
@@ -722,7 +724,8 @@ window.run_pre_flight_checks = async (pennsieveAgentStatusDiv) => {
     await window.synchronizePennsieveWorkspace();
 
     // Run the Pennsieve agent checks
-    const pennsieveAgentCheckSuccessful = await window.checkPennsieveAgent(pennsieveAgentStatusDiv);
+    const pennsieveAgentCheckSuccessful =
+      await window.checkPennsieveAgent(pennsieveAgentStatusDivId);
     if (!pennsieveAgentCheckSuccessful) {
       await swalShowInfo(
         "The Pennsieve Agent is not running",
