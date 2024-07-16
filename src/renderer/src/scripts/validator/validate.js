@@ -429,7 +429,7 @@ const validatePennsieveDatasetStandAlone = async () => {
   };
 
   localSodaJSONObj["bf-account-selected"]["account-name"] = $("#current-bf-account").text();
-  localSodaJSONObj["bf-dataset-selected"]["dataset-name"] = $("#current-bf-dataset").text();
+  localSodaJSONObj["bf-dataset-selected"]["dataset-name"] = $("#bf_dataset_load_validator").text();
 
   // import the dataset from Pennsieve
   let datasetPopulationResponse;
