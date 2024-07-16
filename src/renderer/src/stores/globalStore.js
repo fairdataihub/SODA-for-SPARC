@@ -6,7 +6,6 @@ import { dropDownSlice } from "./slices/dropDownSlice";
 import { singleColumnTableSlice } from "./slices/tableRowSlice";
 import { backgroundServicesSlice } from "./slices/backgroundServicesSlice";
 
-
 const useGlobalStore = create(
   immer((...a) => ({
     ...guidedModeSlice(...a),
