@@ -535,6 +535,21 @@ const getPennsieveUploadManifestFiles = async (uploadManifestId, limit, continua
   return response.data;
 };
 
+const getLocalRemoteComparisonResults = async (datasetId, localDatasetPath) => {
+  const response = await client.get(
+    `/datasets/${datasetId}/comparison_results?local_dataset_path=${localDatasetPath}`
+  );
+  console.log(response.data);
+  return response.data;
+};
+
+const deleteFilesFromDataset = async (datasetId, packages) => {
+  const response = await client.delete(`/datasets/${datasetId}/packages`, {
+    data: { packages: packages },
+  });
+  return response.data;
+};
+
 const api = {
   getUserInformation,
   getDataset,
@@ -570,6 +585,8 @@ const api = {
   checkDatasetNameExists,
   getPennsieveUploadManifests,
   getPennsieveUploadManifestFiles,
+  getLocalRemoteComparisonResults,
+  deleteFilesFromDataset,
 };
 
 export default api;

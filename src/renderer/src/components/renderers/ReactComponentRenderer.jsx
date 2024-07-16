@@ -5,6 +5,7 @@ import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 import DropdownSelect from "../common/DropdownSelect";
 import GenericButton from "../buttons/Generic";
+import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
@@ -72,6 +73,18 @@ const componentTypeRenderers = {
   "pennsieve-agent-check-display": (componentSlot) => {
     const props = {};
     renderComponent(componentSlot, <PennsieveAgentCheckDisplay {...props} />);
+  },
+  "single-column-table": (componentSlot) => {
+    const columnName = componentSlot.getAttribute("data-column-name");
+    const id = componentSlot.id;
+
+    // Create a React root and render the component
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper>
+        <SingleColumnTable id={id} columnName={columnName} />
+      </SodaComponentWrapper>
+    );
   },
 };
 

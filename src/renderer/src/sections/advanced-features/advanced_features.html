@@ -20,8 +20,8 @@
         </div>
       </div>
     </header>
-    <div style="display: flex; align-items: center; height: calc(100% - 5rem)">
-      <div class="d-flex justify-center" style="gap: 5rem">
+    <div style="display: flex; flex-direction: column; margin: auto">
+      <div class="d-flex justify-center" style="gap: 2rem; padding: 20px">
         <button
           class="content-button"
           id="create_manifest_btn"
@@ -154,6 +154,8 @@
           </svg>
           <h2>Upload a banner image</h2>
         </button>
+      </div>
+      <div style="display: flex; flex-direction: row; gap: 2rem" class="justify-center">
         <button
           class="content-button tippy-content-main"
           id="validate_dataset_btn"
@@ -184,6 +186,42 @@
             />
           </svg>
           <h2>Validate dataset</h2>
+        </button>
+        <button
+          class="content-button"
+          id="compare_local_remote_btn"
+          data-original-title=""
+          title=""
+          data-tippy-content="Compare a local and remote dataset for differences."
+          rel="popover"
+          data-trigger="hover"
+          data-tippy-placement="bottom"
+          onclick="window.transitionToAdvancedFeature(event)"
+        >
+          <svg
+            viewBox="-2.4 -2.4 28.80 28.80"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="#13716D"
+            stroke="#13716D"
+            transform="matrix(1, 0, 0, 1, 0, 0)rotate(0)"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke="#CCCCCC"
+              stroke-width="0.384"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <path d="M9,5a7,7,0,1,0,7,7A7,7,0,0,0,9,5ZM9,17a5,5,0,1,1,5-5A5,5,0,0,1,9,17Z"></path>
+              <path
+                d="M15,5a7,7,0,1,0,7,7A7,7,0,0,0,15,5Zm0,12a5,5,0,1,1,5-5A5,5,0,0,1,15,17Z"
+              ></path>
+              <rect width="24" height="24" fill="none"></rect>
+            </g>
+          </svg>
+          <h2>Compare Local and Remote Dataset</h2>
         </button>
       </div>
     </div>
@@ -1439,6 +1477,378 @@
         >
           <div class="ui form" style="width: 450px">
             <div class="grouped fields">
+              <div
+                id="validation-errors-container"
+                style="
+                  visibility: hidden;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                "
+              >
+                <label style="font-size: 17px; color: var(--color-bg-plum)">
+                  Validation Errors
+                </label>
+                <div
+                  style="border-radius: 0.5rem; margin-top: 10px; width: 550px; align-self: center"
+                >
+                  <p class="tip-content">
+                    The path column indicates where the errors occurred in your dataset. The message
+                    column provides an explanation of what the errors are. For updated validation
+                    results you can re-run validation. You can view your raw validation report by
+                    clicking <button class="validate-raw-report_btn">here</button>.
+                  </p>
+                </div>
+
+                <table class="ui celled padded table">
+                  <thead>
+                    <tr>
+                      <th>Path</th>
+                      <th>Message</th>
+                      <!-- <th>Fix Here</th> -->
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    id="compare-local-remote-feature"
+    class="advanced-section hidden"
+    style="width: 100%; display: flex; flex-direction: column; height: calc(100% - 5rem)"
+  >
+    <div class="main-tabs show" style="display: flex; overflow-y: hidden">
+      <header class="section-header">
+        <div class="container-tab-information-header" style="width: 97%; margin-left: 0">
+          <div class="need-help-div" style="margin-top: 0.6rem">
+            <h2>Compare Local and Pennsieve Dataset</h2>
+            <a
+              target="_blank"
+              href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/validate-your-dataset"
+              >Need help?</a
+            >
+          </div>
+        </div>
+      </header>
+
+      <div id="compare_local_remote_dataset-tab" style="overflow-y: auto">
+        <div
+          class="individual-question compare_local_remote_dataset show"
+          id="compare-local-remote-dataset-question-1"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <div class="about-container">
+                <label class="about-title" style="color: var(--color-bg-plum) !important"
+                  >About</label
+                >
+                <p class="about-text">
+                  This tool compare your local dataset with a dataset you have uploaded on to
+                  Pennsieve and show you the differences between the two datasets that exist, if
+                  any.
+                </p>
+              </div>
+
+              <div
+                class="grouped fields"
+                id="compare_local_remote_dataset-question-1-local-container"
+                style="margin-bottom: -2rem"
+              >
+                <label style="font-size: 17px; color: var(--color-bg-plum)"
+                  >Where is the local dataset located?</label
+                >
+                <div
+                  class="field"
+                  style="margin: 15px auto; display: flex; justify-content: center"
+                >
+                  <input
+                    class="form-control"
+                    style="width: 450px !important"
+                    id="compare-local-remote-dataset-local-path"
+                    type="text"
+                    readonly=""
+                    placeholder="Browse here"
+                  />
+                </div>
+
+                <div
+                  class="field"
+                  style="margin: 15px auto; display: flex; justify-content: center"
+                >
+                  <button
+                    style="width: 120px; display: none"
+                    class="btn_animated"
+                    id="compare-local-remote-confirm-local-dataset-btn"
+                    data-next="compare-local-remote-dataset-question-2"
+                    data-current="compare-local-remote-dataset-question-1"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question"
+          id="compare-local-remote-dataset-question-2"
+          style="height: auto; margin-bottom: 84px; margin-top: 0"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Select a Pennsieve dataset to compare your local dataset against
+              </label>
+              <div class="field prepare-metadata-card-field">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                  "
+                >
+                  <div style="display: flex; flex-direction: row; justify-content: space-between">
+                    <div class="card-container prepare-metadata">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="text-align: left; padding-right: 5px">
+                          Current account:
+                        </h5>
+                        <div class="change-current-account">
+                          <h5
+                            class="card-right bf-account-span prepare-metadata-current-account-span"
+                          >
+                            SODA-Pennsieve
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            ></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: row; margin-bottom: 15px">
+                    <div class="card-container prepare-metadata">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="padding-right: 5px">Current workspace:</h5>
+                        <div
+                          class="change-current-account ds-dd organization"
+                          style="margin-left: 12px"
+                        >
+                          <h5
+                            class="card-right bf-organization-span prepare-metadata-organization-span"
+                          >
+                            None
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account organization bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div
+                        class="ui active green inline loader small organization-loader"
+                        style="display: none"
+                      ></div>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: row; justify-content: space-between">
+                    <div class="card-container prepare-comparison prepare-metadata">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="text-align: left; padding-right: 5px">
+                          Current dataset:
+                        </h5>
+                        <div class="change-current-account">
+                          <h5
+                            id="bf_dataset_load_compare_local_remote"
+                            class="card-right bf-dataset-span prepare-metadata-dataset-span"
+                          >
+                            None
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account dataset bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            ></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="ui active green inline loader small" style="display: none"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question validate_dataset"
+          id="compare-local-remote-dataset-question-3"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <div style="margin: auto">
+                <div
+                  data-component-type="generic-button"
+                  id="compare-local-remote-begin-comparison-btn"
+                  variant="filled"
+                  color="green"
+                  data-text="Compare Local and Pennsieve Dataset"
+                ></div>
+              </div>
+
+              <div class="guided--panel mt-0 hidden" id="comparing-local-remote-dataset-roller">
+                <div class="lds-roller">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+                Comparing Local and Pennsieve Dataset
+              </div>
+
+              <div
+                id="comparison-results-container"
+                style="display: flex; flex-direction: column; margin-top: 55px"
+              >
+                <div id="comparison-results-only-on-pennsieve-table">
+                  <label style="font-size: 17px; color: var(--color-bg-plum)">
+                    Files that are on Pennsieve and not in your local dataset
+                  </label>
+                  <div style="border-radius: 0.5rem; margin-top: 10px; align-self: center">
+                    <p class="tip-content">
+                      These folders and files are only on Pennsieve and not in your local dataset.
+                      You have the option of deleting these files from Pennsieve to make them match
+                      your local dataset. You can also download the list of files so that you may
+                      manually delete them yourself. Note: If you do not see any results in the
+                      table it means this Pennsieve dataset does not have any files or folders that
+                      are not in your local dataset.
+                    </p>
+                  </div>
+                  <div
+                    data-component-type="single-column-table"
+                    data-column-name="File Path"
+                    id="comparison-results-only-on-pennsieve-table"
+                  ></div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      margin-top: 2%;
+                      justify-content: space-evenly;
+                    "
+                    id="only-on-pennsieve-btn-div"
+                  >
+                    <div
+                      data-component-type="generic-button"
+                      data-text="Get File List in CSV"
+                      id="only-on-pennsieve-get-list"
+                    ></div>
+                    <div
+                      data-component-type="generic-button"
+                      data-text="Delete Files from Pennsieve"
+                      id="only-on-pennsieve-delete-selected"
+                    ></div>
+                  </div>
+                </div>
+
+                <div id="comparison-results-only-on-local-table" style="margin-top: 15px">
+                  <label style="font-size: 17px; color: var(--color-bg-plum)">
+                    Files that are local and not in your Pennsieve dataset
+                  </label>
+                  <div style="border-radius: 0.5rem; margin-top: 10px; align-self: center">
+                    <p class="tip-content">
+                      These folders and files are only found locally and are not in your Pennsieve
+                      dataset. You may upload these files to Pennsieve to make them match your
+                      Pennsieve dataset. You can also download a list of the files that are only
+                      represented locally to manually upload them to Pennsieve. Note: If you do not
+                      see any results in the table it means this local dataset does not have any
+                      files or folders that are not in your Pennsieve dataset.
+                    </p>
+                  </div>
+                  <div
+                    data-component-type="single-column-table"
+                    data-column-name="File Path"
+                    id="comparison-results-only-on-local-table"
+                  ></div>
+                  <div
+                    id="only-on-local-btn-div"
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      margin-top: 2%;
+                      justify-content: space-evenly;
+                    "
+                  >
+                    <div
+                      data-component-type="generic-button"
+                      data-text="Get File List in CSV"
+                      id="only-on-local-get-list"
+                    ></div>
+                    <div
+                      data-component-type="generic-button"
+                      data-text="Upload Selected Files from Pennsieve"
+                      id="only-on-local-upload-selected"
+                    ></div>
+                  </div>
+                </div>
+
+                <div id="compare-local-remote-dataset-no-differences">
+                  <label style="font-size: 17px; color: var(--color-bg-plum)">
+                    No differences found between the two datasets
+                  </label>
+                  <div style="border-radius: 0.5rem; margin-top: 10px; align-self: center">
+                    <p class="tip-content">
+                      There are no differences between the two datasets. Your local dataset and
+                      Pennsieve dataset are identical.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div
                 id="validation-errors-container"
                 style="

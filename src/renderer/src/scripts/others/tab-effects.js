@@ -2094,6 +2094,9 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
 
   const dataCurrent = $(ev).attr("data-current");
 
+  console.log(ev);
+  console.log(currentDiv);
+
   switch (dataCurrent) {
     case "Question-prepare-changes-1":
       continueProgressRC = await switchMetadataRCQuestion("changes");
@@ -2283,6 +2286,11 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
           $("#samples-organization-field").show();
         }
       }
+      break;
+    case "compare-local-remote-dataset-question-3":
+      let question = document.querySelector("#compare-local-remote-dataset-question-3");
+      question.style.display = "flex";
+      question.scrollIntoView({ behavior: "smooth" });
       break;
   }
 
