@@ -15,6 +15,7 @@ import fileDoc from "/img/doc-file.png";
 import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
+import { swalShowInfo } from "../utils/swal-utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -758,6 +759,18 @@ window.finalManifestGenerationPath = "";
 let pennsievePreview = false;
 
 window.generateManifestPrecheck = async (manifestEditBoolean, ev) => {
+  Swal.fire({
+    title: "Preparing to generate the manifest.xlsx file(s)",
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  })
   let continueProgressValidateDataset = true;
   let titleTerm = "folder";
   let localGenerationDifferentDestination = false;
@@ -768,9 +781,7 @@ window.generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   pennsievePreview = false;
   const type = determineStandaloneManifestGeneratorOrigin();
 
-  if (!["generate_step_5-manifest", "generate-local-preview-manifest"].includes(ev.id)) {
-    window.exitCurate();
-  }
+
   window.sodaJSONObj["starting-point"] = {};
   window.sodaJSONObj["dataset-structure"] = {};
   window.datasetStructureJSONObj = { folders: {}, files: {} };
