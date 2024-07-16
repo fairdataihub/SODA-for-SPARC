@@ -770,7 +770,7 @@ window.generateManifestPrecheck = async (manifestEditBoolean, ev) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  })
+  });
   let continueProgressValidateDataset = true;
   let titleTerm = "folder";
   let localGenerationDifferentDestination = false;
@@ -780,7 +780,6 @@ window.generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   ).placeholder;
   pennsievePreview = false;
   const type = determineStandaloneManifestGeneratorOrigin();
-
 
   window.sodaJSONObj["starting-point"] = {};
   window.sodaJSONObj["dataset-structure"] = {};
