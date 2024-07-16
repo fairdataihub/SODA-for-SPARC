@@ -6,87 +6,74 @@ import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 import DropdownSelect from "../common/DropdownSelect";
 import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
+import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
+
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
   await new Promise((resolve) => setTimeout(resolve, 5));
 }
 
-const componentRenderActions = {
+// Helper function to create a React root and render the component inside SodaComponentWrapper
+const renderComponent = (componentSlot, component) => {
+  console.log("Component Slot: ", componentSlot);
+  const root = createRoot(componentSlot);
+  root.render(<SodaComponentWrapper>{component}</SodaComponentWrapper>);
+};
+
+// Mapping of component types to their render functions
+const componentTypeRenderers = {
   "guided-mode-page": (componentSlot) => {
-    // Map of guided mode page ids to their corresponding React components
     const pageIdToPageComponentMap = {
       "guided-name-subtitle-tab": <NameAndSubtitlePage />,
     };
-    const pageId = componentSlot.id;
-    const pageComponent = pageIdToPageComponentMap[pageId];
-
-    // Create a React root and render the component
-    const root = createRoot(componentSlot);
-    root.render(<SodaComponentWrapper>{pageComponent}</SodaComponentWrapper>);
+    const pageComponent = pageIdToPageComponentMap[componentSlot.id];
+    if (!pageComponent) {
+      console.error(`No page component found for page ID: ${componentSlot.id}`);
+    } else {
+      renderComponent(componentSlot, pageComponent);
+    }
   },
   "external-link": (componentSlot) => {
-    const url = componentSlot.getAttribute("data-url");
-    const buttonText = componentSlot.getAttribute("data-button-text");
-    const buttonType = componentSlot.getAttribute("data-button-type");
-
-    // Create a React root and render the component
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <ExternalLink href={url} buttonText={buttonText} buttonType={buttonType} />
-      </SodaComponentWrapper>
-    );
+    const props = {
+      url: componentSlot.getAttribute("data-url"),
+      buttonText: componentSlot.getAttribute("data-button-text"),
+      buttonType: componentSlot.getAttribute("data-button-type"),
+    };
+    renderComponent(componentSlot, <ExternalLink {...props} />);
   },
   "dropdown-select": (componentSlot) => {
-    const id = componentSlot.id;
-    // Create a React root and render the component
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <DropdownSelect id={id} />
-      </SodaComponentWrapper>
-    );
+    const props = {
+      id: componentSlot.id,
+    };
+    renderComponent(componentSlot, <DropdownSelect {...props} />);
   },
   "navigation-button": (componentSlot) => {
-    const buttonId = componentSlot.getAttribute("data-button-id");
-    const buttonTextNav = componentSlot.getAttribute("data-button-text");
-    const navIcon = componentSlot.getAttribute("data-nav-icon");
-    const buttonSize = componentSlot.getAttribute("data-button-size");
-    const buttonColor = componentSlot.getAttribute("data-button-color");
-    const buttonCustomWidth = componentSlot.getAttribute("data-button-custom-width");
-    const buttonCustomClass = componentSlot.getAttribute("data-button-custom-class");
-
-    // Create a React root and render the component
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <NavigationButton
-          buttonId={buttonId}
-          buttonText={buttonTextNav}
-          navIcon={navIcon}
-          buttonSize={buttonSize}
-          buttonColor={buttonColor}
-          buttonCustomWidth={buttonCustomWidth}
-          buttonCustomClass={buttonCustomClass}
-        />
-      </SodaComponentWrapper>
-    );
+    const props = {
+      buttonId: componentSlot.getAttribute("data-button-id"),
+      buttonText: componentSlot.getAttribute("data-button-text"),
+      navIcon: componentSlot.getAttribute("data-nav-icon"),
+      buttonSize: componentSlot.getAttribute("data-button-size"),
+      buttonColor: componentSlot.getAttribute("data-button-color"),
+      buttonCustomWidth: componentSlot.getAttribute("data-button-custom-width"),
+      buttonCustomClass: componentSlot.getAttribute("data-button-custom-class"),
+    };
+    renderComponent(componentSlot, <NavigationButton {...props} />);
   },
   "generic-button": (componentSlot) => {
-    const id = componentSlot.getAttribute("data-button-id");
-    const variant = componentSlot.getAttribute("data-variant");
-    const size = componentSlot.getAttribute("data-size");
-    const color = componentSlot.getAttribute("data-color");
-    const text = componentSlot.getAttribute("data-text");
+    const props = {
+      id: componentSlot.getAttribute("data-button-id"),
+      variant: componentSlot.getAttribute("data-variant"),
+      size: componentSlot.getAttribute("data-size"),
+      color: componentSlot.getAttribute("data-color"),
+      text: componentSlot.getAttribute("data-text"),
+    };
+    renderComponent(componentSlot, <GenericButton {...props} />);
+  },
 
-    // Create a React root and render the component
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <GenericButton id={id} variant={variant} size={size} color={color} text={text} />
-      </SodaComponentWrapper>
-    );
+  "pennsieve-agent-check-display": (componentSlot) => {
+    const props = {};
+    renderComponent(componentSlot, <PennsieveAgentCheckDisplay {...props} />);
   },
   "single-column-table": (componentSlot) => {
     const columnName = componentSlot.getAttribute("data-column-name");
@@ -102,14 +89,14 @@ const componentRenderActions = {
   },
 };
 
-// Get all DOM nodes with the data attribute "data-component-type"
-const componentSlots = document.querySelectorAll("[data-component-type]");
-componentSlots.forEach((componentSlot) => {
+// Query all DOM nodes with the data attribute "data-component-type" and render the appropriate component
+document.querySelectorAll("[data-component-type]").forEach((componentSlot) => {
   const componentType = componentSlot.getAttribute("data-component-type");
-  const renderAction = componentRenderActions[componentType];
-  if (renderAction) {
-    renderAction(componentSlot);
+  const renderFunction = componentTypeRenderers[componentType];
+
+  if (renderFunction) {
+    renderFunction(componentSlot);
   } else {
-    console.error(`No render action found for component type: ${componentType}`);
+    console.error(`No render function found for component type: ${componentType}`);
   }
 });

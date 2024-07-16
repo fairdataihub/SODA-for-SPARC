@@ -640,7 +640,6 @@ const initialize = () => {
       });
 
       const quit_app = () => {
-        // TODO: CHeck if an update was downloaded here and reset the launchAnnouncements and freshLaunch flags to true [ HERE ]
         app.showExitPrompt = false;
         mainWindow.close();
         /// feedback form iframe prevents closing gracefully

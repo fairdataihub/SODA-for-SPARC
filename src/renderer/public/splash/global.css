@@ -122,6 +122,12 @@ textarea {
   overflow: hidden;
 }
 
+.nav-button-text {
+  font-size: 34px;
+  font-weight: 600;
+  color: #4d4a4a;
+}
+
 #notification {
   position: fixed;
   bottom: 20px;

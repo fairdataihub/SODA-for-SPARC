@@ -12,7 +12,7 @@ import Editor from "@toast-ui/editor";
 // const remote = require("@electron/remote");
 import { Notyf } from "notyf";
 import { v4 as uuidv4 } from "uuid";
-import Tagify from "@yaireo/tagify/dist/tagify.esm";
+import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
 // const https = require("https");
 // const electron = require("electron");
 import jQuery from "jquery";
@@ -61,10 +61,24 @@ import {
   swalFileListTripleAction,
   swalFileListDoubleAction,
   swalShowError,
+  swalShowInfo,
   swalConfirmAction,
 } from "../utils/swal-utils";
 import canSmiley from "/img/can-smiley.png";
 import canSad from "/img/can-sad.png";
+
+import useGlobalStore from "../../stores/globalStore";
+import {
+  resetPennsieveAgentCheckState,
+  setPennsieveAgentCheckSuccessful,
+  setPennsieveAgentInstalled,
+  setPennsieveAgentDownloadURL,
+  setPennsieveAgentOutputErrorMessage,
+  setPennsieveAgentCheckError,
+  setPennsieveAgentOutOfDate,
+  setPennsieveAgentCheckInProgress,
+  setPostPennsieveAgentCheckAction,
+} from "../../stores/slices/backgroundServicesSlice";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -103,12 +117,6 @@ window.introStatus = {
 window.log.setupRendererLogOptions();
 window.homeDirectory = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 
-// set to true once the SODA server has been connected to
-// TODO: Fix this since we removed updating this variable in the startup logic
-let sodaIsConnected = false;
-// set to true once the API version has been confirmed
-let apiVersionChecked = false;
-
 //log user's OS version //
 window.log.info(
   "User OS:",
@@ -117,6 +125,11 @@ window.log.info(
   "version:",
   window.os.release()
 );
+
+// utility function for async style set timeout
+window.wait = async (delay) => {
+  return new Promise((resolve) => setTimeout(resolve, delay));
+};
 
 // // Check current app version //
 const appVersion = await window.electron.ipcRenderer.invoke("app-version");
@@ -294,18 +307,120 @@ let connected_to_internet = false;
 let update_available_notification = "";
 let update_downloaded_notification = "";
 
-// utility function for async style set timeout
-window.wait = async (delay) => {
-  return new Promise((resolve) => setTimeout(resolve, delay));
+const showErrorAndRestart = async (errorMessage) => {
+  await swalShowError(
+    "Error connecting to SODA's background services",
+    `Something went wrong while initializing SODA's background services. Please restart SODA and try again. If this issue occurs multiple times, please email <a target="_blank" href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`
+  );
+  await window.electron.ipcRenderer.invoke("relaunch-soda");
+};
+
+const connectToServer = async () => {
+  const maxWaitTime = 300000; // 5 minutes in milliseconds
+  const retryInterval = 3000; // 3 seconds in milliseconds
+  const totalNumberOfRetries = Math.floor(maxWaitTime / retryInterval);
+  for (let i = 0; i < totalNumberOfRetries; i++) {
+    try {
+      const res = await client.get("/startup/echo?arg=server ready");
+      console.log("Server connected, res: ", res);
+
+      // Log the successful connection to the server
+      window.log.info("Connected to Python back-end successfully");
+      window.electron.ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
+      window.electron.ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.STARTUP,
+        kombuchaEnums.Action.APP_LAUNCHED,
+        kombuchaEnums.Label.PYTHON_CONNECTION,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+        }
+      );
+      return;
+    } catch (e) {
+      console.log("Error connecting to server: ", e);
+      await window.wait(retryInterval);
+    }
+  }
+
+  // If we get to this point, it means we were unable to connect to the server
+  // Report the event and throw an error
+  window.electron.ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
+  window.electron.ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.STARTUP,
+    kombuchaEnums.Action.APP_LAUNCHED,
+    kombuchaEnums.Label.PYTHON_CONNECTION,
+    kombuchaEnums.Status.FAIL,
+    {
+      value: 1,
+    }
+  );
+  throw new Error("Unable to connect to server within the max wait time.");
+};
+
+const ensureUsernameExists = async () => {
+  try {
+    // get the current user profile name using electron
+    const { username } = window.os.userInfo();
+
+    // check if a shortened uuid exists in local storage
+    let usernameExists = await window.electron.ipcRenderer.invoke("get-nodestorage-item", username);
+
+    // if the username does not exist in local storage, create a shortened uuid and store it
+    if (!usernameExists) {
+      const shortenedUUID = uuidv4().substring(0, 4);
+      await window.electron.ipcRenderer.invoke("set-nodestorage-key", username, shortenedUUID);
+    }
+  } catch (error) {
+    console.log("Error creating a new user profile name: ", error);
+    const errorMessage = "Error creating a new user profile name.";
+    clientError(errorMessage);
+    throw new Error(errorMessage);
+  }
+};
+
+const startBackgroundServices = async () => {
+  console.log("Starting background services");
+  try {
+    await connectToServer();
+    await ensureUsernameExists();
+
+    try {
+      initializePennsieveAccountList();
+    } catch (error) {
+      console.error("Error retrieving BF accounts: ", error);
+    }
+
+    notyf.open({
+      duration: "2000",
+      type: "success",
+      message: `Connected to SODA's background services successfully.`,
+    });
+  } catch (error) {
+    console.log("Error connecting to server: ", error);
+    await showErrorAndRestart(error);
+  }
+};
+
+startBackgroundServices();
+
+const launchAnnouncements = async () => {
+  if (launchAnnouncement) {
+    await checkForAnnouncements("announcements");
+    launchAnnouncement = false;
+    await window.electron.ipcRenderer.invoke("set-nodestorage-key", "announcements", false);
+  }
 };
 
 // check that the client connected to the server using exponential backoff
 // verify the api versions match
 const startupServerAndApiCheck = async () => {
-  // wait for SWAL to be loaded in
-  await window.wait(2000);
+  const maxWaitTime = 300000; // 5 minutes in milliseconds
+  const retryInterval = 3000; // 3 seconds in milliseconds
+  const totalNumberOfRetries = Math.floor(maxWaitTime / retryInterval);
 
-  // notify the user that the application is starting connecting to the server
   Swal.fire({
     icon: "info",
     title: `Initializing SODA's background services<br /><br />This may take several minutes...`,
@@ -314,205 +429,252 @@ const startupServerAndApiCheck = async () => {
     confirmButtonText: "Restart now",
     allowOutsideClick: false,
     allowEscapeKey: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
+    didOpen: () => Swal.showLoading(),
   });
+  await window.wait(3000);
 
-  // Darwin executable starts slowly
-  // use an exponential backoff to wait for the app server to be ready
-  // this will give Mac users more time before receiving a backend server error message
-  // ( during the wait period the server should start )
-  // Bonus:  doesn't stop Windows and Linux users from starting right away
-  // NOTE: backOff is bad at surfacing errors to the console
-  //while variable is false keep requesting, if time exceeds two minutes break
-  let status = false;
-  let time_start = new Date();
-  let error = "";
-  while (true) {
+  for (let i = 0; i < totalNumberOfRetries; i++) {
     try {
-      status = await serverIsLiveStartup();
+      await client.get("/startup/echo?arg=server ready");
+      window.log.info("Connected to Python back-end successfully");
+      window.electron.ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
+      window.electron.ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.STARTUP,
+        kombuchaEnums.Action.APP_LAUNCHED,
+        kombuchaEnums.Label.PYTHON_CONNECTION,
+        kombuchaEnums.Status.SUCCESS,
+        { value: 1 }
+      );
+      ensureUsernameExists();
+      Swal.close();
+      return;
     } catch (e) {
-      error = e;
-      status = false;
+      console.log("Error connecting to server: ", e);
+      await window.wait(retryInterval);
     }
-    let time_pass = new Date() - time_start;
-    if (status) {
-      break;
-    }
-    if (time_pass > 300000) {
-      break;
-    } //break after five minutes
-    await window.wait(2000);
   }
 
-  if (!status) {
-    //two minutes pass then handle connection error
-    // SWAL that the server needs to be restarted for the app to work
-    clientError(error);
-    window.electron.ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
-    window.electron.ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.STARTUP,
-      kombuchaEnums.Action.APP_LAUNCHED,
-      kombuchaEnums.Label.PYTHON_CONNECTION,
-      kombuchaEnums.Status.FAIL,
-      {
-        value: 1,
-      }
-    );
-
-    await Swal.fire({
-      icon: "error",
-      html: `Something went wrong while initializing SODA's background services. Please restart SODA and try again. If this issue occurs multiple times, please email <a target="_blank" href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Restart now",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    });
-
-    // Restart the app
-    await window.electron.ipcRenderer.invoke("relaunch-soda");
-  }
-
-  sodaIsConnected = true;
-
-  window.log.info("Connected to Python back-end successfully");
-  window.electron.ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
+  window.electron.ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
   window.electron.ipcRenderer.send(
     "track-kombucha",
     kombuchaEnums.Category.STARTUP,
     kombuchaEnums.Action.APP_LAUNCHED,
     kombuchaEnums.Label.PYTHON_CONNECTION,
-    kombuchaEnums.Status.SUCCESS,
-    {
-      value: 1,
-    }
+    kombuchaEnums.Status.FAIL,
+    { value: 1 }
   );
 
-  // dismiss the Swal
   Swal.close();
-
-  // check if the API versions match
-  try {
-    await apiVersionsMatch();
-  } catch (e) {
-    // api versions do not match
-    await window.electron.ipcRenderer.invoke("exit-soda");
-  }
-
-  if (launchAnnouncement) {
-    await Swal.close();
-    await checkForAnnouncements("announcements");
-    launchAnnouncement = false;
-    window.electron.ipcRenderer.invoke("set-nodestorage-key", "announcements", false);
-  }
-
-  apiVersionChecked = true;
-
-  // get apps base path
-  const basepath = await window.electron.ipcRenderer.invoke("get-app-path", undefined);
-  const resourcesPath = window.process.resourcesPath();
-  // set the templates path
-  try {
-    await client.put("prepare_metadata/template_paths", {
-      basepath: basepath,
-      resourcesPath: resourcesPath,
-    });
-  } catch (error) {
-    clientError(error);
-
-    window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");
-    return;
-  }
-
-  window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+  await Swal.fire({
+    icon: "error",
+    html: `Something went wrong while initializing SODA's background services. SODA will relaunch to try to fix the problem. If this issue occurs multiple times, please email <a target="_blank" href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "Restart now",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+  });
+  await window.electron.ipcRenderer.invoke("relaunch-soda");
 };
-startupServerAndApiCheck().then(async () => {
-  // get the current user profile name using electron
-  const { username } = window.os.userInfo();
-
-  let usernameExists = await window.electron.ipcRenderer.invoke("get-nodestorage-item", username);
-
-  // check if a shortened uuid exists in local storage
-  if (usernameExists) {
-    return;
-  }
-
-  // generate a UUID
-  const uuid = uuidv4();
-
-  // get the first 4 characters of the UUID
-  const uuidShort = uuid.substring(0, 4);
-
-  // store the shortened uuid in local storage
-  // RATIONALE: this is used as a prefix that is unique per each client machine + profile name combination
-  await window.electron.ipcRenderer.invoke("set-nodestorage-key", username, uuidShort);
-});
 
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
 // Also check the core systems to make sure they are all operational
 const initializeSODARenderer = async () => {
   // check that the server is live and the api versions match
+  // If this fails after the allotted time, the app will restart
   await startupServerAndApiCheck();
 
-  window.log.info("Server is live and API versions match");
+  // check if the API versions match
+  // If they do not match, the app will restart to attempt to fix the issue
+  await ensureServerVersionMatchesClientVersion();
 
-  // check integrity of all the core systems
-  await window.run_pre_flight_checks();
+  //Refresh the Pennsieve account list if the user has connected their Pennsieve account in the past
+  if (hasConnectedAccountWithPennsieve()) {
+    try {
+      // window.updateBfAccountList();
+    } catch (error) {
+      clientError(error);
+    }
+  }
 
-  window.log.info("Pre flight checks finished");
+  // Set the app version in the sidebar for the user to see
+  setSidebarAppVersion();
+
+  // Launch announcements if the user has not seen them yet
+  await launchAnnouncements();
+
+  // Set the template paths for dataset metadata generation
+  await setTemplatePaths();
+
+  window.log.info("Successfully initialized SODA renderer process");
 };
 
 initializeSODARenderer();
 
-const stopPennsieveAgent = async () => {
-  try {
-    let agentStopSpawn = await window.spawn.stopPennsieveAgent();
-  } catch (error) {
-    window.log.info(error);
-    throw error;
+const abortPennsieveAgentCheck = (pennsieveAgentStatusDivId) => {
+  setPennsieveAgentCheckSuccessful(false);
+  if (!pennsieveAgentStatusDivId) {
+    return;
   }
-};
-const startPennsieveAgent = async () => {
-  try {
-    let agentStartSpawn = await window.spawn.startPennsieveAgentStart();
-    return agentStartSpawn;
-  } catch (e) {
-    window.log.error(e);
-    throw e;
+  const agentStatusDivToFocus = document.getElementById(pennsieveAgentStatusDivId);
+  if (agentStatusDivToFocus) {
+    window.unHideAndSmoothScrollToElement(pennsieveAgentStatusDivId);
   }
 };
 
-const getPennsieveAgentVersion = async () => {
-  window.log.info("Getting Pennsieve agent version");
+window.getPennsieveAgentStatus = async () => {
+  while (useGlobalStore.getState()["pennsieveAgentCheckInProgress"] === true) {
+    await window.wait(100);
+  }
+  return useGlobalStore.getState()["pennsieveAgentCheckSuccessful"];
+};
 
+window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
   try {
-    let agentVersion = await window.spawn.getPennsieveAgentVersion();
-    return agentVersion;
+    // Step 0: abort if the background services are already running
+    if (useGlobalStore.getState()["pennsieveAgentCheckInProgress"] === true) {
+      console.log("Background services checks are already in progress");
+      return false;
+    }
+    // Reset the background services state in the store and set the checks in progress
+    resetPennsieveAgentCheckState();
+    setPennsieveAgentCheckInProgress(true);
+
+    // Step 1: Check the internet connection
+    const userConnectedToInternet = await window.checkInternetConnection();
+    if (!userConnectedToInternet) {
+      console.log("User not connected to internet aborting now");
+      setPennsieveAgentCheckError(
+        "No Internet Connection",
+        "An internet connection is required to upload to Pennsieve. Please connect to the internet and try again."
+      );
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      return false;
+    }
+
+    // Step 2: Check if the Pennsieve agent is installed
+    const pennsieveAgentInstalled = await window.spawn.checkForPennsieveAgent();
+    console.log("Step 2: Pennsieve agent installed: ", pennsieveAgentInstalled);
+    setPennsieveAgentInstalled(pennsieveAgentInstalled);
+
+    if (!pennsieveAgentInstalled) {
+      // If the Pennsieve agent is not installed, get the download URL and set it in the store
+      const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
+      setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      return false;
+    }
+
+    // Stop the Pennsieve agent if it is running
+    // This is to ensure that the agent is not running when we try to start it so no funny business happens
+    try {
+      await window.spawn.stopPennsieveAgent();
+    } catch (error) {
+      // Note: This error is not critical so we do not need to throw it
+      clientError(error);
+    }
+
+    // Start the Pennsieve agent
+    try {
+      await window.spawn.startPennsieveAgent();
+    } catch (error) {
+      const emessage = userErrorMessage(error);
+      setPennsieveAgentOutputErrorMessage(emessage);
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      return false;
+    }
+
+    // Get the version of the Pennsieve agent
+    let usersPennsieveAgentVersion;
+    try {
+      const versionObj = await window.spawn.getPennsieveAgentVersion();
+      usersPennsieveAgentVersion = versionObj["Agent Version"];
+    } catch (error) {
+      setPennsieveAgentCheckError(
+        "Unable to verify the Pennsieve Agent version",
+        "Please check the Pennsieve Agent logs for more information."
+      );
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+
+      return false;
+    }
+
+    let agentDownloadUrl;
+    let latestPennsieveAgentVersion;
+
+    try {
+      [agentDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
+    } catch (error) {
+      const emessage = userErrorMessage(error);
+      setPennsieveAgentCheckError(
+        "Unable to get information about the latest Pennsieve Agent release",
+        emessage
+      );
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+
+      return false;
+    }
+
+    if (usersPennsieveAgentVersion !== latestPennsieveAgentVersion) {
+      console.log("Users Pennsieve agent version: ", usersPennsieveAgentVersion);
+      console.log("Latest Pennsieve agent version: ", latestPennsieveAgentVersion);
+      const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
+      setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
+      setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      return false;
+    }
+
+    console.log("Users Pennsieve agent version: ", usersPennsieveAgentVersion);
+
+    console.log("Pennsieve Agent checks complete");
+    // If we get to this point, it means all the background services are operational
+    setPennsieveAgentCheckSuccessful(true);
+
+    console.log("pennsieveAgentStatusDivId: ", pennsieveAgentStatusDivId);
+    const postAgentCheckMessages = {
+      "guided-mode-post-log-in-pennsieve-agent-check":
+        "Click the 'Save and Continue' button below to finish preparing your dataset to be uploaded to Pennsieve.",
+      "freeform-mode-pre-generate-pennsieve-agent-check":
+        "Click the 'Upload' button below to upload your dataset to Pennsieve.",
+      "freeform-mode-post-account-confirmation-pennsieve-agent-check":
+        "Click the 'Continue' button below.",
+    };
+    setPostPennsieveAgentCheckAction(
+      postAgentCheckMessages[pennsieveAgentStatusDivId] ||
+        "You are ready to upload datasets to Pennsieve!"
+    );
+
+    return true;
   } catch (error) {
-    clientError(error);
-    throw error;
+    console.log("Error checking Pennsieve background services: ", error);
+    setPennsieveAgentCheckError("Error checking Pennsieve background services", error.message);
+    abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+    return false;
+  }
+};
+
+/**
+ *  Checks that the API key and secret belong to the user's current default workspace value.
+ *  Forces the user to login to the default workspace if not in order to synchronize the two.
+ *
+ */
+window.synchronizePennsieveWorkspace = async () => {
+  // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
+  //           under the default profile does not mean that key is associated with the user's current workspace.
+  const profileMatches = await window.defaultProfileMatchesCurrentWorkspace();
+  if (!profileMatches) {
+    log.info("Default api key is for a different workspace");
+    await window.switchToCurrentWorkspace();
   }
 };
 
 let preFlightCheckNotyf = null;
 
-const agent_installed = async () => {
-  try {
-    let agentStartSpawn = await window.spawn.startPennsieveAgent();
-    return agentStartSpawn;
-  } catch (e) {
-    window.log.info(e);
-    throw e;
-  }
-};
-let userHasSelectedTheyAreOkWithOutdatedAgent = false;
-
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
-window.run_pre_flight_checks = async (check_update = true) => {
+window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
   try {
     window.log.info("Running pre flight checks");
 
@@ -536,387 +698,41 @@ window.run_pre_flight_checks = async (check_update = true) => {
     // Check for an API key pair in the default profile and ensure it is not obsolete.
     // NOTE: Calling the agent startup command without a profile setup in the config.ini file causes it to crash.
     // TODO: Ensure we clear the cache here
-    const account_present = await window.check_api_key();
+    const accountValid = await window.check_api_key(true);
 
     // Add a new api key and secret for validating the user's account in the current workspace.
-    if (!account_present) {
+    if (!accountValid) {
       // Dismiss the preflight check notification if it is still open
       if (preFlightCheckNotyf) {
         window.notyf.dismiss(preFlightCheckNotyf);
         preFlightCheckNotyf = null;
       }
 
-      if (check_update) {
-        checkNewAppVersion();
-      }
+      await swalShowInfo(
+        "You are not connected to Pennsieve",
+        "Please connect your Pennsieve account to continue."
+      );
 
-      // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
-      const { value: userChoseToLogIn } = await Swal.fire({
-        icon: "warning",
-        text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Yes",
-        showCancelButton: true,
-        reverseButtons: window.reverseSwalButtons,
-        cancelButtonText: "I'll do it later",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
+      await window.addBfAccount(null, false);
 
-      // If user chose to log in, open the dropdown prompt
-      if (userChoseToLogIn) {
-        // TODO: The user can cancel at anytime without adding an account. We return false in that case
-        await window.addBfAccount(null, false);
-      } else {
-        return false;
-      }
-
-      // user did not add an account so return false
-      // TODO: Add notyf
+      // If defaultBfAccount is still null after the user has had the ability to sign in,
+      // return false
       if (!window.defaultBfAccount) return false;
-
-      // check that the valid api key in the default profile is for the user's current workspace
-      // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
-      //           under the default profile does not mean that key is associated with the user's current workspace.
-      let matching = await window.defaultProfileMatchesCurrentWorkspace();
-      if (!matching) {
-        log.info("Default api key is for a different workspace");
-        await window.switchToCurrentWorkspace();
-        return false;
-      }
     }
 
-    // check if the Pennsieve agent is installed [ here ]
-    try {
-      let installed = await agent_installed();
-      if (!installed) {
-        const downloadUrl = await getPlatformSpecificAgentDownloadURL();
-        const { value: restartSoda } = await Swal.fire({
-          icon: "info",
-          title: "Pennsieve Agent Not Found",
-          html: `
-                  It looks like the Pennsieve Agent is not installed on your computer. It is recommended that you install the Pennsieve Agent now if you want to upload datasets to Pennsieve through SODA.
-                  <br />
-                  To install the Pennsieve Agent, please visit the link below and follow the instructions.
-                  <br /> 
-                  <br />
-                  <a href="${downloadUrl}" target="_blank">Download the Pennsieve agent</a>
-                  <br />
-                  <br />
-                  Once you have installed the Pennsieve Agent, you will need to close and restart SODA before you can upload datasets. Would you like to close SODA now?
-                `,
-          width: 800,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          showCancelButton: true,
-          showCloseButton: true,
-          reverseButtons: window.reverseSwalButtons,
-          confirmButtonText: "Yes",
-          cancelButtonText: "No",
-        });
+    // NOTE: If the user signed in above this will pass. If the user is already signed in they may be prompted to synchronize.
+    await window.synchronizePennsieveWorkspace();
 
-        if (restartSoda) {
-          await window.electron.ipcRenderer.invoke("exit-soda");
-        }
-
-        // Dismiss the preflight check notification if it is still open
-        if (preFlightCheckNotyf) {
-          window.notyf.dismiss(preFlightCheckNotyf);
-          preFlightCheckNotyf = null;
-        }
-
-        // If the user clicks doesn't want to close SODA return false so the client code knows the pre flight checks failed
-        return false;
-      }
-    } catch (error) {
-      clientError(error);
-      const emessage = userErrorMessage(error);
-
-      const { value: restartSoda } = await Swal.fire({
-        icon: "error",
-        title: "Error Determining if the Pennsieve Agent is Installed",
-        html: `
-          <br />
-          <div class="div--code-block-error">${emessage}</div>
-          <br />
-          Please view the <a href="https://docs.sodaforsparc.io/docs/common-errors/installing-the-pennsieve-agent" target="_blank">SODA documentation</a>
-          for Pennsieve Agent installation instructions. Once installed restart SODA for SPARC. If you continue to receive this issue after  
-          restarting SODA for SPARC please reach out to the SODA team using the "Contact Us" button in the side bar. 
-        `,
-        width: 800,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showCancelButton: true,
-        showCloseButton: true,
-        reverseButtons: window.reverseSwalButtons,
-        confirmButtonText: "Close SODA for SPARC",
-        cancelButtonText: "Skip for now",
-      });
-      // If the user clicks the retry button, rerun the pre flight checks
-      if (restartSoda) {
-        await window.electron.ipcRenderer.invoke("quit-app");
-      }
-
-      // Dismiss the preflight check notification if it is still open
-      if (preFlightCheckNotyf) {
-        window.notyf.dismiss(preFlightCheckNotyf);
-        preFlightCheckNotyf = null;
-      }
-
-      // user selected skip for now
+    // Run the Pennsieve agent checks
+    const pennsieveAgentCheckSuccessful =
+      await window.checkPennsieveAgent(pennsieveAgentStatusDivId);
+    if (!pennsieveAgentCheckSuccessful) {
+      await swalShowInfo(
+        "The Pennsieve Agent is not running",
+        "Please follow the instructions to start the Pennsieve Agent and try again."
+      );
       return false;
     }
-
-    // Stop the Pennsieve agent if it is running
-    // This is to ensure that the agent is not running when we try to start it so no funny business happens
-    try {
-      await stopPennsieveAgent();
-    } catch (error) {
-      // Note: This error is not critical so we do not need to throw it
-      clientError(error);
-    }
-
-    // Start the Pennsieve agent
-    try {
-      await startPennsieveAgent();
-    } catch (error) {
-      clientError(error);
-      const emessage = userErrorMessage(error);
-
-      // check if the Agent is failing to start due to Unique constraint violation or due to the Agent caching an outdated username and password after the user updates their Key + Secret
-      // if so then we prompt the user to allow us to remove the pennsieve Agent DB files and try again
-      if (
-        emessage.includes("UNIQUE constraint failed:") ||
-        emessage.includes("NotAuthorizedException: Incorrect username or password.") ||
-        emessage.includes("401 Error Creating new UserSettings")
-      ) {
-        const { value: deleteFilesRerunChecks } = await Swal.fire({
-          icon: "error",
-          title: "The Pennsieve Agent Failed to Start",
-          html: `
-                <br />
-                <div class="div--code-block-error">${emessage}</div>
-                <br />
-                <p style="text-align: left">This is a known issue with the Pennsieve Agent and is typically resolved by deleting the local Pennsieve Agent database files from your computer. Would you like SODA to do that and restart the Agent?</p>`,
-          width: 800,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          showCancelButton: true,
-          showCloseButton: true,
-          reverseButtons: reverseSwalButtons,
-          confirmButtonText: "Yes",
-          cancelButtonText: "No",
-        });
-
-        if (!deleteFilesRerunChecks) {
-          return false;
-        }
-
-        // wait for the Agent to stop using the db files so they may be deleted
-        await wait(1000);
-        // delete any db files that exist
-        if (window.fs.existsSync(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db`))
-          await window.fs.unlink(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db`);
-        if (window.fs.existsSync(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db-shm`))
-          await window.fs.unlink(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db-shm`);
-        if (window.fs.existsSync(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db-wal`))
-          await window.fs.unlink(`${window.homeDirectory}/.pennsieve/pennsieve_agent.db-wal`);
-
-        // rerun checks
-        return await run_pre_flight_checks();
-      }
-
-      const { value: rerunPreFlightChecks } = await Swal.fire({
-        icon: "info",
-        title: "The Pennsieve Agent failed to start",
-        html: `
-          <br />
-          <div class="div--code-block-error">${emessage}</div>
-          <br />
-          Please view the <a href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda" target="_blank">SODA documentation</a>
-          to troubleshoot this issue. Then click the "Try again" button below to ensure the issue has been fixed.
-        `,
-        width: 800,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showCancelButton: true,
-        showCloseButton: true,
-        reverseButtons: window.reverseSwalButtons,
-        confirmButtonText: "Try again",
-        cancelButtonText: "Skip for now",
-      });
-      // If the user clicks the retry button, rerun the pre flight checks
-      if (rerunPreFlightChecks) {
-        return await window.run_pre_flight_checks();
-      }
-
-      // Dismiss the preflight check notification if it is still open
-      if (preFlightCheckNotyf) {
-        window.notyf.dismiss(preFlightCheckNotyf);
-        preFlightCheckNotyf = null;
-      }
-      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
-      return false;
-    }
-
-    // Get the version of the Pennsieve agent
-    let usersPennsieveAgentVersion;
-    try {
-      const versionObj = await getPennsieveAgentVersion();
-      usersPennsieveAgentVersion = versionObj["Agent Version"];
-    } catch (error) {
-      clientError(error);
-      const emessage = userErrorMessage(error);
-      const { value: rerunPreFlightChecks } = await Swal.fire({
-        icon: "info",
-        title: "Soda was unable to get the Pennsieve Agent Version",
-        html: `
-          <br />
-          <div class="div--code-block-error">${emessage}</div>
-          <br />
-          Please view the <a href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda" target="_blank">SODA documentation</a>
-          to troubleshoot this issue. Then click the "Try again" button below to ensure the issue has been fixed.
-        `,
-        width: 800,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showCancelButton: true,
-        showCloseButton: true,
-        reverseButtons: window.reverseSwalButtons,
-        confirmButtonText: "Try again",
-        cancelButtonText: "Skip for now",
-      });
-      // If the user clicks the retry button, rerun the pre flight checks
-      if (rerunPreFlightChecks) {
-        return await window.run_pre_flight_checks();
-      }
-
-      // Dismiss the preflight check notification if it is still open
-      if (preFlightCheckNotyf) {
-        window.notyf.dismiss(preFlightCheckNotyf);
-        preFlightCheckNotyf = null;
-      }
-      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
-      return false;
-    }
-
-    let agentDownloadUrl;
-    let latestPennsieveAgentVersion;
-
-    // Note: We only want to check the Pennsieve agent version if the user has not already selected that they are ok with an outdated agent
-    if (!userHasSelectedTheyAreOkWithOutdatedAgent) {
-      // First get the latest Pennsieve agent version on GitHub
-      // This is to ensure the user has the latest version of the agent
-      try {
-        [agentDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
-      } catch (error) {
-        const emessage = userErrorMessage(error);
-        const retryAgentVersionCheck = await swalConfirmAction(
-          "warning",
-          "",
-          `
-            <br />
-            <b>${emessage}</b>
-            <br /><br />
-            Would you like to retry or continue with the currently installed version of the Pennsieve agent?
-          `,
-          "Retry",
-          "Contrinue with current version"
-        );
-        if (retryAgentVersionCheck) {
-          return await run_pre_flight_checks();
-        } else {
-          userHasSelectedTheyAreOkWithOutdatedAgent = true;
-        }
-      }
-    }
-
-    if (
-      !userHasSelectedTheyAreOkWithOutdatedAgent &&
-      usersPennsieveAgentVersion !== latestPennsieveAgentVersion
-    ) {
-      // Stop the Pennsieve agent if it is running to prevent any issues when updating while the agent is running
-      try {
-        await stopPennsieveAgent();
-      } catch (error) {
-        // Note: This error is not critical so we do not need to throw it
-        clientError(error);
-      }
-      const { value: rerunPreFlightChecks } = await Swal.fire({
-        icon: "info",
-        title: "Installed Pennsieve agent does not match Pennsieve's latest agent release",
-        html: `
-          Your Pennsieve agent version: <b>${usersPennsieveAgentVersion}</b>
-          <br />
-          Latest Pennsieve agent version: <b>${latestPennsieveAgentVersion}</b>
-          <br />
-          <br />
-          To download Pennsieve's latest agent release, please visit the link below and follow the instructions.
-          <br />
-          <br />
-          <a href="${agentDownloadUrl}" target="_blank" rel="noopener noreferrer">Download the latest Pennsieve agent</a>
-          <br />
-          <br />
-          Once you have downloaded the latest Pennsieve agent, please click the button below to ensure that the Pennsieve agent was updated correctly.
-        `,
-        width: 800,
-        heightAuto: false,
-        backdrop: "rgba(0, 0, 0, 0.4)",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showCancelButton: true,
-        showCloseButton: true,
-        reverseButtons: window.reverseSwalButtons,
-        confirmButtonText: "Check updated Pennsieve agent version",
-        cancelButtonText: "Skip for now",
-      });
-      // If the user clicks the retry button, rerun the pre flight checks
-      if (rerunPreFlightChecks) {
-        return await window.run_pre_flight_checks();
-      }
-      // Dismiss the preflight check notification if it is still open
-      if (preFlightCheckNotyf) {
-        window.notyf.dismiss(preFlightCheckNotyf);
-        preFlightCheckNotyf = null;
-      }
-
-      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
-      return false;
-    }
-
-    if (check_update) {
-      checkNewAppVersion();
-    }
-
-    // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
-    //           under the default profile does not mean that key is associated with the user's current workspace.
-    let matching = await window.defaultProfileMatchesCurrentWorkspace();
-    if (!matching) {
-      log.info("Default api key is for a different workspace");
-      await window.switchToCurrentWorkspace();
-      return false;
-    }
-
-    if (launchAnnouncement) {
-      await checkForAnnouncements("announcements");
-      launchAnnouncement = false;
-    }
-
     // Dismiss the preflight check notification if it is still open
     if (preFlightCheckNotyf) {
       window.notyf.dismiss(preFlightCheckNotyf);
@@ -939,61 +755,14 @@ window.run_pre_flight_checks = async (check_update = true) => {
       window.notyf.dismiss(preFlightCheckNotyf);
       preFlightCheckNotyf = null;
     }
-    // Stop the Pennsieve agent if it is running
-    try {
-      await stopPennsieveAgent();
-    } catch (error) {
-      // Note: This error is not critical so we do not need to throw it
-      clientError(error);
-    }
-
     const emessage = userErrorMessage(error);
-    const { value: retryChecks } = await Swal.fire({
-      icon: "info",
-      title: `Error checking SODA's connection to Pennsieve`,
-      html: `${emessage}`,
-      width: 600,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      confirmButtonText: "Retry",
-      cancelButtonText: "Skip for now",
-      reverseButtons: window.reverseSwalButtons,
-    });
-    // If the user clicks retry, then run the preflight checks again
-    if (retryChecks) {
-      return await window.run_pre_flight_checks();
-    }
-    // If the user clicks skip for now, then return false
+    await swalShowError("Error establishing connection to Pennsieve", `${emessage}`);
     return false;
   }
 };
 
-// Check if the Pysoda server is live
-const serverIsLiveStartup = async () => {
-  let echoResponseObject;
-
-  try {
-    echoResponseObject = await client.get("/startup/echo?arg=server ready");
-  } catch (error) {
-    throw error;
-  }
-
-  let echoResponse = echoResponseObject.data;
-
-  return !!(echoResponse === "server ready");
-};
-
 // Check if the Pysoda server API version and the package.json versions match
-const apiVersionsMatch = async () => {
-  // window.notyf that tells the user that the server is checking the versions
-  let notification = window.notyf.open({
-    message: "Checking API Version",
-    type: "checking_server_api_version",
-  });
-
+const ensureServerVersionMatchesClientVersion = async () => {
   let responseObject;
 
   try {
@@ -1008,23 +777,16 @@ const apiVersionsMatch = async () => {
       userErrorMessage(e)
     );
 
-    await Swal.fire({
-      icon: "error",
-      html: `Something went wrong while initializing SODA's background services. Please try restarting your computer and reinstalling the latest version of SODA. If this issue occurs multiple times, please email <a target="_blank" href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Close now",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    });
-
-    throw e;
+    await swalShowError(
+      "Unable to verify Server API Version",
+      `SODA will restart to attempt to fix the issue. If the issue persists, please contact the SODA team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>`
+    );
+    await window.electron.ipcRenderer.invoke("relaunch-soda");
   }
 
   let serverAppVersion = responseObject.data.version;
 
   window.log.info(`Server version is ${serverAppVersion}`);
-  const apiVersionMismatchDocsLink = `https://docs.sodaforsparc.io/docs/common-errors/api-version-mismatch`;
 
   if (serverAppVersion !== appVersion) {
     window.log.info("Server version does not match client version");
@@ -1036,87 +798,68 @@ const apiVersionsMatch = async () => {
       "Server version does not match client version"
     );
 
-    await Swal.fire({
-      icon: "error",
-      title: "Minimum App Version Mismatch",
-      html: `
-          Your API version: <b>${appVersion}</b>
-          <br />
-          Latest API version: <b>${serverAppVersion}</b>
-          <br />
-          <br />
-          To resolve this issue, please visit the link below and follow the instructions.
-          <br />
-          <br />
-          <a href="${apiVersionMismatchDocsLink}" target="_blank">API Version Mismatch</a>
-          <br />
-          <br />
-          Once you have updated the SODA Server, please restart SODA.
-        `,
-      width: 800,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      showCancelButton: false,
-      showCloseButton: false,
-      reverseButtons: window.reverseSwalButtons,
-      confirmButtonText: "Close Application",
-    });
-
-    //await checkForAnnouncements("update")
-
-    throw new Error();
+    await swalShowError(
+      "SODA Server version and Client version mismatch",
+      `SODA will restart to attempt to fix the issue. If the issue persists, please contact the SODA team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>`
+    );
+    await window.electron.ipcRenderer.invoke("relaunch-soda");
   }
 
   window.electron.ipcRenderer.send("track-event", "Success", "Verifying App Version");
-
-  window.notyf.dismiss(notification);
-
-  // create a success window.notyf for api version check
-  window.notyf.open({
-    message: "API Versions match",
-    type: "success",
-  });
-
-  //Load Default/global Pennsieve account if available
-  if (hasConnectedAccountWithPennsieve()) {
-    try {
-      window.updateBfAccountList();
-    } catch (error) {
-      clientError(error);
-    }
-  }
-  checkNewAppVersion(); // Added so that version will be displayed for new users
 };
 
-const checkInternetConnection = async () => {
+const setTemplatePaths = async () => {
+  try {
+    // get apps base path
+    const basepath = await window.electron.ipcRenderer.invoke("get-app-path", undefined);
+    const resourcesPath = window.process.resourcesPath();
+    await client.put("prepare_metadata/template_paths", {
+      basepath: basepath,
+      resourcesPath: resourcesPath,
+    });
+    window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
+  } catch (error) {
+    window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");
+    await swalShowError(
+      "Error setting template paths",
+      `SODA will restart to attempt to fix the issue. If the issue persists, please contact the SODA team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>`
+    );
+    await window.electron.ipcRenderer.invoke("relaunch-soda");
+  }
+};
+
+window.checkInternetConnection = async () => {
   try {
     await axios.get("https://www.google.com");
+    console.log("Connected");
     return true;
   } catch (error) {
-    console.error("No internet connection");
+    console.log("Not connected");
     window.log.error("No internet connection");
     return false;
   }
 };
 
-window.check_api_key = async () => {
+window.check_api_key = async (showNotyfs = false) => {
   let notification = null;
-  notification = window.notyf.open({
-    type: "api_key_search",
-    message: "Checking for Pennsieve account...",
-  });
+
+  if (showNotyfs) {
+    notification = window.notyf.open({
+      type: "api_key_search",
+      message: "Checking for Pennsieve account...",
+    });
+  }
   await window.wait(800);
   // If no accounts are found, return false.
   let responseObject;
-
   if (!hasConnectedAccountWithPennsieve()) {
-    window.notyf.dismiss(notification);
-    window.notyf.open({
-      type: "error",
-      message: "No account was found",
-    });
+    if (showNotyfs) {
+      window.notyf.dismiss(notification);
+      window.notyf.open({
+        type: "error",
+        message: "No account was found",
+      });
+    }
     return false;
   }
 
@@ -1125,11 +868,13 @@ window.check_api_key = async () => {
   } catch (e) {
     log.info("Current default profile API Key is obsolete");
     clientError(e);
-    window.notyf.dismiss(notification);
-    window.notyf.open({
-      type: "error",
-      message: "No account was found",
-    });
+    if (showNotyfs) {
+      window.notyf.dismiss(notification);
+      window.notyf.open({
+        type: "error",
+        message: "No account was found",
+      });
+    }
     return false;
   }
 
@@ -1138,20 +883,24 @@ window.check_api_key = async () => {
   if (res[0] === "Select" && res.length === 1) {
     log.info("No api keys found");
     //no api key found
-    window.notyf.dismiss(notification);
-    window.notyf.open({
-      type: "error",
-      message: "No account was found",
-    });
+    if (showNotyfs) {
+      window.notyf.dismiss(notification);
+      window.notyf.open({
+        type: "error",
+        message: "No account was found",
+      });
+    }
     return false;
   } else {
     log.info("Found non obsolete api key in default profile");
 
-    window.notyf.dismiss(notification);
-    window.notyf.open({
-      type: "success",
-      message: "Connected to Pennsieve",
-    });
+    if (showNotyfs) {
+      window.notyf.dismiss(notification);
+      window.notyf.open({
+        type: "success",
+        message: "Connected to Pennsieve",
+      });
+    }
     return true;
   }
 };
@@ -1173,6 +922,7 @@ const getPlatformSpecificAgentDownloadURL = async () => {
  * @param {*} releaseList - The list of Pennsieve agent releases to search for the partial string
  * @returns - The download URL for the Pennsieve agent release that contains the partial string
  */
+
 const findDownloadURL = (partialStringToSearch, releaseList) => {
   for (const release of releaseList) {
     const releaseName = release.name;
@@ -1235,7 +985,7 @@ const getLatestPennsieveAgentVersion = async () => {
   return [platformSpecificAgentDownloadURL, latestPennsieveAgentVersion];
 };
 
-const checkNewAppVersion = async () => {
+const setSidebarAppVersion = async () => {
   let currentAppVersion = await window.electron.ipcRenderer.invoke("app-version");
   const version = document.getElementById("version");
   version.innerText = currentAppVersion;
@@ -2831,26 +2581,6 @@ window.displaySIze = 1000;
 window.curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
 window.curateOrganizationDropdown = document.getElementById("curatebforganizationlist");
 
-async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
-  window.defaultBfAccount = bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text;
-  try {
-    let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-      params: {
-        selected_account: window.defaultBfAccount,
-      },
-    });
-    window.datasetList = [];
-    window.datasetList = responseObject.data.datasets;
-    populateDatasetDropdownCurate(datasetDropdown, window.datasetList);
-    window.refreshDatasetList();
-  } catch (error) {
-    clientError(error);
-    curateBFAccountLoadStatus.innerHTML = `<span style='color: red'>${userErrorMessage(
-      error
-    )}</span>`;
-  }
-}
-
 //// De-populate dataset dropdowns to clear options for CURATE
 function populateDatasetDropdownCurate(datasetDropdown, datasetList) {
   window.removeOptions(datasetDropdown);
@@ -3729,8 +3459,8 @@ const populateOrganizationDropdowns = (organizations) => {
   }
 };
 // ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
-
 window.updateBfAccountList = async () => {
+  console.log("Updating bf account list");
   let responseObject;
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
@@ -3758,6 +3488,7 @@ window.updateBfAccountList = async () => {
 };
 
 window.loadDefaultAccount = async () => {
+  console.log("Loading default account");
   let responseObject;
 
   try {
@@ -4273,93 +4004,80 @@ var bfAddAccountBootboxMessage = `<form>
 
 var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve account using an API key</h3>`;
 
-// once connected to SODA get the user's accounts
-(async () => {
-  // wait until soda is connected to the backend server
-  while (!sodaIsConnected) {
-    await window.wait(1000);
-  }
-
-  retrieveBFAccounts();
-})();
-
-// // this function is called in the beginning to load bf accounts to a list
-// // which will be fed as dropdown options
-const retrieveBFAccounts = async () => {
-  // remove all elements from the array
+const initializePennsieveAccountList = async () => {
+  // Clear the bfAccountOptions array
   bfAccountOptions.length = 0;
   window.bfAccountOptionsStatus = "";
 
-  if (hasConnectedAccountWithPennsieve()) {
-    client
-      .get("manage_datasets/bf_account_list")
-      .then((res) => {
-        let accounts = res.data;
-        for (const myitem in accounts) {
-          bfAccountOptions[accounts[myitem]] = accounts[myitem];
-        }
-
-        showDefaultBFAccount();
-      })
-      .catch((error) => {
-        bfAccountOptionsStatus = error;
-      });
-  } else {
-    bfAccountOptionsStatus = "No account connected";
+  if (!hasConnectedAccountWithPennsieve()) {
+    window.bfAccountOptionsStatus = "No account connected";
+    return;
   }
-  return [bfAccountOptions, bfAccountOptionsStatus];
+
+  try {
+    const res = await client.get("manage_datasets/bf_account_list");
+    const accounts = res.data;
+    console.log("BF accounts retrieved: ", accounts);
+    for (const myitem in accounts) {
+      bfAccountOptions[accounts[myitem]] = accounts[myitem];
+    }
+    await setDefaultPennsieveAccountUI();
+  } catch (error) {
+    window.bfAccountOptionsStatus = error;
+  }
 };
 
-let defaultAccountDetails = "";
-const showDefaultBFAccount = async () => {
+const setDefaultPennsieveAccountUI = async () => {
+  console.log("setDefaultPennsieveAccountUI");
+
   try {
-    let bf_default_acc_req = await client.get("manage_datasets/bf_default_account_load");
-    let accounts = bf_default_acc_req.data.defaultAccounts;
-    if (accounts.length > 0) {
-      let myitemselect = accounts[0];
-      window.defaultBfAccount = myitemselect;
-      try {
-        let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
-          params: {
-            selected_account: window.defaultBfAccount,
-          },
-        });
-        let user_email = bf_account_details_req.data.email;
-        $("#current-bf-account").text(user_email);
-        $("#current-bf-account-generate").text(user_email);
-        $("#create_empty_dataset_BF_account_span").text(user_email);
-        $(".bf-account-span").text(user_email);
+    const bfDefaultAccRes = await client.get("manage_datasets/bf_default_account_load");
+    const accounts = bfDefaultAccRes.data.defaultAccounts;
 
-        // show the preferred organization
-        let organization = bf_account_details_req.data.organization;
-        $(".bf-organization-span").text(organization);
+    if (accounts.length === 0) {
+      return;
+    }
 
-        $("#div-bf-account-load-progress").css("display", "none");
-        showHideDropdownButtons("account", "show");
-        window.refreshDatasetList();
-        updateDatasetList();
-        window.updateOrganizationList();
-      } catch (error) {
-        clientError(error);
+    const defaultAccount = accounts[0];
+    window.defaultBfAccount = defaultAccount;
 
-        $("#para-account-detail-curate").html("None");
-        $("#current-bf-account").text("None");
-        $("#current-bf-account-generate").text("None");
-        $("#create_empty_dataset_BF_account_span").text("None");
-        $(".bf-account-span").text("None");
-        $("#para-account-detail-curate-generate").html("None");
-        $("#para_create_empty_dataset_BF_account").html("None");
-        $(".bf-account-details-span").html("None");
+    try {
+      const bfAccountDetailsRes = await client.get("/manage_datasets/bf_account_details", {
+        params: { selected_account: defaultAccount },
+      });
 
-        $("#div-bf-account-load-progress").css("display", "none");
-        showHideDropdownButtons("account", "hide");
-      }
+      const { email, organization } = bfAccountDetailsRes.data;
+
+      $("#current-bf-account").text(email);
+      $("#current-bf-account-generate").text(email);
+      $("#create_empty_dataset_BF_account_span").text(email);
+      $(".bf-account-span").text(email);
+      $(".bf-organization-span").text(organization);
+
+      $("#div-bf-account-load-progress").hide();
+      showHideDropdownButtons("account", "show");
+      window.refreshDatasetList();
+      updateDatasetList();
+      window.updateOrganizationList();
+    } catch (error) {
+      clientError(error);
+
+      $("#para-account-detail-curate").text("None");
+      $("#current-bf-account").text("None");
+      $("#current-bf-account-generate").text("None");
+      $("#create_empty_dataset_BF_account_span").text("None");
+      $(".bf-account-span").text("None");
+      $("#para-account-detail-curate-generate").text("None");
+      $("#para_create_empty_dataset_BF_account").text("None");
+      $(".bf-account-details-span").text("None");
+
+      $("#div-bf-account-load-progress").hide();
+      showHideDropdownButtons("account", "hide");
     }
   } catch (error) {
     clientError(error);
   }
 };
-
 ////// function to trigger action for each context menu option
 window.hideMenu = (category, menu1, menu2, menu3) => {
   if (category === "folder") {
@@ -7141,7 +6859,8 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
 };
 
 const preGenerateSetup = async (e, elementContext) => {
-  $($($(elementContext).parent()[0]).parents()[0]).removeClass("tab-active");
+  console.log($($($(elementContext).parent().parent()[0])));
+  $($($(elementContext).parent().parent()[0]).parents()[0]).removeClass("tab-active");
   // set tab-active to generate-progress-tab
   $("#generate-dataset-progress-tab").addClass("tab-active");
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
@@ -7185,7 +6904,10 @@ const preGenerateSetup = async (e, elementContext) => {
     setTimeout(() => {
       document.getElementById("wrapper-wrap").style.display = "none";
     }, 500);
-    let supplementary_checks = await window.run_pre_flight_checks(false);
+    let supplementary_checks = await window.run_pre_flight_checks(
+      "freeform-mode-pre-generate-pennsieve-agent-check"
+    );
+
     if (!supplementary_checks) {
       $("#sidebarCollapse").prop("disabled", false);
 

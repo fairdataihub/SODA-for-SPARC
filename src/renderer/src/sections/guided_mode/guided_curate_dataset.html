@@ -300,7 +300,7 @@
                 <div></div>
                 <div></div>
               </div>
-              Loading datasets in progress...
+              <p id="guided-section-loading-progress-cards-para">Loading datasets in progress...</p>
             </div>
             <div class="guided--section" id="guided-container-progress-cards"></div>
           </div>
@@ -361,7 +361,9 @@
                 <div></div>
                 <div></div>
               </div>
-              Importing datasets from Pennsieve
+              <p id="guided-panel-pennsieve-dataset-import-loading-para">
+                Importing datasets from Pennsieve
+              </p>
             </div>
 
             <div class="guided--panel mt-0" id="guided-panel-pennsieve-dataset-select">
@@ -4599,13 +4601,38 @@
         data-parent-tab-name="Pennsieve metadata"
       >
         <div class="guided--capsule-container">
-          <div class="guided--capsule" id="guided-pennsieve-intro-capsule"></div>
           <div class="guided--capsule" id="guided-pennsieve-metadata-intro-capsule"></div>
+          <div class="guided--capsule" id="guided-pennsieve-intro-capsule"></div>
           <div class="guided--capsule" id="guided-banner-image-capsule"></div>
           <div class="guided--capsule" id="guided-designate-permissions-capsule"></div>
           <div class="guided--capsule" id="guided-add-description-capsule"></div>
           <div class="guided--capsule" id="guided-add-tags-capsule"></div>
           <div class="guided--capsule" id="guided-assign-license-capsule"></div>
+        </div>
+
+        <div class="guided--page" id="guided-pennsieve-metadata-intro-tab" data-page-name="Intro">
+          <h1 class="text-sub-step-title">Pennsieve metadata Introduction</h1>
+          <div class="guided--section">
+            <p class="help-text">
+              The SPARC guidelines require all datasets to be uploaded to Pennsieve, a cloud-based
+              solution for managing and sharing scientific datasets. As you proceed, you will be
+              guided through various steps, such as adding a banner image and selecting a license,
+              which facilitate the discovery and comprehension of your dataset by other users. Note
+              that some information will be automatically populated in Pennsieve based on the
+              details you provided earlier in the process.
+            </p>
+          </div>
+          <div class="guided--section">
+            <div
+              id="guided-dataset-structure-intro-lottie"
+              class="lottieAnimationContainer guided--container-lottie-standard"
+            ></div>
+          </div>
+          <div class="guided--section">
+            <h2 class="guided--text-click-continue">
+              Click "<span class="next-button-span"></span>" to start adding Pennsieve Metadata.
+            </h2>
+          </div>
         </div>
 
         <div id="guided-pennsieve-intro-tab" class="guided--page" data-page-name="Pennsieve log in">
@@ -4622,7 +4649,19 @@
             </p>
           </div>
 
-          <div class="guided--section" id="guided-confirm-pennsieve-account">
+          <div class="guided--section show-when-logged-out" id="guided-select-pennsieve-account">
+            <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
+            <button
+              class="ui positive button mt-md"
+              data-reset-guided-mode-page="true"
+              onclick="window.openDropdownPrompt(this, 'bf')"
+              style="background-color: var(--color-light-green) !important; width: 200px !important"
+            >
+              Log in to Pennsieve
+            </button>
+          </div>
+
+          <div class="guided--section show-when-logged-in" id="guided-confirm-pennsieve-account">
             <div class="guided--input-container">
               <h2 class="text-sub-step-title">
                 Is this the Pennsieve account you would like to work with?
@@ -4664,18 +4703,8 @@
               </button>
             </div>
           </div>
-          <div class="guided--section" id="guided-select-pennsieve-account">
-            <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
-            <button
-              class="ui positive button mt-md"
-              data-reset-guided-mode-page="true"
-              onclick="window.openDropdownPrompt(this, 'bf')"
-              style="background-color: var(--color-light-green) !important; width: 200px !important"
-            >
-              Log in to Pennsieve
-            </button>
-          </div>
-          <div class="guided--section" id="guided-section-select-organization">
+
+          <div class="guided--section show-when-logged-in" id="guided-section-select-organization">
             <div class="guided--input-container">
               <h2 class="text-sub-step-title">
                 Is this the Pennsieve workspace you want to upload your dataset to?
@@ -4704,9 +4733,10 @@
                 class="ui positive basic button guided--radio-button"
                 id="guided-confirm-pennsieve-organization-button"
                 style="width: 280px"
-                data-next-element="guided-section-organization-confirmed"
+                data-next-element="guided-section-background-services-check"
                 data-button-config-value="organization-has-been-confirmed"
                 data-button-config-value-state="yes"
+                onclick="window.checkPennsieveAgent('guided-mode-post-log-in-pennsieve-agent-check')"
               >
                 Yes, this is the organization
               </button>
@@ -4720,36 +4750,22 @@
               </button>
             </div>
           </div>
-          <div class="guided--section" id="guided-section-organization-confirmed">
-            <h2 class="guided--text-user-directions">
-              Click "<span class="next-button-span"></span>" to confirm your account and
-              organization you will be uploading to.
-            </h2>
-          </div>
-        </div>
-
-        <div class="guided--page" id="guided-pennsieve-metadata-intro-tab" data-page-name="Intro">
-          <h1 class="text-sub-step-title">Pennsieve metadata Introduction</h1>
-          <div class="guided--section">
-            <p class="help-text">
-              The SPARC guidelines require all datasets to be uploaded to Pennsieve, a cloud-based
-              solution for managing and sharing scientific datasets. As you proceed, you will be
-              guided through various steps, such as adding a banner image and selecting a license,
-              which facilitate the discovery and comprehension of your dataset by other users. Note
-              that some information will be automatically populated in Pennsieve based on the
-              details you provided earlier in the process.
-            </p>
-          </div>
-          <div class="guided--section">
+          <div class="guided--section" id="guided-section-background-services-check">
+            <!-- <div 
+              data-component-type="account-check-display"
+              class="guided--section"
+              id="guided-mode-post-log-in-account-check">
+            </div>
             <div
-              id="guided-dataset-structure-intro-lottie"
-              class="lottieAnimationContainer guided--container-lottie-standard"
+              data-component-type="workspace-check-display"
+              class="guided--section"
+              id="guided-mode-post-log-in-workspace-check"  
+            ></div> -->
+            <div
+              data-component-type="pennsieve-agent-check-display"
+              class="guided--section"
+              id="guided-mode-post-log-in-pennsieve-agent-check"
             ></div>
-          </div>
-          <div class="guided--section">
-            <h2 class="guided--text-click-continue">
-              Click "<span class="next-button-span"></span>" to start adding Pennsieve Metadata.
-            </h2>
           </div>
         </div>
 
@@ -5491,13 +5507,19 @@
               </div>
             </div>
           </div>
-          <button
-            class="ui positive button guided--button mb-md"
-            id="guided-generate-dataset-button"
-            style="background-color: var(--color-light-green) !important; width: 290px !important"
-          >
-            Generate
-          </button>
+          <div
+            data-component-type="pennsieve-agent-check-display"
+            class="guided--section"
+            id="guided-mode-pre-generate-pennsieve-agent-check"
+          ></div>
+          <div
+            data-component-type="generic-button"
+            data-button-id="guided-generate-dataset-button"
+            data-variant="filled"
+            data-size="md"
+            data-text="Generate Dataset on Pennsieve"
+            class="mb-md mt-md"
+          ></div>
         </div>
 
         <div
@@ -5790,11 +5812,206 @@
                 </tr>
               </tbody>
             </table>
-            <h2 class="guided--text-user-directions" id="guided-dataset-upload-complete-message">
-              Click "<span class="next-button-span"></span>" to go to the last step of the data
-              curation and sharing process
-            </h2>
           </div>
+
+          <div class="guided--section hidden" id="guided--verify-files">
+            <h2 class="text-sub-step-title">
+              Would you like to verify your dataset files have been uploaded to Pennsieve?
+            </h2>
+
+            <div
+              class="info-dropdown mt-lg"
+              style="justify-content: center; margin: auto !important"
+            >
+              <p
+                class="info-dropdown-text"
+                data-dropdown-type="info"
+                style="font-weight: 600; font-size: 14px"
+              >
+                What does file verification do?
+              </p>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+
+            <div class="info-container" style="max-width: 740px; margin: auto">
+              <p class="help-text mb-0">
+                The file verification step will verify that each file you uploaded has been
+                successfully processed by Pennsieve - meaning it is not in some way corrupted. This
+                is an optional step and you can skip it.
+              </p>
+            </div>
+
+            <div class="guided--radio-button-container" style="margin-top: 10px !important">
+              <button
+                class="ui primary basic button"
+                style="margin: 5px 7px !important"
+                id="guided--verify-files-button"
+              >
+                Verify Files
+              </button>
+              <button
+                class="ui primary basic button pass-button-click-to-next-button"
+                style="margin: 5px 7px !important"
+                id="guided--skip-verify-btn"
+              >
+                Skip and continue
+              </button>
+            </div>
+
+            <div
+              class="guided--section hidden"
+              id="guided--validate-dataset-upload"
+              style="width: 70%"
+            >
+              <div class="ui form" style="width: 100%">
+                <div class="grouped fields">
+                  <div class="field" style="margin: 5px 0; width: auto">
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                        margin-top: 15px;
+                        height: auto;
+                        box-shadow: 0px 0px 10px #d5d5d5;
+                        padding: 15px 25px;
+                        border-radius: 5px;
+                      "
+                    >
+                      <div>
+                        <p style="font-weight: 500; font-size: large">Verified Dataset Files</p>
+                      </div>
+                      <div>
+                        <p
+                          id="guided--verify-dataset-upload-files-count"
+                          style="font-weight: 500; font-size: large"
+                        >
+                          XX/XX Files
+                        </p>
+                      </div>
+                    </div>
+                    <p
+                      id="guided--verify-dataset-upload-files-progress-para"
+                      style="margin-top: 9px; margin-left: 3px"
+                    ></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="guided--section hidden"
+              id="guided--question-validate-dataset-upload-2"
+              style="width: 70%"
+            >
+              <div class="ui form" style="width: 100%">
+                <div class="grouped fields">
+                  <div class="field" style="margin: 5px 0; width: auto">
+                    <h4
+                      style="text-align: center; font-size: large; font-weight: 800; color: black"
+                    >
+                      Files that failed to be uploaded to Pennsieve
+                    </h4>
+                    <p>
+                      The files below were uploaded to Pennsieve, but for an unknown reason were
+                      unable to be kept on the platform. Please take note of the failed files below
+                      and try to upload them again. If this keeps happening reach out to
+                      someone@gamil.com.
+                    </p>
+
+                    <div style="width: 100%; height: 300px; overflow: auto">
+                      <table
+                        id="guided--validate-dataset-failed-table"
+                        style="background-color: lightgray"
+                      >
+                        <tr
+                          style="
+                            border-bottom: solid black 1px;
+                            padding-top: 10px;
+                            padding-left: 10px;
+                          "
+                        >
+                          <th
+                            style="
+                              color: black;
+                              text-align: left;
+                              font-size: large;
+                              font-weight: 500;
+                            "
+                          >
+                            File Path
+                          </th>
+                        </tr>
+                        <tbody
+                          style="padding-top: 10px; padding-left: 10px; overflow-y: scroll"
+                        ></tbody>
+                      </table>
+                    </div>
+
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: row;
+                        margin-top: 15px;
+                        justify-content: center;
+                        width: 100%;
+                      "
+                    >
+                      <button
+                        id="guided--verify-file-status-retry-upload"
+                        class="btn_animated return-btn"
+                        style="
+                          display: flex;
+                          flex-direction: row;
+                          justify-content: center;
+                          font-size: 15px;
+                          margin: 0 10px;
+                          width: 180px;
+                          height: 40px;
+                          border: none !important;
+                        "
+                      >
+                        Retry Upload
+                      </button>
+                      <button
+                        class="ui basic positive button verify-file-status-download-list"
+                        style="margin-top: 0px !important; width: 180px; height: 40px"
+                      >
+                        Download list
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="guided--section hidden" id="guided--question-validate-dataset-upload-3">
+              <div class="ui form" style="width: 100%">
+                <div class="grouped fields">
+                  <div id="guided--div-validate-dataset-success">
+                    <h4
+                      style="text-align: center; font-size: large; font-weight: 800; color: black"
+                    >
+                      All files have been successfully verified and should be viewable on Pennsieve
+                    </h4>
+                    <div
+                      id="guided--success-validated-files-lottie"
+                      class="success-validation-lottie"
+                      style="margin: auto !important"
+                    ></div>
+                    <h2
+                      class="guided--text-user-directions"
+                      id="guided-dataset-upload-complete-message"
+                    >
+                      Click "<span class="next-button-span"></span>" to go to the last step of the
+                      data curation and sharing process
+                    </h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div
             class="guided--section mt-lg hidden neumorphic"
             id="guided-div-dataset-upload-progress-bar"
