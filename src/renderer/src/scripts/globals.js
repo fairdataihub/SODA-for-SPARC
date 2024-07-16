@@ -908,6 +908,7 @@ window.resetFFMUI = (ev) => {
 };
 
 window.addBfAccount = async (ev, verifyingOrganization = False) => {
+  console.log("Running window.addBfAccount");
   var resolveMessage = "";
   let footerMessage = "No existing accounts to load. Please add an account.";
   if (bfAccountOptionsStatus === "") {
@@ -1335,6 +1336,15 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           Swal.showLoading();
         },
       });
+    }
+
+    console.log(
+      "The event is: ",
+      ev?.parentNode?.parentNode?.classList.contains("organize-dataset")
+    );
+    if (ev?.parentNode?.parentNode?.classList.contains("organize-dataset")) {
+      // enable the Confirm button
+      $("#confirm-account-workspace").prop("disabled", false);
     }
   }
 };

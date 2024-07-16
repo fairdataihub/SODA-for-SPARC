@@ -188,7 +188,7 @@ if (process.contextIsolated) {
       },
       normalize: (filepath) => {
         return path.normalize(filepath);
-      }
+      },
     });
     contextBridge.exposeInMainWorld("log", {
       info: (message) => {
@@ -251,24 +251,30 @@ if (process.contextIsolated) {
           });
         });
       },
-      startPennsieveAgent: () => {
+      checkForPennsieveAgent: () => {
         return new Promise((resolve, reject) => {
           let agentStartSpawn = spawn("pennsieve", {
             shell: true,
             env: window.process.env,
           });
 
-          agentStartSpawn.stdout.on("data", async (data) => {
-            return resolve(true);
+          agentStartSpawn.stdout.on("data", (data) => {
+            log.info("Pennsieve agent is installed:", data.toString()); // Log data for debugging
+            resolve(true); // Agent found
           });
 
           agentStartSpawn.stderr.on("data", (data) => {
-            log.error(data.toString());
-            return resolve(false);
+            log.error("Error checking for Pennsieve agent:", data.toString());
+            resolve(false); // Agent not found or error
+          });
+
+          agentStartSpawn.on("error", (error) => {
+            log.error("Unexpected error checking for Pennsieve agent:", error);
+            resolve(false); // Agent not found or error
           });
         });
       },
-      startPennsieveAgentStart: () => {
+      startPennsieveAgent: () => {
         return new Promise((resolve, reject) => {
           // Keep track of the output from the agent
           // (output is added as strings to the array)
