@@ -322,7 +322,6 @@ const connectToServer = async () => {
   for (let i = 0; i < totalNumberOfRetries; i++) {
     try {
       const res = await client.get("/startup/echo?arg=server ready");
-      console.log("Server connected, res: ", res);
 
       // Log the successful connection to the server
       window.log.info("Connected to Python back-end successfully");
@@ -339,7 +338,7 @@ const connectToServer = async () => {
       );
       return;
     } catch (e) {
-      console.log("Error connecting to server: ", e);
+      console.error("Error connecting to server: ", e);
       await window.wait(retryInterval);
     }
   }
@@ -374,7 +373,6 @@ const ensureUsernameExists = async () => {
       await window.electron.ipcRenderer.invoke("set-nodestorage-key", username, shortenedUUID);
     }
   } catch (error) {
-    console.log("Error creating a new user profile name: ", error);
     const errorMessage = "Error creating a new user profile name.";
     clientError(errorMessage);
     throw new Error(errorMessage);
@@ -382,7 +380,6 @@ const ensureUsernameExists = async () => {
 };
 
 const startBackgroundServices = async () => {
-  console.log("Starting background services");
   try {
     await connectToServer();
     await ensureUsernameExists();
@@ -399,7 +396,7 @@ const startBackgroundServices = async () => {
       message: `Connected to SODA's background services successfully.`,
     });
   } catch (error) {
-    console.log("Error connecting to server: ", error);
+    console.error("Error connecting to server: ", error);
     await showErrorAndRestart(error);
   }
 };
@@ -450,7 +447,7 @@ const startupServerAndApiCheck = async () => {
       Swal.close();
       return;
     } catch (e) {
-      console.log("Error connecting to server: ", e);
+      console.error("Error connecting to server: ", e);
       await window.wait(retryInterval);
     }
   }
@@ -535,7 +532,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
   try {
     // Step 0: abort if the background services are already running
     if (useGlobalStore.getState()["pennsieveAgentCheckInProgress"] === true) {
-      console.log("Background services checks are already in progress");
       return false;
     }
     // Reset the background services state in the store and set the checks in progress
@@ -545,7 +541,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
     // Step 1: Check the internet connection
     const userConnectedToInternet = await window.checkInternetConnection();
     if (!userConnectedToInternet) {
-      console.log("User not connected to internet aborting now");
       setPennsieveAgentCheckError(
         "No Internet Connection",
         "An internet connection is required to upload to Pennsieve. Please connect to the internet and try again."
@@ -556,7 +551,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
 
     // Step 2: Check if the Pennsieve agent is installed
     const pennsieveAgentInstalled = await window.spawn.checkForPennsieveAgent();
-    console.log("Step 2: Pennsieve agent installed: ", pennsieveAgentInstalled);
     setPennsieveAgentInstalled(pennsieveAgentInstalled);
 
     if (!pennsieveAgentInstalled) {
@@ -618,8 +612,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
     }
 
     if (usersPennsieveAgentVersion !== latestPennsieveAgentVersion) {
-      console.log("Users Pennsieve agent version: ", usersPennsieveAgentVersion);
-      console.log("Latest Pennsieve agent version: ", latestPennsieveAgentVersion);
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
       setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
@@ -627,13 +619,8 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       return false;
     }
 
-    console.log("Users Pennsieve agent version: ", usersPennsieveAgentVersion);
-
-    console.log("Pennsieve Agent checks complete");
     // If we get to this point, it means all the background services are operational
     setPennsieveAgentCheckSuccessful(true);
-
-    console.log("pennsieveAgentStatusDivId: ", pennsieveAgentStatusDivId);
     const postAgentCheckMessages = {
       "guided-mode-post-log-in-pennsieve-agent-check":
         "Click the 'Save and Continue' button below to finish preparing your dataset to be uploaded to Pennsieve.",
@@ -649,7 +636,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
 
     return true;
   } catch (error) {
-    console.log("Error checking Pennsieve background services: ", error);
     setPennsieveAgentCheckError("Error checking Pennsieve background services", error.message);
     abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
     return false;
@@ -831,10 +817,8 @@ const setTemplatePaths = async () => {
 window.checkInternetConnection = async () => {
   try {
     await axios.get("https://www.google.com");
-    console.log("Connected");
     return true;
   } catch (error) {
-    console.log("Not connected");
     window.log.error("No internet connection");
     return false;
   }
@@ -2057,7 +2041,6 @@ window.parseJson = (path) => {
     return contentJson;
   } catch (error) {
     window.log.error(error);
-    console.log(error);
     return {};
   }
 };
@@ -2068,7 +2051,6 @@ window.createMetadataDir = () => {
     window.fs.mkdirSync(metadataPath, { recursive: true });
   } catch (error) {
     window.log.error(error);
-    console.log(error);
   }
 };
 
@@ -3460,7 +3442,6 @@ const populateOrganizationDropdowns = (organizations) => {
 };
 // ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 window.updateBfAccountList = async () => {
-  console.log("Updating bf account list");
   let responseObject;
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
@@ -3488,7 +3469,6 @@ window.updateBfAccountList = async () => {
 };
 
 window.loadDefaultAccount = async () => {
-  console.log("Loading default account");
   let responseObject;
 
   try {
@@ -4017,7 +3997,6 @@ const initializePennsieveAccountList = async () => {
   try {
     const res = await client.get("manage_datasets/bf_account_list");
     const accounts = res.data;
-    console.log("BF accounts retrieved: ", accounts);
     for (const myitem in accounts) {
       bfAccountOptions[accounts[myitem]] = accounts[myitem];
     }
@@ -4028,8 +4007,6 @@ const initializePennsieveAccountList = async () => {
 };
 
 const setDefaultPennsieveAccountUI = async () => {
-  console.log("setDefaultPennsieveAccountUI");
-
   try {
     const bfDefaultAccRes = await client.get("manage_datasets/bf_default_account_load");
     const accounts = bfDefaultAccRes.data.defaultAccounts;
@@ -5112,9 +5089,6 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
       imgContainer.style.display = "block";
 
       $(paraImagePath).html(image_path);
-      // console.log("Image path being passed into cropper")
-      // prepend the file protocol to the image_path
-      // TODO: Only do on dev serevrs?
       image_path = "file://" + image_path;
       viewImportedImage.src = image_path;
       window.myCropper.destroy();
@@ -5389,7 +5363,7 @@ window.fileContextMenu = (event) => {
       });
     window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 };
 
@@ -6488,7 +6462,6 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
 };
 
 const preGenerateSetup = async (e, elementContext) => {
-  console.log($($($(elementContext).parent().parent()[0])));
   $($($(elementContext).parent().parent()[0]).parents()[0]).removeClass("tab-active");
   // set tab-active to generate-progress-tab
   $("#generate-dataset-progress-tab").addClass("tab-active");

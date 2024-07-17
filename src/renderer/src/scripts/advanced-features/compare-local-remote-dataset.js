@@ -15,8 +15,6 @@ document.querySelector(".prepare-comparison").addEventListener("click", async ()
 document
   .querySelector("#compare-local-remote-dataset-local-path")
   .addEventListener("click", async () => {
-    console.log("Clicked");
-
     window.electron.ipcRenderer.send("open-file-dialog-newdataset");
     window.electron.ipcRenderer.on("selected-new-dataset", (event, path) => {
       document.querySelector("#compare-local-remote-dataset-local-path").value = path;
@@ -37,18 +35,8 @@ document
 
 // observer for the selected dataset label in the dataset selection card in question 2
 const datasetChangedObserver = new MutationObserver(() => {
-  console.log("We activated this here woo woo");
-
   // once a dataset has been selected show the run validator button if the current question is active
   if ($("#bf_dataset_load_compare_local_remote").text().trim() !== "None") {
-    console.log("We activated this here woo woo");
-    // window.transitionFreeFormMode(
-    //   this,
-    //   "compare-local-remote-dataset-question-2",
-    //   "compare_local_remote_dataset_tab",
-    //   "",
-    //   "individual-question"
-    // );
     let nextQuestion = document.querySelector("#compare-local-remote-dataset-question-3");
     nextQuestion.style.display = "flex";
     nextQuestion.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -101,8 +89,6 @@ const compareLocalRemoteDataset = async () => {
   const remoteDatasetPath = window.defaultBfDatasetId;
 
   comparisonResults = await getComparisonResults(localDatasetPath, remoteDatasetPath);
-
-  console.log(comparisonResults);
 
   // check if there are any results
   if (
@@ -217,9 +203,6 @@ document.querySelector("#only-on-local-upload-selected").addEventListener("click
 
 document.querySelector("#only-on-pennsieve-delete-selected").addEventListener("click", async () => {
   let filesToDelete = comparisonResults.files_only_on_pennsieve_ids;
-
-  console.log(filesToDelete);
-
   try {
     await api.deleteFilesFromDataset(window.defaultBfDatasetId, filesToDelete);
     // removeRows("comparison-results-only-on-pennsieve-table")

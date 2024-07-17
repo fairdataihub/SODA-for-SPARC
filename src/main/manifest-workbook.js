@@ -6,7 +6,7 @@ import mv from "mv";
 ipcMain.handle("mv", (event, source, destination) => {
   mv(source, destination, function (err) {
     if (err) {
-      console.log(err);
+      console.error(err);
       return err;
     } else {
       return "success";

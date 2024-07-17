@@ -49,7 +49,6 @@ document.querySelector("#guided--verify-files-button").addEventListener("click",
 
 document.querySelectorAll(".verify-file-status-download-list").forEach((element) => {
   element.addEventListener("click", async () => {
-    console.log("Activated save download list");
     const savePath = await window.electron.ipcRenderer.invoke(
       "open-folder-path-select",
       "Select a folder to save your failed files list"
