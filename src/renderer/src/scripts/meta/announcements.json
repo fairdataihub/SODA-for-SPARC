@@ -1,4 +1,12 @@
 {
+  "15.1.0": {
+    "announcements": {
+      "bug-fixes": [],
+      "features": [
+        "Removed all Pennsieve Agent/log in requirements from the start up processes and added checks within both curation modes to assist users with Pennsieve account/agent requirements."
+      ]
+    }
+  },
   "15.0.2": {
     "announcements": {
       "bug-fixes": [
