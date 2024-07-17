@@ -179,7 +179,7 @@ window.uploadDatasetDropHandler = async (ev) => {
 
       let moveForward = false;
       document.getElementById("para-org-dataset-path").classList.add("hidden");
-      let valid_dataset = window.verify_sparc_folder(folderPath, "local");
+      let valid_dataset = window.verifySparcFolder(folderPath, "local");
 
       if (valid_dataset) {
         moveForward = await window.handleLocalDatasetImport(folderPath);
@@ -519,8 +519,7 @@ window.handleLocalDatasetImport = async (path) => {
   const forbiddenFileNames = [];
   const problematicFiles = [];
   const hiddenItems = [];
-  // window.sodaJSONObj["dataset-structure"]["files"] = list.files;
-  // Check for probelematic files in the metadata files
+
   for (let file in list.files) {
     const filesIsForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
       file,
@@ -630,7 +629,7 @@ window.importLocalDataset = async (folderPath) => {
   };
   let moveForward = false;
 
-  let valid_dataset = window.verify_sparc_folder(folderPath, "local");
+  let valid_dataset = window.verifySparcFolder(folderPath, "local");
 
   if (valid_dataset) {
     moveForward = await window.handleLocalDatasetImport(folderPath);
