@@ -7270,6 +7270,12 @@ const initiate_generate = async (e) => {
       document.getElementById("documentation-view").style.pointerEvents = "";
       // Allow contact us view to be clicked again
       document.getElementById("contact-us-view").style.pointerEvents = "";
+
+      // check if we updated an existing dataset
+      const mergeSelectedCard = document.querySelector("#Question-generate-dataset-existing-folders-options").classList.contains("checked");
+      if(mergeSelectedCard) {
+        await swalShowInfo("Manifest Files Not Updated With New Files", "Please navigate to the `Advanced Features` tab and use the standalone manifest generator to update your manifest files with the new files.")
+      }
     })
     .catch(async (error) => {
       clearInterval(timerProgress);
