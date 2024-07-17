@@ -288,4 +288,22 @@ $("#advanced-start-over-button").on("click", async () => {
     document.getElementById("validate_dataset-question-4").classList.remove("show");
     $("#validate_dataset-question-3").hide();
   }
+
+  console.log(current_advanced_page);
+
+  if(current_advanced_page === "compare_local_remote_btn") {
+    document.querySelector("#compare-local-remote-dataset-local-path").value = "";
+    document.querySelector("#compare-local-remote-dataset-local-path").placeholder = "Browse here";
+
+    document.querySelector("#bf_dataset_load_compare_local_remote").textContent = "None"
+
+
+    // empty the comparison results tables
+    document.querySelector("#comparison-results-only-on-pennsieve-table tbody").innerHTML = "";
+    document.querySelector("#comparison-results-only-on-local-table tbody").innerHTML = "";
+
+
+    document.querySelector("#compare-local-remote-dataset-question-2").style.display = "none"
+    document.querySelector("#compare-local-remote-dataset-question-3").style.display = "none"
+  }
 });
