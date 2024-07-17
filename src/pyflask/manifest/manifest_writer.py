@@ -95,7 +95,6 @@ def update_existing_pennsieve_manifest_files(soda_json_structure, high_level_fol
                         continue
                         
                     high_level_folders.remove(folder_name)
-
                     updated_manifest_dict = update_existing_pennsieve_manifest_file(dataset_structure["folders"][folder_name], manifest_df)
 
                     if not exists(join(manifest_path, folder_name)):
@@ -106,8 +105,6 @@ def update_existing_pennsieve_manifest_files(soda_json_structure, high_level_fol
                     new_manifest.to_excel(filepath, index=False)
 
                     manifest_progress["manifest_files_uploaded"] += 1
-
-                    no_manifest_boolean = True
 
                     # break because we only need to read the "manifest.xlsx" file in each high level folder.
                     break

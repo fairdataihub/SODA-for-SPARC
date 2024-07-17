@@ -1154,21 +1154,6 @@ const recursive_remove_deleted_files = (dataset_folder) => {
   }
 };
 
-/**
- *  Before a user uploads their manifest files to Pennsieve or generates them locally remove empty custom  columns.
- *  It is important that the SPARC SDS 2.0 mandated columns remain even if they are empty.
- */
-const dropEmptyManifestColumns = async () => {
-  try {
-    await client.put("/prepare_metadata/manifest_files/pennsieve", {
-      action: "drop_empty_manifest_columns",
-      type: "bf",
-    });
-  } catch (error) {
-    clientError(error);
-  }
-};
-
 const updateJSONStructureManifestGenerate = () => {
   let starting_point = window.sodaJSONObj["starting-point"]["type"];
   if (starting_point == "bf") {

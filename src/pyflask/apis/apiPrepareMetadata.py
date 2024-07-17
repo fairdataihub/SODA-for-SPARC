@@ -596,7 +596,7 @@ class GenerateManifestFilesPennsieve(Resource):
             api.abort(400, str(selected_account + selected_dataset + soda_json_object))
 
         try:
-            return import_ps_manifest_file(soda_json_object, selected_dataset)
+            return import_ps_manifest_file(soda_json_object)
         except Exception as e:
             api.abort(500, str(e))
 
@@ -605,7 +605,6 @@ class GenerateManifestFilesPennsieve(Resource):
              description="Edit manifest files that are stored locally. Used in the standalone manifest generator to edit manifest files before uploading to Pennsieve.")
     def put(self):
         data = request.get_json()
-
         edit_action = data.get("action")
         manifest_type = data.get("type")
 
@@ -613,7 +612,6 @@ class GenerateManifestFilesPennsieve(Resource):
             api.abort(400, "Cannot edit manifest files without the action and type provided.")
 
         try:
-            # Drop empty columns ( but keep required columns ) beforing uploading the local manifest files to Pennsieve
             return edit_ps_manifest_file(edit_action, manifest_type)
         except Exception as e:
             api.abort(500, str(e))

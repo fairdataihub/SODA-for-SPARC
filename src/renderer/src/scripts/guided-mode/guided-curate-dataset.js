@@ -3324,7 +3324,6 @@ const guidedRenderProgressCards = async () => {
       await window.verifyProfile();
       progressCardLoadingDivText.textContent = "Verifying workspace information";
       await window.synchronizePennsieveWorkspace();
-      progressCardLoadingDivText.textContent = "guided-section-loading-progress-cards-para";
     } catch (e) {
       clientError(e);
       await swalShowInfo(
