@@ -1895,19 +1895,11 @@ const generateManifestOnPennsieve = () => {
 };
 
 const validateSPARCdataset = () => {
-  // check if the bf option is selected
-
-  // skip because previewing the manifest files for the user based off a Pennsieve dataset stored in json that has already been verified
-
   let localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder");
-  let valid_dataset = window.verify_sparc_folder(localDatasetFolderPath, "local");
+  let valid_dataset = window.verifySparcFolder(localDatasetFolderPath, "local");
   if (valid_dataset == true) {
-    let action = "";
     window.irregularFolderArray = [];
-    window.detectIrregularFolders(
-      window.path.basename(localDatasetFolderPath),
-      localDatasetFolderPath
-    );
+    window.detectIrregularFolders(localDatasetFolderPath);
     var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
     if (window.irregularFolderArray.length > 0) {
       Swal.fire({

@@ -1716,9 +1716,8 @@ const recursive_structure_create_include_manifest = (
 // Function to verify if a local folder is a SPARC folder
 // If no high level folders or any possible metadata files
 // are found the folder is marked as invalid
-window.verify_sparc_folder = (root_folder_path, type) => {
-  let high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"];
-  let possible_metadata_files = [
+window.verifySparcFolder = (rootFolderPath, type) => {
+  const possibleMetadataFiles = [
     "submission",
     "dataset_description",
     "subjects",
@@ -1726,34 +1725,21 @@ window.verify_sparc_folder = (root_folder_path, type) => {
     "README",
     "CHANGES",
   ];
-  let valid_dataset = false;
-  let entries = window.fs.readdirSync(root_folder_path);
-  for (let i = 0; i < entries.length; i++) {
-    let item = entries[i];
-    if (type === "local") {
-      if (
-        window.highLevelFolders.includes(item) ||
-        possible_metadata_files.includes(window.path.parse(item).name)
-      ) {
-        valid_dataset = true;
-        break;
-      } else {
-        valid_dataset = false;
-      }
-    } else {
-      if (
-        window.highLevelFolders.includes(item) ||
-        possible_metadata_files.includes(window.path.parse(item).name) ||
-        item.substring(0, 1) != "."
-      ) {
-        valid_dataset = true;
-        break;
-      } else {
-        valid_dataset = false;
-      }
-    }
-  }
-  return valid_dataset;
+
+  // Get the contents of the root folder
+  const entries = window.fs.readdirSync(rootFolderPath);
+
+  // Check if the folder contains any high level folders or metadata files
+  const isValidItem = (item) => {
+    const itemName = window.path.parse(item).name;
+    return (
+      window.highLevelFolders.includes(item) ||
+      possibleMetadataFiles.includes(itemName) ||
+      (type === "pennsieve" && item[0] !== ".")
+    );
+  };
+
+  return entries.some(isValidItem);
 };
 
 // function similar to window.transitionSubQuestions, but for buttons
