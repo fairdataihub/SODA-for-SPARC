@@ -825,7 +825,6 @@ def check_json_size(jsonStructure):
 
 def generate_dataset_locally(soda_json_structure):
     global namespace_logger
-
     namespace_logger.info("starting generate_dataset_locally")
 
     # Vars used for tracking progress on the frontend 
@@ -836,8 +835,6 @@ def generate_dataset_locally(soda_json_structure):
     global main_curation_uploaded_files
 
     main_curation_uploaded_files = 0
-
-
 
     def recursive_dataset_scan(
         my_folder, my_folderpath, list_copy_files, list_move_files
@@ -881,6 +878,8 @@ def generate_dataset_locally(soda_json_structure):
                                     list_copy_files.append(
                                         [file_path, destination_path]
                                     )
+                        else:
+                            namespace_logger.info(f"file_path {file_path} does not exist. Skipping.")
         return list_copy_files, list_move_files
 
 
@@ -901,14 +900,17 @@ def generate_dataset_locally(soda_json_structure):
     list_copy_files = []
     list_move_files = []
     dataset_structure = soda_json_structure["dataset-structure"]
+
     for folder_key, folder in dataset_structure["folders"].items():
         folderpath = join(datasetpath, folder_key)
         mkdir(folderpath)
         list_copy_files, list_move_files = recursive_dataset_scan(
             folder, folderpath, list_copy_files, list_move_files
         )
-
-
+    for file in list_copy_files:
+        namespace_logger.info(f"file to copy: {file}")
+    for file in list_move_files:
+        namespace_logger.info(f"file to move: {file}")
     # 3. Add high-level metadata files in the list
     if "metadata-files" in soda_json_structure.keys():
         namespace_logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
@@ -958,7 +960,6 @@ def generate_dataset_locally(soda_json_structure):
         # track amount of copied files for loggin purposes
         mycopyfile_with_metadata(srcfile, distfile)
         main_curation_uploaded_files += 1
-
 
     namespace_logger.info("generate_dataset_locally step 7")
     # 7. Delete manifest folder and original folder if merge requested and rename new folder
@@ -1841,6 +1842,10 @@ def get_origin_manifest_id(dataset_id):
     for _ in range(max_attempts):
         manifests = get_upload_manifests(dataset_id)
         if manifests and "manifests" in manifests and manifests["manifests"]:
+            namespace_logger.info(f"Manifests returned: {manifests}")
+            # sort the manifests list by date_created timestamp field in descending order
+            manifests["manifests"].sort(key=lambda x: x["date_created"], reverse=True)
+            namespace_logger.info(f"Manifests sorted: {manifests}")
             return manifests["manifests"][0]["id"]
         time.sleep(5)  # Wait for 5 seconds before the next attempt
 
@@ -1889,11 +1894,11 @@ def build_create_folder_request(folder_name, folder_parent_id, dataset_id):
 
     return body
 
-current_files_in_subscriber_session = 0
 
 bytes_uploaded_per_file = {}
 total_bytes_uploaded = {"value": 0}
 current_files_in_subscriber_session = 0
+
 
 bytes_file_path_dict = {}
 
@@ -1923,6 +1928,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
     global manifest_id
     global origin_manifest_id
     global main_curate_status 
+
 
     total_files = 0
     total_dataset_files = 0
@@ -2346,46 +2352,35 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             """
             global files_uploaded
             global total_bytes_uploaded
-            global current_files_in_subscriber_session
             global bytes_uploaded_per_file
             global main_curation_uploaded_files
+            global main_total_generate_dataset_size
+
 
             if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
                 file_id = events_dict["upload_status"].file_id
                 total_bytes_to_upload = events_dict["upload_status"].total
                 current_bytes_uploaded = events_dict["upload_status"].current
 
-                # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
-                previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
+                status = events_dict["upload_status"].status
+                if status == "2" or status == 2:
+                    ps.unsubscribe(10)
+                    namespace_logger.info("[UPLOAD COMPLETE EVENT RECEIVED]")
+                    namespace_logger.info(f"Amount of bytes uploaded via sum: {sum(bytes_uploaded_per_file.values())} vs total bytes uploaded via difference: {total_bytes_uploaded['value']}")
+                    namespace_logger.info(f"Amount of bytes Pennsieve Agent says via sum: {sum(bytes_uploaded_per_file.values())} vs amount of bytes we calculated before hand: {main_total_generate_dataset_size}")
 
-                # sometimes a user uploads the same file to multiple locations in the same session. Edge case. Handle it by resetting the value to 0 if it is equivalent to the 
-                # total bytes for that file 
-                if previous_bytes_uploaded == total_bytes_to_upload:
-                    previous_bytes_uploaded = 0 
-                
+
                 # only update the byte count if the current bytes uploaded is greater than the previous bytes uploaded
                 # if current_bytes_uploaded > previous_bytes_uploaded:
                 # update the file id's current total bytes uploaded value 
                 bytes_uploaded_per_file[file_id] = current_bytes_uploaded
-
-                # calculate the additional amount of bytes that have just been uploaded for the given file id
-                total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
-
-
-
-
+                total_bytes_uploaded["value"] = sum(bytes_uploaded_per_file.values())
 
                 # check if the given file has finished uploading
                 if current_bytes_uploaded == total_bytes_to_upload and  file_id != "":
                     files_uploaded += 1
                     main_curation_uploaded_files += 1
 
-
-                # check if the upload has finished
-                if files_uploaded == current_files_in_subscriber_session:
-                    namespace_logger.info("Upload complete")
-                    # unsubscribe from the agent's upload messages since the upload has finished
-                    ps.unsubscribe(10)
 
         # Set variables needed throughout generation flow
         list_upload_files = []
@@ -2397,16 +2392,14 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
         starting_point = soda_json_structure["starting-point"]["type"]
         relative_path = ds["content"]["name"]
-        
-
-
-
 
 
         # 1. Scan the dataset structure and create a list of files/folders to be uploaded with the desired renaming
         if generate_option == "new" and starting_point == "new":
             vs = ums.df_mid_has_progress()
+            namespace_logger.info(f"Line 2413. Progress found? {vs}")
             if resume == False or resume == True and not vs:
+                namespace_logger.info("NO progress found so we will start from scratch and construct the manifest")
                 main_curate_progress_message = "Preparing a list of files to upload"
                 # we can assume no files/folders exist in the dataset since the generate option is new and starting point is also new
                 # therefore, we can assume the dataset structure is the same as the tracking structure
@@ -2505,8 +2498,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                         main_total_generate_dataset_size += getsize(manifestpath)
 
 
-        # 2. Count how many files will be uploaded to inform frontend - do not count if we are resuming a previous upload
-        if not resume:
+        # 2. Count how many files will be uploaded to inform frontend - do not count if we are resuming a previous upload that has made progress
+        if not resume or resume and not ums.df_mid_has_progress():
             for folderInformation in list_upload_files:
                 file_paths_count = len(folderInformation[0])
                 total_files += file_paths_count
@@ -2658,6 +2651,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             if renamed_files_counter > 0:
                 ums.set_list_of_files_to_rename(list_of_files_to_rename)
                 ums.set_rename_total_files(renamed_files_counter)
+
 
             # upload the manifest files
             try: 
@@ -3267,6 +3261,7 @@ def generate_dataset(soda_json_structure, resume, ps):
  
     # Generate dataset locally
     if generating_locally(soda_json_structure):
+        namespace_logger.info("generate_dataset generating_locally")
         main_generate_destination = soda_json_structure["generate-dataset"][
             "destination"
         ]
@@ -3504,8 +3499,10 @@ def main_curate_function(soda_json_structure, resume):
     main_curate_progress_message = "Generating dataset"
     try:
         if (soda_json_structure["generate-dataset"]["destination"] == "local"):
+            namespace_logger.info("main_curate_function generating locally")
             generate_dataset(soda_json_structure, resume, ps=None)
         else:
+            namespace_logger.info("main_curate_function generating on Pennsieve")
             accountname = soda_json_structure["bf-account-selected"]["account-name"]
             ps = connect_pennsieve_client(accountname)
             generate_dataset(soda_json_structure, resume, ps)

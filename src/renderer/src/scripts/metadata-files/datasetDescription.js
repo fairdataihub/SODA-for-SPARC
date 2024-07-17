@@ -5,7 +5,7 @@ import client from "../client";
 import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
 import api from "../others/api/api";
-import Tagify from "@yaireo/tagify/dist/tagify.esm";
+import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
 import tippy from "tippy.js";
 import doiRegex from "doi-regex";
 import validator from "validator";
