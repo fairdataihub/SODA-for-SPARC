@@ -943,7 +943,7 @@ manifest_progress = {
 }
 
 
-def import_ps_manifest_file(soda_json_structure, bfdataset):
+def import_ps_manifest_file(soda_json_structure):
     # reset the progress tracking information
     global manifest_progress
     global manifest_folder_path
@@ -954,7 +954,7 @@ def import_ps_manifest_file(soda_json_structure, bfdataset):
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
     # convert the string into a json object/dictionary
     if(str(type(soda_json_structure)) == "<class 'str'>"):
-        soda_json_structure = json.loads(soda_json_structure);
+        soda_json_structure = json.loads(soda_json_structure)
         
     dataset_structure = soda_json_structure["dataset-structure"]
 
@@ -965,15 +965,12 @@ def import_ps_manifest_file(soda_json_structure, bfdataset):
 
     # create the path to the dataset files and folders on Pennsieve and add them to the dataset structure stored in soda_json_structure
     recursive_item_path_create(dataset_structure, [])
-
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
 
     # handle updating any existing manifest files on Pennsieve
     update_existing_pennsieve_manifest_files(soda_json_structure, high_level_folders, manifest_progress, manifest_folder_path)
-
     # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
     create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structure, manifest_folder_path, high_level_folders, manifest_progress)
-
     # finished with the manifest generation process
     manifest_progress["finished"] = True
     
@@ -1154,63 +1151,4 @@ def edit_ps_manifest_file(edit_action, manifest_type):
         manifest_file_location = os.path.join(userpath, "SODA", "manifest_files")
     else:
         manifest_file_location = os.path.join(userpath, "SODA", "Manifest Files")
-
-    if edit_action == "drop_empty_manifest_columns":
-        drop_manifest_empty_columns(manifest_file_location)
-
-    return 
-
-
-def drop_manifest_empty_columns(manifest_file_location):
-    global namespace_logger
-
-    # read the manifest files in the manifest files folder
-    high_level_folders = os.listdir(manifest_file_location)
-
-    # go through each high level folder
-    for high_level_folder in high_level_folders:
-        # read the folder's excel file 
-        manifest_df = pd.read_excel(
-            os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx"), engine="openpyxl", usecols=column_check, header=0
-        )
-        custom_columns = []
-
-        # get the custom columns from the data frame
-        SET_COLUMNS = ['filename', 'timestamp', 'description', 'file type', 'Additional Metadata']
-        for column in manifest_df.columns: 
-            if column not in SET_COLUMNS:
-                custom_columns.append(column)
-
-
-        # for each custom column delete the column if all values are null/empty
-        manifest_dict = {x:manifest_df[x].values.tolist() for x in manifest_df}
-
-        for column in custom_columns:
-            if all([pd.isna(x) for x in manifest_dict[column]]):
-                # remove the column from dict
-                del manifest_dict[column]
-
-        # convert the dict to a data frame
-        edited_manifest_df = pd.DataFrame.from_dict(manifest_dict)
-
-        # save the data frame to the manifest folder as an excel file
-        save_location = os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx")
-        edited_manifest_df.to_excel(save_location, index=False)
-        wb = load_workbook(save_location)
-        ws = wb.active
-        blueFill = PatternFill(
-            start_color="9DC3E6", fill_type="solid"
-        )
-        greenFill = PatternFill(
-            start_color="A8D08D", fill_type="solid"
-        )
-        yellowFill = PatternFill(
-            start_color="FFD965", fill_type="solid"
-        )
-        ws['A1'].fill = blueFill
-        ws['B1'].fill = greenFill
-        ws['C1'].fill = greenFill
-        ws['D1'].fill = greenFill
-        ws['E1'].fill = yellowFill
-        wb.save(save_location)
-
+    return

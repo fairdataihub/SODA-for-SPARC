@@ -1154,21 +1154,6 @@ const recursive_remove_deleted_files = (dataset_folder) => {
   }
 };
 
-/**
- *  Before a user uploads their manifest files to Pennsieve or generates them locally remove empty custom  columns.
- *  It is important that the SPARC SDS 2.0 mandated columns remain even if they are empty.
- */
-const dropEmptyManifestColumns = async () => {
-  try {
-    await client.put("/prepare_metadata/manifest_files/pennsieve", {
-      action: "drop_empty_manifest_columns",
-      type: "bf",
-    });
-  } catch (error) {
-    clientError(error);
-  }
-};
-
 const updateJSONStructureManifestGenerate = () => {
   let starting_point = window.sodaJSONObj["starting-point"]["type"];
   if (starting_point == "bf") {
@@ -1895,19 +1880,11 @@ const generateManifestOnPennsieve = () => {
 };
 
 const validateSPARCdataset = () => {
-  // check if the bf option is selected
-
-  // skip because previewing the manifest files for the user based off a Pennsieve dataset stored in json that has already been verified
-
   let localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder");
-  let valid_dataset = window.verify_sparc_folder(localDatasetFolderPath, "local");
+  let valid_dataset = window.verifySparcFolder(localDatasetFolderPath, "local");
   if (valid_dataset == true) {
-    let action = "";
     window.irregularFolderArray = [];
-    window.detectIrregularFolders(
-      window.path.basename(localDatasetFolderPath),
-      localDatasetFolderPath
-    );
+    window.detectIrregularFolders(localDatasetFolderPath);
     var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
     if (window.irregularFolderArray.length > 0) {
       Swal.fire({
