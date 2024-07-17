@@ -289,7 +289,6 @@ $("#advanced-start-over-button").on("click", async () => {
     $("#validate_dataset-question-3").hide();
   }
 
-  console.log(current_advanced_page);
 
   if(current_advanced_page === "compare_local_remote_btn") {
     document.querySelector("#compare-local-remote-dataset-local-path").value = "";
