@@ -138,7 +138,8 @@ $("#advanced-back-button").on("click", () => {
   if (
     current_advanced_page === "create_manifest_btn" ||
     current_advanced_page === "upload_banner_image_btn" ||
-    current_advanced_page === "validate_dataset_btn"
+    current_advanced_page === "validate_dataset_btn" ||
+    current_advanced_page === "compare_local_remote_btn"
   ) {
     // Hide the advanced features to return to the selection page
     document.getElementById("banner-image-feature").classList.add("hidden"); // Banner image feature
@@ -149,6 +150,9 @@ $("#advanced-back-button").on("click", () => {
 
     document.getElementById("manifest-creation-feature").classList.add("hidden"); // Manifest creation feature
     document.getElementById("manifest-creation-feature").classList.remove("is-shown");
+
+    document.getElementById("compare-local-remote-feature").classList.add("hidden"); // Compare local remote feature
+    document.getElementById("compare-local-remote-feature").classList.remove("is-shown");
 
     let localDatasetButton = document.getElementById("validate_dataset-1-local");
     let pennsieveDatasetButton = document.getElementById("validate_dataset-1-pennsieve");
