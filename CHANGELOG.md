@@ -5,6 +5,16 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## V15.1.0 - 2024-07-17
+
+## Feature Additions:
+
+- Removed all Pennsieve Agent/log in requirements from the start up processes and added checks within both curation modes to assist users with Pennsieve account/agent requirements.
+
+## Bug fixes:
+
+- Fixed an issue causing properly named folders to throw errors when generating manifest files for local datasets.
+
 ## v15.0.2 - 2024-06-14
 
 ## Bug fixes:
