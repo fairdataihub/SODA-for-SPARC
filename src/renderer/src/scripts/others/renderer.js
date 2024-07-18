@@ -6788,11 +6788,11 @@ const initiate_generate = async (e) => {
 
       $("#party-lottie").show();
 
-        // check if we updated an existing dataset
-        const mergeSelectedCard = document
+      // check if we updated an existing dataset
+      const mergeSelectedCard = document
         .querySelector("#dataset-upload-existing-dataset")
         .classList.contains("checked");
-      console.log("Merge selected option: ", mergeSelectedCard)
+      console.log("Merge selected option: ", mergeSelectedCard);
       if (mergeSelectedCard) {
         await swalShowInfo(
           "Manifest Files Not Updated With New Files",
@@ -6884,8 +6884,6 @@ const initiate_generate = async (e) => {
       document.getElementById("documentation-view").style.pointerEvents = "";
       // Allow contact us view to be clicked again
       document.getElementById("contact-us-view").style.pointerEvents = "";
-
-
     })
     .catch(async (error) => {
       clearInterval(timerProgress);
