@@ -8,31 +8,9 @@
         "name": "FAIR Data Innovations Hub, California Medical Innovations Institute",
         "type": "Organization"
       },
-      "email": "bpatel@calmi2.org",
-      "familyName": "Patel",
-      "id": "_:author_1",
-      "givenName": "Bhavesh",
-      "type": "Person"
-    },
-    {
-      "affiliation": {
-        "name": "FAIR Data Innovations Hub, California Medical Innovations Institute",
-        "type": "Organization"
-      },
-      "email": "ssoundarajan@calmi2.org",
-      "familyName": "Soundarajan",
-      "id": "_:author_2",
-      "givenName": "Sanjay",
-      "type": "Person"
-    },
-    {
-      "affiliation": {
-        "name": "FAIR Data Innovations Hub, California Medical Innovations Institute",
-        "type": "Organization"
-      },
       "email": "cmarroquin@calmi2.org",
       "familyName": "Marroquin",
-      "id": "_:author_3",
+      "id": "_:author_1",
       "givenName": "Aaron",
       "type": "Person"
     },
@@ -43,7 +21,7 @@
       },
       "email": "jclark@calmi2.org",
       "familyName": "Clark",
-      "id": "_:author_4",
+      "id": "_:author_2",
       "givenName": "Jacob",
       "type": "Person"
     },
@@ -54,7 +32,7 @@
       },
       "email": "dportillo@calmi2.org",
       "familyName": "Portillo",
-      "id": "_:author_5",
+      "id": "_:author_3",
       "givenName": "Dorian",
       "type": "Person"
     },
@@ -63,9 +41,31 @@
         "name": "FAIR Data Innovations Hub, California Medical Innovations Institute",
         "type": "Organization"
       },
+      "email": "ssoundarajan@calmi2.org",
+      "familyName": "Soundarajan",
+      "id": "_:author_4",
+      "givenName": "Sanjay",
+      "type": "Person"
+    },
+    {
+      "affiliation": {
+        "name": "FAIR Data Innovations Hub, California Medical Innovations Institute",
+        "type": "Organization"
+      },
       "familyName": "Ngo",
-      "id": "_:author_6",
+      "id": "_:author_5",
       "givenName": "Tram",
+      "type": "Person"
+    },
+     {
+      "affiliation": {
+        "name": "FAIR Data Innovations Hub, California Medical Innovations Institute",
+        "type": "Organization"
+      },
+      "email": "bpatel@calmi2.org",
+      "familyName": "Patel",
+      "id": "_:author_6",
+      "givenName": "Bhavesh",
       "type": "Person"
     }
   ],
