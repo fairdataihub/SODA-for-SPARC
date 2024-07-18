@@ -76,10 +76,24 @@
   "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
   "developmentStatus": "active",
   "downloadUrl": "https://fairdataihub.org/sodaforsparc",
+  "funder": {
+    "name": "National Institutes of Health (NIH)",
+    "type": "Organization"
+  },
   "funding": "OT2OD030213",
+  "identifier": "10.5281/zenodo.12774826",
   "isPartOf": "https://fairdataihub.org/",
   "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
-  "keywords": ["SPARC", "FAIR", "data", "curation", "mac", "sparc-dataset", "ubuntu", "windows"],
+  "keywords": [
+    "SPARC",
+    "FAIR",
+    "data",
+    "curation",
+    "mac",
+    "sparc-dataset",
+    "ubuntu",
+    "windows"
+  ],
   "license": "https://spdx.org/licenses/MIT",
   "operatingSystem": [
     "Windows 10",
@@ -88,11 +102,16 @@
     "Windows 11",
     "Ubuntu"
   ],
-  "programmingLanguage": ["JavaScript", "HTML", "Python", "CSS"],
+  "programmingLanguage": [
+    "JavaScript",
+    "HTML",
+    "Python",
+    "CSS"
+  ],
   "referencePublication": "https://doi.org/10.1101/2021.02.10.430563",
   "relatedLink": [],
   "runtimePlatform": [],
   "softwareRequirements": [],
-  "version": "15.0.2",
+  "version": "15.1.0",
   "type": "SoftwareSourceCode"
 }
