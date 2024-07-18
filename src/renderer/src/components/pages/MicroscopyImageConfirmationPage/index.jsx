@@ -80,7 +80,7 @@ const MicroscopyImageConfirmationPage = () => {
 
   return (
     <GuidedModePage
-      pageHeader="Microscopy Image Confirmation"
+      pageHeader="Microscopy Image Confrmation"
       pageDescriptionArray={[
         "SODA has identified the images below as potential microscopy images. Please check the cards of the images that are microscopy images. You can use the search filter to batch select/deselect images based on their file name or type.",
         "The selected images will be checked to ensure they have the SDS required file metadata requirements and then converted to SDS complient file types during the upload process.",

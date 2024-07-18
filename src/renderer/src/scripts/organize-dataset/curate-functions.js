@@ -19,6 +19,7 @@ import {
   swalConfirmAction,
   swalFileListSingleAction,
   swalFileListTripleAction,
+  swalShowInfo,
 } from "../utils/swal-utils";
 // const path = require("path");
 
@@ -178,7 +179,7 @@ window.uploadDatasetDropHandler = async (ev) => {
 
       let moveForward = false;
       document.getElementById("para-org-dataset-path").classList.add("hidden");
-      let valid_dataset = window.verify_sparc_folder(folderPath, "local");
+      let valid_dataset = window.verifySparcFolder(folderPath, "local");
 
       if (valid_dataset) {
         moveForward = await window.handleLocalDatasetImport(folderPath);
@@ -320,7 +321,6 @@ window.addManifestDetailsToDatasetStructure = async (
           },
         });
 
-        // console.log(datasetStructure["dataset-structure"]["folders"][folder]["files"])
         for (let file in datasetStructure["dataset-structure"]["folders"][folder]["files"]) {
           if (file.includes("manifest.xlsx") || file.includes("manifest.csv")) {
             // delete key
@@ -331,7 +331,6 @@ window.addManifestDetailsToDatasetStructure = async (
         jsonManifest.shift();
         let currentFolder = datasetStructure?.["dataset-structure"]?.["folders"]?.[folder];
         for (let manifest of jsonManifest) {
-          // console.log(manifest);
           let filename = manifest["filename"].split("/");
           if (filename.length == 1) {
             // update the dataset structure key
@@ -411,10 +410,8 @@ window.addManifestDetailsToDatasetStructure = async (
             }
 
             let currentFolder = datasetStructure?.["dataset-structure"]?.["folders"]?.[folder];
-            let currentFolderProblematicFolders = problematicFoldersObj?.[folder];
 
             for (let i = 0; i < filename.length - 1; i++) {
-              // console.log(currentFolder?.["folders"]?.[filename[i]]);
               let fileName = filename[i];
               let temp = currentFolder?.["folders"]?.[fileName];
               if (temp == undefined) {
@@ -518,8 +515,7 @@ window.handleLocalDatasetImport = async (path) => {
   const forbiddenFileNames = [];
   const problematicFiles = [];
   const hiddenItems = [];
-  // window.sodaJSONObj["dataset-structure"]["files"] = list.files;
-  // Check for probelematic files in the metadata files
+
   for (let file in list.files) {
     const filesIsForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
       file,
@@ -614,60 +610,99 @@ window.handleLocalDatasetImport = async (path) => {
   return true;
 };
 
+window.importLocalDataset = async (folderPath) => {
+  window.sodaJSONObj = {
+    "bf-account-selected": {},
+    "bf-dataset-selected": {},
+    "dataset-structure": {},
+    "metadata-files": {},
+    "manifest-files": {},
+    "generate-dataset": {},
+    "starting-point": {
+      type: "local",
+      "local-path": "",
+    },
+  };
+  let moveForward = false;
+
+  let valid_dataset = window.verifySparcFolder(folderPath, "local");
+
+  if (valid_dataset) {
+    moveForward = await window.handleLocalDatasetImport(folderPath);
+  } else {
+    Swal.fire({
+      icon: "warning",
+      html: `This dataset is not following the SPARC Data Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
+      <br/>
+      See the "Data Organization" section of the SPARC documentation for more 
+      <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showConfirmButton: false,
+      showCancelButton: true,
+      focusCancel: true,
+      cancelButtonText: "Okay",
+      reverseButtons: window.reverseSwalButtons,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+  }
+
+  if (moveForward) {
+    document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
+    document.getElementById("nextBtn").disabled = false;
+  }
+};
+
 window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (event, path) => {
   if (path.length > 0) {
     // Get the path of the first index
     let folderPath = path[0];
-    let moveForward = false;
-    window.sodaJSONObj = {
-      "bf-account-selected": {},
-      "bf-dataset-selected": {},
-      "dataset-structure": {},
-      "metadata-files": {},
-      "manifest-files": {},
-      "generate-dataset": {},
-      "starting-point": {
-        type: "local",
-        "local-path": "",
-      },
-    };
 
-    let valid_dataset = window.verify_sparc_folder(folderPath, "local");
-
-    if (valid_dataset) {
-      moveForward = await window.handleLocalDatasetImport(folderPath);
-    } else {
-      Swal.fire({
-        icon: "warning",
-        html: `This dataset is not following the SPARC Data Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
-        <br/>
-        See the "Data Organization" section of the SPARC documentation for more 
-        <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        showConfirmButton: false,
-        showCancelButton: true,
-        focusCancel: true,
-        cancelButtonText: "Okay",
-        reverseButtons: window.reverseSwalButtons,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-    }
-
-    if (moveForward) {
-      document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
-      document.getElementById("nextBtn").disabled = false;
-    }
+    await window.importLocalDataset(folderPath);
   }
 });
 
 // Event listeners for buttons in step 2 of Organize Dataset
 document.getElementById("confirm-account-workspace").addEventListener("click", async function () {
+  const loadingDiv = document.querySelector("#upload-dataset-synchronizing-workspace-loading");
+  const loadingDivText = document.querySelector(
+    "#upload-dataset-synchronizing-workspace-loading-para"
+  );
+  const pennsieveAgentCheckDivId = "freeform-mode-post-account-confirmation-pennsieve-agent-check";
+  const pennsieveAgentCheckDiv = document.getElementById(pennsieveAgentCheckDivId);
+  // Hide the Pennsieve Agent check div
+  pennsieveAgentCheckDiv.classList.add("hidden");
+
+  try {
+    loadingDiv.classList.remove("hidden");
+    loadingDivText.textContent = "Verifying account...";
+    await window.verifyProfile();
+    loadingDivText.textContent = "Verifying workspace...";
+    await window.synchronizePennsieveWorkspace();
+
+    loadingDiv.classList.add("hidden");
+  } catch (e) {
+    clientError(e);
+    await swalShowInfo(
+      "Something went wrong while verifying your profile",
+      "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
+    );
+    loadingDiv.classList.add("hidden");
+    return;
+  }
+  try {
+    pennsieveAgentCheckDiv.classList.remove("hidden");
+    // Check to make sure the Pennsieve agent is installed
+    await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
+  } catch (e) {
+    console.error("Error with agent" + e);
+  }
+
   // If the user confirms the workspace and account, proceed to the next step
   document.getElementById("confirm-account-workspace").classList.remove("soda-green-border");
   document.getElementById("confirm-account-workspace").classList.add("soda-green-background");

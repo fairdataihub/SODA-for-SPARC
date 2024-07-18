@@ -49,6 +49,11 @@ window.transitionToAdvancedFeature = (event) => {
     // Reveal the start over button
     document.getElementById("advanced-start-over-button").classList.remove("hidden");
   }
+  if (button_id === "compare_local_remote_btn") {
+    document.getElementById("compare-local-remote-feature").classList.remove("hidden");
+    document.getElementById("compare-local-remote-feature").classList.add("is-shown");
+    document.getElementById("advanced-start-over-button").classList.remove("hidden");
+  }
 };
 
 const transitionToAdvancedPage = () => {
@@ -133,7 +138,8 @@ $("#advanced-back-button").on("click", () => {
   if (
     current_advanced_page === "create_manifest_btn" ||
     current_advanced_page === "upload_banner_image_btn" ||
-    current_advanced_page === "validate_dataset_btn"
+    current_advanced_page === "validate_dataset_btn" ||
+    current_advanced_page === "compare_local_remote_btn"
   ) {
     // Hide the advanced features to return to the selection page
     document.getElementById("banner-image-feature").classList.add("hidden"); // Banner image feature
@@ -144,6 +150,9 @@ $("#advanced-back-button").on("click", () => {
 
     document.getElementById("manifest-creation-feature").classList.add("hidden"); // Manifest creation feature
     document.getElementById("manifest-creation-feature").classList.remove("is-shown");
+
+    document.getElementById("compare-local-remote-feature").classList.add("hidden"); // Compare local remote feature
+    document.getElementById("compare-local-remote-feature").classList.remove("is-shown");
 
     let localDatasetButton = document.getElementById("validate_dataset-1-local");
     let pennsieveDatasetButton = document.getElementById("validate_dataset-1-pennsieve");
@@ -282,5 +291,19 @@ $("#advanced-start-over-button").on("click", async () => {
     document.getElementById("validate_dataset-question-2").classList.remove("prev");
     document.getElementById("validate_dataset-question-4").classList.remove("show");
     $("#validate_dataset-question-3").hide();
+  }
+
+  if (current_advanced_page === "compare_local_remote_btn") {
+    document.querySelector("#compare-local-remote-dataset-local-path").value = "";
+    document.querySelector("#compare-local-remote-dataset-local-path").placeholder = "Browse here";
+
+    document.querySelector("#bf_dataset_load_compare_local_remote").textContent = "None";
+
+    // empty the comparison results tables
+    document.querySelector("#comparison-results-only-on-pennsieve-table tbody").innerHTML = "";
+    document.querySelector("#comparison-results-only-on-local-table tbody").innerHTML = "";
+
+    document.querySelector("#compare-local-remote-dataset-question-2").style.display = "none";
+    document.querySelector("#compare-local-remote-dataset-question-3").style.display = "none";
   }
 });

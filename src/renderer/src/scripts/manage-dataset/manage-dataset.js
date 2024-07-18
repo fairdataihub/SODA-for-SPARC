@@ -2671,7 +2671,7 @@ const handleSelectedSubmitDirectory = async (filepath) => {
   if (filepath != null && filepath.length > 0) {
     $("#selected-local-dataset-submit").attr("placeholder", `${filepath[0]}`);
 
-    let valid_dataset = window.verify_sparc_folder(filepath[0], "pennsieve");
+    let valid_dataset = window.verifySparcFolder(filepath[0], "pennsieve");
 
     if (valid_dataset == true) {
       $("#button_upload_local_folder_confirm").click();

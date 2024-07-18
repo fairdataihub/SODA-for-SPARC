@@ -25,7 +25,7 @@ const waitForHtmlSectionsToInsertIntoDOM = () => {
         clearInterval(interval);
         resolve();
       } else {
-        console.log("Nothing in DOM yet, waiting 100ms");
+        console.info("Nothing in DOM yet, waiting 100ms");
       }
     }, 100);
   });
