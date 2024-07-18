@@ -78,35 +78,6 @@ const MicroscopyImageConfirmationPage = () => {
     }
   };
 
-  const ImageSelector = ({
-    selectedImagePaths,
-    deselectedImagePaths,
-    onCardClick,
-    onSelectAllClick,
-    onDeselectAllClick,
-    searchFilterValue,
-    onSearchFilterChange,
-  }) => {
-    const filteredImages = confirmedMicroscopyImages.filter((image) =>
-      image.filePath.toLowerCase().includes(searchFilterValue.toLowerCase())
-    );
-    console.log(filteredImages);
-    return (
-      <GuidedModeSection bordered={true}>
-        <Flex align="flex-end" gap="md">
-          <Stack spacing="xl" align="flex-start"></Stack>
-          <TextInput
-            label="Image search filter"
-            placeholder="Enter a search filter for example 'sub-01' or '.tiff'"
-            style={{ flexGrow: 1 }}
-            value={searchFilterValue}
-            onChange={(event) => onSearchFilterChange(event.currentTarget.value)}
-            rightSection={<IconSearch size={20} />}
-          />
-        </Flex>
-      </GuidedModeSection>
-    );
-  };
   return (
     <GuidedModePage
       pageHeader="Microscopy Image Confirmation"
@@ -115,15 +86,6 @@ const MicroscopyImageConfirmationPage = () => {
         "The selected images will be checked to ensure they have the SDS required file metadata requirements and then converted to SDS complient file types during the upload process.",
       ]}
     >
-      <ImageSelector
-        selectedImagePaths={confirmedImagePaths}
-        deselectedImagePaths={deniedImagePaths}
-        onCardClick={handleCardClick}
-        onSelectAllClick={selectAllImagesAsMicroscopy}
-        onDeselectAllClick={unselectAllImagesAsMicroscopy}
-        searchFilterValue={confirmMicroscopySearchInput}
-        onSearchFilterChange={setConfirmMicroscopySearchInput}
-      />
       <GuidedModeSection bordered={true}>
         <Flex align="flex-end" gap="md">
           <Stack spacing="xl" align="flex-start">
