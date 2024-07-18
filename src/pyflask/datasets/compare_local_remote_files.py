@@ -136,6 +136,7 @@ def import_local_subfolders(subfolder, path):
 def compare_datasets(local_dataset_path):
     global local_dataset_path_in_ps_bool_dict
     global pennsieve_dataset_paths
+    global namespace_logger
 
 
     only_on_pennsieve = []
@@ -143,11 +144,10 @@ def compare_datasets(local_dataset_path):
     only_on_local = []
 
     for path in pennsieve_dataset_paths.keys():
-        local_path = local_dataset_path + path
+        local_path = os.path.join(local_dataset_path, path)
         if local_path not in local_dataset_path_in_ps_bool_dict:
             only_on_pennsieve.append(path)
             only_on_pennsieve_ids.append(pennsieve_dataset_paths[path]["id"])
-            print(f"Path {path} only exists on Pennsieve")
 
         else:
             local_dataset_path_in_ps_bool_dict[local_path] = True
@@ -155,7 +155,6 @@ def compare_datasets(local_dataset_path):
     for path, package in local_dataset_path_in_ps_bool_dict.items():
         if not package:
             only_on_local.append(path)
-            print(f"Path {path} only exists on local dataset")
 
     return {"files_only_on_pennsieve": only_on_pennsieve, "files_only_on_local": only_on_local, "files_only_on_pennsieve_ids": only_on_pennsieve_ids}
 
@@ -171,6 +170,8 @@ def run_comparison(dataset_id, local_dataset_path):
     if not os.path.exists(local_dataset_path) and  not os.path.isdir(local_dataset_path):
         print(f"Path {local_dataset_path} does not exist or is not a directory")
         raise FileNotFoundError(f"Path {local_dataset_path} does not exist or is not a directory")
+    
+
     
 
     import_pennsieve_dataset(dataset_id, "")
