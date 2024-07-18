@@ -672,7 +672,7 @@ const promptSpeciesAndStrainSelection = async () => {
         <option value="Other">Other</option>
       </select>
       <p class="help-text mb-1 mt-2">
-        If your species and strain are not in the dropdown, select other.
+        If your species and strain are not in the dropdown, select "Other".
       </p>
       <div class="d-flex justify-center hidden" id="section-rrid-search">
         <label class="guided--form-label centered mt-5" style="font-size: 1em !important;">
