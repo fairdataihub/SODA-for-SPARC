@@ -178,10 +178,13 @@ document.querySelector("#only-on-local-upload-selected").addEventListener("click
   let res = await swalConfirmAction(
     "warning",
     "Navigate to Upload Dataset and Upload Files",
-    "Clicking this button will take you to the Upload Dataset feature where we will upload the listed files to the selected Pennsieve dataset for you. All steps will have the options pre-selected for you to corrctly upload only these files. Please note if some of your files are not SDS-compliant the dataset cannot be uploaded. Are you sure you want to do this?",
+    "Clicking this button will take you to the Upload Dataset feature where we will upload the listed files to the selected Pennsieve dataset for you. All steps will have the options pre-selected for you to correctly upload only these files. Please note if some of your files are not SDS-compliant the dataset cannot be uploaded. Are you sure you want to do this?",
     "yes",
     "no"
   );
+
+  document.getElementById("compare-local-remote-feature").classList.add("hidden"); // Compare local remote feature
+  document.getElementById("compare-local-remote-feature").classList.remove("is-shown");
 
   if (!res) return;
 
