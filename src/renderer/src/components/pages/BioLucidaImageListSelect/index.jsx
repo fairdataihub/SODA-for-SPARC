@@ -1,17 +1,12 @@
 import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
-
 import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
-import { IconSearch } from "@tabler/icons-react";
 import {
   Affix,
   Text,
-  Table,
-  Checkbox,
   Tooltip,
   Stack,
-  Button,
   Flex,
   TextInput,
   Grid,
@@ -21,13 +16,14 @@ import {
   Overlay,
   Box,
 } from "@mantine/core";
-import { IconSquareCheck } from "@tabler/icons-react";
+import { IconSquareCheck, IconSearch } from "@tabler/icons-react";
 import styles from "./BioLucidaImageListSelectPage.module.css";
 
 const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
 
 const BioLucidaImageListSelectPage = () => {
+  console.log("BioLucidaImageListSelectPage");
   // Get the required zustand store state variables
   const {
     currentGuidedModePage,
@@ -35,7 +31,6 @@ const BioLucidaImageListSelectPage = () => {
     bioLucidaImageSelectSearchInput,
     setBioLucidaImageSelectSearchInput,
     bioLucidaImages,
-    setBioLucidaImages,
     addBioLucidaImage,
     removeBioLucidaImage,
   } = useGlobalStore();

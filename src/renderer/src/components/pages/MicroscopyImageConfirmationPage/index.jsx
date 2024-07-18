@@ -6,26 +6,14 @@ import {
   Image,
   Overlay,
   AspectRatio,
-  Group,
   Card,
   Grid,
   TextInput,
   Box,
   Flex,
-  Affix,
-  Title,
-  Center,
 } from "@mantine/core";
-import {
-  IconCheck,
-  IconMicroscope,
-  IconMicroscopeOff,
-  IconSearch,
-  IconSquareCheck,
-  IconSquareX,
-} from "@tabler/icons-react";
+import { IconSearch, IconSquareCheck, IconSquareX } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
-import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 import {
   undesignateImageAsMicroscopyImage,
   designateImageAsMicroscopyImage,
@@ -39,6 +27,7 @@ const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home")
 const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
 
 const MicroscopyImageConfirmationPage = () => {
+  console.log("MicroscopyImageConfirmationPage");
   const {
     potentialMicroscopyImages,
     confirmedMicroscopyImages,

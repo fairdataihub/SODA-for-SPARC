@@ -1,10 +1,4 @@
 import useGlobalStore from "../../../stores/globalStore";
-import { useState } from "react";
-import {
-  designateImageAsMicroscopyImage,
-  undesignateImageAsMicroscopyImage,
-  setConfirmedMicroscopyImages,
-} from "../../../stores/slices/microscopyImageSlice";
 import {
   Text,
   Button,
@@ -60,6 +54,7 @@ const MicroscopyImageMetadataFormPage = () => {
   const filteredMicroscopyImagesToCopyMetadataTo = confirmedMicroscopyImages.filter((imageObj) =>
     imageObj.filePath.toLowerCase().includes(imageMetadataCopyFilterValue.toLowerCase())
   );
+
   const allFilteredImagesSelected =
     filteredMicroscopyImagesToCopyMetadataTo.length === confirmedMicroscopyImages.length;
 
@@ -160,7 +155,7 @@ const MicroscopyImageMetadataFormPage = () => {
                         return (
                           <Button
                             variant="subtle"
-                            key={fileObj.path}
+                            key={fileObj.filePath}
                             justify="flex-start"
                             size="compact-sm"
                             className={
