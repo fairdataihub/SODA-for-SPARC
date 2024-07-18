@@ -105,6 +105,7 @@ const compareLocalRemoteDataset = async () => {
     document.querySelector("#compare-local-remote-dataset-no-differences").style.display = "none";
     document.querySelector("#only-on-pennsieve-btn-div").style.display = "none";
   } else {
+    document.querySelector("#compare-local-remote-dataset-no-differences").style.display = "none";
     document.querySelector("#only-on-pennsieve-btn-div").style.display = "flex";
     document.querySelector("#only-on-local-btn-div").style.display = "flex";
   }
