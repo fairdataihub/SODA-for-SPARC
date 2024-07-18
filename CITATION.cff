@@ -1,14 +1,6 @@
 title: SODA (Software to Organize Data Automatically) for SPARC
 authors:
-  - given-names: Bhavesh
-    family-names: Patel
-    email: bpatel@calmi2.org
-    affiliation: FAIR Data Innovations Hub, California Medical Innovations Institute
-  - given-names: Sanjay
-    family-names: Soundarajan
-    email: ssoundarajan@calmi2.org
-    affiliation: FAIR Data Innovations Hub, California Medical Innovations Institute
-  - given-names: Aaron
+  - given-names: Christopher
     family-names: Marroquin
     email: cmarroquin@calmi2.org
     affiliation: FAIR Data Innovations Hub, California Medical Innovations Institute
@@ -20,8 +12,16 @@ authors:
     family-names: Portillo
     email: dportillo@calmi2.org
     affiliation: FAIR Data Innovations Hub, California Medical Innovations Institute
+  - given-names: Sanjay
+    family-names: Soundarajan
+    email: ssoundarajan@calmi2.org
+    affiliation: FAIR Data Innovations Hub, California Medical Innovations Institute
   - given-names: Tram
     family-names: Ngo
+    affiliation: FAIR Data Innovations Hub, California Medical Innovations Institute
+ - given-names: Bhavesh
+    family-names: Patel
+    email: bpatel@calmi2.org
     affiliation: FAIR Data Innovations Hub, California Medical Innovations Institute
 cff-version: 1.2.0
 message: If you use this software, please cite it using the metadata from this file.
