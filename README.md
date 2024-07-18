@@ -37,20 +37,6 @@
   </p>
 </p>
 
-<!-- TABLE OF CONTENTS -->
-
-## Table of Contents
-
-- [About](#about)
-- [Downloading SODA](#Downloading-soda)
-- [Full Documentation](#Full-Documentation)
-- [Issues and Feedback](#Issues-and-Feedback)
-- [Contributing](#Contributing)
-- [License](#license)
-- [Privacy Policy](https://docs.sodaforsparc.io/docs/legal/privacypolicy)
-- [Acknowledgements](#acknowledgements)
-- [Citing](#Citing)
-
 ## About
 
 SODA (Software to Organize Data Automatically) for SPARC is an open-source and free cross-platform desktop software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators according to the [FAIR SPARC data curation guidelines](https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd#top). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA for SPARC is designed such that users can accomplish all the requirements to submit a SPARC dataset rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduce users' effort to a bare minimum during each step, often to just a few clicks.
@@ -111,4 +97,4 @@ If you use SODA for SPARC to curate your dataset, please cite the following refe
 
 1. Patel, B., Srivastava, H., Aghasafari, P., & Helmer, K. (2020). SPARC: SODA, an interactive software for curating SPARC datasets. The FASEB Journal, 34(S1), 1-1. [10.1096/fasebj.2020.34.s1.02483](https://doi.org/10.1096/fasebj.2020.34.s1.02483)
 2. Bandrowski, A., Grethe, J. S., Pilko, A., Gillespie, T., Pine, G., Patel, B., Surles-Zeigler, M., & Martone, M. E. (2021). SPARC Data Structure: Rationale and Design of a FAIR Standard for Biomedical Research Data. bioRxiv. [10.1101/2021.02.10.430563](https://doi.org/10.1101/2021.02.10.430563)
-3. Patel, B., Ngo, T., Soundarajan, S., Marroquin, A., Clark, J., & Portillo, D. (2022). SODA (Software to Organize Data Automatically) for SPARC. Zenodo. [10.5281/zenodo.5565455](https://doi.org/10.5281/zenodo.5565455)
+3. Marroquin, C., Clark, J., Portillo, D., Soundarajan, S., Ngo, T., & Patel, B., (2024). SODA (Software to Organize Data Automatically) for SPARC. Zenodo. [10.5281/zenodo.12774826](https://doi.org/10.5281/zenodo.12774826)
