@@ -18,11 +18,10 @@ import {
 } from "@mantine/core";
 import { IconSquareCheck, IconSearch } from "@tabler/icons-react";
 import styles from "./BioLucidaImageListSelectPage.module.css";
-
-const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
-const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
+import useFetchThumbnailsPath from "../../../hooks/useFetchThumbnailsPath";
 
 const BioLucidaImageListSelectPage = () => {
+  const guidedThumbnailsPath = useFetchThumbnailsPath();
   console.log("BioLucidaImageListSelectPage");
   // Get the required zustand store state variables
   const {

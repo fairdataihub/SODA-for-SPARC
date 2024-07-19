@@ -23,19 +23,10 @@ import {
 import useGlobalStore from "../../../stores/globalStore";
 import styles from "./MicroscopyImageConfirmationPage.module.css";
 import GuidedModeSection from "../../containers/GuidedModeSection";
+import useFetchThumbnailsPath from "../../../hooks/useFetchThumbnailsPath";
 
 const MicroscopyImageConfirmationPage = () => {
-  const [guidedThumbnailsPath, setGuidedThumbnailsPath] = useState("");
-
-  useEffect(() => {
-    const fetchPath = async () => {
-      const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
-      const path = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
-      setGuidedThumbnailsPath(path);
-    };
-    fetchPath();
-  }, []);
-  console.log("MicroscopyImageConfirmationPage2");
+  const guidedThumbnailsPath = useFetchThumbnailsPath();
 
   const {
     potentialMicroscopyImages,
