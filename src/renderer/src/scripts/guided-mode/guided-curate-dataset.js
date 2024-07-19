@@ -26,12 +26,12 @@ import doiRegex from "doi-regex";
 import validator from "validator";
 import client from "../client";
 
-// select2()
 import {
   swalConfirmAction,
   swalShowError,
   swalFileListSingleAction,
   swalFileListDoubleAction,
+  swalFileListTripleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
 
@@ -40,8 +40,9 @@ import useGlobalStore from "../../stores/globalStore";
 
 // Import zustand store state slices
 import {
-  setConfirmedMicroscopyImages,
   setPotentialMicroscopyImages,
+  setConfirmedMicroscopyImages,
+  setDeniedMicroscopyImages,
 } from "../../stores/slices/microscopyImageSlice";
 import { setDropdownState } from "../../stores/slices/dropDownSlice";
 import {
@@ -1502,8 +1503,8 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-microscopy-image-confirmation-tab") {
-      const confirmedMicroscopyImages = useGlobalStore.getState().confirmedMicroscopyImages;
-
+      const { potentialMicroscopyImages, confirmedMicroscopyImages, deniedMicroscopyImages } =
+        useGlobalStore.getState();
       if (confirmedMicroscopyImages.length === 0) {
         errorArray.push({
           type: "notyf",
@@ -1511,7 +1512,51 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
-      window.sodaJSONObj["confirmed-microscopy-images"] = confirmedMicroscopyImages;
+      // If all potential microscopy images are not accounted for, show a swal
+      // asking users to either confirm or deny all potential microscopy images
+      if (
+        confirmedMicroscopyImages.length + deniedMicroscopyImages.length !==
+        potentialMicroscopyImages.length
+      ) {
+        const confirmedImagesFilePaths = confirmedMicroscopyImages.map((image) => image.filePath);
+        const deniedImagesFilePaths = deniedMicroscopyImages.map((image) => image.filePath);
+        const unaccountedForImages = potentialMicroscopyImages.filter(
+          (image) =>
+            !confirmedImagesFilePaths.includes(image.filePath) &&
+            !deniedImagesFilePaths.includes(image.filePath)
+        );
+        console.log("unaccountedForImages", unaccountedForImages);
+        const userResponse = await swalFileListTripleAction(
+          unaccountedForImages.map((image) => image.fileName),
+          "<p>Some images were not confirmed or denied</p>",
+          `The folders listed below contain the special characters "#", "&", "%", or "+"
+          which are typically not recommended per the SPARC data standards.
+          You may choose to either keep them as is, or replace the characters with '-'.
+          `,
+          "Mark above images as microscopy images",
+          "Mark above images as not microscopy images",
+          "Cancel and continue selecting images",
+          "What would you like to do with the folders with special characters?"
+        );
+        console.log("userResponse", userResponse);
+        if (userResponse === "cancel") {
+        }
+        if (userResponse === "confirm") {
+          for (const image of unaccountedForImages) {
+            useGlobalStore.getState().designateImageAsMicroscopyImage(image);
+          }
+        }
+        if (userResponse === "deny") {
+          for (const image of unaccountedForImages) {
+            useGlobalStore.getState().undesignateImageAsMicroscopyImage(image);
+          }
+        }
+      }
+
+      window.sodaJSONObj["confirmed-microscopy-images"] =
+        useGlobalStore.getState().confirmedMicroscopyImages;
+      window.sodaJSONObj["denied-microscopy-images"] =
+        useGlobalStore.getState().deniedMicroscopyImages;
     }
 
     if (pageBeingLeftID === "guided-microscopy-image-metadata-form-tab") {
@@ -5565,30 +5610,41 @@ window.openPage = async (targetPageID) => {
       openSubPageNavigation(targetPageID);
     }
     if (targetPageID === "guided-microscopy-image-confirmation-tab") {
+      // Get the potential microscopy images from the primary folder
       const potentialMicroscopyImages = getImagesInDatasetStructure(
         window.datasetStructureJSONObj["folders"]["primary"]
       );
 
+      // Extract the file names of the potential microscopy images
       const potentialMicroscopyImageFileNames = potentialMicroscopyImages.map(
         (image) => image["fileName"]
       );
+
+      // Get the confirmed microscopy images from the global object
       const confirmedMicroscopyImages = window.sodaJSONObj["confirmed-microscopy-images"] || [];
 
+      // Filter confirmed images to include only those that are in the potential images list
+      // This is to ensure that only images that are in the primary folder are displayed
       const filteredConfirmedMicroscopyImages = confirmedMicroscopyImages.filter((image) =>
         potentialMicroscopyImageFileNames.includes(image["fileName"])
       );
 
+      // Extract the file paths of the potential microscopy images
       const potentialMicroscopyImageFilePaths = potentialMicroscopyImages.map(
         (image) => image["filePath"]
       );
-      // Create a directory to store the guided image thumbnails if it doesn't exist
+
+      // Define the path for storing guided image thumbnails
       const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
+
+      // Create the directory for guided image thumbnails if it doesn't exist
       if (!window.fs.existsSync(guidedThumbnailsPath)) {
         window.fs.mkdirSync(guidedThumbnailsPath, { recursive: true });
       }
 
       console.log("guidedThumbnailsPath:", guidedThumbnailsPath);
 
+      // Create image thumbnails for the potential microscopy images
       try {
         const res = await client.post("/image_processing/create_image_thumbnails", {
           image_paths: potentialMicroscopyImageFilePaths,
@@ -5596,13 +5652,15 @@ window.openPage = async (targetPageID) => {
         });
         console.log("Image thumbnails created successfully", res.data);
       } catch (error) {
-        console.error(error);
+        console.error("Error creating image thumbnails:", error);
       }
 
       console.log("confirmedMicroscopyImages:", confirmedMicroscopyImages);
 
+      // Update the state with potential and confirmed microscopy images
       setPotentialMicroscopyImages(potentialMicroscopyImages);
       setConfirmedMicroscopyImages(filteredConfirmedMicroscopyImages);
+      setDeniedMicroscopyImages(window.sodaJSONObj["denied-microscopy-images"] || []);
     }
 
     if (targetPageID === "guided-microscopy-image-metadata-form-tab") {
