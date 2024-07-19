@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Text,
@@ -23,11 +24,19 @@ import useGlobalStore from "../../../stores/globalStore";
 import styles from "./MicroscopyImageConfirmationPage.module.css";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 
-const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
-const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
-
 const MicroscopyImageConfirmationPage = () => {
-  console.log("MicroscopyImageConfirmationPage");
+  const [guidedThumbnailsPath, setGuidedThumbnailsPath] = useState("");
+
+  useEffect(() => {
+    const fetchPath = async () => {
+      const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
+      const path = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
+      setGuidedThumbnailsPath(path);
+    };
+    fetchPath();
+  }, []);
+  console.log("MicroscopyImageConfirmationPage2");
+
   const {
     potentialMicroscopyImages,
     confirmedMicroscopyImages,
@@ -69,7 +78,7 @@ const MicroscopyImageConfirmationPage = () => {
 
   return (
     <GuidedModePage
-      pageHeader="Microscopy Image Confrmation"
+      pageHeader="Microscopy Image Confirmation"
       pageDescriptionArray={[
         "SODA has identified the images below as potential microscopy images. Please check the cards of the images that are microscopy images. You can use the search filter to batch select/deselect images based on their file name or type.",
         "The selected images will be checked to ensure they have the SDS required file metadata requirements and then converted to SDS complient file types during the upload process.",
