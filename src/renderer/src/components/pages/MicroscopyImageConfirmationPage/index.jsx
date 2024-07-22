@@ -119,7 +119,8 @@ const MicroscopyImageConfirmationPage = () => {
                     radius="md"
                     withBorder
                     style={{
-                      opacity: imageIsDenied ? 0.5 : 1,
+                      opacity: imageIsDenied ? 0.6 : 1,
+                      borderColor: imageIsConfirmed ? "green" : "transparent",
                     }}
                   >
                     <Card.Section>

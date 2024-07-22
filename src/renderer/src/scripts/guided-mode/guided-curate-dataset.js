@@ -43,6 +43,8 @@ import {
   setPotentialMicroscopyImages,
   setConfirmedMicroscopyImages,
   setDeniedMicroscopyImages,
+  designateImageAsMicroscopyImage,
+  undesignateImageAsMicroscopyImage,
 } from "../../stores/slices/microscopyImageSlice";
 import { setDropdownState } from "../../stores/slices/dropDownSlice";
 import {
@@ -1505,13 +1507,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     if (pageBeingLeftID === "guided-microscopy-image-confirmation-tab") {
       const { potentialMicroscopyImages, confirmedMicroscopyImages, deniedMicroscopyImages } =
         useGlobalStore.getState();
-      if (confirmedMicroscopyImages.length === 0) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please confirm at least one microscopy image",
-        });
-        throw errorArray;
-      }
+
       // If all potential microscopy images are not accounted for, show a swal
       // asking users to either confirm or deny all potential microscopy images
       if (
@@ -1528,27 +1524,26 @@ const savePageChanges = async (pageBeingLeftID) => {
         console.log("unaccountedForImages", unaccountedForImages);
         const userResponse = await swalFileListTripleAction(
           unaccountedForImages.map((image) => image.fileName),
-          "<p>Some images were not confirmed or denied</p>",
-          `The folders listed below contain the special characters "#", "&", "%", or "+"
-          which are typically not recommended per the SPARC data standards.
-          You may choose to either keep them as is, or replace the characters with '-'.
-          `,
-          "Mark above images as microscopy images",
-          "Mark above images as not microscopy images",
+          "<p>Some images were not marked as microscopy or not microscopy</p>",
+          `All images added to the primary folder must be marked as microscopy images
+          or not microscopy images so SODA can determine if they need to be processed with MicroFile+
+          and uploaded to BioLucida.`,
+          "Yes, All images above are microscopy images",
+          "No, all images above are not microscopy images",
           "Cancel and continue selecting images",
-          "What would you like to do with the folders with special characters?"
+          "Are all the images above microscopy images?"
         );
         console.log("userResponse", userResponse);
         if (userResponse === "cancel") {
         }
         if (userResponse === "confirm") {
           for (const image of unaccountedForImages) {
-            useGlobalStore.getState().designateImageAsMicroscopyImage(image);
+            designateImageAsMicroscopyImage(image);
           }
         }
         if (userResponse === "deny") {
           for (const image of unaccountedForImages) {
-            useGlobalStore.getState().undesignateImageAsMicroscopyImage(image);
+            undesignateImageAsMicroscopyImage(image);
           }
         }
       }

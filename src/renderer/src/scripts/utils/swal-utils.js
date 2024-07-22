@@ -132,7 +132,7 @@ export const swalFileListTripleAction = async (
   const { value: action } = await Swal.fire({
     title: title,
     html: `
-      ${helpText}
+      <p class="text-left">${helpText}</p>
       <div class="swal-file-list">
         ${fileList
           .map(
