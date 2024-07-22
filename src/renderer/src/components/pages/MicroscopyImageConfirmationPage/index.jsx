@@ -115,7 +115,7 @@ const MicroscopyImageConfirmationPage = () => {
                     className={styles.card}
                     onClick={() => handleCardClick(image)}
                     shadow="sm"
-                    p="lg"
+                    p="5px"
                     radius="md"
                     withBorder
                     style={{
@@ -123,33 +123,30 @@ const MicroscopyImageConfirmationPage = () => {
                       borderColor: imageIsConfirmed ? "green" : "transparent",
                     }}
                   >
-                    <Card.Section>
-                      <AspectRatio>
-                        <Image
-                          src={window.path.join(
-                            guidedThumbnailsPath,
-                            `${image.fileName}_thumbnail.jpg`
-                          )}
-                          alt={`${image.fileName}_thumbnail`}
-                          className={styles.thumbnailImage}
-                          fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
-                          loading="lazy"
-                        />
-                        {imageIsConfirmed && (
-                          <Overlay className={styles.thumbnailOverlay} backgroundOpacity={0}>
-                            <Box className={styles.checkBox}>
-                              <IconSquareCheck size={30} color={"green"} className={styles.check} />
-                            </Box>
-                          </Overlay>
+                    <Card.Section m="0px" p="0px">
+                      <Image
+                        src={window.path.join(
+                          guidedThumbnailsPath,
+                          `${image.fileName}_thumbnail.jpg`
                         )}
-                        {imageIsDenied && (
-                          <Overlay className={styles.thumbnailOverlay} backgroundOpacity={0}>
-                            <Box className={styles.checkBox}>
+                        alt={`${image.fileName}_thumbnail`}
+                        className={styles.thumbnailImage}
+                        fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
+                        loading="lazy"
+                      />
+                      {/* Overlay for the checkbox */}
+                      {imageIsDenied || imageIsConfirmed ? (
+                        <Overlay className={styles.thumbnailOverlay} backgroundOpacity={0.3}>
+                          <Box className={styles.checkBox}>
+                            {imageIsDenied && (
                               <IconSquareX size={30} color={"red"} className={styles.check} />
-                            </Box>
-                          </Overlay>
-                        )}
-                      </AspectRatio>
+                            )}
+                            {imageIsConfirmed && (
+                              <IconSquareCheck size={30} color={"green"} className={styles.check} />
+                            )}
+                          </Box>
+                        </Overlay>
+                      ) : null}
                     </Card.Section>
                     <Card.Section p="6px" h="60px" mb="-3px">
                       <Tooltip

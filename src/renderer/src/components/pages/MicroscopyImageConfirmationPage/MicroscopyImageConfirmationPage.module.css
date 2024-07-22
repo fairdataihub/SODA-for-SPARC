@@ -13,11 +13,10 @@
 }
 
 .thumbnailImage {
-  width: 175px !important;
-  height: 175px !important;
+  width: 175px;
+  height: 175px;
   border-radius: 8px !important;
 }
-
 .thumbnailOverlay {
   width: 175px !important;
   height: 175px !important;
@@ -27,6 +26,7 @@
   justify-content: flex-end !important;
   padding: 10px !important;
   background-color: rgba(0, 20, 0, 0.2) !important;
+  margin: 5px !important;
 }
 
 .card {

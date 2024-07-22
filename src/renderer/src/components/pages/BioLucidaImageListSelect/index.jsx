@@ -16,7 +16,7 @@ import {
   Overlay,
   Box,
 } from "@mantine/core";
-import { IconSquareCheck, IconSearch } from "@tabler/icons-react";
+import { IconCloudUpload, IconSearch } from "@tabler/icons-react";
 import styles from "./BioLucidaImageListSelectPage.module.css";
 import useFetchThumbnailsPath from "../../../hooks/useFetchThumbnailsPath";
 
@@ -92,6 +92,10 @@ const BioLucidaImageListSelectPage = () => {
                     p="lg"
                     radius="md"
                     withBorder
+                    style={{
+                      opacity: imageSelectedToBeUploaded ? 1 : 0.9,
+                      borderColor: imageSelectedToBeUploaded ? "green" : "transparent",
+                    }}
                   >
                     <Card.Section>
                       <AspectRatio>
@@ -108,7 +112,7 @@ const BioLucidaImageListSelectPage = () => {
                         {imageSelectedToBeUploaded && (
                           <Overlay className={styles.thumbnailOverlay} backgroundOpacity={0}>
                             <Box className={styles.checkBox}>
-                              <IconSquareCheck size={30} color={"green"} className={styles.check} />
+                              <IconCloudUpload size={30} color={"teal"} className={styles.check} />
                             </Box>
                           </Overlay>
                         )}
