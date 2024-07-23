@@ -7,6 +7,7 @@ import DropdownSelect from "../common/DropdownSelect";
 import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
+import { Divider } from "@mantine/core";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
@@ -82,6 +83,14 @@ const componentTypeRenderers = {
     root.render(
       <SodaComponentWrapper>
         <SingleColumnTable id={id} columnName={columnName} />
+      </SodaComponentWrapper>
+    );
+  },
+  divider: (componentSlot) => {
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper>
+        <Divider my="xl" />
       </SodaComponentWrapper>
     );
   },

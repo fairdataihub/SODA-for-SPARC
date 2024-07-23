@@ -8,22 +8,68 @@
     <div class="document_container">
       <div class="doc_container">
         <div class="dc_con">
-          <h1 class="doc_header">Account</h1>
-          <div class="document-content" style="justify-content: center">
-            <div id="documentation-lottie" class="documentation-lottie_style"></div>
-          </div>
+          <h1 class="doc_header">Manage Accounts</h1>
+          <div data-component-type="divider"></div>
           <div class="docu-content-container">
-            <h2 class="document_text">Current Account: Current Workspace:</h2>
-            <div
-              id="container-view-documentation-button"
-              class="button_container_contact"
-              style="margin-top: 4rem"
-            >
+            <h2 style="margin-right: 76%">Pennsieve Account</h2>
+            <div class="field prepare-metadata-card-field">
               <div
-                data-component-type="external-link"
-                data-url="https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda"
-                data-button-text="View Documentation"
-                data-button-type="button"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
+                  margin-bottom: 20px;
+                "
+              >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
+                  <div class="card-container prepare-metadata">
+                    <div style="width: 100%">
+                      <h5 class="card-left" style="text-align: left; padding-right: 5px">
+                        Current account:
+                      </h5>
+                      <div class="change-current-account">
+                        <h5
+                          class="card-right bf-account-span prepare-metadata-current-account-span"
+                        >
+                          None
+                        </h5>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
+                  <div class="card-container prepare-metadata">
+                    <div style="width: 100%">
+                      <h5 class="card-left" style="padding-right: 5px">Current workspace:</h5>
+                      <div
+                        class="change-current-account ds-dd organization"
+                        style="margin-left: 12px"
+                      >
+                        <h5
+                          class="card-right bf-organization-span prepare-metadata-organization-span"
+                        >
+                          None
+                        </h5>
+                      </div>
+                    </div>
+                    <div
+                      class="ui active green inline loader small organization-loader"
+                      style="display: none"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="margin: auto; width: 75%">
+              <div
+                data-component-type="single-column-table"
+                data-column-name="Account Options"
+                id="account-options-table"
               ></div>
             </div>
           </div>
