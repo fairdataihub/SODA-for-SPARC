@@ -1,13 +1,12 @@
 import { Table } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
-import { swalConfirmAction, swalShowError } from "../../../scripts/utils/swal-utils";
+import { swalConfirmAction, swalShowError, swalShowInfo } from "../../../scripts/utils/swal-utils";
 
 const getClickHandlerFunction = (id) => {
   if (id === "account-options-table") {
     return async (index) => {
       switch (index) {
         case 0:
-          console.log("Change User clicked");
           window.addBfAccount(null, false);
           break;
         case 1:
@@ -36,13 +35,30 @@ const getClickHandlerFunction = (id) => {
           }
           break;
         case 3:
-          console.log("Test Connection With Pennsieve clicked");
-          swalConfirmAction(
+          let responseTestConnection = await swalConfirmAction(
             "info",
             "Test Connection With Pennsieve",
             "Are you sure you want to test connection with Pennsieve?",
             "Yes",
             "No"
+          );
+
+          if (!responseTestConnection) return;
+
+          // Check for an API key pair in the default profile and ensure it is not obsolete.
+          const accountValid = await window.check_api_key(true);
+
+          // Add a new api key and secret for validating the user's account in the current workspace.
+          if (!accountValid) {
+            await swalShowInfo(
+              "Your Pennsieve account connected to SODA is invalid",
+              "Please use the 'Connect Your Account With Pennsieve' option and try again."
+            );
+            return;
+          }
+          await swalShowInfo(
+            "Your Pennsieve account account connected to SODA is valid ",
+            "All Pennsieve based features of SODA should work as expected."
           );
           break;
         default:
