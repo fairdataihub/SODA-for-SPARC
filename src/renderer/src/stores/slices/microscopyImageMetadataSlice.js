@@ -82,6 +82,7 @@ export const microscopyImageMetadataSlice = (set) => ({
   },
 
   copyImageMetadata: (copyFromImageFileName, copyToImageFileNamesArray) => {
+    console.log("copyImageMetadata");
     const state = useGlobalStore.getState();
     const imageMetadata = state.imageMetadataStore[copyFromImageFileName];
     if (!imageMetadata) {
@@ -89,8 +90,11 @@ export const microscopyImageMetadataSlice = (set) => ({
     }
     set(
       produce((state) => {
-        for (let copyToImageFileName of copyToImageFileNamesArray) {
+        for (const copyToImageFileName of copyToImageFileNamesArray) {
+          console.log("copyToImageFileName", copyToImageFileName);
+          console.log("Image metadta before copy", state.imageMetadataStore[copyToImageFileName]);
           state.imageMetadataStore[copyToImageFileName] = { ...imageMetadata };
+          console.log("Image metadta after copy", state.imageMetadataStore[copyToImageFileName]);
         }
       })
     );

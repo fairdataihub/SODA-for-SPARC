@@ -6,7 +6,6 @@ import {
   Stack,
   Image,
   Overlay,
-  AspectRatio,
   Card,
   Grid,
   TextInput,

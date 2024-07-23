@@ -1,3 +1,4 @@
+import { useState } from "react";
 import useGlobalStore from "../../../stores/globalStore";
 import {
   Text,
@@ -13,15 +14,13 @@ import {
   Title,
   Divider,
 } from "@mantine/core";
-import { IconSearch } from "@tabler/icons-react";
+import { IconSearch, IconCheck, IconDots } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import NavigationButton from "../../buttons/Navigation";
-import { IconCheck, IconDots } from "@tabler/icons-react";
-import styles from "./MicroscopyImageMetadataFormPage.module.css";
 import GuidedModeSection from "../../containers/GuidedModeSection";
+import styles from "./MicroscopyImageMetadataFormPage.module.css";
 
 const MicroscopyImageMetadataFormPage = () => {
-  // Get the required zustand store state variables
   const {
     selectedImageFileObj,
     setSelectedImageFileObj,
@@ -39,6 +38,8 @@ const MicroscopyImageMetadataFormPage = () => {
     setImageMetadataCopyFilterValue,
   } = useGlobalStore();
 
+  const [selectedCopyToImages, setSelectedCopyToImages] = useState([]);
+
   const filteredMicroscopyImageObjs = confirmedMicroscopyImages.filter((imageObj) =>
     imageObj.fileName.toLowerCase().includes(imageMetadataSearchValue.toLowerCase())
   );
@@ -51,19 +52,30 @@ const MicroscopyImageMetadataFormPage = () => {
     imageObj.filePath.toLowerCase().includes(imageMetadataCopyFilterValue.toLowerCase())
   );
 
-  const filteredMicroscopyImagesToCopyMetadataTo = confirmedMicroscopyImages.filter((imageObj) =>
-    imageObj.filePath.toLowerCase().includes(imageMetadataCopyFilterValue.toLowerCase())
-  );
+  const allFilteredImagesSelected = filteredCopyToImages.length === selectedCopyToImages.length;
 
-  const allFilteredImagesSelected =
-    filteredMicroscopyImagesToCopyMetadataTo.length === confirmedMicroscopyImages.length;
+  const handleToggleAllImages = (selectAll) => {
+    if (selectAll) {
+      setSelectedCopyToImages([]);
+    } else {
+      setSelectedCopyToImages(filteredCopyToImages);
+    }
+  };
+
+  const handleImageSelection = (imageObj, isSelectedToBeCopiedTo) => {
+    isSelectedToBeCopiedTo
+      ? setSelectedCopyToImages((prevSelected) =>
+          prevSelected.filter((image) => image.filePath !== imageObj.filePath)
+        )
+      : setSelectedCopyToImages((prevSelected) => [...prevSelected, imageObj]);
+  };
 
   return (
     <GuidedModePage
       pageHeader="Microscopy Image Metadata"
       pageDescriptionArray={[
-        "The SDS requires certain metadata fields to be provided for your microsocpy images.",
-        "Plase fill in any missing metadata fields for the images below. Images with complete metadata have a checkmark to the left of the image.",
+        "The SDS requires certain metadata fields to be provided for your microscopy images.",
+        "Please fill in any missing metadata fields for the images below. Images with complete metadata have a checkmark to the left of the image.",
         "If you have multiple microscopy images that have overlapping metadata, you can fill in the metadata for one image and copy it to other images using the 'Copy Metadata from this Image' button.",
       ]}
     >
@@ -87,25 +99,18 @@ const MicroscopyImageMetadataFormPage = () => {
               rightSection={<IconSearch size={20} />}
             />
             <ScrollArea height={300}>
-              <Table miw={800} verticalSpacing="sm" withTableBorder>
+              <Table miw={800} verticalSpacing="sm" withTableBorder highlightOnHover>
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th>
-                      {allFilteredImagesSelected ? (
-                        <Button
-                          className={styles.toggleButton}
-                          onClick={() => toggleAllImages(false)}
-                        >
-                          Select all
-                        </Button>
-                      ) : (
-                        <Button
-                          className={styles.toggleButton}
-                          onClick={() => toggleAllImages(true)}
-                        >
-                          Select all
-                        </Button>
-                      )}
+                      <Button
+                        className={styles.toggleButton}
+                        onClick={() => handleToggleAllImages(allFilteredImagesSelected)}
+                      >
+                        {allFilteredImagesSelected
+                          ? `Deselect ${imageMetadataCopyFilterValue === "" ? "all" : "filtered"}`
+                          : `Select ${imageMetadataCopyFilterValue === "" ? "all" : "filtered"}`}
+                      </Button>
                     </Table.Th>
                     <Table.Th>File name</Table.Th>
                     <Table.Th>File path</Table.Th>
@@ -113,10 +118,16 @@ const MicroscopyImageMetadataFormPage = () => {
                 </Table.Thead>
                 <Table.Tbody>
                   {filteredCopyToImages.map((imageObj) => {
+                    const isSelectedToBeCopiedTo = selectedCopyToImages.some(
+                      (image) => image.filePath === imageObj.filePath
+                    );
                     return (
-                      <Table.Tr key={imageObj.filePath}>
+                      <Table.Tr
+                        key={imageObj.filePath}
+                        onClick={() => handleImageSelection(imageObj, isSelectedToBeCopiedTo)}
+                      >
                         <Table.Td>
-                          <Checkbox />
+                          <Checkbox checked={isSelectedToBeCopiedTo} />
                         </Table.Td>
                         <Table.Td>{imageObj.fileName}</Table.Td>
                         <Table.Td>{imageObj.filePath}</Table.Td>
@@ -128,7 +139,13 @@ const MicroscopyImageMetadataFormPage = () => {
             </ScrollArea>
             <Button
               color="cyan"
-              onClick={() => copyImageMetadata(selectedImageFileObj["fileName"])}
+              onClick={() => {
+                copyImageMetadata(
+                  selectedImageFileObj["filePath"],
+                  filteredCopyToImages.map((image) => image.filePath)
+                );
+                setCopyImageMetadataModeActive(false);
+              }}
             >
               Copy metadata to selected images
             </Button>
@@ -186,40 +203,49 @@ const MicroscopyImageMetadataFormPage = () => {
               </Stack>
             </Grid.Col>
             <Grid.Col span={7}>
-              <Stack gap="md">
-                <Group>
-                  <Text>
-                    <b>Image name:</b> {selectedImageFileObj?.fileName}
-                  </Text>
-                  <Button
-                    variant="light"
-                    color="cyan"
-                    size="xs"
-                    onClick={() => setCopyImageMetadataModeActive(!copyImageMetadataModeActive)}
-                  >
-                    Copy Metadata from this Image
-                  </Button>
-                </Group>
-                {imageMetadataFields.map((field) => {
-                  return (
-                    <TextInput
-                      key={field.key}
-                      label={field.label}
-                      placeholder={`Enter the image's ${field.label}`}
-                      value={
-                        imageMetadataStore?.[selectedImageFileObj?.filePath]?.[field.key] || ""
-                      }
-                      onChange={(event) =>
-                        setImageMetadata(
-                          selectedImageFileObj?.filePath,
-                          field.key,
-                          event.target.value
-                        )
-                      }
-                    />
-                  );
-                })}
-              </Stack>
+              {selectedImageFileObj ? (
+                <Stack gap="md">
+                  <Group>
+                    <Text>
+                      <b>Image name:</b> {selectedImageFileObj?.fileName}
+                    </Text>
+                    <Button
+                      variant="light"
+                      color="cyan"
+                      size="xs"
+                      onClick={() => {
+                        setSelectedCopyToImages([]); // Clear selected images in the copy UI
+                        setCopyImageMetadataModeActive(true);
+                      }}
+                    >
+                      Copy Metadata from this Image
+                    </Button>
+                  </Group>
+                  {imageMetadataFields.map((field) => {
+                    return (
+                      <TextInput
+                        key={field.key}
+                        label={field.label}
+                        placeholder={`Enter the image's ${field.label}`}
+                        value={
+                          imageMetadataStore?.[selectedImageFileObj?.filePath]?.[field.key] || ""
+                        }
+                        onChange={(event) =>
+                          setImageMetadata(
+                            selectedImageFileObj?.filePath,
+                            field.key,
+                            event.target.value
+                          )
+                        }
+                      />
+                    );
+                  })}
+                </Stack>
+              ) : (
+                <Center>
+                  <Text>No image selected.</Text>
+                </Center>
+              )}
             </Grid.Col>
           </Grid>
         )}
