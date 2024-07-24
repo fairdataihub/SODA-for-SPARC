@@ -6,6 +6,14 @@ import * as ini from "ini";
 import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
 
 const addAccountOptions = () => {
+
+  // set default state
+  addRows("account-options-table", [
+    "Connect Your Pennsieve Account",
+    "Change Workspace",
+    "Disconnect Your Pennsieve Account",
+    "Test Connection With Pennsieve",
+  ]);
   // add a subscriber that listens for changes in the bf-account-span class
   $(".bf-account-span").on("DOMSubtreeModified", function () {
     if ($(this).text() === "None") {
