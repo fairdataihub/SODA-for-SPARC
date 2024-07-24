@@ -8,11 +8,10 @@ import {
   Tooltip,
   Stack,
   Flex,
-  TextInput,
+  Button,
   Grid,
   Card,
   Image,
-  AspectRatio,
   Overlay,
   Box,
 } from "@mantine/core";
@@ -27,8 +26,6 @@ const BioLucidaImageListSelectPage = () => {
   const {
     currentGuidedModePage,
     confirmedMicroscopyImages,
-    bioLucidaImageSelectSearchInput,
-    setBioLucidaImageSelectSearchInput,
     bioLucidaImages,
     addBioLucidaImage,
     removeBioLucidaImage,
@@ -66,16 +63,10 @@ const BioLucidaImageListSelectPage = () => {
     >
       <GuidedModeSection bordered={true}>
         <Flex align="flex-end" gap="md">
-          <Stack spacing="xl" align="flex-start"></Stack>
-
-          <TextInput
-            label="Image search filter"
-            placeholder="Enter a search filter for example 'sub-01' or '.tiff'"
-            style={{ flexGrow: 1 }}
-            value={bioLucidaImageSelectSearchInput}
-            onChange={(event) => setBioLucidaImageSelectSearchInput(event.currentTarget.value)}
-            rightSection={<IconSearch size={20} />}
-          />
+          <Button>Select random images</Button>
+          <SodaGreenPaper>
+            <Text>Images selected: {bioLucidaImages.length}/50</Text>
+          </SodaGreenPaper>
         </Flex>
         <Grid>
           {filteredImages.length !== 0 ? (

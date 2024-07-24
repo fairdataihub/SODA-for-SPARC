@@ -2,13 +2,6 @@ import useGlobalStore from "../globalStore";
 import { produce } from "immer";
 
 export const bioLucidaSlice = (set) => ({
-  bioLucidaImageSelectSearchInput: "",
-  setBioLucidaImageSelectSearchInput: (searchInput) => {
-    set((state) => {
-      state.bioLucidaImageSelectSearchInput = searchInput.trim();
-    });
-  },
-
   bioLucidaImages: [],
   setBioLucidaImages: (images) => {
     set((state) => {

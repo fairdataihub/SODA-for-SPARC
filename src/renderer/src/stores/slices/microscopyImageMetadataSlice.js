@@ -150,8 +150,11 @@ export const microscopyImageMetadataSlice = (set) => ({
           }
           for (const fieldKey of imageMetadataFieldKeys) {
             if (filteredImageMetadataJson[filePath][fieldKey] === undefined) {
+              filteredImageMetadataJson[filePath][fieldKey] = "";
+              /* This code simulates starting with random values for the metadata fields 
               filteredImageMetadataJson[filePath][fieldKey] =
                 Math.floor(Math.random() * 5) + 1 > 3 ? "" : Math.floor(Math.random() * 5) + 1;
+              */
             }
           }
         }
