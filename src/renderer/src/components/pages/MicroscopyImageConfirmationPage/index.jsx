@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import {
   Button,
   Text,
@@ -12,7 +11,7 @@ import {
   Box,
   Flex,
 } from "@mantine/core";
-import { IconSearch, IconSquareCheck, IconSquareX } from "@tabler/icons-react";
+import { IconSearch, IconMicroscope, IconSquareX } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import {
   undesignateImageAsMicroscopyImage,
@@ -20,7 +19,7 @@ import {
   setConfirmMicroscopySearchInput,
 } from "../../../stores/slices/microscopyImageSlice";
 import useGlobalStore from "../../../stores/globalStore";
-import styles from "./MicroscopyImageConfirmationPage.module.css";
+import styles from "../../sharedComponentStyles/imageSelector.module.css";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import useFetchThumbnailsPath from "../../../hooks/useFetchThumbnailsPath";
 
@@ -114,7 +113,7 @@ const MicroscopyImageConfirmationPage = () => {
                     className={styles.card}
                     onClick={() => handleCardClick(image)}
                     shadow="sm"
-                    p="5px"
+                    p="2%"
                     radius="md"
                     withBorder
                     style={{
@@ -141,7 +140,7 @@ const MicroscopyImageConfirmationPage = () => {
                               <IconSquareX size={30} color={"red"} className={styles.check} />
                             )}
                             {imageIsConfirmed && (
-                              <IconSquareCheck size={30} color={"green"} className={styles.check} />
+                              <IconMicroscope size={30} color={"green"} className={styles.check} />
                             )}
                           </Box>
                         </Overlay>
@@ -164,6 +163,8 @@ const MicroscopyImageConfirmationPage = () => {
                         <Text
                           weight={500}
                           size="sm"
+                          ml="xs"
+                          mr="xs"
                           style={{
                             display: "-webkit-box",
                             WebkitLineClamp: 3,

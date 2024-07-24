@@ -17,7 +17,7 @@ import {
   Box,
 } from "@mantine/core";
 import { IconCloudUpload, IconSearch } from "@tabler/icons-react";
-import styles from "./BioLucidaImageListSelectPage.module.css";
+import styles from "../../sharedComponentStyles/imageSelector.module.css";
 import useFetchThumbnailsPath from "../../../hooks/useFetchThumbnailsPath";
 
 const BioLucidaImageListSelectPage = () => {
@@ -89,7 +89,7 @@ const BioLucidaImageListSelectPage = () => {
                     className={styles.card}
                     onClick={() => handleCardClick(image)}
                     shadow="sm"
-                    p="lg"
+                    p="2%"
                     radius="md"
                     withBorder
                     style={{
@@ -97,26 +97,24 @@ const BioLucidaImageListSelectPage = () => {
                       borderColor: imageSelectedToBeUploaded ? "green" : "transparent",
                     }}
                   >
-                    <Card.Section>
-                      <AspectRatio>
-                        <Image
-                          src={window.path.join(
-                            guidedThumbnailsPath,
-                            `${image.fileName}_thumbnail.jpg`
-                          )}
-                          alt={`${image.fileName}_thumbnail`}
-                          className={styles.thumbnailImage}
-                          fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
-                          loading="lazy"
-                        />
-                        {imageSelectedToBeUploaded && (
-                          <Overlay className={styles.thumbnailOverlay} backgroundOpacity={0}>
-                            <Box className={styles.checkBox}>
-                              <IconCloudUpload size={30} color={"teal"} className={styles.check} />
-                            </Box>
-                          </Overlay>
+                    <Card.Section m="0px" p="0px">
+                      <Image
+                        src={window.path.join(
+                          guidedThumbnailsPath,
+                          `${image.fileName}_thumbnail.jpg`
                         )}
-                      </AspectRatio>
+                        alt={`${image.fileName}_thumbnail`}
+                        className={styles.thumbnailImage}
+                        fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
+                        loading="lazy"
+                      />
+                      {imageSelectedToBeUploaded && (
+                        <Overlay className={styles.thumbnailOverlay} backgroundOpacity={0}>
+                          <Box className={styles.checkBox}>
+                            <IconCloudUpload size={30} color={"teal"} className={styles.check} />
+                          </Box>
+                        </Overlay>
+                      )}
                     </Card.Section>
                     <Card.Section p="6px" h="60px" mb="-3px">
                       <Tooltip
@@ -135,6 +133,8 @@ const BioLucidaImageListSelectPage = () => {
                         <Text
                           weight={500}
                           size="sm"
+                          ml="xs"
+                          mr="xs"
                           style={{
                             display: "-webkit-box",
                             WebkitLineClamp: 3,

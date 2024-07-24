@@ -26,7 +26,8 @@
   justify-content: flex-end !important;
   padding: 10px !important;
   background-color: rgba(0, 20, 0, 0.2) !important;
-  margin: 5px !important;
+  margin-left: 2%;
+  margin-top: 2%;
 }
 
 .card {
