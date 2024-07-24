@@ -1,7 +1,13 @@
 import { Table } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
-import { swalConfirmAction, swalShowError, swalShowInfo } from "../../../scripts/utils/swal-utils";
+import {
+  swalConfirmAction,
+  swalShowError,
+  swalShowInfo,
+  swalShowLoading,
+} from "../../../scripts/utils/swal-utils";
 import { IconChevronRight } from "@tabler/icons-react";
+import { clientError } from "../../../scripts/others/http-error-handler/error-handler";
 
 const getClickHandlerFunction = (id) => {
   if (id === "account-options-table") {
@@ -36,18 +42,45 @@ const getClickHandlerFunction = (id) => {
           }
           break;
         case 3:
-          // Check for an API key pair in the default profile and ensure it is not obsolete.
-          const accountValid = await window.check_api_key(true);
+          swalShowLoading(
+            "Testing Connection",
+            "Please wait while we test your connection to Pennsieve."
+          );
 
-          // Add a new api key and secret for validating the user's account in the current workspace.
-          if (!accountValid) {
-            await swalShowInfo(
-              "Connection Test Failed",
-              "Please use the 'Connect Your Account With Pennsieve' option and try again."
+          if (
+            !(
+              window.defaultBfAccount !== undefined ||
+              (window.defaultBfAccount === undefined && window.getDefaultProfile())
+            )
+          ) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            await swalShowError(
+              "No Pennsieve Account Connected",
+              "Please use the 'Connect Your Pennsieve Account' option and try again."
             );
             return;
           }
-          await swalShowInfo(
+
+          try {
+            const accountValid = await window.check_api_key();
+            if (!accountValid) {
+              await swalShowError(
+                "Your Pennsieve account connected to SODA is invalid",
+                "Please use the 'Connect Your Pennsieve Account' option and try again."
+              );
+              return;
+            }
+            await window.synchronizePennsieveWorkspace();
+          } catch (e) {
+            clientError(e);
+            await swalShowInfo(
+              "Something went wrong while verifying your profile",
+              "Please try again. If this issue persists please use our `Contact Us` page to report the issue."
+            );
+            return;
+          }
+
+          swalShowInfo(
             "Connection Test Passed",
             "All Pennsieve based features of SODA should work as expected."
           );
