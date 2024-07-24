@@ -1598,7 +1598,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("source");
     }
 
-    /*if (pageBeingLeftID === "guided-biolucida-login-tab") {
+    if (pageBeingLeftID === "guided-biolucida-login-tab") {
       // Check if the user is authenticated to BioLucida
       const userIsAuthenticatedToBioLucida = useGlobalStore.getState().userAuthenticatedToBioLucida;
       if (!userIsAuthenticatedToBioLucida) {
@@ -1631,6 +1631,24 @@ const savePageChanges = async (pageBeingLeftID) => {
         console.log("collection_name", "SODA Integration testing");
         console.log("files_to_upload", microscopyImagesSelectedToBeUploadedToBioLucida);
 
+        // Create a new collection in BioLucida if it does not exist
+        try {
+          const res = await client.post("/image_processing/biolucida_create_collection", {
+            token: bioLucidaAuthToken,
+            collection_name: "SODA account testing",
+          });
+          console.log("BioLucida create collection response", res);
+        } catch (error) {
+          const emessage = userErrorMessage(error);
+          console.log("Error creating BioLucida collection", emessage);
+          errorArray.push({
+            type: "swal",
+            title: "Error creating BioLucida collection",
+            message: `The following error occurred while trying to create a collection in BioLucida: ${emessage}`,
+          });
+          throw errorArray;
+        }
+
         try {
           const res = await client.post("/image_processing/biolucida_image_upload", {
             token: bioLucidaAuthToken,
@@ -1652,7 +1670,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
       }
-    }*/
+    }
 
     if (pageBeingLeftID === "guided-derivative-data-organization-tab") {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("derivative");
@@ -15707,26 +15725,13 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
   }
 };
 
+const convertMicroscopyImagesViaMfPlus = async () => {
+  console.log("Converting microscopy images via MF+");
+};
+
 const guidedPennsieveDatasetUpload = async () => {
   guidedSetNavLoadingState(true);
   try {
-    const guidedBfAccount = window.defaultBfAccount;
-    const guidedDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
-    const guidedDatasetSubtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];
-    const guidedUsers = window.sodaJSONObj["digital-metadata"]["user-permissions"];
-    //const guidedPIOwner = window.sodaJSONObj["digital-metadata"]["pi-owner"];
-    const guidedTeams = window.sodaJSONObj["digital-metadata"]["team-permissions"];
-
-    const guidedPennsieveStudyPurpose =
-      window.sodaJSONObj["digital-metadata"]["description"]["study-purpose"];
-    const guidedPennsieveDataCollection =
-      window.sodaJSONObj["digital-metadata"]["description"]["data-collection"];
-    const guidedPennsievePrimaryConclusion =
-      window.sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
-    const guidedTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
-    const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
-    const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]["banner-image-path"];
-
     //Hide the upload tables
     document.querySelectorAll(".guided-upload-table").forEach((table) => {
       table.classList.add("hidden");
@@ -15746,11 +15751,33 @@ const guidedPennsieveDatasetUpload = async () => {
       }
     }
 
+    //Display the BioLucida Image upload table
+    window.unHideAndSmoothScrollToElement("guided-div-biolucida-image-upload-status-table");
+
+    await convertMicroscopyImagesViaMfPlus();
+    await uploadMicroscopyImagesToBioLucida();
+    const guidedBfAccount = window.defaultBfAccount;
+    const guidedDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
+    const guidedDatasetSubtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];
+    const guidedUsers = window.sodaJSONObj["digital-metadata"]["user-permissions"];
+    //const guidedPIOwner = window.sodaJSONObj["digital-metadata"]["pi-owner"];
+    const guidedTeams = window.sodaJSONObj["digital-metadata"]["team-permissions"];
+
+    const guidedPennsieveStudyPurpose =
+      window.sodaJSONObj["digital-metadata"]["description"]["study-purpose"];
+    const guidedPennsieveDataCollection =
+      window.sodaJSONObj["digital-metadata"]["description"]["data-collection"];
+    const guidedPennsievePrimaryConclusion =
+      window.sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
+    const guidedTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
+    const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
+    const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]["banner-image-path"];
+
     //Display the Pennsieve metadata upload table
     window.unHideAndSmoothScrollToElement(
       "guided-div-pennsieve-metadata-pennsieve-genration-status-table"
     );
-
+    throw new Error("Test Error");
     // Create the dataset on Pennsieve
     await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
 

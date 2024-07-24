@@ -37,7 +37,7 @@ const BioLucidaLogin = () => {
   const { getInputProps, formError, onSubmit } = useForm({
     mode: "uncontrolled",
     initialValues: {
-      username: "jclark",
+      username: "soda",
       password: "",
     },
     validate: {
@@ -58,6 +58,7 @@ const BioLucidaLogin = () => {
       });
       const { data } = res;
       setBioLucidaCredentials(data.username, data.token);
+      window.sodaJSONObj["biolucida_token"] = data.token;
     } catch (error) {
       console.error(error);
       setErrorMessage("Invalid username or password");

@@ -5,6 +5,7 @@ from PIL import Image
 import time
 import os
 import requests
+import base64
 
 api = get_namespace(NamespaceEnum.IMAGE_PROCESSING)
 namespace_logger = get_namespace_logger(NamespaceEnum.IMAGE_PROCESSING)
@@ -41,7 +42,7 @@ class BiolucidaLogin(Resource):
             namespace_logger.info(f"Login response: {res.json()}")
             namespace_logger.info(f"Login status code: {res.status_code}")
             access_token = res.json()['token']
-            namespace_logger.info(f"Access token: {access_token}")    
+            namespace_logger.info(f"Access token: {access_token}")
             return res.json()
         except Exception as e:
             namespace_logger.error(f"Error logging in to Biolucida: {str(e)}")
@@ -84,10 +85,14 @@ class BiolucidaImageUpload(Resource):
             for file_path in files_to_upload:
                 namespace_logger.info(f"Uploading file: {file_path}")
                 file_name = os.path.basename(file_path)
-                file_size = os.path.getsize(file_path)
+                try:
+                    file_size = os.path.getsize(file_path)
+                except FileNotFoundError:
+                    namespace_logger.error(f"File not found: {file_path}")
+                    continue
+                
                 namespace_logger.info(f"File size: {file_size}")
                 namespace_logger.info(f"File name: {file_name}")
-                # Set the cunk size as the fileSize if it is less than 1MB, otherwise set it to 1MB
                 chunk_size = min(file_size, 1000000)
 
                 headers = {'token': token}
@@ -107,25 +112,28 @@ class BiolucidaImageUpload(Resource):
                 namespace_logger.info(f"Number of chunks: {number_of_chunks}")
 
                 with open(file_path, "rb") as image:
-                    image_base64 = image.read()
-                    split_image = [image_base64[i:i+chunk_size] for i in range(0, len(image_base64), chunk_size)]
+                    image_data = image.read()
+                    split_image = [image_data[i:i+chunk_size] for i in range(0, len(image_data), chunk_size)]
                     for i in range(number_of_chunks):
                         chunk_payload = {
                             'upload_key': upload_key,
-                            'upload_data': split_image[i],
+                            'upload_data': base64.b64encode(split_image[i]).decode('utf-8'),
                             'chunk_id': i
                         }
                         namespace_logger.info(f"Uploading chunk {i} of size {len(split_image[i])}")
 
-                        chunk_response = requests.post('https://sparc.biolucida.net/api/v1/upload/continue', data=chunk_payload)
+                        chunk_response = requests.post('https://sparc.biolucida.net/api/v1/upload/continue', json=chunk_payload)
                         namespace_logger.info(f"Chunk upload response: {chunk_response.json()}")
 
                 finish_payload = {'upload_key': upload_key}
-                finish_response = requests.post('https://sparc.biolucida.net/api/v1/upload/finish', data=finish_payload)
+                finish_response = requests.post('https://sparc.biolucida.net/api/v1/upload/finish', json=finish_payload)
                 namespace_logger.info(f"Finish response: {finish_response.json()}")
 
-        except Exception as e:
+        except requests.exceptions.RequestException as e:
             namespace_logger.error(f"Error uploading image to Biolucida: {str(e)}")
+            api.abort(500, str(e))
+        except Exception as e:
+            namespace_logger.error(f"Unexpected error: {str(e)}")
             api.abort(500, str(e))
 
 @api.route('/biolucida_create_collection')
@@ -151,6 +159,7 @@ class BiolucidaLogin(Resource):
 
     def post(self):
         try:
+            namespace_logger.info("Received request to create collection in Biolucida")
             data = self.parser.parse_args()
             token = data['token']
             collection_name = data['collection_name']

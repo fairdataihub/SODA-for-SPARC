@@ -127,7 +127,7 @@ const MicroscopyImageMetadataFormPage = () => {
                         onClick={() => handleImageSelection(imageObj, isSelectedToBeCopiedTo)}
                       >
                         <Table.Td>
-                          <Checkbox checked={isSelectedToBeCopiedTo} />
+                          <Checkbox checked={isSelectedToBeCopiedTo} readOnly />
                         </Table.Td>
                         <Table.Td>{imageObj.fileName}</Table.Td>
                         <Table.Td>{imageObj.filePath}</Table.Td>
