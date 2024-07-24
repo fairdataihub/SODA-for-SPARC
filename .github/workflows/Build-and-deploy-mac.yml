@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      - pre-staging
+      - mfp-data-pipeline
 
 jobs:
   deploy-on-mac:
