@@ -36,29 +36,19 @@ const getClickHandlerFunction = (id) => {
           }
           break;
         case 3:
-          let responseTestConnection = await swalConfirmAction(
-            "info",
-            "Test Connection With Pennsieve",
-            "Are you sure you want to test connection with Pennsieve?",
-            "Yes",
-            "No"
-          );
-
-          if (!responseTestConnection) return;
-
           // Check for an API key pair in the default profile and ensure it is not obsolete.
           const accountValid = await window.check_api_key(true);
 
           // Add a new api key and secret for validating the user's account in the current workspace.
           if (!accountValid) {
             await swalShowInfo(
-              "Your Pennsieve account connected to SODA is invalid",
+              "Connection Test Failed",
               "Please use the 'Connect Your Account With Pennsieve' option and try again."
             );
             return;
           }
           await swalShowInfo(
-            "Your Pennsieve account account connected to SODA is valid ",
+            "Connection Test Passed",
             "All Pennsieve based features of SODA should work as expected."
           );
           break;
