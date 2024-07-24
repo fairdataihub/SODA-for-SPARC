@@ -6,7 +6,7 @@ import * as ini from "ini";
 import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
 
 const addAccountOptions = () => {
-  // add a subscriber that listens for changes in the bf-account-span class 
+  // add a subscriber that listens for changes in the bf-account-span class
   $(".bf-account-span").on("DOMSubtreeModified", function () {
     if ($(this).text() === "None") {
       removeRows("account-options-table");
@@ -15,7 +15,7 @@ const addAccountOptions = () => {
         "Change Workspace",
         "Disconnect Your Pennsieve Account",
         "Test Connection With Pennsieve",
-      ])
+      ]);
     } else {
       removeRows("account-options-table");
       addRows("account-options-table", [
