@@ -25,9 +25,9 @@ const getClickHandlerFunction = (id) => {
           }
           // TODO: Force user to login and check the resulting profile matches the current account before allowing them to disconnect?
           let response = await swalConfirmAction(
-            "info",
+            "warning",
             "Disconnect Pennsieve Account from SODA",
-            "You will need to reconnect your Pennsieve account to use SODA again. Are you sure you want to disconnect?",
+            "You will need to reconnect your Pennsieve account to use Pennsieve features in SODA. Are you sure you want to disconnect?",
             "Yes",
             "No"
           );
