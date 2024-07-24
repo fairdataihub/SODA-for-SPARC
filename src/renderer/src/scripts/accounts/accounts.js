@@ -6,7 +6,6 @@ import * as ini from "ini";
 import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
 
 const addAccountOptions = () => {
-
   // set default state
   addRows("account-options-table", [
     "Connect Your Pennsieve Account",
