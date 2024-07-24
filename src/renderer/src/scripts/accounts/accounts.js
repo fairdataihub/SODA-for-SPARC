@@ -4,15 +4,28 @@ while (!window.baseHtmlLoaded) {
 }
 import * as ini from "ini";
 import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
-import { swalShowError } from "../utils/swal-utils";
 
 const addAccountOptions = () => {
-  addRows("account-options-table", [
-    "Connect Your Pennsieve Account/Connect Another Pennsieve Account",
-    "Change Workspace",
-    "Disconnect Your Pennsieve Account",
-    "Test Connection With Pennsieve",
-  ]);
+  // add a subscriber that listens for changes in the bf-account-span class 
+  $(".bf-account-span").on("DOMSubtreeModified", function () {
+    if ($(this).text() === "None") {
+      removeRows("account-options-table");
+      addRows("account-options-table", [
+        "Connect Your Pennsieve Account",
+        "Change Workspace",
+        "Disconnect Your Pennsieve Account",
+        "Test Connection With Pennsieve",
+      ])
+    } else {
+      removeRows("account-options-table");
+      addRows("account-options-table", [
+        "Connect Another Pennsieve Account",
+        "Change Workspace",
+        "Disconnect Your Pennsieve Account",
+        "Test Connection With Pennsieve",
+      ]);
+    }
+  });
 };
 
 addAccountOptions();

@@ -1,6 +1,8 @@
 import { Table } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
 import { swalConfirmAction, swalShowError, swalShowInfo } from "../../../scripts/utils/swal-utils";
+import { IconChevronRight } from "@tabler/icons-react";
+
 
 const getClickHandlerFunction = (id) => {
   if (id === "account-options-table") {
@@ -75,7 +77,11 @@ const SingleColumnTable = ({ columnName, id }) => {
   const rows = rowData.map((row, index) => {
     return (
       <Table.Tr key={index} onClick={() => handleRowClick(index)}>
-        <Table.Td style={{ textAlign: "left", cursor: "pointer" }}>{row}</Table.Td>
+        <Table.Td style={{ textAlign: "left", cursor: "pointer" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+            {row}<IconChevronRight/>
+          </div>
+        </Table.Td>
       </Table.Tr>
     );
   });
