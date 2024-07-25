@@ -31,13 +31,6 @@ const BioLucidaImageListSelectPage = () => {
     removeBioLucidaImage,
   } = useGlobalStore();
 
-  // Filter the images based on the search input
-  const filteredImages = confirmedMicroscopyImages.filter((image) =>
-    image.relativeDatasetStructurePaths
-      .map((path) => path.toLowerCase())
-      .some((path) => path.includes(bioLucidaImageSelectSearchInput.toLowerCase()))
-  );
-
   const handleCardClick = (image) => {
     console.log("image", image);
     const imageSelectedToBeUploaded = bioLucidaImages.some(
@@ -50,10 +43,32 @@ const BioLucidaImageListSelectPage = () => {
       console.log("Adding image", image.filePath);
       if (bioLucidaImages.length < 50) {
         addBioLucidaImage(image);
+      } else {
+        console.log("Cannot add more than 50 images to BioLucida");
       }
     }
   };
 
+  const handleSelectRandomImagesButtonClick = () => {
+    console.log("Select random images");
+    function getRandomElements(arr, n) {
+      return arr.sort(() => 0.5 - Math.random()).slice(0, n);
+    }
+    const randomImages = getRandomElements(confirmedMicroscopyImages, 50);
+    randomImages.forEach((image) => {
+      addBioLucidaImage(image);
+    });
+  };
+
+  const handleSelectAllImagesButtonClick = () => {
+    console.log("Select all images");
+  };
+
+  const allImagesSelectedToBeUploadedToBioLucida = confirmedMicroscopyImages.every((image) =>
+    bioLucidaImages.some((bioLucidaImage) => bioLucidaImage.filePath === image.filePath)
+  );
+
+  console.log("allImagesSelectedToBeUploadedToBioLucida", allImagesSelectedToBeUploadedToBioLucida);
   return (
     <GuidedModePage
       pageHeader="BioLucida Image Selection"
@@ -63,97 +78,89 @@ const BioLucidaImageListSelectPage = () => {
     >
       <GuidedModeSection bordered={true}>
         <Flex align="flex-end" gap="md">
-          <Button>Select random images</Button>
           <SodaGreenPaper>
             <Text>Images selected: {bioLucidaImages.length}/50</Text>
           </SodaGreenPaper>
+          {!allImagesSelectedToBeUploadedToBioLucida && bioLucidaImages.length > 50 && (
+            <Button onClick={handleSelectRandomImagesButtonClick}>Select random images</Button>
+          )}
+          <Button onClick={handleSelectAllImagesButtonClick}>Select all images</Button>
         </Flex>
         <Grid>
-          {filteredImages.length !== 0 ? (
-            filteredImages.map((image) => {
-              const imageSelectedToBeUploaded = bioLucidaImages.some(
-                (bioLucidaImage) => bioLucidaImage.filePath === image.filePath
-              );
-              return (
-                <Grid.Col span={3} key={image.filePath}>
-                  <Card
-                    className={styles.card}
-                    onClick={() => handleCardClick(image)}
-                    shadow="sm"
-                    p="2%"
-                    radius="md"
-                    withBorder
-                    style={{
-                      opacity: imageSelectedToBeUploaded ? 1 : 0.9,
-                      borderColor: imageSelectedToBeUploaded ? "green" : "transparent",
-                    }}
-                  >
-                    <Card.Section m="0px" p="0px">
-                      <Image
-                        src={window.path.join(
-                          guidedThumbnailsPath,
-                          `${image.fileName}_thumbnail.jpg`
-                        )}
-                        alt={`${image.fileName}_thumbnail`}
-                        className={styles.thumbnailImage}
-                        fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
-                        loading="lazy"
-                      />
-                      {imageSelectedToBeUploaded && (
-                        <Overlay className={styles.thumbnailOverlay} backgroundOpacity={0}>
-                          <Box className={styles.checkBox}>
-                            <IconCloudUpload size={30} color={"teal"} className={styles.check} />
-                          </Box>
-                        </Overlay>
+          {confirmedMicroscopyImages.map((image) => {
+            const imageSelectedToBeUploaded = bioLucidaImages.some(
+              (bioLucidaImage) => bioLucidaImage.filePath === image.filePath
+            );
+            return (
+              <Grid.Col span={3} key={image.filePath}>
+                <Card
+                  className={styles.card}
+                  onClick={() => handleCardClick(image)}
+                  shadow="sm"
+                  p="2%"
+                  radius="md"
+                  withBorder
+                  style={{
+                    opacity: imageSelectedToBeUploaded ? 1 : 0.9,
+                    borderColor: imageSelectedToBeUploaded ? "green" : "transparent",
+                  }}
+                >
+                  <Card.Section m="0px" p="0px">
+                    <Image
+                      src={window.path.join(
+                        guidedThumbnailsPath,
+                        `${image.fileName}_thumbnail.jpg`
                       )}
-                    </Card.Section>
-                    <Card.Section p="6px" h="60px" mb="-3px">
-                      <Tooltip
-                        multiline
-                        label={
-                          <Stack spacing="xs">
-                            <Text>Local file path:</Text>
-                            <Text>{image.filePath}</Text>
-                            <Text>Path in organized dataset structure:</Text>
-                            {image.relativeDatasetStructurePaths.map((path) => (
-                              <Text key={path}>{path}</Text>
-                            ))}
-                          </Stack>
-                        }
+                      alt={`${image.fileName}_thumbnail`}
+                      className={styles.thumbnailImage}
+                      fallbackSrc="https://placehold.co/128x128?text=Preview+unavailable"
+                      loading="lazy"
+                    />
+                    {imageSelectedToBeUploaded && (
+                      <Overlay className={styles.thumbnailOverlay} backgroundOpacity={0}>
+                        <Box className={styles.checkBox}>
+                          <IconCloudUpload size={30} color={"teal"} className={styles.check} />
+                        </Box>
+                      </Overlay>
+                    )}
+                  </Card.Section>
+                  <Card.Section p="6px" h="60px" mb="-3px">
+                    <Tooltip
+                      multiline
+                      label={
+                        <Stack spacing="xs">
+                          <Text>Local file path:</Text>
+                          <Text>{image.filePath}</Text>
+                          <Text>Path in organized dataset structure:</Text>
+                          {image.relativeDatasetStructurePaths.map((path) => (
+                            <Text key={path}>{path}</Text>
+                          ))}
+                        </Stack>
+                      }
+                    >
+                      <Text
+                        weight={500}
+                        size="sm"
+                        ml="xs"
+                        mr="xs"
+                        style={{
+                          display: "-webkit-box",
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          wordBreak: "break-all",
+                          textAlign: "center",
+                        }}
                       >
-                        <Text
-                          weight={500}
-                          size="sm"
-                          ml="xs"
-                          mr="xs"
-                          style={{
-                            display: "-webkit-box",
-                            WebkitLineClamp: 3,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            wordBreak: "break-all",
-                            textAlign: "center",
-                          }}
-                        >
-                          {image.fileName}
-                        </Text>
-                      </Tooltip>
-                    </Card.Section>
-                  </Card>
-                </Grid.Col>
-              );
-            })
-          ) : (
-            <Grid.Col span={12}>
-              <Text c="dimmed" size="lg" ta="center">
-                No images matching the search criteria
-              </Text>
-              <Text c="dimmed" ta="center">
-                Modify the search input to view more images
-              </Text>
-            </Grid.Col>
-          )}
+                        {image.fileName}
+                      </Text>
+                    </Tooltip>
+                  </Card.Section>
+                </Card>
+              </Grid.Col>
+            );
+          })}
         </Grid>
       </GuidedModeSection>
 
