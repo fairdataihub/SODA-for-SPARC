@@ -27,6 +27,7 @@ const BioLucidaImageListSelectPage = () => {
     currentGuidedModePage,
     confirmedMicroscopyImages,
     bioLucidaImages,
+    chooseFiftyRandomBioLucidaImages,
     addBioLucidaImage,
     removeBioLucidaImage,
   } = useGlobalStore();
@@ -44,20 +45,13 @@ const BioLucidaImageListSelectPage = () => {
       if (bioLucidaImages.length < 50) {
         addBioLucidaImage(image);
       } else {
-        console.log("Cannot add more than 50 images to BioLucida");
+        window.notyf.error("Only 50 images can be selected for upload to BioLucida");
       }
     }
   };
 
   const handleSelectRandomImagesButtonClick = () => {
-    console.log("Select random images");
-    function getRandomElements(arr, n) {
-      return arr.sort(() => 0.5 - Math.random()).slice(0, n);
-    }
-    const randomImages = getRandomElements(confirmedMicroscopyImages, 50);
-    randomImages.forEach((image) => {
-      addBioLucidaImage(image);
-    });
+    chooseFiftyRandomBioLucidaImages();
   };
 
   const handleSelectAllImagesButtonClick = () => {
@@ -69,22 +63,30 @@ const BioLucidaImageListSelectPage = () => {
   );
 
   console.log("allImagesSelectedToBeUploadedToBioLucida", allImagesSelectedToBeUploadedToBioLucida);
+  const pageDescriptionArray =
+    confirmedMicroscopyImages.length > 50
+      ? [
+          "Select the microscopy images you would like to upload to BioLucida (Up to 50). The selected images will be uploaded to BioLucida at the end of the guided process.",
+          "*NOTE*If you do not have a preference on which images to upload, you can select 50 random images by clicking the 'Select 50 random images' button below and SODA will choose 50 for you.",
+        ]
+      : [
+          "Select the microscopy images you would like to upload to BioLucida. The selected images will be uploaded to BioLucida at the end of the guided process",
+          "*NOTE*To have all images uploaded to BioLucida, click the 'Select all images' button below.",
+        ];
+
   return (
     <GuidedModePage
       pageHeader="BioLucida Image Selection"
-      pageDescriptionArray={[
-        "Select the microscopy images you would like to upload to BioLucida (Up to 50). The selected images will be uploaded to BioLucida at the end of the guided process.",
-      ]}
+      pageDescriptionArray={pageDescriptionArray}
     >
       <GuidedModeSection bordered={true}>
         <Flex align="flex-end" gap="md">
-          <SodaGreenPaper>
-            <Text>Images selected: {bioLucidaImages.length}/50</Text>
-          </SodaGreenPaper>
-          {!allImagesSelectedToBeUploadedToBioLucida && bioLucidaImages.length > 50 && (
-            <Button onClick={handleSelectRandomImagesButtonClick}>Select random images</Button>
+          {!allImagesSelectedToBeUploadedToBioLucida && confirmedMicroscopyImages.length > 50 && (
+            <Button onClick={handleSelectRandomImagesButtonClick}>Select 50 random images</Button>
           )}
-          <Button onClick={handleSelectAllImagesButtonClick}>Select all images</Button>
+          {!allImagesSelectedToBeUploadedToBioLucida && confirmedMicroscopyImages <= 50 && (
+            <Button onClick={handleSelectAllImagesButtonClick}>Select all images</Button>
+          )}
         </Flex>
         <Grid>
           {confirmedMicroscopyImages.map((image) => {
@@ -103,6 +105,7 @@ const BioLucidaImageListSelectPage = () => {
                   style={{
                     opacity: imageSelectedToBeUploaded ? 1 : 0.9,
                     borderColor: imageSelectedToBeUploaded ? "green" : "transparent",
+                    backgroundColor: imageSelectedToBeUploaded ? "#F0FAF0" : "transparent",
                   }}
                 >
                   <Card.Section m="0px" p="0px">

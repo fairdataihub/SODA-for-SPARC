@@ -1,6 +1,5 @@
 import React from "react";
 import { MantineProvider, createTheme, Stack } from "@mantine/core";
-import FullWidthContainer from "../../containers/FullWidthContainer";
 
 const theme = createTheme({
   colors: {
