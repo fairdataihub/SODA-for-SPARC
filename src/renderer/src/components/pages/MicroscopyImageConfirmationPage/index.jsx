@@ -10,6 +10,7 @@ import {
   TextInput,
   Box,
   Flex,
+  Affix,
 } from "@mantine/core";
 import { IconSearch, IconMicroscope, IconSquareX } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
@@ -21,13 +22,18 @@ import {
 import useGlobalStore from "../../../stores/globalStore";
 import styles from "../../sharedComponentStyles/imageSelector.module.css";
 import GuidedModeSection from "../../containers/GuidedModeSection";
+import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 import useFetchThumbnailsPath from "../../../hooks/useFetchThumbnailsPath";
 
 const MicroscopyImageConfirmationPage = () => {
   const guidedThumbnailsPath = useFetchThumbnailsPath();
 
-  const { potentialMicroscopyImages, confirmedMicroscopyImages, confirmMicroscopySearchInput } =
-    useGlobalStore();
+  const {
+    currentGuidedModePage,
+    potentialMicroscopyImages,
+    confirmedMicroscopyImages,
+    confirmMicroscopySearchInput,
+  } = useGlobalStore();
 
   const filteredImages = potentialMicroscopyImages.filter((image) =>
     image.relativeDatasetStructurePaths
@@ -65,7 +71,7 @@ const MicroscopyImageConfirmationPage = () => {
       pageHeader="Microscopy Image Confirmation"
       pageDescriptionArray={[
         "SODA has identified the images below as potential microscopy images. Please check the cards of the images that are microscopy images. You can use the search filter to batch select/deselect images based on their file name or type.",
-        "The selected images will be checked to ensure they have the SDS required file metadata requirements and then converted to SDS complient file types during the upload process.",
+        "The selected images will be checked to ensure they have the SDS required file metadata requirements and then converted to SDS compliant file types during the upload process.",
       ]}
     >
       <GuidedModeSection bordered={true}>
@@ -135,12 +141,20 @@ const MicroscopyImageConfirmationPage = () => {
                       <Tooltip
                         multiline
                         label={
-                          <Stack spacing="xs">
-                            <Text>Local file path:</Text>
-                            <Text>{image.filePath}</Text>
-                            <Text>Path in organized dataset structure:</Text>
+                          <Stack gap="xs">
+                            <Text size="sm" mb="0px">
+                              Local file path:
+                            </Text>
+                            <Text size="xs" mt="-8px">
+                              {image.filePath}
+                            </Text>
+                            <Text size="sm" mb="-7px" mt="4px">
+                              Path in organized dataset structure:
+                            </Text>
                             {image.relativeDatasetStructurePaths.map((path) => (
-                              <Text key={path}>{path}</Text>
+                              <Text key={path} size="xs">
+                                {path}
+                              </Text>
                             ))}
                           </Stack>
                         }
@@ -180,6 +194,21 @@ const MicroscopyImageConfirmationPage = () => {
           )}
         </Grid>
       </GuidedModeSection>
+
+      {currentGuidedModePage === "guided-microscopy-image-confirmation-tab" && (
+        <Affix
+          position={{ top: 135, right: 20 }}
+          style={{
+            zIndex: 1000,
+          }}
+        >
+          <SodaGreenPaper>
+            <Text>
+              Images selected: {confirmedMicroscopyImages.length}/{potentialMicroscopyImages.length}
+            </Text>
+          </SodaGreenPaper>
+        </Affix>
+      )}
     </GuidedModePage>
   );
 };

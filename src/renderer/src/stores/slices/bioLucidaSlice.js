@@ -20,10 +20,16 @@ export const bioLucidaSlice = (set) => ({
       );
     });
   },
+  clearImagesSelectedToBeUploadedToBioLucida: () => {
+    set((state) => {
+      state.bioLucidaImages = [];
+    });
+  },
   chooseFiftyRandomBioLucidaImages: () => {
     const getRandomElements = (arr, n) => {
-      return arr.sort(() => 0.5 - Math.random()).slice(0, n);
+      return [...arr].sort(() => 0.5 - Math.random()).slice(0, n);
     };
+
     set((state) => {
       state.bioLucidaImages = getRandomElements(state.confirmedMicroscopyImages, 50);
     });

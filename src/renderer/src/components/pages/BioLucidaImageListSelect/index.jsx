@@ -30,6 +30,7 @@ const BioLucidaImageListSelectPage = () => {
     chooseFiftyRandomBioLucidaImages,
     addBioLucidaImage,
     removeBioLucidaImage,
+    clearImagesSelectedToBeUploadedToBioLucida,
   } = useGlobalStore();
 
   const handleCardClick = (image) => {
@@ -58,6 +59,10 @@ const BioLucidaImageListSelectPage = () => {
     console.log("Select all images");
   };
 
+  const handleClearAllSelectedImagesButtonClick = () => {
+    clearImagesSelectedToBeUploadedToBioLucida();
+  };
+
   const allImagesSelectedToBeUploadedToBioLucida = confirmedMicroscopyImages.every((image) =>
     bioLucidaImages.some((bioLucidaImage) => bioLucidaImage.filePath === image.filePath)
   );
@@ -81,11 +86,16 @@ const BioLucidaImageListSelectPage = () => {
     >
       <GuidedModeSection bordered={true}>
         <Flex align="flex-end" gap="md">
-          {!allImagesSelectedToBeUploadedToBioLucida && confirmedMicroscopyImages.length > 50 && (
+          {confirmedMicroscopyImages.length > 50 && (
             <Button onClick={handleSelectRandomImagesButtonClick}>Select 50 random images</Button>
           )}
           {!allImagesSelectedToBeUploadedToBioLucida && confirmedMicroscopyImages <= 50 && (
             <Button onClick={handleSelectAllImagesButtonClick}>Select all images</Button>
+          )}
+          {bioLucidaImages.length > 0 && (
+            <Button variant="light" color="red" onClick={handleClearAllSelectedImagesButtonClick}>
+              Clear all selected images
+            </Button>
           )}
         </Flex>
         <Grid>
@@ -94,7 +104,7 @@ const BioLucidaImageListSelectPage = () => {
               (bioLucidaImage) => bioLucidaImage.filePath === image.filePath
             );
             return (
-              <Grid.Col span={3} key={image.filePath}>
+              <Grid.Col span={2} key={image.filePath}>
                 <Card
                   className={styles.card}
                   onClick={() => handleCardClick(image)}
@@ -105,7 +115,7 @@ const BioLucidaImageListSelectPage = () => {
                   style={{
                     opacity: imageSelectedToBeUploaded ? 1 : 0.9,
                     borderColor: imageSelectedToBeUploaded ? "green" : "transparent",
-                    backgroundColor: imageSelectedToBeUploaded ? "#F0FAF0" : "transparent",
+                    backgroundColor: imageSelectedToBeUploaded ? "#F0FAF0" : "",
                   }}
                 >
                   <Card.Section m="0px" p="0px">
@@ -131,19 +141,27 @@ const BioLucidaImageListSelectPage = () => {
                     <Tooltip
                       multiline
                       label={
-                        <Stack spacing="xs">
-                          <Text>Local file path:</Text>
-                          <Text>{image.filePath}</Text>
-                          <Text>Path in organized dataset structure:</Text>
+                        <Stack gap="xs">
+                          <Text size="sm" mb="0px">
+                            Local file path:
+                          </Text>
+                          <Text size="xs" mt="-8px">
+                            {image.filePath}
+                          </Text>
+                          <Text size="sm" mb="-7px" mt="4px">
+                            Path in organized dataset structure:
+                          </Text>
                           {image.relativeDatasetStructurePaths.map((path) => (
-                            <Text key={path}>{path}</Text>
+                            <Text key={path} size="xs">
+                              {path}
+                            </Text>
                           ))}
                         </Stack>
                       }
                     >
                       <Text
                         weight={500}
-                        size="sm"
+                        size="xs"
                         ml="xs"
                         mr="xs"
                         style={{
@@ -169,7 +187,7 @@ const BioLucidaImageListSelectPage = () => {
 
       {currentGuidedModePage === "guided-biolucida-image-selection-tab" && (
         <Affix
-          position={{ top: 150, right: 20 }}
+          position={{ top: 135, right: 20 }}
           style={{
             zIndex: 1000,
           }}
