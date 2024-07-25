@@ -42,9 +42,7 @@ import useGlobalStore from "../../stores/globalStore";
 import {
   setPotentialMicroscopyImages,
   setConfirmedMicroscopyImages,
-  setDeniedMicroscopyImages,
   designateImageAsMicroscopyImage,
-  undesignateImageAsMicroscopyImage,
 } from "../../stores/slices/microscopyImageSlice";
 import { setDropdownState } from "../../stores/slices/dropDownSlice";
 import {
@@ -1505,53 +1503,18 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-microscopy-image-confirmation-tab") {
-      const { potentialMicroscopyImages, confirmedMicroscopyImages, deniedMicroscopyImages } =
-        useGlobalStore.getState();
+      const { confirmedMicroscopyImages } = useGlobalStore.getState();
 
-      // If all potential microscopy images are not accounted for, show a swal
-      // asking users to either confirm or deny all potential microscopy images
-      if (
-        confirmedMicroscopyImages.length + deniedMicroscopyImages.length !==
-        potentialMicroscopyImages.length
-      ) {
-        const confirmedImagesFilePaths = confirmedMicroscopyImages.map((image) => image.filePath);
-        const deniedImagesFilePaths = deniedMicroscopyImages.map((image) => image.filePath);
-        const unaccountedForImages = potentialMicroscopyImages.filter(
-          (image) =>
-            !confirmedImagesFilePaths.includes(image.filePath) &&
-            !deniedImagesFilePaths.includes(image.filePath)
-        );
-        console.log("unaccountedForImages", unaccountedForImages);
-        const userResponse = await swalFileListTripleAction(
-          unaccountedForImages.map((image) => image.fileName),
-          "<p>Some images were not marked as microscopy or not microscopy</p>",
-          `All images added to the primary folder must be marked as microscopy images
-          or not microscopy images so SODA can determine if they need to be processed with MicroFile+
-          and uploaded to BioLucida.`,
-          "Yes, All images above are microscopy images",
-          "No, all images above are not microscopy images",
-          "Cancel and continue selecting images",
-          "Are all the images above microscopy images?"
-        );
-        console.log("userResponse", userResponse);
-        if (userResponse === "cancel") {
-        }
-        if (userResponse === "confirm") {
-          for (const image of unaccountedForImages) {
-            designateImageAsMicroscopyImage(image);
-          }
-        }
-        if (userResponse === "deny") {
-          for (const image of unaccountedForImages) {
-            undesignateImageAsMicroscopyImage(image);
-          }
-        }
+      if (confirmedMicroscopyImages.length === 0) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please confirm at least one microscopy image",
+        });
+        throw errorArray;
       }
 
       window.sodaJSONObj["confirmed-microscopy-images"] =
         useGlobalStore.getState().confirmedMicroscopyImages;
-      window.sodaJSONObj["denied-microscopy-images"] =
-        useGlobalStore.getState().deniedMicroscopyImages;
     }
 
     if (pageBeingLeftID === "guided-microscopy-image-metadata-form-tab") {
@@ -5673,7 +5636,6 @@ window.openPage = async (targetPageID) => {
       // Update the state with potential and confirmed microscopy images
       setPotentialMicroscopyImages(potentialMicroscopyImages);
       setConfirmedMicroscopyImages(filteredConfirmedMicroscopyImages);
-      setDeniedMicroscopyImages(window.sodaJSONObj["denied-microscopy-images"] || []);
     }
 
     if (targetPageID === "guided-microscopy-image-metadata-form-tab") {

@@ -13,18 +13,18 @@
 }
 
 .thumbnailImage {
-  width: 175px;
-  height: 175px;
-  border-radius: 8px !important;
+  width: 111px !important;
+  height: 111px !important;
+  border-radius: 4px !important;
 }
 .thumbnailOverlay {
-  width: 175px !important;
-  height: 175px !important;
+  width: 111px !important;
+  height: 111px !important;
   border-radius: 8px !important;
   display: flex !important;
   align-items: flex-start !important;
   justify-content: flex-end !important;
-  padding: 10px !important;
+  padding: 6px !important;
   background-color: rgba(0, 20, 0, 0.2) !important;
   margin-left: 2%;
   margin-top: 2%;
@@ -38,7 +38,6 @@
 }
 
 .card:hover {
-  transform: translateY(-5px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 

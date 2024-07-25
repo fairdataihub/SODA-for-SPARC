@@ -14,8 +14,8 @@ import {
 import { IconSearch, IconMicroscope, IconSquareX } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import {
-  undesignateImageAsMicroscopyImage,
   designateImageAsMicroscopyImage,
+  removeMicroscopyImageDesignation,
   setConfirmMicroscopySearchInput,
 } from "../../../stores/slices/microscopyImageSlice";
 import useGlobalStore from "../../../stores/globalStore";
@@ -26,12 +26,8 @@ import useFetchThumbnailsPath from "../../../hooks/useFetchThumbnailsPath";
 const MicroscopyImageConfirmationPage = () => {
   const guidedThumbnailsPath = useFetchThumbnailsPath();
 
-  const {
-    potentialMicroscopyImages,
-    confirmedMicroscopyImages,
-    deniedMicroscopyImages,
-    confirmMicroscopySearchInput,
-  } = useGlobalStore();
+  const { potentialMicroscopyImages, confirmedMicroscopyImages, confirmMicroscopySearchInput } =
+    useGlobalStore();
 
   const filteredImages = potentialMicroscopyImages.filter((image) =>
     image.relativeDatasetStructurePaths
@@ -39,7 +35,6 @@ const MicroscopyImageConfirmationPage = () => {
       .some((path) => path.includes(confirmMicroscopySearchInput.toLowerCase()))
   );
   const confirmedImagePaths = new Set(confirmedMicroscopyImages.map((image) => image.filePath));
-  const deniedImagePaths = new Set(deniedMicroscopyImages.map((image) => image.filePath));
 
   const selectAllImagesAsMicroscopy = () => {
     for (const image of filteredImages) {
@@ -52,14 +47,14 @@ const MicroscopyImageConfirmationPage = () => {
   const unselectAllImagesAsMicroscopy = () => {
     for (const image of filteredImages) {
       if (confirmedImagePaths.has(image.filePath)) {
-        undesignateImageAsMicroscopyImage(image);
+        removeMicroscopyImageDesignation(image);
       }
     }
   };
 
   const handleCardClick = (image) => {
     if (confirmedImagePaths.has(image.filePath)) {
-      undesignateImageAsMicroscopyImage(image);
+      removeMicroscopyImageDesignation(image);
     } else {
       designateImageAsMicroscopyImage(image);
     }
@@ -77,18 +72,13 @@ const MicroscopyImageConfirmationPage = () => {
         <Flex align="flex-end" gap="md">
           <Stack spacing="xl" align="flex-start">
             {!filteredImages.every((image) => confirmedImagePaths.has(image.filePath)) && (
-              <Button variant="light" color="cyan" w="275px" onClick={selectAllImagesAsMicroscopy}>
-                Select {confirmMicroscopySearchInput === "" ? "all" : "filtered"} as microscopy
+              <Button variant="light" color="cyan" w="260px" onClick={selectAllImagesAsMicroscopy}>
+                Select {confirmMicroscopySearchInput === "" ? "all" : "filtered"} images
               </Button>
             )}
-            {!filteredImages.every((image) => deniedImagePaths.has(image.filePath)) && (
-              <Button
-                variant="light"
-                color="indigo"
-                w="275px"
-                onClick={unselectAllImagesAsMicroscopy}
-              >
-                Unselect {confirmMicroscopySearchInput === "" ? "all" : "filtered"} as microscopy
+            {filteredImages.some((image) => confirmedImagePaths.has(image.filePath)) && (
+              <Button variant="light" color="red" w="260px" onClick={unselectAllImagesAsMicroscopy}>
+                Clear {confirmMicroscopySearchInput === "" ? "all" : "filtered"} selected images
               </Button>
             )}
           </Stack>
@@ -106,9 +96,8 @@ const MicroscopyImageConfirmationPage = () => {
           {filteredImages.length !== 0 ? (
             filteredImages.map((image) => {
               const imageIsConfirmed = confirmedImagePaths.has(image.filePath);
-              const imageIsDenied = deniedImagePaths.has(image.filePath);
               return (
-                <Grid.Col span={3} key={image.relativeDatasetStructurePaths.join()}>
+                <Grid.Col span={2} key={image.relativeDatasetStructurePaths.join()}>
                   <Card
                     className={styles.card}
                     onClick={() => handleCardClick(image)}
@@ -117,9 +106,9 @@ const MicroscopyImageConfirmationPage = () => {
                     radius="md"
                     withBorder
                     style={{
-                      opacity: imageIsDenied ? 0.6 : 1,
+                      opacity: imageIsConfirmed ? 0.8 : 1,
                       borderColor: imageIsConfirmed ? "green" : "transparent",
-                      backgroundColor: imageIsConfirmed ? "#F0FAF0" : "transparent",
+                      backgroundColor: imageIsConfirmed ? "#F0FAF0" : "",
                     }}
                   >
                     <Card.Section m="0px" p="0px">
@@ -134,18 +123,13 @@ const MicroscopyImageConfirmationPage = () => {
                         loading="lazy"
                       />
                       {/* Overlay for the checkbox */}
-                      {imageIsDenied || imageIsConfirmed ? (
+                      {imageIsConfirmed && (
                         <Overlay className={styles.thumbnailOverlay} backgroundOpacity={0.3}>
                           <Box className={styles.checkBox}>
-                            {imageIsDenied && (
-                              <IconSquareX size={30} color={"red"} className={styles.check} />
-                            )}
-                            {imageIsConfirmed && (
-                              <IconMicroscope size={30} color={"green"} className={styles.check} />
-                            )}
+                            <IconMicroscope size={20} color={"green"} className={styles.check} />
                           </Box>
                         </Overlay>
-                      ) : null}
+                      )}
                     </Card.Section>
                     <Card.Section p="6px" h="60px" mb="-3px">
                       <Tooltip
@@ -163,7 +147,7 @@ const MicroscopyImageConfirmationPage = () => {
                       >
                         <Text
                           weight={500}
-                          size="sm"
+                          size="xs"
                           ml="xs"
                           mr="xs"
                           style={{

@@ -241,28 +241,32 @@ class CreateImageThumbnails(Resource):
             namespace_logger.info(f"Output directory: {output_directory}")
             converted_image_paths = []
             for image_path in image_paths:
-                try:
-                    image = Image.open(image_path)
-                    image.thumbnail((300, 300))
-                    namespace_logger.info(f"Image_path: {image_path}")
+                # Combine the output_directory with the image name and _thumbnail.jpg
+                thumbnail_path = os.path.join(
+                    output_directory,
+                    f"{os.path.basename(image_path)}_thumbnail.jpg",
+                )
 
-                    # Convert RGBA to RGB if necessary
-                    if image.mode != 'RGB':
-                        image = image.convert('RGB')
+                # If a thumbnail has not already been created for this image, create it
+                if not os.path.exists(output_directory):
+                    try:
+                        image = Image.open(image_path)
+                        image.thumbnail((300, 300))
+                        namespace_logger.info(f"Image_path: {image_path}")
 
-                    # Combine the output_directory with the image name and _thumbnail.jpg
-                    thumbnail_path = os.path.join(
-                        output_directory,
-                        f"{os.path.basename(image_path)}_thumbnail.jpg",
-                    )
-                    namespace_logger.info(f"thumbnail_path: {thumbnail_path}")
-                    image.save(thumbnail_path, "JPEG")
-                    namespace_logger.info(f"Thumbnail saved to: {thumbnail_path}")
-                    converted_image_paths.append(thumbnail_path)
-                except Exception as e:
-                    namespace_logger.error(f"Error creating thumbnail for image: {image_path}")
-                    namespace_logger.error(f"Error: {str(e)}")
-                    namespace_logger.error(f"Skipping this image")
+                        # Convert RGBA to RGB if necessary
+                        if image.mode != 'RGB':
+                            image = image.convert('RGB')
+
+                        
+                        namespace_logger.info(f"thumbnail_path: {thumbnail_path}")
+                        image.save(thumbnail_path, "JPEG")
+                        namespace_logger.info(f"Thumbnail saved to: {thumbnail_path}")
+                        converted_image_paths.append(thumbnail_path)
+                    except Exception as e:
+                        namespace_logger.error(f"Error creating thumbnail for image: {image_path}")
+                        namespace_logger.error(f"Error: {str(e)}")
+                        namespace_logger.error("Skipping this image")
             return {'converted_image_paths': converted_image_paths}, 200
         except Exception as e:
             namespace_logger.error(f"Error creating thumbnails: {str(e)}")
