@@ -1,40 +1,32 @@
 import { Table } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
-import { IconChevronRight } from "@tabler/icons-react";
 import {getClickHandlerFunctions} from "./clickHandlers/clickHandlersFactory"
+import {getRowConfiguration} from "./rows/rowConfigurationFactory"
 
 
 
 const SingleColumnTable = ({ columnName, id }) => {
-  const rowData = useGlobalStore((state) => state.tableData[id]) || [];
-
-  const rows = rowData.map((row, index) => {
-    return (
-      <Table.Tr key={index} onClick={() => handleRowClick(index)}>
-        <Table.Td style={{ textAlign: "left", cursor: "pointer" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%",
-            }}
-          >
-            {row}
-            <IconChevronRight />
-          </div>
-        </Table.Td>
-      </Table.Tr>
-    );
-  });
-
   const handleRowClick = (index) => {
     let clickHandlerFunction = getClickHandlerFunctions(id);
     clickHandlerFunction(index);
   };
 
+  const rowConfiguration = getRowConfiguration(id)
+
+  const rowData = useGlobalStore((state) => state.tableData[id]) || [];
+
+  const rows = rowData.map((row, index) => {
+    return rowConfiguration(row, index, handleRowClick);
+  })
+
+
+  const tableProps = {
+    withTableBorder: true,
+    highlightOnHover: true,
+  }
+
   return (
-    <Table withTableBorder highlightOnHover>
+    <Table {...tableProps}>
       <Table.Thead>
         <Table.Tr>
           <Table.Th>{columnName}</Table.Th>
