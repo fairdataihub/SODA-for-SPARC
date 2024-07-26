@@ -248,7 +248,7 @@ class CreateImageThumbnails(Resource):
                 )
 
                 # If a thumbnail has not already been created for this image, create it
-                if not os.path.exists(output_directory):
+                if not os.path.exists(thumbnail_path):
                     try:
                         image = Image.open(image_path)
                         image.thumbnail((300, 300))

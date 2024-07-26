@@ -13,6 +13,8 @@ import {
   Center,
   Title,
   Divider,
+  Tooltip,
+  Flex,
 } from "@mantine/core";
 import { IconSearch, IconCheck, IconDots } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
@@ -40,9 +42,14 @@ const MicroscopyImageMetadataFormPage = () => {
 
   const [selectedCopyToImages, setSelectedCopyToImages] = useState([]);
 
-  const filteredMicroscopyImageObjs = confirmedMicroscopyImages.filter((imageObj) =>
-    imageObj.fileName.toLowerCase().includes(imageMetadataSearchValue.toLowerCase())
-  );
+  function naturalSort(a, b) {
+    return a.filePath.localeCompare(b.filePath, undefined, { numeric: true, sensitivity: "base" });
+  }
+  const filteredMicroscopyImageObjs = confirmedMicroscopyImages
+    .filter((imageObj) =>
+      imageObj.fileName.toLowerCase().includes(imageMetadataSearchValue.toLowerCase())
+    )
+    .sort(naturalSort);
 
   const microscopyImageFileNamesWithoutSelectedImage = confirmedMicroscopyImages.filter(
     (imageObj) => imageObj.fileName !== selectedImageFileObj?.fileName
@@ -92,26 +99,28 @@ const MicroscopyImageMetadataFormPage = () => {
                 Select images to copy metadata from "{selectedImageFileObj["fileName"]}" to
               </Title>
             </Center>
-            <TextInput
-              placeholder="Filter images using a file name or file path"
-              value={imageMetadataCopyFilterValue}
-              onChange={(event) => setImageMetadataCopyFilterValue(event.target.value)}
-              rightSection={<IconSearch size={20} />}
-            />
-            <ScrollArea height={300}>
+            <Flex align="flex-end" gap="md">
+              <Button
+                className={styles.toggleButton}
+                onClick={() => handleToggleAllImages(allFilteredImagesSelected)}
+              >
+                {allFilteredImagesSelected
+                  ? `Deselect ${imageMetadataCopyFilterValue === "" ? "all" : "filtered"}`
+                  : `Select ${imageMetadataCopyFilterValue === "" ? "all" : "filtered"}`}
+              </Button>
+              <TextInput
+                placeholder="Filter images using a file name or file path"
+                value={imageMetadataCopyFilterValue}
+                style={{ flexGrow: 1 }}
+                onChange={(event) => setImageMetadataCopyFilterValue(event.target.value)}
+                rightSection={<IconSearch size={20} />}
+              />
+            </Flex>
+            <ScrollArea h={300} type="always">
               <Table miw={800} verticalSpacing="sm" withTableBorder highlightOnHover>
                 <Table.Thead>
                   <Table.Tr>
-                    <Table.Th>
-                      <Button
-                        className={styles.toggleButton}
-                        onClick={() => handleToggleAllImages(allFilteredImagesSelected)}
-                      >
-                        {allFilteredImagesSelected
-                          ? `Deselect ${imageMetadataCopyFilterValue === "" ? "all" : "filtered"}`
-                          : `Select ${imageMetadataCopyFilterValue === "" ? "all" : "filtered"}`}
-                      </Button>
-                    </Table.Th>
+                    <Table.Th></Table.Th>
                     <Table.Th>File name</Table.Th>
                     <Table.Th>File path</Table.Th>
                   </Table.Tr>
@@ -168,29 +177,53 @@ const MicroscopyImageMetadataFormPage = () => {
                 <ScrollArea h={300}>
                   <Stack gap="2px">
                     {filteredMicroscopyImageObjs.length > 0 ? (
+                      // Sort the images by file path
+
                       filteredMicroscopyImageObjs.map((fileObj) => {
                         return (
-                          <Button
-                            variant="subtle"
-                            key={fileObj.filePath}
-                            justify="flex-start"
-                            size="compact-sm"
-                            className={
-                              fileObj.filePath === selectedImageFileObj?.filePath
-                                ? styles.selectedImageInSidebar
-                                : ""
+                          <Tooltip
+                            openDelay={500}
+                            label={
+                              <Stack gap="xs">
+                                <Text size="sm" mb="0px">
+                                  Local file path:
+                                </Text>
+                                <Text size="xs" mt="-8px">
+                                  {fileObj.filePath}
+                                </Text>
+                                <Text size="sm" mb="-7px" mt="4px">
+                                  Location in dataset:
+                                </Text>
+                                {fileObj.relativeDatasetStructurePaths.map((path) => (
+                                  <Text key={path} size="xs">
+                                    {path}
+                                  </Text>
+                                ))}
+                              </Stack>
                             }
-                            leftSection={
-                              imageHasRequiredMetadata(fileObj.filePath) ? (
-                                <IconCheck />
-                              ) : (
-                                <IconDots />
-                              )
-                            }
-                            onClick={() => setSelectedImageFileObj(fileObj)}
                           >
-                            <Text size="sm">{fileObj.fileName}</Text>
-                          </Button>
+                            <Button
+                              variant="subtle"
+                              key={fileObj.filePath}
+                              justify="flex-start"
+                              size="compact-sm"
+                              className={
+                                fileObj.filePath === selectedImageFileObj?.filePath
+                                  ? styles.selectedImageInSidebar
+                                  : ""
+                              }
+                              leftSection={
+                                imageHasRequiredMetadata(fileObj.filePath) ? (
+                                  <IconCheck />
+                                ) : (
+                                  <IconDots />
+                                )
+                              }
+                              onClick={() => setSelectedImageFileObj(fileObj)}
+                            >
+                              <Text size="sm">{fileObj.fileName}</Text>
+                            </Button>
+                          </Tooltip>
                         );
                       })
                     ) : (
@@ -243,7 +276,9 @@ const MicroscopyImageMetadataFormPage = () => {
                 </Stack>
               ) : (
                 <Center>
-                  <Text>No image selected.</Text>
+                  <Text mt="xl" size="lg" fw={500}>
+                    Select an image on the left to add/edit metadata.
+                  </Text>
                 </Center>
               )}
             </Grid.Col>

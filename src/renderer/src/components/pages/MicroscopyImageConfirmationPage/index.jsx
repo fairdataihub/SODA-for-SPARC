@@ -70,8 +70,8 @@ const MicroscopyImageConfirmationPage = () => {
     <GuidedModePage
       pageHeader="Microscopy Image Confirmation"
       pageDescriptionArray={[
-        "SODA has identified the images below as potential microscopy images. Please check the cards of the images that are microscopy images. You can use the search filter to batch select/deselect images based on their file name or type.",
-        "The selected images will be checked to ensure they have the SDS required file metadata requirements and then converted to SDS compliant file types during the upload process.",
+        "SODA has identified the images below as potential microscopy images. Indicate which images are microscopy images by either selecting them by clicking on the image, or by using the search filter to select multiple images at once.",
+        "*NOTE* If all of your microscopy images are stored in a single folder or have a common file extension, you can use the search filter to select all images at once by searching and clicking 'Select filtered images'.",
       ]}
     >
       <GuidedModeSection bordered={true}>
@@ -140,6 +140,7 @@ const MicroscopyImageConfirmationPage = () => {
                     <Card.Section p="6px" h="60px" mb="-3px">
                       <Tooltip
                         multiline
+                        openDelay={500}
                         label={
                           <Stack gap="xs">
                             <Text size="sm" mb="0px">
@@ -149,7 +150,7 @@ const MicroscopyImageConfirmationPage = () => {
                               {image.filePath}
                             </Text>
                             <Text size="sm" mb="-7px" mt="4px">
-                              Path in organized dataset structure:
+                              Location in dataset:
                             </Text>
                             {image.relativeDatasetStructurePaths.map((path) => (
                               <Text key={path} size="xs">

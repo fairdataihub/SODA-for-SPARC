@@ -5070,35 +5070,71 @@ const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
   }
 };
 
+/**
+ * Extracts image file paths and their corresponding relative paths from a dataset structure object.
+ *
+ * @param {Object} datasetStructureObj - The dataset structure object containing files and folders.
+ * @returns {Object} - An object containing arrays of ambiguous and assumed microscopy image data.
+ */
 const getImagesInDatasetStructure = (datasetStructureObj) => {
-  // Supported image file extensions (lowercase for case-insensitive matching)
-  const imageFileTypes = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".jp2", ".ome.tif"];
+  // Supported image file extensions for case-insensitive matching
+  const ambiguousFileTypes = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".jp2", ".ome.tif"];
+  const assumedMicroscopyFileTypes = [".czi", ".lif", ".nd2", ".oib", ".oif", ".lsm", ".svs"];
 
-  const checkIfFileTypeIsImage = (fileType) => imageFileTypes.includes(fileType.toLowerCase());
+  // Helper function to check if a file extension indicates an ambiguous image type
+  const isAmbiguousImageType = (fileType) => ambiguousFileTypes.includes(fileType.toLowerCase());
 
-  // Array to store unique file paths with their corresponding relative paths
-  const imageData = [];
+  // Helper function to check if a file extension indicates an assumed microscopy image type
+  const isMicroscopyImageType = (fileType) =>
+    assumedMicroscopyFileTypes.includes(fileType.toLowerCase());
 
-  const recursiveImageFinder = (datasetStructureObj, currentRelativePath) => {
-    const files = Object.keys(datasetStructureObj["files"]);
-    const folders = Object.keys(datasetStructureObj["folders"]);
+  // Arrays to store unique file paths with their corresponding relative paths
+  const ambiguousImagesData = [];
+  const assumedMicroscopyImagesData = [];
+
+  /**
+   * Recursively traverses the dataset structure object to find image files and stores their paths.
+   *
+   * @param {Object} obj - The current dataset structure object (files and folders).
+   * @param {string} currentRelativePath - The current relative path within the dataset structure.
+   */
+  const recursiveImageFinder = (obj, currentRelativePath) => {
+    const files = Object.keys(obj["files"]);
+    const folders = Object.keys(obj["folders"]);
 
     for (const fileName of files) {
-      const fileObj = datasetStructureObj["files"][fileName];
-
+      const fileObj = obj["files"][fileName];
       const fileExtension = fileObj?.["extension"];
-      if (checkIfFileTypeIsImage(fileExtension)) {
-        const filePath = fileObj["path"];
-        const relativeDatasetStructurePath = `${currentRelativePath}${fileName}`;
-        // check and see if an image has alredy been added with the same filePath
-        // by getting the index
+      const filePath = fileObj["path"];
+      const relativeDatasetStructurePath = `${currentRelativePath}${fileName}`;
 
-        const index = imageData.findIndex((image) => image.filePath === filePath);
+      if (isAmbiguousImageType(fileExtension)) {
+        const index = ambiguousImagesData.findIndex((image) => image.filePath === filePath);
         if (index !== -1) {
-          // Add it to the relativeDatasetStructurePaths array
-          imageData[index].relativeDatasetStructurePaths.push(relativeDatasetStructurePath);
+          // Add to the existing relative paths array
+          ambiguousImagesData[index].relativeDatasetStructurePaths.push(
+            relativeDatasetStructurePath
+          );
         } else {
-          imageData.push({
+          // Create a new entry for the image
+          ambiguousImagesData.push({
+            fileName: fileName,
+            filePath: filePath,
+            relativeDatasetStructurePaths: [relativeDatasetStructurePath],
+          });
+        }
+      }
+
+      if (isMicroscopyImageType(fileExtension)) {
+        const index = assumedMicroscopyImagesData.findIndex((image) => image.filePath === filePath);
+        if (index !== -1) {
+          // Add to the existing relative paths array
+          assumedMicroscopyImagesData[index].relativeDatasetStructurePaths.push(
+            relativeDatasetStructurePath
+          );
+        } else {
+          // Create a new entry for the image
+          assumedMicroscopyImagesData.push({
             fileName: fileName,
             filePath: filePath,
             relativeDatasetStructurePaths: [relativeDatasetStructurePath],
@@ -5107,18 +5143,19 @@ const getImagesInDatasetStructure = (datasetStructureObj) => {
       }
     }
 
+    // Recursively process each folder in the current dataset structure
     for (const folder of folders) {
-      recursiveImageFinder(
-        datasetStructureObj["folders"][folder],
-        `${currentRelativePath}${folder}/`
-      );
+      recursiveImageFinder(obj["folders"][folder], `${currentRelativePath}${folder}/`);
     }
   };
 
+  // Start the recursive search from the primary directory
   recursiveImageFinder(datasetStructureObj, "primary/");
 
-  console.log("Image data extracted from dataset structure:", imageData);
-  return imageData;
+  return {
+    ambiguousImagesData: ambiguousImagesData,
+    assumedMicroscopyImagesData: assumedMicroscopyImagesData,
+  };
 };
 
 const guidedAddUsersAndTeamsToDropdown = (usersArray, teamsArray) => {
@@ -5587,27 +5624,35 @@ window.openPage = async (targetPageID) => {
     }
     if (targetPageID === "guided-microscopy-image-confirmation-tab") {
       // Get the potential microscopy images from the primary folder
-      const potentialMicroscopyImages = getImagesInDatasetStructure(
+      const { ambiguousImagesData, assumedMicroscopyImagesData } = getImagesInDatasetStructure(
         window.datasetStructureJSONObj["folders"]["primary"]
       );
+      console.log("ambiguousImagesData:", ambiguousImagesData);
+      console.log("assumedMicroscopyImagesData:", assumedMicroscopyImagesData);
 
-      // Extract the file names of the potential microscopy images
-      const potentialMicroscopyImageFileNames = potentialMicroscopyImages.map(
-        (image) => image["fileName"]
+      // Extract the file paths of the potential microscopy images
+      const ambiguousImagesDataFilePaths = ambiguousImagesData.map((image) => image["filePath"]);
+
+      const assumedMicroscopyImagesDataFilePaths = assumedMicroscopyImagesData.map(
+        (image) => image["filePath"]
       );
 
-      // Get the confirmed microscopy images from the global object
-      const confirmedMicroscopyImages = window.sodaJSONObj["confirmed-microscopy-images"] || [];
+      const previouslyConfirmedMicroscopyImages =
+        window.sodaJSONObj["confirmed-microscopy-images"] || [];
+
+      // Combine the previously confirmed microscopy images with the assumed microscopy images
+      // (Images that are assumed to be microscopy images based on their file extension)
+      const confirmedMicroscopyImages = [
+        ...previouslyConfirmedMicroscopyImages,
+        ...assumedMicroscopyImagesData,
+      ];
 
       // Filter confirmed images to include only those that are in the potential images list
       // This is to ensure that only images that are in the primary folder are displayed
-      const filteredConfirmedMicroscopyImages = confirmedMicroscopyImages.filter((image) =>
-        potentialMicroscopyImageFileNames.includes(image["fileName"])
-      );
-
-      // Extract the file paths of the potential microscopy images
-      const potentialMicroscopyImageFilePaths = potentialMicroscopyImages.map(
-        (image) => image["filePath"]
+      const filteredConfirmedMicroscopyImages = confirmedMicroscopyImages.filter(
+        (image) =>
+          ambiguousImagesDataFilePaths.includes(image["filepath"]) ||
+          assumedMicroscopyImagesDataFilePaths.includes(image["filePath"])
       );
 
       // Define the path for storing guided image thumbnails
@@ -5623,7 +5668,7 @@ window.openPage = async (targetPageID) => {
       // Create image thumbnails for the potential microscopy images
       try {
         const res = await client.post("/image_processing/create_image_thumbnails", {
-          image_paths: potentialMicroscopyImageFilePaths,
+          image_paths: ambiguousImagesDataFilePaths,
           output_directory: guidedThumbnailsPath,
         });
         console.log("Image thumbnails created successfully", res.data);
@@ -5634,7 +5679,7 @@ window.openPage = async (targetPageID) => {
       console.log("confirmedMicroscopyImages:", confirmedMicroscopyImages);
 
       // Update the state with potential and confirmed microscopy images
-      setPotentialMicroscopyImages(potentialMicroscopyImages);
+      setPotentialMicroscopyImages(ambiguousImagesData);
       setConfirmedMicroscopyImages(filteredConfirmedMicroscopyImages);
     }
 
@@ -5683,10 +5728,12 @@ window.openPage = async (targetPageID) => {
         }
         const fileName = window.path.basename(primaryImageFilePath);
         const fileExtension = window.path.extname(primaryImageFilePath);
+        const fileNameWithoutExtension = fileName.replace(fileExtension, ".jp2");
+        console.log("fileNameWithoutExtension:", fileNameWithoutExtension);
         const pathToPrimaryImage = pathArrayToPrimaryImage.join("/");
         console.log("Path to primary image:", pathToPrimaryImage);
 
-        currentFolder["files"][fileName] = {
+        currentFolder["files"][fileNameWithoutExtension] = {
           path: primaryImageFilePath,
           type: "local",
           description: `Image derived from ${pathToPrimaryImage}/${fileName}. Converted to .jp2 with MicroFile+ (RRID:SCR_018724) from MBF Bioscience. Microscopy metadata included in the file header.`,

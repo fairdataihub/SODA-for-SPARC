@@ -140,6 +140,7 @@ const BioLucidaImageListSelectPage = () => {
                   <Card.Section p="6px" h="60px" mb="-3px">
                     <Tooltip
                       multiline
+                      openDelay={500}
                       label={
                         <Stack gap="xs">
                           <Text size="sm" mb="0px">
@@ -149,7 +150,7 @@ const BioLucidaImageListSelectPage = () => {
                             {image.filePath}
                           </Text>
                           <Text size="sm" mb="-7px" mt="4px">
-                            Path in organized dataset structure:
+                            Location in dataset:
                           </Text>
                           {image.relativeDatasetStructurePaths.map((path) => (
                             <Text key={path} size="xs">
