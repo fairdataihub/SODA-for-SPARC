@@ -5664,12 +5664,16 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-derivative-data-organization-tab") {
-      const microScopyImages = window.sodaJSONObj["confirmed-microscopy-images"] || [];
+      const microscopyImages = window.sodaJSONObj["confirmed-microscopy-images"] || [];
 
-      const ensurePathArrayHasFoldersInDatasetStructure = (pathArray) => {
-        console.log("pathArray:", pathArray);
+      const createDerivativeFolderPlaceHolderForFutureMicroscopyimageConversions = (
+        pathArrayToPrimaryImage,
+        primaryImageFilePath
+      ) => {
+        let derivativePathArray = [...pathArrayToPrimaryImage];
+        derivativePathArray[0] = "derivative";
         let currentFolder = window.datasetStructureJSONObj;
-        for (const folder of pathArray) {
+        for (const folder of derivativePathArray) {
           if (!currentFolder["folders"][folder]) {
             console.log("Folder does not exist, creating it");
 
@@ -5677,40 +5681,38 @@ window.openPage = async (targetPageID) => {
           }
           currentFolder = currentFolder["folders"][folder];
         }
-        console.log("currentFolder:", currentFolder);
+        const fileName = window.path.basename(primaryImageFilePath);
+        const fileExtension = window.path.extname(primaryImageFilePath);
+        const pathToPrimaryImage = pathArrayToPrimaryImage.join("/");
+        console.log("Path to primary image:", pathToPrimaryImage);
+
+        currentFolder["files"][fileName] = {
+          path: primaryImageFilePath,
+          type: "local",
+          description: `Image derived from ${pathToPrimaryImage}/${fileName}. Converted to .jp2 with MicroFile+ (RRID:SCR_018724) from MBF Bioscience. Microscopy metadata included in the file header.`,
+          "additional-metadata": "",
+          action: ["new"],
+          extension: fileExtension,
+        };
+
+        console.log("Folder for derivative image:", currentFolder);
       };
 
-      for (const image of microScopyImages) {
+      for (const image of microscopyImages) {
         const relativeDatasetStructurePaths = image["relativeDatasetStructurePaths"];
 
         for (const relativePath of relativeDatasetStructurePaths) {
           try {
-            const derivativeTargetPath = relativePath.replace("primary/", "derivative/");
-            console.log("derivativeTargetPath:", derivativeTargetPath);
-            const splitArray = derivativeTargetPath.split("/");
-            console.log("splitArray:", splitArray);
-            // remove the last element (the image file name)
-            const targetFolderPathForConvertedImage = splitArray.slice(0, -1);
-            splitArray.pop();
-            console.log(
-              "targetFolderPathForConvertedImage after slice:",
-              targetFolderPathForConvertedImage
+            // Create an array of the relative path to the primary image (excluding the image file name)
+            const relativeFolderPathForPrimaryImage = relativePath.split("/").slice(0, -1);
+            console.log("relativeFolderPathForPrimaryImage", relativeFolderPathForPrimaryImage);
+            createDerivativeFolderPlaceHolderForFutureMicroscopyimageConversions(
+              relativeFolderPathForPrimaryImage,
+              image["filePath"]
             );
-            console.log("splitArray after pop:", splitArray);
-
-            ensurePathArrayHasFoldersInDatasetStructure(targetFolderPathForConvertedImage);
             console.log(
               "Getting folder contents at relative path:",
-              targetFolderPathForConvertedImage
-            );
-            const folderContentsAtRelativePath = window.getRecursivePath(
-              targetFolderPathForConvertedImage,
-              window.datasetStructureJSONObj
-            );
-
-            console.log(
-              "Folder contents at relative path: (Should be empty)",
-              folderContentsAtRelativePath
+              relativeFolderPathForPrimaryImage
             );
           } catch (error) {
             console.error(error);
