@@ -5638,22 +5638,22 @@ window.openPage = async (targetPageID) => {
       );
 
       const previouslyConfirmedMicroscopyImages =
-        window.sodaJSONObj["confirmed-microscopy-images"] || [];
+        window.sodaJSONObj?.["confirmed-microscopy-images"] || [];
 
+      console.log("previouslyConfirmedMicroscopyImages:", previouslyConfirmedMicroscopyImages);
       // Combine the previously confirmed microscopy images with the assumed microscopy images
       // (Images that are assumed to be microscopy images based on their file extension)
-      const confirmedMicroscopyImages = [
-        ...previouslyConfirmedMicroscopyImages,
-        ...assumedMicroscopyImagesData,
-      ];
+      const confirmedMicroscopyImages = [];
 
-      // Filter confirmed images to include only those that are in the potential images list
-      // This is to ensure that only images that are in the primary folder are displayed
-      const filteredConfirmedMicroscopyImages = confirmedMicroscopyImages.filter(
-        (image) =>
-          ambiguousImagesDataFilePaths.includes(image["filepath"]) ||
-          assumedMicroscopyImagesDataFilePaths.includes(image["filePath"])
-      );
+      for (const image of previouslyConfirmedMicroscopyImages) {
+        const filePath = image["filePath"];
+        if (
+          assumedMicroscopyImagesDataFilePaths.includes(filePath) ||
+          ambiguousImagesDataFilePaths.includes(filePath)
+        ) {
+          confirmedMicroscopyImages.push(image);
+        }
+      }
 
       // Define the path for storing guided image thumbnails
       const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
@@ -5680,7 +5680,7 @@ window.openPage = async (targetPageID) => {
 
       // Update the state with potential and confirmed microscopy images
       setPotentialMicroscopyImages(ambiguousImagesData);
-      setConfirmedMicroscopyImages(filteredConfirmedMicroscopyImages);
+      setConfirmedMicroscopyImages(confirmedMicroscopyImages);
     }
 
     if (targetPageID === "guided-microscopy-image-metadata-form-tab") {

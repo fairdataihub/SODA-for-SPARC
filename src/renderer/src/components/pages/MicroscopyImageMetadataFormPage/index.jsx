@@ -41,6 +41,7 @@ const MicroscopyImageMetadataFormPage = () => {
   } = useGlobalStore();
 
   const [selectedCopyToImages, setSelectedCopyToImages] = useState([]);
+  console.log("selectedCopyToImages", selectedCopyToImages);
 
   function naturalSort(a, b) {
     return a.filePath.localeCompare(b.filePath, undefined, { numeric: true, sensitivity: "base" });
@@ -77,6 +78,23 @@ const MicroscopyImageMetadataFormPage = () => {
       : setSelectedCopyToImages((prevSelected) => [...prevSelected, imageObj]);
   };
 
+  const handleCopyMetadataFromImageButtonClick = () => {
+    setSelectedCopyToImages([]); // Clear selected images in the copy UI
+    setCopyImageMetadataModeActive(true);
+  };
+  const handleCancelCopyImageMetadataButtonClick = () => {
+    setCopyImageMetadataModeActive(false);
+  };
+
+  const handleCopyImageMetadataButtonClick = () => {
+    console.log("selectedCopyToImages", selectedCopyToImages);
+    copyImageMetadata(
+      selectedImageFileObj["filePath"],
+      selectedCopyToImages.map((image) => image.filePath)
+    );
+    setCopyImageMetadataModeActive(false);
+  };
+
   return (
     <GuidedModePage
       pageHeader="Microscopy Image Metadata"
@@ -92,7 +110,7 @@ const MicroscopyImageMetadataFormPage = () => {
             <NavigationButton
               buttonText="Cancel metadata copy"
               navIcon="left-arrow"
-              buttonOnClick={() => setCopyImageMetadataModeActive(!copyImageMetadataModeActive)}
+              buttonOnClick={handleCancelCopyImageMetadataButtonClick}
             />
             <Center mt="md">
               <Title order={2}>
@@ -146,16 +164,7 @@ const MicroscopyImageMetadataFormPage = () => {
                 </Table.Tbody>
               </Table>
             </ScrollArea>
-            <Button
-              color="cyan"
-              onClick={() => {
-                copyImageMetadata(
-                  selectedImageFileObj["filePath"],
-                  filteredCopyToImages.map((image) => image.filePath)
-                );
-                setCopyImageMetadataModeActive(false);
-              }}
-            >
+            <Button color="cyan" onClick={handleCopyImageMetadataButtonClick}>
               Copy metadata to selected images
             </Button>
           </Stack>
@@ -246,10 +255,7 @@ const MicroscopyImageMetadataFormPage = () => {
                       variant="light"
                       color="cyan"
                       size="xs"
-                      onClick={() => {
-                        setSelectedCopyToImages([]); // Clear selected images in the copy UI
-                        setCopyImageMetadataModeActive(true);
-                      }}
+                      onClick={handleCopyMetadataFromImageButtonClick}
                     >
                       Copy Metadata from this Image
                     </Button>
