@@ -41,59 +41,68 @@ const MicroscopyImageMetadataFormPage = () => {
   } = useGlobalStore();
 
   const [selectedCopyToImages, setSelectedCopyToImages] = useState([]);
-  console.log("selectedCopyToImages", selectedCopyToImages);
 
-  function naturalSort(a, b) {
-    return a.filePath.localeCompare(b.filePath, undefined, { numeric: true, sensitivity: "base" });
-  }
-  const filteredMicroscopyImageObjs = confirmedMicroscopyImages
-    .filter((imageObj) =>
-      imageObj.fileName.toLowerCase().includes(imageMetadataSearchValue.toLowerCase())
-    )
-    .sort(naturalSort);
+  const naturalSort = (a, b) => a.filePath.localeCompare(b.filePath, undefined, { numeric: true, sensitivity: "base" });
+
+  const createMicroscopyImageObject = () => {
+    const imageObject = {};
+    const filteredImages = confirmedMicroscopyImages
+      .filter(imageObj => imageObj.fileName.toLowerCase().includes(imageMetadataSearchValue.toLowerCase()))
+      .sort(naturalSort);
+
+    filteredImages.forEach(imageObj => {
+      const imageDirectoryName = window.path.dirname(imageObj.filePath);
+      const lastFolder = window.path.basename(imageDirectoryName);
+      if (imageObject[lastFolder]) {
+        imageObject[lastFolder].push(imageObj);
+      } else {
+        imageObject[lastFolder] = [imageObj];
+      }
+    });
+
+    return imageObject;
+  };
 
   const microscopyImageFileNamesWithoutSelectedImage = confirmedMicroscopyImages.filter(
-    (imageObj) => imageObj.fileName !== selectedImageFileObj?.fileName
+    imageObj => imageObj.filePath !== selectedImageFileObj?.filePath
   );
 
-  const filteredCopyToImages = microscopyImageFileNamesWithoutSelectedImage.filter((imageObj) =>
-    imageObj.filePath.toLowerCase().includes(imageMetadataCopyFilterValue.toLowerCase())
+  const filteredCopyToImages = microscopyImageFileNamesWithoutSelectedImage.filter(
+    imageObj => imageObj.filePath.toLowerCase().includes(imageMetadataCopyFilterValue.toLowerCase())
   );
 
   const allFilteredImagesSelected = filteredCopyToImages.length === selectedCopyToImages.length;
 
-  const handleToggleAllImages = (selectAll) => {
-    if (selectAll) {
-      setSelectedCopyToImages([]);
-    } else {
-      setSelectedCopyToImages(filteredCopyToImages);
-    }
+  const handleToggleAllImages = () => {
+    setSelectedCopyToImages(allFilteredImagesSelected ? [] : filteredCopyToImages);
   };
 
   const handleImageSelection = (imageObj, isSelectedToBeCopiedTo) => {
-    isSelectedToBeCopiedTo
-      ? setSelectedCopyToImages((prevSelected) =>
-          prevSelected.filter((image) => image.filePath !== imageObj.filePath)
-        )
-      : setSelectedCopyToImages((prevSelected) => [...prevSelected, imageObj]);
+    setSelectedCopyToImages(prevSelected => 
+      isSelectedToBeCopiedTo 
+        ? prevSelected.filter(image => image.filePath !== imageObj.filePath)
+        : [...prevSelected, imageObj]
+    );
   };
 
   const handleCopyMetadataFromImageButtonClick = () => {
-    setSelectedCopyToImages([]); // Clear selected images in the copy UI
+    setSelectedCopyToImages([]);
     setCopyImageMetadataModeActive(true);
   };
+
   const handleCancelCopyImageMetadataButtonClick = () => {
     setCopyImageMetadataModeActive(false);
   };
 
   const handleCopyImageMetadataButtonClick = () => {
-    console.log("selectedCopyToImages", selectedCopyToImages);
     copyImageMetadata(
-      selectedImageFileObj["filePath"],
-      selectedCopyToImages.map((image) => image.filePath)
+      selectedImageFileObj.filePath,
+      selectedCopyToImages.map(image => image.filePath)
     );
     setCopyImageMetadataModeActive(false);
   };
+
+  const microscopyImageObject = createMicroscopyImageObject();
 
   return (
     <GuidedModePage
@@ -114,13 +123,13 @@ const MicroscopyImageMetadataFormPage = () => {
             />
             <Center mt="md">
               <Title order={2}>
-                Select images to copy metadata from "{selectedImageFileObj["fileName"]}" to
+                Select images to copy metadata from "{selectedImageFileObj?.fileName}" to
               </Title>
             </Center>
             <Flex align="flex-end" gap="md">
               <Button
                 className={styles.toggleButton}
-                onClick={() => handleToggleAllImages(allFilteredImagesSelected)}
+                onClick={handleToggleAllImages}
               >
                 {allFilteredImagesSelected
                   ? `Deselect ${imageMetadataCopyFilterValue === "" ? "all" : "filtered"}`
@@ -185,56 +194,59 @@ const MicroscopyImageMetadataFormPage = () => {
                 <Divider my="-10px" />
                 <ScrollArea h={300}>
                   <Stack gap="2px">
-                    {filteredMicroscopyImageObjs.length > 0 ? (
-                      // Sort the images by file path
-
-                      filteredMicroscopyImageObjs.map((fileObj) => {
-                        return (
-                          <Tooltip
-                            openDelay={500}
-                            label={
-                              <Stack gap="xs">
-                                <Text size="sm" mb="0px">
-                                  Local file path:
-                                </Text>
-                                <Text size="xs" mt="-8px">
-                                  {fileObj.filePath}
-                                </Text>
-                                <Text size="sm" mb="-7px" mt="4px">
-                                  Location in dataset:
-                                </Text>
-                                {fileObj.relativeDatasetStructurePaths.map((path) => (
-                                  <Text key={path} size="xs">
-                                    {path}
-                                  </Text>
-                                ))}
-                              </Stack>
-                            }
-                          >
-                            <Button
-                              variant="subtle"
+                    {Object.keys(microscopyImageObject).length > 0 ? (
+                      Object.keys(microscopyImageObject).map((folderKey) => (
+                        <div key={folderKey}>
+                          <Text size="lg" mt="md" mb="xs">
+                            {folderKey}
+                          </Text>
+                          {microscopyImageObject[folderKey].map((fileObj) => (
+                            <Tooltip
+                              openDelay={500}
                               key={fileObj.filePath}
-                              justify="flex-start"
-                              size="compact-sm"
-                              className={
-                                fileObj.filePath === selectedImageFileObj?.filePath
-                                  ? styles.selectedImageInSidebar
-                                  : ""
+                              label={
+                                <Stack gap="xs">
+                                  <Text size="sm" mb="0px">
+                                    Local file path:
+                                  </Text>
+                                  <Text size="xs" mt="-8px">
+                                    {fileObj.filePath}
+                                  </Text>
+                                  <Text size="sm" mb="-7px" mt="4px">
+                                    Location in dataset:
+                                  </Text>
+                                  {fileObj.relativeDatasetStructurePaths.map((path) => (
+                                    <Text key={path} size="xs">
+                                      {path}
+                                    </Text>
+                                  ))}
+                                </Stack>
                               }
-                              leftSection={
-                                imageHasRequiredMetadata(fileObj.filePath) ? (
-                                  <IconCheck />
-                                ) : (
-                                  <IconDots />
-                                )
-                              }
-                              onClick={() => setSelectedImageFileObj(fileObj)}
                             >
-                              <Text size="sm">{fileObj.fileName}</Text>
-                            </Button>
-                          </Tooltip>
-                        );
-                      })
+                              <Button
+                                variant="subtle"
+                                justify="flex-start"
+                                size="compact-sm"
+                                className={
+                                  fileObj.filePath === selectedImageFileObj?.filePath
+                                    ? styles.selectedImageInSidebar
+                                    : ""
+                                }
+                                leftSection={
+                                  imageHasRequiredMetadata(fileObj.filePath) ? (
+                                    <IconCheck />
+                                  ) : (
+                                    <IconDots />
+                                  )
+                                }
+                                onClick={() => setSelectedImageFileObj(fileObj)}
+                              >
+                                <Text size="sm">{fileObj.fileName}</Text>
+                              </Button>
+                            </Tooltip>
+                          ))}
+                        </div>
+                      ))
                     ) : (
                       <Center>
                         <Text>No microscopy images match the search.</Text>
@@ -260,25 +272,23 @@ const MicroscopyImageMetadataFormPage = () => {
                       Copy Metadata from this Image
                     </Button>
                   </Group>
-                  {imageMetadataFields.map((field) => {
-                    return (
-                      <TextInput
-                        key={field.key}
-                        label={field.label}
-                        placeholder={`Enter the image's ${field.label}`}
-                        value={
-                          imageMetadataStore?.[selectedImageFileObj?.filePath]?.[field.key] || ""
-                        }
-                        onChange={(event) =>
-                          setImageMetadata(
-                            selectedImageFileObj?.filePath,
-                            field.key,
-                            event.target.value
-                          )
-                        }
-                      />
-                    );
-                  })}
+                  {imageMetadataFields.map((field) => (
+                    <TextInput
+                      key={field.key}
+                      label={field.label}
+                      placeholder={`Enter the image's ${field.label}`}
+                      value={
+                        imageMetadataStore?.[selectedImageFileObj?.filePath]?.[field.key] || ""
+                      }
+                      onChange={(event) =>
+                        setImageMetadata(
+                          selectedImageFileObj?.filePath,
+                          field.key,
+                          event.target.value
+                        )
+                      }
+                    />
+                  ))}
                 </Stack>
               ) : (
                 <Center>
