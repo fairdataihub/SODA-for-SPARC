@@ -6,6 +6,7 @@ import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 import DropdownSelect from "../common/DropdownSelect";
 import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
+import UserDetailsCard from "../userDetailsCard";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
 import { Divider } from "@mantine/core";
 
@@ -85,6 +86,17 @@ const componentTypeRenderers = {
         <SingleColumnTable id={id} columnName={columnName} />
       </SodaComponentWrapper>
     );
+  },
+  "user-details-card": (componentSlot) => {
+    const id = componentSlot.id;
+    const root = createRoot(componentSlot);
+    const tabName = componentSlot.getAttribute("data-tab-name");
+    const fields = JSON.parse(componentSlot.getAttribute("data-fields"));
+    root.render(
+      <SodaComponentWrapper>
+        <UserDetailsCard id={id} tabName={tabName} fields={fields} />
+      </SodaComponentWrapper>
+    )
   },
   divider: (componentSlot) => {
     const root = createRoot(componentSlot);
