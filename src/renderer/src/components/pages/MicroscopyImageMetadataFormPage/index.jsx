@@ -16,7 +16,15 @@ import {
   Tooltip,
   Flex,
 } from "@mantine/core";
-import { IconSearch, IconCheck, IconDots, IconFolder, IconFolderOpen, IconChevronDown, IconChevronRight } from "@tabler/icons-react";
+import {
+  IconSearch,
+  IconCheck,
+  IconDots,
+  IconFolder,
+  IconFolderOpen,
+  IconChevronDown,
+  IconChevronRight,
+} from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import NavigationButton from "../../buttons/Navigation";
 import GuidedModeSection from "../../containers/GuidedModeSection";
@@ -205,12 +213,22 @@ const MicroscopyImageMetadataFormPage = () => {
                     {Object.keys(microscopyImageObject).length > 0 ? (
                       Object.keys(microscopyImageObject).map((folderKey) => (
                         <Stack gap="2px" key={folderKey}>
-                          <Group m="0px" onClick={() => handleToggleFolder(folderKey)} style={{ cursor: "pointer" }}>
-                            {openFolders[folderKey] ? <IconFolderOpen size={20} /> : <IconFolder size={20} />}
-                            <Text size="lg">
-                              {folderKey}
-                            </Text>
-                            {openFolders[folderKey] ? <IconChevronDown size={20} /> : <IconChevronRight size={20} />}
+                          <Group
+                            m="0px"
+                            onClick={() => handleToggleFolder(folderKey)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            {openFolders[folderKey] ? (
+                              <IconFolderOpen size={20} />
+                            ) : (
+                              <IconFolder size={20} />
+                            )}
+                            <Text size="lg">{folderKey}</Text>
+                            {openFolders[folderKey] ? (
+                              <IconChevronDown size={20} />
+                            ) : (
+                              <IconChevronRight size={20} />
+                            )}
                           </Group>
                           {openFolders[folderKey] &&
                             microscopyImageObject[folderKey].map((fileObj) => (
