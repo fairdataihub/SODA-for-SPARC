@@ -42,15 +42,18 @@ const MicroscopyImageMetadataFormPage = () => {
 
   const [selectedCopyToImages, setSelectedCopyToImages] = useState([]);
 
-  const naturalSort = (a, b) => a.filePath.localeCompare(b.filePath, undefined, { numeric: true, sensitivity: "base" });
+  const naturalSort = (a, b) =>
+    a.filePath.localeCompare(b.filePath, undefined, { numeric: true, sensitivity: "base" });
 
   const createMicroscopyImageObject = () => {
     const imageObject = {};
     const filteredImages = confirmedMicroscopyImages
-      .filter(imageObj => imageObj.fileName.toLowerCase().includes(imageMetadataSearchValue.toLowerCase()))
+      .filter((imageObj) =>
+        imageObj.fileName.toLowerCase().includes(imageMetadataSearchValue.toLowerCase())
+      )
       .sort(naturalSort);
 
-    filteredImages.forEach(imageObj => {
+    filteredImages.forEach((imageObj) => {
       const imageDirectoryName = window.path.dirname(imageObj.filePath);
       const lastFolder = window.path.basename(imageDirectoryName);
       if (imageObject[lastFolder]) {
@@ -64,11 +67,11 @@ const MicroscopyImageMetadataFormPage = () => {
   };
 
   const microscopyImageFileNamesWithoutSelectedImage = confirmedMicroscopyImages.filter(
-    imageObj => imageObj.filePath !== selectedImageFileObj?.filePath
+    (imageObj) => imageObj.filePath !== selectedImageFileObj?.filePath
   );
 
-  const filteredCopyToImages = microscopyImageFileNamesWithoutSelectedImage.filter(
-    imageObj => imageObj.filePath.toLowerCase().includes(imageMetadataCopyFilterValue.toLowerCase())
+  const filteredCopyToImages = microscopyImageFileNamesWithoutSelectedImage.filter((imageObj) =>
+    imageObj.filePath.toLowerCase().includes(imageMetadataCopyFilterValue.toLowerCase())
   );
 
   const allFilteredImagesSelected = filteredCopyToImages.length === selectedCopyToImages.length;
@@ -78,9 +81,9 @@ const MicroscopyImageMetadataFormPage = () => {
   };
 
   const handleImageSelection = (imageObj, isSelectedToBeCopiedTo) => {
-    setSelectedCopyToImages(prevSelected => 
-      isSelectedToBeCopiedTo 
-        ? prevSelected.filter(image => image.filePath !== imageObj.filePath)
+    setSelectedCopyToImages((prevSelected) =>
+      isSelectedToBeCopiedTo
+        ? prevSelected.filter((image) => image.filePath !== imageObj.filePath)
         : [...prevSelected, imageObj]
     );
   };
@@ -97,7 +100,7 @@ const MicroscopyImageMetadataFormPage = () => {
   const handleCopyImageMetadataButtonClick = () => {
     copyImageMetadata(
       selectedImageFileObj.filePath,
-      selectedCopyToImages.map(image => image.filePath)
+      selectedCopyToImages.map((image) => image.filePath)
     );
     setCopyImageMetadataModeActive(false);
   };
@@ -127,10 +130,7 @@ const MicroscopyImageMetadataFormPage = () => {
               </Title>
             </Center>
             <Flex align="flex-end" gap="md">
-              <Button
-                className={styles.toggleButton}
-                onClick={handleToggleAllImages}
-              >
+              <Button className={styles.toggleButton} onClick={handleToggleAllImages}>
                 {allFilteredImagesSelected
                   ? `Deselect ${imageMetadataCopyFilterValue === "" ? "all" : "filtered"}`
                   : `Select ${imageMetadataCopyFilterValue === "" ? "all" : "filtered"}`}

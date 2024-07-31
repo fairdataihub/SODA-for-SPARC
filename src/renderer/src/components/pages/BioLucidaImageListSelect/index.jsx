@@ -78,8 +78,7 @@ const BioLucidaImageListSelectPage = () => {
           "Select the microscopy images you would like to upload to BioLucida. The selected images will be uploaded to BioLucida at the end of the guided process",
           "*NOTE*To have all images uploaded to BioLucida, click the 'Select all images' button below.",
         ];
-  
-  
+
   console.log(path.join(guidedThumbnailsPath, `_thumbnail.jpg`));
   return (
     <GuidedModePage
