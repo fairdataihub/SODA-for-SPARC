@@ -16,7 +16,7 @@ import {
   Tooltip,
   Flex,
 } from "@mantine/core";
-import { IconSearch, IconCheck, IconDots } from "@tabler/icons-react";
+import { IconSearch, IconCheck, IconDots, IconFolder, IconFolderOpen, IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import NavigationButton from "../../buttons/Navigation";
 import GuidedModeSection from "../../containers/GuidedModeSection";
@@ -41,6 +41,7 @@ const MicroscopyImageMetadataFormPage = () => {
   } = useGlobalStore();
 
   const [selectedCopyToImages, setSelectedCopyToImages] = useState([]);
+  const [openFolders, setOpenFolders] = useState({});
 
   const naturalSort = (a, b) =>
     a.filePath.localeCompare(b.filePath, undefined, { numeric: true, sensitivity: "base" });
@@ -103,6 +104,13 @@ const MicroscopyImageMetadataFormPage = () => {
       selectedCopyToImages.map((image) => image.filePath)
     );
     setCopyImageMetadataModeActive(false);
+  };
+
+  const handleToggleFolder = (folderKey) => {
+    setOpenFolders((prevOpenFolders) => ({
+      ...prevOpenFolders,
+      [folderKey]: !prevOpenFolders[folderKey],
+    }));
   };
 
   const microscopyImageObject = createMicroscopyImageObject();
@@ -193,59 +201,64 @@ const MicroscopyImageMetadataFormPage = () => {
                 </Text>
                 <Divider my="-10px" />
                 <ScrollArea h={300}>
-                  <Stack gap="2px">
+                  <Stack gap="xs">
                     {Object.keys(microscopyImageObject).length > 0 ? (
                       Object.keys(microscopyImageObject).map((folderKey) => (
-                        <div key={folderKey}>
-                          <Text size="lg" mt="md" mb="xs">
-                            {folderKey}
-                          </Text>
-                          {microscopyImageObject[folderKey].map((fileObj) => (
-                            <Tooltip
-                              openDelay={500}
-                              key={fileObj.filePath}
-                              label={
-                                <Stack gap="xs">
-                                  <Text size="sm" mb="0px">
-                                    Local file path:
-                                  </Text>
-                                  <Text size="xs" mt="-8px">
-                                    {fileObj.filePath}
-                                  </Text>
-                                  <Text size="sm" mb="-7px" mt="4px">
-                                    Location in dataset:
-                                  </Text>
-                                  {fileObj.relativeDatasetStructurePaths.map((path) => (
-                                    <Text key={path} size="xs">
-                                      {path}
+                        <Stack gap="2px" key={folderKey}>
+                          <Group m="0px" onClick={() => handleToggleFolder(folderKey)} style={{ cursor: "pointer" }}>
+                            {openFolders[folderKey] ? <IconFolderOpen size={20} /> : <IconFolder size={20} />}
+                            <Text size="lg">
+                              {folderKey}
+                            </Text>
+                            {openFolders[folderKey] ? <IconChevronDown size={20} /> : <IconChevronRight size={20} />}
+                          </Group>
+                          {openFolders[folderKey] &&
+                            microscopyImageObject[folderKey].map((fileObj) => (
+                              <Tooltip
+                                openDelay={500}
+                                key={fileObj.filePath}
+                                label={
+                                  <Stack gap="xs">
+                                    <Text size="sm" mb="0px">
+                                      Local file path:
                                     </Text>
-                                  ))}
-                                </Stack>
-                              }
-                            >
-                              <Button
-                                variant="subtle"
-                                justify="flex-start"
-                                size="compact-sm"
-                                className={
-                                  fileObj.filePath === selectedImageFileObj?.filePath
-                                    ? styles.selectedImageInSidebar
-                                    : ""
+                                    <Text size="xs" mt="-8px">
+                                      {fileObj.filePath}
+                                    </Text>
+                                    <Text size="sm" mb="-7px" mt="4px">
+                                      Location in dataset:
+                                    </Text>
+                                    {fileObj.relativeDatasetStructurePaths.map((path) => (
+                                      <Text key={path} size="xs">
+                                        {path}
+                                      </Text>
+                                    ))}
+                                  </Stack>
                                 }
-                                leftSection={
-                                  imageHasRequiredMetadata(fileObj.filePath) ? (
-                                    <IconCheck />
-                                  ) : (
-                                    <IconDots />
-                                  )
-                                }
-                                onClick={() => setSelectedImageFileObj(fileObj)}
                               >
-                                <Text size="sm">{fileObj.fileName}</Text>
-                              </Button>
-                            </Tooltip>
-                          ))}
-                        </div>
+                                <Button
+                                  variant="subtle"
+                                  justify="flex-start"
+                                  size="compact-sm"
+                                  className={
+                                    fileObj.filePath === selectedImageFileObj?.filePath
+                                      ? styles.selectedImageInSidebar
+                                      : ""
+                                  }
+                                  leftSection={
+                                    imageHasRequiredMetadata(fileObj.filePath) ? (
+                                      <IconCheck />
+                                    ) : (
+                                      <IconDots />
+                                    )
+                                  }
+                                  onClick={() => setSelectedImageFileObj(fileObj)}
+                                >
+                                  <Text size="sm">{fileObj.fileName}</Text>
+                                </Button>
+                              </Tooltip>
+                            ))}
+                        </Stack>
                       ))
                     ) : (
                       <Center>
