@@ -15,8 +15,6 @@ document.querySelector(".prepare-comparison").addEventListener("click", async ()
 document
   .querySelector("#compare-local-remote-dataset-local-path")
   .addEventListener("click", async () => {
-    console.log("Clicked");
-
     window.electron.ipcRenderer.send("open-file-dialog-newdataset");
     window.electron.ipcRenderer.on("selected-new-dataset", (event, path) => {
       document.querySelector("#compare-local-remote-dataset-local-path").value = path;
@@ -37,18 +35,8 @@ document
 
 // observer for the selected dataset label in the dataset selection card in question 2
 const datasetChangedObserver = new MutationObserver(() => {
-  console.log("We activated this here woo woo");
-
   // once a dataset has been selected show the run validator button if the current question is active
   if ($("#bf_dataset_load_compare_local_remote").text().trim() !== "None") {
-    console.log("We activated this here woo woo");
-    // window.transitionFreeFormMode(
-    //   this,
-    //   "compare-local-remote-dataset-question-2",
-    //   "compare_local_remote_dataset_tab",
-    //   "",
-    //   "individual-question"
-    // );
     let nextQuestion = document.querySelector("#compare-local-remote-dataset-question-3");
     nextQuestion.style.display = "flex";
     nextQuestion.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -102,8 +90,6 @@ const compareLocalRemoteDataset = async () => {
 
   comparisonResults = await getComparisonResults(localDatasetPath, remoteDatasetPath);
 
-  console.log(comparisonResults);
-
   // check if there are any results
   if (
     comparisonResults.files_only_on_local.length === 0 &&
@@ -119,6 +105,7 @@ const compareLocalRemoteDataset = async () => {
     document.querySelector("#compare-local-remote-dataset-no-differences").style.display = "none";
     document.querySelector("#only-on-pennsieve-btn-div").style.display = "none";
   } else {
+    document.querySelector("#compare-local-remote-dataset-no-differences").style.display = "none";
     document.querySelector("#only-on-pennsieve-btn-div").style.display = "flex";
     document.querySelector("#only-on-local-btn-div").style.display = "flex";
   }
@@ -191,10 +178,13 @@ document.querySelector("#only-on-local-upload-selected").addEventListener("click
   let res = await swalConfirmAction(
     "warning",
     "Navigate to Upload Dataset and Upload Files",
-    "Clicking this button will take you to the Upload Dataset feature where we will upload the listed files to the selected Pennsieve dataset for you. All steps will have the options pre-selected for you to corrctly upload only these files. Please note if some of your files are not SDS-compliant the dataset cannot be uploaded. Are you sure you want to do this?",
+    "Clicking this button will take you to the Upload Dataset feature where we will upload the listed files to the selected Pennsieve dataset for you. All steps will have the options pre-selected for you to correctly upload only these files. Please note if some of your files are not SDS-compliant the dataset cannot be uploaded. Are you sure you want to do this?",
     "yes",
     "no"
   );
+
+  document.getElementById("compare-local-remote-feature").classList.add("hidden"); // Compare local remote feature
+  document.getElementById("compare-local-remote-feature").classList.remove("is-shown");
 
   if (!res) return;
 
@@ -217,9 +207,6 @@ document.querySelector("#only-on-local-upload-selected").addEventListener("click
 
 document.querySelector("#only-on-pennsieve-delete-selected").addEventListener("click", async () => {
   let filesToDelete = comparisonResults.files_only_on_pennsieve_ids;
-
-  console.log(filesToDelete);
-
   try {
     await api.deleteFilesFromDataset(window.defaultBfDatasetId, filesToDelete);
     // removeRows("comparison-results-only-on-pennsieve-table")

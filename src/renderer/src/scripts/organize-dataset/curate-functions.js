@@ -321,7 +321,6 @@ window.addManifestDetailsToDatasetStructure = async (
           },
         });
 
-        // console.log(datasetStructure["dataset-structure"]["folders"][folder]["files"])
         for (let file in datasetStructure["dataset-structure"]["folders"][folder]["files"]) {
           if (file.includes("manifest.xlsx") || file.includes("manifest.csv")) {
             // delete key
@@ -332,7 +331,6 @@ window.addManifestDetailsToDatasetStructure = async (
         jsonManifest.shift();
         let currentFolder = datasetStructure?.["dataset-structure"]?.["folders"]?.[folder];
         for (let manifest of jsonManifest) {
-          // console.log(manifest);
           let filename = manifest["filename"].split("/");
           if (filename.length == 1) {
             // update the dataset structure key
@@ -412,10 +410,8 @@ window.addManifestDetailsToDatasetStructure = async (
             }
 
             let currentFolder = datasetStructure?.["dataset-structure"]?.["folders"]?.[folder];
-            let currentFolderProblematicFolders = problematicFoldersObj?.[folder];
 
             for (let i = 0; i < filename.length - 1; i++) {
-              // console.log(currentFolder?.["folders"]?.[filename[i]]);
               let fileName = filename[i];
               let temp = currentFolder?.["folders"]?.[fileName];
               if (temp == undefined) {

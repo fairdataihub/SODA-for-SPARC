@@ -260,7 +260,6 @@ const confirm_click_function = () => {
         $(".confirm-button").click();
       }
     } else {
-      console.log("Clicking here?");
       $(".confirm-button").click();
     }
   }
@@ -908,17 +907,15 @@ window.resetFFMUI = (ev) => {
 };
 
 window.addBfAccount = async (ev, verifyingOrganization = False) => {
-  console.log("Running window.addBfAccount");
-  var resolveMessage = "";
   let footerMessage = "No existing accounts to load. Please add an account.";
-  if (bfAccountOptionsStatus === "") {
+  if (window.bfAccountOptionsStatus === "") {
     if (Object.keys(bfAccountOptions).length === 1) {
       footerMessage = "No existing accounts to load. Please add an account.";
     } else {
       footerMessage = "";
     }
   } else {
-    footerMessage = bfAccountOptionsStatus;
+    footerMessage = window.bfAccountOptionsStatus;
   }
   var bfacct;
   let bfAccountSwal = false;
