@@ -6,7 +6,7 @@ import useGlobalStore from "../../../../stores/globalStore";
 
 export const AccountField = ({ tabName }) => {
     const [defaultBfAccount, setDefaultBfAccount] = useState(useGlobalStore((state) => state.defaultBfAccount) || "None");
-    
+
     // use effect to capture the change in defaultBfAccount
     useEffect(() => {
         const unsubscribe = useGlobalStore.subscribe(
@@ -22,13 +22,28 @@ export const AccountField = ({ tabName }) => {
 
     return (
         <div className={`card-container ${tabName}`}>
-            <div style={{ display: "flex" }}>
-                <h5 className={"card-left"} style={{ paddingRight: "5px" }}>Current account:</h5>
+            <div style={{ display: "flex", justifyContent: 'space-between', alignItems: "center" }}>
                 <div
                     className={"change-current-account md-change-current-account"}
-                    style={{ marginLeft: "6px" }}
+                    style={{ marginLeft: "6px", display: "flex", alignItems: "center" }}
                 >
-                    <h5 className="card-right bf-account-span" style={{ width: "fit-content" }}>{defaultBfAccount}</h5>
+                    <h5 style={{
+                        color: "#808080",
+                        fontSize: "15px",
+                        minWidth: "135px",
+                        textAlign: "left",
+                        paddingRight: "5px"
+                    }}>Current account:</h5>
+                    <h5 className={"bf-account-span"} style={{ 
+                          color: "#000",
+                          fontWeight: 600,
+                          marginLeft: "8px",
+                          fontSize: "15px",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          wordBreak: "break-word",
+                          textAlign: "left"
+                     }}>{defaultBfAccount}</h5>
 
                     <svg
                         className={"svg-change-current-account bi bi-pencil-fill"}
