@@ -51,6 +51,7 @@ import {
   setGuidedDatasetSubtitle,
 } from "../../stores/slices/guidedModeSlice";
 import { clearBioLucidaCredentials } from "../../stores/slices/authSlice";
+import { setMicroFilePlusInstalled } from "../../stores/slices/backgroundServicesSlice";
 
 import "bootstrap-select";
 // import DragSort from '@yaireo/dragsort'
@@ -13876,6 +13877,15 @@ $(".guided--radio-button").on("click", async function () {
           }
         }
       }
+    }
+
+    if (buttonId === "guided-button-dataset-contains-microscopy-images") {
+      console.log("Checking if mfplus is installed");
+      const req = await client.get("/image_processing/is_microfileplus_installed");
+      const microFilePlusIsInstalled = req.data.status;
+      const userPlatform = req.data.platform;
+      console.log("MicrofilePlus installed: ", microFilePlusIsInstalled);
+      setMicroFilePlusInstalled(microFilePlusIsInstalled);
     }
   }
 

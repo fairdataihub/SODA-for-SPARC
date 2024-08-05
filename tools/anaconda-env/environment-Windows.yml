@@ -78,3 +78,4 @@ dependencies:
     - zope-event==5.0
     - zope-interface==6.1
     - pillow
+    - mfplus==1.0.0

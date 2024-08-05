@@ -5,10 +5,38 @@ from PIL import Image
 import time
 import os
 import requests
+import platform
 import base64
+from mfplus import convert as mfplus_convert, mfpreqs
+import mfplus
 
 api = get_namespace(NamespaceEnum.IMAGE_PROCESSING)
 namespace_logger = get_namespace_logger(NamespaceEnum.IMAGE_PROCESSING)
+
+@api.route('/is_microfileplus_installed')
+class IsMicroFilePlusInstalled(Resource):
+    global namespace_logger
+
+    response_model = {
+        'status': fields.Boolean(required=True, description="The status of the MicroFilePlus installation"),\
+        'platform': fields.String(description="The platform the user is running on")
+    }
+
+    @api.response(200, 'MicroFilePlus installation status', response_model)
+    @api.response(500, 'Internal server error')
+    def get(self):
+        user_platform = platform.system()
+        namespace_logger.info(f"User platform: {user_platform}")
+        try:
+            namespace_logger.info("Received request to get MicroFilePlus installation status")
+            mfplusloc = mfpreqs.findmfplus()
+            if not mfplusloc:
+                return {'status': False, 'platform': user_platform}
+            namespace_logger.info(f"MicroFilePlus found at: {mfplusloc}")
+            return {'status': True, 'platform': user_platform}
+        except Exception as e:
+            namespace_logger.error(f"Error getting MicroFilePlus installation status: {str(e)}")
+            return {'status': False, 'platform': user_platform}
 
 @api.route('/biolucida_login')
 class BiolucidaLogin(Resource):

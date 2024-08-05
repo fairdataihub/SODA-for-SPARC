@@ -763,9 +763,11 @@
                 No
               </button>
             </div>
-            <p class="help-text" style="font-size: 14px" id="subject-deletion-block-text">
-              Subjects have already been added to your dataset. If you would like to add/edit/delete
-              subjects, you may do so in the "Subject addition" tab.
+            <p class="help-text" id="subject-deletion-block-text">
+              <b
+                >Subjects have already been added to your dataset. If you would like to
+                add/edit/delete subjects, you may do so in the "Subject addition" tab.</b
+              >
             </p>
           </div>
           <div
@@ -779,10 +781,11 @@
               <button
                 class="ui positive basic button guided--radio-button"
                 id="guided-button-dataset-contains-microscopy-images"
-                data-next-element="guided-section-ask-if-microscopy-images-converted-with-mfplus"
+                data-next-element="guided-section-microfileplus-installation-check-display"
                 data-button-config-value="dataset-contains-microscopy-images"
                 data-button-config-value-state="yes"
                 data-controls-section="guided-section-dataset-type"
+                data-requires-work-before-action="true"
               >
                 Yes
               </button>
@@ -798,37 +801,15 @@
               </button>
             </div>
           </div>
+
           <div
+            data-component-type="microfileplus-installation-check-display"
             class="guided--section"
-            id="guided-section-ask-if-microscopy-images-converted-with-mfplus"
+            id="guided-section-microfileplus-installation-check-display"
           >
-            <label class="guided--form-label centered"
-              >Have your microscopy images already been converted using the MicroFile+
-              application?</label
-            >
-            <div class="guided--radio-button-container">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-microscopy-images-converted-with-mfplus-outside-of-soda"
-                data-next-element="guided-section-ask-if-dataset-contains-code"
-                data-button-config-value="microscopy-images-converted-with-mfplus-outside-of-soda"
-                data-button-config-value-state="yes"
-                data-controls-section="guided-section-dataset-type"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-microscopy-images-not-converted-with-mfplus-outside-of-soda"
-                data-next-element="guided-section-ask-if-dataset-contains-code"
-                data-button-config-value="microscopy-images-converted-with-mfplus-outside-of-soda"
-                data-button-config-value-state="no"
-                data-controls-section="guided-section-dataset-type"
-              >
-                No
-              </button>
-            </div>
+            asdf
           </div>
+
           <div class="guided--section" id="guided-section-ask-if-dataset-contains-code">
             <label class="guided--form-label centered"
               >Does your dataset include code files (computational models or analysis etc.)?</label

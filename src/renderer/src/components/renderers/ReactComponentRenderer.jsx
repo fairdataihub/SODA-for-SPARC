@@ -11,6 +11,7 @@ import DropdownSelect from "../common/DropdownSelect";
 import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
+import MicrofilePlusInstallationCheckDisplay from "../backgroundServices/MicrofilePlusInstallationCheckDisplay";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
@@ -92,6 +93,10 @@ const componentTypeRenderers = {
         <SingleColumnTable id={id} columnName={columnName} />
       </SodaComponentWrapper>
     );
+  },
+  "microfileplus-installation-check-display": (componentSlot) => {
+    const props = {};
+    renderComponent(componentSlot, <MicrofilePlusInstallationCheckDisplay {...props} />);
   },
 };
 

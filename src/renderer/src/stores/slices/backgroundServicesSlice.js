@@ -12,6 +12,7 @@ const initialState = {
   usersPennsieveAgentVersion: null,
   latestPennsieveAgentVersion: null,
   postPennsieveAgentCheckAction: null,
+  microFilePlusInstalled: null,
 };
 
 export const backgroundServicesSlice = (set) => ({
@@ -105,6 +106,14 @@ export const setPostPennsieveAgentCheckAction = (action) => {
   useGlobalStore.setState(
     produce((state) => {
       state.postPennsieveAgentCheckAction = action;
+    })
+  );
+};
+
+export const setMicroFilePlusInstalled = (installed) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.microFilePlusInstalled = installed;
     })
   );
 };
