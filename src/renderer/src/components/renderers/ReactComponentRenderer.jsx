@@ -96,7 +96,7 @@ const componentTypeRenderers = {
       <SodaComponentWrapper>
         <UserDetailsCard id={id} tabName={tabName} fields={fields} />
       </SodaComponentWrapper>
-    )
+    );
   },
   divider: (componentSlot) => {
     const root = createRoot(componentSlot);
