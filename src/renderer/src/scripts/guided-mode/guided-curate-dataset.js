@@ -51,7 +51,7 @@ import {
   setGuidedDatasetSubtitle,
 } from "../../stores/slices/guidedModeSlice";
 import { clearBioLucidaCredentials } from "../../stores/slices/authSlice";
-import { setMicroFilePlusInstalled } from "../../stores/slices/backgroundServicesSlice";
+import { setMicroFilePlusInstalledStatus } from "../../stores/slices/backgroundServicesSlice";
 
 import "bootstrap-select";
 // import DragSort from '@yaireo/dragsort'
@@ -13651,6 +13651,12 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
     const buttonDatasetDoesNotContainSubjects = document.getElementById(
       "guided-button-dataset-does-not-contain-subjects"
     );
+    const buttonDatasetContainsMicroscopyImages = document.getElementById(
+      "guided-button-dataset-contains-microscopy-images"
+    );
+    const buttonDatasetDoesNotContainMicroscopyImages = document.getElementById(
+      "guided-button-dataset-does-not-contain-microscopy-images"
+    );
     const buttonDatasetContainsCode = document.getElementById(
       "guided-button-dataset-contains-code"
     );
@@ -13669,7 +13675,23 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
       (!buttonDatasetContainsSubjects.classList.contains("selected") &&
         !buttonDatasetDoesNotContainSubjects.classList.contains("selected")) ||
       (!buttonDatasetContainsCode.classList.contains("selected") &&
-        !buttonDatasetDoesNotContainCode.classList.contains("selected"))
+        !buttonDatasetDoesNotContainCode.classList.contains("selected")) ||
+      (!buttonDatasetContainsMicroscopyImages.classList.contains("selected") &&
+        !buttonDatasetDoesNotContainMicroscopyImages.classList.contains("selected"))
+    ) {
+      return;
+    }
+
+    const microFilePlusInstalled = useGlobalStore.getState().microFilePlusInstalled;
+    const usersPlatformIsMicroFilePlusCompatable =
+      useGlobalStore.getState().usersPlatformIsMicroFilePlusCompatable;
+
+    // If the user has microscopy images that they would like to convert and are on a MFP
+    // compatible platform, but do not have MFP installed, return
+    if (
+      buttonDatasetContainsMicroscopyImages.classList.contains("selected") &&
+      usersPlatformIsMicroFilePlusCompatable &&
+      !microFilePlusInstalled
     ) {
       return;
     }
@@ -13880,12 +13902,21 @@ $(".guided--radio-button").on("click", async function () {
     }
 
     if (buttonId === "guided-button-dataset-contains-microscopy-images") {
-      console.log("Checking if mfplus is installed");
+      console.log("Checking if MicroFilePlus is installed");
       const req = await client.get("/image_processing/is_microfileplus_installed");
-      const microFilePlusIsInstalled = req.data.status;
-      const userPlatform = req.data.platform;
-      console.log("MicrofilePlus installed: ", microFilePlusIsInstalled);
-      setMicroFilePlusInstalled(microFilePlusIsInstalled);
+      const { status: microFilePlusIsInstalled, platform } = req.data;
+      const usersPlatformIsMicroFilePlusCompatible = platform === "Windows";
+
+      console.log("MicroFilePlus installed:", microFilePlusIsInstalled);
+      console.log(
+        "Users platform is compatible with MicroFilePlus:",
+        usersPlatformIsMicroFilePlusCompatible
+      );
+
+      setMicroFilePlusInstalledStatus(
+        microFilePlusIsInstalled,
+        usersPlatformIsMicroFilePlusCompatible
+      );
     }
   }
 

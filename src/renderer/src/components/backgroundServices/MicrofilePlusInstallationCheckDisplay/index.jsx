@@ -10,7 +10,27 @@ const handleExitButtonClick = () => {
 };
 
 const MicrofilePlusInstallationCheckDisplay = () => {
-  const { microFilePlusInstalled } = useGlobalStore();
+  const { microFilePlusInstalled, usersPlatformIsMicroFilePlusCompatable } = useGlobalStore();
+
+  if (usersPlatformIsMicroFilePlusCompatable === false) {
+    return (
+      <FullWidthContainer>
+        <Alert
+          variant="light"
+          color="red"
+          title="MicroFile+ not compatible with your platform"
+          icon={<IconTool />}
+          style={{ width: "100%" }}
+        >
+          <Text mb="sm">
+            SODA requires MicroFile+ to convert Microscopy Image Data and Metadata to SPARC Standard
+            Formats. MicroFile+ is currently only available for Windows, so you must either switch
+            to Windows or skip the Microscopy Image Data and Metadata conversion.
+          </Text>
+        </Alert>
+      </FullWidthContainer>
+    );
+  }
 
   if (microFilePlusInstalled === false) {
     return (
