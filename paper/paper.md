@@ -27,7 +27,7 @@ authors:
     corresponding: true 
     affiliation: 1
 affiliations:
- - name: FAIR Data Innovations Hub, California Medical Innovations Institute, San Diego, CA, USA
+ - name: FAIR Data Innovations Hub, California Medical Innovations Institute, San Diego, CA, United States of America
    index: 1
 date: 11 October 2023
 bibliography: paper.bib
