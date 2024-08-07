@@ -33,3 +33,4 @@ dependencies:
   - jsonschema == 4.17.3
   - flask-cors == 4.0.0
   - pillow == 9.0.1
+  - mfplus==1.0.0

@@ -33,3 +33,4 @@ dependencies:
   - urllib3 == 2.0.6
   - requests == 2.31.0
   - pillow
+  - mfplus==1.0.0
