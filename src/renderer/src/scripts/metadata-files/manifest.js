@@ -706,6 +706,7 @@ $(document).ready(async function () {
 
 // function that removes hidden class from js element by id and smooth scrolls to it
 window.unHideAndSmoothScrollToElement = (id) => {
+  console.log("unhiding and scrolling to element" + id);
   let elementToUnhideAndScrollTo = document.getElementById(id);
   elementToUnhideAndScrollTo.classList.remove("hidden");
   elementToUnhideAndScrollTo.scrollIntoView({

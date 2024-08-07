@@ -1185,7 +1185,10 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
 
         // If the dataset contains subjects, check to see if the dataset contains microscopy images
-        if (datasetContainsMicroscopyImages) {
+        if (
+          datasetContainsMicroscopyImages &&
+          !window.sodaJSONObj["skip-microscopy-image-conversion"]
+        ) {
           guidedUnSkipPageSet("microscopy-image-pages");
         } else {
           guidedSkipPageSet("microscopy-image-pages");
@@ -13691,9 +13694,20 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
     if (
       buttonDatasetContainsMicroscopyImages.classList.contains("selected") &&
       usersPlatformIsMicroFilePlusCompatable &&
-      !microFilePlusInstalled
+      !microFilePlusInstalled &&
+      !window.sodaJSONObj["skip-microscopy-image-conversion"]
     ) {
       return;
+    }
+
+    // If the user has selected they have microscopy images but do not want to convert them,
+    // Show the code question so the user does not have to manually click the skip button
+    if (
+      (buttonDatasetContainsMicroscopyImages.classList.contains("selected") &&
+        window.sodaJSONObj["skip-microscopy-image-conversion"]) ||
+      (microFilePlusInstalled && usersPlatformIsMicroFilePlusCompatable)
+    ) {
+      window.unHideAndSmoothScrollToElement("guided-section-ask-if-dataset-contains-code");
     }
 
     let datasetHasSubjects = buttonDatasetContainsSubjects.classList.contains("selected");
@@ -13902,7 +13916,6 @@ $(".guided--radio-button").on("click", async function () {
     }
 
     if (buttonId === "guided-button-dataset-contains-microscopy-images") {
-      console.log("Checking if MicroFilePlus is installed");
       const req = await client.get("/image_processing/is_microfileplus_installed");
       const { status: microFilePlusIsInstalled, platform } = req.data;
       const usersPlatformIsMicroFilePlusCompatible = platform === "Windows";
