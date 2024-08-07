@@ -19,7 +19,7 @@ import {
 import {
   IconSearch,
   IconCheck,
-  IconDots,
+  IconKeyboard,
   IconFolder,
   IconFolderOpen,
   IconChevronDown,
@@ -198,7 +198,7 @@ const MicroscopyImageMetadataFormPage = () => {
             <Grid.Col span={5}>
               <Stack className={styles.imageSidebar}>
                 <TextInput
-                  placeholder="Enter a search term to filter images"
+                  placeholder="Search for an image name or file path"
                   value={imageMetadataSearchValue}
                   onChange={(event) => setImageMetadataSearchValue(event.target.value)}
                   rightSection={<IconSearch size={20} />}
@@ -267,7 +267,7 @@ const MicroscopyImageMetadataFormPage = () => {
                                     imageHasRequiredMetadata(fileObj.filePath) ? (
                                       <IconCheck />
                                     ) : (
-                                      <IconDots />
+                                      <IconKeyboard opacity={0.3} />
                                     )
                                   }
                                   onClick={() => setSelectedImageFileObj(fileObj)}

@@ -5086,11 +5086,22 @@ const getImagesInDatasetStructure = (datasetStructureObj) => {
   const assumedMicroscopyFileTypes = [".czi", ".lif", ".nd2", ".oib", ".oif", ".lsm", ".svs"];
 
   // Helper function to check if a file extension indicates an ambiguous image type
-  const isAmbiguousImageType = (fileType) => ambiguousFileTypes.includes(fileType.toLowerCase());
+  const isAmbiguousImageType = (fileType) => {
+    if (!fileType) {
+      return false;
+    }
+
+    return ambiguousFileTypes.includes(fileType.toLowerCase());
+  };
 
   // Helper function to check if a file extension indicates an assumed microscopy image type
-  const isMicroscopyImageType = (fileType) =>
-    assumedMicroscopyFileTypes.includes(fileType.toLowerCase());
+  const isMicroscopyImageType = (fileType) => {
+    if (!fileType) {
+      return false;
+    }
+
+    return assumedMicroscopyFileTypes.includes(fileType.toLowerCase());
+  };
 
   // Arrays to store unique file paths with their corresponding relative paths
   const ambiguousImagesData = [];
@@ -5111,6 +5122,9 @@ const getImagesInDatasetStructure = (datasetStructureObj) => {
       const fileExtension = fileObj?.["extension"];
       const filePath = fileObj["path"];
       const relativeDatasetStructurePath = `${currentRelativePath}${fileName}`;
+      console.log("fileName", fileName);
+      console.log("fileExtension", fileExtension);
+      console.log("relativeDatasetStructurePath", relativeDatasetStructurePath);
 
       if (isAmbiguousImageType(fileExtension)) {
         const index = ambiguousImagesData.findIndex((image) => image.filePath === filePath);
@@ -5742,7 +5756,7 @@ window.openPage = async (targetPageID) => {
           type: "local",
           description: `Image derived from ${pathToPrimaryImage}/${fileName}. Converted to .jp2 with MicroFile+ (RRID:SCR_018724) from MBF Bioscience. Microscopy metadata included in the file header.`,
           "additional-metadata": "",
-          action: ["new"],
+          action: ["future-microscopy-image-derivative"],
           extension: fileExtension,
         };
 
@@ -13682,6 +13696,7 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
       (!buttonDatasetContainsMicroscopyImages.classList.contains("selected") &&
         !buttonDatasetDoesNotContainMicroscopyImages.classList.contains("selected"))
     ) {
+      console.log("Not all selected");
       return;
     }
 

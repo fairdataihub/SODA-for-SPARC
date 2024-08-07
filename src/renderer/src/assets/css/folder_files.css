@@ -168,6 +168,16 @@
   margin-left: 5px;
 }
 
+.myFile.futureMfpConversion:before {
+  background: url("../img/pdf-file.png");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  margin-left: 5px;
+}
+
 .myFile.txt:before {
   background: url("../img/txt-file.png");
   content: "";

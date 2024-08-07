@@ -635,49 +635,63 @@ window.loadFileFolder = (myPath) => {
 
   count = 0;
   appendString = "";
-  for (var item in sortedObj["files"]) {
+  const supportedExtensions = [
+    "docx",
+    "doc",
+    "pdf",
+    "txt",
+    "jpg",
+    "JPG",
+    "jpeg",
+    "JPEG",
+    "xlsx",
+    "xls",
+    "csv",
+    "png",
+    "PNG",
+  ];
+
+  for (const item in sortedObj["files"]) {
     count += 1;
-    // not the auto-generated manifest
-    if (sortedObj["files"][item].length !== 1) {
-      if ("path" in sortedObj["files"][item]) {
-        var extension = window.path.extname(sortedObj["files"][item]["path"]);
-        extension = extension.slice(1);
-      } else {
-        var extension = "other";
+
+    // Skip auto-generated manifest
+    const file = sortedObj["files"][item];
+    let extension = "other";
+
+    if (file.length !== 1) {
+      if ("path" in file) {
+        extension = window.path.extname(file["path"]).slice(1);
       }
-      if (
-        ![
-          "docx",
-          "doc",
-          "pdf",
-          "txt",
-          "jpg",
-          "JPG",
-          "jpeg",
-          "JPEG",
-          "xlsx",
-          "xls",
-          "csv",
-          "png",
-          "PNG",
-        ].includes(extension)
-      ) {
+
+      if (!supportedExtensions.includes(extension)) {
         extension = "other";
       }
-    } else {
-      extension = "other";
     }
-    appendString =
-      appendString +
-      '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
-      extension +
-      '" oncontextmenu="window.fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">' +
-      item +
-      "</div></div>";
+
+    // If the future-microscopy-image-derivative is in he action array,
+    // set extension so it shows the correct icon
+    const fileAction = file?.["action"] || [];
+
+    console.log("fileAction", fileAction);
+    if (fileAction.includes("future-microscopy-image-derivative")) {
+      console.log("future-microscopy-image-derivative");
+      extension = "futureMfpConversion";
+    }
+
+    appendString += `
+      <div class="single-item" 
+          onmouseover="window.hoverForFullName(this)" 
+          onmouseleave="window.hideFullName()">
+        <h1 class="myFile ${extension}" 
+           oncontextmenu="window.fileContextMenu(this)" 
+           style="margin-bottom: 10px">
+        </h1>
+        <div class="folder_desc">${item}</div>
+      </div>`;
+
     if (count === 100) {
       file_elem.push(appendString);
       count = 0;
-      continue;
     }
   }
   if (count < 100 && !file_elem.includes(appendString)) {
@@ -1302,7 +1316,6 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
             sameName = [];
             i = 0;
             return false;
-            $("swal2-confirm swal2-styled").removeAttr("disabled");
           } else {
             //update json action
             for (let index = 0; index < temp.length; index++) {

@@ -5906,6 +5906,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
             extension = item.split(".").pop();
           }
         }
+        console.log("Checking extension", extension);
         if (
           ![
             "docx",
@@ -5933,6 +5934,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
       deleted_file = false;
 
       if ("action" in sortedObj["files"][item]) {
+        console.log("action", sortedObj["files"][item]["action"]);
         if (
           sortedObj["files"][item]["action"].includes("deleted") ||
           sortedObj["files"][item]["action"].includes("recursive_deleted")
