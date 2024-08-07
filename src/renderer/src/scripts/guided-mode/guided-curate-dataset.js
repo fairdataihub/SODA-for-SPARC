@@ -1189,13 +1189,13 @@ const savePageChanges = async (pageBeingLeftID) => {
           datasetContainsMicroscopyImages &&
           !window.sodaJSONObj["skip-microscopy-image-conversion"]
         ) {
-          guidedUnSkipPageSet("microscopy-image-pages");
+          guidedSetMicrosocpyImageFlow(true);
         } else {
-          guidedSkipPageSet("microscopy-image-pages");
+          guidedSetMicrosocpyImageFlow(false);
         }
       } else {
         // If the dataset does not contain subjects, no need to check for microscopy images
-        guidedSkipPageSet("microscopy-image-pages");
+        guidedSetMicrosocpyImageFlow(false);
       }
 
       const buttonContainsCode = document.getElementById("guided-button-dataset-contains-code");
@@ -4579,6 +4579,16 @@ const guidedUnSkipPageSet = (pageSet) => {
   }
 };
 
+const guidedSetMicrosocpyImageFlow = (userToGoThroughMicroscopyImageFlow) => {
+  if (userToGoThroughMicroscopyImageFlow) {
+    guidedUnSkipPageSet("microscopy-image-pages");
+    window.sodaJSONObj["user-going-through-microscopy-image-flow"] = true;
+  } else {
+    guidedSkipPageSet("microscopy-image-pages");
+    window.sodaJSONObj["user-going-through-microscopy-image-flow"] = false;
+  }
+};
+
 const guidedUnSkipPage = (pageId) => {
   const page = document.getElementById(pageId);
 
@@ -5727,61 +5737,79 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-derivative-data-organization-tab") {
-      const microscopyImages = window.sodaJSONObj["confirmed-microscopy-images"] || [];
+      // If the user is going through the microscopy image flow, create derivative folder placeholders for future microscopy image conversions
+      if (window.sodaJSONObj["user-going-through-microscopy-image-flow"] === true) {
+        const microscopyImages = window.sodaJSONObj["confirmed-microscopy-images"] || [];
 
-      const createDerivativeFolderPlaceHolderForFutureMicroscopyimageConversions = (
-        pathArrayToPrimaryImage,
-        primaryImageFilePath
-      ) => {
-        let derivativePathArray = [...pathArrayToPrimaryImage];
-        derivativePathArray[0] = "derivative";
-        let currentFolder = window.datasetStructureJSONObj;
-        for (const folder of derivativePathArray) {
-          if (!currentFolder["folders"][folder]) {
-            console.log("Folder does not exist, creating it");
+        const derivativeImagePreviewsGenerated = [];
 
-            currentFolder["folders"][folder] = newEmptyFolderObj();
+        const createDerivativeFolderPlaceHolderForFutureMicroscopyimageConversions = (
+          pathArrayToPrimaryImage,
+          primaryImageFilePath
+        ) => {
+          let derivativePathArray = [...pathArrayToPrimaryImage];
+          derivativePathArray[0] = "derivative";
+          let currentFolder = window.datasetStructureJSONObj;
+          for (const folder of derivativePathArray) {
+            if (!currentFolder["folders"][folder]) {
+              console.log("Folder does not exist, creating it");
+
+              currentFolder["folders"][folder] = newEmptyFolderObj();
+            }
+            currentFolder = currentFolder["folders"][folder];
           }
-          currentFolder = currentFolder["folders"][folder];
-        }
-        const fileName = window.path.basename(primaryImageFilePath);
-        const fileExtension = window.path.extname(primaryImageFilePath);
-        const fileNameWithoutExtension = fileName.replace(fileExtension, ".jp2");
-        console.log("fileNameWithoutExtension:", fileNameWithoutExtension);
-        const pathToPrimaryImage = pathArrayToPrimaryImage.join("/");
-        console.log("Path to primary image:", pathToPrimaryImage);
+          const fileName = window.path.basename(primaryImageFilePath);
+          const fileExtension = window.path.extname(primaryImageFilePath);
+          const convertedJp2FileName = fileName.replace(fileExtension, ".jp2");
+          console.log("convertedJp2FileName:", convertedJp2FileName);
+          const pathToPrimaryImage = pathArrayToPrimaryImage.join("/");
+          console.log("Path to primary image:", pathToPrimaryImage);
 
-        currentFolder["files"][fileNameWithoutExtension] = {
-          path: primaryImageFilePath,
-          type: "local",
-          description: `Image derived from ${pathToPrimaryImage}/${fileName}. Converted to .jp2 with MicroFile+ (RRID:SCR_018724) from MBF Bioscience. Microscopy metadata included in the file header.`,
-          "additional-metadata": "",
-          action: ["future-microscopy-image-derivative"],
-          extension: fileExtension,
+          if (currentFolder["files"][convertedJp2FileName]) {
+            derivativeImagePreviewsGenerated.push(`${pathToPrimaryImage}/${convertedJp2FileName}`);
+          }
+
+          currentFolder["files"][convertedJp2FileName] = {
+            path: primaryImageFilePath,
+            type: "local",
+            description: `Image derived from ${pathToPrimaryImage}/${fileName}. Converted to .jp2 with MicroFile+ (RRID:SCR_018724) from MBF Bioscience. Microscopy metadata included in the file header.`,
+            "additional-metadata": "",
+            action: ["future-microscopy-image-derivative"],
+            extension: fileExtension,
+          };
+
+          console.log("Folder for derivative image:", currentFolder);
         };
 
-        console.log("Folder for derivative image:", currentFolder);
-      };
+        for (const image of microscopyImages) {
+          const relativeDatasetStructurePaths = image["relativeDatasetStructurePaths"];
 
-      for (const image of microscopyImages) {
-        const relativeDatasetStructurePaths = image["relativeDatasetStructurePaths"];
-
-        for (const relativePath of relativeDatasetStructurePaths) {
-          try {
-            // Create an array of the relative path to the primary image (excluding the image file name)
-            const relativeFolderPathForPrimaryImage = relativePath.split("/").slice(0, -1);
-            console.log("relativeFolderPathForPrimaryImage", relativeFolderPathForPrimaryImage);
-            createDerivativeFolderPlaceHolderForFutureMicroscopyimageConversions(
-              relativeFolderPathForPrimaryImage,
-              image["filePath"]
-            );
-            console.log(
-              "Getting folder contents at relative path:",
-              relativeFolderPathForPrimaryImage
-            );
-          } catch (error) {
-            console.error(error);
+          for (const relativePath of relativeDatasetStructurePaths) {
+            try {
+              // Create an array of the relative path to the primary image (excluding the image file name)
+              const relativeFolderPathForPrimaryImage = relativePath.split("/").slice(0, -1);
+              console.log("relativeFolderPathForPrimaryImage", relativeFolderPathForPrimaryImage);
+              createDerivativeFolderPlaceHolderForFutureMicroscopyimageConversions(
+                relativeFolderPathForPrimaryImage,
+                image["filePath"]
+              );
+              console.log(
+                "Getting folder contents at relative path:",
+                relativeFolderPathForPrimaryImage
+              );
+            } catch (error) {
+              console.error(error);
+            }
           }
+        }
+
+        if (derivativeImagePreviewsGenerated.length > 0) {
+          await swalFileListSingleAction(
+            derivativeImagePreviewsGenerated,
+            "Microscopy Image previews generated",
+            "Previews for the following microscopy images have been generated and saved as .jp2 files in the derivative folder",
+            ""
+          );
         }
       }
       openSubPageNavigation(targetPageID);

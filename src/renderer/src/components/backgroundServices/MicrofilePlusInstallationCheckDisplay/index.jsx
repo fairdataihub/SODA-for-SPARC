@@ -128,8 +128,8 @@ const MicrofilePlusInstallationCheckDisplay = () => {
           style={{ width: "100%" }}
         >
           <Text>
-            MicroFile+ has been successfully installed. You can now proceed with converting
-            Microscopy Image Data and Metadata to SPARC Standard Formats.
+            SODA will use MicroFile+ to convert Microsocpy Image Data and Metadata to SPARC
+            Standards.
           </Text>
         </Alert>
       )}
