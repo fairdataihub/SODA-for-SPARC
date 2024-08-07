@@ -169,13 +169,14 @@
 }
 
 .myFile.futureMfpConversion:before {
-  background: url("../img/pdf-file.png");
+  background: url("../img/futureMfpConversion-file.png");
   content: "";
   background-size: cover;
   position: absolute;
   width: 55px;
   height: 55px;
   margin-left: 5px;
+  opacity: 0.5;
 }
 
 .myFile.txt:before {
