@@ -42,7 +42,7 @@
 SODA (Software to Organize Data Automatically) for SPARC is an open-source and free cross-platform desktop software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators according to the [FAIR SPARC data curation guidelines](https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd#top). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA for SPARC is designed such that users can accomplish all the requirements to submit a SPARC dataset rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduce users' effort to a bare minimum during each step, often to just a few clicks.
 
 <p align="center">
-  <img src="https://github.com/fairdataihub/SODA-for-SPARC/blob/staging/docs/documentation/Landing-page/Screenshot%20from%202024-07-18%2012-02-50.png" alt="interface" width="600">
+  <img src="./docs/SODA-HOMEPAGE.png" alt="interface" width="600">
   <br/>
   <i> A screenshot of the user interface of SODA. </i>
   </img>
