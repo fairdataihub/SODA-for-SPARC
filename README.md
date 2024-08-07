@@ -4,6 +4,8 @@
 [![MIT License][license-shield]][license-url]
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5565455.svg)](https://doi.org/10.5281/zenodo.5565455)
 [![Curated with FAIRshare](https://raw.githubusercontent.com/fairdataihub/FAIRshare/main/badge.svg)](https://fairdataihub.org/fairshare)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.06140/status.svg)](https://doi.org/10.21105/joss.06140)
+
 
 [contributors-shield]: https://img.shields.io/github/contributors/fairdataihub/SODA-for-SPARC.svg?style=flat-square
 [contributors-url]: https://github.com/fairdataihub/SODA-for-SPARC/graphs/contributors
@@ -13,6 +15,7 @@
 [issues-url]: https://github.com/fairdataihub/SODA-for-SPARC/issues
 [license-shield]: https://img.shields.io/github/license/fairdataihub/SODA-for-SPARC.svg?style=flat-square
 [license-url]: https://github.com/fairdataihub/SODA-for-SPARC/blob/main/LICENSE
+
 
 <!-- HEADER -->
 <br />
@@ -36,6 +39,12 @@
     <a href="https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea">Submit feedback </a>
   </p>
 </p>
+
+
+
+
+
+
 
 ## About
 
