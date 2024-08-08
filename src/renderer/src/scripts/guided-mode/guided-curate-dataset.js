@@ -1858,15 +1858,15 @@ const savePageChanges = async (pageBeingLeftID) => {
       window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] = userSelectedWorkSpace;
     }
 
-    if (pageBeingLeftID === "guided-banner-image-tab") {
-      if (window.sodaJSONObj["digital-metadata"]["banner-image-path"] == undefined) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please add a banner image",
-        });
-        throw errorArray;
-      }
-    }
+    // if (pageBeingLeftID === "guided-banner-image-tab") {
+    //   if (window.sodaJSONObj["digital-metadata"]["banner-image-path"] == undefined) {
+    //     errorArray.push({
+    //       type: "notyf",
+    //       message: "Please add a banner image",
+    //     });
+    //     throw errorArray;
+    //   }
+    // }
 
     if (pageBeingLeftID === "guided-assign-license-tab") {
       const licenseRadioButtonContainer = document.getElementById(
@@ -7967,6 +7967,15 @@ const guidedUploadStatusIcon = (elementID, status) => {
       autoplay: true,
     });
   }
+  if(status === "info") {
+    lottie.loadAnimation({
+      container: statusElement,
+      animationData: infoMark,
+      renderer: "svg",
+      loop: false,
+      autoplay: true,
+    });
+  }
 };
 
 //dataset description (first page) functions
@@ -13987,7 +13996,8 @@ const guidedAddDatasetDescription = async (
     throw new Error(userErrorMessage(error));
   }
 };
-const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
+
+const uploadValidBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
   document.getElementById("guided-dataset-banner-image-upload-tr").classList.remove("hidden");
   const datasetBannerImageUploadText = document.getElementById(
     "guided-dataset-banner-image-upload-text"
@@ -14074,6 +14084,25 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
 
     throw new Error(userErrorMessage(error));
   }
+
+}
+
+const skipBannerImageUpload = () => {
+  document.getElementById("guided-dataset-banner-image-upload-tr").classList.remove("hidden");
+  const datasetBannerImageUploadText = document.getElementById(
+    "guided-dataset-banner-image-upload-text"
+  );
+  datasetBannerImageUploadText.innerHTML = "Skipped optional banner image...";
+  guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "success");
+}
+
+const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
+  if(!bannerImagePath) {
+    skipBannerImageUpload()
+    return
+  } 
+
+  await uploadValidBannerImage(bfAccount, datasetName, bannerImagePath);
 };
 const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) => {
   document.getElementById("guided-dataset-license-upload-tr").classList.remove("hidden");
@@ -15349,7 +15378,8 @@ const guidedPennsieveDatasetUpload = async () => {
       window.sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
     const guidedTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
     const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
-    const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]["banner-image-path"];
+    const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]?.["banner-image-path"];
+    console.log("Banner image path: ", guidedBannerImagePath);
 
     //Hide the upload tables
     document.querySelectorAll(".guided-upload-table").forEach((table) => {
