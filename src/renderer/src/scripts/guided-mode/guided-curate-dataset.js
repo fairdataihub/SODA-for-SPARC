@@ -5765,8 +5765,12 @@ window.openPage = async (targetPageID) => {
           const pathToPrimaryImage = pathArrayToPrimaryImage.join("/");
           console.log("Path to primary image:", pathToPrimaryImage);
 
-          if (currentFolder["files"][convertedJp2FileName]) {
-            derivativeImagePreviewsGenerated.push(`${pathToPrimaryImage}/${convertedJp2FileName}`);
+          // If a preview of the converted image does not already exist, add it to the derivative folder
+          // and push the path to the array of derivative image previews generated so the derivative image preview swal will be shown
+          if (!currentFolder["files"][convertedJp2FileName]) {
+            derivativeImagePreviewsGenerated.push(
+              `${pathToPrimaryImage.replace("primary/", "derivative/")}/${convertedJp2FileName}`
+            );
           }
 
           currentFolder["files"][convertedJp2FileName] = {
@@ -5806,8 +5810,13 @@ window.openPage = async (targetPageID) => {
         if (derivativeImagePreviewsGenerated.length > 0) {
           await swalFileListSingleAction(
             derivativeImagePreviewsGenerated,
-            "Microscopy Image previews generated",
-            "Previews for the following microscopy images have been generated and saved as .jp2 files in the derivative folder",
+            "Derivative Converted Image Previews Generated",
+            `
+              At the end of the guided process, SODA will convert the microscopy images added to the primary folder into .jp2 format using MicroFile+. 
+              These converted images will then be added to the derivative folder, mirroring the structure in which they were added to the primary folder.
+              <br /><br />
+              SODA generated .jp2 image previews at the following locations:
+            `,
             ""
           );
         }
