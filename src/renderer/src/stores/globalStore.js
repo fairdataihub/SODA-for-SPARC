@@ -7,7 +7,7 @@ import { microscopyImageSlice } from "./slices/microscopyImageSlice";
 import { authSlice } from "./slices/authSlice";
 import { microscopyImageMetadataSlice } from "./slices/microscopyImageMetadataSlice";
 import { bioLucidaSlice } from "./slices/bioLucidaSlice";
-import { singleColumnTableSlice } from "./slices/tableRowSlice";
+import { singleColumnTableSlice } from "./slices/tableDataSlice";
 import { backgroundServicesSlice } from "./slices/backgroundServicesSlice";
 
 const useGlobalStore = create(

@@ -52,6 +52,10 @@ import {
 } from "../../stores/slices/guidedModeSlice";
 import { clearBioLucidaCredentials } from "../../stores/slices/authSlice";
 import { setMicroFilePlusInstalledStatus } from "../../stores/slices/backgroundServicesSlice";
+import {
+  addOrUpdateProcessStatusRow,
+  removeProcessStatusRows,
+} from "../../stores/slices/tableDataSlice";
 
 import "bootstrap-select";
 // import DragSort from '@yaireo/dragsort'
@@ -72,6 +76,15 @@ import hasConnectedAccountWithPennsieve from "../others/authentication/auth";
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
+
+const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
+// Define the path for storing various guided mode files
+const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
+const guidedMicroFileConvertedImagesPath = window.path.join(
+  homeDir,
+  "SODA",
+  "MicroFile-Converted-Images"
+);
 
 window.returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
@@ -1566,6 +1579,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-biolucida-login-tab") {
+      /*
       // Check if the user is authenticated to BioLucida
       const userIsAuthenticatedToBioLucida = useGlobalStore.getState().userAuthenticatedToBioLucida;
       if (!userIsAuthenticatedToBioLucida) {
@@ -1636,7 +1650,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
-      }
+      }*/
     }
 
     if (pageBeingLeftID === "guided-derivative-data-organization-tab") {
@@ -4177,7 +4191,6 @@ const setActiveProgressionTab = (targetPageID) => {
   let targetProgressionTab = $(`#${targetProgressionTabID}`);
   targetProgressionTab.addClass("selected-tab");
 };
-let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
 const guidedResetProgressVariables = () => {
@@ -5683,9 +5696,6 @@ window.openPage = async (targetPageID) => {
         }
       }
 
-      // Define the path for storing guided image thumbnails
-      const guidedThumbnailsPath = window.path.join(homeDir, "SODA", "Guided-Image-Thumbnails");
-
       // Create the directory for guided image thumbnails if it doesn't exist
       if (!window.fs.existsSync(guidedThumbnailsPath)) {
         window.fs.mkdirSync(guidedThumbnailsPath, { recursive: true });
@@ -5761,7 +5771,9 @@ window.openPage = async (targetPageID) => {
           const fileName = window.path.basename(primaryImageFilePath);
           const fileExtension = window.path.extname(primaryImageFilePath);
           const convertedJp2FileName = fileName.replace(fileExtension, ".jp2");
+          const convertedOmeTiffFileName = fileName.replace(fileExtension, ".ome.tif");
           console.log("convertedJp2FileName:", convertedJp2FileName);
+          console.log("convertedOmeTiffFileName:", convertedOmeTiffFileName);
           const pathToPrimaryImage = pathArrayToPrimaryImage.join("/");
           console.log("Path to primary image:", pathToPrimaryImage);
 
@@ -5774,12 +5786,16 @@ window.openPage = async (targetPageID) => {
           }
 
           currentFolder["files"][convertedJp2FileName] = {
+            /*path: window.path.join(
+              guidedMicroFileConvertedImagesPath,
+              `guidedMicroFileConvertedImagesPath_converted.jp2`
+            ),*/
             path: primaryImageFilePath,
             type: "local",
             description: `Image derived from ${pathToPrimaryImage}/${fileName}. Converted to .jp2 with MicroFile+ (RRID:SCR_018724) from MBF Bioscience. Microscopy metadata included in the file header.`,
             "additional-metadata": "",
             action: ["future-microscopy-image-derivative"],
-            extension: fileExtension,
+            extension: ".jp2",
           };
 
           console.log("Folder for derivative image:", currentFolder);
@@ -15841,9 +15857,20 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
     row.classList.add("hidden");
   }
 };
-
 const convertMicroscopyImagesViaMfPlus = async () => {
-  console.log("Converting microscopy images via MF+");
+  console.log("Converting microscopy images via MicroFilePlus");
+  addOrUpdateProcessStatusRow("guided-div-microscopy-image-conversion-status-table", "a", "b");
+  addOrUpdateProcessStatusRow("guided-div-microscopy-image-conversion-status-table", "a", "c");
+  addOrUpdateProcessStatusRow("guided-div-microscopy-image-conversion-status-table", "ASDGAS", "b");
+  addOrUpdateProcessStatusRow("guided-div-microscopy-image-conversion-status-table", "]C", "D");
+  // wait for 10000 seconds
+  await new Promise((resolve) => setTimeout(resolve, 10000000));
+};
+
+const uploadMicroscopyImagesToBioLucida = async () => {
+  console.log("Converting microscopy images via MicroFilePlus");
+  // wait for 10 seconds
+  await new Promise((resolve) => setTimeout(resolve, 10000));
 };
 
 const guidedPennsieveDatasetUpload = async () => {
@@ -15868,11 +15895,17 @@ const guidedPennsieveDatasetUpload = async () => {
       }
     }
 
-    //Display the BioLucida Image upload table
-    window.unHideAndSmoothScrollToElement("guided-div-biolucida-image-upload-status-table");
+    // Display the MicroFilePlus conversion status table
+    window.unHideAndSmoothScrollToElement("guided-div-microscopy-image-conversion-status-table");
 
     await convertMicroscopyImagesViaMfPlus();
+
+    //Display the BioLucida Image upload table
+    window.unHideAndSmoothScrollToElement("guided-div-biolucida-image-upload-status-table");
     await uploadMicroscopyImagesToBioLucida();
+
+    // sleep for 20 seconds
+    await new Promise((resolve) => setTimeout(resolve, 20000));
     const guidedBfAccount = window.defaultBfAccount;
     const guidedDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
     const guidedDatasetSubtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];

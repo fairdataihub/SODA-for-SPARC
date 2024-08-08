@@ -10,6 +10,7 @@ import BioLucidaLogin from "../pages/BioLucidaLogin";
 import DropdownSelect from "../common/DropdownSelect";
 import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
+import ProcessStatusTable from "../tables/processStatusTable";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
 import MicrofilePlusInstallationCheckDisplay from "../backgroundServices/MicrofilePlusInstallationCheckDisplay";
 
@@ -97,6 +98,10 @@ const componentTypeRenderers = {
   "microfileplus-installation-check-display": (componentSlot) => {
     const props = {};
     renderComponent(componentSlot, <MicrofilePlusInstallationCheckDisplay {...props} />);
+  },
+  "process-status-table": (componentSlot) => {
+    const props = { tableId: componentSlot.id };
+    renderComponent(componentSlot, <ProcessStatusTable {...props} />);
   },
 };
 
