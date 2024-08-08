@@ -7967,7 +7967,7 @@ const guidedUploadStatusIcon = (elementID, status) => {
       autoplay: true,
     });
   }
-  if(status === "info") {
+  if (status === "info") {
     lottie.loadAnimation({
       container: statusElement,
       animationData: infoMark,
@@ -14084,8 +14084,7 @@ const uploadValidBannerImage = async (bfAccount, datasetName, bannerImagePath) =
 
     throw new Error(userErrorMessage(error));
   }
-
-}
+};
 
 const skipBannerImageUpload = () => {
   document.getElementById("guided-dataset-banner-image-upload-tr").classList.remove("hidden");
@@ -14094,13 +14093,13 @@ const skipBannerImageUpload = () => {
   );
   datasetBannerImageUploadText.innerHTML = "Skipped optional banner image...";
   guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "success");
-}
+};
 
 const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
-  if(!bannerImagePath) {
-    skipBannerImageUpload()
-    return
-  } 
+  if (!bannerImagePath) {
+    skipBannerImageUpload();
+    return;
+  }
 
   await uploadValidBannerImage(bfAccount, datasetName, bannerImagePath);
 };
