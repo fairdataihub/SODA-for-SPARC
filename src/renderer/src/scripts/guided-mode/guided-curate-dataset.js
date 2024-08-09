@@ -15858,11 +15858,70 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
   }
 };
 const convertMicroscopyImagesViaMfPlus = async () => {
+  addOrUpdateProcessStatusRow(
+    "guided-div-microscopy-image-conversion-status-table",
+    "microfileplus-installation-status",
+    "Making sure MicroFile+ is installed",
+    "loading"
+  );
+  // wait for 10000 seconds
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+  // Ensure that MicroFile+ is installed on the user's machine
+  const req = await client.get("/image_processing/is_microfileplus_installed");
+  const { status: microFilePlusIsInstalled } = req.data;
+
+  if (!microFilePlusIsInstalled) {
+    throw new Error(
+      `SODA was unable to detect MicroFile+ on your machine. Please install MicroFile+ and try again.`
+    );
+  }
+  addOrUpdateProcessStatusRow(
+    "guided-div-microscopy-image-conversion-status-table",
+    "microfileplus-installation-status",
+    "SODA detected MicroFile+ installation!",
+    "success"
+  );
   console.log("Converting microscopy images via MicroFilePlus");
-  addOrUpdateProcessStatusRow("guided-div-microscopy-image-conversion-status-table", "a", "b");
-  addOrUpdateProcessStatusRow("guided-div-microscopy-image-conversion-status-table", "a", "c");
-  addOrUpdateProcessStatusRow("guided-div-microscopy-image-conversion-status-table", "ASDGAS", "b");
-  addOrUpdateProcessStatusRow("guided-div-microscopy-image-conversion-status-table", "]C", "D");
+  const microscopyImagesToConvert = window.sodaJSONObj["confirmed-microscopy-images"];
+  const microscopyImagesToConvertCount = microscopyImagesToConvert.length;
+
+  let imageConvertedCount = 1;
+  for await (const image of microscopyImagesToConvert) {
+    console.log(`Converting image: ${image.filePath}`);
+    addOrUpdateProcessStatusRow(
+      "guided-div-microscopy-image-conversion-status-table",
+      `microscopy-image-conversion-progress-count`,
+      `Converting and adding metadata to images`,
+      `${imageConvertedCount}/${microscopyImagesToConvert.length}`
+    );
+    addOrUpdateProcessStatusRow(
+      "guided-div-microscopy-image-conversion-status-table",
+      `${image.filePath}-conversion-status`,
+      `Converting image: ${image.filePath}`,
+      "loading"
+    );
+    // wait for 1 second
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    addOrUpdateProcessStatusRow(
+      "guided-div-microscopy-image-conversion-status-table",
+      `${image.filePath}-conversion-status`,
+      `Successfully converted image: ${image.filePath}`,
+      "success"
+    );
+    imageConvertedCount++;
+  }
+  addOrUpdateProcessStatusRow(
+    "guided-div-microscopy-image-conversion-status-table",
+    "row-add",
+    "Making sure MicroFile+ is installed and ready",
+    `0/${microscopyImagesToConvertCount}`
+  );
+
+  addOrUpdateProcessStatusRow(
+    "guided-div-microscopy-image-conversion-status-table",
+    "Converting microscopy images with MicroFile+",
+    `0/${microscopyImagesToConvertCount}`
+  );
   // wait for 10000 seconds
   await new Promise((resolve) => setTimeout(resolve, 10000000));
 };

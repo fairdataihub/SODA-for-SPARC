@@ -22,17 +22,23 @@ export const removeRows = (id) => {
   );
 };
 
-export const addOrUpdateProcessStatusRow = (id, rowName, rowStatus) => {
+export const addOrUpdateProcessStatusRow = (id, rowId, status, progress) => {
   useGlobalStore.setState(
     produce((state) => {
-      if (!state.processStatusTableData[id]) {
+      // Initialize the array if it does not exist
+      if (!Array.isArray(state.processStatusTableData[id])) {
         state.processStatusTableData[id] = [];
       }
-      const row = state.processStatusTableData[id].find((r) => r.rowName === rowName);
+
+      // Find the row by rowId
+      const row = state.processStatusTableData[id].find((r) => r.rowId === rowId);
+
+      // Update or add the row
       if (row) {
-        row.rowStatus = rowStatus;
+        row.status = status;
+        row.progress = progress;
       } else {
-        state.processStatusTableData[id].push({ rowName: rowName, rowStatus: rowStatus });
+        state.processStatusTableData[id].push({ rowId, status, progress });
       }
     })
   );
