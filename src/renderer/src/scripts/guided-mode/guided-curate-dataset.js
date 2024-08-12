@@ -6174,6 +6174,10 @@ window.openPage = async (targetPageID) => {
         //reset the banner image page
         $("#guided-button-add-banner-image").html("Add banner image");
         $("#guided-banner-image-preview-container").hide();
+
+        console.log("THis is going to run");
+        // set 'save & continue' button text to 'skip & continue' if no banner image is added
+        $("#guided-next-button span .nav-button-text").text("Skip and Continue");
       }
     }
 
