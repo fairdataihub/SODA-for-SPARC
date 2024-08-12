@@ -15910,12 +15910,6 @@ const convertMicroscopyImagesViaMfPlus = async () => {
     );
     imageConvertedCount++;
   }
-  addOrUpdateProcessStatusRow(
-    "guided-div-microscopy-image-conversion-status-table",
-    "row-add",
-    "Making sure MicroFile+ is installed and ready",
-    `0/${microscopyImagesToConvertCount}`
-  );
 
   addOrUpdateProcessStatusRow(
     "guided-div-microscopy-image-conversion-status-table",
