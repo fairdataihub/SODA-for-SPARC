@@ -100,7 +100,9 @@ const componentTypeRenderers = {
     renderComponent(componentSlot, <MicrofilePlusInstallationCheckDisplay {...props} />);
   },
   "process-status-table": (componentSlot) => {
-    const props = { tableId: componentSlot.id };
+    const tableId = componentSlot.id;
+    const tableTitle = componentSlot.getAttribute("data-table-title");
+    const props = { tableId: tableId, tableTitle: tableTitle };
     renderComponent(componentSlot, <ProcessStatusTable {...props} />);
   },
 };

@@ -7,8 +7,9 @@ import { microscopyImageSlice } from "./slices/microscopyImageSlice";
 import { authSlice } from "./slices/authSlice";
 import { microscopyImageMetadataSlice } from "./slices/microscopyImageMetadataSlice";
 import { bioLucidaSlice } from "./slices/bioLucidaSlice";
-import { singleColumnTableSlice } from "./slices/tableDataSlice";
+import { singleColumnTableSlice } from "./slices/tableDataSlice.js";
 import { backgroundServicesSlice } from "./slices/backgroundServicesSlice";
+import { progressElementSlice } from "./slices/progressElementSlice";
 
 const useGlobalStore = create(
   immer((...a) => ({
@@ -21,6 +22,7 @@ const useGlobalStore = create(
     ...bioLucidaSlice(...a),
     ...singleColumnTableSlice(...a),
     ...backgroundServicesSlice(...a),
+    ...progressElementSlice(...a),
   }))
 );
 

@@ -4,7 +4,7 @@ while (!window.baseHtmlLoaded) {
 }
 
 import api from "../others/api/api";
-import { addRows, removeRows } from "../../stores/slices/tableDataSlice";
+import { addRows, removeRows } from "../../stores/slices/tableDataSlice.js";
 import { clientError } from "../others/http-error-handler/error-handler";
 import { swalConfirmAction, swalShowError, swalShowInfo } from "../utils/swal-utils";
 

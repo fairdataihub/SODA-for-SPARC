@@ -53,9 +53,9 @@ import {
 import { clearBioLucidaCredentials } from "../../stores/slices/authSlice";
 import { setMicroFilePlusInstalledStatus } from "../../stores/slices/backgroundServicesSlice";
 import {
-  addOrUpdateProcessStatusRow,
-  removeProcessStatusRows,
-} from "../../stores/slices/tableDataSlice";
+  setProgressElementData,
+  removeProgressElementData,
+} from "../../stores/slices/progressElementSlice.js";
 
 import "bootstrap-select";
 // import DragSort from '@yaireo/dragsort'
@@ -15858,11 +15858,10 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
   }
 };
 const convertMicroscopyImagesViaMfPlus = async () => {
-  addOrUpdateProcessStatusRow(
-    "guided-div-microscopy-image-conversion-status-table",
-    "microfileplus-installation-status",
+  setProgressElementData(
+    "guided-progress-display-microscopy-image-conversion",
     "Making sure MicroFile+ is installed",
-    "loading"
+    0
   );
   // wait for 10000 seconds
   await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -15875,12 +15874,7 @@ const convertMicroscopyImagesViaMfPlus = async () => {
       `SODA was unable to detect MicroFile+ on your machine. Please install MicroFile+ and try again.`
     );
   }
-  addOrUpdateProcessStatusRow(
-    "guided-div-microscopy-image-conversion-status-table",
-    "microfileplus-installation-status",
-    "SODA detected MicroFile+ installation!",
-    "success"
-  );
+
   console.log("Converting microscopy images via MicroFilePlus");
   const microscopyImagesToConvert = window.sodaJSONObj["confirmed-microscopy-images"];
   const microscopyImagesToConvertCount = microscopyImagesToConvert.length;
@@ -15888,42 +15882,77 @@ const convertMicroscopyImagesViaMfPlus = async () => {
   let imageConvertedCount = 1;
   for await (const image of microscopyImagesToConvert) {
     console.log(`Converting image: ${image.filePath}`);
-    addOrUpdateProcessStatusRow(
-      "guided-div-microscopy-image-conversion-status-table",
-      `microscopy-image-conversion-progress-count`,
-      `Converting and adding metadata to images`,
-      `${imageConvertedCount}/${microscopyImagesToConvert.length}`
+
+    const progressPercentage = Math.round(
+      (imageConvertedCount / microscopyImagesToConvertCount) * 100
     );
-    addOrUpdateProcessStatusRow(
-      "guided-div-microscopy-image-conversion-status-table",
-      `${image.filePath}-conversion-status`,
+
+    setProgressElementData(
+      "guided-progress-display-microscopy-image-conversion",
       `Converting image: ${image.filePath}`,
-      "loading"
+      progressPercentage
     );
-    // wait for 1 second
+    // wait for 5 second
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    addOrUpdateProcessStatusRow(
-      "guided-div-microscopy-image-conversion-status-table",
-      `${image.filePath}-conversion-status`,
-      `Successfully converted image: ${image.filePath}`,
-      "success"
-    );
+
     imageConvertedCount++;
   }
 
-  addOrUpdateProcessStatusRow(
-    "guided-div-microscopy-image-conversion-status-table",
-    "Converting microscopy images with MicroFile+",
-    `0/${microscopyImagesToConvertCount}`
+  setProgressElementData(
+    "guided-progress-display-microscopy-image-conversion",
+    "Microscopy images successfully converted",
+    100
   );
-  // wait for 10000 seconds
-  await new Promise((resolve) => setTimeout(resolve, 10000000));
 };
 
 const uploadMicroscopyImagesToBioLucida = async () => {
+  setProgressElementData(
+    "guided-progress-display-microscopy-image-conversion",
+    "Making sure MicroFile+ is installed",
+    0
+  );
+  // wait for 10000 seconds
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+  // Ensure that MicroFile+ is installed on the user's machine
+  const req = await client.get("/image_processing/is_microfileplus_installed");
+  const { status: microFilePlusIsInstalled } = req.data;
+
+  if (!microFilePlusIsInstalled) {
+    throw new Error(
+      `SODA was unable to detect MicroFile+ on your machine. Please install MicroFile+ and try again.`
+    );
+  }
+
   console.log("Converting microscopy images via MicroFilePlus");
-  // wait for 10 seconds
-  await new Promise((resolve) => setTimeout(resolve, 10000));
+  const microscopyImagesToConvert = window.sodaJSONObj["confirmed-microscopy-images"];
+  const microscopyImagesToConvertCount = microscopyImagesToConvert.length;
+
+  let imageConvertedCount = 1;
+  for await (const image of microscopyImagesToConvert) {
+    console.log(`Converting image: ${image.filePath}`);
+
+    const progressPercentage = Math.round(
+      (imageConvertedCount / microscopyImagesToConvertCount) * 100
+    );
+
+    setProgressElementData(
+      "guided-progress-display-microscopy-image-conversion",
+      `Converting image: ${image.filePath}`,
+      progressPercentage
+    );
+    // wait for 5 second
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    imageConvertedCount++;
+  }
+
+  setProgressElementData(
+    "guided-progress-display-microscopy-image-conversion",
+    "Microscopy images successfully converted",
+    100
+  );
+  // wait for 10000 seconds
+  await new Promise((resolve) => setTimeout(resolve, 10000000));
 };
 
 const guidedPennsieveDatasetUpload = async () => {
@@ -15949,12 +15978,12 @@ const guidedPennsieveDatasetUpload = async () => {
     }
 
     // Display the MicroFilePlus conversion status table
-    window.unHideAndSmoothScrollToElement("guided-div-microscopy-image-conversion-status-table");
+    window.unHideAndSmoothScrollToElement("guided-progress-display-microscopy-image-conversion");
 
     await convertMicroscopyImagesViaMfPlus();
 
     //Display the BioLucida Image upload table
-    window.unHideAndSmoothScrollToElement("guided-div-biolucida-image-upload-status-table");
+    window.unHideAndSmoothScrollToElement("guided-progress-display-biolucida-image-upload");
     await uploadMicroscopyImagesToBioLucida();
 
     // sleep for 20 seconds
