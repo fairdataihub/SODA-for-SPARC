@@ -1945,17 +1945,17 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
 
       const PrincipalInvestigator = getContributorMarkedAsPrincipalInvestigator();
-      if (!PrincipalInvestigator) {
-        errorArray.push({
-          type: "swal",
-          message: `
-            You must specify a Principal Investigator (PI) for this dataset.
-            <br/><br/>
-            Please add the "PrincipalInvestigator" role for one of the contributors.
-          `,
-        });
-        throw errorArray;
-      }
+      // if (!PrincipalInvestigator) {
+      //   errorArray.push({
+      //     type: "swal",
+      //     message: `
+      //       You must specify a Principal Investigator (PI) for this dataset.
+      //       <br/><br/>
+      //       Please add the "PrincipalInvestigator" role for one of the contributors.
+      //     `,
+      //   });
+      //   throw errorArray;
+      // }
 
       /* UNCOMMENT THIS TO REQUIRE AT LEAST ONE CORRESPONDING AUTHOR
       const correspondingAuthors = contributors.filter((contributor) =>
