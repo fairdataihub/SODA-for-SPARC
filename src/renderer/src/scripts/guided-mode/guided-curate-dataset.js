@@ -6679,7 +6679,8 @@ window.openPage = async (targetPageID) => {
 
       const datsetName = window.sodaJSONObj["digital-metadata"]["name"];
       const datsetSubtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];
-      const datasetPiOwner = window.sodaJSONObj["digital-metadata"]["pi-owner"]["userString"];
+      const datasetPiOwner =
+        window.sodaJSONObj["digital-metadata"]?.["pi-owner"]?.["userString"] ?? "Not Assigned";
       const datasetUserPermissions = window.sodaJSONObj["digital-metadata"]["user-permissions"];
       const datasetTeamPermissions = window.sodaJSONObj["digital-metadata"]["team-permissions"];
       const datasetTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
