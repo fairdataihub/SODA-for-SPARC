@@ -15944,6 +15944,7 @@ const uploadMicroscopyImagesToBioLucida = async () => {
     "microscopy-images-selected-to-be-uploaded-to-biolucida"
   ]) {
     if (imagesUploaded < 3) {
+      // REMOVE THIS < 3 before production!!!
       const progressPercentage = Math.round((imagesUploaded / imagesToUploadCount) * 100);
       setProgressElementData(
         "guided-progress-display-biolucida-image-upload",
@@ -15963,44 +15964,15 @@ const uploadMicroscopyImagesToBioLucida = async () => {
     }
   }
 
+  // All images have been uploaded so set the progress to 100%
   setProgressElementData(
     "guided-progress-display-biolucida-image-upload",
     "Microscopy images successfully uploaded to BioLucida",
     100
   );
-
-  throw new Error("Test Error");
-
-  console.log("Converting microscopy images via MicroFilePlus");
-  const microscopyImagesToConvert = window.sodaJSONObj["confirmed-microscopy-images"];
-  const microscopyImagesToConvertCount = microscopyImagesToConvert.length;
-
-  let imageConvertedCount = 1;
-  for await (const image of microscopyImagesToConvert) {
-    console.log(`Converting image: ${image.filePath}`);
-
-    const progressPercentage = Math.round(
-      (imageConvertedCount / microscopyImagesToConvertCount) * 100
-    );
-
-    setProgressElementData(
-      "guided-progress-display-microscopy-image-conversion",
-      `Converting image: ${image.filePath}`,
-      progressPercentage
-    );
-    // wait for 5 second
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    imageConvertedCount++;
-  }
-
-  setProgressElementData(
-    "guided-progress-display-microscopy-image-conversion",
-    "Microscopy images successfully converted",
-    100
-  );
-  // wait for 10000 seconds
-  await new Promise((resolve) => setTimeout(resolve, 10000000));
+  // wait for 5 seconds
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+  throw new Error("Throwing Test Error to prevent upload to BioLucida");
 };
 
 const guidedPennsieveDatasetUpload = async () => {
