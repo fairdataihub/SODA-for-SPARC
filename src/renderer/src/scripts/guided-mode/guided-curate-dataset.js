@@ -14040,6 +14040,11 @@ $(".guided--radio-button").on("click", async function () {
     }
 
     if (buttonId === "guided-button-dataset-contains-microscopy-images") {
+      // Pre-add the selected class to the button to prevent the user from being stopped during page skipping
+      // While the logic below is being executed
+      document
+        .getElementById("guided-button-dataset-contains-microscopy-images")
+        .classList.add("selected");
       const req = await client.get("/image_processing/is_microfileplus_installed");
       const { status: microFilePlusIsInstalled, platform } = req.data;
       const usersPlatformIsMicroFilePlusCompatible = platform === "Windows";

@@ -1,18 +1,7 @@
-import {
-  Text,
-  Stack,
-  Group,
-  Button,
-  Alert,
-  Loader,
-  Center,
-  List,
-  Notification,
-} from "@mantine/core";
-import { IconTool, IconRosetteDiscountCheck, IconCheck } from "@tabler/icons-react";
+import { Text, Stack, Group, Button, Alert, List, Notification } from "@mantine/core";
+import { IconTool, IconRosetteDiscountCheck } from "@tabler/icons-react";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 import ExternalLink from "../../buttons/ExternalLink";
-import CodeTextDisplay from "../../common/CodeTextDisplay";
 import useGlobalStore from "../../../stores/globalStore";
 
 const handleRetryButtonClick = () => {
@@ -39,7 +28,7 @@ const SkipMicroscopyImageConversionWarningText = (
     color="red"
     title="Skipping Microsopy Image Conversion"
   >
-    <Text fw={200}>
+    <Text fw={200} size="sm">
       While not recommended, you can skip the Microscopy Image Data and Metadata conversion by
       clicking the "Skip Microscopy Image Conversion" button below. By doing so, your microscopy
       images will not be converted using MicroFile+ and your images will not be uploaded to
@@ -70,10 +59,8 @@ const MicrofilePlusInstallationCheckDisplay = () => {
             icon={<IconTool />}
             style={{ width: "100%" }}
           >
-            <Text mb="sm">
-              MicroFile+ is currently only available for Windows, so you must either switch to
-              Windows or skip the Microscopy Image Data and Metadata conversion.
-            </Text>
+            MicroFile+ is currently only available for Windows, so you must either switch to Windows
+            or skip the Microscopy Image Data and Metadata conversion.
             {SkipMicroscopyImageConversionWarningText}
             <Group justify="center" mt="md">
               {SkipMicroscopyImageConversionButton}
@@ -90,7 +77,7 @@ const MicrofilePlusInstallationCheckDisplay = () => {
             icon={<IconTool />}
             style={{ width: "100%" }}
           >
-            <Text mb="sm" fw={700}>
+            <Text mb="sm" fw={600}>
               Follow the steps below to install MicroFile+:
             </Text>
             <List type="ordered">
@@ -130,10 +117,7 @@ const MicrofilePlusInstallationCheckDisplay = () => {
           icon={<IconRosetteDiscountCheck />}
           style={{ width: "100%" }}
         >
-          <Text>
-            SODA will use MicroFile+ to convert Microsocpy Image Data and Metadata to SPARC
-            Standards.
-          </Text>
+          SODA will use MicroFile+ to convert Microsocpy Image Data and Metadata to SPARC Standards.
         </Alert>
       )}
     </FullWidthContainer>

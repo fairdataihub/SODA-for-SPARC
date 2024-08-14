@@ -1,5 +1,5 @@
 import React from "react";
-import { MantineProvider, createTheme, Stack } from "@mantine/core";
+import { MantineProvider, createTheme } from "@mantine/core";
 
 const theme = createTheme({
   colors: {
@@ -10,7 +10,6 @@ const theme = createTheme({
       "#13716d",
       "#13716d",
       "#13716d",
-
       "#13716d",
       "#13716d",
       "#13716d",
@@ -24,6 +23,21 @@ const theme = createTheme({
     md: "1rem", // (default)
     lg: "1.2rem",
     xl: "1.4rem",
+  },
+  components: {
+    Alert: {
+      defaultProps: {
+        color: "SodaGreen",
+        title: "SODA Alert",
+      },
+      styles(theme) {
+        return {
+          title: {
+            fontSize: "1.1rem",
+          },
+        };
+      },
+    },
   },
 });
 
