@@ -15879,7 +15879,7 @@ const convertMicroscopyImagesViaMfPlus = async () => {
   const microscopyImagesToConvert = window.sodaJSONObj["confirmed-microscopy-images"];
   const microscopyImagesToConvertCount = microscopyImagesToConvert.length;
 
-  let imageConvertedCount = 1;
+  let imageConvertedCount = 0;
   for await (const image of microscopyImagesToConvert) {
     console.log(`Converting image: ${image.filePath}`);
 
@@ -15893,7 +15893,7 @@ const convertMicroscopyImagesViaMfPlus = async () => {
       progressPercentage
     );
     // wait for 5 second
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     imageConvertedCount++;
   }
@@ -15906,22 +15906,70 @@ const convertMicroscopyImagesViaMfPlus = async () => {
 };
 
 const uploadMicroscopyImagesToBioLucida = async () => {
+  // Use the dataset name as the BioLucida collection name
+  const bioLucidaBucketName = window.sodaJSONObj["digital-metadata"]["name"];
   setProgressElementData(
-    "guided-progress-display-microscopy-image-conversion",
-    "Making sure MicroFile+ is installed",
+    "guided-progress-display-biolucida-image-upload",
+    `Creating ${bioLucidaBucketName} collection on BioLucida`,
     0
   );
-  // wait for 10000 seconds
+  // wait for 5 seconds
   await new Promise((resolve) => setTimeout(resolve, 5000));
-  // Ensure that MicroFile+ is installed on the user's machine
-  const req = await client.get("/image_processing/is_microfileplus_installed");
-  const { status: microFilePlusIsInstalled } = req.data;
 
-  if (!microFilePlusIsInstalled) {
-    throw new Error(
-      `SODA was unable to detect MicroFile+ on your machine. Please install MicroFile+ and try again.`
+  let biolucidaCollectionId = null;
+
+  try {
+    const req = await client.post("/image_processing/create_biolucida_collection", {
+      collection_name: bioLucidaBucketName,
+    });
+    biolucidaCollectionId = req.data.created_collection_id;
+    setProgressElementData(
+      "guided-progress-display-biolucida-image-upload",
+      `Successfully created ${bioLucidaBucketName} collection on BioLucida`,
+      0
     );
+  } catch (error) {
+    throw new Error(userErrorMessage(error));
   }
+  console.log("Bucket ID: ", biolucidaCollectionId);
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  const imagesToUpload =
+    window.sodaJSONObj["microscopy-images-selected-to-be-uploaded-to-biolucida"];
+  const imagesToUploadCount = imagesToUpload.length;
+
+  let imagesUploaded = 0;
+
+  // Upload each image to BioLucida
+  for (const image of window.sodaJSONObj[
+    "microscopy-images-selected-to-be-uploaded-to-biolucida"
+  ]) {
+    if (imagesUploaded < 3) {
+      const progressPercentage = Math.round((imagesUploaded / imagesToUploadCount) * 100);
+      setProgressElementData(
+        "guided-progress-display-biolucida-image-upload",
+        `Uploading image: ${image.filePath}`,
+        progressPercentage
+      );
+      const req = await client.post("/image_processing/upload_image_to_biolucida", {
+        collection_id: biolucidaCollectionId,
+        image_path: image.filePath,
+        image_name: image.fileName,
+      });
+      console.log("Image upload response: ", req);
+      imagesUploaded++;
+
+      // wait for .1 second
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+  }
+
+  setProgressElementData(
+    "guided-progress-display-biolucida-image-upload",
+    "Microscopy images successfully uploaded to BioLucida",
+    100
+  );
+
+  throw new Error("Test Error");
 
   console.log("Converting microscopy images via MicroFilePlus");
   const microscopyImagesToConvert = window.sodaJSONObj["confirmed-microscopy-images"];

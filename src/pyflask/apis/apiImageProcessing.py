@@ -1,6 +1,7 @@
 from flask_restx import Resource, fields, reqparse
 from flask import request
 from namespaces import get_namespace, NamespaceEnum, get_namespace_logger
+from authentication import get_access_token
 from PIL import Image
 import time
 import os
@@ -37,6 +38,143 @@ class IsMicroFilePlusInstalled(Resource):
         except Exception as e:
             namespace_logger.error(f"Error getting MicroFilePlus installation status: {str(e)}")
             return {'status': False, 'platform': user_platform}
+        
+@api.route('/create_biolucida_collection')
+class CreateBiolucidaCollection(Resource):
+    global namespace_logger
+    request_model = {
+        'collection_name': fields.String(required=True, description="The name of the collection to create"),
+    }
+    response_model = {
+        'status': fields.String(description="Additional message, such as error details")
+    }
+
+    parser = reqparse.RequestParser(bundle_errors=True)
+    parser.add_argument('collection_name', type=str, required=True, help="The name of the collection to create")
+
+    @api.expect(request_model)
+    @api.response(200, 'Collection created', response_model)
+    @api.response(400, 'Bad request')
+    @api.response(500, 'Internal server error')
+    def post(self):
+        try:
+            data = self.parser.parse_args()
+            collection_name = data['collection_name']
+            access_token = get_access_token()
+            namespace_logger.info(f"Creating collection in Biolucida named: {collection_name}")
+            params = {
+                'collection_name': collection_name,
+                'pennsieve_auth_secret': access_token
+            }
+            res = requests.post('https://flask-hello-world-six-opal.vercel.app/create_biolucida_collection', params=params)
+            namespace_logger.info(f"Create collection response: {res}")
+            namespace_logger.info(f"Create collection json: {res.json()}")  
+            return res.json()
+        except Exception as e:
+            namespace_logger.error(f"Error creating collection in Biolucida: {str(e)}")
+            api.abort(500, str(e))
+
+
+@api.route('/upload_image_to_biolucida')
+class UploadImageToBiolucida(Resource):
+    global namespace_logger
+    request_model = {
+        'collection_id': fields.String(required=True, description="The ID of the collection to upload the image to"),
+        'image_path': fields.String(required=True, description="The path to the image to upload"),
+        'image_name': fields.String(required=True, description="The name of the image to upload")
+    }
+
+    response_model = {
+        'status': fields.String(description="Additional message, such as error details")
+    }
+
+    parser = reqparse.RequestParser(bundle_errors=True)
+    parser.add_argument('collection_id', type=str, required=True, help="The ID of the collection to upload the image to")
+    parser.add_argument('image_path', type=str, required=True, help="The path to the image to upload")
+    parser.add_argument('image_name', type=str, required=True, help="The name of the image to upload")
+
+    @api.expect(request_model)
+    @api.response(200, 'Image uploaded', response_model)
+    @api.response(400, 'Bad request')
+    @api.response(500, 'Internal server error')
+    def post(self):
+        try:
+            data = self.parser.parse_args()
+            collection_id = data['collection_id']
+            image_path = data['image_path']
+            image_name = data['image_name']
+            
+            access_token = get_access_token()
+            namespace_logger.info(f"Getting BioLucida upload_key for image: {image_path}")
+            
+            # Get image file size and log it
+            image_file_size = os.path.getsize(image_path)
+            namespace_logger.info(f"Image file size: {image_file_size}")
+
+            chunk_size = min(image_file_size, 1000000)
+
+            params = {
+                'filesize': image_file_size,
+                'chunk_size': chunk_size,
+                'filename': image_name,
+                'tracked_directory': collection_id,
+                'pennsieve_auth_secret': access_token
+            }
+         
+            res = requests.get('https://flask-hello-world-six-opal.vercel.app/get_biolucida_upload_key', params=params)
+            res_json = res.json()
+            number_of_chunks = int(res_json['total_chunks'])
+            namespace_logger.info(f"Number of chunks: {number_of_chunks}")
+
+            upload_key = res_json['upload_key']
+            namespace_logger.info(f"Upload key: {upload_key}")
+
+            with open(image_path, "rb") as image:
+                image_data = image.read()
+
+                if number_of_chunks == 1:
+                    namespace_logger.info(f"Uploading image in one chunk")
+                    payload = {
+                        'upload_key': upload_key,
+                        'upload_data': base64.b64encode(image_data).decode('utf-8'),
+                        'chunk_id': 0
+                    }
+                    upload_res = requests.post('https://sparc.biolucida.net/api/v1/upload/continue', data=payload)
+                    upload_res_json = upload_res.json()
+                    namespace_logger.info(f"Upload response: {upload_res_json}")
+                else:
+                    namespace_logger.info(f"Uploading image in {number_of_chunks} chunks")
+                    split_image = [image_data[i:i+chunk_size] for i in range(0, len(image_data), chunk_size)]
+                    
+                    for i, chunk in enumerate(split_image):
+                        chunk_payload = {
+                            'upload_key': upload_key,
+                            'upload_data': base64.b64encode(chunk).decode('utf-8'),
+                            'chunk_id': i
+                        }
+                        namespace_logger.info(f"Uploading chunk {i} of size {len(chunk)}")
+                        upload_res = requests.post('https://sparc.biolucida.net/api/v1/upload/continue', data=chunk_payload)
+                        upload_res_json = upload_res.json()
+                        namespace_logger.info(f"Upload response: {upload_res_json}")
+                
+                # Finish the upload
+                namespace_logger.info("Finishing upload")
+                finish_payload = {'upload_key': upload_key}
+                finish_res = requests.post('https://sparc.biolucida.net/api/v1/upload/finish', data=finish_payload)
+                namespace_logger.info(f"Finish response: {finish_res}")
+                namespace_logger.info(f"Response status code: {finish_res.status_code}")
+                namespace_logger.info(f"Response headers: {finish_res.headers}")
+                namespace_logger.info(f"Response text: {finish_res.text}")
+
+                # Return a success response with the finish response details
+                return {'status': 'Image uploaded successfully', 'finish_response': finish_res.json()}, 200
+            
+        except Exception as e:
+            namespace_logger.error(f"Error uploading image to Biolucida: {str(e)}")
+            return api.abort(500, str(e))
+            
+
+
 
 @api.route('/biolucida_login')
 class BiolucidaLogin(Resource):
@@ -169,7 +307,6 @@ class BiolucidaLogin(Resource):
     global namespace_logger
     
     request_model = {
-        'token': fields.String(required=True, description="The token to use for authentication"),
         'collection_name': fields.String(required=True, description="The name of the collection to create"),
     }
     response_model = {
@@ -189,18 +326,9 @@ class BiolucidaLogin(Resource):
         try:
             namespace_logger.info("Received request to create collection in Biolucida")
             data = self.parser.parse_args()
-            token = data['token']
             collection_name = data['collection_name']
-            namespace_logger.info(f"Creating collection in Biolucida: {collection_name}")
-            headers = {
-                'token': token
-            }
-            payload={
-                'name': collection_name,
-                'parent_id': 0,
-                'owner': ''
-            }
-            res = requests.post('https://sparc.biolucida.net/api/v1/collections/create', headers=headers, data=payload)
+            namespace_logger.info(f"Making request to create collection: {collection_name}")
+            res = requests.post('https://sparc.biolucida.net/api/v1/collections/create', data={'name': collection_name, 'parent_id': 0, 'owner': ''})
             namespace_logger.info(f"Create collection response: {res.json()}")
             return res.json()
         except Exception as e:
