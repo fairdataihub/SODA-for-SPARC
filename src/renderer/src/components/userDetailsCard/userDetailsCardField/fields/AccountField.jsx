@@ -1,21 +1,28 @@
 import React, { useEffect } from "react";
-import { useState } from "react";
 import useGlobalStore from "../../../../stores/globalStore";
+import { updateDefaultBfAccount } from "../../../../stores/slices/defaultBfAccountSlice";
 
 export const AccountField = ({ tabName }) => {
-  const [defaultBfAccount, setDefaultBfAccount] = useState(
-    useGlobalStore((state) => state.defaultBfAccount) || "None"
-  );
+  let defaultBfAccount = useGlobalStore((state) => state.defaultBfAccount) || "None"
+  
 
-  // use effect to capture the change in defaultBfAccount
   useEffect(() => {
     const unsubscribe = useGlobalStore.subscribe(
       (state) => state.defaultBfAccount,
       (newDefaultBfAccount) => {
-        setDefaultBfAccount(newDefaultBfAccount || "None");
+        defaultBfAccount = newDefaultBfAccount;
       }
     );
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, []);
+
+
+  const changeAccountName = () => {
+    console.log("Here")
+    updateDefaultBfAccount("New Account");
+  }
 
     return (
       <div className={`card-container ${tabName}`}>
@@ -48,8 +55,9 @@ export const AccountField = ({ tabName }) => {
                 textAlign: "left",
               }}
             >
-              {defaultBfAccount} "Skouch"
+              {defaultBfAccount}
             </h5>
+            <button onClick={changeAccountName}>Change Account</button>
           </div>
         </div>
       </div>
