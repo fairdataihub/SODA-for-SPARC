@@ -54,10 +54,13 @@ const MicrofilePlusInstallationCheckDisplay = () => {
   console.log("usersPlatformIsMicroFilePlusCompatable", usersPlatformIsMicroFilePlusCompatable);
   return (
     <FullWidthContainer>
-      <Text size="lg" mb="md">
-        SODA requires the MicroFile+ application to convert Microscopy Image Data and Metadata to
-        SPARC Standard Formats.
-      </Text>
+      {!microFilePlusInstalled && (
+        <Text size="lg" mb="md">
+          SODA requires the MicroFile+ application to convert Microscopy Image Data and Metadata to
+          SPARC Standard Formats.
+        </Text>
+      )}
+
       {usersPlatformIsMicroFilePlusCompatable === false && (
         <FullWidthContainer>
           <Alert

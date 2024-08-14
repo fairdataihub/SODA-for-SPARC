@@ -70,8 +70,9 @@ const MicroscopyImageConfirmationPage = () => {
     <GuidedModePage
       pageHeader="Microscopy Image Confirmation"
       pageDescriptionArray={[
-        "SODA has identified the images below as potential microscopy images. Indicate which images are microscopy images by either selecting them by clicking on the image, or by using the search filter to select multiple images at once.",
-        "*NOTE* If all of your microscopy images are stored in a single folder or have a common file extension, you can use the search filter to select all images at once by searching and clicking 'Select filtered images'.",
+        "SODA has identified the images below as potential microscopy images. Please indicate which images are microscopy by either selecting them individually by clicking on each image, or by using the search filter to select multiple images at once.",
+        "The images you select below will have SPARC-required metadata added using MicroFile+ and will then be converted and added to the derivative folder.",
+        "*NOTE*If all your microscopy images are stored in a single folder or share a common file extension, you can use the search filter to select all images at once by searching and clicking 'Select filtered images'.",
       ]}
     >
       <GuidedModeSection bordered={true}>

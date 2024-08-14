@@ -5786,10 +5786,6 @@ window.openPage = async (targetPageID) => {
           }
 
           currentFolder["files"][convertedJp2FileName] = {
-            /*path: window.path.join(
-              guidedMicroFileConvertedImagesPath,
-              `guidedMicroFileConvertedImagesPath_converted.jp2`
-            ),*/
             path: primaryImageFilePath,
             type: "local",
             description: `Image derived from ${pathToPrimaryImage}/${fileName}. Converted to .jp2 with MicroFile+ (RRID:SCR_018724) from MBF Bioscience. Microscopy metadata included in the file header.`,
@@ -7759,6 +7755,15 @@ const setActiveSubPage = (pageIdToActivate) => {
     });
   }
   if (pageIdToActivate === "guided-derivative-samples-organization-page") {
+    const sectionAskingIfSamplesHavePrimaryData = document.getElementById(
+      "guided-primary-samples-prompt"
+    );
+    if (window.sodaJSONObj["user-going-through-microscopy-image-flow"] === true) {
+      sectionAskingIfSamplesHavePrimaryData.classList.add("hidden");
+      document.getElementById("guided-button-add-sample-primary-data").click();
+    } else {
+      sectionAskingIfSamplesHavePrimaryData.classList.remove("hidden");
+    }
     renderSamplesHighLevelFolderAsideItems("derivative");
     guidedUpdateFolderStructure("derivative", "samples");
     $("#guided-file-explorer-elements").appendTo(

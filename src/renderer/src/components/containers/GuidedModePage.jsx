@@ -12,6 +12,7 @@ const GuidedModePage = ({ pageHeader, pageDescriptionArray, children }) => {
         </Alert>
       );
     }
+
     return (
       <Text size="lg" key={text}>
         {text}
