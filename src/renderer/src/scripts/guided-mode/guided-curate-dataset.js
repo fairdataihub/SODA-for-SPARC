@@ -5786,7 +5786,7 @@ window.openPage = async (targetPageID) => {
           const pathToPrimaryImage = pathArrayToPrimaryImage.join("/");
           console.log("Path to primary image:", pathToPrimaryImage);
 
-          // If a preview of the converted image does not already exist, add it to the derivative folder
+          // If a preview of the .jp2 converted image does not already exist, add it to the derivative folder
           // and push the path to the array of derivative image previews generated so the derivative image preview swal will be shown
           if (!currentFolder["files"][convertedJp2FileName]) {
             derivativeImagePreviewsGenerated.push(
@@ -5801,6 +5801,22 @@ window.openPage = async (targetPageID) => {
             "additional-metadata": "",
             action: ["future-microscopy-image-derivative"],
             extension: ".jp2",
+          };
+
+          // If a preview of the .ome.tiff converted image does not already exist, add it to the derivative folder
+          // and push the path to the array of derivative image previews generated so the derivative image preview swal will be shown
+          if (!currentFolder["files"][convertedOmeTiffFileName]) {
+            derivativeImagePreviewsGenerated.push(
+              `${pathToPrimaryImage.replace("primary/", "derivative/")}/${convertedOmeTiffFileName}`
+            );
+          }
+          currentFolder["files"][convertedOmeTiffFileName] = {
+            path: primaryImageFilePath,
+            type: "local",
+            description: `Image derived from ${pathToPrimaryImage}/${fileName}. Converted to .ome.tif with MicroFile+ (RRID:SCR_018724) from MBF Bioscience. Microscopy metadata included in the file header.`,
+            "additional-metadata": "",
+            action: ["future-microscopy-image-derivative"],
+            extension: ".ome.tif",
           };
 
           console.log("Folder for derivative image:", currentFolder);
