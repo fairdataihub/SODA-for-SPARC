@@ -7584,6 +7584,16 @@ const setActiveSubPage = (pageIdToActivate) => {
     renderSamplesTable();
   }
   if (pageIdToActivate === "guided-primary-samples-organization-page") {
+    const sectionAskingIfSamplesHavePrimaryData = document.getElementById(
+      "guided-primary-samples-prompt"
+    );
+    if (window.sodaJSONObj["user-going-through-microscopy-image-flow"] === true) {
+      sectionAskingIfSamplesHavePrimaryData.classList.add("hidden");
+      document.getElementById("guided-button-add-sample-primary-data").click();
+    } else {
+      sectionAskingIfSamplesHavePrimaryData.classList.remove("hidden");
+    }
+
     renderSamplesHighLevelFolderAsideItems("primary");
     guidedUpdateFolderStructure("primary", "samples");
 
@@ -7611,6 +7621,17 @@ const setActiveSubPage = (pageIdToActivate) => {
     });
   }
   if (pageIdToActivate === "guided-primary-subjects-organization-page") {
+    const sectionAskingIfSubjectsHavePrimaryData = document.getElementById(
+      "guided-primary-subjects-prompt"
+    );
+
+    if (window.sodaJSONObj["user-going-through-microscopy-image-flow"] === true) {
+      sectionAskingIfSubjectsHavePrimaryData.classList.add("hidden");
+      document.getElementById("guided-button-add-subject-primary-data").click();
+    } else {
+      sectionAskingIfSubjectsHavePrimaryData.classList.remove("hidden");
+    }
+
     renderSubjectsHighLevelFolderAsideItems("primary");
     guidedUpdateFolderStructure("primary", "subjects");
     $("#guided-file-explorer-elements").appendTo(
@@ -7636,6 +7657,16 @@ const setActiveSubPage = (pageIdToActivate) => {
     });
   }
   if (pageIdToActivate === "guided-primary-pools-organization-page") {
+    const sectionAskingIfPoolsHavePrimaryData = document.getElementById(
+      "guided-primary-pools-prompt"
+    );
+    if (window.sodaJSONObj["user-going-through-microscopy-image-flow"] === true) {
+      sectionAskingIfPoolsHavePrimaryData.classList.add("hidden");
+      document.getElementById("guided-button-add-pool-primary-data").click();
+    } else {
+      sectionAskingIfPoolsHavePrimaryData.classList.remove("hidden");
+    }
+
     guidedUpdateFolderStructure("primary", "pools");
     renderPoolsHighLevelFolderAsideItems("primary");
     //guidedUpdateFolderStructure("primary", "pools"); Don't need because pools already generated
@@ -7730,6 +7761,16 @@ const setActiveSubPage = (pageIdToActivate) => {
   }
 
   if (pageIdToActivate === "guided-derivative-subjects-organization-page") {
+    const sectionAskingIfSubjectsHaveDerivativeData = document.getElementById(
+      "guided-derivative-subjects-prompt"
+    );
+    if (window.sodaJSONObj["user-going-through-microscopy-image-flow"] === true) {
+      sectionAskingIfSubjectsHaveDerivativeData.classList.add("hidden");
+      document.getElementById("guided-button-add-subject-derivative-data").click();
+    } else {
+      sectionAskingIfSubjectsHaveDerivativeData.classList.remove("hidden");
+    }
+
     renderSubjectsHighLevelFolderAsideItems("derivative");
     guidedUpdateFolderStructure("derivative", "subjects");
     $("#guided-file-explorer-elements").appendTo(
@@ -7791,6 +7832,16 @@ const setActiveSubPage = (pageIdToActivate) => {
   }
 
   if (pageIdToActivate === "guided-derivative-pools-organization-page") {
+    const sectionAskingIfPoolsHaveDerivativeData = document.getElementById(
+      "guided-derivative-pools-prompt"
+    );
+    if (window.sodaJSONObj["user-going-through-microscopy-image-flow"] === true) {
+      sectionAskingIfPoolsHaveDerivativeData.classList.add("hidden");
+      document.getElementById("guided-button-add-pool-derivative-data").click();
+    } else {
+      sectionAskingIfPoolsHaveDerivativeData.classList.remove("hidden");
+    }
+
     renderSubjectsHighLevelFolderAsideItems("derivative");
     guidedUpdateFolderStructure("derivative", "subjects");
     $("#guided-file-explorer-elements").appendTo(
@@ -14003,6 +14054,13 @@ $(".guided--radio-button").on("click", async function () {
         microFilePlusIsInstalled,
         usersPlatformIsMicroFilePlusCompatible
       );
+
+      if (microFilePlusIsInstalled && usersPlatformIsMicroFilePlusCompatible) {
+        window.sodaJSONObj["skip-microscopy-image-conversion"] = false;
+        document
+          .getElementById("guided-section-ask-if-dataset-contains-code")
+          .classList.remove("hidden");
+      }
     }
   }
 
@@ -15956,6 +16014,11 @@ const uploadMicroscopyImagesToBioLucida = async () => {
         `Uploading image: ${image.filePath}`,
         progressPercentage
       );
+      /*const req = await client.post("/image_processing/upload_image_to_biolucida", {
+        collection_id: biolucidaCollectionId,
+        image_path: image.filePath,
+        image_name: image.fileName,
+      });*/
       const req = await client.post("/image_processing/upload_image_to_biolucida", {
         collection_id: biolucidaCollectionId,
         image_path: image.filePath,

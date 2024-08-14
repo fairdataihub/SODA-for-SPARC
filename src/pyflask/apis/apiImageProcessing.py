@@ -103,10 +103,10 @@ class UploadImageToBiolucida(Resource):
             collection_id = data['collection_id']
             image_path = data['image_path']
             image_name = data['image_name']
-            
+
             access_token = get_access_token()
             namespace_logger.info(f"Getting BioLucida upload_key for image: {image_path}")
-            
+
             # Get image file size and log it
             image_file_size = os.path.getsize(image_path)
             namespace_logger.info(f"Image file size: {image_file_size}")
@@ -120,7 +120,7 @@ class UploadImageToBiolucida(Resource):
                 'tracked_directory': collection_id,
                 'pennsieve_auth_secret': access_token
             }
-         
+
             res = requests.get('https://flask-hello-world-six-opal.vercel.app/get_biolucida_upload_key', params=params)
             res_json = res.json()
             number_of_chunks = int(res_json['total_chunks'])
@@ -145,7 +145,7 @@ class UploadImageToBiolucida(Resource):
                 else:
                     namespace_logger.info(f"Uploading image in {number_of_chunks} chunks")
                     split_image = [image_data[i:i+chunk_size] for i in range(0, len(image_data), chunk_size)]
-                    
+
                     for i, chunk in enumerate(split_image):
                         chunk_payload = {
                             'upload_key': upload_key,
@@ -156,19 +156,26 @@ class UploadImageToBiolucida(Resource):
                         upload_res = requests.post('https://sparc.biolucida.net/api/v1/upload/continue', data=chunk_payload)
                         upload_res_json = upload_res.json()
                         namespace_logger.info(f"Upload response: {upload_res_json}")
-                
+
                 # Finish the upload
                 namespace_logger.info("Finishing upload")
                 finish_payload = {'upload_key': upload_key}
                 finish_res = requests.post('https://sparc.biolucida.net/api/v1/upload/finish', data=finish_payload)
                 namespace_logger.info(f"Finish response: {finish_res}")
                 namespace_logger.info(f"Response status code: {finish_res.status_code}")
-                namespace_logger.info(f"Response headers: {finish_res.headers}")
                 namespace_logger.info(f"Response text: {finish_res.text}")
+                namespace_logger.info(f"Response headers: {finish_res.headers}")
 
-                # Return a success response with the finish response details
-                return {'status': 'Image uploaded successfully', 'finish_response': finish_res.json()}, 200
-            
+                if finish_res.status_code != 200:
+                    return {
+                        'status': f'Image uploaded but was not able to be finished, response: {finish_res.text}'
+                    }, 200
+                else:
+                    return {
+                        'status': f'Image uploaded successfully, response: {finish_res.text}'
+                    }, 200
+
+
         except Exception as e:
             namespace_logger.error(f"Error uploading image to Biolucida: {str(e)}")
             return api.abort(500, str(e))
