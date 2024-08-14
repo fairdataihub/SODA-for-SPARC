@@ -60,6 +60,34 @@ export const swalShowInfo = async (title, infoText) => {
   });
 };
 
+export const swalShowLoading = (title) => {
+  return Swal.fire({
+    title: title,
+    html: `
+      <div class="guided--loading-div">
+        <div class="lds-roller">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+    `,
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    showCancelButton: false,
+    showCloseButton: false,
+    width: 800,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+  });
+};
+
 export const swalFileListSingleAction = async (fileList, title, helpText, postActionText) => {
   await Swal.fire({
     title: title,

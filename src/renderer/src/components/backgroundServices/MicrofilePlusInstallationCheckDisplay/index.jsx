@@ -11,7 +11,6 @@ const handleRetryButtonClick = () => {
 const handleSkipMicroscopyImageConversionButtonClick = () => {
   window.sodaJSONObj["skip-microscopy-image-conversion"] = true;
   window.unHideAndSmoothScrollToElement("guided-section-ask-if-dataset-contains-code");
-  console.log(window.unHideAndSmoothScrollToElement);
 };
 
 const SkipMicroscopyImageConversionButton = (

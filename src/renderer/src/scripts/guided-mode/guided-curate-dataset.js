@@ -33,6 +33,7 @@ import {
   swalFileListDoubleAction,
   swalFileListTripleAction,
   swalShowInfo,
+  swalShowLoading,
 } from "../utils/swal-utils";
 
 // Import state management store
@@ -2449,7 +2450,9 @@ const renderSideBar = (activePage) => {
       if (currentPageUserIsLeaving === pageToNavigateTo) {
         return;
       }
-
+      const pageTransitionLoadingSwal = swalShowLoading(
+        "Please wait while SODA navigates to the selected page"
+      );
       try {
         await savePageChanges(currentPageUserIsLeaving);
         const allNonSkippedPages = getNonSkippedGuidedModePages(document).map(
@@ -2464,10 +2467,13 @@ const renderSideBar = (activePage) => {
 
         //If the user is skipping forward with the nav bar, pages between current page and target page
         //Need to be validated. If they're going backwards, the for loop below will not be ran.
+
         for (const page of pagesBetweenCurrentAndTargetPage) {
           try {
             await checkIfPageIsValid(page);
           } catch (error) {
+            pageTransitionLoadingSwal.close(); // Close the loading swal
+
             const pageWithErrorName = document.getElementById(page).getAttribute("data-page-name");
             await window.openPage(page);
             await Swal.fire({
@@ -2492,7 +2498,10 @@ const renderSideBar = (activePage) => {
 
         //All pages have been validated. Open the target page.
         await window.openPage(pageToNavigateTo);
+
+        pageTransitionLoadingSwal.close(); // Close the loading swal
       } catch (error) {
+        pageTransitionLoadingSwal.close(); // Close the loading swal
         const pageWithErrorName = window.CURRENT_PAGE.dataset.pageName;
         const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
           title: "The current page was not able to be saved",
@@ -14060,6 +14069,8 @@ $(".guided--radio-button").on("click", async function () {
         usersPlatformIsMicroFilePlusCompatible
       );
 
+      // If the user has Microscopy images and is on a platform that is compatible with MicroFilePlus,
+      // and they have not indicated they want to
       if (microFilePlusIsInstalled && usersPlatformIsMicroFilePlusCompatible) {
         window.sodaJSONObj["skip-microscopy-image-conversion"] = false;
         document
