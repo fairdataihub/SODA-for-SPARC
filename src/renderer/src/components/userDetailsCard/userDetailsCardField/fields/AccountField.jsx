@@ -15,6 +15,7 @@ export const AccountField = ({ tabName }) => {
         setDefaultBfAccount(newDefaultBfAccount || "None");
       }
     );
+  }, []);
 
     return (
       <div className={`card-container ${tabName}`}>
@@ -47,11 +48,10 @@ export const AccountField = ({ tabName }) => {
                 textAlign: "left",
               }}
             >
-              {defaultBfAccount}
+              {defaultBfAccount} "Skouch"
             </h5>
           </div>
         </div>
       </div>
     );
-  });
 };
