@@ -75,19 +75,24 @@ class CreateBiolucidaCollection(Resource):
             api.abort(500, str(e))
 
 
+
 @api.route('/upload_image_to_biolucida')
 class UploadImageToBiolucida(Resource):
     global namespace_logger
+    
+    # Define the expected request model
     request_model = {
         'collection_id': fields.String(required=True, description="The ID of the collection to upload the image to"),
         'image_path': fields.String(required=True, description="The path to the image to upload"),
         'image_name': fields.String(required=True, description="The name of the image to upload")
     }
 
+    # Define the response model
     response_model = {
         'status': fields.String(description="Additional message, such as error details")
     }
 
+    # Set up argument parser for the incoming request
     parser = reqparse.RequestParser(bundle_errors=True)
     parser.add_argument('collection_id', type=str, required=True, help="The ID of the collection to upload the image to")
     parser.add_argument('image_path', type=str, required=True, help="The path to the image to upload")
@@ -99,20 +104,24 @@ class UploadImageToBiolucida(Resource):
     @api.response(500, 'Internal server error')
     def post(self):
         try:
+            # Parse and extract the request data
             data = self.parser.parse_args()
             collection_id = data['collection_id']
             image_path = data['image_path']
             image_name = data['image_name']
 
+            # Obtain access token for authentication
             access_token = get_access_token()
             namespace_logger.info(f"Getting BioLucida upload_key for image: {image_path}")
 
-            # Get image file size and log it
+            # Calculate the image file size and log it
             image_file_size = os.path.getsize(image_path)
             namespace_logger.info(f"Image file size: {image_file_size}")
 
+            # Determine the chunk size for the upload, with a maximum chunk size of 1 MB
             chunk_size = min(image_file_size, 1000000)
 
+            # Prepare parameters to request an upload key
             params = {
                 'filesize': image_file_size,
                 'chunk_size': chunk_size,
@@ -121,51 +130,52 @@ class UploadImageToBiolucida(Resource):
                 'pennsieve_auth_secret': access_token
             }
 
+            # Request the upload key and total number of chunks from the Biolucida API
             res = requests.get('https://flask-hello-world-six-opal.vercel.app/get_biolucida_upload_key', params=params)
             res_json = res.json()
-            number_of_chunks = int(res_json['total_chunks'])
-            namespace_logger.info(f"Number of chunks: {number_of_chunks}")
-
-            upload_key = res_json['upload_key']
+            number_of_chunks = int(res_json['total_chunks'])  # Total number of chunks to upload
+            upload_key = res_json['upload_key']  # Retrieve the upload key
             namespace_logger.info(f"Upload key: {upload_key}")
 
+            # Open the image file in binary mode
             with open(image_path, "rb") as image:
                 image_data = image.read()
 
-                if number_of_chunks == 1:
-                    namespace_logger.info(f"Uploading image in one chunk")
+                # Unified loop to handle both single and multiple chunk uploads
+                namespace_logger.info(f"Uploading image in {number_of_chunks} chunk(s)")
+
+                # Loop through each upload chunk and send it to the Biolucida API
+                for i in range(number_of_chunks):
+                    start = i * chunk_size  # Determine the start and end of the current chunk
+                    chunk = image_data[start:start + chunk_size]  # Slice the image data to get the current chunk
+
+                    # Create the payload for the current chunk
                     payload = {
                         'upload_key': upload_key,
-                        'upload_data': base64.b64encode(image_data).decode('utf-8'),
-                        'chunk_id': 0
+                        'upload_data': base64.b64encode(chunk).decode('utf-8'),
+                        'chunk_id': i
                     }
+
+                    # Log the current chunk upload progress
+                    namespace_logger.info(f"Uploading chunk {i + 1} of size {len(chunk)}")
+
+                    # Send the chunk to the Biolucida API
                     upload_res = requests.post('https://sparc.biolucida.net/api/v1/upload/continue', data=payload)
                     upload_res_json = upload_res.json()
                     namespace_logger.info(f"Upload response: {upload_res_json}")
-                else:
-                    namespace_logger.info(f"Uploading image in {number_of_chunks} chunks")
-                    split_image = [image_data[i:i+chunk_size] for i in range(0, len(image_data), chunk_size)]
 
-                    for i, chunk in enumerate(split_image):
-                        chunk_payload = {
-                            'upload_key': upload_key,
-                            'upload_data': base64.b64encode(chunk).decode('utf-8'),
-                            'chunk_id': i
-                        }
-                        namespace_logger.info(f"Uploading chunk {i} of size {len(chunk)}")
-                        upload_res = requests.post('https://sparc.biolucida.net/api/v1/upload/continue', data=chunk_payload)
-                        upload_res_json = upload_res.json()
-                        namespace_logger.info(f"Upload response: {upload_res_json}")
-
-                # Finish the upload
+                # After all chunks are uploaded, finish the upload process
                 namespace_logger.info("Finishing upload")
                 finish_payload = {'upload_key': upload_key}
                 finish_res = requests.post('https://sparc.biolucida.net/api/v1/upload/finish', data=finish_payload)
+                
+                # Log the response from the finish request
                 namespace_logger.info(f"Finish response: {finish_res}")
                 namespace_logger.info(f"Response status code: {finish_res.status_code}")
                 namespace_logger.info(f"Response text: {finish_res.text}")
                 namespace_logger.info(f"Response headers: {finish_res.headers}")
 
+                # Return a success or warning message based on the final response
                 if finish_res.status_code != 200:
                     return {
                         'status': f'Image uploaded but was not able to be finished, response: {finish_res.text}'
@@ -175,8 +185,8 @@ class UploadImageToBiolucida(Resource):
                         'status': f'Image uploaded successfully, response: {finish_res.text}'
                     }, 200
 
-
         except Exception as e:
+            # Handle any exceptions that occur during the process
             namespace_logger.error(f"Error uploading image to Biolucida: {str(e)}")
             return api.abort(500, str(e))
             

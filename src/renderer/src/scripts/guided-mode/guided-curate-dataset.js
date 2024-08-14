@@ -16038,8 +16038,8 @@ const uploadMicroscopyImagesToBioLucida = async () => {
     "Microscopy images successfully uploaded to BioLucida",
     100
   );
-  // wait for 5 seconds
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  // wait for 10 seconds
+  await new Promise((resolve) => setTimeout(resolve, 10000));
   throw new Error("Throwing Test Error to prevent upload to BioLucida");
 };
 
