@@ -219,15 +219,15 @@ const MicroscopyImageMetadataFormPage = () => {
                             style={{ cursor: "pointer" }}
                           >
                             {openFolders[folderKey] ? (
-                              <IconFolderOpen size={20} />
+                              <IconFolderOpen size={18} />
                             ) : (
-                              <IconFolder size={20} />
+                              <IconFolder size={18} />
                             )}
-                            <Text size="lg">{folderKey}</Text>
+                            <Text size="sm">{folderKey}</Text>
                             {openFolders[folderKey] ? (
-                              <IconChevronDown size={20} />
+                              <IconChevronDown size={18} />
                             ) : (
-                              <IconChevronRight size={20} />
+                              <IconChevronRight size={18} />
                             )}
                           </Group>
                           {openFolders[folderKey] &&
@@ -265,9 +265,9 @@ const MicroscopyImageMetadataFormPage = () => {
                                   }
                                   leftSection={
                                     imageHasRequiredMetadata(fileObj.filePath) ? (
-                                      <IconCheck />
+                                      <IconCheck size={18} />
                                     ) : (
-                                      <IconKeyboard opacity={0.3} />
+                                      <IconKeyboard opacity={0.3} size={18} />
                                     )
                                   }
                                   onClick={() => setSelectedImageFileObj(fileObj)}
