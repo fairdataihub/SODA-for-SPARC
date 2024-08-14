@@ -8,9 +8,9 @@ export const defaultBfAccountSlice = (set) => ({
 export const updateDefaultBfAccount = (newBfAccount) => {
   useGlobalStore.setState(
     produce((state) => {
-      console.log("Updating defaultBfAccount to: ", newBfAccount)
-      state.defaultBfAccount = newBfAccount
-      console.log("Updated defaultBfAccount to: ", state.defaultBfAccount)
+      console.log("Updating defaultBfAccount to: ", newBfAccount);
+      state.defaultBfAccount = newBfAccount;
+      console.log("Updated defaultBfAccount to: ", state.defaultBfAccount);
     })
   );
 };
