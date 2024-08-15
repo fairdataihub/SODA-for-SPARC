@@ -16417,7 +16417,6 @@ const guidedSaveBannerImage = async () => {
 
     // hide the skip btn as it is no longer relvant
     document.querySelector("#guided--skip-banner-img-btn").style.display = "none";
-
   });
 };
 // /**************************************/
