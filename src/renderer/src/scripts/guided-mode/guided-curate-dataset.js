@@ -6170,14 +6170,11 @@ window.openPage = async (targetPageID) => {
           window.sodaJSONObj["digital-metadata"]["banner-image-path"],
           true
         );
+        document.querySelector("#guided--skip-banner-img-btn").style.display = "none";
       } else {
         //reset the banner image page
         $("#guided-button-add-banner-image").html("Add banner image");
         $("#guided-banner-image-preview-container").hide();
-
-        console.log("THis is going to run");
-        // set 'save & continue' button text to 'skip & continue' if no banner image is added
-        $("#guided-next-button span .nav-button-text").text("Skip and Continue");
       }
     }
 
@@ -16417,6 +16414,10 @@ const guidedSaveBannerImage = async () => {
       $("#guided-banner-image-modal").modal("hide");
       $("#guided-button-add-banner-image").text("Edit banner image");
     }
+
+    // hide the skip btn as it is no longer relvant
+    document.querySelector("#guided--skip-banner-img-btn").style.display = "none";
+
   });
 };
 // /**************************************/
