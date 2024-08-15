@@ -35,7 +35,7 @@ const componentTypeRenderers = {
   },
   "external-link": (componentSlot) => {
     const props = {
-      url: componentSlot.getAttribute("data-url"),
+      href: componentSlot.getAttribute("data-href"),
       buttonText: componentSlot.getAttribute("data-button-text"),
       buttonType: componentSlot.getAttribute("data-button-type"),
     };
