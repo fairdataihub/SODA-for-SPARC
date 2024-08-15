@@ -5762,81 +5762,87 @@ window.openPage = async (targetPageID) => {
 
         const derivativeImagePreviewsGenerated = [];
 
+        // Helper function to create an object with required properties for a derivative image file
+        // guidedMicroFileConvertedImagesPath *************************
+        const createDerivativeImageFileObject = (fileName, extension) => ({
+          path: primaryImageFilePath,
+          type: "local",
+          description: `Image derived from ${pathToPrimaryImage}/${fileName}. Converted to ${extension} with MicroFile+ (RRID:SCR_018724) from MBF Bioscience. Microscopy metadata included in the file header.`,
+          "additional-metadata": "",
+          action: ["future-microscopy-image-derivative"],
+          extension,
+          "derivative-image-source-folder": pathToPrimaryImage,
+        });
+
         const createDerivativeFolderPlaceHolderForFutureMicroscopyimageConversions = (
-          pathArrayToPrimaryImage,
+          relativePathToPrimaryImage,
           primaryImageFilePath
         ) => {
-          let derivativePathArray = [...pathArrayToPrimaryImage];
-          derivativePathArray[0] = "derivative";
-          let currentFolder = window.datasetStructureJSONObj;
-          for (const folder of derivativePathArray) {
-            if (!currentFolder["folders"][folder]) {
-              console.log("Folder does not exist, creating it");
-
-              currentFolder["folders"][folder] = newEmptyFolderObj();
-            }
-            currentFolder = currentFolder["folders"][folder];
-          }
+          // Declare variables used to create the derivative folder structure and file objects
+          const relativePathArrayToDeriviativeImage = [
+            "derivative",
+            ...relativePathToPrimaryImage.split("/").slice(0, -1).slice(1),
+          ];
+          console.log("relativePathArrayToDeriviativeImage:", relativePathArrayToDeriviativeImage);
           const fileName = window.path.basename(primaryImageFilePath);
           const fileExtension = window.path.extname(primaryImageFilePath);
           const convertedJp2FileName = fileName.replace(fileExtension, ".jp2");
           const convertedOmeTiffFileName = fileName.replace(fileExtension, ".ome.tif");
+          const datasetPathToPrimaryImage = relativePathToPrimaryImage.replace(
+            "primary/",
+            "derivative/"
+          );
+
           console.log("convertedJp2FileName:", convertedJp2FileName);
           console.log("convertedOmeTiffFileName:", convertedOmeTiffFileName);
-          const pathToPrimaryImage = pathArrayToPrimaryImage.join("/");
-          console.log("Path to primary image:", pathToPrimaryImage);
+          // Create the derivative folder path
+          let currentFolder = window.datasetStructureJSONObj;
+          // Create the folders if they don't exist
+          relativePathArrayToDeriviativeImage.forEach((folder) => {
+            if (!currentFolder["folders"][folder]) {
+              console.log("Folder does not exist, creating it");
+              currentFolder["folders"][folder] = newEmptyFolderObj();
+            }
+            currentFolder = currentFolder["folders"][folder];
+          });
 
-          // If a preview of the .jp2 converted image does not already exist, add it to the derivative folder
-          // and push the path to the array of derivative image previews generated so the derivative image preview swal will be shown
+          // Add .jp2 file if it doesn't already exist
           if (!currentFolder["files"][convertedJp2FileName]) {
             derivativeImagePreviewsGenerated.push(
-              `${pathToPrimaryImage.replace("primary/", "derivative/")}/${convertedJp2FileName}`
+              `${datasetPathToPrimaryImage}/${convertedJp2FileName}`
+            );
+            currentFolder["files"][convertedJp2FileName] = createDerivativeImageFileObject(
+              fileName,
+              ".jp2"
             );
           }
+          currentFolder["files"][convertedJp2FileName] = createDerivativeImageFileObject(
+            fileName,
+            ".jp2"
+          );
 
-          currentFolder["files"][convertedJp2FileName] = {
-            path: primaryImageFilePath,
-            type: "local",
-            description: `Image derived from ${pathToPrimaryImage}/${fileName}. Converted to .jp2 with MicroFile+ (RRID:SCR_018724) from MBF Bioscience. Microscopy metadata included in the file header.`,
-            "additional-metadata": "",
-            action: ["future-microscopy-image-derivative"],
-            extension: ".jp2",
-          };
-
-          // If a preview of the .ome.tiff converted image does not already exist, add it to the derivative folder
-          // and push the path to the array of derivative image previews generated so the derivative image preview swal will be shown
+          // Add .ome.tif file if it doesn't already exist
           if (!currentFolder["files"][convertedOmeTiffFileName]) {
             derivativeImagePreviewsGenerated.push(
-              `${pathToPrimaryImage.replace("primary/", "derivative/")}/${convertedOmeTiffFileName}`
+              `${datasetPathToPrimaryImage}/${convertedOmeTiffFileName}`
+            );
+            currentFolder["files"][convertedOmeTiffFileName] = createDerivativeImageFileObject(
+              fileName,
+              ".ome.tif"
             );
           }
-          currentFolder["files"][convertedOmeTiffFileName] = {
-            path: primaryImageFilePath,
-            type: "local",
-            description: `Image derived from ${pathToPrimaryImage}/${fileName}. Converted to .ome.tif with MicroFile+ (RRID:SCR_018724) from MBF Bioscience. Microscopy metadata included in the file header.`,
-            "additional-metadata": "",
-            action: ["future-microscopy-image-derivative"],
-            extension: ".ome.tif",
-          };
 
           console.log("Folder for derivative image:", currentFolder);
         };
 
         for (const image of microscopyImages) {
-          const relativeDatasetStructurePaths = image["relativeDatasetStructurePaths"];
+          const relativeFolderPathsToPrimaryImages = image["relativeDatasetStructurePaths"];
 
-          for (const relativePath of relativeDatasetStructurePaths) {
+          for (const relativeFolderPathToPrimaryImage of relativeFolderPathsToPrimaryImages) {
             try {
-              // Create an array of the relative path to the primary image (excluding the image file name)
-              const relativeFolderPathForPrimaryImage = relativePath.split("/").slice(0, -1);
-              console.log("relativeFolderPathForPrimaryImage", relativeFolderPathForPrimaryImage);
               createDerivativeFolderPlaceHolderForFutureMicroscopyimageConversions(
-                relativeFolderPathForPrimaryImage,
+                relativeFolderPathToPrimaryImage,
                 image["filePath"]
-              );
-              console.log(
-                "Getting folder contents at relative path:",
-                relativeFolderPathForPrimaryImage
               );
             } catch (error) {
               console.error(error);
