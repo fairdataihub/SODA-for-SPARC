@@ -5,17 +5,18 @@ import { updateDefaultBfAccount } from "../../../../stores/slices/defaultBfAccou
 export const AccountField = ({ tabName }) => {
   let defaultBfAccount = useGlobalStore((state) => state.defaultBfAccount) || "None";
 
-  useEffect(() => {
+  // useEffect(() => {
     const unsubscribe = useGlobalStore.subscribe(
       (state) => state.defaultBfAccount,
       (newDefaultBfAccount) => {
+        console.log("New default bf account: ", newDefaultBfAccount);
         defaultBfAccount = newDefaultBfAccount;
       }
     );
 
     // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, []);
+    // return () => unsubscribe();
+  // }, []);
 
   const changeAccountName = () => {
     console.log("Here");
