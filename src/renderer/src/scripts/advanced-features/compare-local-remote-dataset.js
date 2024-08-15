@@ -31,16 +31,25 @@ document
     let nextQuestion = document.querySelector("#compare-local-remote-confirm-local-dataset-btn")
       .dataset.next;
     document.querySelector(`#${nextQuestion}`).style.display = "flex";
+
+    // if a Pennsieve dataset has already been selected then show question 3 as well
+    if ($("#bf_dataset_load_compare_local_remote").text().trim() !== "None") {
+      showQuestion3()
+    }
   });
 
-// observer for the selected dataset label in the dataset selection card in question 2
-const datasetChangedObserver = new MutationObserver(() => {
-  // once a dataset has been selected show the run validator button if the current question is active
-  if ($("#bf_dataset_load_compare_local_remote").text().trim() !== "None") {
+  const showQuestion3 = () => {
     let nextQuestion = document.querySelector("#compare-local-remote-dataset-question-3");
     nextQuestion.style.display = "flex";
     nextQuestion.scrollIntoView({ behavior: "smooth", block: "start" });
     document.querySelector("#comparison-results-container").style.display = "none";
+  }
+
+// observer for the selected dataset label in the dataset selection card in question 2
+const datasetChangedObserver = new MutationObserver(() => {
+  // once a dataset has been selected show the run validator button if the current question is active
+  if ($("#bf_dataset_load_compare_local_remote").text().trim() !== "None" && $("#compare-local-remote-dataset-local-path").val() !== "") {
+    showQuestion3()
   } else {
     $("#compare-local-remote-dataset-question-3").css("display", "none");
   }
