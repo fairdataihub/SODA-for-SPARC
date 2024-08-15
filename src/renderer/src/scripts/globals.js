@@ -6,7 +6,7 @@ import api from "./others/api/api";
 import { clientError, userErrorMessage } from "./others/http-error-handler/error-handler";
 import client from "./client";
 import { swalShowError } from "./utils/swal-utils";
-import {updateDefaultBfAccount} from "../stores/slices/defaultBfAccountSlice"
+import { updateDefaultBfAccount } from "../stores/slices/defaultBfAccountSlice";
 // import { window.clearValidationResults } from './validator/validate'
 // // Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
 // //          needed by the renderer process in order to run.
@@ -922,7 +922,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
   let bfAccountSwal = false;
   if (bfAccountSwal === null) {
     if (bfacct !== "Select") {
-      console.log("THis workflow")
+      console.log("THis workflow");
       Swal.fire({
         allowEscapeKey: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -1126,7 +1126,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           window.defaultBfAccount = profileResponse.toLowerCase();
 
           // Refactor: defaultBfAccount global store update
-          updateDefaultBfAccount(window.defaultBfAccount)
+          updateDefaultBfAccount(window.defaultBfAccount);
           return true;
         } catch (e) {
           // if it fails create a new profile key
