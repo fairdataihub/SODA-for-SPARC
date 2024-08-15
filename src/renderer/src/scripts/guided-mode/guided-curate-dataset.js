@@ -6718,7 +6718,6 @@ window.openPage = async (targetPageID) => {
         })
         .join("\n");
 
-      datasetPiOwnerReviewText.innerHTML = datasetPiOwner;
 
       if (datasetUserPermissions.length > 0) {
         const datasetUserPermissionsString = datasetUserPermissions
