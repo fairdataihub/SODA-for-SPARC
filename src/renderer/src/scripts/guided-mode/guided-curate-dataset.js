@@ -6692,7 +6692,6 @@ window.openPage = async (targetPageID) => {
       const datasetDescriptionReviewText = document.getElementById(
         "guided-review-dataset-description"
       );
-      const datasetPiOwnerReviewText = document.getElementById("guided-review-dataset-pi-owner");
       const datasetUserPermissionsReviewText = document.getElementById(
         "guided-review-dataset-user-permissions"
       );
