@@ -67,6 +67,42 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
+try {
+  // Generate the subjects metadata file
+  await client.post(
+    `/prepare_metadata/subjects_file`,
+    {
+      filepath: generationDestination === "Pennsieve" ? "" : destination,
+      selected_account: window.defaultBfAccount,
+      selected_dataset:
+        generationDestination === "Pennsieve" ? guidedGetDatasetName(window.sodaJSONObj) : "",
+      subjects_header_row: window.subjectsTableData,
+    },
+    {
+      params: {
+        upload_boolean: generationDestination === "Pennsieve",
+      },
+    }
+  );
+
+  // Update UI for successful generation (Pennsieve) and send success event
+  if (generationDestination === "Pennsieve") {
+    guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "success");
+    subjectsMetadataGenerationText.innerHTML = `Subjects metadata successfully generated`;
+  }
+  window.electron.ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.GUIDED_MODE,
+    kombuchaEnums.Action.GENERATE_METADATA,
+    kombuchaEnums.Label.SUBJECTS_XLSX,
+    kombuchaEnums.Status.SUCCESS,
+    guidedCreateEventDataPrepareMetadata(generationDestination, 1)
+  );
+} catch (error) {
+  const emessage = userErrorMessage(error);
+  console.error(emessage);
+}
+
 window.returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
