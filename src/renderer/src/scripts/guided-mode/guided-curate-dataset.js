@@ -104,11 +104,9 @@ window.secretSubjectFunction = async (datasetId) => {
 
 window.subjectAnalysis = async () => {
   // 1. Get the dataset IDS from the json returned from secretDatasetGatherFunction
-
   //2. For each of the dataset IDS, use the secretSubjectFunction to get their subject metadata
-
   //3. Print out the 3 columns related to subject species/strain
-}
+};
 
 window.returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
