@@ -197,20 +197,22 @@ const MicroscopyImageConfirmationPage = () => {
         </Grid>
       </GuidedModeSection>
 
-      {currentGuidedModePage === "guided-microscopy-image-confirmation-tab" && (
-        <Affix
-          position={{ top: 135, right: 20 }}
-          style={{
-            zIndex: 1000,
-          }}
-        >
-          <SodaGreenPaper>
-            <Text>
-              Images selected: {confirmedMicroscopyImages.length}/{potentialMicroscopyImages.length}
-            </Text>
-          </SodaGreenPaper>
-        </Affix>
-      )}
+      {currentGuidedModePage === "guided-microscopy-image-confirmation-tab" &&
+        potentialMicroscopyImages.length && (
+          <Affix
+            position={{ top: 135, right: 20 }}
+            style={{
+              zIndex: 1000,
+            }}
+          >
+            <SodaGreenPaper>
+              <Text>
+                Images selected: {confirmedMicroscopyImages.length}/
+                {potentialMicroscopyImages.length}
+              </Text>
+            </SodaGreenPaper>
+          </Affix>
+        )}
     </GuidedModePage>
   );
 };

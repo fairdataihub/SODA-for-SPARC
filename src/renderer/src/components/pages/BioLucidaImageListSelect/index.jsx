@@ -187,18 +187,19 @@ const BioLucidaImageListSelectPage = () => {
         </Grid>
       </GuidedModeSection>
 
-      {currentGuidedModePage === "guided-biolucida-image-selection-tab" && (
-        <Affix
-          position={{ top: 135, right: 20 }}
-          style={{
-            zIndex: 1000,
-          }}
-        >
-          <SodaGreenPaper>
-            <Text>Images selected: {bioLucidaImages.length}/50</Text>
-          </SodaGreenPaper>
-        </Affix>
-      )}
+      {currentGuidedModePage === "guided-biolucida-image-selection-tab" &&
+        bioLucidaImages.length > 0 && (
+          <Affix
+            position={{ top: 135, right: 20 }}
+            style={{
+              zIndex: 1000,
+            }}
+          >
+            <SodaGreenPaper>
+              <Text>Images selected: {bioLucidaImages.length}/50</Text>
+            </SodaGreenPaper>
+          </Affix>
+        )}
     </GuidedModePage>
   );
 };

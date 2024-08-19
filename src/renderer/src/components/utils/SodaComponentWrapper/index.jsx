@@ -28,7 +28,6 @@ const theme = createTheme({
     Alert: {
       defaultProps: {
         color: "SodaGreen",
-        title: "SODA Alert",
       },
       styles(theme) {
         return {
