@@ -1644,19 +1644,7 @@
                   min-width: 450px;
                 "
               >
-                <div id="div-current-banner-img" style="color: black">
-                  <p
-                    style="text-align: center; height: 2em; margin: auto"
-                    id="para-current-banner-img"
-                  >
-                    None
-                  </p>
-                  <div
-                    id="banner_image_loader"
-                    class="ui active green inline loader medium"
-                    style="display: none; margin-left: 46%"
-                  ></div>
-                  <img id="current-banner-img" />
+                
                 </div>
               </div>
             </div>
@@ -1696,7 +1684,6 @@
     <!-- Modal -->
     <div
       class="modal fade"
-      id="edit_banner_image_modal"
       tabindex="-1"
       role="dialog"
       data-backdrop="false"
@@ -1727,25 +1714,23 @@
           </div>
           <div class="modal-body">
             <div id="div-editbanner-img" style="display: flex; flex-direction: row">
-              <div id="div-img-container-holder" class="img-container">
+              <div  class="img-container">
                 Imported image will be shown here. <br />You will be able to crop it before
                 uploading.
               </div>
 
               <div
-                id="div-img-container"
                 class="img-container"
                 style="display: none; flex-direction: column"
               >
-                <img id="image-banner" class="banner-img" width="100%" />
+                <img class="banner-img" width="100%" />
                 <p
-                  id="para-path-image"
+                 
                   style="margin-top: 0.5em; text-align: center; display: none"
                 ></p>
               </div>
             </div>
             <p
-              id="para-dataset-banner-image-status"
               style="
                 text-align: center;
                 font-weight: 400;
@@ -1766,7 +1751,6 @@
                 "
               >
                 <button
-                  id="button-import-banner-image"
                   type="button"
                   class="btn btn-primary"
                   style="border-radius: 4px"
@@ -1785,7 +1769,6 @@
               <input
                 class="banner-image-size input"
                 style="width: 70px; text-align: center; pointer-events: none"
-                id="form-banner-height"
                 type="text"
                 readonly="readonly"
                 size="7"
@@ -1796,7 +1779,6 @@
             </div>
 
             <button
-              id="save-banner-image"
               type="button"
               class="btn btn-primary"
               style="border-radius: 4px; visibility: hidden"

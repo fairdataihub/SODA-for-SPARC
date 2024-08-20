@@ -5085,6 +5085,7 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
         Swal.close();
       }
     } else {
+      console.log("In this workflow");
       imgHolder.style.display = "none";
       imgContainer.style.display = "block";
 

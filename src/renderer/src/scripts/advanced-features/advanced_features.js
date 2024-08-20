@@ -307,3 +307,12 @@ $("#advanced-start-over-button").on("click", async () => {
     document.querySelector("#compare-local-remote-dataset-question-3").style.display = "none";
   }
 });
+
+// Action when user click on "Import image" button for banner image
+$("#button-import-banner-image").click(async () => {
+  $("#para-dataset-banner-image-status").html("");
+  let filePaths = await window.electron.ipcRenderer.invoke("open-file-dialog-import-banner-image");
+  window.handleSelectedBannerImage(filePaths, "freeform");
+  $("#edit_banner_image_modal").modal("show");
+  $("#edit_banner_image_modal").addClass("show");
+});
