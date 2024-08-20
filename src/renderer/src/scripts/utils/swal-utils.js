@@ -208,3 +208,18 @@ export const swalConfirmAction = async (icon, title, text, confirmButtonText, ca
   });
   return action;
 };
+
+export const swalShowSuccess = async (title, successText) => {
+  Swal.close();
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  await Swal.fire({
+    title: title,
+    html: successText,
+    icon: "success",
+    width: 800,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showConfirmButton: true,
+    confirmButtonText: "OK",
+  });
+};

@@ -4,6 +4,7 @@ while (!window.baseHtmlLoaded) {
 }
 import * as ini from "ini";
 import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
+import { swalShowSuccess } from "../utils/swal-utils";
 
 const addAccountOptions = () => {
   // set default state
@@ -82,4 +83,6 @@ window.disconnectPennsieveAccount = async (profileKey) => {
   $("#para-continue-bf-dataset-getting-started").text("");
   $(".bf-account-span").text("None");
   $(".bf-organization-span").text("None");
+
+  await swalShowSuccess("Success", "Your Pennsieve account has been disconnected.");
 };
