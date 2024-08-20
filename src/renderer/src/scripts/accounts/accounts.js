@@ -40,20 +40,25 @@ addAccountOptions();
 const removeAccountInformationFromServer = (profileKey) => {
   // get every character in profileKey before the substring 'n:organization'
   let profileKeyBeforeOrg = profileKey.substring(0, profileKey.indexOf("n:organization"));
-  console.log(profileKeyBeforeOrg);
 
   // remove every entry in the .ini file that has the profileKeyBeforeOrg
   let homeDir = window.os.homedir();
   let configFilePath = window.path.join(homeDir, ".pennsieve", "config.ini");
   let config = ini.parse(window.fs.readFileSync(configFilePath, "utf-8"));
 
-  console.log(config);
-
-  Object.keys(config).forEach((key) => {
-    if (key.includes(profileKeyBeforeOrg)) {
-      delete config[key];
-    }
-  });
+  if (!profileKeyBeforeOrg) {
+    // NOTE: This means that the user created their account with an API Key or an older version of SODA
+    // only remove the profileKey that matches the default profile value
+    let defaultProfile = config["global"]["default_profile"];
+    delete config[defaultProfile];
+  } else {
+    // delete any matching key
+    Object.keys(config).forEach((key) => {
+      if (key.includes(profileKeyBeforeOrg)) {
+        delete config[key];
+      }
+    });
+  }
 
   delete config["global"]["default_profile"];
 
