@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, dialog } from "electron";
+import { app, shell, BrowserWindow, ipcMain, dialog, screen } from "electron";
 import os from "os";
 import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
@@ -568,13 +568,18 @@ const initialize = () => {
         iconPath = join(__dirname, "../renderer/public/menu-icon/soda_icon.png");
       }
 
+      const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+
+      const windowWidth = 1121;
+      const windowHeight = 735;
+
       // Create the browser window.
       mainWindow = new BrowserWindow({
         show: false,
         minWidth: 1121,
         minHeight: 735,
-        width: 1121,
-        height: 735,
+        width: windowWidth,
+        height: windowHeight,
         center: true,
         show: false,
         nodeIntegration: true,
@@ -587,6 +592,9 @@ const initialize = () => {
           webSecurity: false, // TODO: set to true and make the Python server a proxy to add CORS headers
         },
       });
+
+      mainWindow.webContents.openDevTools();
+      mainWindow.setPosition(width / 2, 0);
 
       mainWindow.webContents.on("new-window", (event, url) => {
         event.preventDefault();

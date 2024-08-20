@@ -5758,10 +5758,6 @@ window.openPage = async (targetPageID) => {
     if (targetPageID === "guided-derivative-data-organization-tab") {
       // If the user is going through the microscopy image flow, create derivative folder placeholders for future microscopy image conversions
       if (window.sodaJSONObj["user-going-through-microscopy-image-flow"] === true) {
-        const microscopyImages = window.sodaJSONObj["confirmed-microscopy-images"] || [];
-
-        const derivativeImagePreviewsGenerated = [];
-
         // Helper function to create an object with required properties for a derivative image file
         // guidedMicroFileConvertedImagesPath *************************
         const createDerivativeImageFileObject = (
@@ -5775,6 +5771,7 @@ window.openPage = async (targetPageID) => {
           "additional-metadata": "",
           action: ["future-microscopy-image-derivative"],
           extension: postConversionExtension,
+          derivativeManifestFileName: "",
         });
 
         const createDerivativeFolderPlaceHolderForFutureMicroscopyimageConversions = (
@@ -5786,6 +5783,8 @@ window.openPage = async (targetPageID) => {
             "derivative",
             ...relativePathToPrimaryImage.split("/").slice(0, -1).slice(1),
           ];
+          console.log("relativePathArrayToDeriviativeImage:", relativePathArrayToDeriviativeImage);
+          console.log("relativePathToPrimaryImage:", relativePathToPrimaryImage);
 
           // Create the derivative image file names
           const fileName = window.path.basename(primaryImageFilePath);
@@ -5835,6 +5834,9 @@ window.openPage = async (targetPageID) => {
         // Get the relative paths array to the primary images to the primary images
         // e.g. ['primary/sub-1/1-images/sub-1-slide-1.jpg'] and create derivative folder placeholders
         // for future microscopy image conversions in the datasetStructureJSONObj
+        const microscopyImages = window.sodaJSONObj["confirmed-microscopy-images"];
+        const derivativeImagePreviewsGenerated = [];
+
         for (const image of microscopyImages) {
           const relativeFolderPathsToPrimaryImages = image["relativeDatasetStructurePaths"];
           for (const relativeFolderPathToPrimaryImage of relativeFolderPathsToPrimaryImages) {
@@ -5932,15 +5934,13 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-manifest-file-generation-tab") {
-      // Note: manifest file auto-generation is handled by an event listener on the button
-      // with the ID: guided-button-auto-generate-manifest-files
-
-      //Delete any manifest files in the dataset structure.
-      for (const folder of Object.keys(window.datasetStructureJSONObj["folders"])) {
-        if (window.datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"]) {
-          delete window.datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"];
+      // Delete existing manifest files in the dataset structure.
+      Object.keys(window.datasetStructureJSONObj["folders"]).forEach((folder) => {
+        const files = window.datasetStructureJSONObj["folders"][folder]["files"];
+        if (files["manifest.xlsx"]) {
+          delete files["manifest.xlsx"];
         }
-      }
+      });
 
       const manifestFilesCardsContainer = document.getElementById(
         "guided-container-manifest-file-cards"
@@ -5948,60 +5948,63 @@ window.openPage = async (targetPageID) => {
 
       // Show the loading spinner
       manifestFilesCardsContainer.innerHTML = `
-        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-        Updating your dataset's manifest files...
-      `;
+    <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    Updating your dataset's manifest files...
+  `;
 
-      const sodaCopy = { ...window.sodaJSONObj };
+      // Prepare a clean copy of the dataset structure without "generate-dataset"
+      const sodaCopy = {
+        ...window.sodaJSONObj,
+        "metadata-files": {},
+        "dataset-structure": window.datasetStructureJSONObj,
+      };
       delete sodaCopy["generate-dataset"];
-      sodaCopy["metadata-files"] = {};
-      sodaCopy["dataset-structure"] = window.datasetStructureJSONObj;
 
+      // Clean the dataset structure
       const cleanJson = await client.post(
         `/curate_datasets/clean-dataset`,
         { soda_json_structure: sodaCopy },
         { timeout: 0 }
       );
-      let response = cleanJson.data.soda_json_structure;
-      let responseDataStructure = response["dataset-structure"];
 
+      const responseDataStructure = cleanJson.data.soda_json_structure["dataset-structure"];
+
+      // Generate high-level folder manifest data
       const res = await client.post(
         `/curate_datasets/generate_high_level_folder_manifest_data`,
-        {
-          dataset_structure_obj: responseDataStructure,
-        },
+        { dataset_structure_obj: responseDataStructure },
         { timeout: 0 }
       );
-      const manifestRes = res.data;
-      //loop through each of the high level folders and store their manifest headers and data
-      //into the window.sodaJSONObj
 
+      const manifestRes = res.data;
       let newManifestData = {};
 
-      for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
-        //Only save manifest files for hlf that returned more than the headers
-        //(meaning manifest file data was generated in the response)
+      // Store manifest headers and data for folders with generated manifest data
+      Object.entries(manifestRes).forEach(([highLevelFolderName, manifestFileData]) => {
         if (manifestFileData.length > 1) {
-          //Remove the first element from the array and set it as the headers
-          const manifestHeader = manifestFileData.shift();
-
+          const manifestHeader = manifestFileData.shift(); // Extract headers
           newManifestData[highLevelFolderName] = {
             headers: manifestHeader,
             data: manifestFileData,
           };
         }
-      }
+      });
+
+      // Merge new manifest data with existing data
       const existingManifestData = window.sodaJSONObj["guided-manifest-files"];
-      let updatedManifestData;
+      const updatedManifestData = existingManifestData
+        ? window.diffCheckManifestFiles(newManifestData, existingManifestData)
+        : newManifestData;
 
-      if (existingManifestData) {
-        updatedManifestData = window.diffCheckManifestFiles(newManifestData, existingManifestData);
-      } else {
-        updatedManifestData = newManifestData;
+      // Update and rerender manifest cards
+      window.sodaJSONObj["guided-manifest-files"] = updatedManifestData;
+
+      console.log("updatedManifestData:", updatedManifestData);
+      if (window.sodaJSONObj["user-going-through-microscopy-image-flow"] === true) {
+        // Potentially add extra headers,
       }
 
-      window.sodaJSONObj["guided-manifest-files"] = updatedManifestData;
-      //Rerender the manifest cards
+      // Render the manifest cards to the page
       renderManifestCards();
     }
 
@@ -15957,6 +15960,7 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
     row.classList.add("hidden");
   }
 };
+
 const convertMicroscopyImagesViaMfPlus = async () => {
   setProgressElementData(
     "guided-progress-display-microscopy-image-conversion",
@@ -16019,10 +16023,12 @@ const uploadMicroscopyImagesToBioLucida = async () => {
   let biolucidaCollectionId = null;
 
   try {
+    // Create a new collection on BioLucida
     const req = await client.post("/image_processing/create_biolucida_collection", {
       collection_name: bioLucidaBucketName,
     });
     biolucidaCollectionId = req.data.created_collection_id;
+    window.sodaJSONObj["biolucida-collection-id"] = biolucidaCollectionId;
     setProgressElementData(
       "guided-progress-display-biolucida-image-upload",
       `Successfully created ${bioLucidaBucketName} collection on BioLucida`,
@@ -16043,19 +16049,15 @@ const uploadMicroscopyImagesToBioLucida = async () => {
   for (const image of window.sodaJSONObj[
     "microscopy-images-selected-to-be-uploaded-to-biolucida"
   ]) {
-    if (imagesUploaded < 3) {
-      // REMOVE THIS < 3 before production!!!
+    if (!imagesUploaded === 0) {
+      // temp for skipping this
       const progressPercentage = Math.round((imagesUploaded / imagesToUploadCount) * 100);
       setProgressElementData(
         "guided-progress-display-biolucida-image-upload",
         `Uploading image: ${image.filePath}`,
         progressPercentage
       );
-      /*const req = await client.post("/image_processing/upload_image_to_biolucida", {
-        collection_id: biolucidaCollectionId,
-        image_path: image.filePath,
-        image_name: image.fileName,
-      });*/
+
       const req = await client.post("/image_processing/upload_image_to_biolucida", {
         collection_id: biolucidaCollectionId,
         image_path: image.filePath,
@@ -16069,6 +16071,63 @@ const uploadMicroscopyImagesToBioLucida = async () => {
     }
   }
 
+  // All images have been uploaded so set the progress to 100%
+  setProgressElementData(
+    "guided-progress-display-biolucida-image-upload",
+    "Microscopy images successfully uploaded to BioLucida",
+    100
+  );
+  // wait for 10 seconds
+  await new Promise((resolve) => setTimeout(resolve, 10000));
+  throw new Error("Throwing Test Error to prevent upload to BioLucida");
+};
+
+const updateBioLucidaRelatedManifestData = async () => {
+  setProgressElementData(
+    "guided-progress-display-biolucida-image-id-retrieval",
+    `Gathering BioLucida image IDs to add to your manifest file`,
+    0
+  );
+  // wait for 5 seconds
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+
+  const biolucidaCollectionId = window.sodaJSONObj["biolucida-collection-id"];
+
+  const microscopyImagesUploadedToBioLucida =
+    window.sodaJSONObj["microscopy-images-selected-to-be-uploaded-to-biolucida"];
+  const microscopyImagesUploadedToBioLucidaCount = microscopyImagesUploaded.length;
+
+  let bioLucidaImageIdsRetrieved = 0;
+
+  // Get the BioLucida image IDs for each image
+  for (const image of microscopyImagesUploadedToBioLucida) {
+    // temp for skipping this
+    const progressPercentage = Math.round(
+      (bioLucidaImageIdsRetrieved / microscopyImagesUploadedToBioLucidaCount) * 100
+    );
+    setProgressElementData(
+      "guided-progress-display-biolucida-image-id-retrieval",
+      `Retrieving BioLucida Image ID for: ${image.fileName}`,
+      progressPercentage
+    );
+
+    const req = await client.get("/image_processing/get_biolucida_image_id", {
+      image_name: image.fileName,
+      collection_id: biolucidaCollectionId,
+    });
+
+    console.log("Retrieve image id res: ", req);
+    bioLucidaImageIdsRetrieved++;
+
+    // wait for .1 second
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  setProgressElementData(
+    "guided-progress-display-biolucida-image-id-retrieval",
+    `SODA retrieved all required BioLucida image IDs`,
+    100
+  );
   // All images have been uploaded so set the progress to 100%
   setProgressElementData(
     "guided-progress-display-biolucida-image-upload",
