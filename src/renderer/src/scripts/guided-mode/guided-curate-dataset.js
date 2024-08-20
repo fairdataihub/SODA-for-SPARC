@@ -1858,16 +1858,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] = userSelectedWorkSpace;
     }
 
-    if (pageBeingLeftID === "guided-banner-image-tab") {
-      if (window.sodaJSONObj["digital-metadata"]["banner-image-path"] == undefined) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please add a banner image",
-        });
-        throw errorArray;
-      }
-    }
-
     if (pageBeingLeftID === "guided-assign-license-tab") {
       const licenseRadioButtonContainer = document.getElementById(
         "guided-license-radio-button-container"
@@ -1943,35 +1933,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
-
-      const PrincipalInvestigator = getContributorMarkedAsPrincipalInvestigator();
-      if (!PrincipalInvestigator) {
-        errorArray.push({
-          type: "swal",
-          message: `
-            You must specify a Principal Investigator (PI) for this dataset.
-            <br/><br/>
-            Please add the "PrincipalInvestigator" role for one of the contributors.
-          `,
-        });
-        throw errorArray;
-      }
-
-      /* UNCOMMENT THIS TO REQUIRE AT LEAST ONE CORRESPONDING AUTHOR
-      const correspondingAuthors = contributors.filter((contributor) =>
-        contributor["conRole"].includes("CorrespondingAuthor")
-      );
-      if (correspondingAuthors.length === 0) {
-        errorArray.push({
-          type: "swal",
-          message: `
-            You must specify at least one corresponding author for this dataset.
-            <br/><br/>
-            Please add the "CorrespondingAuthor" role for one of the contributors.
-          `,
-        });
-        throw errorArray;
-      }*/
 
       // Make sure that all contributors have a valid fields
       for (const contributor of contributors) {
@@ -6170,6 +6131,7 @@ window.openPage = async (targetPageID) => {
           window.sodaJSONObj["digital-metadata"]["banner-image-path"],
           true
         );
+        document.querySelector("#guided--skip-banner-img-btn").style.display = "none";
       } else {
         //reset the banner image page
         $("#guided-button-add-banner-image").html("Add banner image");
@@ -6675,7 +6637,6 @@ window.openPage = async (targetPageID) => {
 
       const datsetName = window.sodaJSONObj["digital-metadata"]["name"];
       const datsetSubtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];
-      const datasetPiOwner = window.sodaJSONObj["digital-metadata"]["pi-owner"]["userString"];
       const datasetUserPermissions = window.sodaJSONObj["digital-metadata"]["user-permissions"];
       const datasetTeamPermissions = window.sodaJSONObj["digital-metadata"]["team-permissions"];
       const datasetTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
@@ -6687,7 +6648,6 @@ window.openPage = async (targetPageID) => {
       const datasetDescriptionReviewText = document.getElementById(
         "guided-review-dataset-description"
       );
-      const datasetPiOwnerReviewText = document.getElementById("guided-review-dataset-pi-owner");
       const datasetUserPermissionsReviewText = document.getElementById(
         "guided-review-dataset-user-permissions"
       );
@@ -6713,8 +6673,6 @@ window.openPage = async (targetPageID) => {
           return `<b>${descriptionTitle}</b>: ${window.sodaJSONObj["digital-metadata"]["description"][key]}<br /><br />`;
         })
         .join("\n");
-
-      datasetPiOwnerReviewText.innerHTML = datasetPiOwner;
 
       if (datasetUserPermissions.length > 0) {
         const datasetUserPermissionsString = datasetUserPermissions
@@ -7962,6 +7920,15 @@ const guidedUploadStatusIcon = (elementID, status) => {
     lottie.loadAnimation({
       container: statusElement,
       animationData: errorMark,
+      renderer: "svg",
+      loop: false,
+      autoplay: true,
+    });
+  }
+  if (status === "info") {
+    lottie.loadAnimation({
+      container: statusElement,
+      animationData: infoMark,
       renderer: "svg",
       loop: false,
       autoplay: true,
@@ -13987,7 +13954,8 @@ const guidedAddDatasetDescription = async (
     throw new Error(userErrorMessage(error));
   }
 };
-const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
+
+const uploadValidBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
   document.getElementById("guided-dataset-banner-image-upload-tr").classList.remove("hidden");
   const datasetBannerImageUploadText = document.getElementById(
     "guided-dataset-banner-image-upload-text"
@@ -14074,6 +14042,24 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
 
     throw new Error(userErrorMessage(error));
   }
+};
+
+const skipBannerImageUpload = () => {
+  document.getElementById("guided-dataset-banner-image-upload-tr").classList.remove("hidden");
+  const datasetBannerImageUploadText = document.getElementById(
+    "guided-dataset-banner-image-upload-text"
+  );
+  datasetBannerImageUploadText.innerHTML = "Skipped optional banner image...";
+  guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "success");
+};
+
+const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
+  if (!bannerImagePath) {
+    skipBannerImageUpload();
+    return;
+  }
+
+  await uploadValidBannerImage(bfAccount, datasetName, bannerImagePath);
 };
 const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) => {
   document.getElementById("guided-dataset-license-upload-tr").classList.remove("hidden");
@@ -15349,7 +15335,8 @@ const guidedPennsieveDatasetUpload = async () => {
       window.sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
     const guidedTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
     const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
-    const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]["banner-image-path"];
+    const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]?.["banner-image-path"];
+    console.log("Banner image path: ", guidedBannerImagePath);
 
     //Hide the upload tables
     document.querySelectorAll(".guided-upload-table").forEach((table) => {
@@ -16386,6 +16373,9 @@ const guidedSaveBannerImage = async () => {
       $("#guided-banner-image-modal").modal("hide");
       $("#guided-button-add-banner-image").text("Edit banner image");
     }
+
+    // hide the skip btn as it is no longer relvant
+    document.querySelector("#guided--skip-banner-img-btn").style.display = "none";
   });
 };
 // /**************************************/
