@@ -1858,16 +1858,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] = userSelectedWorkSpace;
     }
 
-    // if (pageBeingLeftID === "guided-banner-image-tab") {
-    //   if (window.sodaJSONObj["digital-metadata"]["banner-image-path"] == undefined) {
-    //     errorArray.push({
-    //       type: "notyf",
-    //       message: "Please add a banner image",
-    //     });
-    //     throw errorArray;
-    //   }
-    // }
-
     if (pageBeingLeftID === "guided-assign-license-tab") {
       const licenseRadioButtonContainer = document.getElementById(
         "guided-license-radio-button-container"
@@ -1943,35 +1933,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
-
-      const PrincipalInvestigator = getContributorMarkedAsPrincipalInvestigator();
-      // if (!PrincipalInvestigator) {
-      //   errorArray.push({
-      //     type: "swal",
-      //     message: `
-      //       You must specify a Principal Investigator (PI) for this dataset.
-      //       <br/><br/>
-      //       Please add the "PrincipalInvestigator" role for one of the contributors.
-      //     `,
-      //   });
-      //   throw errorArray;
-      // }
-
-      /* UNCOMMENT THIS TO REQUIRE AT LEAST ONE CORRESPONDING AUTHOR
-      const correspondingAuthors = contributors.filter((contributor) =>
-        contributor["conRole"].includes("CorrespondingAuthor")
-      );
-      if (correspondingAuthors.length === 0) {
-        errorArray.push({
-          type: "swal",
-          message: `
-            You must specify at least one corresponding author for this dataset.
-            <br/><br/>
-            Please add the "CorrespondingAuthor" role for one of the contributors.
-          `,
-        });
-        throw errorArray;
-      }*/
 
       // Make sure that all contributors have a valid fields
       for (const contributor of contributors) {
@@ -6676,8 +6637,6 @@ window.openPage = async (targetPageID) => {
 
       const datsetName = window.sodaJSONObj["digital-metadata"]["name"];
       const datsetSubtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];
-      const datasetPiOwner =
-        window.sodaJSONObj["digital-metadata"]?.["pi-owner"]?.["userString"] ?? "Not Assigned";
       const datasetUserPermissions = window.sodaJSONObj["digital-metadata"]["user-permissions"];
       const datasetTeamPermissions = window.sodaJSONObj["digital-metadata"]["team-permissions"];
       const datasetTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
