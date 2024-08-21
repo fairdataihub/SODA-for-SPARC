@@ -1842,10 +1842,8 @@ def get_origin_manifest_id(dataset_id):
     for _ in range(max_attempts):
         manifests = get_upload_manifests(dataset_id)
         if manifests and "manifests" in manifests and manifests["manifests"]:
-            namespace_logger.info(f"Manifests returned: {manifests}")
             # sort the manifests list by date_created timestamp field in descending order
             manifests["manifests"].sort(key=lambda x: x["date_created"], reverse=True)
-            namespace_logger.info(f"Manifests sorted: {manifests}")
             return manifests["manifests"][0]["id"]
         time.sleep(5)  # Wait for 5 seconds before the next attempt
 
@@ -2397,7 +2395,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
         # 1. Scan the dataset structure and create a list of files/folders to be uploaded with the desired renaming
         if generate_option == "new" and starting_point == "new":
             vs = ums.df_mid_has_progress()
-            namespace_logger.info(f"Line 2413. Progress found? {vs}")
             if resume == False or resume == True and not vs:
                 namespace_logger.info("NO progress found so we will start from scratch and construct the manifest")
                 main_curate_progress_message = "Preparing a list of files to upload"
@@ -2663,7 +2660,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 ps.subscribe(10, False, monitor_subscriber_progress)
 
             except Exception as e:
-                namespace_logger.error("Error uploading dataset files")
                 namespace_logger.error(e)
                 raise PennsieveUploadException("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent then click the retry button.")
 

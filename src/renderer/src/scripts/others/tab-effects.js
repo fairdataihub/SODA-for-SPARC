@@ -2080,9 +2080,6 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
 
   const dataCurrent = $(ev).attr("data-current");
 
-  console.log(ev);
-  console.log(currentDiv);
-
   switch (dataCurrent) {
     case "Question-prepare-changes-1":
       continueProgressRC = await switchMetadataRCQuestion("changes");

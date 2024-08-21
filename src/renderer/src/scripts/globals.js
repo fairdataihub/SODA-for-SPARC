@@ -1335,10 +1335,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
       });
     }
 
-    console.log(
-      "The event is: ",
-      ev?.parentNode?.parentNode?.classList.contains("organize-dataset")
-    );
+
     if (ev?.parentNode?.parentNode?.classList.contains("organize-dataset")) {
       // enable the Confirm button
       $("#confirm-account-workspace").prop("disabled", false);

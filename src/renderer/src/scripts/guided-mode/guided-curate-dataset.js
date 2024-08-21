@@ -15336,7 +15336,6 @@ const guidedPennsieveDatasetUpload = async () => {
     const guidedTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
     const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
     const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]?.["banner-image-path"];
-    console.log("Banner image path: ", guidedBannerImagePath);
 
     //Hide the upload tables
     document.querySelectorAll(".guided-upload-table").forEach((table) => {
@@ -15593,7 +15592,6 @@ const guidedUploadDatasetToPennsieve = async () => {
       let { data } = curationRes;
       window.pennsieveManifestId = data["origin_manifest_id"];
       window.totalFilesCount = data["main_curation_total_files"];
-      console.log("Total files count: ", window.totalFilesCount);
 
       $("#sidebarCollapse").prop("disabled", false);
       window.log.info("Completed curate function");

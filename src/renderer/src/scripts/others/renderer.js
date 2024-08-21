@@ -5085,7 +5085,6 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
         Swal.close();
       }
     } else {
-      console.log("In this workflow");
       imgHolder.style.display = "none";
       imgContainer.style.display = "block";
 
@@ -6793,7 +6792,6 @@ const initiate_generate = async (e) => {
       const mergeSelectedCard = document
         .querySelector("#dataset-upload-existing-dataset")
         .classList.contains("checked");
-      console.log("Merge selected option: ", mergeSelectedCard);
       if (mergeSelectedCard) {
         await swalShowInfo(
           "Manifest Files Not Updated With New Files",
