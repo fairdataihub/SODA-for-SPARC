@@ -36,7 +36,6 @@ def import_subfolders(subfolder, path):
                 curr_file = {"name": child["content"]["name"], "path": curr_path}
                 subfolder["files"][child["content"]["name"]] = curr_file
         for folder_name, folder in subfolder["folders"].items():
-            namespace_logger.info(f"Importing subfolders for {folder_name}")
             import_subfolders(folder, f"{path}/{folder_name}")
     except Exception as e:
         print(f"Exception when calling API: {e}")
@@ -71,7 +70,6 @@ def import_pennsieve_dataset(dataset_id, path):
                 pennsieve_dataset_structure["files"][child["content"]["name"]] = curr_file
         
         for folder_name, folder in pennsieve_dataset_structure["folders"].items():
-            namespace_logger.info(f"Importing subfolders for {folder_name}")
             import_subfolders(folder, f"{folder_name}")
     except Exception as e:
         print(f"Exception when calling API: {e}")
@@ -100,7 +98,6 @@ def import_local_dataset(path):
                 curr_file = {"name": child, "path": curr_path}
                 local_dataset_structure["files"][child] = curr_file
         for folder_name, folder in local_dataset_structure["folders"].items():
-            namespace_logger.info(f"Importing subfolders for {folder_name}")
             import_local_subfolders(folder, f"{path}/{folder_name}")
     except Exception as e:
         print(f"Exception when calling API: {e}")
@@ -126,7 +123,6 @@ def import_local_subfolders(subfolder, path):
                 curr_file = {"name": child, "path": curr_path}
                 subfolder["files"][child] = curr_file
         for folder_name, folder in subfolder["folders"].items():
-            namespace_logger.info(f"Importing subfolders for {folder_name}")
             import_local_subfolders(folder, f"{path}/{folder_name}")
     except Exception as e:
         print(f"Exception when calling API: {e}")
@@ -168,7 +164,6 @@ def run_comparison(dataset_id, local_dataset_path):
     global pennsieve_dataset_paths
 
     if not os.path.exists(local_dataset_path) and  not os.path.isdir(local_dataset_path):
-        print(f"Path {local_dataset_path} does not exist or is not a directory")
         raise FileNotFoundError(f"Path {local_dataset_path} does not exist or is not a directory")
     
 

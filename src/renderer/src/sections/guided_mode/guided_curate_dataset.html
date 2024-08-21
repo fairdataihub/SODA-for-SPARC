@@ -2792,11 +2792,14 @@
               <i class="fas fa-chevron-right" style="transform: rotate(0deg)"></i>
             </div>
             <div class="info-container" style="margin-bottom: 1.5rem">
-              <p class="help-text">The minimum requirements for contributors are:</p>
+              <p class="help-text">
+                The minimum requirements for contributors before a dataset can be published are:
+              </p>
               <ul class="help-text">
                 <li class="help-text text-left mb-2">
-                  <b>Principal Investigator: </b>One and only one Principal Investigator is
-                  required.
+                  <b>Principal Investigator: </b>One and only one Principal Investigator is required
+                  before the dataset can be published. However, please note that you may upload your
+                  dataset before officially designating a Principal Investigator.
                 </li>
               </ul>
             </div>
@@ -4790,6 +4793,13 @@
             >
               Add banner image
             </button>
+            <button
+              class="ui primary basic button pass-button-click-to-next-button"
+              style="margin: 5px 7px !important"
+              id="guided--skip-banner-img-btn"
+            >
+              Skip and continue
+            </button>
             <div
               class="guided--container-data-display-contract hidden"
               id="guided-banner-image-preview-container"
@@ -5454,14 +5464,6 @@
               </div>
               <div class="guided--dataset-content-container">
                 <h5 class="guided--dataset-content" id="guided-review-dataset-description"></h5>
-              </div>
-            </div>
-            <div class="guided--card-dataset-info">
-              <div class="guided--dataset-description-container">
-                <h5 class="guided--dataset-description">Dataset PI:</h5>
-              </div>
-              <div class="guided--dataset-content-container">
-                <h5 class="guided--dataset-content" id="guided-review-dataset-pi-owner"></h5>
               </div>
             </div>
             <div class="guided--card-dataset-info">

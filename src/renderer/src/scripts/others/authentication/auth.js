@@ -7,6 +7,21 @@ const hasConnectedAccountWithPennsieve = () => {
   window.log.info("Checking if the user has a connected account with Pennsieve...");
 
   // get the path to home directory
+  let defaultProfile = window.getDefaultProfile();
+
+  if (!defaultProfile) {
+    return false;
+  }
+
+  // check if the default profile has a token key and secret key
+  if (!defaultProfile.api_token || !defaultProfile.api_secret) {
+    return false;
+  }
+
+  return true;
+};
+
+window.getDefaultProfile = () => {
   const homeDir = window.os.homedir();
   const configFilePath = window.path.join(homeDir, ".pennsieve", "config.ini");
 
@@ -35,12 +50,9 @@ const hasConnectedAccountWithPennsieve = () => {
 
   let defaultProfile = config[defaultProfileKey];
 
-  // check if the default profile has a token key and secret key
-  if (!defaultProfile.api_token || !defaultProfile.api_secret) {
-    return false;
-  }
+  defaultProfile["profile_key"] = defaultProfileKey;
 
-  return true;
+  return defaultProfile;
 };
 
 export default hasConnectedAccountWithPennsieve;

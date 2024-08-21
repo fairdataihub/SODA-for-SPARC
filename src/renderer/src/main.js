@@ -31,6 +31,7 @@ import "./scripts/advanced-features/advanced_features";
 import "./scripts/sds-templates/sds_templates";
 import "./scripts/organize-dataset/verify-file-statuses";
 import "./scripts/advanced-features/compare-local-remote-dataset";
+import "./scripts/accounts/accounts";
 
 // Application Lotties
 import "./assets/lotties/activate-lotties";

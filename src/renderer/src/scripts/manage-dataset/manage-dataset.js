@@ -1931,15 +1931,6 @@ const displayBannerImage = async (bannerImagePath) => {
   }
 };
 
-// Action when user click on "Import image" button for banner image
-$("#button-import-banner-image").click(async () => {
-  $("#para-dataset-banner-image-status").html("");
-  let filePaths = await window.electron.ipcRenderer.invoke("open-file-dialog-import-banner-image");
-  handleSelectedBannerImage(filePaths, "freeform");
-  $("#edit_banner_image_modal").modal("show");
-  $("#edit_banner_image_modal").addClass("show");
-});
-
 // TODO: Dorian -> Simplify the if statement, redundent code
 const uploadBannerImage = async () => {
   $("#para-dataset-banner-image-status").html("Please wait...");
@@ -2034,7 +2025,7 @@ const uploadBannerImage = async () => {
         });
 
         // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
-        window.showPrePublishingStatus();
+        // window.showPrePublishingStatus();
       } catch (error) {
         clientError(error);
         let emessage = userErrorMessage(error);
