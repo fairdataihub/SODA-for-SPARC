@@ -5114,6 +5114,9 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
 
 //// helper functions for hiding/showing context menus
 const showmenu = (ev, category, deleted = false) => {
+  console.log("ev", ev);
+  console.log("category", category);
+  console.log("deleted", deleted);
   //stop the real right click menu
   let guidedModeFileExporer = false;
   let activePages = Array.from(document.querySelectorAll(".is-shown"));
@@ -5444,7 +5447,14 @@ $(document).bind("contextmenu", function (event) {
     if (event.target.classList.contains("deleted_file")) {
       showmenu(event, "file", true);
     } else {
-      showmenu(event, "file");
+      if (event.target.classList.contains("futureMfpConversion")) {
+        swalShowInfo(
+          "File Modification Unavailable",
+          "The image you tried to modify is only a placeholder for a future MicroFile+ image conversion and does not yet exist."
+        );
+      } else {
+        showmenu(event, "file");
+      }
     }
     window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
     window.hideMenu(

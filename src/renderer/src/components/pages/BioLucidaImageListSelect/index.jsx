@@ -56,7 +56,10 @@ const BioLucidaImageListSelectPage = () => {
   };
 
   const handleSelectAllImagesButtonClick = () => {
-    console.log("Select all images");
+    clearImagesSelectedToBeUploadedToBioLucida();
+    confirmedMicroscopyImages.forEach((image) => {
+      addBioLucidaImage(image);
+    });
   };
 
   const handleClearAllSelectedImagesButtonClick = () => {
@@ -68,18 +71,28 @@ const BioLucidaImageListSelectPage = () => {
   );
 
   console.log("allImagesSelectedToBeUploadedToBioLucida", allImagesSelectedToBeUploadedToBioLucida);
+  const bioLucidaExplanationText = `
+    BioLucida is a software platform developed by MBF Bioscience for managing, visualizing, and sharing high-resolution microscopy images.
+    Before your dataset is uploaded to Pennsieve at the end of the End-to-End process, the images you select in the interface below will be
+    uploaded to BioLucida allowing other researchers to view them.
+  `;
   const pageDescriptionArray =
     confirmedMicroscopyImages.length > 50
       ? [
-          "Select the microscopy images you would like to upload to BioLucida (Up to 50). The selected images will be uploaded to BioLucida at the end of the guided process.",
+          bioLucidaExplanationText,
+          "Select the microscopy images you would like SODA to upload to BioLucida (Up to 50).",
           "*NOTE*If you do not have a preference on which images to upload, you can select 50 random images by clicking the 'Select 50 random images' button below and SODA will choose 50 for you.",
         ]
       : [
-          "Select the microscopy images you would like to upload to BioLucida. The selected images will be uploaded to BioLucida at the end of the guided process",
+          bioLucidaExplanationText,
+          "Select the microscopy images you would like SODA to upload to BioLucida below.",
           "*NOTE*To have all images uploaded to BioLucida, click the 'Select all images' button below.",
         ];
 
   console.log(path.join(guidedThumbnailsPath, `_thumbnail.jpg`));
+  console.log("allImagesSelectedToBeUploadedToBioLucida", allImagesSelectedToBeUploadedToBioLucida);
+  console.log("confirmedMicroscopyImages <= 50", confirmedMicroscopyImages);
+
   return (
     <GuidedModePage
       pageHeader="BioLucida Image Selection"
@@ -90,7 +103,7 @@ const BioLucidaImageListSelectPage = () => {
           {confirmedMicroscopyImages.length > 50 && (
             <Button onClick={handleSelectRandomImagesButtonClick}>Select 50 random images</Button>
           )}
-          {!allImagesSelectedToBeUploadedToBioLucida && confirmedMicroscopyImages <= 50 && (
+          {!allImagesSelectedToBeUploadedToBioLucida && confirmedMicroscopyImages.length <= 50 && (
             <Button onClick={handleSelectAllImagesButtonClick}>Select all images</Button>
           )}
           {bioLucidaImages.length > 0 && (
@@ -196,7 +209,9 @@ const BioLucidaImageListSelectPage = () => {
             }}
           >
             <SodaGreenPaper>
-              <Text>Images selected: {bioLucidaImages.length}/50</Text>
+              <Text>
+                Images selected: {bioLucidaImages.length}/{confirmedMicroscopyImages.length}
+              </Text>
             </SodaGreenPaper>
           </Affix>
         )}

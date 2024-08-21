@@ -50,7 +50,7 @@ export const swalShowError = async (title, errorText) => {
 export const swalShowInfo = async (title, infoText) => {
   await Swal.fire({
     title: title,
-    html: infoText,
+    html: infoText ? `<p class="text-left">${infoText}</p>` : "",
     icon: "info",
     width: 800,
     heightAuto: false,

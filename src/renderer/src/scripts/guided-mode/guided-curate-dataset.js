@@ -3196,6 +3196,9 @@ const guidedTransitionToHome = () => {
   }
   window.CURRENT_PAGE = undefined;
 
+  // Set the guided mode page to null in the zustand store
+  setGuidedModePage(null);
+
   //Hide guided headers and footers
   document.getElementById("guided-header-div").classList.add("hidden");
   $("#guided-footer-div").addClass("hidden");
@@ -5475,6 +5478,7 @@ window.openPage = async (targetPageID) => {
     const datasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
     const nextButton = document.getElementById("guided-next-button");
     const nextButtonSpans = document.querySelectorAll(".next-button-span");
+    console.log("nextButtonSpans", nextButtonSpans);
 
     if (!datasetName) {
       // set the span inside of nextButton to "Continue"
@@ -5504,7 +5508,7 @@ window.openPage = async (targetPageID) => {
       } else {
       }
     }
-
+    console.log("random target page id", targetPageID);
     if (targetPageID === "guided-select-starting-point-tab") {
       // Hide the pennsieve dataset import progress circle
       const importProgressCircle = document.querySelector(
@@ -6533,6 +6537,7 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-pennsieve-intro-tab") {
+      console.log("targetPageID:", targetPageID);
       const elementsToShowWhenLoggedInToPennsieve =
         document.querySelectorAll(".show-when-logged-in");
       const elementsToShowWhenNotLoggedInToPennsieve =
@@ -17338,6 +17343,7 @@ $("#guided-next-button").on("click", async function () {
     //if more tabs in parent tab, go to next tab and update capsule
     let targetPage = getNextPageNotSkipped(window.CURRENT_PAGE.id);
     let targetPageID = targetPage.id;
+    console.log("targetPageID", targetPageID);
 
     await window.openPage(targetPageID);
   } catch (error) {
