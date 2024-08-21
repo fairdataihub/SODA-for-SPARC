@@ -16061,26 +16061,23 @@ const uploadMicroscopyImagesToBioLucida = async () => {
   for (const image of window.sodaJSONObj[
     "microscopy-images-selected-to-be-uploaded-to-biolucida"
   ]) {
-    if (!imagesUploaded === 0) {
-      // temp for skipping this
-      const progressPercentage = Math.round((imagesUploaded / imagesToUploadCount) * 100);
-      setProgressElementData(
-        "guided-progress-display-biolucida-image-upload",
-        `Uploading image: ${image.filePath}`,
-        progressPercentage
-      );
+    const progressPercentage = Math.round((imagesUploaded / imagesToUploadCount) * 100);
+    setProgressElementData(
+      "guided-progress-display-biolucida-image-upload",
+      `Uploading image: ${image.filePath}`,
+      progressPercentage
+    );
 
-      const req = await client.post("/image_processing/upload_image_to_biolucida", {
-        collection_id: biolucidaCollectionId,
-        image_path: image.filePath,
-        image_name: image.fileName,
-      });
-      console.log("Image upload response: ", req);
-      imagesUploaded++;
+    const req = await client.post("/image_processing/upload_image_to_biolucida", {
+      collection_id: biolucidaCollectionId,
+      image_path: image.filePath,
+      image_name: image.fileName,
+    });
+    console.log("Image upload response: ", req);
+    imagesUploaded++;
 
-      // wait for .1 second
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
+    // wait for .1 second
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
   // All images have been uploaded so set the progress to 100%
@@ -16089,9 +16086,8 @@ const uploadMicroscopyImagesToBioLucida = async () => {
     "Microscopy images successfully uploaded to BioLucida",
     100
   );
-  // wait for 10 seconds
-  await new Promise((resolve) => setTimeout(resolve, 10000));
-  throw new Error("Throwing Test Error to prevent upload to BioLucida");
+  // wait for 5 seconds
+  await new Promise((resolve) => setTimeout(resolve, 5000));
 };
 
 const updateBioLucidaRelatedManifestData = async () => {
@@ -16107,12 +16103,13 @@ const updateBioLucidaRelatedManifestData = async () => {
 
   const microscopyImagesUploadedToBioLucida =
     window.sodaJSONObj["microscopy-images-selected-to-be-uploaded-to-biolucida"];
-  const microscopyImagesUploadedToBioLucidaCount = microscopyImagesUploaded.length;
+  const microscopyImagesUploadedToBioLucidaCount = microscopyImagesUploadedToBioLucida.length;
 
   let bioLucidaImageIdsRetrieved = 0;
 
   // Get the BioLucida image IDs for each image
   for (const image of microscopyImagesUploadedToBioLucida) {
+    console.log("Retrieving BioLucida Image ID for: ", image.fileName);
     // temp for skipping this
     const progressPercentage = Math.round(
       (bioLucidaImageIdsRetrieved / microscopyImagesUploadedToBioLucidaCount) * 100
@@ -16124,8 +16121,10 @@ const updateBioLucidaRelatedManifestData = async () => {
     );
 
     const req = await client.get("/image_processing/get_biolucida_image_id", {
-      image_name: image.fileName,
-      collection_id: biolucidaCollectionId,
+      params: {
+        image_name: image.fileName,
+        collection_id: 279,
+      },
     });
 
     console.log("Retrieve image id res: ", req);
@@ -16140,15 +16139,8 @@ const updateBioLucidaRelatedManifestData = async () => {
     `SODA retrieved all required BioLucida image IDs`,
     100
   );
-  // All images have been uploaded so set the progress to 100%
-  setProgressElementData(
-    "guided-progress-display-biolucida-image-upload",
-    "Microscopy images successfully uploaded to BioLucida",
-    100
-  );
   // wait for 10 seconds
   await new Promise((resolve) => setTimeout(resolve, 10000));
-  throw new Error("Throwing Test Error to prevent upload to BioLucida");
 };
 
 const guidedPennsieveDatasetUpload = async () => {
@@ -16180,10 +16172,14 @@ const guidedPennsieveDatasetUpload = async () => {
 
     //Display the BioLucida Image upload table
     window.unHideAndSmoothScrollToElement("guided-progress-display-biolucida-image-upload");
-    await uploadMicroscopyImagesToBioLucida();
+    // await uploadMicroscopyImagesToBioLucida();
 
-    // sleep for 20 seconds
-    await new Promise((resolve) => setTimeout(resolve, 20000));
+    //Display the BioLucida Image id retrieval table
+    window.unHideAndSmoothScrollToElement("guided-progress-display-biolucida-image-id-retrieval");
+    await updateBioLucidaRelatedManifestData();
+
+    throw new Error("Throwing Test Error to prevent upload to Pennsieve");
+
     const guidedBfAccount = window.defaultBfAccount;
     const guidedDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
     const guidedDatasetSubtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];

@@ -30,7 +30,7 @@ const ProcessStatusTable = ({ tableId, tableTitle }) => {
       </Center>
       <Group>
         <Text size="lg" fw={500}>
-          Task Progress:
+          Task Progress: {taskProgress}%
         </Text>
       </Group>
       <Progress
