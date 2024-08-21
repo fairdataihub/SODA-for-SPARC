@@ -18,15 +18,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed an issue causing the Verify Files feature to freeze when verifying large datasets.
 - Fixed issues in `Advanced features` that made it difficult to add a banner image using the `Upload a banner image` feature.
 
-## V15.1.0 - 2024-07-17
+
+## V15.1.0 - 2024-07-18
 
 ## Feature Additions:
 
 - Removed all Pennsieve Agent/log in requirements from the start up processes and added checks within both curation modes to assist users with Pennsieve account/agent requirements.
+- Added a new feature in the `Advanced Features` tab that allows users tp compare their local and Pennsieve datasets for differences in file structure.
+- Added a new feature in `Prepare Datasets Step-by-Step` that allows a user to verify the integrity of the files they uploaded to Pennsieve.
 
 ## Bug fixes:
 
 - Fixed an issue causing properly named folders to throw errors when generating manifest files for local datasets.
+- Fixed an issue that caused the UI to navigate to the homepage after generating a manifest file in the `Advanced Features` tab.
+- Fixed an issue that would cause the progress bar to hang during some dataset uploads.
+- Fixed an issue in `Advanced Features` that would cause validation of a Pennsieve dataset to fail.
 
 ## v15.0.2 - 2024-06-14
 
