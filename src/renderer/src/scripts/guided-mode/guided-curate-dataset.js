@@ -14025,6 +14025,8 @@ $(".guided--radio-button").on("click", async function () {
   const selectedButton = $(this);
   const notSelectedButton = $(this).siblings(".guided--radio-button");
 
+  let disableNonSelectedButtonHiding = false;
+
   if (selectedButton.data("requires-work-before-action") === true) {
     const buttonId = selectedButton.attr("id");
     if (buttonId === "guided-button-dataset-does-not-contain-code") {
@@ -14100,6 +14102,7 @@ $(".guided--radio-button").on("click", async function () {
         document
           .getElementById("guided-section-ask-if-dataset-contains-code")
           .classList.remove("hidden");
+        disableNonSelectedButtonHiding = true;
       }
     }
   }
@@ -14107,13 +14110,17 @@ $(".guided--radio-button").on("click", async function () {
   notSelectedButton.removeClass("selected");
   notSelectedButton.addClass("not-selected basic");
 
+  console.log("disableNonSelectedButtonHiding", disableNonSelectedButtonHiding);
+
   //Hide all child containers of non-selected buttons
-  notSelectedButton.each(function () {
-    if ($(this).data("next-element")) {
-      window.nextQuestionID = $(this).data("next-element");
-      $(`#${window.nextQuestionID}`).addClass("hidden");
-    }
-  });
+  if (!disableNonSelectedButtonHiding) {
+    notSelectedButton.each(function () {
+      if ($(this).data("next-element")) {
+        window.nextQuestionID = $(this).data("next-element");
+        $(`#${window.nextQuestionID}`).addClass("hidden");
+      }
+    });
+  }
 
   //If button has prevent-radio-handler data attribute, other buttons, will be deselected
   //but all other radio button functions will be halted

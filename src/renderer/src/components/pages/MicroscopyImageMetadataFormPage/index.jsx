@@ -45,10 +45,10 @@ const MicroscopyImageMetadataFormPage = () => {
     imageHasRequiredMetadata,
     copyImageMetadata,
     imageMetadataCopyFilterValue,
-    setImageMetadataCopyFilterValue,
   } = useGlobalStore();
 
   const [selectedCopyToImages, setSelectedCopyToImages] = useState([]);
+  const [selectedCopyToFolders, setSelectedCopyToFolders] = useState([]);
   const [openFolders, setOpenFolders] = useState({});
 
   const naturalSort = (a, b) =>
@@ -72,6 +72,7 @@ const MicroscopyImageMetadataFormPage = () => {
       }
     });
 
+    console.log("imageObject", imageObject);
     return imageObject;
   };
 
@@ -79,22 +80,18 @@ const MicroscopyImageMetadataFormPage = () => {
     (imageObj) => imageObj.filePath !== selectedImageFileObj?.filePath
   );
 
-  const filteredCopyToImages = microscopyImageFileNamesWithoutSelectedImage.filter((imageObj) =>
-    imageObj.filePath.toLowerCase().includes(imageMetadataCopyFilterValue.toLowerCase())
-  );
-
-  const allFilteredImagesSelected = filteredCopyToImages.length === selectedCopyToImages.length;
-
-  const handleToggleAllImages = () => {
-    setSelectedCopyToImages(allFilteredImagesSelected ? [] : filteredCopyToImages);
-  };
-
-  const handleImageSelection = (imageObj, isSelectedToBeCopiedTo) => {
-    setSelectedCopyToImages((prevSelected) =>
-      isSelectedToBeCopiedTo
-        ? prevSelected.filter((image) => image.filePath !== imageObj.filePath)
-        : [...prevSelected, imageObj]
+  const handleCopyToFileClick = (imageObj) => {
+    const imageIsSelectedToBeCopiedTo = selectedCopyToImages.some(
+      (image) => image.filePath === imageObj.filePath
     );
+
+    if (imageIsSelectedToBeCopiedTo) {
+      setSelectedCopyToImages((prevSelected) =>
+        prevSelected.filter((image) => image.filePath !== imageObj.filePath)
+      );
+    } else {
+      setSelectedCopyToImages((prevSelected) => [...prevSelected, imageObj]);
+    }
   };
 
   const handleCopyMetadataFromImageButtonClick = () => {
@@ -121,6 +118,38 @@ const MicroscopyImageMetadataFormPage = () => {
     }));
   };
 
+  const handleSelectCopyToFolderClick = (event, folderName) => {
+    event.stopPropagation();
+
+    const folderNameWasSelected = selectedCopyToFolders.includes(folderName);
+    const imagesInFolder = microscopyImageObject[folderName];
+
+    if (folderNameWasSelected) {
+      // Unselect the folder and all its files
+      setSelectedCopyToFolders((prevSelected) =>
+        prevSelected.filter((folder) => folder !== folderName)
+      );
+      setSelectedCopyToImages((prevSelected) =>
+        prevSelected.filter(
+          (image) =>
+            !imagesInFolder.some((imageInFolder) => imageInFolder.filePath === image.filePath)
+        )
+      );
+    } else {
+      // Select the folder and all its files
+      setSelectedCopyToFolders((prevSelected) => [...prevSelected, folderName]);
+      setSelectedCopyToImages((prevSelected) => [
+        ...prevSelected,
+        ...imagesInFolder.filter(
+          (imageInFolder) =>
+            !prevSelected.some((image) => image.filePath === imageInFolder.filePath)
+        ),
+      ]);
+    }
+  };
+
+  const folderIsSelectedToBeCopiedTo = (folderName) => selectedCopyToFolders.includes(folderName);
+
   const microscopyImageObject = createMicroscopyImageObject();
 
   return (
@@ -135,32 +164,97 @@ const MicroscopyImageMetadataFormPage = () => {
       <GuidedModeSection bordered>
         {copyImageMetadataModeActive ? (
           <Stack>
-            <NavigationButton
-              buttonText="Cancel metadata copy"
-              navIcon="left-arrow"
-              buttonOnClick={handleCancelCopyImageMetadataButtonClick}
-            />
+            <Flex justify="center" align="center" gap="md">
+              <NavigationButton
+                buttonText="Cancel metadata copy"
+                navIcon="left-arrow"
+                buttonOnClick={handleCancelCopyImageMetadataButtonClick}
+              />
+              <Button color="cyan" onClick={handleCopyImageMetadataButtonClick} style={{ flex: 1 }}>
+                Copy metadata to selected images
+              </Button>
+            </Flex>
             <Center mt="md">
               <Title order={2}>
                 Select images to copy metadata from "{selectedImageFileObj?.fileName}" to
               </Title>
             </Center>
-            <Flex align="flex-end" gap="md">
-              <Button className={styles.toggleButton} onClick={handleToggleAllImages}>
-                {allFilteredImagesSelected
-                  ? `Deselect ${imageMetadataCopyFilterValue === "" ? "all" : "filtered"}`
-                  : `Select ${imageMetadataCopyFilterValue === "" ? "all" : "filtered"}`}
-              </Button>
-              <TextInput
-                placeholder="Filter images using a file name or file path"
-                value={imageMetadataCopyFilterValue}
-                style={{ flexGrow: 1 }}
-                onChange={(event) => setImageMetadataCopyFilterValue(event.target.value)}
-                rightSection={<IconSearch size={20} />}
-              />
-            </Flex>
+
             <ScrollArea h={300} type="always">
-              <Table miw={800} verticalSpacing="sm" withTableBorder highlightOnHover>
+              <Stack gap="xs">
+                {Object.keys(microscopyImageObject).map((folderKey) => (
+                  <Stack gap="2px" key={folderKey}>
+                    <Group
+                      m="0px"
+                      onClick={() => handleToggleFolder(folderKey)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <Checkbox
+                        checked={folderIsSelectedToBeCopiedTo(folderKey)}
+                        onClick={(e) => handleSelectCopyToFolderClick(e, folderKey)}
+                        readOnly
+                      />
+                      {openFolders[folderKey] ? (
+                        <IconFolderOpen size={24} />
+                      ) : (
+                        <IconFolder size={24} />
+                      )}
+                      <Text size="sm">{folderKey}</Text>
+                      {openFolders[folderKey] ? (
+                        <IconChevronDown size={24} />
+                      ) : (
+                        <IconChevronRight size={24} />
+                      )}
+                    </Group>
+                    {openFolders[folderKey] &&
+                      microscopyImageObject[folderKey].map((fileObj) => {
+                        const isSelectedToBeCopiedTo = selectedCopyToImages.some(
+                          (image) => image.filePath === fileObj.filePath
+                        );
+                        return (
+                          <Tooltip
+                            openDelay={500}
+                            key={fileObj.filePath}
+                            label={
+                              <Stack gap="xs">
+                                <Text size="sm" mb="0px">
+                                  Local file path:
+                                </Text>
+                                <Text size="xs" mt="-8px">
+                                  {fileObj.filePath}
+                                </Text>
+                                <Text size="sm" mb="-7px" mt="4px">
+                                  Location in dataset:
+                                </Text>
+                                {fileObj.relativeDatasetStructurePaths.map((path) => (
+                                  <Text key={path} size="xs">
+                                    {path}
+                                  </Text>
+                                ))}
+                              </Stack>
+                            }
+                          >
+                            <Button
+                              variant="subtle"
+                              justify="flex-start"
+                              size="compact-sm"
+                              className={
+                                fileObj.filePath === selectedImageFileObj?.filePath
+                                  ? styles.selectedImageInSidebar
+                                  : ""
+                              }
+                              leftSection={<Checkbox checked={isSelectedToBeCopiedTo} readOnly />}
+                              onClick={() => handleCopyToFileClick(fileObj)}
+                            >
+                              <Text size="sm">{fileObj.fileName}</Text>
+                            </Button>
+                          </Tooltip>
+                        );
+                      })}
+                  </Stack>
+                ))}
+              </Stack>
+              {/*<Table miw={800} verticalSpacing="sm" withTableBorder highlightOnHover>
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th></Table.Th>
@@ -176,7 +270,7 @@ const MicroscopyImageMetadataFormPage = () => {
                     return (
                       <Table.Tr
                         key={imageObj.filePath}
-                        onClick={() => handleImageSelection(imageObj, isSelectedToBeCopiedTo)}
+                        onClick={() => handleCopyToFileClick(imageObj, isSelectedToBeCopiedTo)}
                       >
                         <Table.Td>
                           <Checkbox checked={isSelectedToBeCopiedTo} readOnly />
@@ -187,11 +281,8 @@ const MicroscopyImageMetadataFormPage = () => {
                     );
                   })}
                 </Table.Tbody>
-              </Table>
+              </Table>*/}
             </ScrollArea>
-            <Button color="cyan" onClick={handleCopyImageMetadataButtonClick}>
-              Copy metadata to selected images
-            </Button>
           </Stack>
         ) : (
           <Grid gutter="xl">
