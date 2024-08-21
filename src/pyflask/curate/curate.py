@@ -3482,6 +3482,7 @@ def main_curate_function(soda_json_structure, resume):
     global main_curate_status
     global manifest_id 
     global origin_manifest_id
+    global total_files
 
     namespace_logger.info("Starting main_curate_function")
     namespace_logger.info(f"main_curate_function metadata generate-options={soda_json_structure['generate-dataset']}")
@@ -3519,7 +3520,8 @@ def main_curate_function(soda_json_structure, resume):
         "main_total_generate_dataset_size": main_total_generate_dataset_size,
         "main_curation_uploaded_files": main_curation_uploaded_files,
         "local_manifest_id": manifest_id,
-        "origin_manifest_id": origin_manifest_id
+        "origin_manifest_id": origin_manifest_id,
+        "main_curation_total_files": total_files,
     }
 
 

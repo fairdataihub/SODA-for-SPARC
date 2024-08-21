@@ -15592,7 +15592,8 @@ const guidedUploadDatasetToPennsieve = async () => {
 
       let { data } = curationRes;
       window.pennsieveManifestId = data["origin_manifest_id"];
-      window.totalFilesCount = data["main_curation_uploaded_files"];
+      window.totalFilesCount = data["main_curation_total_files"];
+      console.log("Total files count: ", window.totalFilesCount);
 
       $("#sidebarCollapse").prop("disabled", false);
       window.log.info("Completed curate function");
