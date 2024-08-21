@@ -6792,7 +6792,6 @@ const initiate_generate = async (e) => {
       const mergeSelectedCard = document
         .querySelector("#dataset-upload-existing-dataset")
         .classList.contains("checked");
-      console.log("Merge selected option: ", mergeSelectedCard);
       if (mergeSelectedCard) {
         await swalShowInfo(
           "Manifest Files Not Updated With New Files",
@@ -6805,7 +6804,7 @@ const initiate_generate = async (e) => {
       window.pennsieveAgentManifestId = data["local_manifest_id"];
       window.pennsieveManifestId = data["origin_manifest_id"];
 
-      window.totalFilesCount = uploadedFiles;
+      window.totalFilesCount = data["main_curation_total_files"];
 
       $("#sidebarCollapse").prop("disabled", false);
       window.log.info("Completed curate function");

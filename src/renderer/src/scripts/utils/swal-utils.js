@@ -34,7 +34,28 @@ const swalGetUserTextInput = async (
   return textInput;
 };
 
+export const swalShowLoading = (title, text) => {
+  Swal.fire({
+    title: title,
+    html: text,
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    showCancelButton: false,
+    showCloseButton: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    width: 800,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+};
+
 export const swalShowError = async (title, errorText) => {
+  Swal.close();
+  // wait half second
+  await new Promise((resolve) => setTimeout(resolve, 500));
   await Swal.fire({
     title: title,
     html: errorText,
@@ -48,6 +69,8 @@ export const swalShowError = async (title, errorText) => {
 };
 
 export const swalShowInfo = async (title, infoText) => {
+  Swal.close();
+  await new Promise((resolve) => setTimeout(resolve, 500));
   await Swal.fire({
     title: title,
     html: infoText,
@@ -184,4 +207,19 @@ export const swalConfirmAction = async (icon, title, text, confirmButtonText, ca
     cancelButtonText: cancelButtonText,
   });
   return action;
+};
+
+export const swalShowSuccess = async (title, successText) => {
+  Swal.close();
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  await Swal.fire({
+    title: title,
+    html: successText,
+    icon: "success",
+    width: 800,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showConfirmButton: true,
+    confirmButtonText: "OK",
+  });
 };

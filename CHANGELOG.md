@@ -5,6 +5,19 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v15.2.0 - 2024-08-21
+
+## Feature Additions:
+
+- An accounts page is accessible through the sidebar. This page allows users to more easily manage their Pennsieve account(s) that have been connected to SODA.
+- It is now possible to upload a dataset to Pennsieve in End-to-End Curation mode without first adding a banner image. This is useful for users who do not have a banner image prepared. Note that before your dataset can be published you will need to add a banner image.
+- It is now possible to upload a dataset to Pennsieve in End-to-End Curation mode without first assigning a Principal Investigator (PI). Note that before your dataset can be published you will need to assign a PI.
+
+## Bug Fixes:
+
+- Fixed an issue causing the Verify Files feature to freeze when verifying large datasets.
+- Fixed issues in `Advanced features` that made it difficult to add a banner image using the `Upload a banner image` feature.
+
 ## V15.1.0 - 2024-07-17
 
 ## Feature Additions:
