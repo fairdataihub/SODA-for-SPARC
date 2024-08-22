@@ -51,7 +51,6 @@ document.querySelector("#guided--verify-files-button").addEventListener("click",
     behavior: "smooth",
   });
 
-
   document.querySelector("#guided-next-button").disabled = false;
   document.querySelector("#guided-button-save-and-exit").disabled = false;
 });
