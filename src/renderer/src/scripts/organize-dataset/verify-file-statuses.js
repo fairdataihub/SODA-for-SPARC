@@ -15,6 +15,10 @@ let failedFilesPathsList = [];
 
 document.querySelector("#guided--verify-files-button").addEventListener("click", async () => {
   document.querySelector("#guided--validate-dataset-upload").classList.remove("hidden");
+  // scroll to the guided--validate-dataset-upload div
+  document.querySelector("#guided--validate-dataset-upload").scrollIntoView({
+    behavior: "smooth",
+  });
 
   // disable self so verification cannot be re-ran without a retry
   document.querySelector("#guided--verify-files-button").disabled = true;
@@ -42,6 +46,11 @@ document.querySelector("#guided--verify-files-button").addEventListener("click",
     document.querySelector("#guided--skip-verify-btn").disabled = false;
     return;
   }
+
+  document.querySelector("#guided-dataset-upload-complete-message").scrollIntoView({
+    behavior: "smooth",
+  });
+
 
   document.querySelector("#guided-next-button").disabled = false;
   document.querySelector("#guided-button-save-and-exit").disabled = false;
