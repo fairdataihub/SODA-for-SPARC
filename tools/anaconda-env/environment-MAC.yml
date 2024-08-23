@@ -33,5 +33,4 @@ dependencies:
   - urllib3 == 2.0.6
   - requests == 2.31.0
   - backports.tarfile
-
-
+  - setuptools == 71.0.4
