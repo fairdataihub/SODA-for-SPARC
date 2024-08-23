@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Fixed an issue causing the Verify Files feature to freeze when verifying large datasets.
 - Fixed issues in `Advanced features` that made it difficult to add a banner image using the `Upload a banner image` feature.
+- Builds fixed for Mac,Linux, and Windows by setting tarfile and setuptools in env.yaml files.
 
 ## V15.1.0 - 2024-07-18
 
