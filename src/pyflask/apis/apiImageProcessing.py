@@ -132,6 +132,7 @@ class UploadImageToBiolucida(Resource):
 
             # Request the upload key and total number of chunks from the Biolucida API
             res = requests.get('https://flask-hello-world-six-opal.vercel.app/get_biolucida_upload_key', params=params)
+            namespace_logger.info(f"Upload key response: {res}")
             res_json = res.json()
             number_of_chunks = int(res_json['total_chunks'])  # Total number of chunks to upload
             upload_key = res_json['upload_key']  # Retrieve the upload key
@@ -189,48 +190,7 @@ class UploadImageToBiolucida(Resource):
             # Handle any exceptions that occur during the process
             namespace_logger.error(f"Error uploading image to Biolucida: {str(e)}")
             return api.abort(500, str(e))
-        
-@api.route('/get_biolucida_image_id')
-class GetBioLucidaImageId(Resource):
-    global namespace_logger
-
-    request_model = {
-        'image_name': fields.String(required=True, description="The name of the image to get the ID for"),
-        'collection_id': fields.String(required=True, description="The ID of the collection to search for the image in"),
-    }
-
-    response_model = {
-        'image_id': fields.String( description="The ID of the image in BioLucida"),
-    }
-
-    # Set up argument parser for the incoming request
-    parser = reqparse.RequestParser(bundle_errors=True)
-    parser.add_argument('image_name', type=str, required=True, help="The name of the image to get the ID for")
-    parser.add_argument('collection_id', type=str, required=True, help="The ID of the collection to search for the image in")
-
-
-    @api.expect(request_model)
-    @api.response(200, 'Image ID retrieved', response_model)
-    @api.response(400, 'Bad request')
-    @api.response(500, 'Internal server error')
-    def get(self):
-        try:
-            data = self.parser.parse_args()
-            image_name = data['image_name']
-            collection_id = data['collection_id']
-            access_token = get_access_token()
-            namespace_logger.info(f"Getting BioLucida image ID for image: {image_name}")
-            params = {
-                'image_name': image_name,
-                'collection_id': collection_id,
-                'pennsieve_auth_secret': access_token
-            }
-            res = requests.get('https://flask-hello-world-six-opal.vercel.app/get_biolucida_image_id', params=params)
-            namespace_logger.info(f"Get image ID response: {res.json()}")
-            return res.json()
-        except Exception as e:
-            namespace_logger.error(f"Error getting BioLucida image ID: {str(e)}")
-            api.abort(500, str(e))  
+            
 
 
 
@@ -484,4 +444,43 @@ class CreateImageThumbnails(Resource):
             return {'converted_image_paths': converted_image_paths}, 200
         except Exception as e:
             namespace_logger.error(f"Error creating thumbnails: {str(e)}")
+            api.abort(500, str(e))
+
+
+@api.route('/get_biolucida_image_id')
+class GetBiolucidaImageId(Resource):
+    global namespace_logger
+    request_model = {
+        'image_name': fields.String(required=True, description="The name of the image to get the ID for"),
+        'collection_id': fields.String(required=True, description="The ID of the collection the image is in"),
+    }
+    response_model = {
+        'image_id': fields.String(required=True, description="The ID of the image"),
+    }
+
+    parser = reqparse.RequestParser(bundle_errors=True)
+    parser.add_argument('image_name', type=str, required=True, help="The name of the image to get the ID for")
+    parser.add_argument('collection_id', type=str, required=True, help="The ID of the collection the image is in")
+
+    @api.expect(request_model)
+    @api.response(200, 'Image ID retrieved', response_model)
+    @api.response(400, 'Bad request')
+    @api.response(500, 'Internal server error')
+    def get(self):
+        try:
+            data = self.parser.parse_args()
+            image_name = data['image_name']
+            collection_id = data['collection_id']
+            access_token = get_access_token()
+            namespace_logger.info(f"Getting Biolucida image ID for image: {image_name}")
+            params = {
+                'collection_id': collection_id,
+                'image_name': image_name,
+                'pennsieve_auth_secret': access_token
+            }
+            res = requests.get('https://flask-hello-world-six-opal.vercel.app/get_biolucida_image_id', params=params)
+            namespace_logger.info(f"Get image ID response: {res.json()}")
+            return res.json()
+        except Exception as e:
+            namespace_logger.error(f"Error getting Biolucida image ID: {str(e)}")
             api.abort(500, str(e))

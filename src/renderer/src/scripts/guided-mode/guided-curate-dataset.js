@@ -16039,6 +16039,7 @@ const uploadMicroscopyImagesToBioLucida = async () => {
     const req = await client.post("/image_processing/create_biolucida_collection", {
       collection_name: bioLucidaBucketName,
     });
+    console.log("BioLucida collection creation response: ", req);
     biolucidaCollectionId = req.data.created_collection_id;
     window.sodaJSONObj["biolucida-collection-id"] = biolucidaCollectionId;
     setProgressElementData(
@@ -16069,7 +16070,7 @@ const uploadMicroscopyImagesToBioLucida = async () => {
     );
 
     const req = await client.post("/image_processing/upload_image_to_biolucida", {
-      collection_id: biolucidaCollectionId,
+      collection_id: 279,
       image_path: image.filePath,
       image_name: image.fileName,
     });
@@ -16172,7 +16173,7 @@ const guidedPennsieveDatasetUpload = async () => {
 
     //Display the BioLucida Image upload table
     window.unHideAndSmoothScrollToElement("guided-progress-display-biolucida-image-upload");
-    // await uploadMicroscopyImagesToBioLucida();
+    await uploadMicroscopyImagesToBioLucida();
 
     //Display the BioLucida Image id retrieval table
     window.unHideAndSmoothScrollToElement("guided-progress-display-biolucida-image-id-retrieval");
