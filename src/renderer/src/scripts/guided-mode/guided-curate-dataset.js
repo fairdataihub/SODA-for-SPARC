@@ -5794,7 +5794,7 @@ window.openPage = async (targetPageID) => {
           const fileName = window.path.basename(primaryImageFilePath);
           const fileExtension = window.path.extname(primaryImageFilePath);
           const convertedJp2FileName = fileName.replace(fileExtension, ".jp2");
-          const convertedOmeTiffFileName = fileName.replace(fileExtension, ".ome.tif");
+          const convertedTifFileName = fileName.replace(fileExtension, ".tif");
 
           // EG 'derivative/sub-1/1-images/image-1.jpg' used to show where the images will be placed
           const relativePathToDerivativeImage = relativePathToPrimaryImage.replace(
@@ -5823,12 +5823,12 @@ window.openPage = async (targetPageID) => {
             );
           }
 
-          // Add .ome.tif file if it doesn't already exist
-          if (!currentFolder["files"][convertedOmeTiffFileName]) {
+          // Add tif file if it doesn't already exist
+          if (!currentFolder["files"][convertedTifFileName]) {
             derivativeImagePreviewsGenerated.push(
-              `${relativePathToDerivativeImage}/${convertedOmeTiffFileName}`
+              `${relativePathToDerivativeImage}/${convertedTifFileName}`
             );
-            currentFolder["files"][convertedOmeTiffFileName] = createDerivativeImageFileObject(
+            currentFolder["files"][convertedTifFileName] = createDerivativeImageFileObject(
               primaryImageFilePath,
               relativePathToPrimaryImage,
               "OME-TIFF"
@@ -5860,10 +5860,10 @@ window.openPage = async (targetPageID) => {
             derivativeImagePreviewsGenerated,
             "Derivative Converted Image Previews Generated",
             `
-              At the end of the guided process, SODA will convert the microscopy images added to the primary folder into .jp2 format using MicroFile+. 
-              These converted images will then be added to the derivative folder, mirroring the structure in which they were added to the primary folder.
+              Before your dataset is uploaded to Pennsieve, SODA will convert the microscopy images added to the primary folder into .jp2 and .tif formats using MicroFile+. 
+              These converted images will then be placed in the derivative folder, maintaining the same structure as in the primary folder.
               <br /><br />
-              SODA generated .jp2 image previews at the following locations:
+              SODA generated .jp2 and .tif image previews at the following locations:
             `,
             ""
           );
@@ -16136,7 +16136,7 @@ const updateBioLucidaRelatedManifestData = async () => {
       microscopyImageFileNameToRetrievedIdMap.set(path, imageId);
       const possibleFileTypeMaps = {
         ".jp2": "image/vnd.ome.xml+jp2",
-        ".tiff": "image/vnd.ome.xml+tiff",
+        ".tif": "image/vnd.ome.xml+tiff",
       };
       relativeDatasetStructurePathToFileTypeMap.set(
         path,
