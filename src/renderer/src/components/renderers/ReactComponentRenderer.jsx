@@ -102,7 +102,13 @@ const componentTypeRenderers = {
   "process-status-table": (componentSlot) => {
     const tableId = componentSlot.id;
     const tableTitle = componentSlot.getAttribute("data-table-title");
-    const props = { tableId: tableId, tableTitle: tableTitle };
+    const progressText = componentSlot.getAttribute("data-progress-text");
+    const props = {
+      tableId,
+      tableTitle,
+
+      progressText,
+    };
     renderComponent(componentSlot, <ProcessStatusTable {...props} />);
   },
 };

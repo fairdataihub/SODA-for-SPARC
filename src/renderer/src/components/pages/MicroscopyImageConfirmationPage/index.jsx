@@ -70,9 +70,9 @@ const MicroscopyImageConfirmationPage = () => {
     <GuidedModePage
       pageHeader="Microscopy Image Confirmation"
       pageDescriptionArray={[
-        "SODA has identified the images below as potential microscopy images. Please indicate which images are microscopy by either selecting them individually by clicking on each image, or by using the search filter to select multiple images at once.",
-        "The images you select below will have SPARC-required metadata added using MicroFile+ and will then be converted and added to the derivative folder.",
-        "*NOTE*If all your microscopy images are stored in a single folder or share a common file extension, you can use the search filter to select all images at once by searching and clicking 'Select filtered images'.",
+        "SODA has identified the images below as potential microscopy images. Please indicate which of these images are microscopy by either selecting them individually or using the search filter to select multiple images at once.",
+        "The images you select will have SPARC-required metadata added using MicroFile+, after which they will be converted and placed in the derivative folder.",
+        "*NOTE*If all your microscopy images are stored in a single folder or share a common file extension, you can easily select them all at once. Simply use the search filter to narrow down the images based on the folder or file extension, then click 'Select filtered images' to quickly select all matching images.",
       ]}
     >
       <GuidedModeSection bordered={true}>
@@ -198,7 +198,7 @@ const MicroscopyImageConfirmationPage = () => {
       </GuidedModeSection>
 
       {currentGuidedModePage === "guided-microscopy-image-confirmation-tab" &&
-        potentialMicroscopyImages.length && (
+        confirmedMicroscopyImages.length && (
           <Affix
             position={{ top: 135, right: 20 }}
             style={{

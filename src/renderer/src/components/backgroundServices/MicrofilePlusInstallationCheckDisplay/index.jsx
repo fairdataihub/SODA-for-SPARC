@@ -14,25 +14,33 @@ const handleSkipMicroscopyImageConversionButtonClick = () => {
 };
 
 const SkipMicroscopyImageConversionButton = (
-  <Button onClick={handleSkipMicroscopyImageConversionButtonClick} color="gray" variant="outline">
+  <Button
+    onClick={handleSkipMicroscopyImageConversionButtonClick}
+    color="gray"
+    variant="outline"
+    w="300px"
+  >
     Skip Microscopy Image Conversion
   </Button>
 );
 
 const SkipMicroscopyImageConversionWarningText = (
   <Notification
-    mt="md"
+    mt="xl"
     withCloseButton={false}
     withBorder
     color="red"
-    title="Skipping Microsopy Image Conversion"
+    title="If you would like to skip Microscopy Image Conversion"
   >
-    <Text fw={200} size="sm">
-      While not recommended, you can skip the Microscopy Image Data and Metadata conversion by
-      clicking the "Skip Microscopy Image Conversion" button below. By doing so, your microscopy
-      images will not be converted using MicroFile+ and your images will not be uploaded to
-      BioLucida.
-    </Text>
+    <Stack align="center">
+      <Text fw={200} size="sm">
+        Although not recommended, you can skip the Microscopy Image Data and Metadata conversion by
+        clicking the 'Skip Microscopy Image Conversion' button below. If you do so, your microscopy
+        images will not be converted using MicroFile+, and they will not be uploaded to BioLucida.
+        However, you will still be able to generate your dataset locally and on Pennsieve.
+      </Text>
+      {SkipMicroscopyImageConversionButton}
+    </Stack>
   </Notification>
 );
 
@@ -42,10 +50,24 @@ const MicrofilePlusInstallationCheckDisplay = () => {
   console.log("usersPlatformIsMicroFilePlusCompatable", usersPlatformIsMicroFilePlusCompatable);
   return (
     <FullWidthContainer>
-      {!microFilePlusInstalled && (
+      {microFilePlusInstalled && (
         <Text size="lg" mb="md">
-          SODA requires the MicroFile+ application to convert Microscopy Image Data and Metadata to
-          SPARC Standard Formats.
+          SODA requires{" "}
+          <ExternalLink
+            href="https://www.mbfbioscience.com/products/microfileplus"
+            buttonText="MicroFile+"
+            buttonType="anchor"
+            textSize="lg"
+          />
+          to convert Microscopy Image Data and Metadata to SPARC Standard Formats. The converted
+          images are subsequently uploaded to{" "}
+          <ExternalLink
+            href="https://www.biolucida.net/login"
+            buttonText="BioLucida"
+            buttonType="anchor"
+            textSize="lg"
+          />{" "}
+          where they can be viewed and analyzed by other researchers.
         </Text>
       )}
 
@@ -61,9 +83,6 @@ const MicrofilePlusInstallationCheckDisplay = () => {
             MicroFile+ is currently only available for Windows, so you must either switch to Windows
             or skip the Microscopy Image Data and Metadata conversion.
             {SkipMicroscopyImageConversionWarningText}
-            <Group justify="center" mt="md">
-              {SkipMicroscopyImageConversionButton}
-            </Group>
           </Alert>
         </FullWidthContainer>
       )}
@@ -90,21 +109,21 @@ const MicrofilePlusInstallationCheckDisplay = () => {
                 />
               </List.Item>
               <List.Item>Fill out and submit the required form.</List.Item>
-              <List.Item>Check your Email for a direct link to download MicroFile+.</List.Item>
               <List.Item>
-                Download and install MicroFile+ using the license code sent to your Email.
+                Wait for a license code and direct download link to be sent to your Email.
               </List.Item>
+              <List.Item>Download and install MicroFile+.</List.Item>
               <List.Item>
                 Click the "Retry MicroFile+ detection" button below to ensure SODA can detect the
                 installation.
               </List.Item>
             </List>
-            {SkipMicroscopyImageConversionWarningText}
 
             <Group justify="center" mt="md">
               <Button onClick={handleRetryButtonClick}>Retry MicroFile+ detection</Button>
-              {SkipMicroscopyImageConversionButton}
             </Group>
+
+            {SkipMicroscopyImageConversionWarningText}
           </Alert>
         </Stack>
       )}

@@ -5819,7 +5819,7 @@ window.openPage = async (targetPageID) => {
             currentFolder["files"][convertedJp2FileName] = createDerivativeImageFileObject(
               primaryImageFilePath,
               relativePathToPrimaryImage,
-              ".jp2"
+              "JPEG2000"
             );
           }
 
@@ -5831,7 +5831,7 @@ window.openPage = async (targetPageID) => {
             currentFolder["files"][convertedOmeTiffFileName] = createDerivativeImageFileObject(
               primaryImageFilePath,
               relativePathToPrimaryImage,
-              ".ome.tif"
+              "OME-TIFF"
             );
           }
         };
@@ -7179,11 +7179,11 @@ window.openPage = async (targetPageID) => {
         window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] &&
         !window.sodaJSONObj["starting-point"]["type"] === "bf"
       ) {
-        const generateButtonText = "Resume Pennsieve upload in progress";
+        const generateButtonText = "Resume upload in progress";
         generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;
         reviewGenerateButtionTextElement.innerHTML = generateButtonText;
       } else {
-        const generateButtonText = "Generate dataset on Pennsieve";
+        const generateButtonText = "Generate dataset";
         generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;
         reviewGenerateButtionTextElement.innerHTML = generateButtonText;
       }
@@ -15974,13 +15974,15 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
 };
 
 const convertMicroscopyImagesViaMfPlus = async () => {
+  const microscopyImagesToConvert = window.sodaJSONObj["confirmed-microscopy-images"];
+  const microscopyImagesToConvertCount = microscopyImagesToConvert.length;
+
   setProgressElementData(
     "guided-progress-display-microscopy-image-conversion",
     "Making sure MicroFile+ is installed",
-    0
+    `0/${microscopyImagesToConvertCount}`
   );
-  // wait for 10000 seconds
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+
   // Ensure that MicroFile+ is installed on the user's machine
   const req = await client.get("/image_processing/is_microfileplus_installed");
   const { status: microFilePlusIsInstalled } = req.data;
@@ -15992,42 +15994,41 @@ const convertMicroscopyImagesViaMfPlus = async () => {
   }
 
   console.log("Converting microscopy images via MicroFilePlus");
-  const microscopyImagesToConvert = window.sodaJSONObj["confirmed-microscopy-images"];
-  const microscopyImagesToConvertCount = microscopyImagesToConvert.length;
 
   let imageConvertedCount = 0;
   for await (const image of microscopyImagesToConvert) {
     console.log(`Converting image: ${image.filePath}`);
 
-    const progressPercentage = Math.round(
-      (imageConvertedCount / microscopyImagesToConvertCount) * 100
-    );
-
     setProgressElementData(
       "guided-progress-display-microscopy-image-conversion",
       `Converting image: ${image.filePath}`,
-      progressPercentage
+      `${imageConvertedCount}/${microscopyImagesToConvertCount}`
     );
-    // wait for 5 second
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    // wait for 1 second
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     imageConvertedCount++;
   }
 
+  // Microscopy images have been converted so set the progress to 100%
   setProgressElementData(
     "guided-progress-display-microscopy-image-conversion",
     "Microscopy images successfully converted",
-    100
+    `${imageConvertedCount}/${microscopyImagesToConvertCount}`
   );
 };
 
 const uploadMicroscopyImagesToBioLucida = async () => {
+  const imagesToUpload =
+    window.sodaJSONObj["microscopy-images-selected-to-be-uploaded-to-biolucida"];
+  const imagesToUploadCount = imagesToUpload.length;
+
   // Use the dataset name as the BioLucida collection name
   const bioLucidaBucketName = window.sodaJSONObj["digital-metadata"]["name"];
   setProgressElementData(
     "guided-progress-display-biolucida-image-upload",
     `Creating ${bioLucidaBucketName} collection on BioLucida`,
-    0
+    `0/${imagesToUploadCount}`
   );
   // wait for 5 seconds
   await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -16045,16 +16046,13 @@ const uploadMicroscopyImagesToBioLucida = async () => {
     setProgressElementData(
       "guided-progress-display-biolucida-image-upload",
       `Successfully created ${bioLucidaBucketName} collection on BioLucida`,
-      0
+      `0/${imagesToUploadCount}`
     );
   } catch (error) {
     throw new Error(userErrorMessage(error));
   }
   console.log("Bucket ID: ", biolucidaCollectionId);
   await new Promise((resolve) => setTimeout(resolve, 3000));
-  const imagesToUpload =
-    window.sodaJSONObj["microscopy-images-selected-to-be-uploaded-to-biolucida"];
-  const imagesToUploadCount = imagesToUpload.length;
 
   let imagesUploaded = 0;
 
@@ -16062,63 +16060,63 @@ const uploadMicroscopyImagesToBioLucida = async () => {
   for (const image of window.sodaJSONObj[
     "microscopy-images-selected-to-be-uploaded-to-biolucida"
   ]) {
-    const progressPercentage = Math.round((imagesUploaded / imagesToUploadCount) * 100);
     setProgressElementData(
       "guided-progress-display-biolucida-image-upload",
       `Uploading image: ${image.filePath}`,
-      progressPercentage
+      `${imagesUploaded}/${imagesToUploadCount}`
     );
 
-    const req = await client.post("/image_processing/upload_image_to_biolucida", {
+    /*const req = await client.post("/image_processing/upload_image_to_biolucida", {
       collection_id: 279,
       image_path: image.filePath,
       image_name: image.fileName,
     });
     console.log("Image upload response: ", req);
+    */
+    // wait for 2 seconds
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     imagesUploaded++;
-
-    // wait for .1 second
-    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
   // All images have been uploaded so set the progress to 100%
   setProgressElementData(
     "guided-progress-display-biolucida-image-upload",
     "Microscopy images successfully uploaded to BioLucida",
-    100
+    `${imagesUploaded}/${imagesToUploadCount}`
   );
   // wait for 5 seconds
   await new Promise((resolve) => setTimeout(resolve, 5000));
 };
 
 const updateBioLucidaRelatedManifestData = async () => {
+  const microscopyImagesUploadedToBioLucida =
+    window.sodaJSONObj["microscopy-images-selected-to-be-uploaded-to-biolucida"];
+  const microscopyImagesUploadedToBioLucidaCount = microscopyImagesUploadedToBioLucida.length;
+
   setProgressElementData(
     "guided-progress-display-biolucida-image-id-retrieval",
     `Gathering BioLucida image IDs to add to your manifest file`,
-    0
+    `0/${microscopyImagesUploadedToBioLucidaCount}`
   );
   // wait for 5 seconds
   await new Promise((resolve) => setTimeout(resolve, 5000));
 
   const biolucidaCollectionId = window.sodaJSONObj["biolucida-collection-id"];
 
-  const microscopyImagesUploadedToBioLucida =
-    window.sodaJSONObj["microscopy-images-selected-to-be-uploaded-to-biolucida"];
-  const microscopyImagesUploadedToBioLucidaCount = microscopyImagesUploadedToBioLucida.length;
-
   let bioLucidaImageIdsRetrieved = 0;
+
+  // Create a new map containing the paths to the filenames in the derivative manifest file and their image ID'S
+  const microscopyImageFileNameToRetrievedIdMap = new Map();
+  const relativeDatasetStructurePathToFileTypeMap = new Map();
 
   // Get the BioLucida image IDs for each image
   for (const image of microscopyImagesUploadedToBioLucida) {
-    console.log("Retrieving BioLucida Image ID for: ", image.fileName);
-    // temp for skipping this
-    const progressPercentage = Math.round(
-      (bioLucidaImageIdsRetrieved / microscopyImagesUploadedToBioLucidaCount) * 100
-    );
+    console.log("Retrieving BioLucida Image ID for: ", image);
+
     setProgressElementData(
       "guided-progress-display-biolucida-image-id-retrieval",
       `Retrieving BioLucida Image ID for: ${image.fileName}`,
-      progressPercentage
+      `${bioLucidaImageIdsRetrieved}/${microscopyImagesUploadedToBioLucidaCount}`
     );
 
     const req = await client.get("/image_processing/get_biolucida_image_id", {
@@ -16128,6 +16126,24 @@ const updateBioLucidaRelatedManifestData = async () => {
       },
     });
 
+    const imageId = req.data["image_id"];
+    const imageRelativePaths = image["relativeDatasetStructurePaths"].map((path) => {
+      return path.replace("primary/", "");
+    });
+    const imageFileType = window.path.extname(image.fileName);
+    console.log("imageFileType: ", imageFileType);
+    for (const path of imageRelativePaths) {
+      microscopyImageFileNameToRetrievedIdMap.set(path, imageId);
+      const possibleFileTypeMaps = {
+        ".jp2": "image/vnd.ome.xml+jp2",
+        ".tiff": "image/vnd.ome.xml+tiff",
+      };
+      relativeDatasetStructurePathToFileTypeMap.set(
+        path,
+        possibleFileTypeMaps[imageFileType] || ""
+      );
+    }
+
     console.log("Retrieve image id res: ", req);
     bioLucidaImageIdsRetrieved++;
 
@@ -16135,10 +16151,57 @@ const updateBioLucidaRelatedManifestData = async () => {
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
+  const derivativeManifestDataHeaders =
+    window.sodaJSONObj["guided-manifest-files"]["derivative"]["headers"];
+  const derivativeManifestDataRows =
+    window.sodaJSONObj["guided-manifest-files"]["derivative"]["data"];
+  if (!derivativeManifestDataHeaders.includes("Additional types")) {
+    derivativeManifestDataHeaders.push("Additional types");
+    for (const row of derivativeManifestDataRows) {
+      row.push("");
+    }
+  }
+  if (!derivativeManifestDataHeaders.includes("biolucida_id")) {
+    derivativeManifestDataHeaders.push("biolucida_id");
+    for (const row of derivativeManifestDataRows) {
+      row.push("");
+    }
+  }
+  console.log(window.sodaJSONObj["guided-manifest-files"]["derivative"]["headers"]);
+
+  console.log("microscopyImageFileNameToRetrievedIdMap: ", microscopyImageFileNameToRetrievedIdMap);
+  console.log(
+    "relativeDatasetStructurePathToFileTypeMap: ",
+    relativeDatasetStructurePathToFileTypeMap
+  );
+
+  const fileNameIndex = derivativeManifestDataHeaders.indexOf("filename");
+  const additionalTypesIndex = derivativeManifestDataHeaders.indexOf("Additional types");
+  const bioLucidaIdIndex = derivativeManifestDataHeaders.indexOf("biolucida_id");
+
+  // Loop through the derivative manifest data rows and update the BioLucida image IDs and file types
+  for (const row of derivativeManifestDataRows) {
+    const fileName = row[fileNameIndex];
+    console.log("fileName for row: ", fileName);
+    const fileType = relativeDatasetStructurePathToFileTypeMap.get(fileName);
+    const bioLucidaId = microscopyImageFileNameToRetrievedIdMap.get(fileName);
+    if (fileType) {
+      row[additionalTypesIndex] = fileType;
+    }
+    if (bioLucidaId) {
+      row[bioLucidaIdIndex] = bioLucidaId;
+    }
+  }
+
+  console.log(
+    "Updated derivative manifest file: ",
+    window.sodaJSONObj["guided-manifest-files"]["derivative"]
+  );
+
   setProgressElementData(
     "guided-progress-display-biolucida-image-id-retrieval",
     `SODA retrieved all required BioLucida image IDs`,
-    100
+    `${bioLucidaImageIdsRetrieved}/${microscopyImagesUploadedToBioLucidaCount}`
   );
   // wait for 10 seconds
   await new Promise((resolve) => setTimeout(resolve, 10000));
@@ -16168,7 +16231,6 @@ const guidedPennsieveDatasetUpload = async () => {
 
     // Display the MicroFilePlus conversion status table
     window.unHideAndSmoothScrollToElement("guided-progress-display-microscopy-image-conversion");
-
     await convertMicroscopyImagesViaMfPlus();
 
     //Display the BioLucida Image upload table

@@ -156,9 +156,9 @@ const MicroscopyImageMetadataFormPage = () => {
     <GuidedModePage
       pageHeader="Microscopy Image Metadata"
       pageDescriptionArray={[
-        "The SDS requires certain metadata fields to be provided for your microscopy images.",
-        "Please fill in any missing metadata fields for the images below. Images with complete metadata have a checkmark to the left of the image.",
-        "If you have multiple microscopy images that have overlapping metadata, you can fill in the metadata for one image and copy it to other images using the 'Copy Metadata from this Image' button.",
+        "The SPARC Data Structure (SDS) requires specific metadata fields to be added to your microscopy images.",
+        "Please provide any missing metadata for the images listed below. Images with complete metadata are indicated by a checkmark next to their name on the left.",
+        "*NOTE* If multiple microscopy images share the same metadata, you can fill in the metadata for one image and use the 'Copy Metadata from this Image' button to apply it to the other images.",
       ]}
     >
       <GuidedModeSection bordered>

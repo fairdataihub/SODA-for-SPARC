@@ -1,7 +1,7 @@
 import { Button, Anchor, Text } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons-react";
 
-const ExternalLink = ({ href, buttonText, buttonType, buttonSize }) => {
+const ExternalLink = ({ href, buttonText, buttonType, buttonSize, textSize }) => {
   if (buttonType === "button") {
     return (
       <Button
@@ -24,7 +24,7 @@ const ExternalLink = ({ href, buttonText, buttonType, buttonSize }) => {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        size="md"
+        size={textSize || "md"}
         ml={6}
         style={{ whiteSpace: "nowrap", color: "#0070f3" }}
       >
