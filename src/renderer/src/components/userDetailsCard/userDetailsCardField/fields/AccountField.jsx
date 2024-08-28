@@ -37,13 +37,12 @@ export const AccountField = ({ tabName }) => {
               minWidth: "135px",
               textAlign: "left",
               paddingRight: "5px",
-              marginBottom: "0px"
+              marginBottom: "0px",
             }}
           >
             Current account:
           </h5>
           <h5
-
             style={{
               color: "#000",
               fontWeight: 600,
@@ -53,7 +52,7 @@ export const AccountField = ({ tabName }) => {
               wordBreak: "break-word",
               textAlign: "left",
               marginTop: "0px",
-              marginLeft: "60px"
+              marginLeft: "60px",
             }}
           >
             {defaultBfAccount}

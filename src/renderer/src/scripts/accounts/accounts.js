@@ -72,7 +72,7 @@ window.disconnectPennsieveAccount = async (profileKey) => {
   window.defaultBfDatasetId = null;
 
   updateDefaultBfAccount(null);
-  updateDefaultWorkspace(null)
+  updateDefaultWorkspace(null);
 
   // update the account cards so that all their values are None
   // reset the dataset field values
