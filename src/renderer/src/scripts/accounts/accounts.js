@@ -4,6 +4,8 @@ while (!window.baseHtmlLoaded) {
 }
 import * as ini from "ini";
 import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
+import { updateDefaultBfAccount } from "../../stores/slices/defaultBfAccountSlice";
+import { updateDefaultWorkspace } from "../../stores/slices/defaultWorkspaceSlice";
 
 const addAccountOptions = () => {
   // set default state
@@ -68,6 +70,9 @@ window.disconnectPennsieveAccount = async (profileKey) => {
   window.defaultBfAccount = null;
   window.defaultBfDataset = null;
   window.defaultBfDatasetId = null;
+
+  updateDefaultBfAccount(null);
+  updateDefaultWorkspace(null)
 
   // update the account cards so that all their values are None
   // reset the dataset field values
