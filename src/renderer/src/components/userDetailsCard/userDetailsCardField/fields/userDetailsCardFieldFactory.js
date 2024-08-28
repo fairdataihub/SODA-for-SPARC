@@ -1,6 +1,6 @@
 import { AccountField } from "./AccountField";
 // import DatasetField from "./DatasetField";
-// import WorkspaceField from "./WorkspaceField";
+import {WorkspaceField} from "./WorkspaceField";
 // import GenericField from "./GenericField";
 
 export const fieldFactory = (field) => {
@@ -8,11 +8,10 @@ export const fieldFactory = (field) => {
     return AccountField;
     // } else if (field === "dataset") {
     //     return DatasetField;
-    // } else if (field === "workspace") {
-    //     return WorkspaceField;
-    // } else {
-    //     // generic field
-    //     return GenericField;
-    // }
+  } else if (field === "workspace") {
+    return WorkspaceField;
+  } else {
+    // generic field
+    //return GenericField;
   }
-};
+}

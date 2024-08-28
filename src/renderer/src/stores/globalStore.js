@@ -6,6 +6,7 @@ import { dropDownSlice } from "./slices/dropDownSlice";
 import { singleColumnTableSlice } from "./slices/tableRowSlice";
 import { backgroundServicesSlice } from "./slices/backgroundServicesSlice";
 import { defaultBfAccountSlice } from "./slices/defaultBfAccountSlice";
+import { defaultWorkspaceSlice } from "./slices/defaultWorkspaceSlice";
 
 const useGlobalStore = create(
   immer((...a) => ({
@@ -15,6 +16,7 @@ const useGlobalStore = create(
     ...singleColumnTableSlice(...a),
     ...backgroundServicesSlice(...a),
     ...defaultBfAccountSlice(...a),
+    ...defaultWorkspaceSlice(...a),
   }))
 );
 

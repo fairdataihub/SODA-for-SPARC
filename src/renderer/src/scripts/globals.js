@@ -7,6 +7,8 @@ import { clientError, userErrorMessage } from "./others/http-error-handler/error
 import client from "./client";
 import { swalShowError } from "./utils/swal-utils";
 import { updateDefaultBfAccount } from "../stores/slices/defaultBfAccountSlice";
+import { updateDefaultWorkspace } from "../stores/slices/defaultWorkspaceSlice";
+
 // import { window.clearValidationResults } from './validator/validate'
 // // Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
 // //          needed by the renderer process in order to run.
@@ -1963,6 +1965,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#bf-dataset-select-div").hide();
           $("#bf-dataset-select-header").hide();
 
+          // TODO: Remove this eventually
           window.bfOrganization = $("#curatebforganizationlist").val();
           let sweet_al = document.getElementsByClassName("swal2-html-container")[0];
           let sweet_alrt = document.getElementsByClassName("swal2-actions")[0];
@@ -1979,6 +1982,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           sweet_al.appendChild(tip_container);
         },
         preConfirm: () => {
+          // TODO: Remove this 
           window.bfOrganization = $("#curatebforganizationlist").val();
           if (!window.bfOrganization) {
             Swal.showValidationMessage("Please select an organization!");
@@ -1993,6 +1997,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             return undefined;
           }
 
+          // TODO: Use get slice function for this instead
           if (window.bfOrganization === "Select organization") {
             Swal.showValidationMessage("Please select an organization!");
 
@@ -2008,6 +2013,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
           $("#license-lottie-div").css("display", "none");
           $("#license-assigned").css("display", "none");
+          // TODO: Use get slice function for this instead
           return window.bfOrganization;
         },
       });
@@ -2023,6 +2029,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       }
 
       if (dropdownEventID === "dd-select-pennsieve-organization") {
+          // TODO: Use get slice function for this instead
         $("#ds-name").val(window.bfOrganization);
         $("#ds-description").val = $("#bf-dataset-subtitle").val;
         $("body").removeClass("waiting");
@@ -2114,6 +2121,8 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
 
           // set the new organization information in the appropriate fields
+          // TODO: Update the cards so they use react to automatically update per the state change of bfOrganization
+          updateDefaultWorkspace(window.bfOrganization);
           $("#current-bf-organization").text(window.bfOrganization);
           $("#current-bf-organization-generate").text(window.bfOrganization);
           $(".bf-organization-span").html(window.bfOrganization);
