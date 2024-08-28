@@ -5116,9 +5116,32 @@ const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
  */
 const getImagesInDatasetStructure = (datasetStructureObj) => {
   // Supported image file extensions for case-insensitive matching
-  const ambiguousFileTypes = [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp", ".jp2", ".ome.tif"];
-  const assumedMicroscopyFileTypes = [".czi", ".lif", ".nd2", ".oib", ".oif", ".lsm", ".svs"];
-
+  const ambiguousFileTypes = [
+    ".jpg", // JPEG
+    ".jpeg", // JPEG (alternative extension)
+    ".png", // PNG
+    ".tif", // Generic TIFF
+    ".tiff", // Tagged Image Format (alternative extension)
+    ".ome.tiff", // OME TIFF
+    ".btf", // Tagged Image Format (generic)
+    ".bmp", // BMP
+    ".jp2", // JPEG-2000
+    ".jpx", // JPEG-2000 (alternative extension)
+    ".ims", // Imaris/Bitplane/ANDOR
+    ".svs", // Aperio
+    ".h5", // Hierarchical Data Format
+  ];
+  const assumedMicroscopyFileTypes = [
+    ".czi", // Zeiss
+    ".oib", // Olympus
+    ".oif", // Olympus
+    ".lif", // Leica
+    ".nd2", // Nikon
+    ".lsm", // Zeiss
+    ".ndpi", // Nanozoomer
+    ".dcm", // DICOM
+    ".vsi", // Olympus
+  ];
   // Helper function to check if a file extension indicates an ambiguous image type
   const isAmbiguousImageType = (fileType) => {
     if (!fileType) {
@@ -5772,7 +5795,7 @@ window.openPage = async (targetPageID) => {
           "additional-metadata": "",
           action: ["future-microscopy-image-derivative"],
           extension: postConversionExtension,
-          derivativeManifestFileName: "",
+          "mark-safe-for-purge": true,
         });
 
         const createDerivativeFolderPlaceHolderForFutureMicroscopyimageConversions = (
@@ -5818,6 +5841,10 @@ window.openPage = async (targetPageID) => {
               relativePathToPrimaryImage,
               "JPEG2000"
             );
+          } else {
+            // If the file already exists, mark it as safe so it is not removed in the cull
+            currentFolder["files"][convertedJp2FileName]["mark-safe-for-purge"] = true;
+            console.log(currentFolder["files"][convertedJp2FileName]);
           }
 
           // Add tif file if it doesn't already exist
@@ -5830,6 +5857,9 @@ window.openPage = async (targetPageID) => {
               relativePathToPrimaryImage,
               "OME-TIFF"
             );
+          } else {
+            // If the file already exists, mark it as safe so it is not removed in the cull
+            currentFolder["files"][convertedTifFileName]["mark-safe-for-purge"] = true;
           }
         };
         // Get the relative paths array to the primary images to the primary images
@@ -5838,8 +5868,10 @@ window.openPage = async (targetPageID) => {
         const microscopyImages = window.sodaJSONObj["microscopy-images"];
         const derivativeImagePreviewsGenerated = [];
 
+        // For each microscopy image, create derivative folder placeholders for future microscopy image conversions
         for (const image of microscopyImages) {
           const relativeFolderPathsToPrimaryImages = image["relativeDatasetStructurePaths"];
+          console.log("relativeFolderPathsToPrimaryImages:", relativeFolderPathsToPrimaryImages);
           for (const relativeFolderPathToPrimaryImage of relativeFolderPathsToPrimaryImages) {
             try {
               createDerivativeFolderPlaceHolderForFutureMicroscopyimageConversions(
@@ -5851,6 +5883,34 @@ window.openPage = async (targetPageID) => {
             }
           }
         }
+
+        // Go through the deritative datasetStructureJSONObj folder and remove any objects that were not
+        // marked as safe for from the cull (have 'mark-safe-for-purge' set to true) since they were
+        // either recently generated or already existed and still have a mirrored primary image
+        const removeFilesNotMarkedSafeForPurge = (folder) => {
+          const files = folder["files"];
+          for (const file in files) {
+            const fileObj = files[file];
+            if (fileObj?.["action"]?.includes("future-microscopy-image-derivative")) {
+              if (!fileObj["mark-safe-for-purge"]) {
+                // Delete the file that no longer has a mirrored primary image
+                console.log("Deleting file that no longer has a mirrored primary image:", fileObj);
+                delete files[file];
+              } else {
+                // Remove the special key from the JSON object
+                console.log("Removing 'mark-safe-for-purge' key from file:", fileObj);
+                delete files[file]["mark-safe-for-purge"];
+              }
+            }
+          }
+
+          const subFolders = folder["folders"];
+          for (const subFolder in subFolders) {
+            removeFilesNotMarkedSafeForPurge(subFolders[subFolder]);
+          }
+        };
+
+        removeFilesNotMarkedSafeForPurge(window.datasetStructureJSONObj["folders"]["derivative"]);
 
         if (derivativeImagePreviewsGenerated.length > 0) {
           await swalFileListSingleAction(
