@@ -382,7 +382,7 @@ const MicroscopyImageMetadataFormPage = () => {
               {selectedImageFileObj ? (
                 <Stack gap="md">
                   <Group>
-                    <Text>
+                    <Text truncate="end">
                       <b>Image name:</b> {selectedImageFileObj?.fileName}
                     </Text>
                     <Button

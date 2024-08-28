@@ -66,7 +66,7 @@ class CreateBiolucidaCollection(Resource):
                 'collection_name': collection_name,
                 'pennsieve_auth_secret': access_token
             }
-            res = requests.post('https://flask-hello-world-six-opal.vercel.app/create_biolucida_collection', params=params)
+            res = requests.post('https://soda-biolucida-proxy-server.vercel.app/create_biolucida_collection', params=params)
             namespace_logger.info(f"Create collection response: {res}")
             namespace_logger.info(f"Create collection json: {res.json()}")  
             return res.json()
@@ -131,7 +131,7 @@ class UploadImageToBiolucida(Resource):
             }
 
             # Request the upload key and total number of chunks from the Biolucida API
-            res = requests.get('https://flask-hello-world-six-opal.vercel.app/get_biolucida_upload_key', params=params)
+            res = requests.get('https://soda-biolucida-proxy-server.vercel.app/get_biolucida_upload_key', params=params)
             namespace_logger.info(f"Upload key response: {res}")
             res_json = res.json()
             number_of_chunks = int(res_json['total_chunks'])  # Total number of chunks to upload
@@ -479,7 +479,7 @@ class GetBiolucidaImageId(Resource):
                 'image_name': image_name,
                 'pennsieve_auth_secret': access_token
             }
-            res = requests.get('https://flask-hello-world-six-opal.vercel.app/get_biolucida_image_id', params=params)
+            res = requests.get('https://soda-biolucida-proxy-server.vercel.app/get_biolucida_image_id', params=params)
             namespace_logger.info(f"Get image ID response: {res.json()}")
             return res.json()
         except Exception as e:
