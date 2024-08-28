@@ -1,6 +1,6 @@
 import { AccountField } from "./AccountField";
 // import DatasetField from "./DatasetField";
-import {WorkspaceField} from "./WorkspaceField";
+import { WorkspaceField } from "./WorkspaceField";
 // import GenericField from "./GenericField";
 
 export const fieldFactory = (field) => {
@@ -14,4 +14,4 @@ export const fieldFactory = (field) => {
     // generic field
     //return GenericField;
   }
-}
+};

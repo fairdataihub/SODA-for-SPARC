@@ -1982,7 +1982,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           sweet_al.appendChild(tip_container);
         },
         preConfirm: () => {
-          // TODO: Remove this 
+          // TODO: Remove this
           window.bfOrganization = $("#curatebforganizationlist").val();
           if (!window.bfOrganization) {
             Swal.showValidationMessage("Please select an organization!");
@@ -2029,7 +2029,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       }
 
       if (dropdownEventID === "dd-select-pennsieve-organization") {
-          // TODO: Use get slice function for this instead
+        // TODO: Use get slice function for this instead
         $("#ds-name").val(window.bfOrganization);
         $("#ds-description").val = $("#bf-dataset-subtitle").val;
         $("body").removeClass("waiting");

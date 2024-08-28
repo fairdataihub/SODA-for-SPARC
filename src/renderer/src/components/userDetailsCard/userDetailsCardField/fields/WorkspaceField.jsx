@@ -36,7 +36,6 @@ export const WorkspaceField = ({ tabName }) => {
               textAlign: "left",
               paddingRight: "5px",
             }}
-            
           >
             Current workspace:
           </h5>
