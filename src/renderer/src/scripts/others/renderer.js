@@ -79,6 +79,8 @@ import {
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
 } from "../../stores/slices/backgroundServicesSlice";
+import { updateDefaultWorkspace } from "../../stores/slices/defaultWorkspaceSlice";
+import { updateDefaultBfAccount } from "../../stores/slices/defaultBfAccountSlice";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -4030,6 +4032,8 @@ const setDefaultPennsieveAccountUI = async () => {
       $("#create_empty_dataset_BF_account_span").text(email);
       $(".bf-account-span").text(email);
       $(".bf-organization-span").text(organization);
+      updateDefaultWorkspace(organization)
+      updateDefaultBfAccount(email);
 
       $("#div-bf-account-load-progress").hide();
       showHideDropdownButtons("account", "show");

@@ -42,7 +42,7 @@ export const AccountField = ({ tabName }) => {
             Current account:
           </h5>
           <h5
-            className={"bf-account-span"}
+            // className={"bf-account-span"}
             style={{
               color: "#000",
               fontWeight: 600,
@@ -56,7 +56,6 @@ export const AccountField = ({ tabName }) => {
           >
             {defaultBfAccount}
           </h5>
-          <button onClick={changeAccountName}>Change Account</button>
         </div>
       </div>
     </div>
