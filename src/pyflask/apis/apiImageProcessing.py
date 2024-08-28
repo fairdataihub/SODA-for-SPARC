@@ -415,6 +415,7 @@ class CreateImageThumbnails(Resource):
             namespace_logger.info(f"Output directory: {output_directory}")
             converted_image_paths = []
             for image_path in image_paths:
+                namespace_logger.info(f"Creating thumbnail for image: {image_path}")
                 # Combine the output_directory with the image name and _thumbnail.jpg
                 thumbnail_path = os.path.join(
                     output_directory,

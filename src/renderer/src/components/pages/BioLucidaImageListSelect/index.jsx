@@ -16,7 +16,7 @@ import {
   Box,
 } from "@mantine/core";
 import { IconCloudUpload, IconSearch } from "@tabler/icons-react";
-import styles from "../../sharedComponentStyles/imageSelector.module.css";
+import styles from "../../sharedComponentStyles/ImageSelector.module.css";
 import useFetchThumbnailsPath from "../../../hooks/useFetchThumbnailsPath";
 
 const BioLucidaImageListSelectPage = () => {

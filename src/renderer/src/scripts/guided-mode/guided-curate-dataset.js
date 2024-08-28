@@ -1531,8 +1531,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      window.sodaJSONObj["confirmed-microscopy-images"] =
-        useGlobalStore.getState().confirmedMicroscopyImages;
+      window.sodaJSONObj["microscopy-images"] = useGlobalStore.getState().confirmedMicroscopyImages;
     }
 
     if (pageBeingLeftID === "guided-microscopy-image-metadata-form-tab") {
@@ -4511,7 +4510,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
 
   if (highLevelFolder === "derivative") {
     // If there are microscopy images added to the primary folder
-    const confirmedMicroscopyImages = window.sodaJSONObj["confirmed-microscopy-images"];
+    const confirmedMicroscopyImages = window.sodaJSONObj["microscopy-images"];
     console.log("confirmedMicroscopyImages", confirmedMicroscopyImages);
   }
 };
@@ -5265,15 +5264,20 @@ const copyLink = (link) => {
   });
 };
 
-const validatePageArray = async (arrayOfPagesToCheck) => {
-  const nonSkippedPages = getNonSkippedGuidedModePages(document);
-  for (const page of nonSkippedPages) {
-    try {
-      await checkIfPageIsValid(page.id);
-    } catch (error) {
-      await window.openPage(page.id);
-      break;
-    }
+const createThumbnails = async (imagePaths) => {
+  // Ensure the directory for guided image thumbnails exists, creating it if necessary
+  if (!window.fs.existsSync(guidedThumbnailsPath)) {
+    window.fs.mkdirSync(guidedThumbnailsPath, { recursive: true });
+  }
+  // Attempt to create thumbnails for the provided image paths
+  try {
+    const res = await client.post("/image_processing/create_image_thumbnails", {
+      image_paths: imagePaths,
+      output_directory: guidedThumbnailsPath,
+    });
+    console.log("Image thumbnails created successfully:", res.data);
+  } catch (error) {
+    console.error("Error creating image thumbnails:", error);
   }
 };
 
@@ -5677,65 +5681,53 @@ window.openPage = async (targetPageID) => {
       openSubPageNavigation(targetPageID);
     }
     if (targetPageID === "guided-microscopy-image-confirmation-tab") {
-      // Get the potential microscopy images from the primary folder
+      // Extract potential and assumed microscopy images from the primary folder in the dataset structure
       const { ambiguousImagesData, assumedMicroscopyImagesData } = getImagesInDatasetStructure(
         window.datasetStructureJSONObj["folders"]["primary"]
       );
-      console.log("ambiguousImagesData:", ambiguousImagesData);
-      console.log("assumedMicroscopyImagesData:", assumedMicroscopyImagesData);
 
-      // Extract the file paths of the potential microscopy images
+      console.log("Ambiguous Images Data:", ambiguousImagesData);
+      console.log("Assumed Microscopy Images Data:", assumedMicroscopyImagesData);
+
+      // Retrieve saved microscopy images, if available
+      const previouslyConfirmedMicroscopyImages = window.sodaJSONObj?.["microscopy-images"] || [];
+
+      // Extract file paths from ambiguous and assumed microscopy images
       const ambiguousImagesDataFilePaths = ambiguousImagesData.map((image) => image["filePath"]);
-
       const assumedMicroscopyImagesDataFilePaths = assumedMicroscopyImagesData.map(
         (image) => image["filePath"]
       );
 
-      const previouslyConfirmedMicroscopyImages =
-        window.sodaJSONObj?.["confirmed-microscopy-images"] || [];
+      // Filter previously confirmed microscopy images by checking if their file paths exist in the
+      // current set of ambiguous or assumed microscopy images
+      const confirmedMicroscopyImages = previouslyConfirmedMicroscopyImages.filter(
+        (image) =>
+          ambiguousImagesDataFilePaths.includes(image["filePath"]) ||
+          assumedMicroscopyImagesDataFilePaths.includes(image["filePath"])
+      );
 
-      console.log("previouslyConfirmedMicroscopyImages:", previouslyConfirmedMicroscopyImages);
-      // Combine the previously confirmed microscopy images with the assumed microscopy images
-      // (Images that are assumed to be microscopy images based on their file extension)
-      const confirmedMicroscopyImages = [];
+      // Extract the file paths of the confirmed microscopy images
+      const confirmedMicroscopyImagesFilePaths = confirmedMicroscopyImages.map(
+        (image) => image["filePath"]
+      );
 
-      for (const image of previouslyConfirmedMicroscopyImages) {
-        const filePath = image["filePath"];
-        if (
-          assumedMicroscopyImagesDataFilePaths.includes(filePath) ||
-          ambiguousImagesDataFilePaths.includes(filePath)
-        ) {
+      // Add the Assumed Microscopy Images microscopy image list if they have not already been added
+      assumedMicroscopyImagesData.forEach((image) => {
+        if (!confirmedMicroscopyImagesFilePaths.includes(image["filePath"])) {
           confirmedMicroscopyImages.push(image);
         }
-      }
+      });
 
-      // Create the directory for guided image thumbnails if it doesn't exist
-      if (!window.fs.existsSync(guidedThumbnailsPath)) {
-        window.fs.mkdirSync(guidedThumbnailsPath, { recursive: true });
-      }
+      // Create thumbnails for the ambiguous images to display in the UI
+      await createThumbnails(ambiguousImagesDataFilePaths);
 
-      console.log("guidedThumbnailsPath:", guidedThumbnailsPath);
-
-      // Create image thumbnails for the potential microscopy images
-      try {
-        const res = await client.post("/image_processing/create_image_thumbnails", {
-          image_paths: ambiguousImagesDataFilePaths,
-          output_directory: guidedThumbnailsPath,
-        });
-        console.log("Image thumbnails created successfully", res.data);
-      } catch (error) {
-        console.error("Error creating image thumbnails:", error);
-      }
-
-      console.log("confirmedMicroscopyImages:", confirmedMicroscopyImages);
-
-      // Update the state with potential and confirmed microscopy images
+      // Update the state with the potential and confirmed microscopy images
       setPotentialMicroscopyImages(ambiguousImagesData);
       setConfirmedMicroscopyImages(confirmedMicroscopyImages);
     }
 
     if (targetPageID === "guided-microscopy-image-metadata-form-tab") {
-      setConfirmedMicroscopyImages(window.sodaJSONObj["confirmed-microscopy-images"]);
+      setConfirmedMicroscopyImages(window.sodaJSONObj["microscopy-images"]);
       useGlobalStore
         .getState()
         .setImageMetadataJson(window.sodaJSONObj["microscopy-image-metadata"] || {});
@@ -5745,9 +5737,14 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-biolucida-image-selection-tab") {
+      // Create thumbnails for the confirmed microscopy images to display in the UI
+      await createThumbnails(
+        window.sodaJSONObj["microscopy-images"].map((image) => image["filePath"])
+      );
+
       // Get the confirmed microscopy images and the microscopy images selected to be uploaded to BioLucida (if they were previously set)
       // and update the zustand store state to update the React components
-      setConfirmedMicroscopyImages(window.sodaJSONObj["confirmed-microscopy-images"]);
+      setConfirmedMicroscopyImages(window.sodaJSONObj["microscopy-images"]);
 
       useGlobalStore
         .getState()
@@ -5838,7 +5835,7 @@ window.openPage = async (targetPageID) => {
         // Get the relative paths array to the primary images to the primary images
         // e.g. ['primary/sub-1/1-images/sub-1-slide-1.jpg'] and create derivative folder placeholders
         // for future microscopy image conversions in the datasetStructureJSONObj
-        const microscopyImages = window.sodaJSONObj["confirmed-microscopy-images"];
+        const microscopyImages = window.sodaJSONObj["microscopy-images"];
         const derivativeImagePreviewsGenerated = [];
 
         for (const image of microscopyImages) {
@@ -15974,7 +15971,7 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
 };
 
 const convertMicroscopyImagesViaMfPlus = async () => {
-  const microscopyImagesToConvert = window.sodaJSONObj["confirmed-microscopy-images"];
+  const microscopyImagesToConvert = window.sodaJSONObj["microscopy-images"];
   const microscopyImagesToConvertCount = microscopyImagesToConvert.length;
 
   setProgressElementData(

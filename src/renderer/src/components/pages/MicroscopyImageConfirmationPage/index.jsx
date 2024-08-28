@@ -20,7 +20,7 @@ import {
   setConfirmMicroscopySearchInput,
 } from "../../../stores/slices/microscopyImageSlice";
 import useGlobalStore from "../../../stores/globalStore";
-import styles from "../../sharedComponentStyles/imageSelector.module.css";
+import styles from "../../sharedComponentStyles/ImageSelector.module.css";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 import useFetchThumbnailsPath from "../../../hooks/useFetchThumbnailsPath";
@@ -41,6 +41,10 @@ const MicroscopyImageConfirmationPage = () => {
       .some((path) => path.includes(confirmMicroscopySearchInput.toLowerCase()))
   );
   const confirmedImagePaths = new Set(confirmedMicroscopyImages.map((image) => image.filePath));
+
+  const selectedMicroscopyImagesCount = potentialMicroscopyImages.filter((image) =>
+    confirmedImagePaths.has(image.filePath)
+  ).length;
 
   const selectAllImagesAsMicroscopy = () => {
     for (const image of filteredImages) {
@@ -198,7 +202,7 @@ const MicroscopyImageConfirmationPage = () => {
       </GuidedModeSection>
 
       {currentGuidedModePage === "guided-microscopy-image-confirmation-tab" &&
-        confirmedMicroscopyImages.length && (
+        selectedMicroscopyImagesCount > 0 && (
           <Affix
             position={{ top: 135, right: 20 }}
             style={{
@@ -207,8 +211,7 @@ const MicroscopyImageConfirmationPage = () => {
           >
             <SodaGreenPaper>
               <Text>
-                Images selected: {confirmedMicroscopyImages.length}/
-                {potentialMicroscopyImages.length}
+                Images selected: {selectedMicroscopyImagesCount}/{potentialMicroscopyImages.length}
               </Text>
             </SodaGreenPaper>
           </Affix>
