@@ -26,7 +26,7 @@ export const WorkspaceField = ({ tabName }) => {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div
           className={"change-current-account md-change-current-account"}
-          style={{ marginLeft: "6px", display: "flex", alignItems: "center" }}
+          style={{ marginLeft: "6px", display: "flex", alignItems: "center", padding: "5px 0px"  }}
         >
           <h5
             style={{
@@ -35,6 +35,7 @@ export const WorkspaceField = ({ tabName }) => {
               minWidth: "135px",
               textAlign: "left",
               paddingRight: "5px",
+              marginBottom: "0px"
             }}
           >
             Current workspace:
@@ -50,6 +51,8 @@ export const WorkspaceField = ({ tabName }) => {
               justifyContent: "space-between",
               wordBreak: "break-word",
               textAlign: "left",
+              marginTop: "0px",
+              marginLeft: "41px"
             }}
           >
             {defaultWorkspace}

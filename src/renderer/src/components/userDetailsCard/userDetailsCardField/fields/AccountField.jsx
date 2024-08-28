@@ -28,7 +28,7 @@ export const AccountField = ({ tabName }) => {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div
           className={"change-current-account md-change-current-account"}
-          style={{ marginLeft: "6px", display: "flex", alignItems: "center" }}
+          style={{ marginLeft: "6px", display: "flex", alignItems: "center", padding: "5px 0px" }}
         >
           <h5
             style={{
@@ -37,21 +37,23 @@ export const AccountField = ({ tabName }) => {
               minWidth: "135px",
               textAlign: "left",
               paddingRight: "5px",
+              marginBottom: "0px"
             }}
           >
             Current account:
           </h5>
           <h5
-            // className={"bf-account-span"}
+
             style={{
               color: "#000",
               fontWeight: 600,
-              marginLeft: "8px",
               fontSize: "15px",
               display: "flex",
               justifyContent: "space-between",
               wordBreak: "break-word",
               textAlign: "left",
+              marginTop: "0px",
+              marginLeft: "60px"
             }}
           >
             {defaultBfAccount}
