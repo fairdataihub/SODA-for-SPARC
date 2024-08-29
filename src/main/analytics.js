@@ -160,4 +160,4 @@ const trackEvent = (category, action, label, value, datasetID) => {
   }
 };
 
-export { trackEvent, trackKombuchaEvent };
+export { trackEvent, trackKombuchaEvent, dnt };

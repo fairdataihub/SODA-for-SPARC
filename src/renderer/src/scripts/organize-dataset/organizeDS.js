@@ -598,112 +598,150 @@ window.getGlobalPathFromString = (pathString) => {
 };
 
 window.loadFileFolder = (myPath) => {
+  console.log("window.loadFileFolder called");
+  console.log("myPath::", myPath);
+  const sortedObj = window.sortObjByKeys(myPath);
+  const folder_elem = [];
+  const file_elem = [];
   let appendString = "";
-  let sortedObj = window.sortObjByKeys(myPath);
   let count = 0;
-  let file_elem = [],
-    folder_elem = [];
 
-  for (let item in sortedObj["folders"]) {
+  const handleFolders = (item, folderData) => {
     let emptyFolder = "";
     count += 1;
+
     if (
       !window.highLevelFolders.includes(item) &&
-      JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
-      JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
+      Object.keys(folderData["folders"]).length === 0 &&
+      Object.keys(folderData["files"]).length === 0
     ) {
       emptyFolder = " empty";
     }
-    appendString =
-      appendString +
-      '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 oncontextmenu="window.folderContextMenu(this)" class="myFol' +
-      emptyFolder +
-      '"></h1><div class="folder_desc">' +
-      item +
-      "</div></div>";
+
+    appendString += `
+      <div class="single-item" 
+        onmouseover="window.hoverForFullName(this)" 
+        onmouseleave="window.hideFullName()"
+      >
+        <h1 oncontextmenu="window.folderContextMenu(this)" 
+          class="myFol${emptyFolder}">
+        </h1>
+        <div class="folder_desc">${item}</div>
+      </div>
+    `;
+
     if (count === 100) {
       folder_elem.push(appendString);
+      appendString = "";
       count = 0;
-      continue;
     }
-  }
+  };
 
-  if (count < 100 && !folder_elem.includes(appendString)) {
-    folder_elem.push(appendString);
-    count = 0;
-  }
-
-  count = 0;
-  appendString = "";
-  const supportedExtensions = [
-    "docx",
-    "doc",
-    "pdf",
-    "txt",
-    "jpg",
-    "JPG",
-    "jpeg",
-    "JPEG",
-    "xlsx",
-    "xls",
-    "csv",
-    "png",
-    "PNG",
-  ];
-
-  for (const item in sortedObj["files"]) {
+  const handleFiles = (item, file) => {
     count += 1;
 
-    // Skip auto-generated manifest
-    const file = sortedObj["files"][item];
     let extension = "other";
+    console.log("file::", file);
 
-    if (file.length !== 1) {
-      if ("path" in file) {
-        extension = window.path.extname(file["path"]).slice(1);
-      }
+    if (file.length !== 1 && "path" in file) {
+      const fileExtension = window.path.extname(file["path"]).slice(1);
 
-      if (!supportedExtensions.includes(extension)) {
-        extension = "other";
+      const supportedExtensions = new Set([
+        "docx",
+        "doc",
+        "pdf",
+        "txt",
+        "jpg",
+        "JPG",
+        "jpeg",
+        "JPEG",
+        "xlsx",
+        "xls",
+        "csv",
+        "png",
+        "PNG",
+      ]);
+
+      const nonSupportedImageExtensionsSupportedByMicroFilePlus = new Set([
+        "tif",
+        "tiff",
+        "btf",
+        "bmp",
+        "jp2",
+        "jpx",
+        "ims",
+        "svs",
+        "h5",
+        "czi",
+        "oib",
+        "oif",
+        "lif",
+        "nd2",
+        "lsm",
+        "ndpi",
+        "dcm",
+        "vsi",
+      ]);
+
+      if (supportedExtensions.has(fileExtension)) {
+        extension = fileExtension;
+      } else if (nonSupportedImageExtensionsSupportedByMicroFilePlus.has(fileExtension)) {
+        extension = "image-other";
       }
     }
 
-    // If the future-microscopy-image-derivative is in he action array,
-    // set extension so it shows the correct icon
     const fileAction = file?.["action"] || [];
+    console.log("fileAction::", fileAction);
 
-    console.log("fileAction", fileAction);
     if (fileAction.includes("future-microscopy-image-derivative")) {
-      console.log("future-microscopy-image-derivative");
       extension = "futureMfpConversion";
     }
 
     appendString += `
       <div class="single-item" 
-          onmouseover="window.hoverForFullName(this)" 
-          onmouseleave="window.hideFullName()">
+           onmouseover="window.hoverForFullName(this)" 
+           onmouseleave="window.hideFullName()">
         <h1 class="myFile ${extension}" 
-           oncontextmenu="window.fileContextMenu(this)" 
-           style="margin-bottom: 10px">
+            oncontextmenu="window.fileContextMenu(this)" 
+            style="margin-bottom: 10px">
         </h1>
         <div class="folder_desc">${item}</div>
       </div>`;
 
     if (count === 100) {
       file_elem.push(appendString);
+      appendString = "";
       count = 0;
     }
+  };
+
+  // Handle folders
+  for (const item in sortedObj["folders"]) {
+    const folderData = sortedObj["folders"][item];
+    handleFolders(item, folderData);
   }
-  if (count < 100 && !file_elem.includes(appendString)) {
+
+  if (appendString !== "") {
+    folder_elem.push(appendString);
+  }
+
+  // Reset appendString and count for files
+  appendString = "";
+  count = 0;
+
+  // Handle files
+  for (const item in sortedObj["files"]) {
+    const file = sortedObj["files"][item];
+    handleFiles(item, file);
+  }
+
+  if (appendString !== "") {
     file_elem.push(appendString);
-    count = 0;
   }
-  if (folder_elem[0] === "") {
-    folder_elem.splice(0, 1);
-  }
-  if (file_elem[0] === "") {
-    file_elem.splice(0, 1);
-  }
+
+  // Remove empty elements
+  if (folder_elem[0] === "") folder_elem.splice(0, 1);
+  if (file_elem[0] === "") file_elem.splice(0, 1);
 
   return [folder_elem, file_elem];
 };

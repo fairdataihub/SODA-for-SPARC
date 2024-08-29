@@ -4246,9 +4246,7 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
     // If the folder name is not valid, replace it with a valid name and then recurse through the
     // renamed folder to check for any other problematic folders
     if (!folderNameIsValid) {
-      console.log("Folder name is not valid: ", folderKey);
       const newFolderName = folderKey.replace(sparcFolderAndFileRegex, "-");
-      console.log("Newly corrected folder name: ", newFolderName);
       const newFolderObj = { ...datasetStructure["folders"][folderKey] };
       if (!newFolderObj["action"].includes("renamed")) {
         newFolderObj["action"].push("renamed");
@@ -5114,9 +5112,6 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
 
 //// helper functions for hiding/showing context menus
 const showmenu = (ev, category, deleted = false) => {
-  console.log("ev", ev);
-  console.log("category", category);
-  console.log("deleted", deleted);
   //stop the real right click menu
   let guidedModeFileExporer = false;
   let activePages = Array.from(document.querySelectorAll(".is-shown"));
@@ -5447,14 +5442,7 @@ $(document).bind("contextmenu", function (event) {
     if (event.target.classList.contains("deleted_file")) {
       showmenu(event, "file", true);
     } else {
-      if (event.target.classList.contains("futureMfpConversion")) {
-        swalShowInfo(
-          "File Modification Unavailable",
-          "The image you tried to modify is only a placeholder for a future MicroFile+ image conversion and does not yet exist."
-        );
-      } else {
-        showmenu(event, "file");
-      }
+      showmenu(event, "file");
     }
     window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
     window.hideMenu(
@@ -5563,6 +5551,7 @@ window.sortObjByKeys = (object) => {
 };
 
 window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
+  console.log("window.listItems called");
   //allow amount to choose how many elements to create
   //break elements into sets of 100
   const rootFolders = ["primary", "source", "derivative"];
@@ -5729,122 +5718,162 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
   //start creating folder elements to be rendered
   if (Object.keys(sortedObj["folders"]).length > 0) {
     for (var item in sortedObj["folders"]) {
-      // Helper function to check if a sample should be skipped
-      function shouldSkipSample(item, allSamples) {
-        if (allSamples.length > 1) {
-          const [poolSamples, noPoolSamples] = allSamples;
-          if (
-            poolSamples.some((sample) => sample["sampleName"] === item) ||
-            noPoolSamples.some((sample) => sample["sampleName"] === item)
-          ) {
-            return true;
-          }
-        } else if (allSamples.length === 1) {
-          const [poolSamples] = allSamples;
-          if (poolSamples.some((sample) => sample["sampleName"] === item)) {
-            return true;
-          }
-        }
-        return false;
-      }
-
-      // Helper function to check if a subject folder should be skipped
-      function shouldSkipSubject(item, currentSubjects) {
-        if (currentSubjects.length === 1) {
-          const [poolSubjects] = currentSubjects;
-          if (poolSubjects.some((subject) => subject["subjectName"] === item)) {
-            return true;
-          }
-        } else if (currentSubjects.length > 1) {
-          const [poolSubjects, noPoolSubjects] = currentSubjects;
-          if (
-            noPoolSubjects.some((subject) => subject["subjectName"] === item) ||
-            poolSubjects.some((subject) => subject["subjectName"] === item)
-          ) {
-            return true;
-          }
-        }
-        return false;
-      }
-
-      // Hide samples when on the subjects page
+      //hide samples when on the subjects page
       if (hideSampleFolders) {
-        const allSamples = window.sodaJSONObj.getAllSamplesFromSubjects();
-
-        if (shouldSkipSample(item, allSamples)) {
-          continue;
+        let currentSampleFolder = splitPath[0];
+        let allSamples = window.sodaJSONObj.getAllSamplesFromSubjects();
+        let noPoolSamples = [];
+        let poolSamples = [];
+        let skipSubjectFolder = false;
+        if (allSamples.length > 1) {
+          //subjects within pools and others not
+          poolSamples = allSamples[0];
+          noPoolSamples = allSamples[1];
+          for (let i = 0; i < poolSamples.length; i++) {
+            if (item === poolSamples[i]["sampleName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+          for (let i = 0; i < noPoolSamples.length; i++) {
+            if (item === noPoolSamples[i]["sampleName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+        }
+        if (allSamples.length === 1) {
+          poolSamples = allSamples[1];
+          for (let i = 0; i < poolSamples.length; i++) {
+            if (item === poolSamples[i]["sampleName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
         }
       }
-
-      // Hide subject folders when displaying pool page
       if (hideSubjectFolders) {
-        const currentSubjects = window.sodaJSONObj.getAllSubjects();
-
-        if (shouldSkipSubject(item, currentSubjects)) {
-          continue;
+        //hide subject folders when displaying pool page
+        const currentPoolName = splitPath[0];
+        let currentSubjects = window.sodaJSONObj.getAllSubjects();
+        let poolSubjects = [];
+        let noPoolSubjects = [];
+        let skipSubjectFolder = false;
+        if (currentSubjects.length === 1) {
+          poolSubjects = currentSubjects[0];
+          for (let i = 0; i < poolSubjects.length; i++) {
+            if (item === poolSubjects[i]["subjectName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
         }
+        if (currentSubjects.length > 1) {
+          //some subjects in pools and some not
+          poolSubjects = currentSubjects[0];
+          noPoolSubjects = currentSubjects[1];
+          for (let i = 0; i < noPoolSubjects.length; i++) {
+            if (item === noPoolSubjects[i]["subjectName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+          for (let i = 0; i < poolSubjects.length; i++) {
+            if (item === poolSubjects[i]["subjectName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+        }
+        if (skipSubjectFolder) continue;
       }
 
       count += 1;
-
-      let emptyFolder = "";
-      const folders = sortedObj["folders"][item];
-
-      // Determine if the folder is empty
+      var emptyFolder = "";
       if (!window.highLevelFolders.includes(item)) {
         if (
-          JSON.stringify(folders["folders"]) === "{}" &&
-          JSON.stringify(folders["files"]) === "{}"
+          JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
+          JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
         ) {
           emptyFolder = " empty";
         }
       }
 
-      let cloud_item = "";
-      let deleted_folder = false;
+      cloud_item = "";
+      deleted_folder = false;
 
-      // Determine folder status based on actions
-      if ("action" in folders) {
-        const action = folders["action"];
-        if (action.includes("deleted") || action.includes("recursive_deleted")) {
+      if ("action" in sortedObj["folders"][item]) {
+        if (
+          sortedObj["folders"][item]["action"].includes("deleted") ||
+          sortedObj["folders"][item]["action"].includes("recursive_deleted")
+        ) {
           emptyFolder += " deleted_folder";
           deleted_folder = true;
-          if (action.includes("recursive_deleted")) {
+          if (sortedObj["folders"][item]["action"].includes("recursive_deleted")) {
             emptyFolder += " recursive_deleted_file";
           }
         }
       }
 
-      // Determine cloud item type
-      if (folders["type"] === "bf") {
-        cloud_item = deleted_folder ? " pennsieve_folder_deleted" : " pennsieve_folder";
-      } else if (folders["type"] === "local") {
-        cloud_item = folders["action"].includes("existing")
-          ? deleted_folder
-            ? " local_folder_deleted"
-            : " local_folder"
-          : folders["action"].includes("updated")
-            ? " update-file"
-            : "";
+      if (sortedObj["folders"][item]["type"] == "bf") {
+        cloud_item = " pennsieve_folder";
+        if (deleted_folder) {
+          cloud_item = " pennsieve_folder_deleted";
+        }
       }
 
-      // Create HTML for folder item
-      const element_creation = `
-        <div class="single-item${folders["action"].includes("updated") ? " updated-file" : ""}" 
-            onmouseover="window.hoverForFullName(this)" 
-            onmouseleave="window.hideFullName()">
-          <h1 oncontextmenu="window.folderContextMenu(this)" class="myFol${emptyFolder}"></h1>
-          <div class="folder_desc${cloud_item}">${item}</div>
-        </div>
-      `;
+      if (
+        sortedObj["folders"][item]["type"] == "local" &&
+        sortedObj["folders"][item]["action"].includes("existing")
+      ) {
+        cloud_item = " local_folder";
+        if (deleted_folder) {
+          cloud_item = " local_folder_deleted";
+        }
+      }
 
-      appendString += element_creation;
+      if (sortedObj["folders"][item]["action"].includes("updated")) {
+        cloud_item = " update-file";
+        let elem_creation =
+          '<div class="single-item updated-file" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 oncontextmenu="window.folderContextMenu(this)" class="myFol' +
+          emptyFolder +
+          '"></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
 
-      if (count === 100) {
-        // Every one hundred elements created we put them into one element within the array
-        folder_elements.push(appendString);
-        count = 0;
-        appendString = "";
+        appendString = appendString + elem_creation;
+        if (count === 100) {
+          //every one hundred elements created we put it into one element within the array
+          folder_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
+        }
+      } else {
+        let element_creation =
+          '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 oncontextmenu="window.folderContextMenu(this)" class="myFol' +
+          emptyFolder +
+          '"></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+
+        appendString = appendString + element_creation;
+        if (count === 100) {
+          //every one hundred elements created we put it into one element within the array
+          folder_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
+        }
       }
     }
     if (count < 100) {
@@ -5860,91 +5889,126 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
   appendString = "";
   if (Object.keys(sortedObj["files"]).length > 0) {
     for (var item in sortedObj["files"]) {
-      // Increment count
       count += 1;
-
-      const file = sortedObj["files"][item];
-      let extension = "other";
-      let cloud_item = "";
-      let deleted_file = false;
-
-      // Determine the file extension
-      if (file.length !== 1) {
-        if ("path" in file) {
-          extension = window.path.extname(file["path"]).slice(1);
+      // not the auto-generated manifest
+      if (sortedObj["files"][item].length !== 1) {
+        if ("path" in sortedObj["files"][item]) {
+          var extension = window.path.extname(sortedObj["files"][item]["path"]).slice(1);
+        } else {
+          var extension = "other";
         }
-
-        if (file["type"] === "bf") {
-          if (file["action"].includes("deleted")) {
-            const original_file_name = item.substring(0, item.lastIndexOf("-"));
+        if (sortedObj["files"][item]["type"] == "bf") {
+          if (sortedObj["files"][item]["action"].includes("deleted")) {
+            let original_file_name = item.substring(0, item.lastIndexOf("-"));
             extension = original_file_name.split(".").pop();
           } else {
             extension = item.split(".").pop();
           }
         }
-
-        console.log("Checking extension", extension);
-        const validExtensions = [
-          "docx",
-          "doc",
-          "pdf",
-          "txt",
-          "jpg",
-          "jpeg",
-          "xlsx",
-          "xls",
-          "csv",
-          "png",
-        ];
-        if (!validExtensions.includes(extension.toLowerCase())) {
+        if (
+          ![
+            "docx",
+            "doc",
+            "pdf",
+            "txt",
+            "jpg",
+            "JPG",
+            "jpeg",
+            "JPEG",
+            "xlsx",
+            "xls",
+            "csv",
+            "png",
+            "PNG",
+          ].includes(extension)
+        ) {
           extension = "other";
         }
+      } else {
+        extension = "other";
       }
 
-      // Determine cloud item type and file status
-      if ("action" in file) {
-        console.log("action", file["action"]);
-        if (file["action"].includes("deleted") || file["action"].includes("recursive_deleted")) {
+      cloud_item = "";
+      deleted_file = false;
+
+      if ("action" in sortedObj["files"][item]) {
+        if (
+          sortedObj["files"][item]["action"].includes("deleted") ||
+          sortedObj["files"][item]["action"].includes("recursive_deleted")
+        ) {
           extension += " deleted_file";
           deleted_file = true;
-          if (file["action"].includes("recursive_deleted")) {
+          if (sortedObj["files"][item]["action"].includes("recursive_deleted")) {
             extension += " recursive_deleted_file";
           }
-        } else {
-          if (file["action"].includes("future-microscopy-image-derivative")) {
-            extension = "futureMfpConversion";
-          }
         }
       }
 
-      if (file["type"] === "bf") {
-        cloud_item = deleted_file ? " pennsieve_file_deleted" : " pennsieve_file";
-      } else if (file["type"] === "local") {
-        if (file["action"].includes("existing")) {
-          cloud_item = deleted_file ? " local_file_deleted" : " local_file";
-        } else if (file["action"].includes("updated")) {
-          cloud_item = deleted_file ? " pennsieve_file_deleted" : " update-file";
+      if (sortedObj["files"][item]["type"] == "bf") {
+        cloud_item = " pennsieve_file";
+        if (deleted_file) {
+          cloud_item = " pennsieve_file_deleted";
         }
+        let element_creation =
+          '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="window.fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
       }
 
-      // Create HTML for file item
-      const element_creation = `
-        <div class="single-item${file["action"].includes("updated") ? " updated-file" : ""}" 
-            onmouseover="window.hoverForFullName(this)" 
-            onmouseleave="window.hideFullName()">
-          <h1 class="myFile ${extension}" oncontextmenu="window.fileContextMenu(this)" style="margin-bottom: 10px"></h1>
-          <div class="folder_desc${cloud_item}">${item}</div>
-        </div>
-      `;
+      if (
+        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["action"].includes("existing")
+      ) {
+        cloud_item = " local_file";
+        if (deleted_file) {
+          cloud_item = " local_file_deleted";
+        }
+      }
+      if (
+        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["action"].includes("updated")
+      ) {
+        cloud_item = " update-file";
+        if (deleted_file) {
+          cloud_item = "pennsieve_file_deleted";
+        }
+        let elem_creation =
+          '<div class="single-item updated-file" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="window.fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
 
-      appendString += element_creation;
+        appendString = appendString + elem_creation;
+        if (count === 100) {
+          file_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
+        }
+      } else {
+        let element_creation =
+          '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="window.fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
 
-      if (count === 100) {
-        // Every one hundred elements created we put them into one element within the array
-        file_elements.push(appendString);
-        count = 0;
-        appendString = "";
-        continue;
+        appendString = appendString + element_creation;
+        if (count === 100) {
+          file_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
+        }
       }
     }
     if (count < 100) {
@@ -6729,7 +6793,6 @@ const initiate_generate = async (e) => {
       const mergeSelectedCard = document
         .querySelector("#dataset-upload-existing-dataset")
         .classList.contains("checked");
-      console.log("Merge selected option: ", mergeSelectedCard);
       if (mergeSelectedCard) {
         await swalShowInfo(
           "Manifest Files Not Updated With New Files",
@@ -6742,7 +6805,7 @@ const initiate_generate = async (e) => {
       window.pennsieveAgentManifestId = data["local_manifest_id"];
       window.pennsieveManifestId = data["origin_manifest_id"];
 
-      window.totalFilesCount = uploadedFiles;
+      window.totalFilesCount = data["main_curation_total_files"];
 
       $("#sidebarCollapse").prop("disabled", false);
       window.log.info("Completed curate function");
@@ -8386,6 +8449,7 @@ const directToGuidedMode = () => {
   guidedModeLinkButton.click();
 };
 window.directToFreeFormMode = () => {
+  const freeFormModeLinkButton = document.getElementById("main_tabs_view");
   const directToOrganize = document.getElementById("organize_dataset_btn");
   directToOrganize.click();
   // freeFormModeLinkButton.click();

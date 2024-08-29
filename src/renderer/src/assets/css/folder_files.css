@@ -219,6 +219,16 @@
   margin-left: 5px;
 }
 
+.myFile.image-other:before {
+  background: url("../img/image-other.svg");
+  content: "";
+  background-size: cover;
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  opacity: 0.7;
+}
+
 .myFile.deleted_file:before {
   opacity: 0.5;
 }

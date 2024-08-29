@@ -74,7 +74,7 @@ const BioLucidaImageListSelectPage = () => {
   const bioLucidaExplanationText = `
     BioLucida is a software platform developed by MBF Bioscience for managing, visualizing, and sharing high-resolution microscopy images.
     Before your dataset is uploaded to Pennsieve at the end of the End-to-End process, the images you select in the interface below will be
-    uploaded to BioLucida allowing other researchers to view them.
+    uploaded to BioLucida allowing other researchers to view them in the browser.
   `;
   const pageDescriptionArray =
     confirmedMicroscopyImages.length > 50
