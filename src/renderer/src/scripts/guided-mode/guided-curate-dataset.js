@@ -4127,11 +4127,16 @@ const guidedShowTreePreview = (new_dataset_name, targetElementId) => {
 
   //Add the manifest files that have been created to the preview
   for (const manifestFileKey of Object.keys(window.sodaJSONObj["guided-manifest-files"])) {
-    dsJsonObjCopy["folders"][manifestFileKey]["files"]["manifest.xlsx"] = {
-      action: ["new"],
-      path: "",
-      type: "local",
-    };
+    const hlfStillExistsForManifestFile = Object.keys(dsJsonObjCopy["folders"]).includes(
+      manifestFileKey
+    );
+    if (hlfStillExistsForManifestFile) {
+      dsJsonObjCopy["folders"][manifestFileKey]["files"]["manifest.xlsx"] = {
+        action: ["new"],
+        path: "",
+        type: "local",
+      };
+    }
   }
 
   //Add the Readme file to the preview if it exists in JSON
