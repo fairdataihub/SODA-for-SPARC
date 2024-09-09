@@ -7,7 +7,7 @@ on:
       - main
       - staging
       - pre-staging
-      - gm-preview-page-file-check
+      - v-2019-pennsieve-agent-patch
 
 jobs:
   deploy-on-windows:
