@@ -7,7 +7,6 @@ on:
       - main
       - staging
       - pre-staging
-      - v-2019-pennsieve-agent-patch
 
 jobs:
   deploy-on-windows:
