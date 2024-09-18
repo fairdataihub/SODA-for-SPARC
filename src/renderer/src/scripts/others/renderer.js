@@ -4307,22 +4307,23 @@ window.replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
 //   }
 // };
 
-const namesOfForbiddenFiles = {
+const forbiddenFiles = {
   ".DS_Store": true,
   "Thumbs.db": true,
 };
 
-const sparcFolderAndFileRegex = /[\+&\%#]/;
+const validSparcFolderAndFileNameRegex = /^[0-9A-Za-z,.-_ ]+$/;
 const identifierConventionsRegex = /^[a-zA-Z0-9-_]+$/;
 
-window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
-  const testCases = {
-    "folder-and-file-name-is-valid": !sparcFolderAndFileRegex.test(stringToTest), // returns true if the string is valid
-    "file-is-hidden": stringToTest.startsWith("."), // returns true if the string is hidden
-    "file-is-in-forbidden-files-list": namesOfForbiddenFiles?.[stringToTest], // returns true if the string is in the forbidden files list
-    "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest), // returns true if the string adheres to the identifier conventions
+window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
+  const tests = {
+    "is-valid-folder-or-file-name": validSparcFolderAndFileNameRegex.test(stringToTest),
+    "is-hidden-file": stringToTest.startsWith("."),
+    "is-forbidden-file": forbiddenFiles[stringToTest] === true,
+    "adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest),
   };
-  return testCases[stringCase];
+
+  return tests[testType];
 };
 let loadingSweetAlert;
 let loadingSweetAlertTimer;
