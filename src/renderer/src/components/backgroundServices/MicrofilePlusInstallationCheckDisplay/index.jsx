@@ -131,7 +131,7 @@ const MicrofilePlusInstallationCheckDisplay = () => {
         <Alert
           variant="light"
           color="green"
-          title="MicroFile+ installed successfully"
+          title="SODA successfully detected MicroFile+ installation"
           icon={<IconRosetteDiscountCheck />}
           style={{ width: "100%" }}
         >
