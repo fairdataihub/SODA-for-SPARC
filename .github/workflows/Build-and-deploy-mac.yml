@@ -8,6 +8,7 @@ on:
       - staging
       - pre-staging
       - v-2019-pennsieve-agent-patch
+      - update-electron-builder
 
 jobs:
   deploy-on-mac:
