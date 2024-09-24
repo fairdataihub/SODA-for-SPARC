@@ -821,8 +821,7 @@
                 class="btn-confirm-ds-selection"
               >
                 <button
-                  onclick="window.generateManifestFolderLocallyForEdit(this)"
-                  id="btn-pull-ds-manifest"
+                  id="btn-confirm-dataset-manifest-page"
                   class="btn_animated"
                   style="
                     border: none !important;
@@ -857,6 +856,31 @@
                   "
                 >
                   Fake confirm
+                </button>
+              </div>
+              <div
+                data-component-type="pennsieve-agent-check-display"
+                class="hidden"
+                id="advanced-features-manifest-generation-pennsieve-agent-check"
+              ></div>
+              <div style="flex-direction: row; justify-content: center; margin: 25px auto">
+                <button
+                  id="btn-pull-ds-manifest"
+                  style="
+                    border: none !important;
+                    border-radius: 4px;
+                    margin: 0.5rem auto;
+                    width: 110px;
+                    height: 35px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-size: 14px;
+                    font-weight: 600;
+                    padding-left: 9px;
+                  "
+                  class="hidden btn_animated"
+                >
+                  Pull Manifest Information
                 </button>
               </div>
             </div>

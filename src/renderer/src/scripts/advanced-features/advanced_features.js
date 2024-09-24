@@ -316,3 +316,37 @@ $("#button-import-banner-image").click(async () => {
   $("#edit_banner_image_modal").modal("show");
   $("#edit_banner_image_modal").addClass("show");
 });
+
+// Pennsieve Agent check display
+document.querySelector("#btn-confirm-dataset-manifest-page").addEventListener("click", async () => {
+  // hide the confirm button
+  document.querySelector("#btn-confirm-dataset-manifest-page").classList.add("hidden");
+
+  // show the Pennsieve Agent slot
+  const pennsieveAgentCheckDivId = "advanced-features-manifest-generation-pennsieve-agent-check";
+  let pennsieveAgentCheckDiv = document.querySelector(`#${pennsieveAgentCheckDivId}`);
+
+  // start agent check
+  let agentCheckSuccessful = false;
+  try {
+    pennsieveAgentCheckDiv.classList.remove("hidden");
+    // Check to make sure the Pennsieve agent is installed
+    agentCheckSuccessful = await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
+  } catch (e) {
+    console.error("Error with agent" + e);
+  }
+
+  if (!agentCheckSuccessful) {
+    return;
+  }
+
+  // show the btn-pul-ds-manifest button
+  document.querySelector("#btn-pull-ds-manifest").classList.remove("hidden");
+
+  // scroll to the button
+  document.querySelector("#btn-pull-ds-manifest").scrollIntoView({ behavior: "smooth" });
+});
+
+document.querySelector("#btn-pull-ds-manifest").addEventListener("click", async function () {
+  window.generateManifestFolderLocallyForEdit(this);
+});
