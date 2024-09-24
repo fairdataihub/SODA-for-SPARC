@@ -253,6 +253,7 @@ if (process.contextIsolated) {
       },
       checkForPennsieveAgent: () => {
         return new Promise((resolve, reject) => {
+          console.log("SSSS");
           let agentStartSpawn = spawn("pennsieve", ["agent"], {
             shell: true,
             env: window.process.env,
