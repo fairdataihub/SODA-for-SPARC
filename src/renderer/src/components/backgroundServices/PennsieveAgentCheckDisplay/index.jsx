@@ -72,8 +72,14 @@ const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
               <>
                 <Text>
                   This is a known issue with the Pennsieve Agent. It can typically be resolved by
-                  deleting the local Pennsieve Agent database files. Would you like SODA to do this
-                  and restart the Agent?
+                  deleting the local Pennsieve Agent database files. You can refer to the
+                  <ExternalLink
+                    href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda"
+                    buttonText="SODA documentation"
+                    buttonType="anchor"
+                  />
+                  for information on how to fix the issue manually. SODA can also attempt to fix the
+                  issue for you. Would you like to have SODA try to fix the issue?
                 </Text>
                 <Group justify="center" mt="sm">
                   <Button onClick={deletePennsieveAgentDBFilesAndRestart}>
