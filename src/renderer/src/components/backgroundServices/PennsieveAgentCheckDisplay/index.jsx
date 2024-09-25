@@ -108,6 +108,7 @@ const PennsieveAgentCheckDisplay = () => {
     postPennsieveAgentCheckAction,
   } = useGlobalStore();
 
+  // If the Pennsieve agent check is in progress, display a loading spinner
   if (pennsieveAgentCheckInProgress === true) {
     return (
       <FullWidthContainer>
@@ -121,6 +122,7 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
+  // If an error message title and message are present, display the error message
   if (pennsieveAgentCheckError?.title && pennsieveAgentCheckError?.message) {
     return (
       <FullWidthContainer>
@@ -142,6 +144,7 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
+  // If the Pennsieve agent is not installed, display a message with a download link
   if (pennsieveAgentInstalled === false) {
     return (
       <FullWidthContainer>
@@ -176,7 +179,8 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
-  if (pennsieveAgentOutputErrorMessage === true) {
+  // If the Pennsieve agent check returned an error message, display the error message
+  if (pennsieveAgentOutputErrorMessage != null) {
     return (
       <FullWidthContainer>
         <PennsieveAgentErrorMessageDisplay errorMessage={pennsieveAgentOutputErrorMessage} />
@@ -184,6 +188,7 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
+  // If the Pennsieve agent is not up to date, display a message with a download link to the latest version
   if (pennsieveAgentUpToDate === false) {
     return (
       <FullWidthContainer>
@@ -223,6 +228,7 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
+  // If the Pennsieve agent check was successful (no flags occurred), display a success message
   return (
     <FullWidthContainer>
       <Stack mt="sm" align="center" mx="sm">

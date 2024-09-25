@@ -562,8 +562,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-      console.log("oops");
-
       return false;
     }
 
