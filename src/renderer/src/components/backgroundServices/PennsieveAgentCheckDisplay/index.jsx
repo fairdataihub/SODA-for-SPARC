@@ -12,6 +12,7 @@ const KNOWN_ERROR_MESSAGES = [
   "UNIQUE constraint failed:",
   "NotAuthorizedException: Incorrect username or password.",
   "401 Error Creating new UserSettings",
+  "UserSettings" /* If the error message contains "UserSettings", it is likely solved by deleting the Pennsieve Agent database files */,
 ];
 
 // Utility Functions
@@ -22,6 +23,10 @@ const deletePennsieveAgentDBFilesAndRestart = async () => {
     "/.pennsieve/pennsieve_agent.db-wal",
   ];
 
+  // Stop the Pennsieve agent to free up the database files
+  await window.spawn.stopPennsieveAgent();
+
+  // Delete the Pennsieve agent database files
   for (const file of filesToDelete) {
     const filePath = `${window.homeDirectory}${file}`;
     if (window.fs.existsSync(filePath)) {
@@ -29,6 +34,7 @@ const deletePennsieveAgentDBFilesAndRestart = async () => {
     }
   }
 
+  // Restart the Pennsieve agent check
   await window.checkPennsieveAgent();
 };
 
