@@ -22,15 +22,21 @@ const deletePennsieveAgentDBFilesAndRestart = async () => {
     "/.pennsieve/pennsieve_agent.db-wal",
   ];
 
-  // Stop the Pennsieve agent to free up the database files
-  await window.spawn.stopPennsieveAgent();
+  try {
+    // Stop the Pennsieve agent to free up the database files
+    await window.spawn.stopPennsieveAgent();
 
-  // Delete the Pennsieve agent database files
-  for (const file of filesToDelete) {
-    const filePath = `${window.homeDirectory}${file}`;
-    if (window.fs.existsSync(filePath)) {
-      await window.fs.unlink(filePath);
+    // Delete the Pennsieve agent database files
+    for (const file of filesToDelete) {
+      const filePath = `${window.homeDirectory}${file}`;
+      if (window.fs.existsSync(filePath)) {
+        await window.fs.unlink(filePath);
+      } else {
+        console.error(`Unable to find Pennsieve agent DB file: ${filePath}`);
+      }
     }
+  } catch (error) {
+    console.error("Error deleting Pennsieve agent DB files:", error);
   }
 
   // Restart the Pennsieve agent check
