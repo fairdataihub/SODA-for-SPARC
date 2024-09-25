@@ -532,6 +532,8 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
   try {
     // Step 0: abort if the background services are already running
     if (useGlobalStore.getState()["pennsieveAgentCheckInProgress"] === true) {
+  console.log("oops")
+
       return false;
     }
     // Reset the background services state in the store and set the checks in progress
@@ -546,6 +548,8 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
         "An internet connection is required to upload to Pennsieve. Please connect to the internet and try again."
       );
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+  console.log("oops")
+
       return false;
     }
 
@@ -558,6 +562,8 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+  console.log("oops")
+
       return false;
     }
 
@@ -577,6 +583,8 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       const emessage = userErrorMessage(error);
       setPennsieveAgentOutputErrorMessage(emessage);
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+  console.log("oops")
+
       return false;
     }
 
@@ -591,6 +599,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
         "Please check the Pennsieve Agent logs for more information."
       );
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      console.log("oops")
 
       return false;
     }
@@ -607,6 +616,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
         emessage
       );
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      console.log("oops")
 
       return false;
     }
@@ -616,6 +626,8 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
       setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      console.log("oops")
+
       return false;
     }
 

@@ -5,6 +5,7 @@ import { hideAllSectionsAndDeselectButtons } from "../../assets/nav";
 import { existingDataset, modifyDataset } from "../../assets/lotties/lotties";
 import lottie from "lottie-web";
 import Swal from "sweetalert2";
+import { clientError } from "../others/http-error-handler/error-handler";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -336,17 +337,23 @@ document.querySelector("#btn-confirm-dataset-manifest-page").addEventListener("c
     console.error("Error with agent" + e);
   }
 
+  console.log(agentCheckSuccessful)
+
   if (!agentCheckSuccessful) {
     return;
   }
 
-  // show the btn-pul-ds-manifest button
-  document.querySelector("#btn-pull-ds-manifest").classList.remove("hidden");
+  // show the btn-pull-ds-manifest button
+  document.querySelector("#div-btn-pull-ds-manifest").classList.remove("hidden");
 
   // scroll to the button
-  document.querySelector("#btn-pull-ds-manifest").scrollIntoView({ behavior: "smooth" });
+  document.querySelector("#div-btn-pull-ds-manifest").scrollIntoView({ behavior: "smooth" });
 });
 
 document.querySelector("#btn-pull-ds-manifest").addEventListener("click", async function () {
+  try {
   window.generateManifestFolderLocallyForEdit(this);
+  } catch (e) {
+    clientError(e)
+  }
 });
