@@ -337,7 +337,7 @@ document.querySelector("#btn-confirm-dataset-manifest-page").addEventListener("c
     console.error("Error with agent" + e);
   }
 
-  console.log(agentCheckSuccessful)
+  console.log(agentCheckSuccessful);
 
   if (!agentCheckSuccessful) {
     return;
@@ -352,8 +352,8 @@ document.querySelector("#btn-confirm-dataset-manifest-page").addEventListener("c
 
 document.querySelector("#btn-pull-ds-manifest").addEventListener("click", async function () {
   try {
-  window.generateManifestFolderLocallyForEdit(this);
+    window.generateManifestFolderLocallyForEdit(this);
   } catch (e) {
-    clientError(e)
+    clientError(e);
   }
 });
