@@ -344,7 +344,7 @@ document.querySelector("#btn-confirm-dataset-manifest-page").addEventListener("c
   }
 
   // show the btn-pull-ds-manifest button
-  document.querySelector("#div-btn-pull-ds-manifest").classList.remove("hidden");
+  // document.querySelector("#div-btn-pull-ds-manifest").classList.remove("hidden");
 
   // scroll to the button
   document.querySelector("#div-btn-pull-ds-manifest").scrollIntoView({ behavior: "smooth" });
@@ -357,3 +357,23 @@ document.querySelector("#btn-pull-ds-manifest").addEventListener("click", async 
     clientError(e);
   }
 });
+
+
+// create a mutation observer on this id advanced-features-manifest-generation-pennsieve-agent-check
+// to check if the agent check has been completed and we can show the div-btn-pull-ds-manifest
+const agentCheckDiv = document.querySelector("#advanced-features-manifest-generation-pennsieve-agent-check");
+const agentCheckObserver = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    const textToCheck = "The Pennsieve Agent is running and ready to upload!";
+    const isTextPresent = agentCheckDiv.textContent.includes(textToCheck);
+    if (isTextPresent) {
+      document.querySelector
+        ("#div-btn-pull-ds-manifest").classList.remove("hidden");
+    }
+
+  }, { attributes: true });
+});
+
+agentCheckObserver.observe(agentCheckDiv, { childList: true,subtree: true, characterData: true  });
+
+
