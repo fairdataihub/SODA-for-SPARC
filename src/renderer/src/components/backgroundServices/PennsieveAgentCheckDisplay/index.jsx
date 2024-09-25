@@ -11,7 +11,6 @@ const CLOSE_SODA_BUTTON_TEXT = "Close SODA";
 const KNOWN_ERROR_MESSAGES = [
   "UNIQUE constraint failed:",
   "NotAuthorizedException: Incorrect username or password.",
-  "401 Error Creating new UserSettings",
   "UserSettings" /* If the error message contains "UserSettings", it is likely solved by deleting the Pennsieve Agent database files */,
 ];
 
