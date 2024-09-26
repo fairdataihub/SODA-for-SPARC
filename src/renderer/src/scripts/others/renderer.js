@@ -2593,6 +2593,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetList) {
 // ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
 const metadataDatasetlistChange = () => {
+  console.log("This is called")
   $("#bf-dataset-subtitle").val("");
   $("#para-dataset-banner-image-status").html("");
   window.showCurrentSubtitle();
@@ -4961,6 +4962,7 @@ document.querySelectorAll(".file-import-container").forEach((fileImportContainer
 //path: array
 //curationMode: string (guided-moded) (freeform)
 window.handleSelectedBannerImage = async (path, curationMode) => {
+  console.log("This is called")
   let imgContainer = "";
   let imgHolder = "";
   let paraImagePath = "";
