@@ -231,6 +231,16 @@ $("#advanced-start-over-button").on("click", async () => {
     ).children[0].children[0].style.display = "block";
     document.getElementById("input-manifest-local-folder-dataset").placeholder = "Browse here";
 
+    // hide the pennsieve agent check section
+    document.getElementById("advanced-features-manifest-generation-pennsieve-agent-check").classList.add("hidden");
+    // hide the pull manifest information button's div
+    document.getElementById("div-btn-pull-ds-manifest").classList.add("hidden");
+    // set the dataset text to none
+    document.querySelector("#bf_dataset_create_manifest").textContent = "None";
+    // hide the confirm button 
+    document.querySelector("#btn-confirm-dataset-manifest-page").classList.add("hidden")
+
+
     // Hide the all sub-questions for generating manifest
     document.getElementById("Question-prepare-manifest-2").classList.remove("show");
     document.getElementById("Question-prepare-manifest-2").classList.remove("prev");

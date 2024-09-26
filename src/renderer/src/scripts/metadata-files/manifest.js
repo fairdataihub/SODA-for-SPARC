@@ -119,6 +119,8 @@ $(document).ready(async function () {
   $("#bf_dataset_create_manifest").on("DOMSubtreeModified", () => {
     if ($("#bf_dataset_create_manifest").text().trim() !== "None") {
       $("#div-check-bf-create-manifest").css("display", "flex");
+      document.querySelector("#btn-confirm-dataset-manifest-page").classList.remove("hidden")
+
       $($("#div-check-bf-create-manifest").children()[0]).show();
     } else {
       $("#div-check-bf-create-manifest").css("display", "none");
