@@ -4962,7 +4962,7 @@ document.querySelectorAll(".file-import-container").forEach((fileImportContainer
 //path: array
 //curationMode: string (guided-moded) (freeform)
 window.handleSelectedBannerImage = async (path, curationMode) => {
-  console.log("This is called");
+  console.log("This is called - handle selected banner image");
   let imgContainer = "";
   let imgHolder = "";
   let paraImagePath = "";
@@ -4978,6 +4978,7 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
     cropperOptions = window.guidedCropOptions;
   }
   if (curationMode === "freeform") {
+    console.log("Here specifically");
     cropperOptions = window.cropOptions;
     paraImagePath = "#para-path-image";
     saveBannerImage = "#save-banner-image";

@@ -389,3 +389,35 @@ const agentCheckObserver = new MutationObserver((mutations) => {
 });
 
 agentCheckObserver.observe(agentCheckDiv, { childList: true, subtree: true, characterData: true });
+
+// add the same mutatiomn observer for the banner image pennsieve agent check
+const agentCheckBannerImageDiv = document.querySelector(
+  "#advanced-features-banner-image-pennsieve-agent-check"
+);
+const agentCheckBannerImageDivObserver = new MutationObserver((mutations) => {
+  mutations.forEach(
+    async (mutation) => {
+      const textToCheck = "The Pennsieve Agent is running and ready to upload!";
+      const isTextPresent = agentCheckBannerImageDiv.textContent.includes(textToCheck);
+      if (isTextPresent) {
+        await window.transitionFreeFormMode(
+          document.querySelector("#div_add_edit_banner_image_agent_check"),
+          "div_add_edit_banner_image_agent_check",
+          "delete",
+          "freeform"
+        );
+        await window.wait(1000);
+
+        // scroll the next section into view
+        document.querySelector("#edit_banner_image_button").scrollIntoView({ behavior: "smooth" });
+      }
+    },
+    { attributes: true }
+  );
+});
+
+agentCheckBannerImageDivObserver.observe(agentCheckBannerImageDiv, {
+  childList: true,
+  subtree: true,
+  characterData: true,
+});
