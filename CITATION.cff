@@ -1,6 +1,6 @@
 title: SODA (Software to Organize Data Automatically) for SPARC
 authors:
-  - given-names: Christopher
+  - given-names: Aaron
     family-names: Marroquin
     email: cmarroquin@calmi2.org
     affiliation: FAIR Data Innovations Hub, California Medical Innovations Institute
@@ -19,7 +19,7 @@ authors:
   - given-names: Tram
     family-names: Ngo
     affiliation: FAIR Data Innovations Hub, California Medical Innovations Institute
- - given-names: Bhavesh
+  - given-names: Bhavesh
     family-names: Patel
     email: bpatel@calmi2.org
     affiliation: FAIR Data Innovations Hub, California Medical Innovations Institute
@@ -28,7 +28,7 @@ message: If you use this software, please cite it using the metadata from this f
 type: software
 identifiers:
   - type: doi
-    value: 10.5281/zenodo.12774826
+    value: 10.5281/zenodo.13874674
 abstract: Simplifying data curation for researchers funded by the NIH SPARC initiative
 keywords:
   - SPARC
@@ -41,5 +41,5 @@ keywords:
   - windows
 license: MIT
 repository-code: https://github.com/fairdataihub/SODA-for-SPARC
-version: 15.1.0
-date-released: 2024-07-19
+version: 15.2.1
+date-released: 2024-10-01
