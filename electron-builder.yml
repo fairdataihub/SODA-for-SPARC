@@ -30,6 +30,7 @@ nsis:
   createDesktopShortcut: always
 mac:
   icon: "app-icon/png/icon.png"
+  entitlements: ./entitlements.mac.plist
   entitlementsInherit: ./entitlements.mac.inherit.plist
   notarize: true
   extraResources:
