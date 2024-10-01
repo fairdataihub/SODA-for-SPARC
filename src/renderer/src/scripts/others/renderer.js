@@ -499,17 +499,6 @@ const initializeSODARenderer = async () => {
   // Set the app version in the sidebar for the user to see
   setSidebarAppVersion();
 
-  // Warn the user if they are on a beta version of the app
-  const warnUserIfBetaVersionAndDntNotEnabled = async () => {
-    let currentAppVersion = await window.electron.ipcRenderer.invoke("app-version");
-    if (currentAppVersion.includes("beta")) {
-      await swalShowInfo(
-        "You are on a beta version of SODA",
-        "When you are finished using this special version of SODA, please download the latest stable version<a href='https://docs.sodaforsparc.io/' target='_blank'> by clicking here</a>"
-      );
-    }
-  };
-
   await warnUserIfBetaVersionAndDntNotEnabled();
 
   // Launch announcements if the user has not seen them yet
@@ -986,6 +975,22 @@ const setSidebarAppVersion = async () => {
   let currentAppVersion = await window.electron.ipcRenderer.invoke("app-version");
   const version = document.getElementById("version");
   version.innerText = currentAppVersion;
+};
+
+// Warn the user if they are on a beta version of the app
+const warnUserIfBetaVersionAndDntNotEnabled = async () => {
+  try {
+    let currentAppVersion = await window.electron.ipcRenderer.invoke("app-version");
+    const dntFilePath = window.path.join(homeDirectory, ".soda-config", "dnt.soda");
+    if (currentAppVersion.includes("beta") && !window.fs.existsSync(dntFilePath)) {
+      await swalShowInfo(
+        "You are on a beta version of SODA",
+        "When you are finished using this special version of SODA, please download the latest stable version<a href='https://docs.sodaforsparc.io/' target='_blank'> by clicking here</a>"
+      );
+    }
+  } catch (err) {
+    console.error("Error determing if beta pop up should exist:", err);
+  }
 };
 
 // Check app version on current app and display in the side bar
