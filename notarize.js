@@ -1,9 +1,11 @@
-const fs = require("fs");
-const path = require("path");
-require("dotenv").config();
-var electron_notarize = require("electron-notarize");
+import fs from "fs";
+import path from "path";
+import { config } from "dotenv";
+import { notarize } from "@electron/notarize";
 
-module.exports = async function (params) {
+config();
+
+export default async function (params) {
   // Only notarize the app on Mac OS only.
   if (process.platform !== "darwin") {
     console.log(
@@ -24,7 +26,7 @@ module.exports = async function (params) {
   console.log(`Notarizing ${appId} found at ${appPath}`);
 
   try {
-    await electron_notarize.notarize({
+    await notarize({
       tool: "notarytool",
       appBundleId: appId,
       appPath: appPath,
@@ -37,4 +39,4 @@ module.exports = async function (params) {
   }
 
   console.log(`Done notarizing ${appId}`);
-};
+}
