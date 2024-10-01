@@ -499,6 +499,19 @@ const initializeSODARenderer = async () => {
   // Set the app version in the sidebar for the user to see
   setSidebarAppVersion();
 
+  // Warn the user if they are on a beta version of the app
+  const warnUserIfBetaVersionAndDntNotEnabled = async () => {
+    let currentAppVersion = await window.electron.ipcRenderer.invoke("app-version");
+    if (currentAppVersion.includes("beta")) {
+      await swalShowInfo(
+        "You are on a beta version of SODA",
+        "When you are finished using this special version of SODA, please download the latest stable version<a href='https://docs.sodaforsparc.io/' target='_blank'> by clicking here</a>"
+      );
+    }
+  };
+
+  await warnUserIfBetaVersionAndDntNotEnabled();
+
   // Launch announcements if the user has not seen them yet
   await launchAnnouncements();
 
@@ -4212,13 +4225,38 @@ window.electron.ipcRenderer.on(
 /* ################################################################################## */
 /* ################################################################################## */
 
-const getNestedObjectsFromDatasetStructureByPath = (datasetStructure, path) => {
-  const pathArray = window.path.split("/").filter((item) => item !== "");
-  let currentObject = datasetStructure;
-  for (const item of pathArray) {
-    currentObject = currentObject["folders"][item];
+// Function to check if a folder on the user's machine is empty or not
+const localFolderPathAndSubFoldersHaveNoFiles = (localFolderPath) => {
+  try {
+    const items = window.fs.readdirSync(localFolderPath);
+    for (const item of items) {
+      const itemPath = window.path.join(localFolderPath, item);
+      const statsObj = window.fs.statSync(itemPath);
+
+      // Check if the item is a file
+      if (statsObj.isFile) {
+        // If a file with size > 0 is found, the folder is not considered empty
+        if (window.fs.fileSizeSync(itemPath) > 0) {
+          console.log("File is not empty");
+          return false; // Found a non-empty file
+        }
+      }
+      // Check if the item is a directory
+      else if (statsObj.isDirectory) {
+        // Recursively check the subdirectory
+        const isEmpty = localFolderPathAndSubFoldersHaveNoFiles(itemPath);
+        if (!isEmpty) {
+          return false; // Found a non-empty subdirectory
+        }
+      }
+    }
+
+    // If no files with size > 0 are found, the folder is considered empty
+    return true;
+  } catch (error) {
+    console.error(`Error reading folder: ${error.message}`);
+    return false; // Return false on error as we couldn't verify the folder
   }
-  return currentObject;
 };
 
 const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
@@ -4385,47 +4423,56 @@ window.buildDatasetStructureJsonFromImportedData = async (
   const problematicFileNames = [];
   const datasetStructure = {};
   const hiddenItems = [];
+  const emptyFolders = [];
+  const emptyFiles = [];
 
   showFileImportLoadingSweetAlert(500);
 
   // Function to traverse and build JSON structure
   const traverseAndBuildJson = async (pathToExplore, currentStructure, currentStructurePath) => {
+    // Initialize the current structure if it does not exist
     currentStructure["folders"] = currentStructure["folders"] || {};
     currentStructure["files"] = currentStructure["files"] || {};
 
     try {
       if (await window.fs.isDirectory(pathToExplore)) {
-        const folderName = window.path.basename(pathToExplore);
+        const folderIsEmpty = localFolderPathAndSubFoldersHaveNoFiles(pathToExplore);
+        // If the folder is not empty, recursively traverse the folder and build the JSON structure
 
-        const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
-          folderName,
-          "folder-and-file-name-is-valid"
-        );
-        if (!folderNameIsValid) {
-          problematicFolderNames.push(`${currentStructurePath}${folderName}`);
+        if (folderIsEmpty) {
+          emptyFolders.push(pathToExplore);
+        } else {
+          const folderName = window.path.basename(pathToExplore);
+          const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
+            folderName,
+            "folder-and-file-name-is-valid"
+          );
+          if (!folderNameIsValid) {
+            problematicFolderNames.push(`${currentStructurePath}${folderName}`);
+          }
+
+          // Add the folder to the JSON structure
+          currentStructure["folders"][folderName] = {
+            path: pathToExplore,
+            type: "local",
+            files: {},
+            folders: {},
+            action: ["new"],
+          };
+
+          // Recursively traverse the folder and build the JSON structure
+          const folderContents = await window.fs.readdir(pathToExplore);
+          await Promise.all(
+            folderContents.map(async (item) => {
+              const itemPath = window.path.join(pathToExplore, item);
+              await traverseAndBuildJson(
+                itemPath,
+                currentStructure["folders"][folderName],
+                `${currentStructurePath}${folderName}/`
+              );
+            })
+          );
         }
-
-        // Add the folder to the JSON structure
-        currentStructure["folders"][folderName] = {
-          path: pathToExplore,
-          type: "local",
-          files: {},
-          folders: {},
-          action: ["new"],
-        };
-
-        // Recursively traverse the folder and build the JSON structure
-        const folderContents = await window.fs.readdir(pathToExplore);
-        await Promise.all(
-          folderContents.map(async (item) => {
-            const itemPath = window.path.join(pathToExplore, item);
-            await traverseAndBuildJson(
-              itemPath,
-              currentStructure["folders"][folderName],
-              `${currentStructurePath}${folderName}/`
-            );
-          })
-        );
       } else if (await window.fs.isFile(pathToExplore)) {
         const fileName = window.path.basename(pathToExplore);
         const fileExtension = window.path.extname(pathToExplore);
@@ -4441,8 +4488,13 @@ window.buildDatasetStructureJsonFromImportedData = async (
           "file-is-in-forbidden-files-list"
         );
 
+        const fileIsEmpty = window.fs.fileSizeSync(pathToExplore) === 0;
+
+        // If the file is not empty or forbidden, add it to the current dataset structure
         if (fileIsInForbiddenFilesList) {
           forbiddenFileNames.push(fileObject);
+        } else if (fileIsEmpty) {
+          emptyFiles.push(fileObject);
         } else {
           // Check if the file name has any characters that do not comply with SPARC naming requirements
           const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
@@ -4501,6 +4553,24 @@ window.buildDatasetStructureJsonFromImportedData = async (
       forbiddenFileNames.map((file) => file.relativePath),
       "Forbidden file names detected",
       "The files listed below do not comply with the SPARC data standards and will not be imported:",
+      false
+    );
+  }
+
+  if (emptyFolders.length > 0) {
+    await swalFileListSingleAction(
+      emptyFolders,
+      "Empty folders detected",
+      "The following folders are empty or contain only other empty folders or files (0 KB). These will not be imported into SODA:",
+      false
+    );
+  }
+
+  if (emptyFiles.length > 0) {
+    await swalFileListSingleAction(
+      emptyFiles.map((file) => file.relativePath),
+      "Empty files detected",
+      "The files listed below are empty (0 KB) and will not be imported into SODA:",
       false
     );
   }
@@ -4687,29 +4757,6 @@ const mergeLocalAndRemoteDatasetStructure = async (
       }
     }
   }
-};
-
-const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath) => {
-  const duplicateFolderNames = [];
-  const duplicateFileNames = [];
-
-  const checkForDuplicateNames = async (importedFolders, itemsAtPath) => {
-    const currentFoldersAtPath = Object.keys(itemsAtPath.folders);
-    const currentFilesAtPath = Object.keys(itemsAtPath.files);
-    fg;
-    for (const folder of importedFolders) {
-      folderName = window.path.basename(folder);
-      if (currentFoldersAtPath.includes(folderName)) {
-        duplicateFolderNames.push(folderName);
-      }
-      const folderContents = await fs.readdir(folder);
-    }
-    for (const fileName of importedFiles) {
-      if (currentFilesAtPath.includes(fileName)) {
-        duplicateFileNames.push(fileName);
-      }
-    }
-  };
 };
 
 const addDataArrayToDatasetStructureAtPath = async (importedData) => {
@@ -6372,47 +6419,6 @@ const divGenerateProgressBar = document.getElementById("div-new-curate-meter-pro
 const generateProgressBar = document.getElementById("progress-bar-new-curate");
 var progressStatus = document.getElementById("para-new-curate-progress-bar-status");
 
-const checkEmptyFilesAndFolders = async (sodaJSONObj) => {
-  let emptyFilesFoldersResponse;
-  try {
-    emptyFilesFoldersResponse = await client.post(
-      `/curate_datasets/empty_files_and_folders`,
-      {
-        soda_json_structure: sodaJSONObj,
-      },
-      { timeout: 0 }
-    );
-  } catch (error) {
-    clientError(error);
-    let emessage = userErrorMessage(error);
-    document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-      "<span style='color: red;'> Error: " + emessage + "</span>";
-    document.getElementById("para-please-wait-new-curate").innerHTML = "";
-    $("#sidebarCollapse").prop("disabled", false);
-    return;
-  }
-
-  let { data } = emptyFilesFoldersResponse;
-
-  window.log.info("Continue with curate");
-  let errorMessage = "";
-  let error_files = data["empty_files"];
-  //bring duplicate outside
-  let error_folders = data["empty_folders"];
-
-  if (error_files.length > 0) {
-    const errorFilesHtml = generateHtmlListFromArray(error_files);
-    errorMessage += errorFilesHtml;
-  }
-
-  if (error_folders.length > 0) {
-    const errorFoldersHtml = generateHtmlListFromArray(error_folders);
-    errorMessage += errorFoldersHtml;
-  }
-
-  return errorMessage;
-};
-
 window.setSodaJSONStartingPoint = (sodaJSONObj) => {
   if (window.sodaJSONObj["starting-point"]["type"] === "local") {
     window.sodaJSONObj["starting-point"]["type"] = "new";
@@ -6548,49 +6554,7 @@ const preGenerateSetup = async (e, elementContext) => {
 
   deleteTreeviewFiles(sodaJSONObj);
 
-  let errorMessage = await checkEmptyFilesAndFolders(sodaJSONObj);
-
-  if (errorMessage) {
-    errorMessage += "Would you like to continue?";
-    errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
-    Swal.fire({
-      icon: "warning",
-      html: errorMessage,
-      showCancelButton: true,
-      cancelButtonText: "No, I want to review my files",
-      focusCancel: true,
-      confirmButtonText: "Yes, Continue",
-      backdrop: "rgba(0,0,0, 0.4)",
-      reverseButtons: window.reverseSwalButtons,
-      heightAuto: false,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-      didOpen: () => {
-        document.getElementById("swal2-html-container").style.maxHeight = "19rem";
-        document.getElementById("swal2-html-container").style.overflowY = "auto";
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        initiate_generate(e);
-      } else {
-        $("#sidebarCollapse").prop("disabled", false);
-        $("#please-wait-new-curate-div").show();
-        document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
-        document.getElementById("div-generate-comeback").style.display = "flex";
-        document.getElementById("guided_mode_view").style.pointerEvents = "";
-        // Allow documentation view to be clicked again
-        document.getElementById("documentation-view").style.pointerEvents = "";
-        // Allow contact us view to be clicked again
-        document.getElementById("contact-us-view").style.pointerEvents = "";
-      }
-    });
-  } else {
-    initiate_generate(e);
-  }
+  initiate_generate(e);
 };
 
 document.getElementById("button-generate").addEventListener("click", async function (e) {
