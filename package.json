@@ -58,6 +58,7 @@
     "dragselect": "^3.0.4",
     "electron-context-menu": "^3.6.1",
     "electron-log": "^5.0.1",
+    "electron-notarize": "^1.2.2",
     "electron-updater": "^6.1.7",
     "esbuild": "^0.21.3",
     "excel4node": "^1.8.2",
@@ -91,7 +92,6 @@
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.1",
     "@electron-toolkit/eslint-config-prettier": "^1.0.1",
-    "@electron/notarize": "^2.5.0",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@vitejs/plugin-react": "^4.0.4",
     "electron": "19.0.0",
