@@ -7,7 +7,7 @@ on:
       - main
       - staging
       - pre-staging
-      - empty-folders-files-hotfix
+      - sds3
 
 jobs:
   deploy-on-windows:
