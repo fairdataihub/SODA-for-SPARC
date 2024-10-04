@@ -54,8 +54,8 @@ def lowercase_account_names(config, account_name, configpath):
 
     # add the section back with the lowercase account name
     config.add_section(formatted_account_name) 
-    config.set(formatted_account_name, "api_token", config.get(formatted_account_name, "api_token"))
-    config.set(formatted_account_name, "api_secret", config.get(formatted_account_name, "api_secret"))
+    config.set(formatted_account_name, "api_token", config.get(account_name, "api_token"))
+    config.set(formatted_account_name, "api_secret", config.get(account_name, "api_secret"))
 
     # set the global default_profile option to lowercase
     config.set("global", "default_profile", formatted_account_name)
