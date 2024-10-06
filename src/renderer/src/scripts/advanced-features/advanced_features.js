@@ -370,54 +370,43 @@ document.querySelector("#btn-pull-ds-manifest").addEventListener("click", async 
   }
 });
 
+function createAgentCHeckObserver(targetDiv, successCallback) {
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      const textToCheck = "The Pennsieve Agent is running and ready to upload!";
+      if (targetDiv.textContent.includes(textToCheck)) {
+        successCallback();
+      }
+    });
+  });
+
+  observer.observe(targetDiv, { childList: true, subtree: true, characterData: true });
+  return observer;
+}
+
 // create a mutation observer on this id advanced-features-manifest-generation-pennsieve-agent-check
 // to check if the agent check has been completed and we can show the div-btn-pull-ds-manifest
 const agentCheckDiv = document.querySelector(
   "#advanced-features-manifest-generation-pennsieve-agent-check"
 );
-const agentCheckObserver = new MutationObserver((mutations) => {
-  mutations.forEach(
-    (mutation) => {
-      const textToCheck = "The Pennsieve Agent is running and ready to upload!";
-      const isTextPresent = agentCheckDiv.textContent.includes(textToCheck);
-      if (isTextPresent) {
-        document.querySelector("#div-btn-pull-ds-manifest").classList.remove("hidden");
-      }
-    },
-    { attributes: true }
-  );
+createAgentCHeckObserver(agentCheckDiv, () => {
+  document.querySelector("#div-btn-pull-ds-manifest").classList.remove("hidden");
 });
-
-agentCheckObserver.observe(agentCheckDiv, { childList: true, subtree: true, characterData: true });
 
 // add the same mutatiomn observer for the banner image pennsieve agent check
 const agentCheckBannerImageDiv = document.querySelector(
   "#advanced-features-banner-image-pennsieve-agent-check"
 );
-const agentCheckBannerImageDivObserver = new MutationObserver((mutations) => {
-  mutations.forEach(
-    async (mutation) => {
-      const textToCheck = "The Pennsieve Agent is running and ready to upload!";
-      const isTextPresent = agentCheckBannerImageDiv.textContent.includes(textToCheck);
-      if (isTextPresent) {
-        await window.transitionFreeFormMode(
-          document.querySelector("#div_add_edit_banner_image_agent_check"),
-          "div_add_edit_banner_image_agent_check",
-          "delete",
-          "freeform"
-        );
-        await window.wait(1000);
 
-        // scroll the next section into view
-        document.querySelector("#edit_banner_image_button").scrollIntoView({ behavior: "smooth" });
-      }
-    },
-    { attributes: true }
+createAgentCHeckObserver(agentCheckBannerImageDiv, async () => {
+  await window.transitionFreeFormMode(
+    document.querySelector("#div_add_edit_banner_image_agent_check"),
+    "div_add_edit_banner_image_agent_check",
+    "delete",
+    "freeform"
   );
-});
+  await window.wait(1000);
 
-agentCheckBannerImageDivObserver.observe(agentCheckBannerImageDiv, {
-  childList: true,
-  subtree: true,
-  characterData: true,
+  // scroll the next section into view
+  document.querySelector("#edit_banner_image_button").scrollIntoView({ behavior: "smooth" });
 });
