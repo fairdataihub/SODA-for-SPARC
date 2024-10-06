@@ -322,7 +322,6 @@ $("#advanced-start-over-button").on("click", async () => {
 
 // Action when user click on "Import image" button for banner image
 $("#button-import-banner-image").click(async () => {
-  console.log("THis is happening?");
   $("#para-dataset-banner-image-status").html("");
   let filePaths = await window.electron.ipcRenderer.invoke("open-file-dialog-import-banner-image");
   window.handleSelectedBannerImage(filePaths, "freeform");
@@ -354,9 +353,6 @@ document.querySelector("#btn-confirm-dataset-manifest-page").addEventListener("c
   if (!agentCheckSuccessful) {
     return;
   }
-
-  // show the btn-pull-ds-manifest button
-  // document.querySelector("#div-btn-pull-ds-manifest").classList.remove("hidden");
 
   // scroll to the button
   document.querySelector("#div-btn-pull-ds-manifest").scrollIntoView({ behavior: "smooth" });
