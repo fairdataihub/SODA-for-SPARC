@@ -1900,6 +1900,11 @@ current_files_in_subscriber_session = 0
 
 bytes_file_path_dict = {}
 
+# retry variables instantiated outside function
+list_of_files_to_rename = {}
+renamed_files_counter = 0 
+
+
 def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
     global namespace_logger
 
@@ -1925,7 +1930,9 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
     global elapsed_time
     global manifest_id
     global origin_manifest_id
-    global main_curate_status 
+    global main_curate_status
+    global list_of_files_to_rename
+    global renamed_files_counter
 
 
     total_files = 0
