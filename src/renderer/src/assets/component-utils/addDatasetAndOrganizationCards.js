@@ -165,7 +165,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     currentParentTab: "add_edit_banner_parent-tab",
     action: "delete",
     section: "individual-question manage-dataset",
-    dataNext: "div_add_edit_banner",
+    dataNext: "div_add_edit_banner_image_agent_check",
     fields: [
       FIELD_OPTIONS.ACCOUNT_EDITABLE,
 
