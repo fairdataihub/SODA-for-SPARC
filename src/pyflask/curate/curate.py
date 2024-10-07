@@ -907,10 +907,7 @@ def generate_dataset_locally(soda_json_structure):
         list_copy_files, list_move_files = recursive_dataset_scan(
             folder, folderpath, list_copy_files, list_move_files
         )
-    for file in list_copy_files:
-        namespace_logger.info(f"file to copy: {file}")
-    for file in list_move_files:
-        namespace_logger.info(f"file to move: {file}")
+
     # 3. Add high-level metadata files in the list
     if "metadata-files" in soda_json_structure.keys():
         namespace_logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
