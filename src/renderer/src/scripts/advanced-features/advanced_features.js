@@ -348,8 +348,6 @@ document.querySelector("#btn-confirm-dataset-manifest-page").addEventListener("c
     console.error("Error with agent" + e);
   }
 
-  console.log(agentCheckSuccessful);
-
   if (!agentCheckSuccessful) {
     return;
   }

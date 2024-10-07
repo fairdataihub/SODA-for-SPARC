@@ -2233,7 +2233,6 @@ $("#save-banner-image").click((event) => {
 });
 
 window.showCurrentBannerImage = async () => {
-  console.log("Show current banner image called?");
   let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 

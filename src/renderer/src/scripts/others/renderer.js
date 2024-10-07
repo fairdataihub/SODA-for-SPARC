@@ -532,8 +532,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
   try {
     // Step 0: abort if the background services are already running
     if (useGlobalStore.getState()["pennsieveAgentCheckInProgress"] === true) {
-      console.log("oops");
-
       return false;
     }
     // Reset the background services state in the store and set the checks in progress
@@ -548,7 +546,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
         "An internet connection is required to upload to Pennsieve. Please connect to the internet and try again."
       );
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-      console.log("oops");
 
       return false;
     }
@@ -581,7 +578,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       const emessage = userErrorMessage(error);
       setPennsieveAgentOutputErrorMessage(emessage);
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-      console.log("oops");
 
       return false;
     }
@@ -597,7 +593,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
         "Please check the Pennsieve Agent logs for more information."
       );
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-      console.log("oops");
 
       return false;
     }
@@ -614,7 +609,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
         emessage
       );
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-      console.log("oops");
 
       return false;
     }
@@ -624,7 +618,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
       setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-      console.log("oops");
 
       return false;
     }
@@ -2593,7 +2586,6 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetList) {
 // ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
 const metadataDatasetlistChange = () => {
-  console.log("This is called");
   $("#bf-dataset-subtitle").val("");
   $("#para-dataset-banner-image-status").html("");
   window.showCurrentSubtitle();
@@ -4962,7 +4954,6 @@ document.querySelectorAll(".file-import-container").forEach((fileImportContainer
 //path: array
 //curationMode: string (guided-moded) (freeform)
 window.handleSelectedBannerImage = async (path, curationMode) => {
-  console.log("This is called - handle selected banner image");
   let imgContainer = "";
   let imgHolder = "";
   let paraImagePath = "";
@@ -4978,7 +4969,6 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
     cropperOptions = window.guidedCropOptions;
   }
   if (curationMode === "freeform") {
-    console.log("Here specifically");
     cropperOptions = window.cropOptions;
     paraImagePath = "#para-path-image";
     saveBannerImage = "#save-banner-image";
