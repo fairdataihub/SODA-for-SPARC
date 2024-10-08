@@ -4108,83 +4108,6 @@ const changeStepOrganize = (step) => {
   }
 };
 
-// var newDSName;
-// const generateDataset = (button) => {
-//   document.getElementById("para-organize-datasets-success").style.display = "none";
-//   document.getElementById("para-organize-datasets-error").style.display = "none";
-//   if (button.id === "btn-generate-locally") {
-//     $("#btn-generate-BF").removeClass("active");
-//     $(button).toggleClass("active");
-//     Swal.fire({
-//       title: "Generate dataset locally",
-//       text: "Enter a name for the dataset:",
-//       input: "text",
-//       showCancelButton: true,
-//       cancelButtonText: "Cancel",
-//       confirmButtonText: "Confirm and Choose Location",
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       reverseButtons: window.reverseSwalButtons,
-//       showClass: {
-//         popup: "animate__animated animate__zoomIn animate__faster",
-//       },
-//       hideClass: {
-//         popup: "animate__animated animate__zoomOut animate_fastest",
-//       },
-//     }).then((result) => {
-//       if (result.isConfirmed) {
-//         newDSName = result.value.trim();
-//         window.electron.ipcRenderer.send("open-file-dialog-newdataset");
-//       }
-//     });
-//   } else {
-//     $("#btn-generate-locally").removeClass("active");
-//     $(button).toggleClass("active");
-//   }
-// };
-
-// window.electron.ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
-//   if (filepath.length > 0) {
-//     if (filepath != null) {
-//       document.getElementById("para-organize-datasets-loading").style.display = "block";
-//       document.getElementById("para-organize-datasets-loading").innerHTML =
-//         "<span>Please wait...</span>";
-
-//       window.log.info("Generating a new dataset organize datasets at ${filepath}");
-
-//       try {
-//         await client.post(
-//           `/organize_datasets/datasets`,
-
-//           {
-//             generation_type: "create-new",
-//             generation_destination_path: filepath[0],
-//             dataset_name: newDSName,
-//             soda_json_directory_structure: window.datasetStructureJSONObj,
-//           },
-//           {
-//             timeout: 0,
-//           },
-//           {
-//             timeout: 0,
-//           }
-//         );
-
-//         document.getElementById("para-organize-datasets-error").style.display = "none";
-//         document.getElementById("para-organize-datasets-success").style.display = "block";
-//         document.getElementById("para-organize-datasets-success").innerHTML =
-//           "<span>Generated successfully!</span>";
-//       } catch (error) {
-//         clientError(error);
-//         document.getElementById("para-organize-datasets-success").style.display = "none";
-//         document.getElementById("para-organize-datasets-error").style.display = "block";
-//         document.getElementById("para-organize-datasets-error").innerHTML =
-//           "<span> " + userErrorMessage(error) + "</span>";
-//       }
-//     }
-//   }
-// });
-
 window.CheckFileListForServerAccess = async (fileList) => {
   try {
     const res = await client.post(`/curate_datasets/check_server_access_to_files`, {
@@ -4289,7 +4212,7 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
     // If the folder name is not valid, replace it with a valid name and then recurse through the
     // renamed folder to check for any other problematic folders
     if (!folderNameIsValid) {
-      const newFolderName = folderKey.replace(sparcFolderAndFileRegex, "-");
+      const newFolderName = folderKey.replace(validSparcFolderAndFileNameRegex, "-");
       const newFolderObj = { ...datasetStructure["folders"][folderKey] };
       if (!newFolderObj["action"].includes("renamed")) {
         newFolderObj["action"].push("renamed");
@@ -4313,7 +4236,7 @@ window.replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
       "folder-and-file-name-is-valid"
     );
     if (!fileNameIsValid) {
-      const newFileName = fileKey.replace(sparcFolderAndFileRegex, "-");
+      const newFileName = fileKey.replace(validSparcFolderAndFileNameRegex, "-");
       const newFileObj = { ...datasetStructure["files"][fileKey] };
       if (!newFileObj["action"].includes("renamed")) {
         newFileObj["action"].push("renamed");

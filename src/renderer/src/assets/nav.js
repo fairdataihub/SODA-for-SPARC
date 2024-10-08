@@ -337,11 +337,7 @@ document.querySelector("#shortcut-navigate-to-create_submission").addEventListen
 document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
   //Free form mode will open through here (FROM HOME TO UPLOAD DATASET NOW)
   window.guidedPrepareHomeScreen();
-
-  // guidedResetSkippedPages();
-
   window.directToFreeFormMode();
-  document.getElementById("guided_mode_view").classList.add("is-selected");
 });
 
 $(document).ready(() => {
