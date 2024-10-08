@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Bug Fixes:
 
-- TODO: Add pennsieve agent startup fixes and error message detection feature here
+- Fixed an issue with the Pennsieve agent version check not being able to detect old versions of the Pennsieve agent (The agent found at https://github.com/Pennsieve/agent).
 - Fixed an issue in how SODA reads the config.ini file that made it so that if the account name 'SODA-Pennsieve' exists it is always used for authentication with Pennsieve even when a defualt_profile key exists in the config.
 - Fixed an issue in the manifest creation and banner image upload/edit features of the `Advanced Features` tab that made it so users without Pennsieve Agents were not directed to the Pennsieve Agent download page. Instead they were told 'the pennsieve agent is not running.'
 - It was possible for an upload to fail early in 'Prepare Datasets Step-by-Step' and 'Upload Dataset' such that the catch statement referenced a variable that was not yet defined. This has been fixed.
