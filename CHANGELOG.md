@@ -5,7 +5,6 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-
 ## v15.2.2 - 2024-10-09
 
 ## Bug Fixes:
@@ -24,7 +23,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Bug Fixes:
 
 - Fixed an issue preventing users with pre-2.0 Pennsieve agent versions from being able to update.
-
 
 ## v15.2.0 - 2024-08-21
 
