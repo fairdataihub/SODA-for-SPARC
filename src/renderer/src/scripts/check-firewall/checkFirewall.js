@@ -9,13 +9,12 @@ while (!window.baseHtmlLoaded) {
  * Assumptions: The client is connected to the internet.
  * Returns: true if the client is blocked by an external firewall, false otherwise.
  */
-export const clientBlockedByExternalFirewall = async () => {
+export const clientBlockedByExternalFirewall = async (url) => {
   // check that the client can make an api request to Pennsieve's public API
   //make an axios request to this public endpoint: https://api.pennsieve.io/discover/datasets
   //if the request fails, the client is blocked by an external firewall
-  const pennsieveURL = "https://api.pennsieve.io/discover/datasets";
   try {
-    await axios.get(pennsieveURL);
+    await axios.get(url);
     return false;
   } catch (error) {
     return true;
