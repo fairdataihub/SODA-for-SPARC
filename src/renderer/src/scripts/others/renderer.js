@@ -489,7 +489,6 @@ const initializeSODARenderer = async () => {
   // If they do not match, the app will restart to attempt to fix the issue
   await ensureServerVersionMatchesClientVersion();
 
-
   //Refresh the Pennsieve account list if the user has connected their Pennsieve account in the past
   if (hasConnectedAccountWithPennsieve()) {
     // check for external firewall interference (aspirational in that may not be foolproof)
@@ -641,7 +640,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
     };
     setPostPennsieveAgentCheckAction(
       postAgentCheckMessages[pennsieveAgentStatusDivId] ||
-      "You are ready to upload datasets to Pennsieve!"
+        "You are ready to upload datasets to Pennsieve!"
     );
 
     return true;
@@ -1440,7 +1439,7 @@ window.electron.ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => { });
+            }).then((result) => {});
             window.generateSubjectsFileHelper(false);
           }
         });
@@ -1456,7 +1455,7 @@ window.electron.ipcRenderer.on(
           didOpen: () => {
             Swal.showLoading();
           },
-        }).then((result) => { });
+        }).then((result) => {});
         window.generateSubjectsFileHelper(false);
       }
     }
@@ -1540,7 +1539,7 @@ window.generateSubjectsFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   try {
     window.log.info(`Generating a subjects file.`);
@@ -1650,7 +1649,7 @@ window.electron.ipcRenderer.on("selected-generate-metadata-samples", (event, dir
             didOpen: () => {
               Swal.showLoading();
             },
-          }).then((result) => { });
+          }).then((result) => {});
           window.generateSamplesFileHelper(uploadBFBoolean);
         }
       });
@@ -1666,7 +1665,7 @@ window.electron.ipcRenderer.on("selected-generate-metadata-samples", (event, dir
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       window.generateSamplesFileHelper(uploadBFBoolean);
     }
   }
@@ -1748,7 +1747,7 @@ window.generateSamplesFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   try {
     let samplesFileResponse = await client.post(
@@ -6119,8 +6118,9 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
           ${dragDropInstructionsText}
         </p>
         <p class="text-center">
-          You may also <b>add</b> or <b>import</b> ${folderType === undefined ? "folders or files" : folderType + " data"
-      } using the buttons in the upper right corner
+          You may also <b>add</b> or <b>import</b> ${
+            folderType === undefined ? "folders or files" : folderType + " data"
+          } using the buttons in the upper right corner
         </p>
       </div>`
     );
@@ -6462,7 +6462,7 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
     if (
       "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
       sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
-      "forTreeview"
+        "forTreeview"
       ]
     ) {
       delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
@@ -7307,7 +7307,7 @@ const initiate_generate = async (e) => {
         "track-event",
         "Success",
         window.PrepareDatasetsAnalyticsPrefix.CURATE +
-        "- Step 7 - Generate - Dataset - Number of Files",
+          "- Step 7 - Generate - Dataset - Number of Files",
         `${datasetUploadSession.id}`,
         500
       );
