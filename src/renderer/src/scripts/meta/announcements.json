@@ -1,4 +1,14 @@
 {
+  "15.2.2": {
+    "announcements": {
+      "bug-fixes": [
+        "Fixed an issue where SODA was not able to detect legacy versions of the Pennsieve Agent and suggest an update.",
+        "Fixed the Pennsieve Agent installation check that runs in the `Advanced Features` section so that users are properly notified if they do not have the Agent installed.",
+        "Fixed a Pennsieve connectivity issue legacy users were experiencing when updating to the latest version of SODA."
+      ],
+      "features": []
+    }
+  },
   "15.2.0": {
     "announcements": {
       "bug-fixes": [

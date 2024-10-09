@@ -548,6 +548,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
         "An internet connection is required to upload to Pennsieve. Please connect to the internet and try again."
       );
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+
       return false;
     }
 
@@ -579,6 +580,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       const emessage = userErrorMessage(error);
       setPennsieveAgentOutputErrorMessage(emessage);
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+
       return false;
     }
 
@@ -618,6 +620,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
       setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+
       return false;
     }
 
