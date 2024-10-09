@@ -5,6 +5,7 @@ import { hideAllSectionsAndDeselectButtons } from "../../assets/nav";
 import { existingDataset, modifyDataset } from "../../assets/lotties/lotties";
 import lottie from "lottie-web";
 import Swal from "sweetalert2";
+import { clientError } from "../others/http-error-handler/error-handler";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -230,6 +231,17 @@ $("#advanced-start-over-button").on("click", async () => {
     ).children[0].children[0].style.display = "block";
     document.getElementById("input-manifest-local-folder-dataset").placeholder = "Browse here";
 
+    // hide the pennsieve agent check section
+    document
+      .getElementById("advanced-features-manifest-generation-pennsieve-agent-check")
+      .classList.add("hidden");
+    // hide the pull manifest information button's div
+    document.getElementById("div-btn-pull-ds-manifest").classList.add("hidden");
+    // set the dataset text to none
+    document.querySelector("#bf_dataset_create_manifest").textContent = "None";
+    // hide the confirm button
+    document.querySelector("#btn-confirm-dataset-manifest-page").classList.add("hidden");
+
     // Hide the all sub-questions for generating manifest
     document.getElementById("Question-prepare-manifest-2").classList.remove("show");
     document.getElementById("Question-prepare-manifest-2").classList.remove("prev");
@@ -315,4 +327,80 @@ $("#button-import-banner-image").click(async () => {
   window.handleSelectedBannerImage(filePaths, "freeform");
   $("#edit_banner_image_modal").modal("show");
   $("#edit_banner_image_modal").addClass("show");
+});
+
+// Pennsieve Agent check display
+document.querySelector("#btn-confirm-dataset-manifest-page").addEventListener("click", async () => {
+  // hide the confirm button
+  document.querySelector("#btn-confirm-dataset-manifest-page").classList.add("hidden");
+
+  // show the Pennsieve Agent slot
+  const pennsieveAgentCheckDivId = "advanced-features-manifest-generation-pennsieve-agent-check";
+  let pennsieveAgentCheckDiv = document.querySelector(`#${pennsieveAgentCheckDivId}`);
+
+  // start agent check
+  let agentCheckSuccessful = false;
+  try {
+    pennsieveAgentCheckDiv.classList.remove("hidden");
+    // Check to make sure the Pennsieve agent is installed
+    agentCheckSuccessful = await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
+  } catch (e) {
+    console.error("Error with agent" + e);
+  }
+
+  if (!agentCheckSuccessful) {
+    return;
+  }
+
+  // scroll to the button
+  document.querySelector("#div-btn-pull-ds-manifest").scrollIntoView({ behavior: "smooth" });
+});
+
+document.querySelector("#btn-pull-ds-manifest").addEventListener("click", async function () {
+  try {
+    window.generateManifestFolderLocallyForEdit(this);
+  } catch (e) {
+    clientError(e);
+  }
+});
+
+function createAgentCHeckObserver(targetDiv, successCallback) {
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      const textToCheck = "The Pennsieve Agent is running and ready to upload!";
+      if (targetDiv.textContent.includes(textToCheck)) {
+        successCallback();
+      }
+    });
+  });
+
+  observer.observe(targetDiv, { childList: true, subtree: true, characterData: true });
+  return observer;
+}
+
+// create a mutation observer on this id advanced-features-manifest-generation-pennsieve-agent-check
+// to check if the agent check has been completed and we can show the div-btn-pull-ds-manifest
+const agentCheckDiv = document.querySelector(
+  "#advanced-features-manifest-generation-pennsieve-agent-check"
+);
+createAgentCHeckObserver(agentCheckDiv, () => {
+  document.querySelector("#div-btn-pull-ds-manifest").classList.remove("hidden");
+});
+
+// add the same mutatiomn observer for the banner image pennsieve agent check
+const agentCheckBannerImageDiv = document.querySelector(
+  "#advanced-features-banner-image-pennsieve-agent-check"
+);
+
+createAgentCHeckObserver(agentCheckBannerImageDiv, async () => {
+  await window.transitionFreeFormMode(
+    document.querySelector("#div_add_edit_banner_image_agent_check"),
+    "div_add_edit_banner_image_agent_check",
+    "delete",
+    "freeform"
+  );
+  await window.wait(1000);
+
+  // scroll the next section into view
+  document.querySelector("#edit_banner_image_button").scrollIntoView({ behavior: "smooth" });
 });

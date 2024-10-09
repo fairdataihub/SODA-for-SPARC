@@ -907,10 +907,7 @@ def generate_dataset_locally(soda_json_structure):
         list_copy_files, list_move_files = recursive_dataset_scan(
             folder, folderpath, list_copy_files, list_move_files
         )
-    for file in list_copy_files:
-        namespace_logger.info(f"file to copy: {file}")
-    for file in list_move_files:
-        namespace_logger.info(f"file to move: {file}")
+
     # 3. Add high-level metadata files in the list
     if "metadata-files" in soda_json_structure.keys():
         namespace_logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
@@ -1900,6 +1897,11 @@ current_files_in_subscriber_session = 0
 
 bytes_file_path_dict = {}
 
+# retry variables instantiated outside function
+list_of_files_to_rename = {}
+renamed_files_counter = 0 
+
+
 def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
     global namespace_logger
 
@@ -1925,7 +1927,9 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
     global elapsed_time
     global manifest_id
     global origin_manifest_id
-    global main_curate_status 
+    global main_curate_status
+    global list_of_files_to_rename
+    global renamed_files_counter
 
 
     total_files = 0

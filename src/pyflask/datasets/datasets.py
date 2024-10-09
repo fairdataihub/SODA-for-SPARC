@@ -132,7 +132,6 @@ def reserve_dataset_doi(dataset):  # sourcery skip: extract-method
         doi_request.raise_for_status()
         return {"doi": doi_request.json()["doi"]}
     except Exception as e:
-        print(e)
         abort(e.response.status_code,  e.response.json().get('message'))
 
 

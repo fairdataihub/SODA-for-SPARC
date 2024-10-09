@@ -2343,6 +2343,21 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
       document.getElementById("dd-select-pennsieve-dataset").style.display = "none";
     }
   }
+
+  if (ev.getAttribute("data-next") === "div_add_edit_banner_image_agent_check") {
+    // show the Pennsieve Agent slot
+    const pennsieveAgentCheckDivId = "advanced-features-banner-image-pennsieve-agent-check";
+    let pennsieveAgentCheckDiv = document.querySelector(`#${pennsieveAgentCheckDivId}`);
+
+    // start agent check
+    try {
+      pennsieveAgentCheckDiv.classList.remove("hidden");
+      // Check to make sure the Pennsieve agent is installed
+      window.checkPennsieveAgent(pennsieveAgentCheckDivId);
+    } catch (e) {
+      console.error("Error with agent" + e);
+    }
+  }
   // hide related previous divs
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
@@ -2356,7 +2371,10 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
         let label = document.querySelector("#Question-prepare-manifest-5 label:first-of-type");
         label.scrollIntoView({ behavior: "smooth" });
       } // auto-scroll to bottom of div
-      else if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+      else if (
+        ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections" &&
+        ev.getAttribute("data-next") !== "div_add_edit_banner"
+      ) {
         document.getElementById(parentDiv).scrollTop =
           document.getElementById(parentDiv).scrollHeight;
       }
@@ -2371,7 +2389,10 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
       setTimeout(function () {
         $(ev).siblings().hide();
         // auto-scroll to bottom of div
-        if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+        if (
+          ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections" &&
+          ev.getAttribute("data-next") !== "div_add_edit_banner"
+        ) {
           document.getElementById(parentDiv).scrollTop =
             document.getElementById(parentDiv).scrollHeight;
         }
@@ -2380,7 +2401,10 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
     setTimeout(function () {
       $(ev).hide();
       // auto-scroll to bottom of div
-      if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+      if (
+        ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections" &&
+        ev.getAttribute("data-next") !== "div_add_edit_banner"
+      ) {
         document.getElementById(parentDiv).scrollTop =
           document.getElementById(parentDiv).scrollHeight;
       }
@@ -2418,7 +2442,10 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
   }
 
   // auto-scroll to bottom of div
-  if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+  if (
+    ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections" &&
+    ev.getAttribute("data-next") !== "div_add_edit_banner"
+  ) {
     document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
   }
 
