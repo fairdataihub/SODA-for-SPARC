@@ -1,11 +1,12 @@
 import Swal from "sweetalert2";
 import "bootstrap-select";
 import DragSort from "@yaireo/dragsort";
-
 import api from "./others/api/api";
 import { clientError, userErrorMessage } from "./others/http-error-handler/error-handler";
 import client from "./client";
 import { swalShowError } from "./utils/swal-utils";
+// TODO: Figure out why this import is a problem
+import { clientBlockedByExternalFirewall } from "./check-firewall/checkFirewall";
 // import { window.clearValidationResults } from './validator/validate'
 // // Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
 // //          needed by the renderer process in order to run.
@@ -1346,6 +1347,15 @@ var dropdownEventID = "";
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
   if (dropdown === "bf") {
+    // check for external firewall interference (aspirational in that may not be foolproof)
+    const pennsieveURL = "https://api.pennsieve.io/discover/datasets";
+    const blocked = await clientBlockedByExternalFirewall(pennsieveURL);
+    if (blocked) {
+      await swalShowInfo(
+        "Potential Firewall Interference",
+        "We are having trouble reaching Pennsieve. On rare occasions Pennsieve is unreachable for a short period of time. Please try again later. If this issue persists it is possible that your network is blocking access to Pennsieve from SODA. In that case, please contact your network administrator for assistance."
+      );
+    }
     await window.addBfAccount(ev, false);
   } else if (dropdown === "dataset") {
     dropdownEventID = ev?.id ?? "";
