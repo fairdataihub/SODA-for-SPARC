@@ -1,3 +1,5 @@
+import axios from "axios";
+
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
@@ -7,7 +9,7 @@ while (!window.baseHtmlLoaded) {
  * Assumptions: The client is connected to the internet.
  * Returns: true if the client is blocked by an external firewall, false otherwise.
  */
-const clientBlockedByExternalFirewall = async () => {
+export const clientBlockedByExternalFirewall = async () => {
   // check that the client can make an api request to Pennsieve's public API
   //make an axios request to this public endpoint: https://api.pennsieve.io/discover/datasets
   //if the request fails, the client is blocked by an external firewall

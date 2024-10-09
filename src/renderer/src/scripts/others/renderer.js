@@ -79,6 +79,7 @@ import {
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
 } from "../../stores/slices/backgroundServicesSlice";
+import { clientBlockedByExternalFirewall } from "../check-firewall/checkFirewall";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -486,6 +487,15 @@ const initializeSODARenderer = async () => {
   // check if the API versions match
   // If they do not match, the app will restart to attempt to fix the issue
   await ensureServerVersionMatchesClientVersion();
+
+
+  // check for external firewall interference (aspirational in that may not be foolproof)
+  // TODO: Make this check a check to Google. If it is blocked and we know internet exists then it may be a firewall. Since some may have access to Google though when Pennsieve is required we should first check for that firewall blockage too. 
+  // TODO: Move this to where we check for Pennsieve information. We do not want non-Pennsieve users to have to bother with not being able to connect to Pennsieve. 
+  const blocked = await clientBlockedByExternalFirewall()
+  if (blocked) {
+    swalShowInfo("Potential Firewall Interference", "We are having trouble reaching Pennsieve. On rare occasions Pennsieve is unreachable for a short period of time. Please try again later. If this issue persists it is possible that your network is blocking access to Pennsieve from SODA. In that case, please contact your network administrator for assistance.")
+  }
 
   //Refresh the Pennsieve account list if the user has connected their Pennsieve account in the past
   if (hasConnectedAccountWithPennsieve()) {
