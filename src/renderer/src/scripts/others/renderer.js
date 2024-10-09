@@ -489,15 +489,15 @@ const initializeSODARenderer = async () => {
   // If they do not match, the app will restart to attempt to fix the issue
   await ensureServerVersionMatchesClientVersion();
 
- 
-
-
   // check for external firewall interference (aspirational in that may not be foolproof)
   // TODO: Move this to where we check for Pennsieve information. We do not want non-Pennsieve users to have to bother with not being able to connect to Pennsieve. (detect-firewall)
   const pennsieveURL = "https://api.pennsieve.io/discover/datasets";
-  const blocked = await clientBlockedByExternalFirewall(pennsieveURL)
+  const blocked = await clientBlockedByExternalFirewall(pennsieveURL);
   if (blocked) {
-    swalShowInfo("Potential Firewall Interference", "We are having trouble reaching Pennsieve. On rare occasions Pennsieve is unreachable for a short period of time. Please try again later. If this issue persists it is possible that your network is blocking access to Pennsieve from SODA. In that case, please contact your network administrator for assistance.")
+    swalShowInfo(
+      "Potential Firewall Interference",
+      "We are having trouble reaching Pennsieve. On rare occasions Pennsieve is unreachable for a short period of time. Please try again later. If this issue persists it is possible that your network is blocking access to Pennsieve from SODA. In that case, please contact your network administrator for assistance."
+    );
   }
 
   //Refresh the Pennsieve account list if the user has connected their Pennsieve account in the past
