@@ -480,6 +480,7 @@ const startupServerAndApiCheck = async () => {
 // Check app version on current app and display in the side bar
 // Also check the core systems to make sure they are all operational
 const initializeSODARenderer = async () => {
+  // TODO: Add check for internal firewall that blocks us from talking to the server here (detect-firewall)
   // check that the server is live and the api versions match
   // If this fails after the allotted time, the app will restart
   await startupServerAndApiCheck();
@@ -489,7 +490,7 @@ const initializeSODARenderer = async () => {
   await ensureServerVersionMatchesClientVersion();
 
  
-  // TODO: Add check for internal firewall that blocks us from talking to the server here (detect-firewall)
+
 
   // check for external firewall interference (aspirational in that may not be foolproof)
   // TODO: Move this to where we check for Pennsieve information. We do not want non-Pennsieve users to have to bother with not being able to connect to Pennsieve. (detect-firewall)
