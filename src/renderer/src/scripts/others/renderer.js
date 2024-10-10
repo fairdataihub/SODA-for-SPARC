@@ -79,7 +79,11 @@ import {
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
 } from "../../stores/slices/backgroundServicesSlice";
-import { clientBlockedByExternalFirewall, blockedMessage, hostFirewallMessage } from "../check-firewall/checkFirewall";
+import {
+  clientBlockedByExternalFirewall,
+  blockedMessage,
+  hostFirewallMessage,
+} from "../check-firewall/checkFirewall";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -453,8 +457,6 @@ const startupServerAndApiCheck = async () => {
     }
   }
 
-
-
   window.electron.ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
   window.electron.ipcRenderer.send(
     "track-kombucha",
@@ -465,7 +467,7 @@ const startupServerAndApiCheck = async () => {
     { value: 1 }
   );
 
-  let serverIsLive = await window.server.serverIsLive()
+  let serverIsLive = await window.server.serverIsLive();
   if (serverIsLive) {
     // notify the user that there may be a firewall issue preventing the client from connecting to the server
     Swal.close();
