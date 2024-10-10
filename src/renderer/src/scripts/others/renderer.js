@@ -3756,7 +3756,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
           let val = $("#add-new-folder-input").val();
           const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
             val,
-            "folder-and-file-name-is-valid"
+            "folder-or-file-name-is-valid"
           );
 
           if (folderNameIsValid) {
@@ -4190,7 +4190,7 @@ const localFolderPathAndSubFoldersHaveNoFiles = (localFolderPath) => {
 const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
-    const fileIsHidden = window.evaluateStringAgainstSdsRequirements(fileKey, "file-is-hidden");
+    const fileIsHidden = window.evaluateStringAgainstSdsRequirements(fileKey, "is-hidden-file");
     if (fileIsHidden) {
       delete datasetStructure["files"][fileKey];
     }
@@ -4207,7 +4207,7 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
   for (const folderKey of currentFoldersAtPath) {
     const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
       folderKey,
-      "folder-and-file-name-is-valid"
+      "folder-or-file-name-is-valid"
     );
     // If the folder name is not valid, replace it with a valid name and then recurse through the
     // renamed folder to check for any other problematic folders
@@ -4233,7 +4233,7 @@ window.replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
   for (const fileKey of currentFilesAtPath) {
     const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
       fileKey,
-      "folder-and-file-name-is-valid"
+      "folder-or-file-name-is-valid"
     );
     if (!fileNameIsValid) {
       const newFileName = fileKey.replace(validSparcFolderAndFileNameRegex, "-");
@@ -4260,7 +4260,7 @@ window.replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
 //   for (const fileKey of currentFilesAtPath) {
 //     const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
 //       fileKey,
-//       "folder-and-file-name-is-valid"
+//       "folder-or-file-name-is-valid"
 //     );
 //     if (!fileNameIsValid) {
 //       delete datasetStructure["files"][fileKey];
@@ -4278,19 +4278,22 @@ const forbiddenFiles = {
   "Thumbs.db": true,
 };
 
-const validSparcFolderAndFileNameRegex = /^[0-9A-Za-z,.-_ ]+$/;
-const identifierConventionsRegex = /^[a-zA-Z0-9-_]+$/;
+const validSparcFolderAndFileNameRegex = /^[0-9A-Za-z,.\-_ ]*$/;
+const identifierConventionsRegex = /^[0-9A-Za-z-_]*$/;
 
 window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
   const tests = {
-    "is-valid-folder-or-file-name": validSparcFolderAndFileNameRegex.test(stringToTest),
+    "folder-or-file-name-is-valid": validSparcFolderAndFileNameRegex.test(stringToTest),
+    "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest),
     "is-hidden-file": stringToTest.startsWith("."),
     "is-forbidden-file": forbiddenFiles[stringToTest] === true,
-    "adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest),
   };
+  console.log(`${testType}   ${stringToTest}    ${tests[testType]}`);
+
   return tests[testType];
 };
 
+// Create some test case examples
 let loadingSweetAlert;
 let loadingSweetAlertTimer;
 
@@ -4374,7 +4377,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
           const folderName = window.path.basename(pathToExplore);
           const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
             folderName,
-            "folder-and-file-name-is-valid"
+            "folder-or-file-name-is-valid"
           );
           if (!folderNameIsValid) {
             problematicFolderNames.push(`${currentStructurePath}${folderName}`);
@@ -4414,7 +4417,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
 
         const fileIsInForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
           fileName,
-          "file-is-in-forbidden-files-list"
+          "is-forbidden-file"
         );
 
         const fileIsEmpty = window.fs.fileSizeSync(pathToExplore) === 0;
@@ -4428,7 +4431,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
           // Check if the file name has any characters that do not comply with SPARC naming requirements
           const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
             fileName,
-            "folder-and-file-name-is-valid"
+            "folder-or-file-name-is-valid"
           );
           if (!fileNameIsValid) {
             problematicFileNames.push(fileObject);
@@ -4436,7 +4439,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
 
           const fileIsHidden = window.evaluateStringAgainstSdsRequirements(
             fileName,
-            "file-is-hidden"
+            "is-hidden-file"
           );
           if (fileIsHidden) {
             hiddenItems.push(fileObject);
@@ -4819,7 +4822,7 @@ window.detectIrregularFolders = (localFolderPath) => {
   const folderName = window.path.basename(localFolderPath);
   const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
     folderName,
-    "folder-and-file-name-is-valid"
+    "folder-or-file-name-is-valid"
   );
   if (!folderNameIsValid) {
     window.irregularFolderArray.push(localFolderPath);

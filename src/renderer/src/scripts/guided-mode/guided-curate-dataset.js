@@ -17283,7 +17283,7 @@ $("#guided-new-folder").on("click", () => {
           let val = $("#add-new-folder-input").val();
           const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
             val,
-            "folder-and-file-name-is-valid"
+            "folder-or-file-name-is-valid"
           );
           if (folderNameIsValid) {
             $("#add-new-folder-button").attr("disabled", false);

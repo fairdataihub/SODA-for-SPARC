@@ -522,21 +522,21 @@ window.handleLocalDatasetImport = async (path) => {
   for (let file in list.files) {
     const filesIsForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
       file,
-      "file-is-in-forbidden-files-list"
+      "is-forbidden-file"
     );
     if (filesIsForbiddenFilesList) {
       forbiddenFileNames.push(file);
     } else {
       const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
         file,
-        "folder-and-file-name-is-valid"
+        "folder-or-file-name-is-valid"
       );
 
       if (!fileNameIsValid) {
         problematicFiles.push(file);
       }
 
-      const fileIsHidden = window.evaluateStringAgainstSdsRequirements("file", "file-is-hidden");
+      const fileIsHidden = window.evaluateStringAgainstSdsRequirements("file", "is-hidden-file");
       if (fileIsHidden) {
         hiddenItems.push(file);
       }
