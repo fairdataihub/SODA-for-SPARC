@@ -4168,7 +4168,6 @@ const localFolderPathAndSubFoldersHaveNoFiles = (localFolderPath) => {
       if (statsObj.isFile) {
         // If a file with size > 0 is found, the folder is not considered empty
         if (window.fs.fileSizeSync(itemPath) > 0) {
-          console.log("File is not empty");
           return false; // Found a non-empty file
         }
       }
@@ -4185,7 +4184,7 @@ const localFolderPathAndSubFoldersHaveNoFiles = (localFolderPath) => {
     // If no files with size > 0 are found, the folder is considered empty
     return true;
   } catch (error) {
-    console.error(`Error reading folder: ${error.message}`);
+    window.log.error(`Error reading folder: ${error.message}`);
     return false; // Return false on error as we couldn't verify the folder
   }
 };

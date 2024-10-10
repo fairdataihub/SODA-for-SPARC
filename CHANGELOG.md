@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed an issue in the manifest creation and banner image upload/edit features of the `Advanced Features` tab that made it so users without Pennsieve Agents were not directed to the Pennsieve Agent download page. Instead they were told 'the pennsieve agent is not running.'
 - It was possible for an upload to fail early in 'Prepare Datasets Step-by-Step' and 'Upload Dataset' such that the catch statement referenced a variable that was not yet defined. This has been fixed.
 
+## v15.2.1 - 2024-10-01
+
+## Feature Additions:
+
+- Removed the ability to import empty folders and files into SODA.
+
+## Bug Fixes:
+
+- Fixed an issue preventing users with pre-2.0 Pennsieve agent versions from being able to update.
+
 ## v15.2.0 - 2024-08-21
 
 ## Feature Additions:
