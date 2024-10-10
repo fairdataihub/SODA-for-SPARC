@@ -43,6 +43,11 @@ log.initialize({ preload: true });
 log.transports.console.level = false;
 log.transports.file.level = "debug";
 let user_restart_confirmed = false;
+global.serverLive = true
+
+ipcMain.handle('get-server-live-status', () => {
+  return global.serverLive;
+});
 
 let nodeStorage = new JSONStorage(app.getPath("userData"));
 
@@ -331,12 +336,31 @@ const createPyProc = async () => {
         pyflaskProcess.stderr.on("data", (data) => {
           const logOutput = `[pyflaskProcess stderr] ${data.toString()}`;
           sessionServerOutput += `${logOutput}`;
+          global.serverLive = false
+
         });
         // On close, log the outputs and the exit code
         pyflaskProcess.on("close", (code) => {
           log.info(`child process exited with code ${code}`);
           log.info("Server output during session found below:");
           log.info(sessionServerOutput);
+          global.serverLive = false
+        });
+        // Event listener for when the process exits
+        pyflaskProcess.on('exit', (code, signal) => {
+          if (signal) {
+            log.info(`Process was killed by signal: ${signal}`);
+            global.serverLive = false
+
+          } else if (code !== 0) {
+            log.info(`Process exited with error code: ${code}`);
+            global.serverLive = false
+
+          } else {
+            log.info('Process exited successfully');
+            global.serverLive = false
+
+          }
         });
       } else {
         log.info("Application is not packaged");
@@ -351,10 +375,31 @@ const createPyProc = async () => {
 
         pyflaskProcess.on("error", function (err) {
           console.error("Failed to start pyflaskProcess:", err);
+          global.serverLive = false
+
         });
 
         pyflaskProcess.on("close", function (err) {
           console.error("Failed to start pyflaskProcess:", err);
+          global.serverLive = false
+
+        });
+
+        // Event listener for when the process exits
+        pyflaskProcess.on('exit', (code, signal) => {
+          if (signal) {
+            global.serverLive = false
+
+            log.info(`Process was killed by signal: ${signal}`);
+          } else if (code !== 0) {
+            global.serverLive = false
+
+            log.info(`Process exited with error code: ${code}`);
+          } else {
+            global.serverLive = false
+
+            log.info('Process exited successfully');
+          }
         });
       }
       if (pyflaskProcess != null) {
