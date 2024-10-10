@@ -2,11 +2,10 @@ import "./assets/imports";
 
 // Render React Components into their respective slots in the DOM
 import "./components/renderers/ReactComponentRenderer";
-
+import "./scripts/check-firewall/checkFirewall";
 import "./assets/demo-btns";
 import "./assets/nav";
 import "./scripts/client";
-import "./scripts/check-firewall/checkFirewall";
 import "./scripts/globals";
 import "./scripts/guided-mode/guided-curate-dataset";
 import "./scripts/others/renderer";

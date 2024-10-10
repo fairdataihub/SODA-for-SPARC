@@ -1,9 +1,5 @@
 import axios from "axios";
 
-while (!window.baseHtmlLoaded) {
-  await new Promise((resolve) => setTimeout(resolve, 100));
-}
-
 /**
  * This function checks if the client is blocked by an external firewall.
  * Assumptions: The client is connected to the internet.

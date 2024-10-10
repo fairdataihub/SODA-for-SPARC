@@ -5,11 +5,9 @@ import api from "./others/api/api";
 import { clientError, userErrorMessage } from "./others/http-error-handler/error-handler";
 import client from "./client";
 import { swalShowError } from "./utils/swal-utils";
-// TODO: Figure out why this import is a problem
-import { clientBlockedByExternalFirewall } from "./check-firewall/checkFirewall";
-// import { window.clearValidationResults } from './validator/validate'
 // // Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
 // //          needed by the renderer process in order to run.
+import { clientBlockedByExternalFirewall } from "./check-firewall/checkFirewall";
 
 // // Contributors table for the dataset description editing page
 const currentConTable = document.getElementById("table-current-contributors");
