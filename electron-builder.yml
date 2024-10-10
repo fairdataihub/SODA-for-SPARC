@@ -41,6 +41,7 @@ mac:
     - from: ./pennsieve-io-chain.pem
       to: ./pennsieve-io-chain.pem
 dmg:
+  sign: true
   artifactName: ${name}-${version}.${ext}
 linux:
   target:
