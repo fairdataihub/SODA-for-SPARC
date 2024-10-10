@@ -79,7 +79,7 @@ import {
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
 } from "../../stores/slices/backgroundServicesSlice";
-import { clientBlockedByExternalFirewall, blockedMessage } from "../check-firewall/checkFirewall";
+import { clientBlockedByExternalFirewall, blockedMessage, hostFirewallMessage } from "../check-firewall/checkFirewall";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -453,6 +453,8 @@ const startupServerAndApiCheck = async () => {
     }
   }
 
+
+
   window.electron.ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
   window.electron.ipcRenderer.send(
     "track-kombucha",
@@ -462,6 +464,23 @@ const startupServerAndApiCheck = async () => {
     kombuchaEnums.Status.FAIL,
     { value: 1 }
   );
+
+  let serverIsLive = await window.server.serverIsLive()
+  if (serverIsLive) {
+    // notify the user that there may be a firewall issue preventing the client from connecting to the server
+    Swal.close();
+    await Swal.fire({
+      icon: "error",
+      title: "Potential Firewall Interference",
+      text: hostFirewallMessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Restart now",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
+    await window.electron.ipcRenderer.invoke("relaunch-soda");
+  }
 
   Swal.close();
   await Swal.fire({

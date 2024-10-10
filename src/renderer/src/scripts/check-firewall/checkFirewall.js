@@ -20,3 +20,4 @@ export const clientBlockedByExternalFirewall = async (url) => {
 
 export const blockedMessage =
   "SODA is unable to reach Pennsieve. On rare occasions Pennsieve is not available for short periods of time. If you intend to upload to the Pennsieve platform please try again later. If this issue persists it is possible that your network is blocking access to Pennsieve from SODA. You may need to contact your network administrator for assistance.";
+export const hostFirewallMessage = "SODA is unable to communicate with its server.  If this issue persists it is possible that your network is blocking access. You may need to contact your network administrator for assistance."
