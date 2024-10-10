@@ -910,11 +910,8 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
   const pennsieveURL = "https://api.pennsieve.io/discover/datasets";
   const blocked = await clientBlockedByExternalFirewall(pennsieveURL);
   if (blocked) {
-    await swalShowInfo(
-      "Potential Firewall Interference",
-      blockedMessage
-    );
-    return 
+    await swalShowInfo("Potential Firewall Interference", blockedMessage);
+    return;
   }
   let footerMessage = "No existing accounts to load. Please add an account.";
   if (window.bfAccountOptionsStatus === "") {
@@ -1355,7 +1352,7 @@ var dropdownEventID = "";
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
   if (dropdown === "bf") {
-    console.log("Calling opendropdown here?")
+    console.log("Calling opendropdown here?");
 
     await window.addBfAccount(ev, false);
   } else if (dropdown === "dataset") {

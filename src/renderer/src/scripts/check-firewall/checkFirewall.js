@@ -10,7 +10,7 @@ export const clientBlockedByExternalFirewall = async (url) => {
   //make an axios request to this public endpoint: https://api.pennsieve.io/discover/datasets
   //if the request fails, the client is blocked by an external firewall
   try {
-    console.log("Checking")
+    console.log("Checking");
     await axios.get(url);
     return true;
   } catch (error) {
@@ -18,4 +18,5 @@ export const clientBlockedByExternalFirewall = async (url) => {
   }
 };
 
-export const blockedMessage = "SODA is unable to reach Pennsieve. On rare occasions Pennsieve is not available for short periods of time. If you intend to upload to the Pennsieve platform please try again later. If this issue persists it is possible that your network is blocking access to Pennsieve from SODA. You may need to contact your network administrator for assistance."
+export const blockedMessage =
+  "SODA is unable to reach Pennsieve. On rare occasions Pennsieve is not available for short periods of time. If you intend to upload to the Pennsieve platform please try again later. If this issue persists it is possible that your network is blocking access to Pennsieve from SODA. You may need to contact your network administrator for assistance.";
