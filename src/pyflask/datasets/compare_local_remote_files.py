@@ -16,6 +16,7 @@ PENNSIEVE_URL = "https://api.pennsieve.io"
 
 def import_subfolders(subfolder, path):
     global PENNSIEVE_URL
+    global namespace_logger
     global pennsieve_dataset_paths
     folder_id = subfolder["id"]
     try:
@@ -38,7 +39,7 @@ def import_subfolders(subfolder, path):
         for folder_name, folder in subfolder["folders"].items():
             import_subfolders(folder, f"{path}/{folder_name}")
     except Exception as e:
-        print(f"Exception when calling API: {e}")
+        namespace_logger.info(f"Exception when calling API: {e}")
         raise e
 
 
@@ -72,7 +73,7 @@ def import_pennsieve_dataset(dataset_id, path):
         for folder_name, folder in pennsieve_dataset_structure["folders"].items():
             import_subfolders(folder, f"{folder_name}")
     except Exception as e:
-        print(f"Exception when calling API: {e}")
+        namespace_logger.info(f"Exception when calling API: {e}")
         raise e
 
 
@@ -100,7 +101,7 @@ def import_local_dataset(path):
         for folder_name, folder in local_dataset_structure["folders"].items():
             import_local_subfolders(folder, f"{path}/{folder_name}")
     except Exception as e:
-        print(f"Exception when calling API: {e}")
+        namespace_logger.info(f"Exception when calling API: {e}")
         raise e
 
 
@@ -125,7 +126,7 @@ def import_local_subfolders(subfolder, path):
         for folder_name, folder in subfolder["folders"].items():
             import_local_subfolders(folder, f"{path}/{folder_name}")
     except Exception as e:
-        print(f"Exception when calling API: {e}")
+        namespace_logger.info(f"Exception when calling API: {e}")
         raise e
 
 

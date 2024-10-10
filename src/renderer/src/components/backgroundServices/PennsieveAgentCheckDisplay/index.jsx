@@ -11,7 +11,7 @@ const CLOSE_SODA_BUTTON_TEXT = "Close SODA";
 const KNOWN_ERROR_MESSAGES = [
   "UNIQUE constraint failed:",
   "NotAuthorizedException: Incorrect username or password.",
-  "401 Error Creating new UserSettings",
+  "UserSettings" /* If the error message contains "UserSettings", it is likely solved by deleting the Pennsieve Agent database files */,
 ];
 
 // Utility Functions
@@ -22,13 +22,24 @@ const deletePennsieveAgentDBFilesAndRestart = async () => {
     "/.pennsieve/pennsieve_agent.db-wal",
   ];
 
-  for (const file of filesToDelete) {
-    const filePath = `${window.homeDirectory}${file}`;
-    if (window.fs.existsSync(filePath)) {
-      await window.fs.unlink(filePath);
+  try {
+    // Stop the Pennsieve agent to free up the database files
+    await window.spawn.stopPennsieveAgent();
+
+    // Delete the Pennsieve agent database files
+    for (const file of filesToDelete) {
+      const filePath = `${window.homeDirectory}${file}`;
+      if (window.fs.existsSync(filePath)) {
+        await window.fs.unlink(filePath);
+      } else {
+        console.error(`Unable to find Pennsieve agent DB file: ${filePath}`);
+      }
     }
+  } catch (error) {
+    console.error("Error deleting Pennsieve agent DB files:", error);
   }
 
+  // Restart the Pennsieve agent check
   await window.checkPennsieveAgent();
 };
 
@@ -61,8 +72,14 @@ const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
               <>
                 <Text>
                   This is a known issue with the Pennsieve Agent. It can typically be resolved by
-                  deleting the local Pennsieve Agent database files. Would you like SODA to do this
-                  and restart the Agent?
+                  deleting the local Pennsieve Agent database files. You can refer to the
+                  <ExternalLink
+                    href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda"
+                    buttonText="SODA documentation"
+                    buttonType="anchor"
+                  />
+                  for information on how to fix the issue manually. SODA can also attempt to fix the
+                  issue for you. Would you like to have SODA try to fix the issue?
                 </Text>
                 <Group justify="center" mt="sm">
                   <Button onClick={deletePennsieveAgentDBFilesAndRestart}>
@@ -108,6 +125,7 @@ const PennsieveAgentCheckDisplay = () => {
     postPennsieveAgentCheckAction,
   } = useGlobalStore();
 
+  // If the Pennsieve agent check is in progress, display a loading spinner
   if (pennsieveAgentCheckInProgress === true) {
     return (
       <FullWidthContainer>
@@ -121,6 +139,7 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
+  // If an error message title and message are present, display the error message
   if (pennsieveAgentCheckError?.title && pennsieveAgentCheckError?.message) {
     return (
       <FullWidthContainer>
@@ -142,6 +161,7 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
+  // If the Pennsieve agent is not installed, display a message with a download link
   if (pennsieveAgentInstalled === false) {
     return (
       <FullWidthContainer>
@@ -176,7 +196,8 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
-  if (pennsieveAgentOutputErrorMessage === true) {
+  // If the Pennsieve agent check returned an error message, display the error message
+  if (pennsieveAgentOutputErrorMessage != null) {
     return (
       <FullWidthContainer>
         <PennsieveAgentErrorMessageDisplay errorMessage={pennsieveAgentOutputErrorMessage} />
@@ -184,6 +205,7 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
+  // If the Pennsieve agent is not up to date, display a message with a download link to the latest version
   if (pennsieveAgentUpToDate === false) {
     return (
       <FullWidthContainer>
@@ -223,6 +245,7 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
+  // If the Pennsieve agent check was successful (no flags occurred), display a success message
   return (
     <FullWidthContainer>
       <Stack mt="sm" align="center" mx="sm">
