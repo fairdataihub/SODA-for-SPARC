@@ -408,10 +408,10 @@ if (process.contextIsolated) {
     });
     contextBridge.exposeInMainWorld("server", {
       serverIsLive: async () => {
-        const status = await ipcRenderer.invoke('get-server-live-status');
+        const status = await ipcRenderer.invoke("get-server-live-status");
         return status;
-      }
-    })
+      },
+    });
   } catch (error) {
     log.error(error);
   }
