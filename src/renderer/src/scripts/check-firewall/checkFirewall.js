@@ -6,10 +6,9 @@ import axios from "axios";
  * Returns: true if the client is blocked by an external firewall, false otherwise.
  */
 export const clientBlockedByExternalFirewall = async (url) => {
-
-  // if the user doesnt have an internet connection they are not blocked by a firewall 
+  // if the user doesnt have an internet connection they are not blocked by a firewall
   // A simplification but we check for internet elsewhere so this is okay here.
-  let internetConnection = navigator.onLine; 
+  let internetConnection = navigator.onLine;
   if (!internetConnection) {
     return false;
   }
