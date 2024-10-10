@@ -6,13 +6,20 @@ import axios from "axios";
  * Returns: true if the client is blocked by an external firewall, false otherwise.
  */
 export const clientBlockedByExternalFirewall = async (url) => {
+
+  // if the user doesnt have an internet connection they are not blocked by a firewall 
+  // A simplification but we check for internet elsewhere so this is okay here.
+  let internetConnection = navigator.onLine; 
+  if (!internetConnection) {
+    return false;
+  }
+
   // check that the client can make an api request to Pennsieve's public API
   //make an axios request to this public endpoint: https://api.pennsieve.io/discover/datasets
   //if the request fails, the client is blocked by an external firewall
   try {
-    console.log("Checking");
     await axios.get(url);
-    return true;
+    return false;
   } catch (error) {
     return true;
   }
