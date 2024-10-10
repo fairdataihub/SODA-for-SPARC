@@ -79,7 +79,7 @@ import {
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
 } from "../../stores/slices/backgroundServicesSlice";
-import { clientBlockedByExternalFirewall } from "../check-firewall/checkFirewall";
+import { clientBlockedByExternalFirewall, blockedMessage } from "../check-firewall/checkFirewall";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -497,7 +497,7 @@ const initializeSODARenderer = async () => {
     if (blocked) {
       swalShowInfo(
         "Potential Firewall Interference",
-        "We are having trouble reaching Pennsieve. On rare occasions Pennsieve is unreachable for a short period of time. Please try again later. If this issue persists it is possible that your network is blocking access to Pennsieve from SODA. In that case, please contact your network administrator for assistance."
+        blockedMessage
       );
     }
   }
