@@ -4275,20 +4275,17 @@ window.replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
 //   }
 // };
 
-const forbiddenFiles = {
-  ".DS_Store": true,
-  "Thumbs.db": true,
-};
-
 const validSparcFolderAndFileNameRegex = /^[0-9A-Za-z,.\-_ ]*$/;
 const identifierConventionsRegex = /^[0-9A-Za-z-_]*$/;
+const forbiddenFiles = new Set([".DS_Store", "Thumbs.db"]);
+const forbiddenFilesRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
 
 window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
   const tests = {
     "folder-or-file-name-is-valid": validSparcFolderAndFileNameRegex.test(stringToTest),
     "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest),
     "is-hidden-file": stringToTest.startsWith("."),
-    "is-forbidden-file": forbiddenFiles[stringToTest] === true,
+    "is-forbidden-file": forbiddenFiles.has(stringToTest) || forbiddenFilesRegex.test(stringToTest),
   };
   console.log(`${testType}   ${stringToTest}    ${tests[testType]}`);
 
@@ -4371,11 +4368,12 @@ window.buildDatasetStructureJsonFromImportedData = async (
     try {
       if (await window.fs.isDirectory(pathToExplore)) {
         const folderIsEmpty = localFolderPathAndSubFoldersHaveNoFiles(pathToExplore);
-        // If the folder is not empty, recursively traverse the folder and build the JSON structure
 
+        // If the folder is empty, add it to the empty folders list and do not add it to the JSON structure
         if (folderIsEmpty) {
           emptyFolders.push(pathToExplore);
         } else {
+          // If the folder is not empty, build the JSON structure for the folder
           const folderName = window.path.basename(pathToExplore);
           const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
             folderName,
