@@ -4277,11 +4277,13 @@ window.replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
 
 const validSparcFolderAndFileNameRegex = /^[0-9A-Za-z,.\-_ ]*$/;
 const identifierConventionsRegex = /^[0-9A-Za-z-_]*$/;
+const forbiddenFileNameRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
 const forbiddenFiles = new Set([".DS_Store", "Thumbs.db"]);
 const forbiddenFilesRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
 
 window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
   const tests = {
+    "folder-or-file-name-contains-forbidden-characters": !forbiddenFileNameRegex.test(stringToTest),
     "folder-or-file-name-is-valid": validSparcFolderAndFileNameRegex.test(stringToTest),
     "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest),
     "is-hidden-file": stringToTest.startsWith("."),
@@ -4428,6 +4430,13 @@ window.buildDatasetStructureJsonFromImportedData = async (
         } else if (fileIsEmpty) {
           emptyFiles.push(fileObject);
         } else {
+          const fileNameContainsForbiddenCharacters = window.evaluateStringAgainstSdsRequirements(
+            fileName,
+            "folder-or-file-name-contains-forbidden-characters"
+          );
+          if (fileNameContainsForbiddenCharacters) {
+            console.log("File name contains forbidden characters");
+          }
           // Check if the file name has any characters that do not comply with SPARC naming requirements
           const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
             fileName,
@@ -4520,16 +4529,52 @@ window.buildDatasetStructureJsonFromImportedData = async (
       "Cancel import",
       "What would you like to do with the folders with special characters?"
     );
+
     if (userResponse === "confirm") {
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure);
     }
     // If the userResponse is "deny", nothing needs to be done
+
     if (userResponse === "cancel") {
       throw new Error("Importation cancelled");
     }
   }
 
   if (problematicFileNames.length > 0) {
+    // Create two lists of problematic file names, one for files that contain forbidden characters,
+    // and one for files that contain unallowed characters but are not forbidden
+    const problematicFileNamesWithForbiddenCharacters = problematicFileNames.filter((file) =>
+      window.evaluateStringAgainstSdsRequirements(
+        file.fileName,
+        "folder-or-file-name-contains-forbidden-characters"
+      )
+    );
+    const problematicFileNamesWithoutForbiddenCharacters = problematicFileNames.filter(
+      (file) =>
+        !window.evaluateStringAgainstSdsRequirements(
+          file.fileName,
+          "folder-or-file-name-contains-forbidden-characters"
+        )
+    );
+    console.log(problematicFileNamesWithForbiddenCharacters);
+    console.log(problematicFileNamesWithoutForbiddenCharacters);
+
+    if (problematicFileNamesWithForbiddenCharacters.length > 0) {
+      const replaceForbiddenCharactersWithSdsCompliantCharacters = await swalFileListDoubleAction(
+        problematicFileNamesWithForbiddenCharacters.map((file) => file.relativePath),
+        "<p>Forbidden file names detected</p>",
+        `The files listed below contain forbidden characters and will not be imported into SODA.
+        You may choose to either keep them as is, or replace the characters with '-'.
+        `,
+        "Replace the forbidden characters with '-'",
+        "Cancel import for all folders and files",
+        "What would you like to do with the files with forbidden characters?"
+      );
+      if (replaceForbiddenCharactersWithSdsCompliantCharacters) {
+        window.replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
+      }
+    }
+
     const userResponse = await swalFileListTripleAction(
       problematicFileNames.map((file) => file.relativePath),
       "<p>File name modifications</p>",
