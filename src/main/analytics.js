@@ -18,8 +18,6 @@ const kombuchaServer = axios.create({
   timeout: 0,
 });
 
-
-
 // Retrieve the userid value, and if it's not there, assign it a new uuid.
 let userId;
 try {
