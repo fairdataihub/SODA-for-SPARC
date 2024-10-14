@@ -28,8 +28,8 @@ module.exports = async function (params) {
       tool: "notarytool",
       appBundleId: appId,
       appPath: appPath,
-      appleId: process.env.APPLE_ID,
-      appleIdPassword: process.env.APPLE_PASSWORD,
+      appleId: process.env.appleId,
+      appleIdPassword: process.env.appleIdPassword,
       teamId: "7KPPP4K323",
     });
   } catch (error) {
