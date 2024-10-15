@@ -1,5 +1,6 @@
 {
   "name": "SODA (Software to Organize Data Automatically) for SPARC",
+  "identifier": "https://doi.org/10.5281/zenodo.13910024",
   "@context": "https://w3id.org/codemeta/3.0",
   "applicationCategory": "Scientific",
   "author": [
