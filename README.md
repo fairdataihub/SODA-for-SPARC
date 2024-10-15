@@ -96,6 +96,6 @@ SODA uses Kombucha Analytics for tracking. Tracking is anonymous and no identify
 
 If you use SODA for SPARC to curate your dataset, please cite the following references:
 
-1. Marroquin et al., (2024). SODA: Software to Support the Curation and Sharing of FAIR Autonomic Nervous System Data. Journal of Open Source Software, 9(100), 6140, [https://doi.org/10.21105/joss.06140](https://doi.org/10.21105/joss.06140)
+1. Marroquin, C., Clark, J., Portillo, D., Soundarajan, S., Ngo, T., & Patel, B., SODA: Software to Support the Curation and Sharing of FAIR Autonomic Nervous System Data. Journal of Open Source Software, 9(100), 6140, [https://doi.org/10.21105/joss.06140](https://doi.org/10.21105/joss.06140)
 2. Marroquin, C., Clark, J., Portillo, D., Soundarajan, S., Ngo, T., & Patel, B., (2024). SODA (Software to Organize Data Automatically) for SPARC. Zenodo. [10.5281/zenodo.5565455](https://doi.org/10.5281/zenodo.5565455) [Note: if you used a specific version of SODA, we recommend citing that version using the instructions provided on the Zenodo SODA page]
 3. Bandrowski, A., Grethe, J. S., Pilko, A., Gillespie, T., Pine, G., Patel, B., Surles-Zeigler, M., & Martone, M. E. (2021). SPARC Data Structure: Rationale and Design of a FAIR Standard for Biomedical Research Data. bioRxiv. [10.1101/2021.02.10.430563](https://doi.org/10.1101/2021.02.10.430563)
