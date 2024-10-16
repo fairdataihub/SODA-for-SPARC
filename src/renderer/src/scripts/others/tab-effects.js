@@ -1713,11 +1713,10 @@ const recursive_structure_create_include_manifest = (
   return;
 };
 
-// Function to verify if a local folder is a SPARC folder
-// If no high level folders or any possible metadata files
-// are found the folder is marked as invalid
+// Function to verify if a local folder is a valid SPARC folder
+// A valid SPARC folder must contain at least one high-level folder or metadata file.
 window.verifySparcFolder = (rootFolderPath, type) => {
-  const possibleMetadataFiles = [
+  const metadataFiles = [
     "submission",
     "dataset_description",
     "subjects",
@@ -1733,20 +1732,18 @@ window.verifySparcFolder = (rootFolderPath, type) => {
     "manifest",
   ];
 
-  // Get the contents of the root folder
-  const entries = window.fs.readdirSync(rootFolderPath);
+  const folderContents = window.fs
+    .readdirSync(rootFolderPath)
+    .map((item) => window.path.parse(item).name.toLowerCase());
+  const highLevelFolders = window.highLevelFolders.map((folder) => folder.toLowerCase());
 
-  // Check if the folder contains any high level folders or metadata files (case-insensitive)
-  const isValidItem = (item) => {
-    const itemName = window.path.parse(item).name.toLowerCase(); // Convert to lowercase
-    return (
-      window.highLevelFolders.map((folder) => folder.toLowerCase()).includes(itemName) ||
-      possibleMetadataFiles.map((file) => file.toLowerCase()).includes(itemName) ||
-      (type === "pennsieve" && item[0] !== ".")
-    );
-  };
+  const isValidItem = (item) =>
+    highLevelFolders.includes(item) ||
+    metadataFiles.includes(item) ||
+    (type === "pennsieve" && !item.startsWith("."));
 
-  return entries.some(isValidItem);
+  // Returns true if the folder contains at least one valid item (high level folder or metadata file)
+  return folderContents.some(isValidItem);
 };
 
 // function similar to window.transitionSubQuestions, but for buttons
