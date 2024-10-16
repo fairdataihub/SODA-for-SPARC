@@ -186,7 +186,7 @@ window.uploadDatasetDropHandler = async (ev) => {
       } else {
         Swal.fire({
           icon: "warning",
-          html: `This dataset is not following the SPARC Data Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
+          html: `1This dataset is not following the SPARC Data Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
           <br/>
           See the "Data Organization" section of the SPARC documentation for more 
           <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
@@ -614,6 +614,7 @@ window.handleLocalDatasetImport = async (path) => {
 };
 
 window.importLocalDataset = async (folderPath) => {
+  // Reset the sodaJSONObj
   window.sodaJSONObj = {
     "bf-account-selected": {},
     "bf-dataset-selected": {},
@@ -626,8 +627,8 @@ window.importLocalDataset = async (folderPath) => {
       "local-path": "",
     },
   };
-  let moveForward = false;
 
+  let moveForward = false;
   let valid_dataset = window.verifySparcFolder(folderPath, "local");
 
   if (valid_dataset) {
@@ -635,7 +636,7 @@ window.importLocalDataset = async (folderPath) => {
   } else {
     Swal.fire({
       icon: "warning",
-      html: `This dataset is not following the SPARC Data Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
+      html: `2This dataset is not following the SPARC Data Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
       <br/>
       See the "Data Organization" section of the SPARC documentation for more 
       <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,

@@ -1724,17 +1724,24 @@ window.verifySparcFolder = (rootFolderPath, type) => {
     "samples",
     "README",
     "CHANGES",
+    ".dss",
+    "sites",
+    "license",
+    "specimens",
+    "resources",
+    "code_description",
+    "manifest",
   ];
 
   // Get the contents of the root folder
   const entries = window.fs.readdirSync(rootFolderPath);
 
-  // Check if the folder contains any high level folders or metadata files
+  // Check if the folder contains any high level folders or metadata files (case-insensitive)
   const isValidItem = (item) => {
-    const itemName = window.path.parse(item).name;
+    const itemName = window.path.parse(item).name.toLowerCase(); // Convert to lowercase
     return (
-      window.highLevelFolders.includes(item) ||
-      possibleMetadataFiles.includes(itemName) ||
+      window.highLevelFolders.map((folder) => folder.toLowerCase()).includes(itemName) ||
+      possibleMetadataFiles.map((file) => file.toLowerCase()).includes(itemName) ||
       (type === "pennsieve" && item[0] !== ".")
     );
   };
