@@ -128,7 +128,7 @@ export const swalFileListDoubleAction = async (
           )
           .join("")}
       </div>
-      <b>${confirmationText}</b>
+      ${confirmationText ? `<b>${confirmationText}</b>` : ""}
     `,
     width: 800,
     heightAuto: false,

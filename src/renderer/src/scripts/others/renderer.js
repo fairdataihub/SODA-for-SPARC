@@ -4205,92 +4205,70 @@ const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
 };
 
 const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
-  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+  const currentFoldersAtPath = Object.keys(datasetStructure["folders"]);
+
   for (const folderKey of currentFoldersAtPath) {
     const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
       folderKey,
       "folder-or-file-name-is-valid"
     );
-    // If the folder name is not valid, replace it with a valid name and then recurse through the
-    // renamed folder to check for any other problematic folders
+
     if (!folderNameIsValid) {
-      const newFolderName = folderKey.replace(validSparcFolderAndFileNameRegex, "-");
+      const newFolderName = folderKey.replace(validSparcFolderAndFileNameRegexReplacer, "-");
       const newFolderObj = { ...datasetStructure["folders"][folderKey] };
+
       if (!newFolderObj["action"].includes("renamed")) {
         newFolderObj["action"].push("renamed");
       }
-      newFolderObj["original-name"] = folderKey;
+      if (!newFolderObj["original-name"]) {
+        newFolderObj["original-name"] = folderKey;
+      }
       newFolderObj["new-name"] = newFolderName;
       datasetStructure["folders"][newFolderName] = newFolderObj;
       delete datasetStructure["folders"][folderKey];
+
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][newFolderName]);
     } else {
-      // If the folder name is valid, recurse through the folder to check for any problematic folders
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
     }
   }
 };
-window.replaceProblematicFilesWithSDSCompliantNames = (
-  datasetStructure,
-  onlyReplaceForbiddenFileNames
-) => {
-  let hasbeendone = false;
-  if (!hasbeendone) {
-    console.log("replaceProblematicFilesWithSDSCompliantNames called");
-    console.log("datasetStructure", datasetStructure);
-    hasbeendone = true;
-  }
-  const currentFilesAtPath = Object.keys(datasetStructure.files);
+
+window.replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
+  const currentFilesAtPath = Object.keys(datasetStructure["files"]);
+
   for (const fileKey of currentFilesAtPath) {
-    const fileKeyContainsForbiddenCharacters = window.evaluateStringAgainstSdsRequirements(
-      fileKey,
-      "folder-or-file-name-contains-forbidden-characters"
-    );
-
-    // Skip file if forbidden characters aren't found and only forbidden names should be replaced
-    if (onlyReplaceForbiddenFileNames && !fileKeyContainsForbiddenCharacters) {
-      console.log(`Skipping file: ${fileKey}`);
-      continue;
-    }
-
     const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
       fileKey,
       "folder-or-file-name-is-valid"
     );
 
     if (!fileNameIsValid) {
-      const newFileName = fileKey.replace(validSparcFolderAndFileNameRegex, "-");
+      const newFileName = fileKey.replace(validSparcFolderAndFileNameRegexReplacer, "-");
       const newFileObj = { ...datasetStructure["files"][fileKey] };
 
-      // Track renaming action and original name
       if (!newFileObj["action"].includes("renamed")) {
         newFileObj["action"].push("renamed");
       }
       if (!newFileObj["original-name"]) {
-        console.log("Setting original name");
         newFileObj["original-name"] = fileKey;
       }
       newFileObj["new-name"] = newFileName;
-
-      // Replace the old fileKey with the newFileName in datasetStructure
       datasetStructure["files"][newFileName] = newFileObj;
       delete datasetStructure["files"][fileKey];
     }
   }
 
-  // Recursively apply the function to subfolders
   if (datasetStructure?.["folders"]) {
-    const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+    const currentFoldersAtPath = Object.keys(datasetStructure["folders"]);
     for (const folderKey of currentFoldersAtPath) {
-      window.replaceProblematicFilesWithSDSCompliantNames(
-        datasetStructure["folders"][folderKey],
-        onlyReplaceForbiddenFileNames
-      );
+      window.replaceProblematicFilesWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
     }
   }
 };
 
-const validSparcFolderAndFileNameRegex = /^[0-9A-Za-z,.\-_ ]*$/;
+const validSparcFolderAndFileNameRegexMatcher = /^[0-9A-Za-z,.\-_ ]*$/;
+const validSparcFolderAndFileNameRegexReplacer = /[^0-9A-Za-z,.\-_ ]/g;
 const identifierConventionsRegex = /^[0-9A-Za-z-_]*$/;
 const forbiddenFileNameRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
 const forbiddenFiles = new Set([".DS_Store", "Thumbs.db"]);
@@ -4299,12 +4277,11 @@ const forbiddenFilesRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
 window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
   const tests = {
     "folder-or-file-name-contains-forbidden-characters": !forbiddenFileNameRegex.test(stringToTest),
-    "folder-or-file-name-is-valid": validSparcFolderAndFileNameRegex.test(stringToTest),
+    "folder-or-file-name-is-valid": validSparcFolderAndFileNameRegexMatcher.test(stringToTest),
     "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest),
     "is-hidden-file": stringToTest.startsWith("."),
     "is-forbidden-file": forbiddenFiles.has(stringToTest) || forbiddenFilesRegex.test(stringToTest),
   };
-  // console.info(`${testType}   ${stringToTest}    ${tests[testType]}`);
 
   return tests[testType];
 };
@@ -4385,12 +4362,11 @@ window.buildDatasetStructureJsonFromImportedData = async (
     try {
       if (await window.fs.isDirectory(pathToExplore)) {
         const folderIsEmpty = localFolderPathAndSubFoldersHaveNoFiles(pathToExplore);
+        // If the folder is not empty, recursively traverse the folder and build the JSON structure
 
-        // If the folder is empty, add it to the empty folders list and do not add it to the JSON structure
         if (folderIsEmpty) {
           emptyFolders.push(pathToExplore);
         } else {
-          // If the folder is not empty, build the JSON structure for the folder
           const folderName = window.path.basename(pathToExplore);
           const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
             folderName,
@@ -4434,7 +4410,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
 
         const fileIsInForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
           fileName,
-          "is-forbidden-file"
+          "file-is-in-forbidden-files-list"
         );
 
         const fileIsEmpty = window.fs.fileSizeSync(pathToExplore) === 0;
@@ -4445,21 +4421,22 @@ window.buildDatasetStructureJsonFromImportedData = async (
         } else if (fileIsEmpty) {
           emptyFiles.push(fileObject);
         } else {
-          // Add the file to the problematic file names list if it contains non-sds compliant characters
-          if (
-            !window.evaluateStringAgainstSdsRequirements(fileName, "folder-or-file-name-is-valid")
-          ) {
+          // Check if the file name has any characters that do not comply with SPARC naming requirements
+          const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
+            fileName,
+            "folder-or-file-name-is-valid"
+          );
+          if (!fileNameIsValid) {
             problematicFileNames.push(fileObject);
           }
 
-          // Add the file to the hidden items list if it is a hidden file
-          if (window.evaluateStringAgainstSdsRequirements(fileName, "is-hidden-file")) {
+          const fileIsHidden = window.evaluateStringAgainstSdsRequirements(
+            fileName,
+            "file-is-hidden"
+          );
+          if (fileIsHidden) {
             hiddenItems.push(fileObject);
           }
-
-          console.log("Adding file to the current structure " + fileName);
-          console.log("currentStructure");
-          console.log(currentStructure);
 
           // Add the file to the current structure
           currentStructure["files"][fileName] = {
@@ -4470,11 +4447,6 @@ window.buildDatasetStructureJsonFromImportedData = async (
             action: ["new"],
             extension: fileExtension,
           };
-
-          console.log("current structure files filename" + currentStructure["files"][fileName]);
-
-          console.log("currentStructure after adding file");
-          console.log(currentStructure);
         }
       }
     } catch (error) {
@@ -4528,103 +4500,56 @@ window.buildDatasetStructureJsonFromImportedData = async (
     );
   }
 
-  let finalDatasetStructure = { ...datasetStructure };
-
   if (problematicFolderNames.length > 0) {
-    const userResponse = await swalFileListTripleAction(
+    /*
+      await swalFileListDoubleAction(
+          subjectsWithEmptyFolders.map((subject) => subject.subjectName),
+          `${highLevelFolder} data missing for some subjects`,
+          `The subjects below did not have folders or files containing ${highLevelFolder} data added to them:`,
+          `Continue without adding ${highLevelFolder} data to all subjects`,
+          `Finish adding ${highLevelFolder} data to subjects`,
+          `Would you like to continue without adding ${highLevelFolder} data to all subjects?`
+        );
+    */
+    const replaceFoldersForUser = await swalFileListDoubleAction(
       problematicFolderNames,
-      "<p>Folder name modifications</p>",
-      `The folders listed below contain the special characters "#", "&", "%", or "+"
-      which are typically not recommended per the SPARC data standards.
-      You may choose to either keep them as is, or replace the characters with '-'.
+      "Folder names not compliant with SPARC data standards detected",
+      `
+        The SPARC data standards require folder names to only letters, numbers, spaces,
+        hyphens, underscores, commas, and periods.
+        <br /><br />
+        The following folders contain special characters that are not compliant with the SPARC data standards:
       `,
-      "Replace the special characters with '-'",
-      "Keep the folder names as they are",
-      "Cancel import",
-      "What would you like to do with the folders with special characters?"
+      "Have SODA replace the special characters with '-'",
+      "Cancel the import",
+      "What would you like to do with the non-compliant folder names?"
     );
 
-    if (userResponse === "confirm") {
-      finalDatasetStructure = replaceProblematicFoldersWithSDSCompliantNames(finalDatasetStructure);
-    }
-    // If the userResponse is "deny", nothing needs to be done
-
-    if (userResponse === "cancel") {
+    if (replaceFoldersForUser) {
+      replaceProblematicFoldersWithSDSCompliantNames(datasetStructure);
+    } else {
       throw new Error("Importation cancelled");
     }
   }
 
-  console.log("Dataset structure before checking problematic files");
-  console.log(finalDatasetStructure);
-
   if (problematicFileNames.length > 0) {
-    console.log("datasetStructure before filter");
-    console.log(datasetStructure);
-    // Create two lists of problematic file names, one for files that contain forbidden characters,
-    // and one for files that contain unallowed characters but are not forbidden
-    const problematicFileNamesWithForbiddenCharacters = problematicFileNames.filter((file) =>
-      window.evaluateStringAgainstSdsRequirements(
-        file.fileName,
-        "folder-or-file-name-contains-forbidden-characters"
-      )
-    );
-    const problematicFileNamesWithoutForbiddenCharacters = problematicFileNames.filter(
-      (file) =>
-        !window.evaluateStringAgainstSdsRequirements(
-          file.fileName,
-          "folder-or-file-name-contains-forbidden-characters"
-        )
-    );
-    console.log("datset structure before if statement");
-    console.log(finalDatasetStructure);
-    if (problematicFileNamesWithForbiddenCharacters.length > 0) {
-      console.log("dataset structure now that we are in the if statement");
-      console.log(finalDatasetStructure);
-
-      const replaceForbiddenCharactersWithSdsCompliantCharacters = await swalFileListDoubleAction(
-        problematicFileNamesWithForbiddenCharacters.map((file) => file.relativePath),
-        "<p>Forbidden file names detected</p>",
-        `The files listed below contain forbidden characters and will not be imported into SODA.
-        You may choose to either keep them as is, or replace the characters with '-'.
-        `,
-        "Replace the forbidden characters with '-'",
-        "Cancel import for all folders and files",
-        "What would you like to do with the files with forbidden characters?"
-      );
-      // If the userResponse is "confirm", replace the forbidden characters with '-'
-      if (replaceForbiddenCharactersWithSdsCompliantCharacters) {
-        console.log("Replacing problematic files with SDS compliant names");
-        console.log(finalDatasetStructure);
-        finalDatasetStructure = window.replaceProblematicFilesWithSDSCompliantNames(
-          finalDatasetStructure,
-          true
-        );
-      } else {
-        throw new Error("Importation cancelled");
-      }
-    }
-    console.log("finalDatasetStructure after replacing forbidden characters");
-    console.log(finalDatasetStructure);
-    if (problematicFileNamesWithoutForbiddenCharacters.length > 0) {
-      const userResponse = await swalFileListTripleAction(
-        problematicFileNames.map((file) => file.relativePath),
-        "<p>File name modifications</p>",
-        `The files listed below contain the special characters "#", "&", "%", or "+"
-      which are typically not recommended per the SPARC data standards.
-      You may choose to either keep them as is, or replace the characters with '-'.
+    const replaceFilesForUser = await swalFileListDoubleAction(
+      problematicFileNames.map((file) => file.relativePath),
+      "File names not compliant with SPARC data standards detected",
+      `
+        The SPARC data standards require folder names to only letters, numbers, spaces,
+        hyphens, underscores, commas, and periods.
+        <br /><br />
+        The following files contain special characters that are not compliant with the SPARC data standards:
       `,
-        "Replace the special characters with '-'",
-        "Keep the file names as they are",
-        "Cancel import",
-        "What would you like to do with the files with special characters?"
-      );
-      if (userResponse === "confirm") {
-        window.replaceProblematicFilesWithSDSCompliantNames(datasetStructure, false);
-      }
-      // If the userResponse is "deny", nothing needs to be done
-      if (userResponse === "cancel") {
-        throw new Error("Importation cancelled");
-      }
+      "Have SODA replace the special characters with '-'",
+      "Cancel the import",
+      "What would you like to do with the non-compliant file names?"
+    );
+    if (replaceFilesForUser) {
+      window.replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
+    } else {
+      throw new Error("Importation cancelled");
     }
   }
 
@@ -4652,7 +4577,6 @@ window.buildDatasetStructureJsonFromImportedData = async (
     Object.keys(datasetStructure?.["folders"]).length === 0 &&
     Object.keys(datasetStructure?.["files"]).length === 0
   ) {
-    console.log("Dataset structure check fail" + datasetStructure);
     throw new Error("Error building dataset structure");
   }
 
@@ -4917,12 +4841,6 @@ window.detectIrregularFolders = (localFolderPath) => {
   }
 
   return window.irregularFolderArray;
-};
-
-const checkIrregularNameBoolean = (folderName) => {
-  //window.nonAllowedCharacters modified to only allow a-z A-z 0-9 and hyphen "-"
-  const nonAllowedFolderCharacters = /[^a-zA-Z0-9-]/;
-  return nonAllowedFolderCharacters.test(folderName);
 };
 
 /* The following functions aim at ignore folders with irregular characters, or replace the characters with (-),
