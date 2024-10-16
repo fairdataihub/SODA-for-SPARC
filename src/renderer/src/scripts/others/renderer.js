@@ -4230,45 +4230,55 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
     }
   }
 };
-
 window.replaceProblematicFilesWithSDSCompliantNames = (
   datasetStructure,
   onlyReplaceForbiddenFileNames
 ) => {
-  console.log("replaceProblematicFilesWithSDSCompliantNames called");
-  console.log("datasetStructure");
-  console.log(datasetStructure);
-
-  const problematicFilesAtPath = Object.keys(datasetStructure?.["files"]).filter((fileKey) => {
-    return !window.evaluateStringAgainstSdsRequirements(fileKey, "folder-or-file-name-is-valid");
-  });
-
-  for (const fileKey of problematicFilesAtPath) {
+  let hasbeendone = false;
+  if (!hasbeendone) {
+    console.log("replaceProblematicFilesWithSDSCompliantNames called");
+    console.log("datasetStructure", datasetStructure);
+    hasbeendone = true;
+  }
+  const currentFilesAtPath = Object.keys(datasetStructure.files);
+  for (const fileKey of currentFilesAtPath) {
     const fileKeyContainsForbiddenCharacters = window.evaluateStringAgainstSdsRequirements(
       fileKey,
       "folder-or-file-name-contains-forbidden-characters"
     );
 
-    // If we are only replacing forbidden file names and the file key does not contain forbidden characters,
-    // skip this file and continue to the next one
+    // Skip file if forbidden characters aren't found and only forbidden names should be replaced
     if (onlyReplaceForbiddenFileNames && !fileKeyContainsForbiddenCharacters) {
       console.log(`Skipping file: ${fileKey}`);
       continue;
     }
 
-    const newFileName = fileKey.replace(validSparcFolderAndFileNameRegex, "-");
-    const newFileObj = { ...datasetStructure["files"][fileKey] };
-    if (!newFileObj["action"].includes("renamed")) {
-      newFileObj["action"].push("renamed");
+    const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
+      fileKey,
+      "folder-or-file-name-is-valid"
+    );
+
+    if (!fileNameIsValid) {
+      const newFileName = fileKey.replace(validSparcFolderAndFileNameRegex, "-");
+      const newFileObj = { ...datasetStructure["files"][fileKey] };
+
+      // Track renaming action and original name
+      if (!newFileObj["action"].includes("renamed")) {
+        newFileObj["action"].push("renamed");
+      }
+      if (!newFileObj["original-name"]) {
+        console.log("Setting original name");
+        newFileObj["original-name"] = fileKey;
+      }
+      newFileObj["new-name"] = newFileName;
+
+      // Replace the old fileKey with the newFileName in datasetStructure
+      datasetStructure["files"][newFileName] = newFileObj;
+      delete datasetStructure["files"][fileKey];
     }
-    if (!newFileObj["original-name"]) {
-      newFileObj["original-name"] = fileKey;
-    }
-    newFileObj["new-name"] = newFileName;
-    datasetStructure["files"][newFileName] = newFileObj;
-    delete datasetStructure["files"][fileKey];
   }
 
+  // Recursively apply the function to subfolders
   if (datasetStructure?.["folders"]) {
     const currentFoldersAtPath = Object.keys(datasetStructure.folders);
     for (const folderKey of currentFoldersAtPath) {
@@ -4279,6 +4289,7 @@ window.replaceProblematicFilesWithSDSCompliantNames = (
     }
   }
 };
+
 const validSparcFolderAndFileNameRegex = /^[0-9A-Za-z,.\-_ ]*$/;
 const identifierConventionsRegex = /^[0-9A-Za-z-_]*$/;
 const forbiddenFileNameRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
@@ -4460,6 +4471,8 @@ window.buildDatasetStructureJsonFromImportedData = async (
             extension: fileExtension,
           };
 
+          console.log("current structure files filename" + currentStructure["files"][fileName]);
+
           console.log("currentStructure after adding file");
           console.log(currentStructure);
         }
@@ -4515,6 +4528,8 @@ window.buildDatasetStructureJsonFromImportedData = async (
     );
   }
 
+  let finalDatasetStructure = { ...datasetStructure };
+
   if (problematicFolderNames.length > 0) {
     const userResponse = await swalFileListTripleAction(
       problematicFolderNames,
@@ -4530,7 +4545,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
     );
 
     if (userResponse === "confirm") {
-      replaceProblematicFoldersWithSDSCompliantNames(datasetStructure);
+      finalDatasetStructure = replaceProblematicFoldersWithSDSCompliantNames(finalDatasetStructure);
     }
     // If the userResponse is "deny", nothing needs to be done
 
@@ -4540,7 +4555,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   console.log("Dataset structure before checking problematic files");
-  console.log(datasetStructure);
+  console.log(finalDatasetStructure);
 
   if (problematicFileNames.length > 0) {
     console.log("datasetStructure before filter");
@@ -4561,11 +4576,10 @@ window.buildDatasetStructureJsonFromImportedData = async (
         )
     );
     console.log("datset structure before if statement");
-    console.log(datasetStructure);
+    console.log(finalDatasetStructure);
     if (problematicFileNamesWithForbiddenCharacters.length > 0) {
       console.log("dataset structure now that we are in the if statement");
-      console.log(datasetStructure);
-      window.test1 = { ...datasetStructure };
+      console.log(finalDatasetStructure);
 
       const replaceForbiddenCharactersWithSdsCompliantCharacters = await swalFileListDoubleAction(
         problematicFileNamesWithForbiddenCharacters.map((file) => file.relativePath),
@@ -4577,17 +4591,20 @@ window.buildDatasetStructureJsonFromImportedData = async (
         "Cancel import for all folders and files",
         "What would you like to do with the files with forbidden characters?"
       );
-      window.test2 = { ...datasetStructure };
       // If the userResponse is "confirm", replace the forbidden characters with '-'
       if (replaceForbiddenCharactersWithSdsCompliantCharacters) {
         console.log("Replacing problematic files with SDS compliant names");
-        console.log(datasetStructure);
-        window.replaceProblematicFilesWithSDSCompliantNames(datasetStructure, true);
+        console.log(finalDatasetStructure);
+        finalDatasetStructure = window.replaceProblematicFilesWithSDSCompliantNames(
+          finalDatasetStructure,
+          true
+        );
       } else {
         throw new Error("Importation cancelled");
       }
     }
-
+    console.log("finalDatasetStructure after replacing forbidden characters");
+    console.log(finalDatasetStructure);
     if (problematicFileNamesWithoutForbiddenCharacters.length > 0) {
       const userResponse = await swalFileListTripleAction(
         problematicFileNames.map((file) => file.relativePath),
