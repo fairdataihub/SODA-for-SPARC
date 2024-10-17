@@ -1,24 +1,35 @@
-import React, { useState } from "react";
-import { Collapse, Button, Group, Text } from "@mantine/core";
+import { useState } from "react";
+import { Collapse, Button, Group, Text, Stack, UnstyledButton } from "@mantine/core";
+import { IconFolder, IconFolderOpen } from "@tabler/icons-react";
 
 const DatasetTreeViewRenderer = ({ datasetStructure }) => {
   if (!datasetStructure) return null;
 
   const FolderView = ({ name, content }) => {
-    const [opened, setOpened] = useState(false);
+    const [folderIsOpen, setFolderIsOpen] = useState(false);
 
     const toggleFolder = () => {
-      setOpened((prev) => !prev);
+      setFolderIsOpen((prev) => !prev);
+    };
+    const FileView = ({ name }) => {
+      return (
+        <div style={{ paddingLeft: 1 }}>
+          <Text>{name}</Text>
+        </div>
+      );
     };
 
     return (
-      <div style={{ paddingLeft: 20 }}>
-        <Button onClick={toggleFolder} variant="light" fullWidth style={{ marginTop: 5 }}>
-          {opened ? "📂" : "📁"} {name}
-        </Button>
-        <Collapse in={opened}>
-          {/* Recursively render subfolders and files */}
-          <div style={{ paddingLeft: 20 }}>
+      <Stack gap={1}>
+        <UnstyledButton
+          onClick={toggleFolder}
+          style={{ marginTop: 5, display: "flex", alignItems: "center", gap: 5 }}
+        >
+          {folderIsOpen ? <IconFolderOpen /> : <IconFolder />}
+          <Text>{name}</Text>
+        </UnstyledButton>
+        <Collapse in={folderIsOpen}>
+          <div style={{ paddingLeft: 10 }}>
             {Object.keys(content.folders || {}).map((folderName) => (
               <FolderView
                 key={folderName}
@@ -27,26 +38,30 @@ const DatasetTreeViewRenderer = ({ datasetStructure }) => {
               />
             ))}
             {Object.keys(content.files || {}).map((fileName) => (
-              <Group key={fileName} spacing="xs" style={{ paddingLeft: 20 }}>
-                <Text>📄 {fileName}</Text>
-              </Group>
+              <FileView key={fileName} name={fileName} />
             ))}
           </div>
         </Collapse>
-      </div>
+      </Stack>
     );
   };
 
+  const rootFolders = Object.keys(datasetStructure.folders || {});
+  const rootFiles = Object.keys(datasetStructure.files || {});
+
   return (
-    <div>
-      {Object.keys(datasetStructure.folders).map((folderName) => (
+    <Stack gap={1}>
+      {rootFolders.map((folderName) => (
         <FolderView
           key={folderName}
           name={folderName}
           content={datasetStructure.folders[folderName]}
         />
       ))}
-    </div>
+      {rootFiles.map((fileName) => (
+        <FileView key={fileName} name={fileName} />
+      ))}
+    </Stack>
   );
 };
 export default DatasetTreeViewRenderer;

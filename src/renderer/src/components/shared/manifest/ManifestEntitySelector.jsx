@@ -11,8 +11,6 @@ const ManifestEntitySelector = () => {
     console.log("Button clicked!");
     setDatasetStructureJSONObj(window.datasetStructureJSONObj);
   };
-  // Click the button every 10 seconds
-  setInterval(handleButtonClick, 10000);
 
   return (
     <FullWidthContainer>
