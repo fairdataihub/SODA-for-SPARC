@@ -5,6 +5,7 @@ import { sideBarSlice } from "./slices/sideBarSlice";
 import { dropDownSlice } from "./slices/dropDownSlice";
 import { singleColumnTableSlice } from "./slices/tableRowSlice";
 import { backgroundServicesSlice } from "./slices/backgroundServicesSlice";
+import { manifestEntitySelectorSlice } from "./slices/manifestEntitySelectorSlice";
 
 const useGlobalStore = create(
   immer((...a) => ({
@@ -13,6 +14,7 @@ const useGlobalStore = create(
     ...dropDownSlice(...a),
     ...singleColumnTableSlice(...a),
     ...backgroundServicesSlice(...a),
+    ...manifestEntitySelectorSlice(...a),
   }))
 );
 
