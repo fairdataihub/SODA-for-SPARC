@@ -8,8 +8,11 @@ const ManifestEntitySelector = () => {
   const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
 
   const handleButtonClick = () => {
+    console.log("Button clicked!");
     setDatasetStructureJSONObj(window.datasetStructureJSONObj);
   };
+  // Click the button every 10 seconds
+  setInterval(handleButtonClick, 10000);
 
   return (
     <FullWidthContainer>
