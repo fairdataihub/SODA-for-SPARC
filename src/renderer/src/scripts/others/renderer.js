@@ -4432,10 +4432,16 @@ window.buildDatasetStructureJsonFromImportedData = async (
 
           const fileIsHidden = window.evaluateStringAgainstSdsRequirements(
             fileName,
-            "file-is-hidden"
+            "is-hidden-file"
           );
           if (fileIsHidden) {
-            hiddenItems.push(fileObject);
+            // Hidden files are allowed in the dataset_root/ and dataset_root/code/ directories
+            const allowedHiddenFilePaths = new Set(["dataset_root/", "dataset_root/code/"]);
+
+            // Check if the current path is not allowed for hidden files
+            if (!allowedHiddenFilePaths.has(currentStructurePath)) {
+              hiddenItems.push(fileObject);
+            }
           }
 
           // Add the file to the current structure
