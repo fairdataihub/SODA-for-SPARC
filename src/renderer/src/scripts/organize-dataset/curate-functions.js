@@ -538,7 +538,6 @@ window.handleLocalDatasetImport = async (path) => {
 
       const fileIsHidden = window.evaluateStringAgainstSdsRequirements("file", "is-hidden-file");
       if (fileIsHidden) {
-      
         hiddenItems.push(file);
       }
     }
@@ -1788,11 +1787,6 @@ window.create_child_node = (
   }
 
   return newFormatNode;
-
-
-
-
-  
 };
 
 // var selected = false;
