@@ -3,8 +3,6 @@ import FullWidthContainer from "../../containers/FullWidthContainer";
 import useGlobalStore from "../../../stores/globalStore";
 import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
 
-
-
 const ManifestEntitySelector = () => {
   const setDatasetStructureJSONObj = useGlobalStore((state) => state.setDatasetStructureJSONObj);
   const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
