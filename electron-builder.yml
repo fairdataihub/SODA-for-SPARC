@@ -31,7 +31,7 @@ nsis:
 mac:
   icon: "app-icon/png/icon.png"
   entitlementsInherit: ./entitlements.mac.inherit.plist
-  notarize: true
+  notarize: false
   extraResources:
     - from: ./pyflaskdist/app
     - from: ./file_templates

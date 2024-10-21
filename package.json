@@ -55,6 +55,7 @@
     "convert-csv-to-json": "^2.0.0",
     "convert-excel-to-json": "^1.7.0",
     "cropperjs": "^1.6.1",
+    "dmg-license": "^1.0.11",
     "doi-regex": "^0.1.13",
     "dragselect": "^3.0.4",
     "electron-context-menu": "^3.6.1",
