@@ -25,7 +25,7 @@
     "python-onefile-build-unix": "python -m PyInstaller --onefile --clean ./src/pyflask/app.py --additional-hooks-dir=./hooks/hook-backports.py --distpath ./pyflaskdist",
     "python-folder-build-unix": "python -m PyInstaller --onedir --clean ./src/pyflask/app.py --additional-hooks-dir=./hooks/hook-backports.py --distpath ./pyflaskdist",
     "deploy-win": "npm run python-onefile-build-win && npm run build && electron-builder --win --config --publish always",
-    "deploy-linux": "npm run python-onefile-build-unix && npm run build && electron-builder --linux --config --publish always",
+    "deploy-linux": "npm run python-folder-build-unix && npm run build && electron-builder --linux --config --publish always",
     "deploy-mac": "npm run python-folder-build-unix && npm run build && electron-builder --mac --config --publish always"
   },
   "dependencies": {
