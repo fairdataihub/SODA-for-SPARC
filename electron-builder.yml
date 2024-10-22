@@ -19,7 +19,7 @@ win:
   extraResources:
     - from: ./file_templates
       to: ./file_templates
-    - from: ./pyflaskdist/app.exe
+    - from: ./pyflaskdist/app/app.exe
   asar: true
   target:
     - nsis
