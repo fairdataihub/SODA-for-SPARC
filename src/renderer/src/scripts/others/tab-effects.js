@@ -1730,6 +1730,7 @@ window.verifySparcFolder = (rootFolderPath, type) => {
     "resources",
     "code_description",
     "manifest",
+    "code_parameters",
   ];
 
   const folderContents = window.fs

@@ -9,15 +9,16 @@ const ManifestEntitySelector = () => {
 
   const handleButtonClick = () => {
     console.log("Button clicked!");
-    setDatasetStructureJSONObj(window.datasetStructureJSONObj);
+    const datasetStructureJSONObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+    setDatasetStructureJSONObj(datasetStructureJSONObjCopy);
   };
 
   return (
     <FullWidthContainer>
       <Button onClick={handleButtonClick}>Set Name</Button>
       <Grid>
-        <Grid.Col span={3}>Entity</Grid.Col>
-        <Grid.Col span={9}>
+        <Grid.Col span={4}>Entity</Grid.Col>
+        <Grid.Col span={8}>
           <DatasetTreeViewRenderer datasetStructure={datasetStructureJSONObj} />
         </Grid.Col>
       </Grid>

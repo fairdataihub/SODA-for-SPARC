@@ -1278,7 +1278,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-subjects-addition-tab") {
-      if (getExistingSubjectNames().length === 0) {
+      if (window.getExistingSubjectNames().length === 0) {
         errorArray.push({
           type: "notyf",
           message: "Please add at least one subject",
@@ -1461,7 +1461,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
-        const subjects = getExistingSubjectNames();
+        const subjects = window.getExistingSubjectNames();
         if (subjects.length === 0) {
           errorArray.push({
             type: "swal",
@@ -5284,7 +5284,7 @@ window.openPage = async (targetPageID) => {
       // The page is unskipped only if the user has not added any subjects,
       // indicated that they will be adding subjects, and the user is not starting from Pennsieve
       if (
-        getExistingSubjectNames().length === 0 &&
+        window.getExistingSubjectNames().length === 0 &&
         window.sodaJSONObj["starting-point"]["type"] != "bf" &&
         window.sodaJSONObj["button-config"]["dataset-contains-subjects"] === "yes"
       ) {
@@ -5373,19 +5373,16 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-dataset-structure-review-tab") {
-      // Delete the guided high level folders if they are empty
-      // They could possibly be empty if the user did not add any subject data
-      // These will be added back safely when the user traverses back to the high level folder's page
-      for (const folder of guidedHighLevelFolders) {
-        const rootFolderPath = window.datasetStructureJSONObj["folders"][folder];
-
+      // Remove empty guided high-level folders (primary, source, derivative)
+      guidedHighLevelFolders.forEach((folder) => {
+        const rootFolderPath = window.datasetStructureJSONObj?.folders?.[folder];
         if (rootFolderPath && folderIsEmpty(rootFolderPath)) {
-          delete window.datasetStructureJSONObj["folders"][folder];
+          delete window.datasetStructureJSONObj?.folders?.[folder];
         }
-      }
+      });
 
       guidedShowTreePreview(
-        window.sodaJSONObj["digital-metadata"]["name"],
+        window.sodaJSONObj?.["digital-metadata"]?.name,
         "guided-folder-structure-review"
       );
     }
@@ -5432,6 +5429,8 @@ window.openPage = async (targetPageID) => {
         { timeout: 0 }
       );
       const manifestRes = res.data;
+      console.log("manifestRes");
+      console.log(manifestRes);
       //loop through each of the high level folders and store their manifest headers and data
       //into the window.sodaJSONObj
 
@@ -5462,6 +5461,8 @@ window.openPage = async (targetPageID) => {
       window.sodaJSONObj["guided-manifest-files"] = updatedManifestData;
       //Rerender the manifest cards
       renderManifestCards();
+    }
+    if (targetPageID === "guided-manifest-subject-entity-selector-tab") {
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {
@@ -6843,7 +6844,7 @@ const guidedOpenEntityEditSwal = async (entityName) => {
   let entityPrefix;
 
   if (entityName.startsWith("sub-")) {
-    preExistingEntities = getExistingSubjectNames();
+    preExistingEntities = window.getExistingSubjectNames();
     entityNameSingular = "subject";
     entityPrefix = "sub-";
   }
@@ -11192,7 +11193,7 @@ const addSubjectSpecificationTableRow = () => {
   }
 };
 
-const getExistingSubjectNames = () => {
+window.getExistingSubjectNames = () => {
   // Get all subjects in pools and outside of pools
   const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
   // Combine the two arrays
@@ -11489,7 +11490,7 @@ document
       const sampleName = lowercaseFirstLetter(row["sample id"]);
 
       // Check to see if the subject already exists
-      const subjectAlreadyExists = getExistingSubjectNames().includes(subjectName);
+      const subjectAlreadyExists = window.getExistingSubjectNames().includes(subjectName);
       if (!subjectAlreadyExists) {
         window.sodaJSONObj.addSubject(subjectName);
         if (subjectsPool) {
@@ -11569,7 +11570,7 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
   formattedSubjectNameArray.filter((subjectName) => subjectName.length > 0);
 
   // Get an array of existing subjects to check for duplicates
-  const existingSubjects = getExistingSubjectNames();
+  const existingSubjects = window.getExistingSubjectNames();
 
   // Array of the subjects that already exist in the dataset
   const duplicateSubjects = formattedSubjectNameArray.filter((subjectName) =>
@@ -11647,14 +11648,14 @@ const convertArrayToCommaSeparatedString = (array) => {
 
 const guidedOpenEntityAdditionSwal = async (entityName) => {
   // Get a list of the existing entities so we can check for duplicates
-  // const subjects = getExistingSubjectNames();
+  // const subjects = window.getExistingSubjectNames();
   let preExistingEntities;
   let entityNameSingular;
   let entityPrefix;
 
   // case when adding subjects
   if (entityName === "subjects") {
-    preExistingEntities = getExistingSubjectNames();
+    preExistingEntities = window.getExistingSubjectNames();
     entityNameSingular = "subject";
     entityPrefix = "sub-";
   }
@@ -13376,7 +13377,7 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
     // (case for updating a dataset from Pennsieve or old progress files),
     // Select the option for them
     if (!sodaJSONObj["button-config"]["subject-addition-method"]) {
-      if (getExistingSubjectNames().length > 0) {
+      if (window.getExistingSubjectNames().length > 0) {
         document.getElementById("guided-button-add-subject-structure-manually").click();
       }
     }

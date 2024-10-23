@@ -4368,6 +4368,8 @@ window.buildDatasetStructureJsonFromImportedData = async (
           emptyFolders.push(pathToExplore);
         } else {
           const folderName = window.path.basename(pathToExplore);
+          const folderRelativePath = `${currentStructurePath}${folderName}/`;
+          console.log("folderRelativePath", folderRelativePath);
           const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
             folderName,
             "folder-or-file-name-is-valid"

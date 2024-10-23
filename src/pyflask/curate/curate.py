@@ -3705,184 +3705,83 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
 
 
 def generate_manifest_file_data(dataset_structure_obj):
-    # modify this function here to handle paths from pennsieve
-    # create path using bfpath key from json object
-
     local_timezone = TZLOCAL()
-
+    
     double_extensions = [
-        ".ome.tiff",
-        ".ome.tif",
-        ".ome.tf2,",
-        ".ome.tf8",
-        ".ome.btf",
-        ".ome.xml",
-        ".brukertiff.gz",
-        ".mefd.gz",
-        ".moberg.gz",
-        ".nii.gz",
-        ".mgh.gz",
-        ".tar.gz",
-        ".bcl.gz",
+        ".ome.tiff", ".ome.tif", ".ome.tf2,", ".ome.tf8", ".ome.btf", ".ome.xml", 
+        ".brukertiff.gz", ".mefd.gz", ".moberg.gz", ".nii.gz", ".mgh.gz", ".tar.gz", ".bcl.gz"
     ]
 
     def get_name_extension(file_name):
-        double_ext = False
         for ext in double_extensions:
-            if file_name.find(ext) != -1:
-                double_ext = True
-                break
+            if file_name.endswith(ext):
+                # Extract the base extension before the double extension
+                base_ext = os.path.splitext(os.path.splitext(file_name)[0])[1]
+                return base_ext + ext
+        return os.path.splitext(file_name)[1]
 
-        ext = ""
+    def build_file_entry(item, folder, ds_struct_path, timestamp_entry, file_name):
+        file_manifest_template_data = []
+        filename_entry = "/".join(ds_struct_path) + "/" + file_name if ds_struct_path else file_name
+        file_type_entry = get_name_extension(file_name)
 
-        if double_ext == False:
-            ext = os.path.splitext(file_name)[1]
+        if filename_entry[:1] == "/":
+            file_manifest_template_data.append(filename_entry[1:])
         else:
-            ext = (
-                os.path.splitext(os.path.splitext(file_name)[0])[1]
-                + os.path.splitext(file_name)[1]
-            )
-        return ext
+            file_manifest_template_data.append(filename_entry)
 
-    def guided_recursive_folder_traversal(folder, hlf_data_array, ds_struct_path):
-        if "files" in folder.keys():
-            standard_manifest_columns = ["filename", "timestamp", "description", "file type", "Additional Metadata"]
-            if(len(hlf_data_array) < 1):
+        file_manifest_template_data.append(timestamp_entry)
+        file_manifest_template_data.append(folder["files"][item]["description"])
+        file_manifest_template_data.append(file_type_entry)
+        file_manifest_template_data.append(folder["files"][item]["additional-metadata"])
+
+        if "extra_columns" in folder["files"][item]:
+            for key, value in folder["files"][item]["extra_columns"].items():
+                file_manifest_template_data.append(value)
+                if key not in hlf_data_array[0]:
+                    hlf_data_array[0].append(key)
+
+        return file_manifest_template_data
+
+    def recursive_folder_traversal(folder, hlf_data_array, ds_struct_path, is_pennsieve):
+        if "files" in folder:
+            standard_manifest_columns = ["filename", "timestamp", "description", "file type", "entity", "data modality", "also in dataset", "data dictionary path", "entity is transitive", "Additional Metadata"]
+            if not hlf_data_array:
                 hlf_data_array.append(standard_manifest_columns)
-            for item in list(folder["files"]):
-                # do not generate a manifest file entry for the manifest file itself
+
+            for item in folder["files"]:
                 if item in ["manifest.xlsx", "manifest.csv"]:
                     continue
-                file_manifest_template_data = []
-                local_path_to_file = folder["files"][item]["path"].replace("\\", "/")
-                item_description = folder["files"][item]["description"]
-                item_additional_info = folder["files"][item]["additional-metadata"]
-
-                # The name of the file eg "file.txt"
-                file_name = os.path.basename(local_path_to_file)
-                if file_name != item:
-                    file_name = item
-                if len(ds_struct_path) > 0:
-                    filename_entry = "/".join(ds_struct_path) + "/" + file_name
-                else:
-                    filename_entry = file_name
-
-                # The extension of the file eg ".txt"
-                file_type_entry = get_name_extension(file_name)
-
-                # The timestamp of the file on the user's local machine
-                file_path = pathlib.Path(local_path_to_file)
-                mtime = file_path.stat().st_mtime
-                last_mod_time = datetime.fromtimestamp(mtime, tz=local_timezone).fromtimestamp(mtime).astimezone(
-                    local_timezone
-                )
-                timestamp_entry = last_mod_time.isoformat().replace(".", ",").replace("+00:00", "Z")
-
-                if filename_entry[:1] == "/":
-                    file_manifest_template_data.append(filename_entry[:1])
-                else:
-                    file_manifest_template_data.append(filename_entry)
-
-                file_manifest_template_data.append(timestamp_entry)
-                file_manifest_template_data.append(item_description)
-                file_manifest_template_data.append(file_type_entry)
-                file_manifest_template_data.append(item_additional_info)
-
-                # extra column key is an object of all extra columns of a manifest
-                # key will be the column header and value will be the value of the column+row 
-                # (from the excel) (now in the form of a dict)
-                if "extra_columns" in folder["files"][item]:
-                    for key in folder["files"][item]["extra_columns"]:
-                        file_manifest_template_data.append(folder["files"][item]["extra_columns"][key])
-                        if key not in hlf_data_array[0]:
-                            # add column name to manifest column names array
-                            hlf_data_array[0].append(key)
-
-                hlf_data_array.append(file_manifest_template_data)
-
-        if "folders" in folder.keys():
-            for item in list(folder["folders"]):
-                relative_structure_path.append(item)
-                guided_recursive_folder_traversal(
-                    folder["folders"][item], hlf_data_array, relative_structure_path
-                )
-                relative_structure_path.pop()
-        return
-
-    def pennsieve_recursive_folder_traversal(folder, hlf_data_array, ds_struct_path):
-        if "files" in folder.keys():
-            standard_manifest_columns = ["filename", "timestamp", "description", "file type", "Additional Metadata"]
-            if(len(hlf_data_array) < 1):
-                hlf_data_array.append(standard_manifest_columns)
-            for item in list(folder["files"]):
-                file_manifest_template_data = []
-                if item in ["manifest.xlsx", "manifest.csv"]:
-                    continue
-                item_description = folder["files"][item]["description"]
-                item_additional_info = folder["files"][item]["additional-metadata"]
-                file_name = ""
-                if folder["files"][item]["type"] == "bf": 
+                
+                if is_pennsieve and folder["files"][item]["type"] == "bf":
                     file_name = os.path.basename(item)
                     timestamp_entry = folder["files"][item]["timestamp"]
                 else:
                     local_path_to_file = folder["files"][item]["path"].replace("\\", "/")
                     file_name = os.path.basename(local_path_to_file)
-                    file_path = pathlib.Path(local_path_to_file)
-                    mtime = file_path.stat().st_mtime
-                    last_mod_time = datetime.fromtimestamp(mtime, tz=local_timezone).fromtimestamp(mtime).astimezone(local_timezone)
-                    timestamp_entry = last_mod_time.isoformat().replace(".", ",").replace("+00:00", "Z")
+                    mtime = pathlib.Path(local_path_to_file).stat().st_mtime
+                    timestamp_entry = datetime.fromtimestamp(mtime, tz=local_timezone).isoformat().replace(".", ",").replace("+00:00", "Z")
 
+                hlf_data_array.append(build_file_entry(item, folder, ds_struct_path, timestamp_entry, file_name))
 
-                filename_entry = "/".join(ds_struct_path) + "/" + file_name
-                file_type_entry = get_name_extension(file_name)
+        if "folders" in folder:
+            for item in folder["folders"]:
+                ds_struct_path.append(item)
+                recursive_folder_traversal(folder["folders"][item], hlf_data_array, ds_struct_path, is_pennsieve)
+                ds_struct_path.pop()
 
-                if filename_entry[:1] == "/":
-                    file_manifest_template_data.append(filename_entry[1:])
-                else:
-                    file_manifest_template_data.append(filename_entry)
-                file_manifest_template_data.append(timestamp_entry)
-                file_manifest_template_data.append(item_description)
-                file_manifest_template_data.append(file_type_entry)
-                file_manifest_template_data.append(item_additional_info)
-                # extra column key is an object of all extra columns of a manifest
-                # key will be the column header and value will be the value of the column+row 
-                # (from the excel) (now in the form of a dict)
-                if "extra_columns" in folder["files"][item]:
-                    for key in folder["files"][item]["extra_columns"]:
-                        file_manifest_template_data.append(folder["files"][item]["extra_columns"][key])
-                        if key not in hlf_data_array[0]:
-                            # add column name to manifest column names array
-                            hlf_data_array[0].append(key)
-
-                hlf_data_array.append(file_manifest_template_data)
-
-        if "folders" in folder.keys():
-            for item in list(folder["folders"]):
-                relative_structure_path.append(item)
-                pennsieve_recursive_folder_traversal(
-                    folder["folders"][item], hlf_data_array, relative_structure_path
-                )
-                relative_structure_path.pop()
-        return
-
-    # Initialize the array that the manifest data will be added to.
     hlf_manifest_data = {}
-    # any additional columns created by the user will be appended with the high level folder when found
 
+    namespace_logger.info("Generating manifest file data")
+    namespace_logger.info(dataset_structure_obj)
 
-    # Loop through each high level folder and create a manifest data array for each.
-    for high_level_folder in list(dataset_structure_obj["folders"]):
+    for high_level_folder in dataset_structure_obj["folders"]:
         hlf_data_array = []
-
-        # create an array to keep track of the path to the obj being recursed over
         relative_structure_path = []
-        # hlf_data_array.append(standard_manifest_columns)
 
-        if "bfpath" in dataset_structure_obj["folders"][high_level_folder]:
-            # means the json is from a pennsieve dataset
-            pennsieve_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path)
-        else:
-            guided_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path)
+        is_pennsieve = "bfpath" in dataset_structure_obj["folders"][high_level_folder]
+        recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path, is_pennsieve)
+
         hlf_manifest_data[high_level_folder] = hlf_data_array
 
     return hlf_manifest_data
