@@ -1934,8 +1934,16 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
+      console.log(contributors)
+      let piContributors = []
       // Ensure at least one PI is assigned
-      const piContributors = contributors.filter((contributor) => contributor["role"] === "PI");
+      for (const contributor of contributors) {
+        for (const role of contributor.conRole) {
+          if (role === "PrincipalInvestigator") {
+            piContributors.push(contributor);
+        } 
+      }
+    }
       if (piContributors.length === 0) {
         errorArray.push({
           type: "notyf",
