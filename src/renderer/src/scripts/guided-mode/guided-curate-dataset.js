@@ -1934,6 +1934,16 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
+      // Ensure at least one PI is assigned
+      const piContributors = contributors.filter((contributor) => contributor["role"] === "PI");
+      if (piContributors.length === 0) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please assign at least one PI to your dataset",
+        });
+        throw errorArray;
+      }
+
       // Make sure that all contributors have a valid fields
       for (const contributor of contributors) {
         if (!window.contributorDataIsValid(contributor)) {
