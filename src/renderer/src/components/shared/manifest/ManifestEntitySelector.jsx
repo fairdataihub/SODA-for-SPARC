@@ -34,31 +34,27 @@ const ManifestEntitySelector = () => {
     toggleRelativeFilePathForManifestEntity(entityType, activeEntity, fileContents.relativePath);
   };
 
-  const getFolderBackgroundColor = (folderRelativePath) => {
-    const folderIsSelected = getEntityForRelativePath(folderRelativePath);
-    return folderIsSelected ? "blue" : "white";
-  };
-
   const getFileBackgroundColor = (fileRelativePath) => {
-    if (fileRelativePath === "primary/sub-1/code_description.xlsx") {
-      console.log("Active entity:", activeEntity);
+    const filesEntity = getEntityForRelativePath(fileRelativePath);
+    if (!filesEntity) {
+      return null;
     }
-    const fileIsSelected = getEntityForRelativePath(fileRelativePath);
-    if (fileIsSelected) {
-      console.log("File is selected:", fileRelativePath);
+    if (filesEntity === "sub-2") {
+      console.log(fileRelativePath + " is sub-2");
     }
-    return fileIsSelected ? "blue" : "white";
+
+    return filesEntity === activeEntity ? "var(--color-transparent-soda-green)" : "red";
   };
 
   return (
     <FullWidthContainer>
       <Grid gutter="md">
         <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
-          <Paper shadow="lg" p="lg" radius="md" withBorder>
-            <Text size="xl" weight={700} align="center" color="dark">
-              Select Entity
+          <Paper shadow="lg" p="sm" radius="md" withBorder>
+            <Text size="xl" weight={700} align="center" c="dark">
+              Subject list
             </Text>
-            <Divider my="lg" />
+            <Divider my="sm" />
             <Stack gap="xs">
               {entityList.map((entity) => (
                 <Button
@@ -83,7 +79,6 @@ const ManifestEntitySelector = () => {
               datasetStructure={datasetStructureJSONObj}
               onFolderClick={handleFolderClick}
               onFileClick={handleFileClick}
-              getFolderBackgroundColor={getFolderBackgroundColor}
               getFileBackgroundColor={getFileBackgroundColor}
             />
           </Paper>

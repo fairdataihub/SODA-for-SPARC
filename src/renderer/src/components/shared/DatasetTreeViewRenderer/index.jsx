@@ -39,6 +39,7 @@ const fileIconMap = {
   xml: <IconFileTypeXml size={FILE_ICON_SIZE} />,
   zip: <IconFileTypeZip size={FILE_ICON_SIZE} />,
   rar: <IconFileTypeZip size={FILE_ICON_SIZE} />,
+  jp2: <IconPhoto size={FILE_ICON_SIZE} />,
 };
 
 const getFileTypeIcon = (fileName) => {
@@ -48,8 +49,7 @@ const getFileTypeIcon = (fileName) => {
 
 // FileItem component
 const FileItem = ({ name, content, onFileClick, getFileBackgroundColor }) => {
-  const filesRelativePath = content.relativePath;
-  const fileBackgroundColor = getFileBackgroundColor(filesRelativePath);
+  const fileBackgroundColor = getFileBackgroundColor(content.relativePath);
   return (
     <div
       style={{
@@ -68,14 +68,7 @@ const FileItem = ({ name, content, onFileClick, getFileBackgroundColor }) => {
 };
 
 // FolderItem component
-const FolderItem = ({
-  name,
-  content,
-  onFolderClick,
-  onFileClick,
-  getFolderBackgroundColor,
-  getFileBackgroundColor,
-}) => {
+const FolderItem = ({ name, content, onFolderClick, onFileClick, getFileBackgroundColor }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
 
@@ -115,7 +108,6 @@ const FolderItem = ({
             content={content.folders[folderName]}
             onFolderClick={onFolderClick}
             onFileClick={onFileClick}
-            getFolderBackgroundColor={getFolderBackgroundColor}
             getFileBackgroundColor={getFileBackgroundColor}
           />
         ))}
@@ -138,7 +130,6 @@ const DatasetTreeView = ({
   datasetStructure,
   onFolderClick,
   onFileClick,
-  getFolderBackgroundColor,
   getFileBackgroundColor,
 }) =>
   !datasetStructure?.folders && !datasetStructure?.files ? null : (
@@ -159,7 +150,6 @@ const DatasetTreeView = ({
           content={datasetStructure.folders[folderName]}
           onFolderClick={onFolderClick}
           onFileClick={onFileClick}
-          getFolderBackgroundColor={getFolderBackgroundColor}
           getFileBackgroundColor={getFileBackgroundColor}
         />
       ))}

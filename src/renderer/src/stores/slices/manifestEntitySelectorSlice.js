@@ -127,5 +127,14 @@ export const getEntityForRelativePath = (relativePath) => {
   const manifestEntityObj = useGlobalStore((state) => state.manifestEntityObj);
   const entityType = useGlobalStore((state) => state.entityType);
   const activeEntity = useGlobalStore((state) => state.activeEntity);
-  return manifestEntityObj?.[entityType]?.[activeEntity]?.includes(relativePath);
+
+  if (!entityType || !activeEntity) {
+    return null;
+  }
+
+  if (manifestEntityObj?.[entityType]?.[activeEntity]?.includes(relativePath)) {
+    return activeEntity;
+  } else {
+    return null;
+  }
 };
