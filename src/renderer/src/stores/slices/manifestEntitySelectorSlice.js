@@ -81,6 +81,14 @@ export const toggleRelativeFilePathForManifestEntity = (
   entityName,
   entityRelativePath
 ) => {
+  if (!entityType || !entityName || !entityRelativePath) {
+    console.log(
+      "Aborting toggleRelativeFilePathForManifestEntity: entityType, entityName, or entityRelativePath is missing"
+    );
+    console.log(entityType, entityName, entityRelativePath);
+
+    return;
+  }
   useGlobalStore.setState(
     produce((state) => {
       // Check if entityType exists, if not, create it
@@ -115,12 +123,9 @@ export const toggleRelativeFilePathForManifestEntity = (
   );
 };
 
-export const getEntityForRelativePath = (entityType, relativePath) => {
+export const getEntityForRelativePath = (relativePath) => {
   const manifestEntityObj = useGlobalStore((state) => state.manifestEntityObj);
-  if (!manifestEntityObj[entityType]) {
-    return null;
-  }
-  return Object.keys(manifestEntityObj[entityType]).find((entity) =>
-    manifestEntityObj[entityType][entity]?.includes(relativePath)
-  );
+  const entityType = useGlobalStore((state) => state.entityType);
+  const activeEntity = useGlobalStore((state) => state.activeEntity);
+  return manifestEntityObj?.[entityType]?.[activeEntity]?.includes(relativePath);
 };

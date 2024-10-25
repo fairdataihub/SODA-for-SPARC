@@ -5,7 +5,9 @@ import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
 import {
   setActiveEntity,
   toggleRelativeFilePathForManifestEntity,
+  getEntityForRelativePath,
 } from "../../../stores/slices/manifestEntitySelectorSlice";
+import { get } from "jquery";
 
 const ManifestEntitySelector = () => {
   const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
@@ -30,6 +32,22 @@ const ManifestEntitySelector = () => {
     console.log("File contents:", fileContents);
     console.log("Entity type:", entityType);
     toggleRelativeFilePathForManifestEntity(entityType, activeEntity, fileContents.relativePath);
+  };
+
+  const getFolderBackgroundColor = (folderRelativePath) => {
+    const folderIsSelected = getEntityForRelativePath(folderRelativePath);
+    return folderIsSelected ? "blue" : "white";
+  };
+
+  const getFileBackgroundColor = (fileRelativePath) => {
+    if (fileRelativePath === "primary/sub-1/code_description.xlsx") {
+      console.log("Active entity:", activeEntity);
+    }
+    const fileIsSelected = getEntityForRelativePath(fileRelativePath);
+    if (fileIsSelected) {
+      console.log("File is selected:", fileRelativePath);
+    }
+    return fileIsSelected ? "blue" : "white";
   };
 
   return (
@@ -65,6 +83,8 @@ const ManifestEntitySelector = () => {
               datasetStructure={datasetStructureJSONObj}
               onFolderClick={handleFolderClick}
               onFileClick={handleFileClick}
+              getFolderBackgroundColor={getFolderBackgroundColor}
+              getFileBackgroundColor={getFileBackgroundColor}
             />
           </Paper>
         </Grid.Col>

@@ -49,8 +49,6 @@ const getFileTypeIcon = (fileName) => {
 // FileItem component
 const FileItem = ({ name, content, onFileClick, getFileBackgroundColor }) => {
   const filesRelativePath = content.relativePath;
-  const filesEntity = getEntityForRelativePath("subjects", filesRelativePath);
-
   const fileBackgroundColor = getFileBackgroundColor(filesRelativePath);
   return (
     <div
@@ -117,6 +115,8 @@ const FolderItem = ({
             content={content.folders[folderName]}
             onFolderClick={onFolderClick}
             onFileClick={onFileClick}
+            getFolderBackgroundColor={getFolderBackgroundColor}
+            getFileBackgroundColor={getFileBackgroundColor}
           />
         ))}
         {Object.keys(content.files || {}).map((fileName) => (
