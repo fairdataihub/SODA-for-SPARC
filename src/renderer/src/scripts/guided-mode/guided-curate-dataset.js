@@ -28,7 +28,6 @@ import client from "../client";
 import jQuery from "jquery";
 import bootstrap from "bootstrap";
 import * as select2 from "select2"; // TODO: select2()
-// select2()
 import {
   swalConfirmAction,
   swalShowError,
@@ -38,7 +37,6 @@ import {
 } from "../utils/swal-utils";
 
 // Import state management stores
-
 import useGlobalStore from "../../stores/globalStore";
 import { setDropdownState } from "../../stores/slices/dropDownSlice";
 import {
@@ -46,9 +44,13 @@ import {
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
 } from "../../stores/slices/guidedModeSlice";
+import {
+  setDatasetStructureJSONObj,
+  setEntityList,
+  setEntityType,
+} from "../../stores/slices/manifestEntitySelectorSlice";
 
 import "bootstrap-select";
-// import DragSort from '@yaireo/dragsort'
 import Cropper from "cropperjs";
 
 import "jstree";
@@ -5463,6 +5465,10 @@ window.openPage = async (targetPageID) => {
       renderManifestCards();
     }
     if (targetPageID === "guided-manifest-subject-entity-selector-tab") {
+      //
+      setEntityList(window.getExistingSubjectNames());
+      setDatasetStructureJSONObj(window.datasetStructureJSONObj);
+      setEntityType("subjects");
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {

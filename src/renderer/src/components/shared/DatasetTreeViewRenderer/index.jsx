@@ -1,110 +1,169 @@
 import { useState } from "react";
 import { Collapse, Text, Stack, UnstyledButton } from "@mantine/core";
+import { useHover } from "@mantine/hooks";
 import {
   IconFolder,
   IconFolderOpen,
   IconFile,
   IconPhoto,
-  IconFileTypeBmp,
   IconFileTypeCsv,
   IconFileTypeDoc,
   IconFileTypeDocx,
   IconFileTypeJpg,
   IconFileTypePdf,
   IconFileTypePng,
-  IconFileTypeSvg,
   IconFileTypeTxt,
   IconFileTypeXls,
   IconFileTypeXml,
   IconFileTypeZip,
 } from "@tabler/icons-react";
+import { getEntityForRelativePath } from "../../../stores/slices/manifestEntitySelectorSlice";
+
 // Constants
-const folderColor = "#ADD8E6";
-const folderIconSize = 18;
-const fileIconSize = 15;
+const FOLDER_ICON_COLOR = "#ADD8E6";
+const FOLDER_ICON_SIZE = 18;
+const FILE_ICON_SIZE = 15;
+
 // File extension to icon map
 const fileIconMap = {
-  csv: <IconFileTypeCsv size={fileIconSize} />,
-  xls: <IconFileTypeXls size={fileIconSize} />,
-  xlsx: <IconFileTypeXls size={fileIconSize} />,
-  txt: <IconFileTypeTxt size={fileIconSize} />,
-  doc: <IconFileTypeDoc size={fileIconSize} />,
-  docx: <IconFileTypeDocx size={fileIconSize} />,
-  pdf: <IconFileTypePdf size={fileIconSize} />,
-  png: <IconFileTypePng size={fileIconSize} />,
-  jpg: <IconFileTypeJpg size={fileIconSize} />,
-  jpeg: <IconFileTypeJpg size={fileIconSize} />,
-  bmp: <IconFileTypeBmp size={fileIconSize} />,
-  svg: <IconFileTypeSvg size={fileIconSize} />,
-  gif: <IconPhoto size={fileIconSize} />,
-  webp: <IconPhoto size={fileIconSize} />,
-  tiff: <IconPhoto size={fileIconSize} />,
-  heic: <IconPhoto size={fileIconSize} />,
-  heif: <IconPhoto size={fileIconSize} />,
-  avif: <IconPhoto size={fileIconSize} />,
-  jp2: <IconPhoto size={fileIconSize} />,
-  jxr: <IconPhoto size={fileIconSize} />,
-  wdp: <IconPhoto size={fileIconSize} />,
-  xml: <IconFileTypeXml size={fileIconSize} />,
-  zip: <IconFileTypeZip size={fileIconSize} />,
-  rar: <IconFileTypeZip size={fileIconSize} />,
+  csv: <IconFileTypeCsv size={FILE_ICON_SIZE} />,
+  xls: <IconFileTypeXls size={FILE_ICON_SIZE} />,
+  xlsx: <IconFileTypeXls size={FILE_ICON_SIZE} />,
+  txt: <IconFileTypeTxt size={FILE_ICON_SIZE} />,
+  doc: <IconFileTypeDoc size={FILE_ICON_SIZE} />,
+  docx: <IconFileTypeDocx size={FILE_ICON_SIZE} />,
+  pdf: <IconFileTypePdf size={FILE_ICON_SIZE} />,
+  png: <IconFileTypePng size={FILE_ICON_SIZE} />,
+  jpg: <IconFileTypeJpg size={FILE_ICON_SIZE} />,
+  jpeg: <IconFileTypeJpg size={FILE_ICON_SIZE} />,
+  xml: <IconFileTypeXml size={FILE_ICON_SIZE} />,
+  zip: <IconFileTypeZip size={FILE_ICON_SIZE} />,
+  rar: <IconFileTypeZip size={FILE_ICON_SIZE} />,
 };
-const getFileIcon = (fileName) => {
+
+const getFileTypeIcon = (fileName) => {
   const extension = fileName.split(".").pop().toLowerCase();
-  return fileIconMap[extension] || <IconFile size={fileIconSize} />;
+  return fileIconMap[extension] || <IconFile size={FILE_ICON_SIZE} />;
 };
-const FileView = ({ name }) => (
-  <div style={{ paddingLeft: 10, display: "flex", alignItems: "center", gap: 5 }}>
-    {getFileIcon(name)}
-    <Text>{name}</Text>
-  </div>
-);
-const FolderView = ({ name, content }) => {
-  const [folderIsOpen, setFolderIsOpen] = useState(false);
+
+// FileItem component
+const FileItem = ({ name, content, onFileClick, getFileBackgroundColor }) => {
+  const filesRelativePath = content.relativePath;
+  const filesEntity = getEntityForRelativePath("subjects", filesRelativePath);
+
+  const fileBackgroundColor = getFileBackgroundColor(filesRelativePath);
+  return (
+    <div
+      style={{
+        paddingLeft: 10,
+        display: "flex",
+        alignItems: "center",
+        gap: 5,
+        backgroundColor: fileBackgroundColor,
+      }}
+      onClick={() => onFileClick(name, content)}
+    >
+      {getFileTypeIcon(name)}
+      <Text>{name}</Text>
+    </div>
+  );
+};
+
+// FolderItem component
+const FolderItem = ({
+  name,
+  content,
+  onFolderClick,
+  onFileClick,
+  getFolderBackgroundColor,
+  getFileBackgroundColor,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { hovered, ref } = useHover();
+
   const toggleFolder = () => {
-    setFolderIsOpen((prev) => !prev);
+    setIsOpen((prev) => !prev);
   };
+
   return (
     <Stack gap={1}>
-      <UnstyledButton
-        onClick={toggleFolder}
-        style={{ display: "flex", alignItems: "center", gap: 3 }}
-      >
-        {folderIsOpen ? (
-          <IconFolderOpen size={folderIconSize} color={folderColor} />
+      <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+        {isOpen ? (
+          <IconFolderOpen
+            size={FOLDER_ICON_SIZE}
+            color={FOLDER_ICON_COLOR}
+            onClick={toggleFolder}
+          />
         ) : (
-          <IconFolder size={folderIconSize} color={folderColor} />
+          <IconFolder size={FOLDER_ICON_SIZE} color={FOLDER_ICON_COLOR} onClick={toggleFolder} />
         )}
-        <Text size="lg">{name}</Text>
-      </UnstyledButton>
-      <Collapse in={folderIsOpen} ml="sm">
+        <UnstyledButton
+          ref={ref}
+          style={{
+            backgroundColor: hovered ? "gray" : "transparent",
+            padding: "2px 5px",
+            borderRadius: "4px",
+          }}
+          onClick={() => onFolderClick(name, content)}
+        >
+          <Text size="lg">{name}</Text>
+        </UnstyledButton>
+      </div>
+      <Collapse in={isOpen} ml="xs">
         {Object.keys(content.folders || {}).map((folderName) => (
-          <FolderView key={folderName} name={folderName} content={content.folders[folderName]} />
+          <FolderItem
+            key={folderName}
+            name={folderName}
+            content={content.folders[folderName]}
+            onFolderClick={onFolderClick}
+            onFileClick={onFileClick}
+          />
         ))}
         {Object.keys(content.files || {}).map((fileName) => (
-          <FileView key={fileName} name={fileName} />
+          <FileItem
+            key={fileName}
+            name={fileName}
+            content={content.files[fileName]}
+            onFileClick={onFileClick}
+            getFileBackgroundColor={getFileBackgroundColor}
+          />
         ))}
       </Collapse>
     </Stack>
   );
 };
+
 // Main component
-const DatasetTreeViewRenderer = ({ datasetStructure }) => {
-  if (!datasetStructure?.["folders"] || !datasetStructure?.["files"]) return null;
-  return (
+const DatasetTreeView = ({
+  datasetStructure,
+  onFolderClick,
+  onFileClick,
+  getFolderBackgroundColor,
+  getFileBackgroundColor,
+}) =>
+  !datasetStructure?.folders && !datasetStructure?.files ? null : (
     <Stack gap={1}>
       {Object.keys(datasetStructure.files || {}).map((fileName) => (
-        <FileView key={fileName} name={fileName} />
+        <FileItem
+          key={fileName}
+          name={fileName}
+          content={datasetStructure.files[fileName]}
+          onFileClick={onFileClick}
+          getFileBackgroundColor={getFileBackgroundColor}
+        />
       ))}
       {Object.keys(datasetStructure.folders || {}).map((folderName) => (
-        <FolderView
+        <FolderItem
           key={folderName}
           name={folderName}
           content={datasetStructure.folders[folderName]}
+          onFolderClick={onFolderClick}
+          onFileClick={onFileClick}
+          getFolderBackgroundColor={getFolderBackgroundColor}
+          getFileBackgroundColor={getFileBackgroundColor}
         />
       ))}
     </Stack>
   );
-};
 
-export default DatasetTreeViewRenderer;
+export default DatasetTreeView;
