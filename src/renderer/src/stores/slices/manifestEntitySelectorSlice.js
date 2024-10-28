@@ -126,15 +126,23 @@ export const toggleRelativeFilePathForManifestEntity = (
 export const getEntityForRelativePath = (relativePath) => {
   const manifestEntityObj = useGlobalStore((state) => state.manifestEntityObj);
   const entityType = useGlobalStore((state) => state.entityType);
-  const activeEntity = useGlobalStore((state) => state.activeEntity);
 
-  if (!entityType || !activeEntity) {
+  if (!entityType || !manifestEntityObj?.[entityType]) {
     return null;
   }
 
-  if (manifestEntityObj?.[entityType]?.[activeEntity]?.includes(relativePath)) {
-    return activeEntity;
-  } else {
-    return null;
+  // Iterate through all entities within the specified entityType
+  for (const entity in manifestEntityObj[entityType]) {
+    if (manifestEntityObj[entityType][entity]?.includes(relativePath)) {
+      return entity;
+    }
   }
+
+  return null;
+};
+
+export const getNumberFilesForEntity = (entityName) => {
+  const manifestEntityObj = useGlobalStore((state) => state.manifestEntityObj);
+  const entityType = useGlobalStore((state) => state.entityType);
+  return manifestEntityObj?.[entityType]?.[entityName]?.length || 0;
 };
