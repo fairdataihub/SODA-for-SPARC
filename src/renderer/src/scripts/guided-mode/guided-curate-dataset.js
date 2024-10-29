@@ -9322,6 +9322,7 @@ const handleAddContributorHeaderUI = () => {
       `;
     });
 
+  // TODO: publishing-rework-end-to-end - Change the dropdown to include all organization wide contributors
   return `
     <label class="guided--form-label centered mb-2" style="font-size: 1em !important;">
       If the contributor has been previously added, select them from the dropdown below.
