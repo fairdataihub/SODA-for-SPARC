@@ -32,7 +32,8 @@ from manageDatasets import (
     get_dataset_readme,
     get_dataset_tags,
     update_dataset_tags,
-    scale_image
+    scale_image,
+    add_contributors
 )
 
 from pysodaUtils import get_agent_version, start_agent
@@ -1154,6 +1155,26 @@ class BfGetUserpoolAccessToken(Resource):
 
     try:
       return get_cognito_userpool_access_token(email, password)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
+
+@api.route('/datasets/<string:dataset_id>/contributors')
+class PSContributors(Resource):
+  parser = reqparse.RequestParser(bundle_errors=True)
+  parser.add_argument('contributorIds', type=list, required=True, location='json', help='The contributor ids to add to the dataset.')
+
+  @api.expect(parser)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Get the contributors for a dataset.")
+  @api.marshal_with(model_get_ds_tags, False, 200)
+  def put(self, dataset_id):
+    data = self.parser.parse_args()
+
+    con_ids = data.get('contributorIds')
+
+    try:
+      return add_contributors(dataset_id, con_ids)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))

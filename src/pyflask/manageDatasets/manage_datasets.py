@@ -1550,3 +1550,19 @@ def scale_image(imagePath):
 
     return { "scaled_image_path": store_image_path }
 
+
+def add_contributors(dataset_id, con_ids):
+    """
+    Takes a list of contributor Ids and adds them to the dataset as contributors. 
+    """
+    global PENNSIEVE_URL
+
+    url = "f{PENNSIEVE_URL}/datasets/{dataset_id}/contributors"
+
+    for id in con_ids:
+        payload = {"contributorId": id}
+        r = requests.put(url, json=payload, headers=create_request_headers(get_access_token()))
+        r.raise_for_status()
+
+    return {"message": "Contributors added"}
+
