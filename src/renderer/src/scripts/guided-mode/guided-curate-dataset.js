@@ -1934,8 +1934,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      console.log(contributors)
-      let piContributors = []
+      console.log(contributors);
+      let piContributors = [];
       // Ensure at least one PI is assigned
       for (const contributor of contributors) {
         for (const role of contributor.conRole) {
