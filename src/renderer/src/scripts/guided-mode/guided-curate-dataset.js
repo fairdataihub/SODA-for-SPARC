@@ -44,11 +44,8 @@ import {
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
 } from "../../stores/slices/guidedModeSlice";
-import {
-  setDatasetStructureJSONObj,
-  setEntityList,
-  setEntityType,
-} from "../../stores/slices/manifestEntitySelectorSlice";
+import { setEntityList, setEntityType } from "../../stores/slices/manifestEntitySelectorSlice";
+import { setTreeViewDatasetStructure } from "../../stores/slices/datasetTreeViewSlice";
 
 import "bootstrap-select";
 import Cropper from "cropperjs";
@@ -5467,7 +5464,7 @@ window.openPage = async (targetPageID) => {
     if (targetPageID === "guided-manifest-subject-entity-selector-tab") {
       //
       setEntityList(window.getExistingSubjectNames());
-      setDatasetStructureJSONObj(window.datasetStructureJSONObj);
+      setTreeViewDatasetStructure(window.datasetStructureJSONObj);
       setEntityType("subjects");
     }
 

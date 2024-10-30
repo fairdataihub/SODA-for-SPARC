@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Collapse, Text, Stack, UnstyledButton } from "@mantine/core";
+import { Collapse, Text, Stack, UnstyledButton, TextInput } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 import {
   IconFolder,
@@ -16,8 +16,10 @@ import {
   IconFileTypeXls,
   IconFileTypeXml,
   IconFileTypeZip,
+  IconSearch,
 } from "@tabler/icons-react";
-import { getEntityForRelativePath } from "../../../stores/slices/manifestEntitySelectorSlice";
+import useGlobalStore from "../../../stores/globalStore";
+import { setDatasetstructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
 
 // Constants
 const FOLDER_ICON_COLOR = "#ADD8E6";
@@ -42,39 +44,42 @@ const fileIconMap = {
   jp2: <IconPhoto size={FILE_ICON_SIZE} />,
 };
 
+// Retrieve icon based on file extension
 const getFileTypeIcon = (fileName) => {
   const extension = fileName.split(".").pop().toLowerCase();
   return fileIconMap[extension] || <IconFile size={FILE_ICON_SIZE} />;
 };
 
 // FileItem component
-const FileItem = ({ name, content, onFileClick, getFileBackgroundColor }) => {
-  const fileBackgroundColor = getFileBackgroundColor(content.relativePath);
-  return (
-    <div
-      style={{
-        paddingLeft: 10,
-        display: "flex",
-        alignItems: "center",
-        gap: 5,
-        backgroundColor: fileBackgroundColor,
-      }}
-      onClick={() => onFileClick(name, content)}
-    >
-      {getFileTypeIcon(name)}
-      <Text>{name}</Text>
-    </div>
-  );
-};
+const FileItem = ({ name, content, onFileClick, getFileBackgroundColor }) => (
+  <div
+    style={{
+      paddingLeft: 10,
+      display: "flex",
+      alignItems: "center",
+      gap: 5,
+      backgroundColor: getFileBackgroundColor(content.relativePath),
+    }}
+    onClick={() => onFileClick(name, content)}
+  >
+    {getFileTypeIcon(name)}
+    <Text>{name}</Text>
+  </div>
+);
 
 // FolderItem component
-const FolderItem = ({ name, content, onFolderClick, onFileClick, getFileBackgroundColor }) => {
+const FolderItem = ({
+  name,
+  content,
+  onFolderClick,
+  onFileClick,
+  getFileBackgroundColor,
+  searchFilter,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
 
-  const toggleFolder = () => {
-    setIsOpen((prev) => !prev);
-  };
+  const toggleFolder = () => setIsOpen((prev) => !prev);
 
   return (
     <Stack gap={1}>
@@ -100,22 +105,23 @@ const FolderItem = ({ name, content, onFolderClick, onFileClick, getFileBackgrou
           <Text size="lg">{name}</Text>
         </UnstyledButton>
       </div>
-      <Collapse in={isOpen} ml="xs">
-        {Object.keys(content.folders || {}).map((folderName) => (
+      <Collapse in={isOpen}>
+        {content.filteredFolders?.map(([folderName, folderContent]) => (
           <FolderItem
             key={folderName}
             name={folderName}
-            content={content.folders[folderName]}
+            content={folderContent}
             onFolderClick={onFolderClick}
             onFileClick={onFileClick}
             getFileBackgroundColor={getFileBackgroundColor}
+            searchFilter={searchFilter}
           />
         ))}
-        {Object.keys(content.files || {}).map((fileName) => (
+        {content.filteredFiles?.map(([fileName, fileContent]) => (
           <FileItem
             key={fileName}
             name={fileName}
-            content={content.files[fileName]}
+            content={fileContent}
             onFileClick={onFileClick}
             getFileBackgroundColor={getFileBackgroundColor}
           />
@@ -125,35 +131,74 @@ const FolderItem = ({ name, content, onFolderClick, onFileClick, getFileBackgrou
   );
 };
 
+// Recursive function to filter folders and files, marking parent folders if a child matches
+const filterStructure = (structure, searchFilter) => {
+  const lowerCaseFilter = searchFilter.toLowerCase();
+
+  const folders = Object.entries(structure.folders || {}).reduce((acc, [name, content]) => {
+    const filteredContent = filterStructure(content, searchFilter);
+    if (filteredContent || name.toLowerCase().includes(lowerCaseFilter)) {
+      acc[name] = { ...content, ...filteredContent };
+    }
+    return acc;
+  }, {});
+
+  const files = Object.entries(structure.files || {}).filter(([name]) =>
+    name.toLowerCase().includes(lowerCaseFilter)
+  );
+
+  if (Object.keys(folders).length || files.length) {
+    return { filteredFolders: Object.entries(folders), filteredFiles: files };
+  }
+  return null;
+};
+
 // Main component
 const DatasetTreeView = ({
   datasetStructure,
   onFolderClick,
   onFileClick,
   getFileBackgroundColor,
-}) =>
-  !datasetStructure?.folders && !datasetStructure?.files ? null : (
+}) => {
+  const datasetStructureSearchFilter = useGlobalStore(
+    (state) => state.datasetStructureSearchFilter
+  );
+
+  const handleSearchChange = (event) => setDatasetstructureSearchFilter(event.target.value);
+
+  const filteredStructure = filterStructure(datasetStructure, datasetStructureSearchFilter);
+
+  return (
     <Stack gap={1}>
-      {Object.keys(datasetStructure.files || {}).map((fileName) => (
-        <FileItem
-          key={fileName}
-          name={fileName}
-          content={datasetStructure.files[fileName]}
-          onFileClick={onFileClick}
-          getFileBackgroundColor={getFileBackgroundColor}
-        />
-      ))}
-      {Object.keys(datasetStructure.folders || {}).map((folderName) => (
+      <TextInput
+        label="Search files and folders:"
+        placeholder="Search files and folders..."
+        value={datasetStructureSearchFilter}
+        onChange={handleSearchChange}
+        leftSection={<IconSearch stroke={1.5} />}
+      />
+      {filteredStructure?.filteredFolders?.map(([folderName, folderContent]) => (
         <FolderItem
           key={folderName}
           name={folderName}
-          content={datasetStructure.folders[folderName]}
+          content={folderContent}
           onFolderClick={onFolderClick}
+          onFileClick={onFileClick}
+          getFileBackgroundColor={getFileBackgroundColor}
+          searchFilter={datasetStructureSearchFilter}
+        />
+      ))}
+      {filteredStructure?.filteredFiles?.map(([fileName, fileContent]) => (
+        <FileItem
+          key={fileName}
+          name={fileName}
+          content={fileContent}
           onFileClick={onFileClick}
           getFileBackgroundColor={getFileBackgroundColor}
         />
       ))}
     </Stack>
   );
+};
 
 export default DatasetTreeView;

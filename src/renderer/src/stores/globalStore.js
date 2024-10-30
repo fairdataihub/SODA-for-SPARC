@@ -6,6 +6,7 @@ import { dropDownSlice } from "./slices/dropDownSlice";
 import { singleColumnTableSlice } from "./slices/tableRowSlice";
 import { backgroundServicesSlice } from "./slices/backgroundServicesSlice";
 import { manifestEntitySelectorSlice } from "./slices/manifestEntitySelectorSlice";
+import { datasetTreeViewSlice } from "./slices/datasetTreeViewSlice";
 
 const useGlobalStore = create(
   immer((...a) => ({
@@ -15,6 +16,7 @@ const useGlobalStore = create(
     ...singleColumnTableSlice(...a),
     ...backgroundServicesSlice(...a),
     ...manifestEntitySelectorSlice(...a),
+    ...datasetTreeViewSlice(...a),
   }))
 );
 
