@@ -38,6 +38,7 @@ import "./assets/lotties/activate-lotties";
 
 // Application CSS
 import "@mantine/core/styles.css";
+import "@mantine/dropzone/styles.css";
 import "cropperjs/dist/cropper.css";
 import "fomantic-ui/dist/semantic.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";

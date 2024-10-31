@@ -8,6 +8,7 @@ import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
 import ManifestEntitySelector from "../shared/manifest/ManifestEntitySelector";
+import DataImporter from "../shared/DataImporter";
 import { Divider } from "@mantine/core";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
@@ -92,6 +93,14 @@ const componentTypeRenderers = {
     root.render(
       <SodaComponentWrapper>
         <ManifestEntitySelector />
+      </SodaComponentWrapper>
+    );
+  },
+  "data-importer": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper>
+        <DataImporter />
       </SodaComponentWrapper>
     );
   },

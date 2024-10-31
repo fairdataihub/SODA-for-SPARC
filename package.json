@@ -33,6 +33,7 @@
     "@fairdataihub/config": "^2.2.3",
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@mantine/core": "^7.7.1",
+    "@mantine/dropzone": "^7.13.4",
     "@mantine/hooks": "^7.7.1",
     "@popperjs/core": "^2.11.8",
     "@rollup/plugin-inject": "^5.0.5",

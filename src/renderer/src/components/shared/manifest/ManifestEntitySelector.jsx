@@ -9,7 +9,6 @@ import {
 } from "../../../stores/slices/manifestEntitySelectorSlice";
 
 const ManifestEntitySelector = () => {
-  const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
   const entityList = useGlobalStore((state) => state.entityList);
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const entityType = useGlobalStore((state) => state.entityType);
@@ -61,7 +60,6 @@ const ManifestEntitySelector = () => {
           {activeEntity ? (
             <Paper shadow="sm" p="xl" radius="md">
               <DatasetTreeViewRenderer
-                datasetStructure={datasetStructureJSONObj}
                 onFolderClick={handleFolderClick}
                 onFileClick={handleFileClick}
                 getFileBackgroundColor={getFileBackgroundColor}

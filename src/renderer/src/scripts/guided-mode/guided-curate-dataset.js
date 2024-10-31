@@ -45,7 +45,10 @@ import {
   setGuidedDatasetSubtitle,
 } from "../../stores/slices/guidedModeSlice";
 import { setEntityList, setEntityType } from "../../stores/slices/manifestEntitySelectorSlice";
-import { setTreeViewDatasetStructure } from "../../stores/slices/datasetTreeViewSlice";
+import {
+  setDatasetstructureSearchFilter,
+  setTreeViewDatasetStructure,
+} from "../../stores/slices/datasetTreeViewSlice";
 
 import "bootstrap-select";
 import Cropper from "cropperjs";
@@ -5068,6 +5071,7 @@ window.openPage = async (targetPageID) => {
   const targetPage = document.getElementById(targetPageID);
   const targetPageName = targetPage.dataset.pageName || targetPageID;
   const targetPageParentTab = targetPage.closest(".guided--parent-tab");
+  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
 
   //when the promise completes there is a catch for error handling
   //upon resolving it will set navLoadingstate to false
