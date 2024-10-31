@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Collapse, Text, Stack, UnstyledButton, TextInput } from "@mantine/core";
+import { Collapse, Text, Stack, UnstyledButton, TextInput, Flex } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 import {
   IconFolder,
@@ -52,19 +52,15 @@ const getFileTypeIcon = (fileName) => {
 
 // FileItem component
 const FileItem = ({ name, content, onFileClick, getFileBackgroundColor }) => (
-  <div
-    style={{
-      paddingLeft: 10,
-      display: "flex",
-      alignItems: "center",
-      gap: 5,
-      backgroundColor: getFileBackgroundColor(content.relativePath),
-    }}
+  <Flex
+    align="center"
+    gap="sm"
+    bg={getFileBackgroundColor(content.relativePath)}
     onClick={() => onFileClick(name, content)}
   >
     {getFileTypeIcon(name)}
     <Text>{name}</Text>
-  </div>
+  </Flex>
 );
 
 // FolderItem component
@@ -82,8 +78,8 @@ const FolderItem = ({
   const toggleFolder = () => setIsOpen((prev) => !prev);
 
   return (
-    <Stack gap={1}>
-      <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+    <Stack gap={1} ml="sm">
+      <Flex align="center" gap="sm">
         {isOpen ? (
           <IconFolderOpen
             size={FOLDER_ICON_SIZE}
@@ -97,14 +93,13 @@ const FolderItem = ({
           ref={ref}
           style={{
             backgroundColor: hovered ? "gray" : "transparent",
-            padding: "2px 5px",
             borderRadius: "4px",
           }}
           onClick={() => onFolderClick(name, content)}
         >
           <Text size="lg">{name}</Text>
         </UnstyledButton>
-      </div>
+      </Flex>
       <Collapse in={isOpen}>
         {content.filteredFolders?.map(([folderName, folderContent]) => (
           <FolderItem
