@@ -4609,6 +4609,7 @@
           <div class="guided--capsule" id="guided-pennsieve-intro-capsule"></div>
           <div class="guided--capsule" id="guided-banner-image-capsule"></div>
           <div class="guided--capsule" id="guided-designate-permissions-capsule"></div>
+          <div class="guided--capsule" id="guided-designate-contributors-capsule"></div>
           <div class="guided--capsule" id="guided-add-description-capsule"></div>
           <div class="guided--capsule" id="guided-add-tags-capsule"></div>
           <div class="guided--capsule" id="guided-assign-license-capsule"></div>
@@ -5104,6 +5105,85 @@
                 <br />
                 <b>Note:</b> Users on guest accounts may not grant permissions to other teams.
               </p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="guided-designate-contributors-tab"
+          class="guided--page"
+          data-page-name="Pennsieve dataset contributors"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Dataset contributors</h1>
+            <p class="help-text text-left">
+              Dataset contributors are individuals who have contributed to the dataset in some way. 
+              Assigned contributors will be shown when the dataset is published on Pennsieve Discover and
+              on the sparc.science portal. Any contributor you have added to your dataset metadata should be added here as well.
+            </p>
+          </div>
+
+          <div class="guided--section" id="guided-section-add-additional-permissions">
+            <p class="help-text text-left mb-md">
+              Current contributors are listed in the table below. To add a contributor select an individual 
+              from the dropdown list. To remove a contributor, click the delete icon in the
+              table below. If a contributor you already created is not in the table or the dropdown list then
+              add them by clicking the "Add External Contributor" button.
+            </p>
+
+            <table class="ui celled striped table" style="margin-bottom: 10px; width: 800px">
+              <thead>
+                <tr>
+                  <th>Contributor</th>
+                  <th class="center aligned remove-left-border" style="width: 30px">Delete</th>
+                </tr>
+              </thead>
+              <tbody id="contributors-table-body"></tbody>
+            </table>
+            <div class="guided--container-permissions mb-md" style="margin-top: 1rem">
+              <div style="flex-grow: 1">
+                <div
+                  class="field"
+                  style="
+                    display: flex;
+                    width: 100%;
+                    justify-content: center;
+                    align-items: center;
+                    flex-direction: column;
+                  "
+                >
+                  <div
+                    id="guided_contributors_select_div"
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-around;
+                      width: 100%;
+                    "
+                  >
+                    <select
+                      class="selectpicker SODA-select-picker"
+                      data-live-search="true"
+                      id="guided_bf_list_users_contributors"
+                    >
+                  <option>Add contributor from the current workspace</option></select>
+                  </div>
+                </div>
+              </div>
+              <button
+                class="ui primary button"
+                id="guided-button-add-external-contributor"
+                style="
+                  height: 35px;
+                  background-color: var(--color-light-green) !important;
+                  padding: 0.7em 1.3em;
+                  width: 225px;
+                  margin-right: 0px;
+                  margin-left: 10px;
+                "
+              >
+                Add External Contributor
+              </button>
             </div>
           </div>
         </div>

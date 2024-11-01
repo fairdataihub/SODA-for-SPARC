@@ -199,6 +199,7 @@ button[data-id="guided-select-pennsieve-dataset-to-resume"],
 button[data-id="bf_list_users_pi"],
 button[data-id="guided_bf_list_users_pi"],
 button[data-id="guided_bf_list_users_and_teams"],
+button[data-id="guided_bf_list_users_contributors"],
 button[data-id="common-strain-rrid-dropdown"] {
   border: 1px solid rgba(34, 36, 38, 0.15);
   border-radius: 7px;
@@ -212,6 +213,10 @@ button[data-id="common-strain-rrid-dropdown"] {
 #guided_sparc_award_bootstrap_select_div > .dropdown.bootstrap-select,
 #guided_pi_bootstrap_select_div > .dropdown.bootstrap-select,
 #guided_permissions_select_div > .dropdown.bootstrap-select {
+  width: 100%;
+}
+
+#guided_contributors_select_div > .dropdown.bootstrap-select {
   width: 100%;
 }
 
