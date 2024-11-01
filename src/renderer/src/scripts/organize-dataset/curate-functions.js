@@ -1546,9 +1546,8 @@ $(document).ready(async function () {
   $("#guided_bf_list_users_pi").selectpicker("refresh");
   $("#guided_bf_list_users_and_teams").selectpicker();
   $("#guided_bf_list_users_and_teams").selectpicker("refresh");
-  $("#guided_bf_list_users_contributors").selectpicker()
-  $("#guided_bf_list_users_contributors").selectpicker("refresh")
-
+  $("#guided_bf_list_users_contributors").selectpicker();
+  $("#guided_bf_list_users_contributors").selectpicker("refresh");
 });
 
 window.create_api_key_and_secret = (login, password, machineUsernameSpecifier) => {

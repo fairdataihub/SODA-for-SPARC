@@ -4872,17 +4872,16 @@ const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
 };
 
 const guidedAddUsersToDropdown = (usersArray) => {
-  console.log("Adding users to contributor dropdown")
+  console.log("Adding users to contributor dropdown");
   $("#guided_bf_list_users_contributors").selectpicker("refresh");
   const guidedUsersAndTeamsDropdown = document.getElementById("guided_bf_list_users_contributors");
   // Reset the dropdown
   guidedUsersAndTeamsDropdown.innerHTML =
     "<option>Select individuals to add them as contributors</option>";
 
-
   // Loop through the users and add them to the dropdown
   for (const userString of usersArray) {
-    console.log("wowza")
+    console.log("wowza");
     const userNameAndEmail = userString.split("!|**|!")[0].trim();
     const userID = userString.split("!|**|!")[1].trim();
     const userOption = `
@@ -4896,8 +4895,8 @@ const guidedAddUsersToDropdown = (usersArray) => {
     guidedUsersAndTeamsDropdown.insertAdjacentHTML("beforeend", userOption);
   }
 
-  console.log(guidedUsersAndTeamsDropdown)
-}
+  console.log(guidedUsersAndTeamsDropdown);
+};
 
 const guidedAddUsersAndTeamsToDropdown = (usersArray, teamsArray) => {
   const guidedUsersAndTeamsDropdown = document.getElementById("guided_bf_list_users_and_teams");
@@ -6190,9 +6189,8 @@ window.openPage = async (targetPageID) => {
       }
     }
 
-    console.log(targetPageID)
-    if(targetPageID === "guided-designate-contributors-tab") {
-
+    console.log(targetPageID);
+    if (targetPageID === "guided-designate-contributors-tab") {
       const usersReq = await client.get(
         `manage_datasets/ps_get_users?selected_account=${window.defaultBfAccount}`
       );
