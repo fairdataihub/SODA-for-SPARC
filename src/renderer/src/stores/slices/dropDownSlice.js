@@ -6,7 +6,16 @@ export const dropDownSlice = (set) => ({
     "guided-select-sparc-funding-consortium": {
       label: "SPARC Funding Consortium",
       placeholder: "Select a SPARC Funding Consortium",
-      options: ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"],
+      options: [
+        "SPARC",
+        "SPARC-2",
+        "VESPA",
+        "REVA",
+        "HORNET",
+        "HEAL",
+        "HEAL-REJOIN",
+        "HEAL-PRECISION",
+      ],
       selectedValue: "",
     },
   },

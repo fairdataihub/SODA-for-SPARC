@@ -20,7 +20,16 @@ while (!window.baseHtmlLoaded) {
 $(".ui.accordion").accordion();
 
 // List of funding consortiums taken from the 2.1 submission file
-window.sparcFundingConsortiums = ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"];
+window.sparcFundingConsortiums = [
+  "SPARC",
+  "SPARC-2",
+  "VESPA",
+  "REVA",
+  "HORNET",
+  "HEAL",
+  "HEAL-REJOIN",
+  "HEAL-PRECISION",
+];
 
 // event listeners for opendropdown prompt
 document.querySelectorAll(".submission-change-current-account").forEach((element) => {

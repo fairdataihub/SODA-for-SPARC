@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { StrictMode, useState } from "react";
 import { Collapse, Text, Stack, UnstyledButton, TextInput, Flex } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 import {
@@ -142,30 +142,39 @@ const FolderItem = ({ name, content, onFolderClick, onFileClick, getFileBackgrou
   );
 };
 
-// Recursive function to filter folders and files, marking parent folders if a child matches
 const filterStructure = (structure, searchFilter) => {
-  const lowerCaseFilter = searchFilter.toLowerCase();
+  console.log("Filtering structure:");
+  console.log(JSON.stringify(structure, null, 2));
+  const lowercaseFilter = searchFilter.toLowerCase();
 
-  const folders = Object.entries(structure?.folders || {}).reduce((acc, [name, content]) => {
-    const filteredContent = filterStructure(content, searchFilter);
-    if (filteredContent || name.toLowerCase().includes(lowerCaseFilter)) {
-      acc[name] = { ...content, ...filteredContent };
+  const checkIfFolderContainsSearchFilter = (folderObj) => {
+    if (folderObj["relativePath"].toLowerCase().includes(lowercaseFilter)) {
+      return true;
     }
-    return acc;
-  }, {});
+    for (const folderName of Object.keys(folderObj["folders"])) {
+      if (checkIfFolderContainsSearchFilter(folderContent)) {
+        return true;
+      }
+    }
+    for (const fileName of Object.keys(folderObj["files"])) {
+      if (fileName.toLowerCase().includes(lowercaseFilter)) {
+        return true;
+      }
+    }
+    return false;
+  };
 
-  const files = Object.entries(structure?.files || {}).filter(([name]) =>
-    name.toLowerCase().includes(lowerCaseFilter)
-  );
-
-  if (Object.keys(folders).length || files.length) {
-    return { filteredFolders: Object.entries(folders), filteredFiles: files };
+  for (const folder in structure["folders"]) {
+    console.log("Checking folder:", folder);
+    console.log(checkIfFolderContainsSearchFilter(structure["folders"][folder]));
   }
-  return null;
 };
-
-// Main component
-const DatasetTreeView = ({ onFolderClick, onFileClick, getFileBackgroundColor }) => {
+const DatasetTreeView = ({
+  onFolderClick,
+  onFileClick,
+  getFileBackgroundColor,
+  highLevelFolder,
+}) => {
   const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
   const datasetStructureSearchFilter = useGlobalStore(
     (state) => state.datasetStructureSearchFilter
@@ -173,7 +182,19 @@ const DatasetTreeView = ({ onFolderClick, onFileClick, getFileBackgroundColor })
 
   const handleSearchChange = (event) => setDatasetstructureSearchFilter(event.target.value);
 
-  const filteredStructure = filterStructure(datasetStructureJSONObj, datasetStructureSearchFilter);
+  if (!datasetStructureJSONObj) {
+    // If dataset structure is not available, return null
+    return null;
+  }
+
+  let filteredStructure = filterStructure(datasetStructureJSONObj, datasetStructureSearchFilter);
+  console.log("Filtered structure:", filteredStructure);
+
+  if (highLevelFolder && filteredStructure) {
+    console.log(filteredStructure);
+    console.log(highLevelFolder);
+    filteredStructure = filteredStructure["folders"][highLevelFolder];
+  }
 
   return (
     <Stack gap={1}>

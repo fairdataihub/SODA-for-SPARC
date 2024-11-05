@@ -1237,7 +1237,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
         guidedUnSkipPage("guided-primary-data-organization-tab");
         guidedUnSkipPage("guided-source-data-organization-tab");
-        guidedUnSkipPage("guided-derivative-data-organization-tab");
+        guidedUnSkipPage("guided-derivative-data-selection-tab");
         guidedUnSkipPage("guided-create-subjects-metadata-tab");
         guidedUnSkipPage("guided-create-samples-metadata-tab");
       } else {
@@ -1247,7 +1247,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
         guidedSkipPage("guided-primary-data-organization-tab");
         guidedSkipPage("guided-source-data-organization-tab");
-        guidedSkipPage("guided-derivative-data-organization-tab");
+        guidedSkipPage("guided-derivative-data-selection-tab");
         guidedSkipPage("guided-create-subjects-metadata-tab");
         guidedSkipPage("guided-create-samples-metadata-tab");
 
@@ -1487,7 +1487,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("source");
     }
 
-    if (pageBeingLeftID === "guided-derivative-data-organization-tab") {
+    if (pageBeingLeftID === "guided-derivative-data-selection-tab") {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("derivative");
     }
 
@@ -5324,7 +5324,7 @@ window.openPage = async (targetPageID) => {
       openSubPageNavigation(targetPageID);
     }
 
-    if (targetPageID === "guided-derivative-data-organization-tab") {
+    if (targetPageID === "guided-derivative-data-selection-tab") {
       openSubPageNavigation(targetPageID);
     }
 
@@ -7509,6 +7509,7 @@ const removeAlertMessageIfExists = (elementToCheck) => {
 
 //function that creates a new folder object
 const newEmptyFolderObj = () => {
+  console.log("newEmptyFolderObj");
   return {
     folders: {},
     files: {},
@@ -7584,16 +7585,6 @@ const guidedGetPageToReturnTo = (sodaJSONObj) => {
 
 const patchPreviousGuidedModeVersions = async () => {
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
-
-  for (const highLevelFolderManifestData in window.sodaJSONObj["guided-manifest-files"]) {
-    if (
-      window.sodaJSONObj["guided-manifest-files"][highLevelFolderManifestData]["headers"][0] ===
-      "File Name"
-    ) {
-      // reset the manifest files
-      window.sodaJSONObj["guided-manifest-files"] = {};
-    }
-  }
 
   //Add key to track status of Pennsieve uploads
   if (!window.sodaJSONObj["pennsieve-upload-status"]) {
