@@ -193,6 +193,7 @@ const DatasetTreeView = ({
     console.log("No dataset structure available");
     return "No dataset structure available";
   }
+  const lowerCaseSearchFilter = searchFilter.toLowerCase();
 
   let filteredStructure = filterStructure(datasetStructureJSONObj, datasetStructureSearchFilter);
   console.log("Filtered structure:", filteredStructure);
