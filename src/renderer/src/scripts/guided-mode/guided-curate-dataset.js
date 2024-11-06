@@ -408,7 +408,7 @@ document.getElementById("guided-button-has-protocol-data").addEventListener("cli
     if (folderImportedFromPennsieve(protocolFolder)) {
       // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
       guidedModifyPennsieveFolder(protocolFolder, "restore");
-      updateFolderStructureUI("protocol/");
+      guidedUpdateFolderStructureUI("protocol/");
     }
   }
 });
@@ -419,7 +419,7 @@ document.getElementById("guided-button-has-docs-data").addEventListener("click",
     if (folderImportedFromPennsieve(docsFolder)) {
       // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
       guidedModifyPennsieveFolder(docsFolder, "restore");
-      updateFolderStructureUI("docs/");
+      guidedUpdateFolderStructureUI("docs/");
     }
   }
 });
@@ -4194,17 +4194,11 @@ const guidedShowTreePreview = (new_dataset_name, targetElementId) => {
 
 const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
   //add high level folder if it does not exist
+  /*
   if (!window.datasetStructureJSONObj["folders"][highLevelFolder]) {
     window.datasetStructureJSONObj["folders"][highLevelFolder] = newEmptyFolderObj();
-  }
-  //Add pools to the datsetStructuresJSONObj if they don't exist
-  const pools = Object.keys(window.sodaJSONObj.getPools());
-  for (const pool of pools) {
-    if (!window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool]) {
-      window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool] =
-        newEmptyFolderObj();
-    }
-  }
+  }*/
+
   if (subjectsOrSamples === "subjects") {
     //Add subjects to datsetStructuresJSONObj if they don't exist
     const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
@@ -5071,7 +5065,6 @@ window.openPage = async (targetPageID) => {
   const targetPage = document.getElementById(targetPageID);
   const targetPageName = targetPage.dataset.pageName || targetPageID;
   const targetPageParentTab = targetPage.closest(".guided--parent-tab");
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
 
   //when the promise completes there is a catch for error handling
   //upon resolving it will set navLoadingstate to false
@@ -5316,6 +5309,9 @@ window.openPage = async (targetPageID) => {
       renderSamplesTable();
     }
 
+    if (targetPageID === "guided-unstructured-data-import-tab") {
+      guidedUpdateFolderStructureUI("primary/");
+    }
     if (targetPageID === "guided-primary-data-organization-tab") {
       openSubPageNavigation(targetPageID);
     }
@@ -5337,7 +5333,7 @@ window.openPage = async (targetPageID) => {
       }
       //Append the guided-file-explorer element to the code folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-code-data"));
-      updateFolderStructureUI("code/");
+      guidedUpdateFolderStructureUI("code/");
 
       //Remove hidden class from file explorer element in case it was hidden
       //when showing the intro for prim/src/deriv organization
@@ -5353,7 +5349,7 @@ window.openPage = async (targetPageID) => {
       }
       //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-protocol-data"));
-      updateFolderStructureUI("protocol/");
+      guidedUpdateFolderStructureUI("protocol/");
 
       //Remove hidden class from file explorer element in case it was hidden
       //when showing the intro for prim/src/deriv organization
@@ -5369,7 +5365,7 @@ window.openPage = async (targetPageID) => {
       }
       //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-docs-data"));
-      updateFolderStructureUI("docs/");
+      guidedUpdateFolderStructureUI("docs/");
       //Remove hidden class from file explorer element in case it was hidden
       //when showing the intro for prim/src/deriv organization
       document.getElementById("guided-file-explorer-elements").classList.remove("hidden");
@@ -7518,6 +7514,19 @@ const newEmptyFolderObj = () => {
   };
 };
 
+const getDatasetStructureJsonFolderContentsAtNestedArrayPath = (folderPathArray) => {
+  let currentFolder = window.datasetStructureJSONObj;
+  folderPathArray.forEach((folder) => {
+    console.log("currentFolder[folders'][folder]", currentFolder["folders"][folder]);
+    // Continue to recursively create folders if they don't exist
+    if (!currentFolder["folders"][folder]) {
+      currentFolder["folders"][folder] = newEmptyFolderObj();
+    }
+    currentFolder = currentFolder["folders"][folder];
+  });
+  return currentFolder;
+};
+
 const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
   if (!window.sodaJSONObj["completed-tabs"].includes("guided-pennsieve-intro-tab")) {
     return false;
@@ -8700,36 +8709,42 @@ const attachGuidedMethodsToSodaJSONObj = () => {
   };
 };
 
-const updateFolderStructureUI = (folderPath) => {
-  //If the pageDataObj has header and contents, set element text and hide
-  //If not, remove the elements from the screen
-  const fileExplorer = document.getElementById("guided-file-explorer-elements");
+const guidedUpdateFolderStructureUI = (folderPathSeperatedBySlashes) => {
+  console.log("guidedUpdateFolderStructureUI called");
+  console.log("folderPathSeperatedBySlashes", folderPathSeperatedBySlashes);
 
+  const fileExplorer = document.getElementById("guided-file-explorer-elements");
   fileExplorer.classList.remove("file-explorer-transition");
 
-  $("#guided-input-global-path").val(`dataset_root/${folderPath}`);
-  window.organizeDSglobalPath = $("#guided-input-global-path")[0];
-  var filtered = window.getGlobalPath(window.organizeDSglobalPath);
-  window.organizeDSglobalPath.value = filtered.slice(0, filtered.length).join("/") + "/";
+  // Update the global path input to show the selected folder path
+  const globalPathInput = $("#guided-input-global-path");
+  globalPathInput.val(`dataset_root/${folderPathSeperatedBySlashes}`);
+  window.organizeDSglobalPath = globalPathInput[0];
+  console.log("window.organizeDSglobalPath", window.organizeDSglobalPath);
 
-  var myPath = window.datasetStructureJSONObj;
-  for (var item of filtered.slice(1, filtered.length)) {
-    myPath = myPath["folders"][item];
-  }
-  // construct UI with files and folders
-  //var appendString = window.loadFileFolder(myPath);
+  // Filter and format the path for the dataset structure JSON object
+  const filtered = window.getGlobalPath(window.organizeDSglobalPath);
+  console.log("filtered", filtered);
 
-  /// empty the div
+  window.organizeDSglobalPath.value = `${filtered.join("/")}/`;
+  console.log("window.organizeDSglobalPath.value", window.organizeDSglobalPath.value);
 
-  // reconstruct div with new elements
+  // Traverse dataset structure based on the filtered path
+  const datasetStructureJsonValueAtFilteredPath =
+    getDatasetStructureJsonFolderContentsAtNestedArrayPath(filtered.slice(1));
+  console.log("datasetStructureJsonValueAtFilteredPath:", datasetStructureJsonValueAtFilteredPath);
 
-  //where folder section items will be created
-  window.listItems(myPath, "#items", 500, true);
+  // Populate the UI with files and folders based on the selected path
+  window.listItems(datasetStructureJsonValueAtFilteredPath, "#items", 500, true);
   window.getInFolder(
     ".single-item",
     "#items",
     window.organizeDSglobalPath,
     window.datasetStructureJSONObj
+  );
+  setTreeViewDatasetStructure(
+    datasetStructureJsonValueAtFilteredPath,
+    folderPathSeperatedBySlashes
   );
 };
 
@@ -12632,7 +12647,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
       const pathSuffix = e.target.dataset.pathSuffix;
 
       //render folder section in #items
-      updateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
+      guidedUpdateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
     });
     //add hover event that changes the background color to black
     item.addEventListener("mouseover", (e) => {
@@ -12699,7 +12714,7 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
       //get the path prefix from the clicked item
       const pathSuffix = e.target.dataset.pathSuffix;
 
-      updateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
+      guidedUpdateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
     });
   });
 };
@@ -12747,7 +12762,7 @@ const renderPoolsHighLevelFolderAsideItems = (highLevelFolderName) => {
       //get the path prefix from the clicked item
       const { pathSuffix } = e.target.dataset;
 
-      updateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
+      guidedUpdateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
     });
   });
 };

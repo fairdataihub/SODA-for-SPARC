@@ -16,7 +16,7 @@ export const setDatasetstructureSearchFilter = (datasetStructureSearchFilter) =>
   }));
 };
 
-export const setTreeViewDatasetStructure = (datasetStructureJSONObj) => {
+export const setTreeViewDatasetStructure = (datasetStructureJSONObj, folderPathString) => {
   // Create a deep copy of the object so that the original object is not mutated
   const datasetStructureJSONObjCopy = JSON.parse(JSON.stringify(datasetStructureJSONObj));
   // Recursively add the relative paths to the datasetStructureJSONObjCopy object

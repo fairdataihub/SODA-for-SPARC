@@ -142,27 +142,33 @@ const FolderItem = ({ name, content, onFolderClick, onFileClick, getFileBackgrou
   );
 };
 
+const checkIfFolderContainsSearchFilter = (folderObj, lowerCaseSearchFilter) => {
+  const relativePath = folderObj["relativePath"].toLowerCase();
+  if (relativePath.includes(lowerCaseSearchFilter)) {
+    return true;
+  }
+
+  // Check if any folder matches the filter
+  for (const subFolder of Object.values(folderObj["folders"])) {
+    if (checkIfFolderContainsSearchFilter(subFolder)) {
+      return true;
+    }
+  }
+
+  // Check if any file matches the filter
+  for (const fileName of Object.values(folderObj["files"])) {
+    if (fileName.toLowerCase().includes(lowerCaseSearchFilter)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 const filterStructure = (structure, searchFilter) => {
   console.log("Filtering structure:");
   console.log(JSON.stringify(structure, null, 2));
-  const lowercaseFilter = searchFilter.toLowerCase();
-
-  const checkIfFolderContainsSearchFilter = (folderObj) => {
-    if (folderObj["relativePath"].toLowerCase().includes(lowercaseFilter)) {
-      return true;
-    }
-    for (const folderName of Object.keys(folderObj["folders"])) {
-      if (checkIfFolderContainsSearchFilter(folderContent)) {
-        return true;
-      }
-    }
-    for (const fileName of Object.keys(folderObj["files"])) {
-      if (fileName.toLowerCase().includes(lowercaseFilter)) {
-        return true;
-      }
-    }
-    return false;
-  };
+  const lowerCaseSearchFilter = searchFilter.toLowerCase();
 
   for (const folder in structure["folders"]) {
     console.log("Checking folder:", folder);
@@ -184,7 +190,8 @@ const DatasetTreeView = ({
 
   if (!datasetStructureJSONObj) {
     // If dataset structure is not available, return null
-    return null;
+    console.log("No dataset structure available");
+    return "No dataset structure available";
   }
 
   let filteredStructure = filterStructure(datasetStructureJSONObj, datasetStructureSearchFilter);
