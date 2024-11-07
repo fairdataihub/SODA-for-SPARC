@@ -505,3 +505,12 @@
 #copy-icon-client-id:hover {
   cursor: pointer;
 }
+
+
+#copy-icon-firewall-docs {
+  margin-left: 5px;
+}
+
+#copy-icon-firewall-docs:hover {
+  cursor: pointer;
+}

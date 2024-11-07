@@ -510,13 +510,16 @@ const initializeSODARenderer = async () => {
   // If they do not match, the app will restart to attempt to fix the issue
   await ensureServerVersionMatchesClientVersion();
 
+  swalShowInfo("Potential Network Issue Detected", blockedMessage);
+
+
   //Refresh the Pennsieve account list if the user has connected their Pennsieve account in the past
   if (hasConnectedAccountWithPennsieve()) {
     // check for external firewall interference (aspirational in that may not be foolproof)
     const pennsieveURL = "https://api.pennsieve.io/discover/datasets";
     const blocked = await clientBlockedByExternalFirewall(pennsieveURL);
     if (blocked) {
-      swalShowInfo("Potential Firewall Interference", blockedMessage);
+      swalShowInfo("Potential Network Issue Detected", blockedMessage);
     }
   }
 
