@@ -525,7 +525,6 @@ const initializeSODARenderer = async () => {
 
   swalShowInfo("Potential Network Issue Detected", blockedMessage);
 
-
   //Refresh the Pennsieve account list if the user has connected their Pennsieve account in the past
   if (hasConnectedAccountWithPennsieve()) {
     // check for external firewall interference (aspirational in that may not be foolproof)
