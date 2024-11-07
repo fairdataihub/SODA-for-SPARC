@@ -26,15 +26,22 @@ const copyClientIdToClipboard = () => {
   window.electron.ipcRenderer.invoke("clipboard-write", docsUrl, "clipboard");
 };
 
-export const blockedMessage = `
-  <p style="text-align:left;">SODA is unable to reach Pennsieve. 
-  If this issue persists it is possible that your network is blocking access to Pennsieve from SODA. 
-  Please refer to the SODA documentation page on resolving this issue by either clicking <a href="https://docs.sodaforsparc.io/how-to/how-to-resolve-network-issues" target="_blank">here</a> or by copying the url to the documentation page with the copy icon below.</p>
+const commonHTML = 
+`<p>Please refer to the SODA documentation page on resolving this issue by either clicking <a href="https://docs.sodaforsparc.io/how-to/how-to-resolve-network-issues" target="_blank">here</a> or by copying the url to the documentation page with the copy icon below.</p>
   
   <div style="display:flex; margin:auto;">
     <p style="margin-right: 10px;">${docsUrl}</p>
     <div><i class="fas fa-copy" id="copy-icon-firewall-docs" click=${copyClientIdToClipboard()}></i></div>
-  </div>`;
+  </div>`
+
+export const blockedMessage = `
+  <p style="text-align:left;">SODA is unable to reach Pennsieve. 
+  If this issue persists it is possible that your network is blocking access to Pennsieve from SODA.
+  </p>
+  ${commonHTML}`;
 
 export const hostFirewallMessage =
-  "SODA is unable to communicate with its server.  If this issue persists it is possible that your network is blocking access. You may need to contact your network administrator for assistance.";
+  `<p text-align:left;>SODA is unable to communicate with its server.  
+    If this issue persists it is possible that your network is blocking access.
+  </p>
+   ${commonHTML}`;

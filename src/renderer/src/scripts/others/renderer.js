@@ -472,14 +472,15 @@ const startupServerAndApiCheck = async () => {
     // notify the user that there may be a firewall issue preventing the client from connecting to the server
     Swal.close();
     await Swal.fire({
-      icon: "error",
-      title: "Potential Firewall Interference",
-      text: hostFirewallMessage,
+      icon: "info",
+      title: "Potential Network Issues",
+      html: hostFirewallMessage,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Restart now",
+      confirmButtonText: "Restart SODA To Try Again",
       allowOutsideClick: false,
       allowEscapeKey: false,
+      width: 800,
     });
     await window.electron.ipcRenderer.invoke("relaunch-soda");
   }
@@ -509,6 +510,18 @@ const initializeSODARenderer = async () => {
   // check if the API versions match
   // If they do not match, the app will restart to attempt to fix the issue
   await ensureServerVersionMatchesClientVersion();
+
+  await Swal.fire({
+    icon: "info",
+    title: "Potential Network Issues",
+    html: hostFirewallMessage,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "Restart SODA To Try Again",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    width: 800,
+  });
 
   swalShowInfo("Potential Network Issue Detected", blockedMessage);
 
