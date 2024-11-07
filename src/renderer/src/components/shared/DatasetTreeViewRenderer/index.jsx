@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Collapse, Text, Stack, UnstyledButton, TextInput, Flex } from "@mantine/core";
-import { useHover, useDebouncedValue } from "@mantine/hooks";
+import { useHover } from "@mantine/hooks";
 import {
   IconFolder,
   IconFolderOpen,
@@ -27,7 +27,7 @@ const ICON_SETTINGS = {
   fileSize: 15,
 };
 
-// Map file extensions to icons
+// File extension icon mapping
 const FILE_ICON_MAP = {
   csv: <IconFileTypeCsv size={ICON_SETTINGS.fileSize} />,
   xls: <IconFileTypeXls size={ICON_SETTINGS.fileSize} />,
@@ -45,41 +45,52 @@ const FILE_ICON_MAP = {
   jp2: <IconPhoto size={ICON_SETTINGS.fileSize} />,
 };
 
-// Retrieve appropriate icon for a file based on its extension
+// Function to get file type icon
 const getFileTypeIcon = (fileName) => {
   const extension = fileName.split(".").pop().toLowerCase();
   return FILE_ICON_MAP[extension] || <IconFile size={ICON_SETTINGS.fileSize} />;
 };
 
 // FileItem component
-const FileItem = ({ name, content, onFileClick, getFileBackgroundColor }) => {
-  const handleClick = () => onFileClick?.(name, content);
-
-  return (
-    <Flex
-      align="center"
-      gap="sm"
-      bg={getFileBackgroundColor?.(content.relativePath) || "transparent"}
-      onClick={handleClick}
-      ml="sm"
-    >
-      {getFileTypeIcon(name)}
-      <Text>{name}</Text>
-    </Flex>
-  );
-};
+const FileItem = ({ name, content, onFileClick, getFileBackgroundColor }) => (
+  <Flex
+    align="center"
+    gap="sm"
+    bg={getFileBackgroundColor?.(content.relativePath) || "transparent"}
+    onClick={() => onFileClick?.(name, content)}
+    ml="sm"
+  >
+    {getFileTypeIcon(name)}
+    <Text>{name}</Text>
+  </Flex>
+);
 
 // FolderItem component
-const FolderItem = ({ name, content, onFolderClick, onFileClick, getFileBackgroundColor }) => {
+const FolderItem = ({
+  name,
+  content,
+  onFolderClick,
+  onFileClick,
+  getFileBackgroundColor,
+  defaultOpenAllFolders,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
+  if (!isOpen) {
+    console.log("FolderItem:", name);
+    console.log("is not open");
+    console.log("but defaultOpenAllFolders is", defaultOpenAllFolders);
+  }
+  useEffect(() => {
+    setIsOpen(defaultOpenAllFolders);
+  }, [defaultOpenAllFolders]);
 
   const toggleFolder = () => setIsOpen((prev) => !prev);
 
   return (
     <Stack gap={1} ml="sm">
       <Flex align="center" gap="sm">
-        {isOpen ? (
+        {isOpen || defaultOpenAllFolders ? (
           <IconFolderOpen
             size={ICON_SETTINGS.folderSize}
             color={ICON_SETTINGS.folderColor}
@@ -94,10 +105,7 @@ const FolderItem = ({ name, content, onFolderClick, onFileClick, getFileBackgrou
         )}
         <UnstyledButton
           ref={ref}
-          style={{
-            backgroundColor: hovered ? "gray" : "transparent",
-            borderRadius: "4px",
-          }}
+          style={{ backgroundColor: hovered ? "gray" : "transparent", borderRadius: "4px" }}
           onClick={() => onFolderClick?.(name, content) || toggleFolder()}
         >
           <Text size="lg">{name}</Text>
@@ -112,6 +120,7 @@ const FolderItem = ({ name, content, onFolderClick, onFileClick, getFileBackgrou
             onFolderClick={onFolderClick}
             onFileClick={onFileClick}
             getFileBackgroundColor={getFileBackgroundColor}
+            defaultOpenAllFolders={defaultOpenAllFolders}
           />
         ))}
         {Object.keys(content?.files || {}).map((fileName) => (
@@ -128,19 +137,21 @@ const FolderItem = ({ name, content, onFolderClick, onFileClick, getFileBackgrou
   );
 };
 
-// Helper functions for search filtering
 const folderObjIsIncludedInSearchFilter = (folderObj, searchFilter) => {
   const relativePath = folderObj["relativePath"].toLowerCase();
+
+  // Check if the folder's relativePath matches the search filter
   if (relativePath.includes(searchFilter)) return true;
 
-  for (const subFolder of Object.keys(folderObj?.folders || {})) {
-    if (folderObjIsIncludedInSearchFilter(folderObj.folders[subFolder], searchFilter)) {
-      return true;
-    }
-  }
-
-  return Object.keys(folderObj?.files || {}).some((fileName) =>
-    fileName.toLowerCase().includes(searchFilter)
+  // Recursively check subfolders
+  return (
+    Object.keys(folderObj?.folders || {}).some((subFolder) =>
+      folderObjIsIncludedInSearchFilter(folderObj.folders[subFolder], searchFilter)
+    ) ||
+    // Check if any files' relativePaths match the search filter
+    Object.keys(folderObj?.files || {}).some((fileName) =>
+      folderObj?.files[fileName]["relativePath"].toLowerCase().includes(searchFilter)
+    )
   );
 };
 
@@ -156,7 +167,6 @@ const filterStructure = (structure, searchFilter) => {
         recursivePrune(folderObj.folders[subFolder]);
       }
     }
-
     for (const fileName of Object.keys(folderObj?.files || {})) {
       if (
         !folderObj?.files[fileName]["relativePath"].toLowerCase().includes(lowerCaseSearchFilter)
@@ -170,8 +180,8 @@ const filterStructure = (structure, searchFilter) => {
   return filteredStructure;
 };
 
-// Main DatasetTreeView component
-const DatasetTreeView = ({
+// Main component
+const DatasetTreeViewRenderer = ({
   onFolderClick,
   onFileClick,
   getFileBackgroundColor,
@@ -213,6 +223,7 @@ const DatasetTreeView = ({
           onFolderClick={onFolderClick}
           onFileClick={onFileClick}
           getFileBackgroundColor={getFileBackgroundColor}
+          defaultOpenAllFolders={datasetStructureSearchFilter !== ""}
         />
       ))}
       {Object.keys(highLevelFolder?.files || {}).map((fileName) => (
@@ -228,4 +239,4 @@ const DatasetTreeView = ({
   );
 };
 
-export default DatasetTreeView;
+export default DatasetTreeViewRenderer;
