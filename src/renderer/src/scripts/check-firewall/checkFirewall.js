@@ -19,8 +19,6 @@ export const clientBlockedByExternalFirewall = async (url) => {
   }
 };
 
-
-
 let docsUrl = "https://docs.sodaforsparc.io/how-to/how-to-resolve-network-issues";
 const copyClientIdToClipboard = () => {
   window.electron.ipcRenderer.invoke("clipboard-write", docsUrl, "clipboard");
