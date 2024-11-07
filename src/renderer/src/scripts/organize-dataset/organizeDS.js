@@ -1588,6 +1588,7 @@ const warningCharacterCheck = (filename) => {
 };
 
 window.getPathSlashCount = () => {
+  console.log(organizeDSglobalPath.value);
   return organizeDSglobalPath.value.trim().split("/").length - 1;
 };
 

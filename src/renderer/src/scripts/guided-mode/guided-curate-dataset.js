@@ -1232,7 +1232,6 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       if (datasetHasSubjects) {
         guidedUnSkipPage("guided-subjects-addition-tab");
-        guidedUnSkipPage("guided-subjects-pooling-tab");
         guidedUnSkipPage("guided-samples-addition-tab");
 
         guidedUnSkipPage("guided-primary-data-organization-tab");
@@ -1242,7 +1241,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedUnSkipPage("guided-create-samples-metadata-tab");
       } else {
         guidedSkipPage("guided-subjects-addition-tab");
-        guidedSkipPage("guided-subjects-pooling-tab");
         guidedSkipPage("guided-samples-addition-tab");
 
         guidedSkipPage("guided-primary-data-organization-tab");
@@ -1286,72 +1284,6 @@ const savePageChanges = async (pageBeingLeftID) => {
           message: "Please add at least one subject",
         });
         throw errorArray;
-      }
-    }
-
-    if (pageBeingLeftID === "guided-subjects-pooling-tab") {
-      const pools =
-        window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
-
-      const userSelectedDatasetHasPools = document
-        .getElementById("guided-button-pool-page-subjects-are-pooled")
-        .classList.contains("selected");
-      const userSelectedDatasetDoesNotHavePools = document
-        .getElementById("guided-button-pool-page-subjects-are-not-pooled")
-        .classList.contains("selected");
-
-      if (!userSelectedDatasetHasPools && !userSelectedDatasetDoesNotHavePools) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate whether or not the dataset contains pools",
-        });
-        throw errorArray;
-      }
-
-      if (userSelectedDatasetHasPools) {
-        if (Object.keys(pools).length === 0) {
-          errorArray.push({
-            type: "notyf",
-            message:
-              "Please add at least one pool or indicate that your dataset does not contain pools.",
-          });
-          throw errorArray;
-        }
-        //delete empty pools
-        for (const pool of Object.keys(pools)) {
-          if (
-            Object.keys(
-              window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][pool]
-            ).length === 0
-          ) {
-            errorArray.push({
-              type: "notyf",
-              message:
-                "Empty data pools are not allowed. Please add at least one subject to each pool or delete the empty pool.",
-            });
-            throw errorArray;
-          }
-        }
-        //Unskip the pool data pages
-        guidedUnSkipPage(`guided-primary-pools-organization-page`);
-        guidedUnSkipPage(`guided-source-pools-organization-page`);
-        guidedUnSkipPage(`guided-derivative-pools-organization-page`);
-      }
-      if (userSelectedDatasetDoesNotHavePools) {
-        if (Object.keys(pools).length > 0) {
-          document.getElementById("guided-button-pool-page-subjects-are-pooled").click();
-          errorArray.push({
-            type: "notyf",
-            message:
-              "Please indicate that your dataset contains pools or delete the pools you have added.",
-          });
-          throw errorArray;
-        }
-
-        //Skip the pool data organization pages
-        guidedSkipPage(`guided-primary-pools-organization-page`);
-        guidedSkipPage(`guided-source-pools-organization-page`);
-        guidedSkipPage(`guided-derivative-pools-organization-page`);
       }
     }
 
@@ -5301,10 +5233,6 @@ window.openPage = async (targetPageID) => {
       renderSubjectsTable();
     }
 
-    if (targetPageID === "guided-subjects-pooling-tab") {
-      renderPoolsTable();
-    }
-
     if (targetPageID === "guided-samples-addition-tab") {
       renderSamplesTable();
     }
@@ -8750,6 +8678,7 @@ const guidedUpdateFolderStructureUI = (folderPathSeperatedBySlashes) => {
   // Update tree view based on the current path
   setTreeViewDatasetStructure(window.datasetStructureJSONObj, arrayPathToNestedJsonToRender);
 };
+
 const getGuidedAdditionalLinks = () => {
   return window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].map(
     (link) => link.link
@@ -11852,12 +11781,8 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
   }
 };
 
-// STOP DELETING HERE
 document.getElementById("guided-button-add-subjects").addEventListener("click", async () => {
   guidedOpenEntityAdditionSwal("subjects");
-});
-document.getElementById("guided-button-add-pools").addEventListener("click", async () => {
-  guidedOpenEntityAdditionSwal("pools");
 });
 
 window.addSubjectSpecificationTableRow = () => {

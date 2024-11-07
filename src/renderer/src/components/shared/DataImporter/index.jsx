@@ -56,10 +56,10 @@ const DataImporter = () => {
 
           <div>
             <Text size="xl" inline>
-              Drag images here or click to select files
+              Drag experimental data here or click to import from your computer
             </Text>
             <Text size="sm" c="dimmed" inline mt={7}>
-              Attach as many files as you like, each file should not exceed 5 MB
+              Additional text
             </Text>
           </div>
         </Group>
