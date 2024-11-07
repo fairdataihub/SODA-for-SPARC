@@ -1,6 +1,6 @@
-import { StrictMode, useState } from "react";
+import { useEffect, useState } from "react";
 import { Collapse, Text, Stack, UnstyledButton, TextInput, Flex } from "@mantine/core";
-import { useHover } from "@mantine/hooks";
+import { useHover, useDebouncedValue } from "@mantine/hooks";
 import {
   IconFolder,
   IconFolderOpen,
@@ -21,57 +21,45 @@ import {
 import useGlobalStore from "../../../stores/globalStore";
 import { setDatasetstructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
 
-// Constants
-const FOLDER_ICON_COLOR = "#ADD8E6";
-const FOLDER_ICON_SIZE = 18;
-const FILE_ICON_SIZE = 15;
-
-// File extension to icon map
-const fileIconMap = {
-  csv: <IconFileTypeCsv size={FILE_ICON_SIZE} />,
-  xls: <IconFileTypeXls size={FILE_ICON_SIZE} />,
-  xlsx: <IconFileTypeXls size={FILE_ICON_SIZE} />,
-  txt: <IconFileTypeTxt size={FILE_ICON_SIZE} />,
-  doc: <IconFileTypeDoc size={FILE_ICON_SIZE} />,
-  docx: <IconFileTypeDocx size={FILE_ICON_SIZE} />,
-  pdf: <IconFileTypePdf size={FILE_ICON_SIZE} />,
-  png: <IconFileTypePng size={FILE_ICON_SIZE} />,
-  jpg: <IconFileTypeJpg size={FILE_ICON_SIZE} />,
-  jpeg: <IconFileTypeJpg size={FILE_ICON_SIZE} />,
-  xml: <IconFileTypeXml size={FILE_ICON_SIZE} />,
-  zip: <IconFileTypeZip size={FILE_ICON_SIZE} />,
-  rar: <IconFileTypeZip size={FILE_ICON_SIZE} />,
-  jp2: <IconPhoto size={FILE_ICON_SIZE} />,
+const ICON_SETTINGS = {
+  folderColor: "#ADD8E6",
+  folderSize: 18,
+  fileSize: 15,
 };
 
-// Retrieve icon based on file extension
+// Map file extensions to icons
+const FILE_ICON_MAP = {
+  csv: <IconFileTypeCsv size={ICON_SETTINGS.fileSize} />,
+  xls: <IconFileTypeXls size={ICON_SETTINGS.fileSize} />,
+  xlsx: <IconFileTypeXls size={ICON_SETTINGS.fileSize} />,
+  txt: <IconFileTypeTxt size={ICON_SETTINGS.fileSize} />,
+  doc: <IconFileTypeDoc size={ICON_SETTINGS.fileSize} />,
+  docx: <IconFileTypeDocx size={ICON_SETTINGS.fileSize} />,
+  pdf: <IconFileTypePdf size={ICON_SETTINGS.fileSize} />,
+  png: <IconFileTypePng size={ICON_SETTINGS.fileSize} />,
+  jpg: <IconFileTypeJpg size={ICON_SETTINGS.fileSize} />,
+  jpeg: <IconFileTypeJpg size={ICON_SETTINGS.fileSize} />,
+  xml: <IconFileTypeXml size={ICON_SETTINGS.fileSize} />,
+  zip: <IconFileTypeZip size={ICON_SETTINGS.fileSize} />,
+  rar: <IconFileTypeZip size={ICON_SETTINGS.fileSize} />,
+  jp2: <IconPhoto size={ICON_SETTINGS.fileSize} />,
+};
+
+// Retrieve appropriate icon for a file based on its extension
 const getFileTypeIcon = (fileName) => {
   const extension = fileName.split(".").pop().toLowerCase();
-  return fileIconMap[extension] || <IconFile size={FILE_ICON_SIZE} />;
+  return FILE_ICON_MAP[extension] || <IconFile size={ICON_SETTINGS.fileSize} />;
 };
 
 // FileItem component
 const FileItem = ({ name, content, onFileClick, getFileBackgroundColor }) => {
-  const handleClick = () => {
-    if (onFileClick) {
-      onFileClick(name, content);
-    } else {
-      console.log("File clicked:", name, content); // Default action if no handler is provided
-    }
-  };
-
-  const handleFileBackgroundColor = (content) => {
-    if (getFileBackgroundColor) {
-      return getFileBackgroundColor(content.relativePath);
-    }
-    return "transparent";
-  };
+  const handleClick = () => onFileClick?.(name, content);
 
   return (
     <Flex
       align="center"
       gap="sm"
-      bg={handleFileBackgroundColor(content)}
+      bg={getFileBackgroundColor?.(content.relativePath) || "transparent"}
       onClick={handleClick}
       ml="sm"
     >
@@ -93,12 +81,16 @@ const FolderItem = ({ name, content, onFolderClick, onFileClick, getFileBackgrou
       <Flex align="center" gap="sm">
         {isOpen ? (
           <IconFolderOpen
-            size={FOLDER_ICON_SIZE}
-            color={FOLDER_ICON_COLOR}
+            size={ICON_SETTINGS.folderSize}
+            color={ICON_SETTINGS.folderColor}
             onClick={toggleFolder}
           />
         ) : (
-          <IconFolder size={FOLDER_ICON_SIZE} color={FOLDER_ICON_COLOR} onClick={toggleFolder} />
+          <IconFolder
+            size={ICON_SETTINGS.folderSize}
+            color={ICON_SETTINGS.folderColor}
+            onClick={toggleFolder}
+          />
         )}
         <UnstyledButton
           ref={ref}
@@ -106,33 +98,27 @@ const FolderItem = ({ name, content, onFolderClick, onFileClick, getFileBackgrou
             backgroundColor: hovered ? "gray" : "transparent",
             borderRadius: "4px",
           }}
-          onClick={() => {
-            if (onFolderClick) {
-              onFolderClick(name, content);
-            } else {
-              toggleFolder(); // Default action if no handler is provided
-            }
-          }}
+          onClick={() => onFolderClick?.(name, content) || toggleFolder()}
         >
           <Text size="lg">{name}</Text>
         </UnstyledButton>
       </Flex>
       <Collapse in={isOpen}>
-        {content.filteredFolders?.map(([folderName, folderContent]) => (
+        {Object.keys(content?.folders || {}).map((folderName) => (
           <FolderItem
             key={folderName}
             name={folderName}
-            content={folderContent}
+            content={content.folders[folderName]}
             onFolderClick={onFolderClick}
             onFileClick={onFileClick}
             getFileBackgroundColor={getFileBackgroundColor}
           />
         ))}
-        {content.filteredFiles?.map(([fileName, fileContent]) => (
+        {Object.keys(content?.files || {}).map((fileName) => (
           <FileItem
             key={fileName}
             name={fileName}
-            content={fileContent}
+            content={content.files[fileName]}
             onFileClick={onFileClick}
             getFileBackgroundColor={getFileBackgroundColor}
           />
@@ -142,39 +128,49 @@ const FolderItem = ({ name, content, onFolderClick, onFileClick, getFileBackgrou
   );
 };
 
-const checkIfFolderContainsSearchFilter = (folderObj, lowerCaseSearchFilter) => {
+// Helper functions for search filtering
+const folderObjIsIncludedInSearchFilter = (folderObj, searchFilter) => {
   const relativePath = folderObj["relativePath"].toLowerCase();
-  if (relativePath.includes(lowerCaseSearchFilter)) {
-    return true;
-  }
+  if (relativePath.includes(searchFilter)) return true;
 
-  // Check if any folder matches the filter
-  for (const subFolder of Object.values(folderObj["folders"])) {
-    if (checkIfFolderContainsSearchFilter(subFolder)) {
+  for (const subFolder of Object.keys(folderObj?.folders || {})) {
+    if (folderObjIsIncludedInSearchFilter(folderObj.folders[subFolder], searchFilter)) {
       return true;
     }
   }
 
-  // Check if any file matches the filter
-  for (const fileName of Object.values(folderObj["files"])) {
-    if (fileName.toLowerCase().includes(lowerCaseSearchFilter)) {
-      return true;
-    }
-  }
-
-  return false;
+  return Object.keys(folderObj?.files || {}).some((fileName) =>
+    fileName.toLowerCase().includes(searchFilter)
+  );
 };
 
 const filterStructure = (structure, searchFilter) => {
-  console.log("Filtering structure:");
-  console.log(JSON.stringify(structure, null, 2));
+  const filteredStructure = JSON.parse(JSON.stringify(structure));
   const lowerCaseSearchFilter = searchFilter.toLowerCase();
 
-  for (const folder in structure["folders"]) {
-    console.log("Checking folder:", folder);
-    console.log(checkIfFolderContainsSearchFilter(structure["folders"][folder]));
-  }
+  const recursivePrune = (folderObj) => {
+    for (const subFolder of Object.keys(folderObj?.folders || {})) {
+      if (!folderObjIsIncludedInSearchFilter(folderObj.folders[subFolder], lowerCaseSearchFilter)) {
+        delete folderObj.folders[subFolder];
+      } else {
+        recursivePrune(folderObj.folders[subFolder]);
+      }
+    }
+
+    for (const fileName of Object.keys(folderObj?.files || {})) {
+      if (
+        !folderObj?.files[fileName]["relativePath"].toLowerCase().includes(lowerCaseSearchFilter)
+      ) {
+        delete folderObj.files[fileName];
+      }
+    }
+  };
+
+  recursivePrune(filteredStructure);
+  return filteredStructure;
 };
+
+// Main DatasetTreeView component
 const DatasetTreeView = ({
   onFolderClick,
   onFileClick,
@@ -184,25 +180,21 @@ const DatasetTreeView = ({
   const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
   const datasetStructureSearchFilter = useGlobalStore(
     (state) => state.datasetStructureSearchFilter
-  );
+  ).toLowerCase();
 
   const handleSearchChange = (event) => setDatasetstructureSearchFilter(event.target.value);
 
   if (!datasetStructureJSONObj) {
-    // If dataset structure is not available, return null
     console.log("No dataset structure available");
     return "No dataset structure available";
   }
-  const lowerCaseSearchFilter = searchFilter.toLowerCase();
 
-  let filteredStructure = filterStructure(datasetStructureJSONObj, datasetStructureSearchFilter);
-  console.log("Filtered structure:", filteredStructure);
+  const filteredStructure = filterStructure(
+    JSON.parse(JSON.stringify(datasetStructureJSONObj)),
+    datasetStructureSearchFilter
+  );
 
-  if (highLevelFolder && filteredStructure) {
-    console.log(filteredStructure);
-    console.log(highLevelFolder);
-    filteredStructure = filteredStructure["folders"][highLevelFolder];
-  }
+  console.log("Filtered structure:", JSON.stringify(filteredStructure, null, 2));
 
   return (
     <Stack gap={1}>
@@ -213,21 +205,21 @@ const DatasetTreeView = ({
         onChange={handleSearchChange}
         leftSection={<IconSearch stroke={1.5} />}
       />
-      {filteredStructure?.filteredFolders?.map(([folderName, folderContent]) => (
+      {Object.keys(filteredStructure?.folders || {}).map((folderName) => (
         <FolderItem
           key={folderName}
           name={folderName}
-          content={folderContent}
+          content={filteredStructure.folders[folderName]}
           onFolderClick={onFolderClick}
           onFileClick={onFileClick}
           getFileBackgroundColor={getFileBackgroundColor}
         />
       ))}
-      {filteredStructure?.filteredFiles?.map(([fileName, fileContent]) => (
+      {Object.keys(highLevelFolder?.files || {}).map((fileName) => (
         <FileItem
           key={fileName}
           name={fileName}
-          content={fileContent}
+          content={highLevelFolder.files[fileName]}
           onFileClick={onFileClick}
           getFileBackgroundColor={getFileBackgroundColor}
         />

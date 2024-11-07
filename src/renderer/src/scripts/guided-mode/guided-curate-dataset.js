@@ -5312,6 +5312,12 @@ window.openPage = async (targetPageID) => {
     if (targetPageID === "guided-unstructured-data-import-tab") {
       guidedUpdateFolderStructureUI("primary/");
     }
+    if (targetPageID === "guided-denote-derivative-data-tab") {
+      // Set the folder structure as the primary folder since the user is
+      // denoting data as derivative which will be moved to the derivative folder
+      guidedUpdateFolderStructureUI("primary/");
+    }
+
     if (targetPageID === "guided-primary-data-organization-tab") {
       openSubPageNavigation(targetPageID);
     }
@@ -5464,7 +5470,7 @@ window.openPage = async (targetPageID) => {
     if (targetPageID === "guided-manifest-subject-entity-selector-tab") {
       //
       setEntityList(window.getExistingSubjectNames());
-      setTreeViewDatasetStructure(window.datasetStructureJSONObj);
+      setTreeViewDatasetStructure(window.datasetStructureJSONObj, []);
       setEntityType("subjects");
     }
 
@@ -8711,43 +8717,39 @@ const attachGuidedMethodsToSodaJSONObj = () => {
 
 const guidedUpdateFolderStructureUI = (folderPathSeperatedBySlashes) => {
   console.log("guidedUpdateFolderStructureUI called");
-  console.log("folderPathSeperatedBySlashes", folderPathSeperatedBySlashes);
+  console.log("Provided folder path:", folderPathSeperatedBySlashes);
 
   const fileExplorer = document.getElementById("guided-file-explorer-elements");
   fileExplorer.classList.remove("file-explorer-transition");
 
-  // Update the global path input to show the selected folder path
-  const globalPathInput = $("#guided-input-global-path");
-  globalPathInput.val(`dataset_root/${folderPathSeperatedBySlashes}`);
-  window.organizeDSglobalPath = globalPathInput[0];
-  console.log("window.organizeDSglobalPath", window.organizeDSglobalPath);
+  // Directly assign the folder path to a global variable for use without setting it to the DOM
+  const fullPath = `dataset_root/${folderPathSeperatedBySlashes}`;
+  window.organizeDSglobalPath = fullPath;
+  console.log("Updated global path:", window.organizeDSglobalPath);
 
-  // Filter and format the path for the dataset structure JSON object
-  const filtered = window.getGlobalPath(window.organizeDSglobalPath);
-  console.log("filtered", filtered);
+  // Filter and format the path for JSON traversal
+  const filteredPath = window.getGlobalPath({ value: fullPath }); // Mock input for compatibility
+  const arrayPathToNestedJsonToRender = filteredPath.slice(1);
+  console.log("Filtered path to render:", arrayPathToNestedJsonToRender);
 
-  window.organizeDSglobalPath.value = `${filtered.join("/")}/`;
-  console.log("window.organizeDSglobalPath.value", window.organizeDSglobalPath.value);
+  // Retrieve content from the dataset structure JSON using the filtered path
+  const datasetContent = getDatasetStructureJsonFolderContentsAtNestedArrayPath(
+    arrayPathToNestedJsonToRender
+  );
+  console.log("Retrieved dataset structure content:", datasetContent);
 
-  // Traverse dataset structure based on the filtered path
-  const datasetStructureJsonValueAtFilteredPath =
-    getDatasetStructureJsonFolderContentsAtNestedArrayPath(filtered.slice(1));
-  console.log("datasetStructureJsonValueAtFilteredPath:", datasetStructureJsonValueAtFilteredPath);
-
-  // Populate the UI with files and folders based on the selected path
-  window.listItems(datasetStructureJsonValueAtFilteredPath, "#items", 500, true);
+  // Update UI with the retrieved files and folders
+  window.listItems(datasetContent, "#items", 500, true);
   window.getInFolder(
     ".single-item",
     "#items",
     window.organizeDSglobalPath,
     window.datasetStructureJSONObj
   );
-  setTreeViewDatasetStructure(
-    datasetStructureJsonValueAtFilteredPath,
-    folderPathSeperatedBySlashes
-  );
-};
 
+  // Update tree view based on the current path
+  setTreeViewDatasetStructure(window.datasetStructureJSONObj, arrayPathToNestedJsonToRender);
+};
 const getGuidedAdditionalLinks = () => {
   return window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].map(
     (link) => link.link
