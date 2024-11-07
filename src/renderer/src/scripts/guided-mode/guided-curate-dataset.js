@@ -8658,7 +8658,6 @@ const guidedUpdateFolderStructureUI = (folderPathSeperatedBySlashes) => {
   console.log("Set global input path to:", `dataset_root/${folderPathSeperatedBySlashes}`);
 
   window.organizeDSglobalPath = $("#guided-input-global-path")[0];
-  console.log("Updated window.organizeDSglobalPath reference.");
 
   // Filter and format the path using the global path function
   const filtered = window.getGlobalPath(window.organizeDSglobalPath);
