@@ -8642,41 +8642,57 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
   };
 };
-
 const guidedUpdateFolderStructureUI = (folderPathSeperatedBySlashes) => {
-  console.log("guidedUpdateFolderStructureUI called");
-  console.log("Provided folder path:", folderPathSeperatedBySlashes);
+  console.log("Function called: guidedUpdateFolderStructureUI");
+  console.log("Input - folder path (separated by slashes):", folderPathSeperatedBySlashes);
 
   const fileExplorer = document.getElementById("guided-file-explorer-elements");
+  console.log("File explorer element retrieved:", fileExplorer);
+
+  // Remove transition class to reset animation or styles
   fileExplorer.classList.remove("file-explorer-transition");
+  console.log("Removed 'file-explorer-transition' class from file explorer.");
 
-  // Directly assign the folder path to a global variable for use without setting it to the DOM
-  const fullPath = `dataset_root/${folderPathSeperatedBySlashes}`;
-  window.organizeDSglobalPath = fullPath;
-  console.log("Updated global path:", window.organizeDSglobalPath);
+  // Update the global path input value with the new path
+  $("#guided-input-global-path").val(`dataset_root/${folderPathSeperatedBySlashes}`);
+  console.log("Set global input path to:", `dataset_root/${folderPathSeperatedBySlashes}`);
 
-  // Filter and format the path for JSON traversal
-  const filteredPath = window.getGlobalPath({ value: fullPath }); // Mock input for compatibility
-  const arrayPathToNestedJsonToRender = filteredPath.slice(1);
-  console.log("Filtered path to render:", arrayPathToNestedJsonToRender);
+  window.organizeDSglobalPath = $("#guided-input-global-path")[0];
+  console.log("Updated window.organizeDSglobalPath reference.");
 
-  // Retrieve content from the dataset structure JSON using the filtered path
+  // Filter and format the path using the global path function
+  const filtered = window.getGlobalPath(window.organizeDSglobalPath);
+  console.log("Filtered path from getGlobalPath:", filtered);
+
+  window.organizeDSglobalPath.value = `${filtered.join("/")}/`;
+  console.log("Set window.organizeDSglobalPath.value to:", window.organizeDSglobalPath.value);
+
+  // Prepare the path array for nested JSON retrieval
+  const arrayPathToNestedJsonToRender = filtered.slice(1);
+  console.log("Path array for JSON content retrieval:", arrayPathToNestedJsonToRender);
+
+  // Retrieve content at the nested path in the dataset structure
   const datasetContent = getDatasetStructureJsonFolderContentsAtNestedArrayPath(
     arrayPathToNestedJsonToRender
   );
-  console.log("Retrieved dataset structure content:", datasetContent);
+  console.log("Retrieved dataset content at nested path:", datasetContent);
 
-  // Update UI with the retrieved files and folders
+  // Update the UI with the files and folders retrieved
   window.listItems(datasetContent, "#items", 500, true);
+  console.log("Called window.listItems to update the UI.");
+
+  // Set up click behavior for folder items in the list
   window.getInFolder(
     ".single-item",
     "#items",
     window.organizeDSglobalPath,
     window.datasetStructureJSONObj
   );
+  console.log("Called window.getInFolder for interactive folder behavior.");
 
-  // Update tree view based on the current path
+  // Refresh the tree view to match the current folder structure
   setTreeViewDatasetStructure(window.datasetStructureJSONObj, arrayPathToNestedJsonToRender);
+  console.log("Updated tree view structure based on current path.");
 };
 
 const getGuidedAdditionalLinks = () => {
