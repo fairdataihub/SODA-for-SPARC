@@ -1,4 +1,5 @@
 import axios from "axios";
+import { clientError } from "../others/http-error-handler/error-handler";
 
 /**
  * This function checks if the client is blocked by an external firewall.
@@ -13,6 +14,7 @@ export const clientBlockedByExternalFirewall = async (url) => {
     await axios.get(url);
     return false;
   } catch (error) {
+    clientError(error);
     return true;
   }
 };
