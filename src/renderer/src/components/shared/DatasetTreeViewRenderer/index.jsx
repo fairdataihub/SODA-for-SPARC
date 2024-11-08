@@ -155,31 +155,6 @@ const folderObjIsIncludedInSearchFilter = (folderObj, searchFilter) => {
   );
 };
 
-const filterStructure = (structure, searchFilter) => {
-  const filteredStructure = JSON.parse(JSON.stringify(structure));
-  const lowerCaseSearchFilter = searchFilter.toLowerCase();
-
-  const recursivePrune = (folderObj) => {
-    for (const subFolder of Object.keys(folderObj?.folders || {})) {
-      if (!folderObjIsIncludedInSearchFilter(folderObj.folders[subFolder], lowerCaseSearchFilter)) {
-        delete folderObj.folders[subFolder];
-      } else {
-        recursivePrune(folderObj.folders[subFolder]);
-      }
-    }
-    for (const fileName of Object.keys(folderObj?.files || {})) {
-      if (
-        !folderObj?.files[fileName]["relativePath"].toLowerCase().includes(lowerCaseSearchFilter)
-      ) {
-        delete folderObj.files[fileName];
-      }
-    }
-  };
-
-  recursivePrune(filteredStructure);
-  return filteredStructure;
-};
-
 // Main component
 const DatasetTreeViewRenderer = ({
   onFolderClick,
@@ -187,24 +162,16 @@ const DatasetTreeViewRenderer = ({
   getFileBackgroundColor,
   highLevelFolder,
 }) => {
-  const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
+  const renderDatasetStructureJSONObj = useGlobalStore(
+    (state) => state.renderDatasetStructureJSONObj
+  );
   const datasetStructureSearchFilter = useGlobalStore(
     (state) => state.datasetStructureSearchFilter
-  ).toLowerCase();
+  );
 
   const handleSearchChange = (event) => setDatasetstructureSearchFilter(event.target.value);
 
-  if (!datasetStructureJSONObj) {
-    console.log("No dataset structure available");
-    return "No dataset structure available";
-  }
-
-  const filteredStructure = filterStructure(
-    JSON.parse(JSON.stringify(datasetStructureJSONObj)),
-    datasetStructureSearchFilter
-  );
-
-  console.log("Filtered structure:", JSON.stringify(filteredStructure, null, 2));
+  console.log("Filtered structure:", JSON.stringify(renderDatasetStructureJSONObj, null, 2));
 
   return (
     <Stack gap={1}>
@@ -215,26 +182,30 @@ const DatasetTreeViewRenderer = ({
         onChange={handleSearchChange}
         leftSection={<IconSearch stroke={1.5} />}
       />
-      {Object.keys(filteredStructure?.folders || {}).map((folderName) => (
-        <FolderItem
-          key={folderName}
-          name={folderName}
-          content={filteredStructure.folders[folderName]}
-          onFolderClick={onFolderClick}
-          onFileClick={onFileClick}
-          getFileBackgroundColor={getFileBackgroundColor}
-          defaultOpenAllFolders={datasetStructureSearchFilter !== ""}
-        />
-      ))}
-      {Object.keys(highLevelFolder?.files || {}).map((fileName) => (
-        <FileItem
-          key={fileName}
-          name={fileName}
-          content={highLevelFolder.files[fileName]}
-          onFileClick={onFileClick}
-          getFileBackgroundColor={getFileBackgroundColor}
-        />
-      ))}
+      {renderDatasetStructureJSONObj && (
+        <>
+          {Object.keys(renderDatasetStructureJSONObj?.folders || {}).map((folderName) => (
+            <FolderItem
+              key={folderName}
+              name={folderName}
+              content={renderDatasetStructureJSONObj.folders[folderName]}
+              onFolderClick={onFolderClick}
+              onFileClick={onFileClick}
+              getFileBackgroundColor={getFileBackgroundColor}
+              defaultOpenAllFolders={datasetStructureSearchFilter !== ""}
+            />
+          ))}
+          {Object.keys(renderDatasetStructureJSONObj?.files || {}).map((fileName) => (
+            <FileItem
+              key={fileName}
+              name={fileName}
+              content={renderDatasetStructureJSONObj.files[fileName]}
+              onFileClick={onFileClick}
+              getFileBackgroundColor={getFileBackgroundColor}
+            />
+          ))}
+        </>
+      )}
     </Stack>
   );
 };

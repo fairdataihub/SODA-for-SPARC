@@ -68,6 +68,7 @@ import canSmiley from "/img/can-smiley.png";
 import canSad from "/img/can-sad.png";
 
 import useGlobalStore from "../../stores/globalStore";
+import { setTreeViewDatasetStructure } from "../../stores/slices/datasetTreeViewSlice";
 import {
   resetPennsieveAgentCheckState,
   setPennsieveAgentCheckSuccessful,
@@ -4738,6 +4739,9 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
       window.organizeDSglobalPath,
       window.datasetStructureJSONObj
     );
+    console.log("currentPathArray", currentPathArray.slice(1));
+
+    setTreeViewDatasetStructure(window.datasetStructureJSONObj, currentPathArray.slice(1));
 
     // Step 4: Update successful, show success message
     window.notyf.open({

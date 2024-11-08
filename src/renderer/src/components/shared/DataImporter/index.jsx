@@ -1,6 +1,6 @@
 import { Group, Text, rem } from "@mantine/core";
 import { Dropzone } from "@mantine/dropzone";
-import { IconUpload, IconPhoto, IconX } from "@tabler/icons-react";
+import { IconUpload, IconFile, IconX } from "@tabler/icons-react";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 import useGlobalStore from "../../../stores/globalStore";
 import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
@@ -34,7 +34,7 @@ const DataImporter = () => {
         onReject={(files) => console.log("Rejected files:", files)}
         onDragOver={allowDrop}
       >
-        <Group justify="center" gap="xl" mih={220} style={{ pointerEvents: "none" }}>
+        <Group justify="center" gap="xl" mih={120} style={{ pointerEvents: "none" }}>
           <Dropzone.Accept>
             <IconUpload
               style={{ width: rem(52), height: rem(52), color: "var(--mantine-color-blue-6)" }}
@@ -48,7 +48,7 @@ const DataImporter = () => {
             />
           </Dropzone.Reject>
           <Dropzone.Idle>
-            <IconPhoto
+            <IconFile
               style={{ width: rem(52), height: rem(52), color: "var(--mantine-color-dimmed)" }}
               stroke={1.5}
             />
