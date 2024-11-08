@@ -513,6 +513,7 @@ const initializeSODARenderer = async () => {
 initializeSODARenderer();
 
 const abortPennsieveAgentCheck = (pennsieveAgentStatusDivId) => {
+  console.log("CHange for build");
   setPennsieveAgentCheckSuccessful(false);
   if (!pennsieveAgentStatusDivId) {
     return;
