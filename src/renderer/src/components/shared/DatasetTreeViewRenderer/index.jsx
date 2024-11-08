@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Collapse, Text, Stack, UnstyledButton, TextInput, Flex } from "@mantine/core";
-import { useHover } from "@mantine/hooks";
+import { useHover, useDebouncedValue } from "@mantine/hooks";
 import {
   IconFolder,
   IconFolderOpen,
@@ -65,7 +65,6 @@ const FileItem = ({ name, content, onFileClick, getFileBackgroundColor }) => (
   </Flex>
 );
 
-// FolderItem component
 const FolderItem = ({
   name,
   content,
@@ -76,16 +75,16 @@ const FolderItem = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
-  if (!isOpen) {
-    console.log("FolderItem:", name);
-    console.log("is not open");
-    console.log("but defaultOpenAllFolders is", defaultOpenAllFolders);
-  }
+
   useEffect(() => {
-    setIsOpen(defaultOpenAllFolders);
+    if (defaultOpenAllFolders) {
+      setIsOpen(true);
+    }
   }, [defaultOpenAllFolders]);
 
-  const toggleFolder = () => setIsOpen((prev) => !prev);
+  const toggleFolder = () => {
+    setIsOpen((prev) => !prev);
+  };
 
   return (
     <Stack gap={1} ml="sm">
@@ -106,32 +105,39 @@ const FolderItem = ({
         <UnstyledButton
           ref={ref}
           style={{ backgroundColor: hovered ? "gray" : "transparent", borderRadius: "4px" }}
-          onClick={() => onFolderClick?.(name, content) || toggleFolder()}
+          onClick={() => {
+            toggleFolder();
+            if (onFolderClick) onFolderClick(name, content);
+          }}
         >
           <Text size="lg">{name}</Text>
         </UnstyledButton>
       </Flex>
       <Collapse in={isOpen}>
-        {Object.keys(content?.folders || {}).map((folderName) => (
-          <FolderItem
-            key={folderName}
-            name={folderName}
-            content={content.folders[folderName]}
-            onFolderClick={onFolderClick}
-            onFileClick={onFileClick}
-            getFileBackgroundColor={getFileBackgroundColor}
-            defaultOpenAllFolders={defaultOpenAllFolders}
-          />
-        ))}
-        {Object.keys(content?.files || {}).map((fileName) => (
-          <FileItem
-            key={fileName}
-            name={fileName}
-            content={content.files[fileName]}
-            onFileClick={onFileClick}
-            getFileBackgroundColor={getFileBackgroundColor}
-          />
-        ))}
+        {isOpen && ( // Only map and render children when the folder is open
+          <>
+            {Object.keys(content?.folders || {}).map((folderName) => (
+              <FolderItem
+                key={folderName}
+                name={folderName}
+                content={content.folders[folderName]}
+                onFolderClick={onFolderClick}
+                onFileClick={onFileClick}
+                getFileBackgroundColor={getFileBackgroundColor}
+                defaultOpenAllFolders={defaultOpenAllFolders}
+              />
+            ))}
+            {Object.keys(content?.files || {}).map((fileName) => (
+              <FileItem
+                key={fileName}
+                name={fileName}
+                content={content.files[fileName]}
+                onFileClick={onFileClick}
+                getFileBackgroundColor={getFileBackgroundColor}
+              />
+            ))}
+          </>
+        )}
       </Collapse>
     </Stack>
   );
@@ -155,21 +161,25 @@ const folderObjIsIncludedInSearchFilter = (folderObj, searchFilter) => {
   );
 };
 
-// Main component
-const DatasetTreeViewRenderer = ({
-  onFolderClick,
-  onFileClick,
-  getFileBackgroundColor,
-  highLevelFolder,
-}) => {
+const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getFileBackgroundColor }) => {
   const renderDatasetStructureJSONObj = useGlobalStore(
     (state) => state.renderDatasetStructureJSONObj
   );
+  const [localSearch, setLocalSearch] = useState(""); // Local state for immediate input
+  const [debouncedSearch] = useDebouncedValue(localSearch, 200);
+
+  // Sync debounced value with the store when it changes
+  useEffect(() => {
+    setDatasetstructureSearchFilter(debouncedSearch);
+  }, [debouncedSearch]);
+
+  const handleSearchChange = (event) => {
+    setLocalSearch(event.target.value); // Update local state on input change
+  };
+
   const datasetStructureSearchFilter = useGlobalStore(
     (state) => state.datasetStructureSearchFilter
   );
-
-  const handleSearchChange = (event) => setDatasetstructureSearchFilter(event.target.value);
 
   console.log("Filtered structure:", JSON.stringify(renderDatasetStructureJSONObj, null, 2));
 
@@ -178,7 +188,7 @@ const DatasetTreeViewRenderer = ({
       <TextInput
         label="Search files and folders:"
         placeholder="Search files and folders..."
-        value={datasetStructureSearchFilter}
+        value={localSearch}
         onChange={handleSearchChange}
         leftSection={<IconSearch stroke={1.5} />}
       />
@@ -192,7 +202,7 @@ const DatasetTreeViewRenderer = ({
               onFolderClick={onFolderClick}
               onFileClick={onFileClick}
               getFileBackgroundColor={getFileBackgroundColor}
-              defaultOpenAllFolders={datasetStructureSearchFilter !== ""}
+              defaultOpenAllFolders={localSearch !== ""}
             />
           ))}
           {Object.keys(renderDatasetStructureJSONObj?.files || {}).map((fileName) => (
