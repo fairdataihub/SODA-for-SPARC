@@ -30,6 +30,11 @@ const ManifestEntitySelector = () => {
     return !filesEntity ? "transparent" : filesEntity === activeEntity ? "#D0E8FF" : "#F2F2F2";
   };
 
+  const getFolderBackgroundColor = (folderRelativePath) => {
+    const foldersEntity = getEntityForRelativePath(folderRelativePath);
+    return !foldersEntity ? "transparent" : foldersEntity === activeEntity ? "#D0E8FF" : "#F2F2F2";
+  };
+
   return (
     <FullWidthContainer>
       <Grid gutter="lg">
@@ -62,6 +67,7 @@ const ManifestEntitySelector = () => {
               <DatasetTreeViewRenderer
                 onFolderClick={handleFolderClick}
                 onFileClick={handleFileClick}
+                getFolderBackgroundColor={getFolderBackgroundColor}
                 getFileBackgroundColor={getFileBackgroundColor}
               />
             </Paper>

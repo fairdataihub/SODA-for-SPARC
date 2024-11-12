@@ -1,5 +1,14 @@
-import { useState } from "react";
-import { Collapse, Text, Stack, UnstyledButton, TextInput, Flex } from "@mantine/core";
+import { useState, useEffect } from "react";
+import {
+  Collapse,
+  Text,
+  Stack,
+  UnstyledButton,
+  TextInput,
+  Flex,
+  Button,
+  Paper,
+} from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 import {
   IconFolder,
@@ -70,25 +79,31 @@ const FolderItem = ({
   content,
   onFolderClick,
   onFileClick,
+  getFolderBackgroundColor,
   getFileBackgroundColor,
-  defaultOpenAllFolders,
+  datasetStructureSearchFilter,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
+
+  useEffect(() => {
+    if (datasetStructureSearchFilter !== "") {
+      setIsOpen(true);
+    }
+  }, [datasetStructureSearchFilter]);
 
   const toggleFolder = () => {
     setIsOpen((prev) => !prev);
   };
 
+  const isFolderEmpty =
+    Object.keys(content.folders || {}).length === 0 &&
+    Object.keys(content.files || {}).length === 0;
+
   return (
     <Stack gap={1} ml="sm">
       <Flex align="center" gap="sm">
-        {isOpen ||
-        (defaultOpenAllFolders &&
-          !(
-            Object.keys(content["folders"]).length === 0 &&
-            Object.keys(content["files"].length === 0)
-          )) ? (
+        {isOpen ? (
           <IconFolderOpen
             size={ICON_SETTINGS.folderSize}
             color={ICON_SETTINGS.folderColor}
@@ -103,7 +118,9 @@ const FolderItem = ({
         )}
         <UnstyledButton
           ref={ref}
-          style={{ backgroundColor: hovered ? "gray" : "transparent", borderRadius: "4px" }}
+          style={{ borderRadius: "4px" }}
+          px="2"
+          bg={getFileBackgroundColor?.(content.relativePath) || "transparent"}
           onClick={() => {
             toggleFolder();
             if (onFolderClick) onFolderClick(name, content);
@@ -113,7 +130,7 @@ const FolderItem = ({
         </UnstyledButton>
       </Flex>
       <Collapse in={isOpen}>
-        {isOpen && ( // Only map and render children when the folder is open
+        {isOpen && !isFolderEmpty && (
           <>
             {Object.keys(content?.folders || {}).map((folderName) => (
               <FolderItem
@@ -122,8 +139,9 @@ const FolderItem = ({
                 content={content.folders[folderName]}
                 onFolderClick={onFolderClick}
                 onFileClick={onFileClick}
+                getFolderBackgroundColor={getFolderBackgroundColor}
                 getFileBackgroundColor={getFileBackgroundColor}
-                defaultOpenAllFolders={defaultOpenAllFolders}
+                datasetStructureSearchFilter={datasetStructureSearchFilter}
               />
             ))}
             {Object.keys(content?.files || {}).map((fileName) => (
@@ -142,28 +160,20 @@ const FolderItem = ({
   );
 };
 
-const folderObjIsIncludedInSearchFilter = (folderObj, searchFilter) => {
-  const relativePath = folderObj["relativePath"].toLowerCase();
-
-  // Check if the folder's relativePath matches the search filter
-  if (relativePath.includes(searchFilter)) return true;
-
-  // Recursively check subfolders
-  return (
-    Object.keys(folderObj?.folders || {}).some((subFolder) =>
-      folderObjIsIncludedInSearchFilter(folderObj.folders[subFolder], searchFilter)
-    ) ||
-    // Check if any files' relativePaths match the search filter
-    Object.keys(folderObj?.files || {}).some((fileName) =>
-      folderObj?.files[fileName]["relativePath"].toLowerCase().includes(searchFilter)
-    )
-  );
-};
-
-const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getFileBackgroundColor }) => {
+const DatasetTreeViewRenderer = ({
+  onFolderClick,
+  onFileClick,
+  getFolderBackgroundColor,
+  getFileBackgroundColor,
+}) => {
   const renderDatasetStructureJSONObj = useGlobalStore(
     (state) => state.renderDatasetStructureJSONObj
   );
+
+  const renderObjIsEmpty =
+    !renderDatasetStructureJSONObj ||
+    (Object.keys(renderDatasetStructureJSONObj?.folders).length === 0 &&
+      Object.keys(renderDatasetStructureJSONObj?.files).length === 0);
 
   const handleSearchChange = (event) => {
     console.log("Search filter set:", event.target.value);
@@ -175,39 +185,50 @@ const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getFileBackground
   );
 
   return (
-    <Stack gap={1} style={{ maxHeight: 400, overflowY: "auto" }}>
-      <TextInput
-        label="Search files and folders:"
-        placeholder="Search files and folders..."
-        value={datasetStructureSearchFilter}
-        onChange={handleSearchChange}
-        leftSection={<IconSearch stroke={1.5} />}
-      />
-      {renderDatasetStructureJSONObj && (
-        <>
-          {Object.keys(renderDatasetStructureJSONObj?.folders || {}).map((folderName) => (
-            <FolderItem
-              key={folderName}
-              name={folderName}
-              content={renderDatasetStructureJSONObj.folders[folderName]}
-              onFolderClick={onFolderClick}
-              onFileClick={onFileClick}
-              getFileBackgroundColor={getFileBackgroundColor}
-              defaultOpenAllFolders={datasetStructureSearchFilter !== ""}
-            />
-          ))}
-          {Object.keys(renderDatasetStructureJSONObj?.files || {}).map((fileName) => (
-            <FileItem
-              key={fileName}
-              name={fileName}
-              content={renderDatasetStructureJSONObj.files[fileName]}
-              onFileClick={onFileClick}
-              getFileBackgroundColor={getFileBackgroundColor}
-            />
-          ))}
-        </>
-      )}
-    </Stack>
+    <Paper padding="md" shadow="sm" radius="md" mih={200} my="md">
+      <Flex justify="space-between" mb="md">
+        <Button variant="light">Select All</Button>
+        <Button color="red" variant="light">
+          Delete All
+        </Button>
+      </Flex>
+      <Stack gap={1} style={{ maxHeight: 400, overflowY: "auto" }}>
+        <TextInput
+          label="Search files and folders:"
+          placeholder="Search files and folders..."
+          value={datasetStructureSearchFilter}
+          onChange={handleSearchChange}
+          leftSection={<IconSearch stroke={1.5} />}
+        />
+        {renderObjIsEmpty ? (
+          <div>Search filter no results</div>
+        ) : (
+          <>
+            {Object.keys(renderDatasetStructureJSONObj?.folders || {}).map((folderName) => (
+              <FolderItem
+                key={folderName}
+                name={folderName}
+                content={renderDatasetStructureJSONObj.folders[folderName]}
+                onFolderClick={onFolderClick}
+                onFileClick={onFileClick}
+                getFolderBackgroundColor={getFolderBackgroundColor}
+                getFileBackgroundColor={getFileBackgroundColor}
+                datasetStructureSearchFilter={datasetStructureSearchFilter}
+              />
+            ))}
+            {Object.keys(renderDatasetStructureJSONObj?.files || {}).map((fileName) => (
+              <FileItem
+                key={fileName}
+                name={fileName}
+                content={renderDatasetStructureJSONObj.files[fileName]}
+                onFileClick={onFileClick}
+                getFileBackgroundColor={getFileBackgroundColor}
+              />
+            ))}
+          </>
+        )}
+      </Stack>
+    </Paper>
   );
 };
 
