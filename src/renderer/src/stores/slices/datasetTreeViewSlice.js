@@ -4,11 +4,21 @@ const initialState = {
   datasetStructureJSONObj: null,
   renderDatasetStructureJSONObj: null,
   datasetStructureSearchFilter: "",
+  pathToRender: [], // Store pathToRender here
 };
 
 export const datasetTreeViewSlice = (set) => ({
   ...initialState,
 });
+
+// Helper function to traverse dataset structure by pathToRender
+const traverseStructureByPath = (structure, pathToRender) => {
+  let structureRef = structure;
+  pathToRender.forEach((subFolder) => {
+    structureRef = structureRef.folders[subFolder];
+  });
+  return structureRef;
+};
 
 // Checks if a folder or its subfolders/files match the search filter
 const folderObjMatchesSearch = (folderObj, searchFilter) => {
@@ -48,6 +58,13 @@ const filterStructure = (structure, searchFilter) => {
 
     // Remove files that do not match the filter
     for (const fileName of Object.keys(folderObj.files || {})) {
+      if (fileName.endsWith(".tiff")) {
+        console.log("File name:", fileName);
+        console.log("search filter:", lowerCaseSearchFilter);
+        console.log(
+          folderObj.files[fileName].relativePath.toLowerCase().includes(lowerCaseSearchFilter)
+        );
+      }
       if (!folderObj.files[fileName].relativePath.toLowerCase().includes(lowerCaseSearchFilter)) {
         delete folderObj.files[fileName];
       }
@@ -61,27 +78,29 @@ const filterStructure = (structure, searchFilter) => {
   return pruneStructure(structureCopy);
 };
 
+// Sets the dataset structure search filter and updates the render dataset structure
 export const setDatasetstructureSearchFilter = (searchFilter) => {
   const globalStore = useGlobalStore.getState();
   console.log("Before filter set:", globalStore);
 
-  useGlobalStore.setState({
-    ...globalStore,
-    datasetStructureSearchFilter: searchFilter,
-  });
+  let originalStructure = JSON.parse(JSON.stringify(globalStore.datasetStructureJSONObj));
 
-  const originalStructure = JSON.parse(JSON.stringify(globalStore.datasetStructureJSONObj));
-  const filteredStructure = filterStructure(originalStructure, searchFilter);
+  // Use the helper function to traverse to the correct nested structure
+  const structureToFilter = traverseStructureByPath(originalStructure, globalStore.pathToRender);
+
+  const filteredStructure = filterStructure(structureToFilter, searchFilter);
 
   console.log("Filtered structure result:", filteredStructure); // Check result
 
+  // Update the filtered structure in global state
   useGlobalStore.setState({
     ...globalStore,
+    datasetStructureSearchFilter: searchFilter,
     renderDatasetStructureJSONObj: filteredStructure,
   });
 };
 
-// Sets the tree view structure and updates relative paths
+// Sets the tree view dataset structure and updates relative paths
 export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
   const clonedStructure = JSON.parse(JSON.stringify(datasetStructure));
 
@@ -103,18 +122,13 @@ export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
 
   useGlobalStore.setState({
     datasetStructureJSONObj: clonedStructure,
+    pathToRender: pathToRender,
   });
 
-  // Traverse the tree to get the reference to the specific nested structure
-  let renderStructureRef = clonedStructure;
-  pathToRender.forEach((subFolder) => {
-    renderStructureRef = renderStructureRef.folders[subFolder];
-  });
+  // Use the helper function to traverse to the correct structure
+  let renderStructureRef = traverseStructureByPath(clonedStructure, pathToRender);
 
   addRelativePaths(renderStructureRef, pathToRender);
-
-  // Reset the filter and update global state
-  setDatasetstructureSearchFilter("");
 
   useGlobalStore.setState({
     renderDatasetStructureJSONObj: renderStructureRef,

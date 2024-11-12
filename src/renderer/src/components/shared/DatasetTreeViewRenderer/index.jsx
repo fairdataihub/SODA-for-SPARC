@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Collapse, Text, Stack, UnstyledButton, TextInput, Flex } from "@mantine/core";
-import { useHover, useDebouncedValue } from "@mantine/hooks";
+import { useHover } from "@mantine/hooks";
 import {
   IconFolder,
   IconFolderOpen,
@@ -76,12 +76,6 @@ const FolderItem = ({
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
 
-  useEffect(() => {
-    if (defaultOpenAllFolders) {
-      setIsOpen(true);
-    }
-  }, [defaultOpenAllFolders]);
-
   const toggleFolder = () => {
     setIsOpen((prev) => !prev);
   };
@@ -89,7 +83,12 @@ const FolderItem = ({
   return (
     <Stack gap={1} ml="sm">
       <Flex align="center" gap="sm">
-        {isOpen || defaultOpenAllFolders ? (
+        {isOpen ||
+        (defaultOpenAllFolders &&
+          !(
+            Object.keys(content["folders"]).length === 0 &&
+            Object.keys(content["files"].length === 0)
+          )) ? (
           <IconFolderOpen
             size={ICON_SETTINGS.folderSize}
             color={ICON_SETTINGS.folderColor}
@@ -165,30 +164,22 @@ const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getFileBackground
   const renderDatasetStructureJSONObj = useGlobalStore(
     (state) => state.renderDatasetStructureJSONObj
   );
-  const [localSearch, setLocalSearch] = useState(""); // Local state for immediate input
-  const [debouncedSearch] = useDebouncedValue(localSearch, 200);
-
-  // Sync debounced value with the store when it changes
-  useEffect(() => {
-    setDatasetstructureSearchFilter(debouncedSearch);
-  }, [debouncedSearch]);
 
   const handleSearchChange = (event) => {
-    setLocalSearch(event.target.value); // Update local state on input change
+    console.log("Search filter set:", event.target.value);
+    setDatasetstructureSearchFilter(event.target.value);
   };
 
   const datasetStructureSearchFilter = useGlobalStore(
     (state) => state.datasetStructureSearchFilter
   );
 
-  console.log("Filtered structure:", JSON.stringify(renderDatasetStructureJSONObj, null, 2));
-
   return (
-    <Stack gap={1}>
+    <Stack gap={1} style={{ maxHeight: 400, overflowY: "auto" }}>
       <TextInput
         label="Search files and folders:"
         placeholder="Search files and folders..."
-        value={localSearch}
+        value={datasetStructureSearchFilter}
         onChange={handleSearchChange}
         leftSection={<IconSearch stroke={1.5} />}
       />
@@ -202,7 +193,7 @@ const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getFileBackground
               onFolderClick={onFolderClick}
               onFileClick={onFileClick}
               getFileBackgroundColor={getFileBackgroundColor}
-              defaultOpenAllFolders={localSearch !== ""}
+              defaultOpenAllFolders={datasetStructureSearchFilter !== ""}
             />
           ))}
           {Object.keys(renderDatasetStructureJSONObj?.files || {}).map((fileName) => (
