@@ -2,13 +2,9 @@ import { Grid, Button, Stack, Title, Paper, Divider, Text, Box } from "@mantine/
 import FullWidthContainer from "../../containers/FullWidthContainer";
 import useGlobalStore from "../../../stores/globalStore";
 import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
-import {
-  setActiveEntity,
-  toggleRelativeFilePathForManifestEntity,
-  getEntityForRelativePath,
-} from "../../../stores/slices/manifestEntitySelectorSlice";
+import {} from "../../../stores/slices/SourceDerivativeSelectorSlice";
 
-const ManifestEntitySelector = () => {
+const SourceDerivativeSelector = () => {
   const entityList = useGlobalStore((state) => state.entityList);
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const entityType = useGlobalStore((state) => state.entityType);
@@ -18,11 +14,11 @@ const ManifestEntitySelector = () => {
   };
 
   const handleFolderClick = (folderName, folderContents) => {
-    toggleRelativeFilePathForManifestEntity(entityType, activeEntity, folderContents.relativePath);
+    toggleRelativeFilePathForDatasetEntity(entityType, activeEntity, folderContents.relativePath);
   };
 
   const handleFileClick = (fileName, fileContents) => {
-    toggleRelativeFilePathForManifestEntity(entityType, activeEntity, fileContents.relativePath);
+    toggleRelativeFilePathForDatasetEntity(entityType, activeEntity, fileContents.relativePath);
   };
 
   const getFileBackgroundColor = (fileRelativePath) => {
@@ -84,4 +80,4 @@ const ManifestEntitySelector = () => {
   );
 };
 
-export default ManifestEntitySelector;
+export default SourceDerivativeSelector;

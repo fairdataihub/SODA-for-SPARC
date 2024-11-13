@@ -44,7 +44,7 @@ import {
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
 } from "../../stores/slices/guidedModeSlice";
-import { setEntityList, setEntityType } from "../../stores/slices/manifestEntitySelectorSlice";
+import { setEntityList, setEntityType } from "../../stores/slices/datasetEntitySelectorSlice";
 import {
   setDatasetstructureSearchFilter,
   setTreeViewDatasetStructure,

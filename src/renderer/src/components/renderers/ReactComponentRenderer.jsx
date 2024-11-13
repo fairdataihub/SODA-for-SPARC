@@ -7,7 +7,8 @@ import DropdownSelect from "../common/DropdownSelect";
 import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
-import ManifestEntitySelector from "../shared/manifest/ManifestEntitySelector";
+import DatasetEntitySelector from "../shared/manifest/DatasetEntitySelector";
+import SourceDerivativeSelector from "../shared/SourceDerivativeSelector";
 import DataImporter from "../shared/DataImporter";
 import { Divider } from "@mantine/core";
 
@@ -92,7 +93,15 @@ const componentTypeRenderers = {
     const root = createRoot(componentSlot);
     root.render(
       <SodaComponentWrapper>
-        <ManifestEntitySelector />
+        <DatasetEntitySelector />
+      </SodaComponentWrapper>
+    );
+  },
+  "source-derivative-selector": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper>
+        <SourceDerivativeSelector />
       </SodaComponentWrapper>
     );
   },

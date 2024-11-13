@@ -65,6 +65,7 @@
     "excel4node": "^1.8.2",
     "find-free-port": "^2.0.0",
     "fomantic-ui": "^2.9.3",
+    "fs": "^0.0.1-security",
     "fs-extra": "^11.1.1",
     "image-data-uri": "^2.0.1",
     "immer": "^10.0.4",
