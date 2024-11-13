@@ -1095,11 +1095,15 @@ const savePageChanges = async (pageBeingLeftID) => {
           message: "Please enter a dataset name.",
         });
       }
-      if (check_forbidden_characters_ps(datasetNameInput)) {
+
+      const datasetNameContainsForbiddenCharacters = window.evaluateStringAgainstSdsRequirements(
+        datasetNameInput,
+        "string-contains-forbidden-characters"
+      );
+      if (datasetNameContainsForbiddenCharacters) {
         errorArray.push({
           type: "notyf",
-          message:
-            "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+          message: `A Pennsieve dataset name cannot contain any of the following characters: @#$%^&*()+=/\|"'~;:<>{}[]?`,
         });
       }
       if (!datasetSubtitleInput) {

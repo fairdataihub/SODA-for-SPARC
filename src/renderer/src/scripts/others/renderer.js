@@ -4359,6 +4359,7 @@ const namesOfForbiddenFiles = {
 
 const sparcFolderAndFileRegex = /[\+&\%#]/;
 const identifierConventionsRegex = /^[a-zA-Z0-9-_]+$/;
+const forbiddenCharacters = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/;
 
 window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
   const testCases = {
@@ -4366,6 +4367,7 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
     "file-is-hidden": stringToTest.startsWith("."), // returns true if the string is hidden
     "file-is-in-forbidden-files-list": namesOfForbiddenFiles?.[stringToTest], // returns true if the string is in the forbidden files list
     "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest), // returns true if the string adheres to the identifier conventions
+    "string-contains-forbidden-characters": forbiddenCharacters.test(stringToTest), // returns true if the string contains forbidden characters
   };
   return testCases[stringCase];
 };
