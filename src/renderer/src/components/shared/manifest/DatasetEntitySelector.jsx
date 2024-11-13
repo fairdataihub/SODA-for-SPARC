@@ -17,21 +17,23 @@ const DatasetEntitySelector = () => {
     setActiveEntity(entity);
   };
 
-  const handleFolderClick = (folderName, folderContents) => {
+  const handleFolderClick = (folderName, folderContents, toggleChildren) => {
     // Designate the folder as part of the active entity
     toggleRelativeFilePathForDatasetEntity(entityType, activeEntity, folderContents.relativePath);
 
-    // Designate the files in the folder as part of the active entity
-    for (const file of Object.keys(folderContents.files)) {
-      toggleRelativeFilePathForDatasetEntity(
-        entityType,
-        activeEntity,
-        folderContents.files[file].relativePath
-      );
-    }
-    // Recursively designate the subfolders as part of the active entity
-    for (const subFolder of Object.keys(folderContents.folders)) {
-      handleFolderClick(subFolder, folderContents.folders[subFolder]);
+    if (toggleChildren) {
+      // Designate the files in the folder as part of the active entity
+      for (const file of Object.keys(folderContents.files)) {
+        toggleRelativeFilePathForDatasetEntity(
+          entityType,
+          activeEntity,
+          folderContents.files[file].relativePath
+        );
+      }
+      // Recursively designate the subfolders as part of the active entity
+      for (const subFolder of Object.keys(folderContents.folders)) {
+        handleFolderClick(subFolder, folderContents.folders[subFolder]);
+      }
     }
   };
 

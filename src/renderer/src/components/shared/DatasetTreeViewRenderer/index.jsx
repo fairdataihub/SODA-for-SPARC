@@ -121,13 +121,33 @@ const FolderItem = ({
           style={{ borderRadius: "4px" }}
           px="2"
           bg={getFileBackgroundColor?.(content.relativePath) || "transparent"}
-          onClick={() => {
-            toggleFolder();
-            if (onFolderClick) onFolderClick(name, content);
-          }}
+          onClick={toggleFolder} // Only toggles open/close, not selecting
         >
           <Text size="lg">{name}</Text>
         </UnstyledButton>
+        <Button.Group>
+          <Button
+            size="compact-xs"
+            variant="default"
+            onClick={() => onFolderClick && onFolderClick(name, content, true)}
+          >
+            Select folder and children
+          </Button>
+          <Button
+            size="compact-xs"
+            variant="default"
+            onClick={() => onFolderClick && onFolderClick(name, content, true)}
+          >
+            Select folder
+          </Button>
+          <Button
+            size="compact-xs"
+            variant="default"
+            onClick={() => onFolderClick && onFolderClick(name, content, true)}
+          >
+            Select children
+          </Button>
+        </Button.Group>
       </Flex>
       <Collapse in={isOpen}>
         {isOpen && !isFolderEmpty && (
