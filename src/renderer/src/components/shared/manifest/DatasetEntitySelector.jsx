@@ -17,6 +17,17 @@ const DatasetEntitySelector = () => {
     setActiveEntity(entity);
   };
 
+  const handleFileClick = (fileName, fileContents) => {
+    toggleRelativeFilePathForDatasetEntity(entityType, activeEntity, fileContents.relativePath);
+  };
+
+  const getEntitySelectedStatus = (entityRelativePath) => {
+    const entityExists = getEntityForRelativePath(entityRelativePath);
+    console.log("Entity exists", entityExists);
+
+    return entityExists;
+  };
+
   const handleFolderClick = (folderName, folderContents, toggleChildren) => {
     // Designate the folder as part of the active entity
     toggleRelativeFilePathForDatasetEntity(entityType, activeEntity, folderContents.relativePath);
@@ -35,17 +46,6 @@ const DatasetEntitySelector = () => {
         handleFolderClick(subFolder, folderContents.folders[subFolder]);
       }
     }
-  };
-
-  const handleFileClick = (fileName, fileContents) => {
-    toggleRelativeFilePathForDatasetEntity(entityType, activeEntity, fileContents.relativePath);
-  };
-
-  const getEntitySelectedStatus = (entityRelativePath) => {
-    const entityExists = getEntityForRelativePath(entityRelativePath);
-    console.log("Entity exists", entityExists);
-
-    return entityExists;
   };
 
   return (

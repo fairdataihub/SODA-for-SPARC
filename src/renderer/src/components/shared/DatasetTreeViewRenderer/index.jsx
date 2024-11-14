@@ -9,6 +9,7 @@ import {
   TextInput,
   Flex,
   Button,
+  Tooltip,
   Paper,
   Checkbox,
 } from "@mantine/core";
@@ -30,14 +31,15 @@ import {
   IconFileTypeZip,
   IconSearch,
   IconSelect,
+  IconFileDownload,
 } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
 import { setDatasetstructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
 
 const ICON_SETTINGS = {
   folderColor: "#ADD8E6",
-  folderSize: 15,
-  fileSize: 13,
+  folderSize: 16,
+  fileSize: 14,
 };
 
 // File extension icon mapping
@@ -112,7 +114,7 @@ const FolderItem = ({
 
   return (
     <Stack gap={1} ml="xs">
-      <Group gap={4} justify="flex-start">
+      <Group gap={3} justify="flex-start">
         {isOpen ? (
           <IconFolderOpen
             size={ICON_SETTINGS.folderSize}
@@ -130,19 +132,44 @@ const FolderItem = ({
           ref={ref}
           style={{ borderRadius: "4px" }}
           px="2"
-          bg={folderIsSlected ? "gray" : hovered ? "gray" : "transparent"}
-          onClick={toggleFolder} // Only toggles open/close, not selecting
+          bg={folderIsSlected ? "gray" : "transparent"}
+          onClick={toggleFolder}
         >
           <Text size="md" px={1}>
             {name}
           </Text>
         </UnstyledButton>
-        <Checkbox onClick={() => onFolderClick(name, content, false)} checked={folderIsSlected} />
-        <IconSelect size={20} onClick={() => onFolderClick(name, content, true)} />
+        <Tooltip label="Select folder" zIndex={2999}>
+          <Checkbox
+            onClick={() => onFolderClick(name, content, "folder-select")}
+            checked={folderIsSlected}
+          />
+        </Tooltip>
+        <Tooltip label="Select all files in this folder" zIndex={2999}>
+          <IconFileDownload
+            size={20}
+            onClick={() => onFolderClick(name, content, "folder-files-select")}
+          />
+        </Tooltip>
+        <Tooltip label="Select this folder and ALL contents" zIndex={2999}>
+          <IconSelect
+            size={20}
+            onClick={() => onFolderClick(name, content, "folder-recursive-select")}
+          />
+        </Tooltip>
       </Group>
       <Collapse in={isOpen}>
         {isOpen && !isFolderEmpty && (
           <>
+            {Object.keys(content?.files || {}).map((fileName) => (
+              <FileItem
+                key={fileName}
+                name={fileName}
+                content={content.files[fileName]}
+                onFileClick={onFileClick}
+                getEntitySelectedStatus={getEntitySelectedStatus}
+              />
+            ))}
             {Object.keys(content?.folders || {}).map((folderName) => (
               <FolderItem
                 key={folderName}
@@ -152,15 +179,6 @@ const FolderItem = ({
                 onFileClick={onFileClick}
                 getEntitySelectedStatus={getEntitySelectedStatus}
                 datasetStructureSearchFilter={datasetStructureSearchFilter}
-              />
-            ))}
-            {Object.keys(content?.files || {}).map((fileName) => (
-              <FileItem
-                key={fileName}
-                name={fileName}
-                content={content.files[fileName]}
-                onFileClick={onFileClick}
-                getEntitySelectedStatus={getEntitySelectedStatus}
               />
             ))}
           </>
@@ -194,18 +212,27 @@ const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntitySelected
 
   return (
     <Paper padding="md" shadow="sm" radius="md" mih={200} my="md">
-      <Stack gap={1} style={{ maxHeight: 400, overflowY: "auto", overflowX: "auto" }}>
-        <TextInput
-          label="Search files and folders:"
-          placeholder="Search files and folders..."
-          value={datasetStructureSearchFilter}
-          onChange={handleSearchChange}
-          leftSection={<IconSearch stroke={1.5} />}
-        />
+      <TextInput
+        label="Search files and folders:"
+        placeholder="Search files and folders..."
+        value={datasetStructureSearchFilter}
+        onChange={handleSearchChange}
+        leftSection={<IconSearch stroke={1.5} />}
+      />
+      <Stack gap={1} style={{ maxHeight: 400, overflowY: "auto", overflowX: "auto" }} py={3}>
         {renderObjIsEmpty ? (
           <div>Search filter no results</div>
         ) : (
           <>
+            {Object.keys(renderDatasetStructureJSONObj?.files || {}).map((fileName) => (
+              <FileItem
+                key={fileName}
+                name={fileName}
+                content={renderDatasetStructureJSONObj.files[fileName]}
+                onFileClick={onFileClick}
+                getEntitySelectedStatus={getEntitySelectedStatus}
+              />
+            ))}
             {Object.keys(renderDatasetStructureJSONObj?.folders || {}).map((folderName) => (
               <FolderItem
                 key={folderName}
@@ -215,15 +242,6 @@ const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntitySelected
                 onFileClick={onFileClick}
                 getEntitySelectedStatus={getEntitySelectedStatus}
                 datasetStructureSearchFilter={datasetStructureSearchFilter}
-              />
-            ))}
-            {Object.keys(renderDatasetStructureJSONObj?.files || {}).map((fileName) => (
-              <FileItem
-                key={fileName}
-                name={fileName}
-                content={renderDatasetStructureJSONObj.files[fileName]}
-                onFileClick={onFileClick}
-                getEntitySelectedStatus={getEntitySelectedStatus}
               />
             ))}
           </>
