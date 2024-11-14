@@ -3,6 +3,8 @@ import {
   Collapse,
   Text,
   Stack,
+  Group,
+  Popover,
   UnstyledButton,
   TextInput,
   Flex,
@@ -32,8 +34,8 @@ import { setDatasetstructureSearchFilter } from "../../../stores/slices/datasetT
 
 const ICON_SETTINGS = {
   folderColor: "#ADD8E6",
-  folderSize: 18,
-  fileSize: 15,
+  folderSize: 15,
+  fileSize: 13,
 };
 
 // File extension icon mapping
@@ -62,16 +64,16 @@ const getFileTypeIcon = (fileName) => {
 
 // FileItem component
 const FileItem = ({ name, content, onFileClick, getFileBackgroundColor }) => (
-  <Flex
-    align="center"
+  <Group
     gap="sm"
+    justify="flex-start"
     bg={getFileBackgroundColor?.(content.relativePath) || "transparent"}
     onClick={() => onFileClick?.(name, content)}
     ml="sm"
   >
     {getFileTypeIcon(name)}
-    <Text>{name}</Text>
-  </Flex>
+    <Text size="sm">{name}</Text>
+  </Group>
 );
 
 const FolderItem = ({
@@ -101,8 +103,8 @@ const FolderItem = ({
     Object.keys(content.files || {}).length === 0;
 
   return (
-    <Stack gap={1} ml="sm">
-      <Flex align="center" gap="sm">
+    <Stack gap={1} ml="xs">
+      <Group gap="sm" justify="flex-start">
         {isOpen ? (
           <IconFolderOpen
             size={ICON_SETTINGS.folderSize}
@@ -123,32 +125,9 @@ const FolderItem = ({
           bg={getFileBackgroundColor?.(content.relativePath) || "transparent"}
           onClick={toggleFolder} // Only toggles open/close, not selecting
         >
-          <Text size="lg">{name}</Text>
+          <Text size="md">{name}</Text>
         </UnstyledButton>
-        <Button.Group>
-          <Button
-            size="compact-xs"
-            variant="default"
-            onClick={() => onFolderClick && onFolderClick(name, content, true)}
-          >
-            Select folder and children
-          </Button>
-          <Button
-            size="compact-xs"
-            variant="default"
-            onClick={() => onFolderClick && onFolderClick(name, content, true)}
-          >
-            Select folder
-          </Button>
-          <Button
-            size="compact-xs"
-            variant="default"
-            onClick={() => onFolderClick && onFolderClick(name, content, true)}
-          >
-            Select children
-          </Button>
-        </Button.Group>
-      </Flex>
+      </Group>
       <Collapse in={isOpen}>
         {isOpen && !isFolderEmpty && (
           <>
@@ -206,13 +185,7 @@ const DatasetTreeViewRenderer = ({
 
   return (
     <Paper padding="md" shadow="sm" radius="md" mih={200} my="md">
-      <Flex justify="space-between" mb="md">
-        <Button variant="light">Select All</Button>
-        <Button color="red" variant="light">
-          Delete All
-        </Button>
-      </Flex>
-      <Stack gap={1} style={{ maxHeight: 400, overflowY: "auto" }}>
+      <Stack gap={1} style={{ maxHeight: 400, overflowY: "auto", overflowX: "auto" }}>
         <TextInput
           label="Search files and folders:"
           placeholder="Search files and folders..."

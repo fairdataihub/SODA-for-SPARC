@@ -5398,7 +5398,7 @@ window.openPage = async (targetPageID) => {
     if (targetPageID === "guided-manifest-subject-entity-selector-tab") {
       //
       setEntityList(window.getExistingSubjectNames());
-      setTreeViewDatasetStructure(window.datasetStructureJSONObj, []);
+      setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       setEntityType("subjects");
     }
 
