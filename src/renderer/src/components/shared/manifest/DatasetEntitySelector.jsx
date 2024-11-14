@@ -41,14 +41,11 @@ const DatasetEntitySelector = () => {
     toggleRelativeFilePathForDatasetEntity(entityType, activeEntity, fileContents.relativePath);
   };
 
-  const getFileBackgroundColor = (fileRelativePath) => {
-    const filesEntity = getEntityForRelativePath(fileRelativePath);
-    return !filesEntity ? "transparent" : filesEntity === activeEntity ? "#D0E8FF" : "#F2F2F2";
-  };
+  const getEntitySelectedStatus = (entityRelativePath) => {
+    const entityExists = getEntityForRelativePath(entityRelativePath);
+    console.log("Entity exists", entityExists);
 
-  const getFolderBackgroundColor = (folderRelativePath) => {
-    const foldersEntity = getEntityForRelativePath(folderRelativePath);
-    return !foldersEntity ? "transparent" : foldersEntity === activeEntity ? "green" : "#F2F2F2";
+    return entityExists;
   };
 
   return (
@@ -83,12 +80,11 @@ const DatasetEntitySelector = () => {
               <DatasetTreeViewRenderer
                 onFolderClick={handleFolderClick}
                 onFileClick={handleFileClick}
-                getFolderBackgroundColor={getFolderBackgroundColor}
-                getFileBackgroundColor={getFileBackgroundColor}
+                getEntitySelectedStatus={getEntitySelectedStatus}
               />
             </Paper>
           ) : (
-            <Box p="xl" textAlign="center">
+            <Box p="xl">
               <Text size="xl" c="gray">
                 Select a subject from the list on the left to map files to it.
               </Text>

@@ -10,6 +10,7 @@ import {
   Flex,
   Button,
   Paper,
+  Checkbox,
 } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 import {
@@ -28,6 +29,7 @@ import {
   IconFileTypeXml,
   IconFileTypeZip,
   IconSearch,
+  IconSelect,
 } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
 import { setDatasetstructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
@@ -63,26 +65,28 @@ const getFileTypeIcon = (fileName) => {
 };
 
 // FileItem component
-const FileItem = ({ name, content, onFileClick, getFileBackgroundColor }) => (
-  <Group
-    gap="sm"
-    justify="flex-start"
-    bg={getFileBackgroundColor?.(content.relativePath) || "transparent"}
-    onClick={() => onFileClick?.(name, content)}
-    ml="sm"
-  >
-    {getFileTypeIcon(name)}
-    <Text size="sm">{name}</Text>
-  </Group>
-);
+const FileItem = ({ name, content, onFileClick, getEntitySelectedStatus }) => {
+  const fileIsSlected = getEntitySelectedStatus(content.relativePath);
+  return (
+    <Group
+      gap="sm"
+      justify="flex-start"
+      bg={fileIsSlected ? "gray" : "transparent"}
+      onClick={() => onFileClick && onFileClick(name, content)}
+      ml="sm"
+    >
+      {getFileTypeIcon(name)}
+      <Text size="sm">{name}</Text>
+    </Group>
+  );
+};
 
 const FolderItem = ({
   name,
   content,
   onFolderClick,
   onFileClick,
-  getFolderBackgroundColor,
-  getFileBackgroundColor,
+  getEntitySelectedStatus,
   datasetStructureSearchFilter,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -102,9 +106,13 @@ const FolderItem = ({
     Object.keys(content.folders || {}).length === 0 &&
     Object.keys(content.files || {}).length === 0;
 
+  const folderIsSlected = getEntitySelectedStatus
+    ? getEntitySelectedStatus(content.relativePath)
+    : false;
+
   return (
     <Stack gap={1} ml="xs">
-      <Group gap="sm" justify="flex-start">
+      <Group gap={4} justify="flex-start">
         {isOpen ? (
           <IconFolderOpen
             size={ICON_SETTINGS.folderSize}
@@ -122,11 +130,15 @@ const FolderItem = ({
           ref={ref}
           style={{ borderRadius: "4px" }}
           px="2"
-          bg={getFileBackgroundColor?.(content.relativePath) || "transparent"}
+          bg={folderIsSlected ? "gray" : hovered ? "gray" : "transparent"}
           onClick={toggleFolder} // Only toggles open/close, not selecting
         >
-          <Text size="md">{name}</Text>
+          <Text size="md" px={1}>
+            {name}
+          </Text>
         </UnstyledButton>
+        <Checkbox onClick={() => onFolderClick(name, content, false)} checked={folderIsSlected} />
+        <IconSelect size={20} onClick={() => onFolderClick(name, content, true)} />
       </Group>
       <Collapse in={isOpen}>
         {isOpen && !isFolderEmpty && (
@@ -138,8 +150,7 @@ const FolderItem = ({
                 content={content.folders[folderName]}
                 onFolderClick={onFolderClick}
                 onFileClick={onFileClick}
-                getFolderBackgroundColor={getFolderBackgroundColor}
-                getFileBackgroundColor={getFileBackgroundColor}
+                getEntitySelectedStatus={getEntitySelectedStatus}
                 datasetStructureSearchFilter={datasetStructureSearchFilter}
               />
             ))}
@@ -149,7 +160,7 @@ const FolderItem = ({
                 name={fileName}
                 content={content.files[fileName]}
                 onFileClick={onFileClick}
-                getFileBackgroundColor={getFileBackgroundColor}
+                getEntitySelectedStatus={getEntitySelectedStatus}
               />
             ))}
           </>
@@ -159,12 +170,10 @@ const FolderItem = ({
   );
 };
 
-const DatasetTreeViewRenderer = ({
-  onFolderClick,
-  onFileClick,
-  getFolderBackgroundColor,
-  getFileBackgroundColor,
-}) => {
+const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntitySelectedStatus }) => {
+  console.log("onFolderClick", onFolderClick);
+  console.log("onFileClick", onFileClick);
+  console.log("getEntitySelectedStatus", getEntitySelectedStatus);
   const renderDatasetStructureJSONObj = useGlobalStore(
     (state) => state.renderDatasetStructureJSONObj
   );
@@ -204,8 +213,7 @@ const DatasetTreeViewRenderer = ({
                 content={renderDatasetStructureJSONObj.folders[folderName]}
                 onFolderClick={onFolderClick}
                 onFileClick={onFileClick}
-                getFolderBackgroundColor={getFolderBackgroundColor}
-                getFileBackgroundColor={getFileBackgroundColor}
+                getEntitySelectedStatus={getEntitySelectedStatus}
                 datasetStructureSearchFilter={datasetStructureSearchFilter}
               />
             ))}
@@ -215,7 +223,7 @@ const DatasetTreeViewRenderer = ({
                 name={fileName}
                 content={renderDatasetStructureJSONObj.files[fileName]}
                 onFileClick={onFileClick}
-                getFileBackgroundColor={getFileBackgroundColor}
+                getEntitySelectedStatus={getEntitySelectedStatus}
               />
             ))}
           </>
