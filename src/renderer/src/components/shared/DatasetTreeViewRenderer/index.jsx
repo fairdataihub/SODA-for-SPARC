@@ -4,22 +4,19 @@ import {
   Text,
   Stack,
   Group,
-  Popover,
-  UnstyledButton,
-  TextInput,
-  Flex,
-  Button,
-  Space,
   Tooltip,
   Paper,
   Checkbox,
+  TextInput,
+  Space,
+  Center,
 } from "@mantine/core";
+
 import { useHover } from "@mantine/hooks";
 import {
   IconFolder,
   IconFolderOpen,
   IconFile,
-  IconPhoto,
   IconFileTypeCsv,
   IconFileTypeDoc,
   IconFileTypeDocx,
@@ -30,12 +27,13 @@ import {
   IconFileTypeXls,
   IconFileTypeXml,
   IconFileTypeZip,
+  IconPhoto,
   IconSearch,
   IconSelect,
   IconFileDownload,
+  IconEraser,
 } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
-import { getEntityForRelativePath } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { setDatasetstructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
 
 const ICON_SETTINGS = {
@@ -44,7 +42,6 @@ const ICON_SETTINGS = {
   fileSize: 14,
 };
 
-// File extension icon mapping
 const FILE_ICON_MAP = {
   csv: <IconFileTypeCsv size={ICON_SETTINGS.fileSize} />,
   xls: <IconFileTypeXls size={ICON_SETTINGS.fileSize} />,
@@ -62,25 +59,25 @@ const FILE_ICON_MAP = {
   jp2: <IconPhoto size={ICON_SETTINGS.fileSize} />,
 };
 
-// Function to get file type icon
 const getFileTypeIcon = (fileName) => {
   const extension = fileName.split(".").pop().toLowerCase();
   return FILE_ICON_MAP[extension] || <IconFile size={ICON_SETTINGS.fileSize} />;
 };
 
-// FileItem component
 const FileItem = ({ name, content, onFileClick, getEntityForRelativePath }) => {
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const entityType = useGlobalStore((state) => state.entityType);
   const activeEntity = useGlobalStore((state) => state.activeEntity);
 
-  const filesEntity = getEntityForRelativePath(datasetEntityObj, entityType, content.relativePath);
+  const filesEntity = getEntityForRelativePath
+    ? getEntityForRelativePath(datasetEntityObj, entityType, content.relativePath)
+    : null;
 
   return (
     <Group
       gap="sm"
       justify="flex-start"
-      bg={!filesEntity ? "transparent" : activeEntity === filesEntity ? "blue" : "red"}
+      bg={!filesEntity ? "transparent" : filesEntity === activeEntity ? "#90BFFF" : "#D3D3D3"}
       onClick={() => onFileClick && onFileClick(name, content)}
       ml="sm"
     >
@@ -100,19 +97,16 @@ const FolderItem = ({
 }) => {
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const entityType = useGlobalStore((state) => state.entityType);
-  const foldersEntity = getEntityForRelativePath(
-    datasetEntityObj,
-    entityType,
-    content.relativePath
-  );
-  console.log("Folders entity", foldersEntity);
   const activeEntity = useGlobalStore((state) => state.activeEntity);
+  const foldersEntity = getEntityForRelativePath
+    ? getEntityForRelativePath(datasetEntityObj, entityType, content.relativePath)
+    : null;
 
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
 
   useEffect(() => {
-    if (datasetStructureSearchFilter !== "") {
+    if (datasetStructureSearchFilter) {
       setIsOpen(true);
     }
   }, [datasetStructureSearchFilter]);
@@ -125,9 +119,14 @@ const FolderItem = ({
     Object.keys(content.folders || {}).length === 0 &&
     Object.keys(content.files || {}).length === 0;
 
+  const folderHasFiles = Object.keys(content.files || {}).length > 0;
+  const folderHasFolders = Object.keys(content.folders || {}).length > 0;
+
+  const isViewOnly = !onFileClick || !onFolderClick || !getEntityForRelativePath;
+
   return (
     <Stack gap={1} ml="xs">
-      <Group gap={3} justify="flex-start">
+      <Group gap={3} justify="flex-start" ref={ref}>
         {isOpen ? (
           <IconFolderOpen
             size={ICON_SETTINGS.folderSize}
@@ -141,30 +140,37 @@ const FolderItem = ({
             onClick={toggleFolder}
           />
         )}
-        <Tooltip label="Select folder" zIndex={2999}>
-          <Checkbox
-            readOnly
-            onClick={() => onFolderClick(name, content, "folder-select")}
-            checked={foldersEntity === activeEntity}
-          />
-        </Tooltip>
+        {!isViewOnly && (
+          <Tooltip label="Select folder" zIndex={2999}>
+            <Checkbox
+              readOnly
+              onClick={() => onFolderClick(name, content, "folder-select")}
+              checked={foldersEntity === activeEntity}
+            />
+          </Tooltip>
+        )}
         <Text size="md" px={5} onClick={toggleFolder}>
           {name}
         </Text>
         <Space w="lg" />
-
-        <Tooltip label="Select all files in this folder" zIndex={2999}>
-          <IconFileDownload
-            size={20}
-            onClick={() => onFolderClick(name, content, "folder-files-select")}
-          />
-        </Tooltip>
-        <Tooltip label="Select this folder and ALL contents" zIndex={2999}>
-          <IconSelect
-            size={20}
-            onClick={() => onFolderClick(name, content, "folder-recursive-select")}
-          />
-        </Tooltip>
+        {!isViewOnly && (
+          <>
+            {folderHasFiles && (
+              <Tooltip label="Select all files in this folder" zIndex={2999}>
+                <IconFileDownload
+                  size={20}
+                  onClick={() => onFolderClick(name, content, "folder-files-select")}
+                />
+              </Tooltip>
+            )}
+            <Tooltip label="Select this folder and ALL contents" zIndex={2999}>
+              <IconSelect
+                size={20}
+                onClick={() => onFolderClick(name, content, "folder-recursive-select")}
+              />
+            </Tooltip>
+          </>
+        )}
       </Group>
       <Collapse in={isOpen}>
         {isOpen && !isFolderEmpty && (
@@ -197,14 +203,12 @@ const FolderItem = ({
 };
 
 const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntityForRelativePath }) => {
-  const { entityList, activeEntity, entityType, datasetEntityObj, renderDatasetStructureJSONObj } =
-    useGlobalStore((state) => ({
-      entityList: state.entityList,
-      activeEntity: state.activeEntity,
-      entityType: state.entityType,
-      datasetEntityObj: state.datasetEntityObj,
+  const { renderDatasetStructureJSONObj, datasetStructureSearchFilter } = useGlobalStore(
+    (state) => ({
       renderDatasetStructureJSONObj: state.renderDatasetStructureJSONObj,
-    }));
+      datasetStructureSearchFilter: state.datasetStructureSearchFilter,
+    })
+  );
 
   const renderObjIsEmpty =
     !renderDatasetStructureJSONObj ||
@@ -212,26 +216,39 @@ const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntityForRelat
       Object.keys(renderDatasetStructureJSONObj?.files).length === 0);
 
   const handleSearchChange = (event) => {
-    console.log("Search filter set:", event.target.value);
     setDatasetstructureSearchFilter(event.target.value);
   };
 
-  const datasetStructureSearchFilter = useGlobalStore(
-    (state) => state.datasetStructureSearchFilter
-  );
-
   return (
-    <Paper padding="md" shadow="sm" radius="md" mih={200} my="md">
+    <Paper padding="md" shadow="sm" radius="md" mih={200} my="md" p="sm">
       <TextInput
         label="Search files and folders:"
         placeholder="Search files and folders..."
         value={datasetStructureSearchFilter}
         onChange={handleSearchChange}
         leftSection={<IconSearch stroke={1.5} />}
+        mb="sm"
+        rightSection={
+          <Tooltip label="Clear search" zIndex={2999}>
+            <IconEraser
+              size={20}
+              onClick={() => setDatasetstructureSearchFilter("")}
+              style={{ cursor: "pointer" }}
+            />
+          </Tooltip>
+        }
       />
-      <Stack gap={1} style={{ maxHeight: 400, overflowY: "auto", overflowX: "auto" }} py={3}>
+      <Stack gap={1} style={{ maxHeight: 400, overflowY: "auto" }} py={3}>
         {renderObjIsEmpty ? (
-          <div>Search filter no results</div>
+          <Center mt="md">
+            {datasetStructureSearchFilter ? (
+              <Text size="sm" color="gray">
+                No files or folders found matching the search criteria.
+              </Text>
+            ) : (
+              <Text color="gray">Import experimental data above</Text>
+            )}
+          </Center>
         ) : (
           <>
             {Object.keys(renderDatasetStructureJSONObj?.files || {}).map((fileName) => (

@@ -58,9 +58,6 @@ const DataImporter = () => {
             <Text size="xl" inline>
               Drag experimental data here or click to import from your computer
             </Text>
-            <Text size="sm" c="dimmed" inline mt={7}>
-              Additional text
-            </Text>
           </div>
         </Group>
       </Dropzone>

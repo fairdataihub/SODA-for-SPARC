@@ -5396,9 +5396,14 @@ window.openPage = async (targetPageID) => {
       renderManifestCards();
     }
     if (targetPageID === "guided-manifest-subject-entity-selector-tab") {
-      setEntityList(window.getExistingSubjectNames());
+      setEntityList(window.getExistingSubjectNames(), "Subjects List");
       setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       setEntityType("subjects");
+    }
+    if (targetPageID === "guided-source-derivative-folders-and-files-selector-tab") {
+      setEntityList(["source", "derivative"], "Supplementary data");
+      setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
+      setEntityType("source-derivative-folders-and-files");
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {

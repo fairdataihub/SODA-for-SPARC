@@ -2,6 +2,7 @@ import useGlobalStore from "../globalStore";
 import { produce } from "immer";
 const initialState = {
   entityList: [],
+  entityListName: "",
   activeEntity: null,
   entityType: null,
   datasetEntityObj: {},
@@ -20,10 +21,11 @@ export const resetDatasetEntitySelectorState = () => {
   );
 };
 
-export const setEntityList = (entityList) => {
+export const setEntityList = (entityList, entityListName) => {
   useGlobalStore.setState((state) => ({
     ...state,
     entityList,
+    entityListName,
   }));
 };
 
