@@ -35,6 +35,7 @@ import {
   IconFileDownload,
 } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
+import { getEntityForRelativePath } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { setDatasetstructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
 
 const ICON_SETTINGS = {
@@ -68,13 +69,18 @@ const getFileTypeIcon = (fileName) => {
 };
 
 // FileItem component
-const FileItem = ({ name, content, onFileClick, getEntitySelectedStatus }) => {
-  const fileIsSlected = getEntitySelectedStatus(content.relativePath);
+const FileItem = ({ name, content, onFileClick, getEntityForRelativePath }) => {
+  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
+  const entityType = useGlobalStore((state) => state.entityType);
+  const activeEntity = useGlobalStore((state) => state.activeEntity);
+
+  const filesEntity = getEntityForRelativePath(datasetEntityObj, entityType, content.relativePath);
+
   return (
     <Group
       gap="sm"
       justify="flex-start"
-      bg={fileIsSlected ? "gray" : "transparent"}
+      bg={!filesEntity ? "transparent" : activeEntity === filesEntity ? "blue" : "red"}
       onClick={() => onFileClick && onFileClick(name, content)}
       ml="sm"
     >
@@ -89,9 +95,19 @@ const FolderItem = ({
   content,
   onFolderClick,
   onFileClick,
-  getEntitySelectedStatus,
+  getEntityForRelativePath,
   datasetStructureSearchFilter,
 }) => {
+  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
+  const entityType = useGlobalStore((state) => state.entityType);
+  const foldersEntity = getEntityForRelativePath(
+    datasetEntityObj,
+    entityType,
+    content.relativePath
+  );
+  console.log("Folders entity", foldersEntity);
+  const activeEntity = useGlobalStore((state) => state.activeEntity);
+
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
 
@@ -108,10 +124,6 @@ const FolderItem = ({
   const isFolderEmpty =
     Object.keys(content.folders || {}).length === 0 &&
     Object.keys(content.files || {}).length === 0;
-
-  const folderIsSlected = getEntitySelectedStatus
-    ? getEntitySelectedStatus(content.relativePath)
-    : false;
 
   return (
     <Stack gap={1} ml="xs">
@@ -131,11 +143,12 @@ const FolderItem = ({
         )}
         <Tooltip label="Select folder" zIndex={2999}>
           <Checkbox
+            readOnly
             onClick={() => onFolderClick(name, content, "folder-select")}
-            checked={folderIsSlected}
+            checked={foldersEntity === activeEntity}
           />
         </Tooltip>
-        <Text size="md" px={5}>
+        <Text size="md" px={5} onClick={toggleFolder}>
           {name}
         </Text>
         <Space w="lg" />
@@ -162,7 +175,7 @@ const FolderItem = ({
                 name={fileName}
                 content={content.files[fileName]}
                 onFileClick={onFileClick}
-                getEntitySelectedStatus={getEntitySelectedStatus}
+                getEntityForRelativePath={getEntityForRelativePath}
               />
             ))}
             {Object.keys(content?.folders || {}).map((folderName) => (
@@ -172,7 +185,7 @@ const FolderItem = ({
                 content={content.folders[folderName]}
                 onFolderClick={onFolderClick}
                 onFileClick={onFileClick}
-                getEntitySelectedStatus={getEntitySelectedStatus}
+                getEntityForRelativePath={getEntityForRelativePath}
                 datasetStructureSearchFilter={datasetStructureSearchFilter}
               />
             ))}
@@ -183,10 +196,15 @@ const FolderItem = ({
   );
 };
 
-const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntitySelectedStatus }) => {
-  const renderDatasetStructureJSONObj = useGlobalStore(
-    (state) => state.renderDatasetStructureJSONObj
-  );
+const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntityForRelativePath }) => {
+  const { entityList, activeEntity, entityType, datasetEntityObj, renderDatasetStructureJSONObj } =
+    useGlobalStore((state) => ({
+      entityList: state.entityList,
+      activeEntity: state.activeEntity,
+      entityType: state.entityType,
+      datasetEntityObj: state.datasetEntityObj,
+      renderDatasetStructureJSONObj: state.renderDatasetStructureJSONObj,
+    }));
 
   const renderObjIsEmpty =
     !renderDatasetStructureJSONObj ||
@@ -222,7 +240,7 @@ const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntitySelected
                 name={fileName}
                 content={renderDatasetStructureJSONObj.files[fileName]}
                 onFileClick={onFileClick}
-                getEntitySelectedStatus={getEntitySelectedStatus}
+                getEntityForRelativePath={getEntityForRelativePath}
               />
             ))}
             {Object.keys(renderDatasetStructureJSONObj?.folders || {}).map((folderName) => (
@@ -232,7 +250,7 @@ const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntitySelected
                 content={renderDatasetStructureJSONObj.folders[folderName]}
                 onFolderClick={onFolderClick}
                 onFileClick={onFileClick}
-                getEntitySelectedStatus={getEntitySelectedStatus}
+                getEntityForRelativePath={getEntityForRelativePath}
                 datasetStructureSearchFilter={datasetStructureSearchFilter}
               />
             ))}

@@ -49,10 +49,11 @@ export const setdatasetEntityObj = (datasetEntityObj) => {
 };
 
 // Function to add or update a specific value (relative path) in datasetEntityObj
-export const toggleRelativeFilePathForDatasetEntity = (
+export const modifyDatasetEntityForRelativeFilePath = (
   entityType,
   entityName,
-  entityRelativePath
+  entityRelativePath,
+  action
 ) => {
   if (!entityType || !entityName || !entityRelativePath) {
     console.log("Aborting function: entityType, entityName, or entityRelativePath is missing");
@@ -60,38 +61,88 @@ export const toggleRelativeFilePathForDatasetEntity = (
 
     return;
   }
-  useGlobalStore.setState(
-    produce((state) => {
-      // Check if entityType exists, if not, create it
-      if (!state.datasetEntityObj[entityType]) {
-        state.datasetEntityObj[entityType] = {};
-      }
 
-      // Check if entityName exists within the entityType, if not, create it as an array
-      if (!state.datasetEntityObj[entityType][entityName]) {
-        state.datasetEntityObj[entityType][entityName] = [entityRelativePath];
-      } else {
-        // If entityName exists, check if the entityRelativePath exists in the array
-        // If it does, remove it, otherwise add it
+  if (action === "toggle") {
+    console.log("Toggling entity for relative path", entityRelativePath);
+    useGlobalStore.setState(
+      produce((state) => {
+        // Check if entityType exists, if not, create it
+        if (!state.datasetEntityObj[entityType]) {
+          state.datasetEntityObj[entityType] = {};
+        }
+
+        // Check if entityName exists within the entityType, if not, create it as an array
+        if (!state.datasetEntityObj[entityType][entityName]) {
+          state.datasetEntityObj[entityType][entityName] = [entityRelativePath];
+        } else {
+          // If entityName exists, check if the entityRelativePath exists in the array
+          // If it does, remove it, otherwise add it
+          const index = state.datasetEntityObj[entityType][entityName].indexOf(entityRelativePath);
+          if (index !== -1) {
+            state.datasetEntityObj[entityType][entityName].splice(index, 1);
+          } else {
+            state.datasetEntityObj[entityType][entityName].push(entityRelativePath);
+          }
+        }
+
+        // Remove the entityRelativePath from all other entities in the same entityType
+        Object.keys(state.datasetEntityObj[entityType]).forEach((entity) => {
+          if (entity !== entityName) {
+            const index = state.datasetEntityObj[entityType][entity].indexOf(entityRelativePath);
+            if (index !== -1) {
+              state.datasetEntityObj[entityType][entity].splice(index, 1);
+            }
+          }
+        });
+      })
+    );
+  }
+  if (action === "add") {
+    useGlobalStore.setState(
+      produce((state) => {
+        // Check if entityType exists, if not, create it
+        if (!state.datasetEntityObj[entityType]) {
+          state.datasetEntityObj[entityType] = {};
+        }
+
+        // Check if entityName exists within the entityType, if not, create it as an array
+        if (!state.datasetEntityObj[entityType][entityName]) {
+          state.datasetEntityObj[entityType][entityName] = [entityRelativePath];
+        } else {
+          // If entityName exists, check if the entityRelativePath exists in the array
+          // If it does, remove it, otherwise add it
+          const index = state.datasetEntityObj[entityType][entityName].indexOf(entityRelativePath);
+          if (index === -1) {
+            state.datasetEntityObj[entityType][entityName].push(entityRelativePath);
+          }
+        }
+
+        // Remove the entityRelativePath from all other entities in the same entityType
+        Object.keys(state.datasetEntityObj[entityType]).forEach((entity) => {
+          if (entity !== entityName) {
+            const index = state.datasetEntityObj[entityType][entity].indexOf(entityRelativePath);
+            if (index !== -1) {
+              state.datasetEntityObj[entityType][entity].splice(index, 1);
+            }
+          }
+        });
+      })
+    );
+  }
+  if (action === "remove") {
+    useGlobalStore.setState(
+      produce((state) => {
+        // Check if entityType exists, if not, create it
+        if (!state?.datasetEntityObj?.[entityType]?.[entityName]) {
+          return;
+        }
         const index = state.datasetEntityObj[entityType][entityName].indexOf(entityRelativePath);
         if (index !== -1) {
           state.datasetEntityObj[entityType][entityName].splice(index, 1);
-        } else {
-          state.datasetEntityObj[entityType][entityName].push(entityRelativePath);
         }
-      }
-
-      // Remove the entityRelativePath from all other entities in the same entityType
-      Object.keys(state.datasetEntityObj[entityType]).forEach((entity) => {
-        if (entity !== entityName) {
-          const index = state.datasetEntityObj[entityType][entity].indexOf(entityRelativePath);
-          if (index !== -1) {
-            state.datasetEntityObj[entityType][entity].splice(index, 1);
-          }
-        }
-      });
-    })
-  );
+      })
+    );
+  }
 };
 
 export const getEntityForRelativePath = (datasetEntityObj, entityType, relativePath) => {
