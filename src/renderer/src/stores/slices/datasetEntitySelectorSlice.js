@@ -55,9 +55,7 @@ export const toggleRelativeFilePathForDatasetEntity = (
   entityRelativePath
 ) => {
   if (!entityType || !entityName || !entityRelativePath) {
-    console.log(
-      "Aborting toggleRelativeFilePathForDatasetEntity: entityType, entityName, or entityRelativePath is missing"
-    );
+    console.log("Aborting function: entityType, entityName, or entityRelativePath is missing");
     console.log(entityType, entityName, entityRelativePath);
 
     return;
@@ -96,22 +94,21 @@ export const toggleRelativeFilePathForDatasetEntity = (
   );
 };
 
-export const getEntityForRelativePath = (relativePath) => {
-  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
-  const entityType = useGlobalStore((state) => state.entityType);
-
-  if (!entityType || !datasetEntityObj?.[entityType]) {
+export const getEntityForRelativePath = (datasetEntityObj, entityType, relativePath) => {
+  // Ensure the datasetEntityObj and entityType are valid
+  if (!datasetEntityObj || !entityType || !datasetEntityObj[entityType]) {
     return null;
   }
 
   // Iterate through all entities within the specified entityType
-  for (const entity in datasetEntityObj[entityType]) {
-    if (datasetEntityObj[entityType][entity]?.includes(relativePath)) {
-      return entity;
+  for (const entityName in datasetEntityObj[entityType]) {
+    // If the relativePath exists in the entity's list, return the entityName
+    if (datasetEntityObj[entityType][entityName]?.includes(relativePath)) {
+      return entityName;
     }
   }
 
-  return null;
+  return null; // Return null if the relativePath is not found
 };
 
 export const getNumberFilesForEntity = (entityName) => {

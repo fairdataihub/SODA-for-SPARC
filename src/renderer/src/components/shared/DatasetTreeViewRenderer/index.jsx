@@ -9,6 +9,7 @@ import {
   TextInput,
   Flex,
   Button,
+  Space,
   Tooltip,
   Paper,
   Checkbox,
@@ -128,23 +129,17 @@ const FolderItem = ({
             onClick={toggleFolder}
           />
         )}
-        <UnstyledButton
-          ref={ref}
-          style={{ borderRadius: "4px" }}
-          px="2"
-          bg={folderIsSlected ? "gray" : "transparent"}
-          onClick={toggleFolder}
-        >
-          <Text size="md" px={1}>
-            {name}
-          </Text>
-        </UnstyledButton>
         <Tooltip label="Select folder" zIndex={2999}>
           <Checkbox
             onClick={() => onFolderClick(name, content, "folder-select")}
             checked={folderIsSlected}
           />
         </Tooltip>
+        <Text size="md" px={5}>
+          {name}
+        </Text>
+        <Space w="lg" />
+
         <Tooltip label="Select all files in this folder" zIndex={2999}>
           <IconFileDownload
             size={20}
@@ -189,9 +184,6 @@ const FolderItem = ({
 };
 
 const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntitySelectedStatus }) => {
-  console.log("onFolderClick", onFolderClick);
-  console.log("onFileClick", onFileClick);
-  console.log("getEntitySelectedStatus", getEntitySelectedStatus);
   const renderDatasetStructureJSONObj = useGlobalStore(
     (state) => state.renderDatasetStructureJSONObj
   );

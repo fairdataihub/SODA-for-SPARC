@@ -12,6 +12,7 @@ const DatasetEntitySelector = () => {
   const entityList = useGlobalStore((state) => state.entityList);
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const entityType = useGlobalStore((state) => state.entityType);
+  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
 
   const handleEntityClick = (entity) => {
     setActiveEntity(entity);
@@ -22,28 +23,59 @@ const DatasetEntitySelector = () => {
   };
 
   const getEntitySelectedStatus = (entityRelativePath) => {
-    const entityExists = getEntityForRelativePath(entityRelativePath);
-    console.log("Entity exists", entityExists);
-
-    return entityExists;
+    const entity = getEntityForRelativePath(datasetEntityObj, entityType, entityRelativePath);
+    return entity;
   };
 
-  const handleFolderClick = (folderName, folderContents, toggleChildren) => {
-    // Designate the folder as part of the active entity
-    toggleRelativeFilePathForDatasetEntity(entityType, activeEntity, folderContents.relativePath);
+  const handleFolderClick = (folderName, folderContents, folderClickAction) => {
+    if (folderClickAction === "folder-select") {
+      toggleRelativeFilePathForDatasetEntity(entityType, activeEntity, folderContents.relativePath);
+      return;
+    }
 
-    if (toggleChildren) {
-      // Designate the files in the folder as part of the active entity
-      for (const file of Object.keys(folderContents.files)) {
-        toggleRelativeFilePathForDatasetEntity(
-          entityType,
-          activeEntity,
-          folderContents.files[file].relativePath
-        );
+    if (folderClickAction === "folder-files-select") {
+      // Check if all files have the same entity as the active entity
+      const fileRelativePaths = Object.keys(folderContents.files).map(
+        (file) => folderContents.files[file].relativePath
+      );
+
+      // Get the entities of all the files in the folder
+      const fileEntities = fileRelativePaths.map((fileRelativePath) =>
+        getEntityForRelativePath(datasetEntityObj, entityType, fileRelativePath)
+      );
+
+      // Determine if the files are consistent in terms of entity selection
+      const allFilesHaveSameEntity = fileEntities.every((entity) => entity === activeEntity);
+
+      // If all files in the folder are associated with the active entity, toggle selection
+      if (allFilesHaveSameEntity) {
+        fileRelativePaths.forEach((relativePath) => {
+          toggleRelativeFilePathForDatasetEntity(entityType, activeEntity, relativePath);
+        });
+      } else {
+        // If the files belong to different entities, toggle each file independently
+        fileRelativePaths.forEach((relativePath) => {
+          toggleRelativeFilePathForDatasetEntity(entityType, activeEntity, relativePath);
+        });
       }
-      // Recursively designate the subfolders as part of the active entity
+    }
+
+    if (folderClickAction === "folder-recursive-select") {
+      // Mark the folder itself as part of the active entity if needed
+      toggleRelativeFilePathForDatasetEntity(entityType, activeEntity, folderContents.relativePath);
+      // Recursively toggle all subfolders and their contents
+      for (const file of Object.keys(folderContents.files)) {
+        const filesRelativePath = folderContents.files[file].relativePath;
+        console.log("Files relative path", filesRelativePath);
+        console.log(
+          "Files entity",
+          getEntityForRelativePath(datasetEntityObj, entityType, filesRelativePath)
+        );
+
+        toggleRelativeFilePathForDatasetEntity(entityType, activeEntity, filesRelativePath);
+      }
       for (const subFolder of Object.keys(folderContents.folders)) {
-        handleFolderClick(subFolder, folderContents.folders[subFolder]);
+        handleFolderClick(subFolder, folderContents.folders[subFolder], "folder-recursive-select");
       }
     }
   };
