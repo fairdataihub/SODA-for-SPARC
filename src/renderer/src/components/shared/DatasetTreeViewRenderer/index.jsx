@@ -31,7 +31,6 @@ import {
   IconSearch,
   IconSelect,
   IconFileDownload,
-  IconEraser,
 } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
 import { setDatasetstructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
@@ -77,7 +76,13 @@ const FileItem = ({ name, content, onFileClick, getEntityForRelativePath }) => {
     <Group
       gap="sm"
       justify="flex-start"
-      bg={!filesEntity ? "transparent" : filesEntity === activeEntity ? "#90BFFF" : "#D3D3D3"}
+      bg={
+        !filesEntity
+          ? "transparent"
+          : filesEntity === activeEntity
+            ? "rgb(227, 242, 253)"
+            : "lightgray"
+      }
       onClick={() => onFileClick && onFileClick(name, content)}
       ml="sm"
     >
@@ -145,7 +150,8 @@ const FolderItem = ({
             <Checkbox
               readOnly
               onClick={() => onFolderClick(name, content, "folder-select")}
-              checked={foldersEntity === activeEntity}
+              checked={foldersEntity}
+              color={foldersEntity === activeEntity ? "blue" : "gray"}
             />
           </Tooltip>
         )}
@@ -220,7 +226,7 @@ const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntityForRelat
   };
 
   return (
-    <Paper padding="md" shadow="sm" radius="md" mih={200} my="md" p="sm">
+    <Paper padding="md" shadow="sm" radius="md" mih={200} p="sm">
       <TextInput
         label="Search files and folders:"
         placeholder="Search files and folders..."
@@ -228,25 +234,16 @@ const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntityForRelat
         onChange={handleSearchChange}
         leftSection={<IconSearch stroke={1.5} />}
         mb="sm"
-        rightSection={
-          <Tooltip label="Clear search" zIndex={2999}>
-            <IconEraser
-              size={20}
-              onClick={() => setDatasetstructureSearchFilter("")}
-              style={{ cursor: "pointer" }}
-            />
-          </Tooltip>
-        }
       />
-      <Stack gap={1} style={{ maxHeight: 400, overflowY: "auto" }} py={3}>
+      <Stack gap={1} style={{ maxHeight: 700, overflowY: "auto" }} py={3}>
         {renderObjIsEmpty ? (
           <Center mt="md">
             {datasetStructureSearchFilter ? (
-              <Text size="sm" color="gray">
+              <Text size="sm" c="gray">
                 No files or folders found matching the search criteria.
               </Text>
             ) : (
-              <Text color="gray">Import experimental data above</Text>
+              <Text c="gray">Import experimental data above</Text>
             )}
           </Center>
         ) : (

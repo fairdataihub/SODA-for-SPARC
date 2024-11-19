@@ -1,4 +1,4 @@
-import { Grid, Button, Stack, Title, Paper, Divider, Text, Box } from "@mantine/core";
+import { Grid, Button, Stack, Title, Paper, Divider, Text, Box, Group, rem } from "@mantine/core";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 import useGlobalStore from "../../../stores/globalStore";
 import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
@@ -34,7 +34,7 @@ const DatasetEntitySelector = () => {
 
   const handleFolderClick = (folderName, folderContents, folderClickAction) => {
     console.log("handleFolderClick", folderClickAction);
-    if (folderClickAction === "folder-select") {
+    /*if (folderClickAction === "folder-select") {
       modifyDatasetEntityForRelativeFilePath(
         entityType,
         activeEntity,
@@ -42,7 +42,7 @@ const DatasetEntitySelector = () => {
         "toggle"
       );
       return;
-    }
+    }*/
 
     if (folderClickAction === "folder-files-select") {
       // Get all of the files that do not belong to a seperate entity and are not claimed
@@ -159,41 +159,63 @@ const DatasetEntitySelector = () => {
       <Grid gutter="lg">
         <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
           <Paper shadow="lg" p="md" radius="md" withBorder>
-            <Title order={2} align="center" color="dark">
-              {entityListName}
-            </Title>
-            <Divider my="md" />
-            <Stack spacing="sm">
-              {entityList.map((entity) => {
+            <Group mb="md" spacing="xs">
+              <Text size="lg" weight={500}>
+                {entityListName}
+              </Text>
+            </Group>
+            <Divider my="sm" />
+            <Box
+              style={{
+                maxHeight: "70vh", // Contain list within a scrollable box
+                overflowY: "auto",
+              }}
+            >
+              {entityList.map((entity, index) => {
                 const entityItemsCount = Object.keys(
                   datasetEntityObj?.[entityType]?.[entity] || {}
                 ).length;
-                console.log("Entity count", entityItemsCount);
+                const isActive = activeEntity === entity;
+
                 return (
-                  <Button
+                  <Box
                     key={entity}
-                    variant={activeEntity === entity ? "filled" : "outline"}
-                    color={activeEntity === entity ? "blue" : "gray"}
-                    fullWidth
-                    size="sm"
+                    component="button"
                     onClick={() => handleEntityClick(entity)}
-                    rightSection={
-                      <Text size="sm" color="gray">
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      textAlign: "left",
+                      backgroundColor: isActive ? "#e3f2fd" : "transparent",
+                      color: isActive ? "#0d47a1" : "#333",
+                      padding: rem(8),
+                      paddingLeft: rem(16), // Add space for hierarchy-like appearance
+                      fontSize: rem(14),
+                      lineHeight: 1.5,
+                      fontWeight: isActive ? 500 : 400,
+                      textDecoration: "none",
+                      border: "none",
+                      borderLeft: `3px solid ${isActive ? "#2196f3" : "transparent"}`, // Highlight active with a border
+                      cursor: "pointer",
+                      transition: "background-color 0.2s ease, border-color 0.2s ease",
+                    }}
+                  >
+                    <Group justify="space-between" noWrap>
+                      <Text>{entity}</Text>
+                      <Text size="sm" color={isActive ? "blue" : "gray"}>
                         {entityItemsCount}
                       </Text>
-                    }
-                  >
-                    <Text c={activeEntity === entity ? "white" : "dark"}>{entity}</Text>
-                  </Button>
+                    </Group>
+                  </Box>
                 );
               })}
-            </Stack>
+            </Box>
           </Paper>
         </Grid.Col>
 
         <Grid.Col span={8}>
           {activeEntity ? (
-            <Paper shadow="sm" p="xl" radius="md">
+            <Paper shadow="sm" radius="md">
               <DatasetTreeViewRenderer
                 onFolderClick={handleFolderClick}
                 onFileClick={handleFileClick}
