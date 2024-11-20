@@ -7874,12 +7874,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     await patchPreviousGuidedModeVersions();
 
     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-    console.log("Sample folder now:");
-    console.log(
-      window.datasetStructureJSONObj["folders"]["primary"]["folders"]["sub-a"]["folders"]["sam-1"][
-        "folders"
-      ]
-    );
     window.subjectsTableData = window.sodaJSONObj["subjects-table-data"];
     window.samplesTableData = window.sodaJSONObj["samples-table-data"];
 
