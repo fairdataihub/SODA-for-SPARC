@@ -2105,12 +2105,14 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
-    // Save the current version of SODA as the user should be taken back to the first page when the app is updated
-    const currentAppVersion = document.getElementById("version").innerHTML;
-    window.sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
-
     // Stop any animations that need to be stopped
     startOrStopAnimationsInContainer(pageBeingLeftID, "stop");
+
+    try {
+      await guidedSaveProgress();
+    } catch (error) {
+      log.error(error);
+    }
   } catch (error) {
     guidedSetNavLoadingState(false);
     console.log(error);
@@ -3004,9 +3006,14 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
   $("#guided-footer-div").css("display", "flex");
 };
 
-const saveGuidedProgress = async (guidedProgressFileName) => {
+const guidedSaveProgress = async () => {
+  const guidedProgressFileName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
   //return if guidedProgressFileName is not a strnig greater than 0
-  if (typeof guidedProgressFileName !== "string" || guidedProgressFileName.length === 0) {
+  if (
+    !guidedProgressFileName ||
+    typeof guidedProgressFileName !== "string" ||
+    guidedProgressFileName.length === 0
+  ) {
     return;
   }
   //Destination: HOMEDIR/SODA/Guided-Progress
@@ -3029,6 +3036,10 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
   window.sodaJSONObj["dataset-structure"] = window.datasetStructureJSONObj;
   window.sodaJSONObj["subjects-table-data"] = window.subjectsTableData;
   window.sodaJSONObj["samples-table-data"] = window.samplesTableData;
+
+  // Save the current version of SODA as the user should be taken back to the first page when the app is updated
+  const currentAppVersion = document.getElementById("version").innerHTML;
+  window.sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
 
   window.fs.writeFileSync(guidedFilePath, JSON.stringify(window.sodaJSONObj, null, 2));
 };
@@ -3470,7 +3481,7 @@ window.guidedOpenManifestEditSwal = async (highLevelFolderName) => {
       //spreadsheet reply contained results
       await updateManifestJson(highLevelFolderName, result);
       window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
-      await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+      await guidedSaveProgress();
       renderManifestCards();
     }
   });
@@ -6819,7 +6830,7 @@ window.openPage = async (targetPageID) => {
 
     // Set the last opened page and save it
     window.sodaJSONObj["page-before-exit"] = targetPageID;
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
   } catch (error) {
     const eMessage = userErrorMessage(error);
     Swal.fire({
@@ -7541,7 +7552,7 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
   return false;
 };
 
-const guidedGetPageToReturnTo = (sodaJSONObj) => {
+const guidedGetPageToReturnTo = async (sodaJSONObj) => {
   // Set by window.openPage function
   const usersPageBeforeExit = window.sodaJSONObj["page-before-exit"];
 
@@ -7557,7 +7568,11 @@ const guidedGetPageToReturnTo = (sodaJSONObj) => {
   const lastVersionOfSodaUsedOnProgressFile = window.sodaJSONObj["last-version-of-soda-used"];
 
   if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
-    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
+    // If the progress file was last edited in a previous SODA version, reset to the first page
+    await swalShowInfo(
+      "SODA has been updated since you last worked on this dataset.",
+      "You'll be taken to the first page to ensure compatibility with the latest workflow. Your previous work is saved and accessible."
+    );
     return firstPageID;
   }
 
@@ -7859,6 +7874,12 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     await patchPreviousGuidedModeVersions();
 
     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
+    console.log("Sample folder now:");
+    console.log(
+      window.datasetStructureJSONObj["folders"]["primary"]["folders"]["sub-a"]["folders"]["sam-1"][
+        "folders"
+      ]
+    );
     window.subjectsTableData = window.sodaJSONObj["subjects-table-data"];
     window.samplesTableData = window.sodaJSONObj["samples-table-data"];
 
@@ -7880,7 +7901,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     hideSubNavAndShowMainNav(false);
 
     // pageToReturnTo will be set to the page the user will return to
-    const pageToReturnTo = guidedGetPageToReturnTo(window.sodaJSONObj);
+    const pageToReturnTo = await guidedGetPageToReturnTo(window.sodaJSONObj);
 
     await window.openPage(pageToReturnTo);
 
@@ -10550,7 +10571,7 @@ window.openCopySubjectMetadataPopup = async () => {
         window.populateForms(currentSubjectOpenInView, "", "guided");
       }
 
-      await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+      await guidedSaveProgress();
     }
   });
 };
@@ -10648,7 +10669,7 @@ window.openCopySampleMetadataPopup = async () => {
       if (currentSampleOpenInView) {
         openModifySampleMetadataPage(currentSampleOpenInView, currentSampleSubjectOpenInView);
       }
-      await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+      await guidedSaveProgress();
     }
   });
 };
@@ -12870,7 +12891,7 @@ const renderSubjectsMetadataAsideItems = async () => {
       //check to see if previousSubject is empty
       if (previousSubject) {
         window.addSubject("guided");
-        await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+        await guidedSaveProgress();
       }
 
       window.clearAllSubjectFormFields(window.guidedSubjectsFormDiv);
@@ -12888,7 +12909,7 @@ const renderSubjectsMetadataAsideItems = async () => {
 
       document.getElementById("guided-bootbox-subject-id").value = e.target.innerText;
 
-      await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+      await guidedSaveProgress();
     });
   });
 };
@@ -13015,7 +13036,7 @@ const renderSamplesMetadataAsideItems = async () => {
       //check to see if previousSample is empty
       if (previousSample) {
         window.addSample("guided");
-        await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+        await guidedSaveProgress();
       }
 
       //add selected class to clicked element
@@ -13035,7 +13056,7 @@ const renderSamplesMetadataAsideItems = async () => {
         e.target.innerText.split("/")[0]
       );
 
-      await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+      await guidedSaveProgress();
     });
   });
 };
@@ -13715,7 +13736,7 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
       // so new metadata can be uploaded to the newly created dataset
       // (This would happen if the user deleted the dataset on Pennsieve)
       window.sodaJSONObj["previously-uploaded-data"] = {};
-      await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+      await guidedSaveProgress();
     }
   }
 
@@ -13768,7 +13789,7 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
     //Save the dataset ID generated by pennsieve so the dataset is not re-uploaded when the user
     //resumes progress after failing an upload
     window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = createdDatasetsID;
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
 
     return createdDatasetsID;
   } catch (error) {
@@ -13834,7 +13855,7 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
     datasetSubtitleUploadText.innerHTML = `Successfully added dataset subtitle: ${datasetSubtitle}`;
     guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "success");
     window.sodaJSONObj["previously-uploaded-data"]["subtitle"] = datasetSubtitle;
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
 
     // Send successful dataset subtitle upload event to Kombucha
     window.electron.ipcRenderer.send(
@@ -13920,7 +13941,7 @@ const guidedAddDatasetDescription = async (
     datasetDescriptionUploadText.innerHTML = `Successfully added dataset description!`;
     guidedUploadStatusIcon("guided-dataset-description-upload-status", "success");
     window.sodaJSONObj["previously-uploaded-data"]["description"] = description;
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
 
     // Send successful dataset description upload event to Kombucha
     window.electron.ipcRenderer.send(
@@ -14007,7 +14028,7 @@ const uploadValidBannerImage = async (bfAccount, datasetName, bannerImagePath) =
     datasetBannerImageUploadText.innerHTML = `Successfully added dataset banner image!`;
     guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "success");
     window.sodaJSONObj["previously-uploaded-data"]["banner-image-path"] = bannerImagePath;
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
 
     // Send successful banner image upload event to Kombucha
     window.electron.ipcRenderer.send(
@@ -14100,7 +14121,7 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
     datasetLicenseUploadText.innerHTML = `Successfully added dataset license: ${datasetLicense}`;
     guidedUploadStatusIcon("guided-dataset-license-upload-status", "success");
     window.sodaJSONObj["previously-uploaded-data"]["license"] = datasetLicense;
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
 
     // Send successful license upload event to Kombucha
     window.electron.ipcRenderer.send(
@@ -14173,7 +14194,7 @@ const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
     datasetTagsUploadText.innerHTML = `Successfully added dataset tags: ${tags.join(", ")}`;
     guidedUploadStatusIcon("guided-dataset-tags-upload-status", "success");
     window.sodaJSONObj["previously-uploaded-data"]["tags"] = tags;
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
 
     // Send successful tags upload event to Kombucha
     window.electron.ipcRenderer.send(
@@ -15692,7 +15713,7 @@ const guidedUploadDatasetToPennsieve = async () => {
         window.sodaJSONObj["digital-metadata"]["name"];
 
       // Save the window.sodaJSONObj after a successful upload
-      await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+      await guidedSaveProgress();
 
       //Display the click next text
       document.getElementById("guided--verify-files").classList.remove("hidden");
@@ -16497,8 +16518,6 @@ $("#guided-next-button").on("click", async function () {
 
   try {
     await savePageChanges(window.pageBeingLeftID);
-    //Save progress onto local storage with the dataset name as the key
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
 
     //Mark page as completed in JSONObj so we know what pages to load when loading local saves
     //(if it hasn't already been marked complete)
@@ -17091,7 +17110,7 @@ const saveSubPageChanges = async (openSubPageID) => {
         "import";
     }
 
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
   } catch (error) {
     guidedSetNavLoadingState(false);
     throw error;
