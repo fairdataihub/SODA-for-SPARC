@@ -998,6 +998,7 @@
           <div class="guided--capsule" id="guided-samples-addition-capsule"></div>
           <div class="guided--capsule" id="guided-unstructured-data-import-capsule"></div>
           <div class="guided--capsule" id="guided-manifest-subject-entity-selector-capsule"></div>
+          <div class="guided--capsule" id="guided-manifest-sample-entity-selector-capsule"></div>
           <div
             class="guided--capsule"
             id="guided-source-derivative-folders-and-files-selector-capsule"
@@ -1435,10 +1436,28 @@
         <div
           class="guided--page"
           id="guided-manifest-subject-entity-selector-tab"
-          data-page-name="Map Folders/Files to Subjects"
+          data-page-name="Map data to Subjects"
         >
           <div class="guided--section">
-            <h1 class="text-sub-step-title">Map Folders/Files to Subjects</h1>
+            <h1 class="text-sub-step-title">Map data to Subjects</h1>
+            <p class="help-text">
+              The SPARC guidelines require all folders and files related to subjects to be mapped to
+              their respective subjects in the manifest file.
+            </p>
+            <p class="help-text">
+              To map folders and files to subjects in the interface below, first select a subject
+              from the list, then choose the folders and files associated with that subject.
+            </p>
+          </div>
+          <div data-component-type="manifest-entity-selector" class="guided--section"></div>
+        </div>
+        <div
+          class="guided--page"
+          id="guided-manifest-sample-entity-selector-tab"
+          data-page-name="Map data to samples"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Map data to Samples</h1>
             <p class="help-text">
               The SPARC guidelines require all folders and files related to subjects to be mapped to
               their respective subjects in the manifest file.
@@ -2010,14 +2029,6 @@
             <div class="guided--section" id="guided-container-manifest-file-cards"></div>
           </div>
         </div>
-        <!--
-        <div
-          id="guided-manifest-subject-entity-selector-tab"
-          class="guided--page"
-          data-component-type="guided-mode-page"
-          data-page-header="Indicate subject folders/files"
-          data-page-name="Manifest subject selection"
-        ></div>-->
 
         <div
           class="guided--page"

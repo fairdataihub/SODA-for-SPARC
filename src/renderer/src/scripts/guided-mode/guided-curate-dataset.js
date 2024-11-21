@@ -1288,7 +1288,6 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-samples-addition-tab") {
-      const samples = getExistingSampleNames();
       const userSelectedDatasetHasSamples = document
         .getElementById("guided-button-samples-page-subjects-have-samples")
         .classList.contains("selected");
@@ -1303,6 +1302,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
+
+      const samples = getExistingSampleNames();
 
       if (userSelectedDatasetHasSamples) {
         if (samples.length === 0) {
@@ -5399,6 +5400,11 @@ window.openPage = async (targetPageID) => {
       setEntityList(window.getExistingSubjectNames(), "Subjects List");
       setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       setEntityType("subjects");
+    }
+    if (targetPageID === "guided-manifest-sample-entity-selector-tab") {
+      setEntityList(window.getExistingSubjectNames(), "Samples List");
+      setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
+      setEntityType("samples");
     }
     if (targetPageID === "guided-source-derivative-folders-and-files-selector-tab") {
       setEntityList(["source", "derivative"], "Supplementary data");
