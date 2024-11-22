@@ -15,7 +15,14 @@ export const clientBlockedByExternalFirewall = async (url) => {
     return false;
   } catch (error) {
     clientError(error);
-    return true;
+    if (!error.response) {
+      // the request was made but no response was received. May be a firewall issue or the client
+      // may just need to wait to try again later.
+      return true;
+    }
+
+    // there is not a firewall issue if we get an actual repsonse from the server
+    return false;
   }
 };
 
