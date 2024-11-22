@@ -2,7 +2,7 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5565455.svg)](https://doi.org/10.5281/zenodo.5565455)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5565455.svg)](10.5281/zenodo.14195414)
 [![Curated with FAIRshare](https://raw.githubusercontent.com/fairdataihub/FAIRshare/main/badge.svg)](https://fairdataihub.org/fairshare)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.06140/status.svg)](https://doi.org/10.21105/joss.06140)
 
