@@ -79,6 +79,11 @@ import {
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
 } from "../../stores/slices/backgroundServicesSlice";
+import {
+  clientBlockedByExternalFirewall,
+  blockedMessage,
+  hostFirewallMessage,
+} from "../check-firewall/checkFirewall";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -462,6 +467,24 @@ const startupServerAndApiCheck = async () => {
     { value: 1 }
   );
 
+  let serverIsLive = await window.server.serverIsLive();
+  if (serverIsLive) {
+    // notify the user that there may be a firewall issue preventing the client from connecting to the server
+    Swal.close();
+    await Swal.fire({
+      icon: "info",
+      title: "Potential Network Issues",
+      html: hostFirewallMessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Restart SODA To Try Again",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      width: 800,
+    });
+    await window.electron.ipcRenderer.invoke("relaunch-soda");
+  }
+
   Swal.close();
   await Swal.fire({
     icon: "error",
@@ -479,6 +502,7 @@ const startupServerAndApiCheck = async () => {
 // Check app version on current app and display in the side bar
 // Also check the core systems to make sure they are all operational
 const initializeSODARenderer = async () => {
+  // TODO: Add check for internal firewall that blocks us from talking to the server here (detect-firewall)
   // check that the server is live and the api versions match
   // If this fails after the allotted time, the app will restart
   await startupServerAndApiCheck();
@@ -489,10 +513,11 @@ const initializeSODARenderer = async () => {
 
   //Refresh the Pennsieve account list if the user has connected their Pennsieve account in the past
   if (hasConnectedAccountWithPennsieve()) {
-    try {
-      // window.updateBfAccountList();
-    } catch (error) {
-      clientError(error);
+    // check for external firewall interference (aspirational in that may not be foolproof)
+    const pennsieveURL = "https://api.pennsieve.io/discover/datasets";
+    const blocked = await clientBlockedByExternalFirewall(pennsieveURL);
+    if (blocked) {
+      swalShowInfo("Potential Network Issue Detected", blockedMessage);
     }
   }
 
