@@ -511,20 +511,6 @@ const initializeSODARenderer = async () => {
   // If they do not match, the app will restart to attempt to fix the issue
   await ensureServerVersionMatchesClientVersion();
 
-  await Swal.fire({
-    icon: "info",
-    title: "Potential Network Issues",
-    html: hostFirewallMessage,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "Restart SODA To Try Again",
-    allowOutsideClick: false,
-    allowEscapeKey: false,
-    width: 800,
-  });
-
-  swalShowInfo("Potential Network Issue Detected", blockedMessage);
-
   //Refresh the Pennsieve account list if the user has connected their Pennsieve account in the past
   if (hasConnectedAccountWithPennsieve()) {
     // check for external firewall interference (aspirational in that may not be foolproof)
