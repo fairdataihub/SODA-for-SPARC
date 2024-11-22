@@ -31,7 +31,7 @@ const copyClientIdToClipboard = () => {
   window.electron.ipcRenderer.invoke("clipboard-write", docsUrl, "clipboard");
 };
 
-const commonHTML = `<p>Please refer to the SODA documentation page on resolving this issue by either clicking <a href="https://docs.sodaforsparc.io/how-to/how-to-resolve-network-issues" target="_blank">here</a> or by copying the url to the documentation page with the copy icon below.</p>
+const commonHTML = `<p style="text-align:left;">Please refer to the SODA documentation page on resolving this issue by either clicking <a href="https://docs.sodaforsparc.io/how-to/how-to-resolve-network-issues" target="_blank">here</a> or by copying the url to the documentation page with the copy icon below.</p>
   
   <div style="display:flex; margin:auto;">
     <p style="margin-right: 10px;">${docsUrl}</p>
