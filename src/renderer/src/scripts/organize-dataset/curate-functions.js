@@ -502,15 +502,18 @@ window.uploadDatasetClickHandler = async (ev) => {
 };
 
 window.handleLocalDatasetImport = async (path) => {
+  console.log("Importing local dataset from path:", path);
   const list = await getFilesAndFolders(path);
+  console.log("List of files and folders:", list);
   const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
-  const buildDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
+  console.log("Current file explorer path:", currentFileExplorerPath);
+  const builtDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
     list.folders,
-    currentFileExplorerPath,
+    "dataset_root/", // Use dataset_root as the root folder since we are importing the root in this case
     true
   );
 
-  window.sodaJSONObj["dataset-structure"] = buildDatasetStructure[0];
+  window.sodaJSONObj["dataset-structure"] = builtDatasetStructure[0];
   window.sodaJSONObj["metadata-files"] = list.files;
   const forbiddenFileNames = [];
   const problematicFiles = [];
@@ -604,7 +607,7 @@ window.handleLocalDatasetImport = async (path) => {
   window.sodaJSONObj = await window.addManifestDetailsToDatasetStructure(
     window.sodaJSONObj,
     list.manifestFiles,
-    buildDatasetStructure
+    builtDatasetStructure
   );
 
   return true;
