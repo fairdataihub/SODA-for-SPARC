@@ -7,7 +7,7 @@ on:
       - main
       - staging
       - pre-staging
-      - detect-firewall
+      - folder-build
 
 jobs:
   deploy-on-windows:

@@ -426,13 +426,20 @@ const startupServerAndApiCheck = async () => {
   Swal.fire({
     icon: "info",
     title: `Initializing SODA's background services<br /><br />This may take several minutes...`,
-    heightAuto: true,
+    heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "Restart now",
     allowOutsideClick: false,
     allowEscapeKey: false,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
     didOpen: () => Swal.showLoading(),
   });
+
   await window.wait(3000);
 
   for (let i = 0; i < totalNumberOfRetries; i++) {
@@ -538,6 +545,7 @@ const initializeSODARenderer = async () => {
 initializeSODARenderer();
 
 const abortPennsieveAgentCheck = (pennsieveAgentStatusDivId) => {
+  console.log("CHange for build");
   setPennsieveAgentCheckSuccessful(false);
   if (!pennsieveAgentStatusDivId) {
     return;
