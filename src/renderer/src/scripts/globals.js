@@ -910,7 +910,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
   const pennsieveURL = "https://api.pennsieve.io/discover/datasets";
   const blocked = await clientBlockedByExternalFirewall(pennsieveURL);
   if (blocked) {
-    await swalShowInfo("Potential Firewall Interference", blockedMessage);
+    await swalShowInfo("Potential Network Issues", blockedMessage);
     return;
   }
   let footerMessage = "No existing accounts to load. Please add an account.";

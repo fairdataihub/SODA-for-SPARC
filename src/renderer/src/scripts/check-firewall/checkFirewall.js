@@ -39,8 +39,8 @@ const commonHTML = `<p style="text-align:left;">Please refer to the SODA documen
   </div>`;
 
 export const blockedMessage = `
-  <p style="text-align:left;">SODA is unable to reach Pennsieve. 
-  If this issue persists it is possible that your network is blocking access to Pennsieve from SODA.
+  <p style="text-align:left;">SODA is unable to reach Pennsieve. Please confirm that you are connected to the internet.
+  If you are connected and this issue persists it is possible that your network is blocking access to Pennsieve from SODA.
   </p>
   ${commonHTML}`;
 
