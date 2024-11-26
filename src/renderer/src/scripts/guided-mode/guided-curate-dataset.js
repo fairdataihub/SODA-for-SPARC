@@ -44,7 +44,11 @@ import {
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
 } from "../../stores/slices/guidedModeSlice";
-import { setEntityList, setEntityType } from "../../stores/slices/datasetEntitySelectorSlice";
+import {
+  setEntityList,
+  setEntityType,
+  getEntityListForEntityType,
+} from "../../stores/slices/datasetEntitySelectorSlice";
 import {
   setDatasetstructureSearchFilter,
   setTreeViewDatasetStructure,
@@ -1349,6 +1353,21 @@ const savePageChanges = async (pageBeingLeftID) => {
         window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
           "REJOIN-HEAL";
       }
+    }
+
+    if (pageBeingLeftID === "guided-manifest-subject-entity-selector-tab") {
+      const subjectsEntitylist = getEntityListForEntityType("subjects");
+      console.log(subjectsEntitylist);
+    }
+    if (pageBeingLeftID === "guided-manifest-sample-entity-selector-tab") {
+      const samplesEntityList = getEntityListForEntityType("samples");
+      console.log(samplesEntityList);
+    }
+    if (pageBeingLeftID === "guided-source-derivative-folders-and-files-selector-tab") {
+      const sourceDerivativeFoldersAndFiles = getEntityListForEntityType(
+        "source-derivative-folders-and-files"
+      );
+      console.log(sourceDerivativeFoldersAndFiles);
     }
 
     if (pageBeingLeftID === "guided-subject-structure-spreadsheet-importation-tab") {
@@ -5356,7 +5375,7 @@ window.openPage = async (targetPageID) => {
       let responseDataStructure = response["dataset-structure"];
 
       const res = await client.post(
-        `/curate_datasets/generate_high_level_folder_manifest_data`,
+        `/curate_datasets/generate_manifest_file_data`,
         {
           dataset_structure_obj: responseDataStructure,
         },
@@ -5402,7 +5421,7 @@ window.openPage = async (targetPageID) => {
       setEntityType("subjects");
     }
     if (targetPageID === "guided-manifest-sample-entity-selector-tab") {
-      setEntityList(window.getExistingSubjectNames(), "Samples List");
+      setEntityList(getExistingSampleNames(), "Samples List");
       setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       setEntityType("samples");
     }

@@ -29,6 +29,10 @@ export const setEntityList = (entityList, entityListName) => {
   }));
 };
 
+export const getEntityListForEntityType = (entityListName) => {
+  return useGlobalStore.getState()?.datasetEntityObj?.[entityListName] || {};
+};
+
 export const setActiveEntity = (activeEntity) => {
   useGlobalStore.setState((state) => ({
     ...state,

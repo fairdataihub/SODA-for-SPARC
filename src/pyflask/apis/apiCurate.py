@@ -269,7 +269,7 @@ class GenerateManifestLocally(Resource):
 
 
 
-@api.route('/generate_high_level_folder_manifest_data')
+@api.route('/generate_manifest_file_data')
 class GenerateManifestData(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('dataset_structure_obj', type=dict, required=True, help='dataset structure used to generate manifest files for each high level folder', location='json')

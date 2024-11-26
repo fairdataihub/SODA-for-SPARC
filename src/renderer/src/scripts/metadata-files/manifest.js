@@ -364,7 +364,7 @@ $(document).ready(async function () {
       // create manifest data of all high level folders
       try {
         const res = await client.post(
-          `/curate_datasets/generate_high_level_folder_manifest_data`,
+          `/curate_datasets/generate_manifest_file_data`,
           {
             dataset_structure_obj: datasetStructCopy,
           },

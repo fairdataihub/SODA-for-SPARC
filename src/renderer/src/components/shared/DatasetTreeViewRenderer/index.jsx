@@ -58,6 +58,9 @@ const FILE_ICON_MAP = {
   jp2: <IconPhoto size={ICON_SETTINGS.fileSize} />,
 };
 
+const naturalSort = (arr) =>
+  arr.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
+
 const getFileTypeIcon = (fileName) => {
   const extension = fileName.split(".").pop().toLowerCase();
   return FILE_ICON_MAP[extension] || <IconFile size={ICON_SETTINGS.fileSize} />;
@@ -181,7 +184,7 @@ const FolderItem = ({
       <Collapse in={isOpen}>
         {isOpen && !isFolderEmpty && (
           <>
-            {Object.keys(content?.files || {}).map((fileName) => (
+            {naturalSort(Object.keys(content?.files || {})).map((fileName) => (
               <FileItem
                 key={fileName}
                 name={fileName}
@@ -190,7 +193,7 @@ const FolderItem = ({
                 getEntityForRelativePath={getEntityForRelativePath}
               />
             ))}
-            {Object.keys(content?.folders || {}).map((folderName) => (
+            {naturalSort(Object.keys(content?.folders || {})).map((folderName) => (
               <FolderItem
                 key={folderName}
                 name={folderName}
@@ -248,26 +251,30 @@ const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntityForRelat
           </Center>
         ) : (
           <>
-            {Object.keys(renderDatasetStructureJSONObj?.files || {}).map((fileName) => (
-              <FileItem
-                key={fileName}
-                name={fileName}
-                content={renderDatasetStructureJSONObj.files[fileName]}
-                onFileClick={onFileClick}
-                getEntityForRelativePath={getEntityForRelativePath}
-              />
-            ))}
-            {Object.keys(renderDatasetStructureJSONObj?.folders || {}).map((folderName) => (
-              <FolderItem
-                key={folderName}
-                name={folderName}
-                content={renderDatasetStructureJSONObj.folders[folderName]}
-                onFolderClick={onFolderClick}
-                onFileClick={onFileClick}
-                getEntityForRelativePath={getEntityForRelativePath}
-                datasetStructureSearchFilter={datasetStructureSearchFilter}
-              />
-            ))}
+            {naturalSort(Object.keys(renderDatasetStructureJSONObj?.files || {})).map(
+              (fileName) => (
+                <FileItem
+                  key={fileName}
+                  name={fileName}
+                  content={renderDatasetStructureJSONObj.files[fileName]}
+                  onFileClick={onFileClick}
+                  getEntityForRelativePath={getEntityForRelativePath}
+                />
+              )
+            )}
+            {naturalSort(Object.keys(renderDatasetStructureJSONObj?.folders || {})).map(
+              (folderName) => (
+                <FolderItem
+                  key={folderName}
+                  name={folderName}
+                  content={renderDatasetStructureJSONObj.folders[folderName]}
+                  onFolderClick={onFolderClick}
+                  onFileClick={onFileClick}
+                  getEntityForRelativePath={getEntityForRelativePath}
+                  datasetStructureSearchFilter={datasetStructureSearchFilter}
+                />
+              )
+            )}
           </>
         )}
       </Stack>
