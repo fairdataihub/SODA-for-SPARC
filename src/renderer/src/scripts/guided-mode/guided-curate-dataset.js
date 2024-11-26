@@ -5416,6 +5416,134 @@ window.openPage = async (targetPageID) => {
         }
       }
 
+      const purgeNonExistentFilesFromDatasetStructure = async (datasetStructure) => {
+        const nonExistentFiles = [];
+
+        /**
+         * Recursively collects non-existent files from the dataset structure.
+         * @param {Object} currentStructure - The current level of the dataset structure.
+         * @param {string} currentPath - The relative path to the current structure.
+         */
+        const collectNonExistentFiles = async (currentStructure, currentPath = "") => {
+          const files = currentStructure?.files || {};
+          for (const fileName in files) {
+            const fileData = files[fileName];
+            if (fileData.type === "local") {
+              const filePath = fileData.path;
+              const fileExists = await window.fs.existsSync(filePath);
+
+              if (!fileExists) {
+                nonExistentFiles.push(`${currentPath}${fileName}`);
+              }
+            }
+          }
+
+          const folders = currentStructure?.folders || {};
+          for (const folderName in folders) {
+            await collectNonExistentFiles(folders[folderName], `${currentPath}${folderName}/`);
+          }
+        };
+
+        /**
+         * Recursively deletes references to non-existent files from the dataset structure.
+         * @param {Object} currentStructure - The current level of the dataset structure.
+         * @param {string} currentPath - The relative path to the current structure.
+         */
+        const deleteNonExistentFiles = (currentStructure, currentPath = "") => {
+          const files = currentStructure?.files || {};
+          for (const fileName in files) {
+            const fileData = files[fileName];
+            if (fileData.type === "local") {
+              const filePath = fileData.path;
+              const isNonExistent = !window.fs.existsSync(filePath);
+
+              if (isNonExistent) {
+                console.log(`Deleting reference to non-existent file: ${currentPath}${fileName}`);
+                delete files[fileName];
+              }
+            }
+          }
+
+          const folders = currentStructure?.folders || {};
+          for (const folderName in folders) {
+            deleteNonExistentFiles(folders[folderName], `${currentPath}${folderName}/`);
+          }
+        };
+
+        // Start collecting non-existent files
+        await collectNonExistentFiles(datasetStructure);
+
+        if (nonExistentFiles.length > 0) {
+          await swalFileListSingleAction(
+            nonExistentFiles,
+            "Files imported into SODA that are no longer on your computer were detected",
+            "The files listed below will be disregarded by SODA and will not be uploaded to Pennsieve.",
+            ""
+          );
+
+          // Delete references to the non-existent files
+          deleteNonExistentFiles(datasetStructure);
+        }
+      };
+
+      // Purge non-existent files from the dataset structure before generating manifest files
+      await purgeNonExistentFilesFromDatasetStructure(window.datasetStructureJSONObj);
+      console.log("Purged non-existent files from dataset structure");
+      // Helper function to check if a folder structure is empty
+      const isFolderJSONObjEmpty = (folderStructure) => {
+        // Get the list of files and folders at this level
+        const fileKeys = Object.keys(folderStructure.files || {});
+        const folderKeys = Object.keys(folderStructure.folders || {});
+
+        // If no files and no folders exist, the folder is empty
+        if (fileKeys.length === 0 && folderKeys.length === 0) {
+          return true;
+        }
+
+        // Recursively check each subfolder
+        for (const subfolderName of folderKeys) {
+          const subfolderStructure = folderStructure.folders[subfolderName];
+          if (!isFolderJSONObjEmpty(subfolderStructure)) {
+            return false; // If any subfolder is not empty, return false
+          }
+        }
+
+        // If all subfolders are empty and no files exist, the folder is empty
+        return true;
+      };
+
+      // Recursively delete empty folders from the dataset structure
+      // if they are empty or only have empty descendants
+      const deleteEmptyFolders = (currentStructure) => {
+        const folders = currentStructure?.folders || {};
+
+        for (const folderName in folders) {
+          const folderStructure = folders[folderName];
+
+          // Check if the folder is empty and delete it
+          if (isFolderJSONObjEmpty(folderStructure)) {
+            delete folders[folderName];
+          } else {
+            // Recursively clean subfolders
+            deleteEmptyFolders(folderStructure);
+          }
+        }
+      };
+
+      // Trigger the deletion of empty folders
+      deleteEmptyFolders(window.datasetStructureJSONObj);
+
+      // If no folders or files are left in the dataset structure,
+      if (Object.keys(window.datasetStructureJSONObj.folders).length === 0) {
+        await swalShowInfo(
+          "No files or folders are currently imported into SODA",
+          "You will be returned to the beginning of the dataset structuring section to import your data."
+        );
+        await window.openPage("guided-dataset-structure-intro-tab");
+
+        return;
+      }
+
       const manifestFilesCardsContainer = document.getElementById(
         "guided-container-manifest-file-cards"
       );
