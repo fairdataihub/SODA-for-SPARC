@@ -3704,7 +3704,100 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
     return {"success_message_or_manifest_destination": "success"}
 
 
-def generate_manifest_file_data(dataset_structure_obj):
+
+def generate_manifest_file_data(dataset_structure):
+    # Define the double extensions
+    double_extensions = [
+        ".ome.tiff", ".ome.tif", ".ome.tf2", ".ome.tf8", ".ome.btf", ".ome.xml",
+        ".brukertiff.gz", ".mefd.gz", ".moberg.gz", ".nii.gz", ".mgh.gz", ".tar.gz", ".bcl.gz"
+    ]
+
+    # Helper function to identify the correct file extension
+    def get_file_extension(filename):
+        for ext in double_extensions:
+            if filename.endswith(ext):
+                base_ext = os.path.splitext(os.path.splitext(filename)[0])[1]
+                return base_ext + ext
+        return os.path.splitext(filename)[1]
+
+    # Helper function to build a file entry for the manifest
+    def create_file_entry(item, folder, path_parts, timestamp, filename):
+        entry = []
+        full_path = "/".join(path_parts) + "/" + filename if path_parts else filename
+        file_type = get_file_extension(filename)
+
+        entry.append(full_path.lstrip("/"))  # Remove leading slash if exists
+        entry.append(timestamp)
+        entry.append(folder["files"][item]["description"])
+        entry.append(file_type)
+        entry.append(folder["files"][item]["additional-metadata"])
+
+        # Append extra columns if available
+        if "extra_columns" in folder["files"][item]:
+            for key, value in folder["files"][item]["extra_columns"].items():
+                entry.append(value)
+                if key not in header_row:
+                    header_row.append(key)
+
+        return entry
+
+    # Recursive function to traverse folder structure and collect file data
+    def traverse_folders(folder, file_data, path_parts, is_pennsieve):
+        if "files" in folder:
+            if not file_data:
+                file_data.append(header_row)  # Add header row only once
+
+            for item in folder["files"]:
+                # Skip manifest files
+                if item in ["manifest.xlsx", "manifest.csv"]:
+                    continue
+                
+                # Determine timestamp for file
+                file_info = folder["files"][item]
+                if is_pennsieve and file_info["type"] == "bf":
+                    filename = os.path.basename(item)
+                    timestamp = file_info["timestamp"]
+                else:
+                    local_path = file_info["path"].replace("\\", "/")
+                    filename = os.path.basename(local_path)
+                    mtime = pathlib.Path(local_path).stat().st_mtime
+                    timestamp = datetime.fromtimestamp(mtime, tz=local_timezone).isoformat().replace(".", ",").replace("+00:00", "Z")
+
+                file_data.append(create_file_entry(item, folder, path_parts, timestamp, filename))
+
+        # Recursively process subfolders
+        if "folders" in folder:
+            for subfolder in folder["folders"]:
+                path_parts.append(subfolder)
+                traverse_folders(folder["folders"][subfolder], file_data, path_parts, is_pennsieve)
+                path_parts.pop()  # Backtrack after processing each subfolder
+
+    # Initialize data structures
+    all_file_data = []  # Will hold all the data for the manifest
+    header_row = ["filename", "timestamp", "description", "file type", "entity", "data modality", "also in dataset", "data dictionary path", "entity is transitive", "Additional Metadata"]
+
+    # Local timezone
+    local_timezone = TZLOCAL()
+
+    # Log the dataset structure
+    namespace_logger.info("Generating manifest file data")
+    namespace_logger.info(dataset_structure)
+
+    # Traverse each high-level folder
+    for top_level_folder in dataset_structure["folders"]:
+        file_data_for_folder = []
+        path_parts = []  # Keep track of the current folder structure
+
+        # Check if it's a Pennsieve dataset
+        is_pennsieve = "bfpath" in dataset_structure["folders"][top_level_folder]
+
+        # Start recursive traversal for the folder
+        traverse_folders(dataset_structure["folders"][top_level_folder], file_data_for_folder, path_parts, is_pennsieve)
+
+        # Add collected data for this folder to the overall manifest data
+        all_file_data.extend(file_data_for_folder)
+
+    return all_file_data
     local_timezone = TZLOCAL()
     
     double_extensions = [
