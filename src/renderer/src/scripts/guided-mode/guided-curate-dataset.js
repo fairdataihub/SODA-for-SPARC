@@ -5458,7 +5458,7 @@ window.openPage = async (targetPageID) => {
               const isNonExistent = !window.fs.existsSync(filePath);
 
               if (isNonExistent) {
-                console.log(`Deleting reference to non-existent file: ${currentPath}${fileName}`);
+                log.info(`Deleting reference to non-existent file: ${currentPath}${fileName}`);
                 delete files[fileName];
               }
             }
@@ -5472,7 +5472,6 @@ window.openPage = async (targetPageID) => {
 
         // Start collecting non-existent files
         await collectNonExistentFiles(datasetStructure);
-
         if (nonExistentFiles.length > 0) {
           await swalFileListSingleAction(
             nonExistentFiles,
@@ -5488,7 +5487,6 @@ window.openPage = async (targetPageID) => {
 
       // Purge non-existent files from the dataset structure before generating manifest files
       await purgeNonExistentFilesFromDatasetStructure(window.datasetStructureJSONObj);
-      console.log("Purged non-existent files from dataset structure");
       // Helper function to check if a folder structure is empty
       const isFolderJSONObjEmpty = (folderStructure) => {
         // Get the list of files and folders at this level
@@ -5496,8 +5494,8 @@ window.openPage = async (targetPageID) => {
         const folderKeys = Object.keys(folderStructure.folders || {});
 
         // If no files and no folders exist, the folder is empty
-        if (fileKeys.length === 0 && folderKeys.length === 0) {
-          return true;
+        if (fileKeys.length != 0 || folderKeys.length != 0) {
+          return false;
         }
 
         // Recursively check each subfolder
@@ -5519,7 +5517,6 @@ window.openPage = async (targetPageID) => {
 
         for (const folderName in folders) {
           const folderStructure = folders[folderName];
-
           // Check if the folder is empty and delete it
           if (isFolderJSONObjEmpty(folderStructure)) {
             delete folders[folderName];
