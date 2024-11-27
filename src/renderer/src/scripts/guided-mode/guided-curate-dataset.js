@@ -5536,7 +5536,7 @@ window.openPage = async (targetPageID) => {
           "No files or folders are currently imported into SODA",
           "You will be returned to the beginning of the dataset structuring section to import your data."
         );
-        await window.openPage("guided-docs-folder-tab");
+        await window.openPage("guided-dataset-structure-intro-tab");
 
         return;
       }
