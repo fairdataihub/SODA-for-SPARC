@@ -5488,20 +5488,18 @@ window.openPage = async (targetPageID) => {
       // Purge non-existent files from the dataset structure before generating manifest files
       await purgeNonExistentFilesFromDatasetStructure(window.datasetStructureJSONObj);
       // Helper function to check if a folder structure is empty
-      const isFolderJSONObjEmpty = (folderStructure) => {
-        // Get the list of files and folders at this level
+      const folderObjIsEmpty = (folderStructure) => {
+        // Check if there are no files and no folders at this level
         const fileKeys = Object.keys(folderStructure.files || {});
-        const folderKeys = Object.keys(folderStructure.folders || {});
-
-        // If no files and no folders exist, the folder is empty
-        if (fileKeys.length != 0 || folderKeys.length != 0) {
+        if (fileKeys.length != 0) {
           return false;
         }
 
+        const folderKeys = Object.keys(folderStructure.folders || {});
         // Recursively check each subfolder
         for (const subfolderName of folderKeys) {
           const subfolderStructure = folderStructure.folders[subfolderName];
-          if (!isFolderJSONObjEmpty(subfolderStructure)) {
+          if (!folderObjIsEmpty(subfolderStructure)) {
             return false; // If any subfolder is not empty, return false
           }
         }
@@ -5518,9 +5516,16 @@ window.openPage = async (targetPageID) => {
         for (const folderName in folders) {
           const folderStructure = folders[folderName];
           // Check if the folder is empty and delete it
-          if (isFolderJSONObjEmpty(folderStructure)) {
+          console.log(`Checking folder: ${folderName}`);
+          console.log("folderObjIsEmpty(folderStructure): ", folderObjIsEmpty(folderStructure));
+          if (folderObjIsEmpty(folderStructure)) {
+            console.log("folder structure is empty");
+            console.log(JSON.stringify(folderStructure, null, 2));
+
             delete folders[folderName];
           } else {
+            console.log("folder structure is not empty");
+            console.log(JSON.stringify(folderStructure, null, 2));
             // Recursively clean subfolders
             deleteEmptyFolders(folderStructure);
           }
@@ -5536,7 +5541,7 @@ window.openPage = async (targetPageID) => {
           "No files or folders are currently imported into SODA",
           "You will be returned to the beginning of the dataset structuring section to import your data."
         );
-        await window.openPage("guided-dataset-structure-intro-tab");
+        await window.openPage("guided-docs-folder-tab");
 
         return;
       }
