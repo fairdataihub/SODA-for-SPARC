@@ -169,10 +169,10 @@ def get_package_type_counts(dataset_name):
     """
     dataset_id = get_dataset_id(dataset_name)
 
-    r = requests.get(f"https://api.pennsieve.io/datasets/{dataset_id}/packageTypeCounts", headers=create_request_headers(get_access_token()))
+    r = requests.get(f"https://api.pennsieve.io/datasets/{dataset_id}", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
 
-    return r.json()
+    return r.json()["packageTypes"]
 
 def get_total_items_in_local_dataset(dataset_path):
     """

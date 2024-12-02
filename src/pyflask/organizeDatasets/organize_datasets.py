@@ -1190,9 +1190,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     root_folder = r.json()["children"]
 
     # Get the amount of files/folders in the dataset
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=create_request_headers(get_access_token()))
-    r.raise_for_status()
-    packages_list = r.json()
+    packages_list = r.json()["packageTypes"]
 
 
     # root's children files
