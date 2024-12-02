@@ -200,7 +200,7 @@ const DatasetEntitySelector = () => {
                       transition: "background-color 0.2s ease, border-color 0.2s ease",
                     }}
                   >
-                    <Group justify="space-between" noWrap>
+                    <Group justify="space-between">
                       <Text>{entity}</Text>
                       <Text size="sm" color={isActive ? "blue" : "gray"}>
                         {entityItemsCount}
