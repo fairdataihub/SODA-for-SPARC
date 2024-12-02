@@ -5,6 +5,13 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v15.2.3 - 2024-11-20
+
+## Bug Fixes:
+
+- Restricted forbidden characters in Guided Mode datasets to avoid JSON save file issues.
+- Moved guidedSaveProgress to trigger after every successful page exit for broader save coverage.
+
 ## v15.2.2 - 2024-10-09
 
 ## Bug Fixes:
