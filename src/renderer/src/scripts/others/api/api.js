@@ -93,7 +93,7 @@ const getDatasetRole = async (datasetNameOrId) => {
     window.defaultBfDataset = datasetNameOrId;
   }
 
-  let datasetRoleResponse = await client.get(`/datasets/${window.defaultBfDataset}/role`);
+  let datasetRoleResponse = await client.get(`/datasets/${window.defaultBfDatasetId}/role`);
 
   let { role } = datasetRoleResponse.data;
 

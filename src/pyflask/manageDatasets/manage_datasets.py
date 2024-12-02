@@ -334,9 +334,7 @@ def bf_dataset_account(accountname):
             store = []
         for dataset in datasets_list:
             selected_dataset_id = dataset['id']
-            r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=create_request_headers(get_access_token()))
-            r.raise_for_status()
-            user_role = r.json()["role"]
+            user_role = pennsieve_get_current_user_permissions(selected_dataset_id)
             if user_role not in ["viewer", "editor"]:
                 store.append(
                     {"id": selected_dataset_id, "name": dataset['name'], "role": user_role, "intId": dataset["intId"]}

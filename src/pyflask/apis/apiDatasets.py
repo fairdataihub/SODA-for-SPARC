@@ -5,8 +5,9 @@ from errorHandlers import notBadRequestException, handle_http_error
 import platform 
 import subprocess
 import os
+from permissions import pennsieve_get_current_user_permissions
+from authentication import get_access_token
 from datasets import ( 
-    get_role, 
     get_dataset_by_id, 
     get_current_collection_names, 
     upload_collection_names, 
@@ -21,9 +22,6 @@ from datasets import (
 
 api = get_namespace(NamespaceEnum.DATASETS)
 
-model_get_role_response = api.model("GetRoleResponse", {
-  "role": fields.String(description="The role of the dataset")
-})
 
 
 @api.route('/<string:dataset_name>/role')
@@ -36,7 +34,7 @@ class DatasetRole(Resource):
   def get(self, dataset_name):
 
     try:
-      return get_role(dataset_name) 
+      return pennsieve_get_current_user_permissions(dataset_name, get_access_token())
     except Exception as e:
       if notBadRequestException(e):
         # general exception that was unexpected and caused by our code
