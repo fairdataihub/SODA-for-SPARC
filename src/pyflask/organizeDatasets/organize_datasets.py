@@ -1167,7 +1167,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # check that the user has permission to edit this dataset
     try:
-        role = pennsieve_get_current_user_permissions(selected_dataset_id, get_access_token())["role"]
+        role = pennsieve_get_current_user_permissions(selected_dataset_id, get_access_token())
         if role not in ["owner", "manager", "editor"]:
             curatestatus = "Done"
             raise Exception("You don't have permissions for uploading to this Pennsieve dataset")

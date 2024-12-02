@@ -3374,7 +3374,7 @@ def validate_dataset_structure(soda_json_structure, resume):
 
         # check that the user has permissions for uploading and modifying the dataset
         main_curate_progress_message = "Checking that you have required permissions for modifying the selected dataset"
-        role = pennsieve_get_current_user_permissions(selected_dataset_id, get_access_token())["role"]
+        role = pennsieve_get_current_user_permissions(selected_dataset_id, get_access_token())
         if role not in ["owner", "manager", "editor"]:
             main_curate_status = "Done"
             abort(403, "Error: You don't have permissions for uploading to this Pennsieve dataset")

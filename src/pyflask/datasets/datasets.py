@@ -22,9 +22,9 @@ def get_role(dataset):
     selected_dataset_id = get_dataset_id(dataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/role", headers=create_request_headers(get_access_token()))
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/permission", headers=create_request_headers(get_access_token()))
         r.raise_for_status()
-        role = r.json()["role"]
+        role = r.json()["permission"]
         return {"role": role}
     except Exception as e:
         abort(e.response.status_code,  e.response.json().get('message'))
