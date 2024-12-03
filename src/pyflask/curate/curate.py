@@ -3706,13 +3706,13 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
 
 
 def generate_manifest_file_data(dataset_structure):
-    # Define the double extensions
-    double_extensions = [
+    # Define common file extensions with special handling
+    double_extensions = {
         ".ome.tiff", ".ome.tif", ".ome.tf2", ".ome.tf8", ".ome.btf", ".ome.xml",
         ".brukertiff.gz", ".mefd.gz", ".moberg.gz", ".nii.gz", ".mgh.gz", ".tar.gz", ".bcl.gz"
-    ]
+    }
 
-    # Helper function to identify the correct file extension
+    # Helper function: Get the complete file extension
     def get_file_extension(filename):
         for ext in double_extensions:
             if filename.endswith(ext):
@@ -3720,164 +3720,81 @@ def generate_manifest_file_data(dataset_structure):
                 return base_ext + ext
         return os.path.splitext(filename)[1]
 
-    # Helper function to build a file entry for the manifest
+    # Helper function: Build a single manifest entry
     def create_file_entry(item, folder, path_parts, timestamp, filename):
-        entry = []
-        full_path = "/".join(path_parts) + "/" + filename if path_parts else filename
-        file_type = get_file_extension(filename)
+        full_path = "/".join(path_parts + [filename])
+        file_info = folder["files"][item]
 
-        entry.append(full_path.lstrip("/"))  # Remove leading slash if exists
-        entry.append(timestamp)
-        entry.append(folder["files"][item]["description"])
-        entry.append(file_type)
-        entry.append(folder["files"][item]["additional-metadata"])
+        entry = [
+            full_path.lstrip("/"),  # Remove leading slash for consistency
+            timestamp,
+            file_info["description"],
+            get_file_extension(filename),
+            "",  # Entity (empty)
+            "",  # Data modality (empty)
+            "",  # Also in dataset (empty)
+            "",  # Data dictionary path (empty)
+            "",  # Entity is transitive (empty)
+            file_info.get("additional-metadata", "")
+        ]
 
-        # Append extra columns if available
-        if "extra_columns" in folder["files"][item]:
-            for key, value in folder["files"][item]["extra_columns"].items():
+        # Add any extra columns dynamically
+        if "extra_columns" in file_info:
+            for key, value in file_info["extra_columns"].items():
                 entry.append(value)
                 if key not in header_row:
                     header_row.append(key)
 
         return entry
 
-    # Recursive function to traverse folder structure and collect file data
-    def traverse_folders(folder, file_data, path_parts, is_pennsieve):
+    # Recursive function: Traverse dataset and collect file data
+    def traverse_folders(folder, path_parts):
         if "files" in folder:
-            if not file_data:
-                file_data.append(header_row)  # Add header row only once
+            # Add header row if processing files for the first time
+            if not manifest_data:
+                manifest_data.append(header_row)
 
-            for item in folder["files"]:
-                # Skip manifest files
-                if item in ["manifest.xlsx", "manifest.csv"]:
+            for item, file_info in folder["files"].items():
+
+                # If the file is a manifest file, skip it
+                if item in {"manifest.xlsx", "manifest.csv"}:
                     continue
-                
-                # Determine timestamp for file
-                file_info = folder["files"][item]
+
+                # Determine timestamp 
+                filename = os.path.basename(file_info["path"].replace("\\", "/"))
                 if is_pennsieve and file_info["type"] == "bf":
-                    filename = os.path.basename(item)
                     timestamp = file_info["timestamp"]
                 else:
-                    local_path = file_info["path"].replace("\\", "/")
-                    filename = os.path.basename(local_path)
-                    mtime = pathlib.Path(local_path).stat().st_mtime
-                    timestamp = datetime.fromtimestamp(mtime, tz=local_timezone).isoformat().replace(".", ",").replace("+00:00", "Z")
+                    local_path = pathlib.Path(file_info["path"])
+                    timestamp = datetime.fromtimestamp(
+                        local_path.stat().st_mtime, tz=local_timezone
+                    ).isoformat().replace(".", ",").replace("+00:00", "Z")
 
-                file_data.append(create_file_entry(item, folder, path_parts, timestamp, filename))
+                # Add file entry
+                manifest_data.append(create_file_entry(item, folder, path_parts, timestamp, filename))
 
-        # Recursively process subfolders
         if "folders" in folder:
-            for subfolder in folder["folders"]:
-                path_parts.append(subfolder)
-                traverse_folders(folder["folders"][subfolder], file_data, path_parts, is_pennsieve)
-                path_parts.pop()  # Backtrack after processing each subfolder
+            for subfolder_name, subfolder in folder["folders"].items():
+                traverse_folders(subfolder, path_parts + [subfolder_name])
 
-    # Initialize data structures
-    all_file_data = []  # Will hold all the data for the manifest
-    header_row = ["filename", "timestamp", "description", "file type", "entity", "data modality", "also in dataset", "data dictionary path", "entity is transitive", "Additional Metadata"]
-
-    # Local timezone
+    # Initialize variables
+    manifest_data = []  # Collects all rows for the manifest
+    header_row = [
+        "filename", "timestamp", "description", "file type", "entity",
+        "data modality", "also in dataset", "data dictionary path",
+        "entity is transitive", "Additional Metadata"
+    ]
     local_timezone = TZLOCAL()
+    is_pennsieve = "bfpath" in dataset_structure
 
     # Log the dataset structure
     namespace_logger.info("Generating manifest file data")
     namespace_logger.info(dataset_structure)
 
-    # Traverse each high-level folder
-    for top_level_folder in dataset_structure["folders"]:
-        file_data_for_folder = []
-        path_parts = []  # Keep track of the current folder structure
+    # Start recursive traversal from the root
+    traverse_folders(dataset_structure, [])
 
-        # Check if it's a Pennsieve dataset
-        is_pennsieve = "bfpath" in dataset_structure["folders"][top_level_folder]
-
-        # Start recursive traversal for the folder
-        traverse_folders(dataset_structure["folders"][top_level_folder], file_data_for_folder, path_parts, is_pennsieve)
-
-        # Add collected data for this folder to the overall manifest data
-        all_file_data.extend(file_data_for_folder)
-
-    return all_file_data
-    local_timezone = TZLOCAL()
-    
-    double_extensions = [
-        ".ome.tiff", ".ome.tif", ".ome.tf2,", ".ome.tf8", ".ome.btf", ".ome.xml", 
-        ".brukertiff.gz", ".mefd.gz", ".moberg.gz", ".nii.gz", ".mgh.gz", ".tar.gz", ".bcl.gz"
-    ]
-
-    def get_name_extension(file_name):
-        for ext in double_extensions:
-            if file_name.endswith(ext):
-                # Extract the base extension before the double extension
-                base_ext = os.path.splitext(os.path.splitext(file_name)[0])[1]
-                return base_ext + ext
-        return os.path.splitext(file_name)[1]
-
-    def build_file_entry(item, folder, ds_struct_path, timestamp_entry, file_name):
-        file_manifest_template_data = []
-        filename_entry = "/".join(ds_struct_path) + "/" + file_name if ds_struct_path else file_name
-        file_type_entry = get_name_extension(file_name)
-
-        if filename_entry[:1] == "/":
-            file_manifest_template_data.append(filename_entry[1:])
-        else:
-            file_manifest_template_data.append(filename_entry)
-
-        file_manifest_template_data.append(timestamp_entry)
-        file_manifest_template_data.append(folder["files"][item]["description"])
-        file_manifest_template_data.append(file_type_entry)
-        file_manifest_template_data.append(folder["files"][item]["additional-metadata"])
-
-        if "extra_columns" in folder["files"][item]:
-            for key, value in folder["files"][item]["extra_columns"].items():
-                file_manifest_template_data.append(value)
-                if key not in hlf_data_array[0]:
-                    hlf_data_array[0].append(key)
-
-        return file_manifest_template_data
-
-    def recursive_folder_traversal(folder, hlf_data_array, ds_struct_path, is_pennsieve):
-        if "files" in folder:
-            standard_manifest_columns = ["filename", "timestamp", "description", "file type", "entity", "data modality", "also in dataset", "data dictionary path", "entity is transitive", "Additional Metadata"]
-            if not hlf_data_array:
-                hlf_data_array.append(standard_manifest_columns)
-
-            for item in folder["files"]:
-                if item in ["manifest.xlsx", "manifest.csv"]:
-                    continue
-                
-                if is_pennsieve and folder["files"][item]["type"] == "bf":
-                    file_name = os.path.basename(item)
-                    timestamp_entry = folder["files"][item]["timestamp"]
-                else:
-                    local_path_to_file = folder["files"][item]["path"].replace("\\", "/")
-                    file_name = os.path.basename(local_path_to_file)
-                    mtime = pathlib.Path(local_path_to_file).stat().st_mtime
-                    timestamp_entry = datetime.fromtimestamp(mtime, tz=local_timezone).isoformat().replace(".", ",").replace("+00:00", "Z")
-
-                hlf_data_array.append(build_file_entry(item, folder, ds_struct_path, timestamp_entry, file_name))
-
-        if "folders" in folder:
-            for item in folder["folders"]:
-                ds_struct_path.append(item)
-                recursive_folder_traversal(folder["folders"][item], hlf_data_array, ds_struct_path, is_pennsieve)
-                ds_struct_path.pop()
-
-    hlf_manifest_data = {}
-
-    namespace_logger.info("Generating manifest file data")
-    namespace_logger.info(dataset_structure_obj)
-
-    for high_level_folder in dataset_structure_obj["folders"]:
-        hlf_data_array = []
-        relative_structure_path = []
-
-        is_pennsieve = "bfpath" in dataset_structure_obj["folders"][high_level_folder]
-        recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path, is_pennsieve)
-
-        hlf_manifest_data[high_level_folder] = hlf_data_array
-
-    return hlf_manifest_data
+    return manifest_data
 
 
 def handle_duplicate_package_name_error(e, soda_json_structure):

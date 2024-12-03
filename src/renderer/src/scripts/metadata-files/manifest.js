@@ -537,7 +537,7 @@ $(document).ready(async function () {
       }
 
       //Create child window here
-      // const existingManifestData = window.sodaJSONObj["guided-manifest-files"][highLevelFolderName];
+      // const existingManifestData = window.sodaJSONObj["guided-manifest-file-data"][highLevelFolderName];
       //send manifest data to main.js to then send to child window
       const existingManifestData = window.sodaCopy["manifest-files"]?.[parentFolderName];
       Swal.close();

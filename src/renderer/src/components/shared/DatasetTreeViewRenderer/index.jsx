@@ -87,10 +87,14 @@ const FileItem = ({ name, content, onFileClick, getEntityForRelativePath }) => {
             : "lightgray"
       }
       onClick={() => onFileClick && onFileClick(name, content)}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        console.log("add context menu here");
+      }}
       ml="sm"
     >
       {getFileTypeIcon(name)}
-      <Text size="sm">{name}</Text>
+      <Text size="sm">{content.relativePath}</Text>
     </Group>
   );
 };

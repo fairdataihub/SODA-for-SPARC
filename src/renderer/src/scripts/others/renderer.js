@@ -80,6 +80,11 @@ import {
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
 } from "../../stores/slices/backgroundServicesSlice";
+import {
+  clientBlockedByExternalFirewall,
+  blockedMessage,
+  hostFirewallMessage,
+} from "../check-firewall/checkFirewall";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -422,13 +427,20 @@ const startupServerAndApiCheck = async () => {
   Swal.fire({
     icon: "info",
     title: `Initializing SODA's background services<br /><br />This may take several minutes...`,
-    heightAuto: true,
+    heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "Restart now",
     allowOutsideClick: false,
     allowEscapeKey: false,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
     didOpen: () => Swal.showLoading(),
   });
+
   await window.wait(3000);
 
   for (let i = 0; i < totalNumberOfRetries; i++) {
@@ -463,6 +475,24 @@ const startupServerAndApiCheck = async () => {
     { value: 1 }
   );
 
+  let serverIsLive = await window.server.serverIsLive();
+  if (serverIsLive) {
+    // notify the user that there may be a firewall issue preventing the client from connecting to the server
+    Swal.close();
+    await Swal.fire({
+      icon: "info",
+      title: "Potential Network Issues",
+      html: hostFirewallMessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Restart SODA To Try Again",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      width: 800,
+    });
+    await window.electron.ipcRenderer.invoke("relaunch-soda");
+  }
+
   Swal.close();
   await Swal.fire({
     icon: "error",
@@ -480,6 +510,7 @@ const startupServerAndApiCheck = async () => {
 // Check app version on current app and display in the side bar
 // Also check the core systems to make sure they are all operational
 const initializeSODARenderer = async () => {
+  // TODO: Add check for internal firewall that blocks us from talking to the server here (detect-firewall)
   // check that the server is live and the api versions match
   // If this fails after the allotted time, the app will restart
   await startupServerAndApiCheck();
@@ -490,10 +521,11 @@ const initializeSODARenderer = async () => {
 
   //Refresh the Pennsieve account list if the user has connected their Pennsieve account in the past
   if (hasConnectedAccountWithPennsieve()) {
-    try {
-      // window.updateBfAccountList();
-    } catch (error) {
-      clientError(error);
+    // check for external firewall interference (aspirational in that may not be foolproof)
+    const pennsieveURL = "https://api.pennsieve.io/discover/datasets";
+    const blocked = await clientBlockedByExternalFirewall(pennsieveURL);
+    if (blocked) {
+      swalShowInfo("Potential Network Issue Detected", blockedMessage);
     }
   }
 
@@ -514,6 +546,7 @@ const initializeSODARenderer = async () => {
 initializeSODARenderer();
 
 const abortPennsieveAgentCheck = (pennsieveAgentStatusDivId) => {
+  console.log("CHange for build");
   setPennsieveAgentCheckSuccessful(false);
   if (!pennsieveAgentStatusDivId) {
     return;
@@ -4274,6 +4307,7 @@ const identifierConventionsRegex = /^[0-9A-Za-z-_]*$/;
 const forbiddenFileNameRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
 const forbiddenFiles = new Set([".DS_Store", "Thumbs.db"]);
 const forbiddenFilesRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
+const forbiddenCharacters = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/;
 
 window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
   const tests = {
@@ -4282,6 +4316,7 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
     "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest),
     "is-hidden-file": stringToTest.startsWith("."),
     "is-forbidden-file": forbiddenFiles.has(stringToTest) || forbiddenFilesRegex.test(stringToTest),
+    "string-contains-forbidden-characters": forbiddenCharacters.test(stringToTest),
   };
 
   return tests[testType];

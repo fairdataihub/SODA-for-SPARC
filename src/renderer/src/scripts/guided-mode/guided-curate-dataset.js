@@ -1101,11 +1101,15 @@ const savePageChanges = async (pageBeingLeftID) => {
           message: "Please enter a dataset name.",
         });
       }
-      if (check_forbidden_characters_ps(datasetNameInput)) {
+
+      const datasetNameContainsForbiddenCharacters = window.evaluateStringAgainstSdsRequirements(
+        datasetNameInput,
+        "string-contains-forbidden-characters"
+      );
+      if (datasetNameContainsForbiddenCharacters) {
         errorArray.push({
           type: "notyf",
-          message:
-            "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+          message: `A Pennsieve dataset name cannot contain any of the following characters: @#$%^&*()+=/\|"'~;:<>{}[]?`,
         });
       }
       if (!datasetSubtitleInput) {
@@ -1317,10 +1321,9 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
-        //Unskip the sample data organization pages
-        guidedUnSkipPage(`guided-primary-samples-organization-page`);
-        guidedUnSkipPage(`guided-source-samples-organization-page`);
-        guidedUnSkipPage(`guided-derivative-samples-organization-page`);
+        //Unskip the sample file annotation page
+        guidedUnSkipPage(`guided-manifest-sample-entity-selector-tab`);
+
         //Unskip the samples metadata page
         guidedUnSkipPage(`guided-create-samples-metadata-tab`);
       }
@@ -1336,9 +1339,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
 
         //Skip the sample data organization pages
-        guidedSkipPage(`guided-primary-samples-organization-page`);
-        guidedSkipPage(`guided-source-samples-organization-page`);
-        guidedSkipPage(`guided-derivative-samples-organization-page`);
+        guidedSkipPage(`guided-manifest-sample-entity-selector-tab`);
         //Skip the samples metadata page
         guidedSkipPage(`guided-create-samples-metadata-tab`);
       }
@@ -2055,12 +2056,14 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
-    // Save the current version of SODA as the user should be taken back to the first page when the app is updated
-    const currentAppVersion = document.getElementById("version").innerHTML;
-    window.sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
-
     // Stop any animations that need to be stopped
     startOrStopAnimationsInContainer(pageBeingLeftID, "stop");
+
+    try {
+      await guidedSaveProgress();
+    } catch (error) {
+      log.error(error);
+    }
   } catch (error) {
     guidedSetNavLoadingState(false);
     console.log(error);
@@ -2954,9 +2957,14 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
   $("#guided-footer-div").css("display", "flex");
 };
 
-const saveGuidedProgress = async (guidedProgressFileName) => {
+const guidedSaveProgress = async () => {
+  const guidedProgressFileName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
   //return if guidedProgressFileName is not a strnig greater than 0
-  if (typeof guidedProgressFileName !== "string" || guidedProgressFileName.length === 0) {
+  if (
+    !guidedProgressFileName ||
+    typeof guidedProgressFileName !== "string" ||
+    guidedProgressFileName.length === 0
+  ) {
     return;
   }
   //Destination: HOMEDIR/SODA/Guided-Progress
@@ -2979,6 +2987,10 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
   window.sodaJSONObj["dataset-structure"] = window.datasetStructureJSONObj;
   window.sodaJSONObj["subjects-table-data"] = window.subjectsTableData;
   window.sodaJSONObj["samples-table-data"] = window.samplesTableData;
+
+  // Save the current version of SODA as the user should be taken back to the first page when the app is updated
+  const currentAppVersion = document.getElementById("version").innerHTML;
+  window.sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
 
   window.fs.writeFileSync(guidedFilePath, JSON.stringify(window.sodaJSONObj, null, 2));
 };
@@ -3318,20 +3330,35 @@ document
   });
 
 const renderManifestCards = () => {
-  const guidedManifestData = window.sodaJSONObj["guided-manifest-files"];
-  const highLevelnFoldersWithManifestData = Object.keys(guidedManifestData);
-
-  const manifestCards = highLevelnFoldersWithManifestData
-    .map((highLevelFolder) => {
-      return generateManifestEditCard(highLevelFolder);
-    })
-    .join("\n");
+  const manifestCard = `
+    <div class="dataset-card">        
+      <div class="dataset-card-body shrink">
+        <div class="dataset-card-row">
+          <h1 class="dataset-card-title-text">
+            <span class="manifest-folder-name">View Manifest</span>
+          </h1>
+        </div>
+      </div>
+      <div class="dataset-card-button-container">
+        <button
+          class="ui primary button dataset-card-button-confirm"
+          style="
+            width: 302px !important;
+            height: 40px;
+          "
+          onClick="window.guidedOpenManifestEditSwal()"
+        >
+          Preview/Edit manifest file
+        </button>
+      </div>
+    </div>
+  `;
 
   const manifestFilesCardsContainer = document.getElementById(
     "guided-container-manifest-file-cards"
   );
 
-  manifestFilesCardsContainer.innerHTML = manifestCards;
+  manifestFilesCardsContainer.innerHTML = manifestCard;
 
   window.smoothScrollToElement(manifestFilesCardsContainer);
 };
@@ -3362,20 +3389,11 @@ const generateManifestEditCard = (highLevelFolderName) => {
   `;
 };
 
-const updateManifestJson = async (highLvlFolderName, result) => {
-  const savedHeaders = result[0];
-  const savedData = result[1];
-  window.sodaJSONObj["guided-manifest-files"][highLvlFolderName] = {
-    headers: savedHeaders,
-    data: savedData,
-  };
-};
-
 const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
   // First, empty the guided_manifest_files so we can add the new manifest files
   window.fs.emptyDirSync(window.guidedManifestFilePath);
 
-  const guidedManifestData = window.sodaJSONObj["guided-manifest-files"];
+  const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"];
   for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
     let manifestJSON = window.processManifestInfo(
       guidedManifestData[highLevelFolder]["headers"],
@@ -3406,8 +3424,8 @@ const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 };
 
-window.guidedOpenManifestEditSwal = async (highLevelFolderName) => {
-  const existingManifestData = window.sodaJSONObj["guided-manifest-files"][highLevelFolderName];
+window.guidedOpenManifestEditSwal = async () => {
+  const existingManifestData = window.sodaJSONObj["guided-manifest-file-data"];
   //send manifest data to main.js to then send to child window
   window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
 
@@ -3417,93 +3435,78 @@ window.guidedOpenManifestEditSwal = async (highLevelFolderName) => {
       window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
       return;
     } else {
-      //spreadsheet reply contained results
-      await updateManifestJson(highLevelFolderName, result);
       window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
-      await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+      window.sodaJSONObj["guided-manifest-file-data"] = result;
+
+      await guidedSaveProgress();
       renderManifestCards();
     }
   });
 };
 
-const extractFileNamesFromManifestData = (manifestData) => {
-  let allFileNamesinDsStructure = [];
-  for (const highLevelFolder of Object.keys(manifestData)) {
-    if (highLevelFolder === "auto-generated" || highLevelFolder === "destination") {
-      continue;
-    }
-    for (const row of manifestData[highLevelFolder]["data"]) {
-      allFileNamesinDsStructure.push(row[0]);
-    }
-  }
-  //return sorted allFileNamesinDsStructure
-  return allFileNamesinDsStructure.sort();
-};
-
 window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
-  const prevManifestFileNames = extractFileNamesFromManifestData(existingManifestData);
-  const newManifestFileNames = extractFileNamesFromManifestData(newManifestData);
-
+  // If the new manifest data is identical to the existing, return the existing manifest
   if (JSON.stringify(existingManifestData) === JSON.stringify(newManifestData)) {
-    //All files have remained the same, no need to diff check
     return existingManifestData;
   }
 
-  const numImmutableManifestDataCols = 2;
+  console.log("newManifestData", newManifestData);
+  console.log("existingManifestData", existingManifestData);
 
-  // Create a hash table for the existing manifest data
+  const columnValuesNotToUseOldValuesFor = new Set(["filename", "timestamp", "file type"]);
+
+  const newManifestDataHeaders = newManifestData["headers"];
+  const newManifestDataData = newManifestData["data"];
+  const existingManifestDataHeaders = existingManifestData["headers"];
+  const existingManifestDataData = existingManifestData["data"];
+
+  // Initialize combined manifest headers and data
+  const combinedManifestDataHeaders = [...newManifestDataHeaders];
+  const combinedManifestDataData = [...newManifestDataData];
+
+  // Add headers from the existing manifest that are not present in the new manifest
+  for (const header of existingManifestDataHeaders) {
+    if (!newManifestDataHeaders.includes(header)) {
+      console.log(`Adding header "${header}" to combined manifest data headers`);
+      combinedManifestDataHeaders.push(header);
+      // Add empty values for the new column in each row of the combined data
+      for (const row of combinedManifestDataData) {
+        row.push("");
+      }
+    }
+  }
+
+  // Build a hash table for the existing manifest data
   const existingManifestDataHashTable = {};
-  for (const highLevelFolderName in existingManifestData) {
-    const existingManifestDataHeaders = existingManifestData[highLevelFolderName]["headers"];
-    const existingManifestDataData = existingManifestData[highLevelFolderName]["data"];
-
-    for (const row of existingManifestDataData) {
-      const fileObj = {};
-      const fileName = row[0];
-      //Create a new array from row starting at index 2
-      const fileData = row.slice(numImmutableManifestDataCols);
-      for (const [index, rowValue] of fileData.entries()) {
-        const oldHeader = existingManifestDataHeaders[index + numImmutableManifestDataCols];
-        fileObj[oldHeader] = rowValue;
-      }
-      existingManifestDataHashTable[fileName] = fileObj;
+  for (const row of existingManifestDataData) {
+    const relativePath = row[0];
+    const fileObj = {};
+    for (const header of existingManifestDataHeaders) {
+      if (columnValuesNotToUseOldValuesFor.has(header)) continue;
+      const headerIndex = existingManifestDataHeaders.indexOf(header);
+      fileObj[header] = row[headerIndex];
     }
+    existingManifestDataHashTable[relativePath] = fileObj;
   }
-  let returnObj = {};
 
-  for (const highLevelFolder of Object.keys(newManifestData)) {
-    if (!existingManifestData[highLevelFolder]) {
-      //If the high level folder does not exist in the existing manifest data, add it
-      returnObj[highLevelFolder] = newManifestData[highLevelFolder];
-    } else {
-      //If the high level folder does exist in the existing manifest data, update it
-      let newManifestReturnObj = {};
-      newManifestReturnObj["headers"] = existingManifestData[highLevelFolder]["headers"];
-      newManifestReturnObj["data"] = [];
+  console.log("existingManifestDataHashTable", existingManifestDataHashTable);
 
-      const rowData = newManifestData[highLevelFolder]["data"];
-      for (const row of rowData) {
-        const fileName = row[0];
-
-        if (existingManifestDataHashTable[fileName]) {
-          //Push the new values generated
-          let updatedRow = row.slice(0, numImmutableManifestDataCols);
-
-          for (const header of newManifestReturnObj["headers"].slice(
-            numImmutableManifestDataCols
-          )) {
-            updatedRow.push(existingManifestDataHashTable[fileName][header]);
-          }
-          newManifestReturnObj["data"].push(updatedRow);
-        } else {
-          //If the file does not exist in the existing manifest data, add it
-          newManifestReturnObj["data"].push(row);
-        }
-        returnObj[highLevelFolder] = newManifestReturnObj;
+  // Update rows in the combined data by looping over the new manifest data
+  for (const row of combinedManifestDataData) {
+    const relativePath = row[0];
+    if (existingManifestDataHashTable[relativePath]) {
+      for (const header of combinedManifestDataHeaders) {
+        if (columnValuesNotToUseOldValuesFor.has(header)) continue;
+        const headerIndex = combinedManifestDataHeaders.indexOf(header);
+        row[headerIndex] = existingManifestDataHashTable[relativePath][header] || row[headerIndex];
       }
     }
   }
-  return returnObj;
+
+  return {
+    headers: combinedManifestDataHeaders,
+    data: combinedManifestDataData,
+  };
 };
 
 document
@@ -4080,7 +4083,7 @@ const guidedShowTreePreview = (new_dataset_name, targetElementId) => {
   }
 
   //Add the manifest files that have been created to the preview
-  for (const manifestFileKey of Object.keys(window.sodaJSONObj["guided-manifest-files"])) {
+  for (const manifestFileKey of Object.keys(window.sodaJSONObj["guided-manifest-file-data"])) {
     const hlfStillExistsForManifestFile = Object.keys(dsJsonObjCopy["folders"]).includes(
       manifestFileKey
     );
@@ -5351,6 +5354,131 @@ window.openPage = async (targetPageID) => {
         }
       }
 
+      const purgeNonExistentFilesFromDatasetStructure = async (datasetStructure) => {
+        const nonExistentFiles = [];
+
+        /**
+         * Recursively collects non-existent files from the dataset structure.
+         * @param {Object} currentStructure - The current level of the dataset structure.
+         * @param {string} currentPath - The relative path to the current structure.
+         */
+        const collectNonExistentFiles = async (currentStructure, currentPath = "") => {
+          const files = currentStructure?.files || {};
+          for (const fileName in files) {
+            const fileData = files[fileName];
+            if (fileData.type === "local") {
+              const filePath = fileData.path;
+              const fileExists = await window.fs.existsSync(filePath);
+
+              if (!fileExists) {
+                nonExistentFiles.push(`${currentPath}${fileName}`);
+              }
+            }
+          }
+
+          const folders = currentStructure?.folders || {};
+          for (const folderName in folders) {
+            await collectNonExistentFiles(folders[folderName], `${currentPath}${folderName}/`);
+          }
+        };
+
+        /**
+         * Recursively deletes references to non-existent files from the dataset structure.
+         * @param {Object} currentStructure - The current level of the dataset structure.
+         * @param {string} currentPath - The relative path to the current structure.
+         */
+        const deleteNonExistentFiles = (currentStructure, currentPath = "") => {
+          const files = currentStructure?.files || {};
+          for (const fileName in files) {
+            const fileData = files[fileName];
+            if (fileData.type === "local") {
+              const filePath = fileData.path;
+              const isNonExistent = !window.fs.existsSync(filePath);
+
+              if (isNonExistent) {
+                log.info(`Deleting reference to non-existent file: ${currentPath}${fileName}`);
+                delete files[fileName];
+              }
+            }
+          }
+
+          const folders = currentStructure?.folders || {};
+          for (const folderName in folders) {
+            deleteNonExistentFiles(folders[folderName], `${currentPath}${folderName}/`);
+          }
+        };
+
+        // Start collecting non-existent files
+        await collectNonExistentFiles(datasetStructure);
+        if (nonExistentFiles.length > 0) {
+          await swalFileListSingleAction(
+            nonExistentFiles,
+            "Files imported into SODA that are no longer on your computer were detected",
+            "The files listed below will be disregarded by SODA and will not be uploaded to Pennsieve.",
+            ""
+          );
+
+          // Delete references to the non-existent files
+          deleteNonExistentFiles(datasetStructure);
+        }
+      };
+
+      // Purge non-existent files from the dataset structure before generating manifest files
+      await purgeNonExistentFilesFromDatasetStructure(window.datasetStructureJSONObj);
+
+      // Helper function to check if a folder structure is empty
+      const folderObjIsEmpty = (folderStructure) => {
+        // Check if there are no files at this level
+        const hasFiles = folderStructure.files && Object.keys(folderStructure.files).length > 0;
+        if (hasFiles) return false;
+
+        // Check if there are no non-empty subfolders
+        const subfolders = folderStructure.folders || {};
+        for (const subfolderName in subfolders) {
+          const subfolderStructure = subfolders[subfolderName];
+          if (!folderObjIsEmpty(subfolderStructure)) {
+            return false; // Found a non-empty subfolder
+          }
+        }
+
+        // If no files and all subfolders are empty, the folder is empty
+        return true;
+      };
+
+      // Recursively delete empty folders from the dataset structure
+      const deleteEmptyFolders = (currentStructure) => {
+        const folders = currentStructure?.folders || {};
+
+        for (const folderName in folders) {
+          const folderStructure = folders[folderName];
+
+          // Recursively clean subfolders first
+          deleteEmptyFolders(folderStructure);
+
+          // Check if the folder is empty and delete it
+          if (folderObjIsEmpty(folderStructure)) {
+            delete folders[folderName];
+          }
+        }
+      };
+
+      // Trigger the deletion of empty folders
+      deleteEmptyFolders(window.datasetStructureJSONObj);
+
+      // If no folders or files are left in the dataset structure,
+      // then direct them back to the beginning of the dataset structuring section
+      // (This is an unlikely edge case that would only happen if SODA could not detect
+      // literally all files that they added to the dataset structure)
+      if (Object.keys(window.datasetStructureJSONObj.folders).length === 0) {
+        await swalShowInfo(
+          "No files or folders are currently imported into SODA",
+          "You will be returned to the beginning of the dataset structuring section to import your data."
+        );
+        await window.openPage("guided-dataset-structure-intro-tab");
+
+        return;
+      }
+
       const manifestFilesCardsContainer = document.getElementById(
         "guided-container-manifest-file-cards"
       );
@@ -5382,27 +5510,14 @@ window.openPage = async (targetPageID) => {
         { timeout: 0 }
       );
       const manifestRes = res.data;
-      console.log("manifestRes");
-      console.log(manifestRes);
-      //loop through each of the high level folders and store their manifest headers and data
-      //into the window.sodaJSONObj
 
-      let newManifestData = {};
+      const newManifestData = {
+        headers: manifestRes.shift(),
+        data: manifestRes,
+      };
 
-      for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
-        //Only save manifest files for hlf that returned more than the headers
-        //(meaning manifest file data was generated in the response)
-        if (manifestFileData.length > 1) {
-          //Remove the first element from the array and set it as the headers
-          const manifestHeader = manifestFileData.shift();
-
-          newManifestData[highLevelFolderName] = {
-            headers: manifestHeader,
-            data: manifestFileData,
-          };
-        }
-      }
-      const existingManifestData = window.sodaJSONObj["guided-manifest-files"];
+      console.log("newManifestData", newManifestData);
+      const existingManifestData = window.sodaJSONObj["guided-manifest-file-data"];
       let updatedManifestData;
 
       if (existingManifestData) {
@@ -5411,7 +5526,7 @@ window.openPage = async (targetPageID) => {
         updatedManifestData = newManifestData;
       }
 
-      window.sodaJSONObj["guided-manifest-files"] = updatedManifestData;
+      window.sodaJSONObj["guided-manifest-file-data"] = updatedManifestData;
       //Rerender the manifest cards
       renderManifestCards();
     }
@@ -6782,7 +6897,7 @@ window.openPage = async (targetPageID) => {
 
     // Set the last opened page and save it
     window.sodaJSONObj["page-before-exit"] = targetPageID;
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
   } catch (error) {
     const eMessage = userErrorMessage(error);
     Swal.fire({
@@ -7518,7 +7633,7 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
   return false;
 };
 
-const guidedGetPageToReturnTo = (sodaJSONObj) => {
+const guidedGetPageToReturnTo = async (sodaJSONObj) => {
   // Set by window.openPage function
   const usersPageBeforeExit = window.sodaJSONObj["page-before-exit"];
 
@@ -7534,7 +7649,11 @@ const guidedGetPageToReturnTo = (sodaJSONObj) => {
   const lastVersionOfSodaUsedOnProgressFile = window.sodaJSONObj["last-version-of-soda-used"];
 
   if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
-    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
+    // If the progress file was last edited in a previous SODA version, reset to the first page
+    await swalShowInfo(
+      "SODA has been updated since you last worked on this dataset.",
+      "You'll be taken to the first page to ensure compatibility with the latest workflow. Your previous work is saved and accessible."
+    );
     return firstPageID;
   }
 
@@ -7847,7 +7966,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     hideSubNavAndShowMainNav(false);
 
     // pageToReturnTo will be set to the page the user will return to
-    const pageToReturnTo = guidedGetPageToReturnTo(window.sodaJSONObj);
+    const pageToReturnTo = await guidedGetPageToReturnTo(window.sodaJSONObj);
 
     await window.openPage(pageToReturnTo);
 
@@ -7922,7 +8041,7 @@ const guidedCreateSodaJSONObj = () => {
   window.sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   window.sodaJSONObj["generate-dataset"] = {};
   window.sodaJSONObj["generate-dataset"]["destination"] = "bf";
-  window.sodaJSONObj["guided-manifest-files"] = {};
+  window.sodaJSONObj["guided-manifest-file-data"] = {};
   window.sodaJSONObj["starting-point"] = {};
   window.sodaJSONObj["dataset-metadata"] = {};
   window.sodaJSONObj["dataset-metadata"]["shared-metadata"] = {};
@@ -10535,7 +10654,7 @@ window.openCopySubjectMetadataPopup = async () => {
         window.populateForms(currentSubjectOpenInView, "", "guided");
       }
 
-      await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+      await guidedSaveProgress();
     }
   });
 };
@@ -10633,7 +10752,7 @@ window.openCopySampleMetadataPopup = async () => {
       if (currentSampleOpenInView) {
         openModifySampleMetadataPage(currentSampleOpenInView, currentSampleSubjectOpenInView);
       }
-      await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+      await guidedSaveProgress();
     }
   });
 };
@@ -12851,7 +12970,7 @@ const renderSubjectsMetadataAsideItems = async () => {
       //check to see if previousSubject is empty
       if (previousSubject) {
         window.addSubject("guided");
-        await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+        await guidedSaveProgress();
       }
 
       window.clearAllSubjectFormFields(window.guidedSubjectsFormDiv);
@@ -12869,7 +12988,7 @@ const renderSubjectsMetadataAsideItems = async () => {
 
       document.getElementById("guided-bootbox-subject-id").value = e.target.innerText;
 
-      await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+      await guidedSaveProgress();
     });
   });
 };
@@ -12996,7 +13115,7 @@ const renderSamplesMetadataAsideItems = async () => {
       //check to see if previousSample is empty
       if (previousSample) {
         window.addSample("guided");
-        await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+        await guidedSaveProgress();
       }
 
       //add selected class to clicked element
@@ -13016,7 +13135,7 @@ const renderSamplesMetadataAsideItems = async () => {
         e.target.innerText.split("/")[0]
       );
 
-      await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+      await guidedSaveProgress();
     });
   });
 };
@@ -13696,7 +13815,7 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
       // so new metadata can be uploaded to the newly created dataset
       // (This would happen if the user deleted the dataset on Pennsieve)
       window.sodaJSONObj["previously-uploaded-data"] = {};
-      await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+      await guidedSaveProgress();
     }
   }
 
@@ -13749,7 +13868,7 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
     //Save the dataset ID generated by pennsieve so the dataset is not re-uploaded when the user
     //resumes progress after failing an upload
     window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = createdDatasetsID;
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
 
     return createdDatasetsID;
   } catch (error) {
@@ -13815,7 +13934,7 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
     datasetSubtitleUploadText.innerHTML = `Successfully added dataset subtitle: ${datasetSubtitle}`;
     guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "success");
     window.sodaJSONObj["previously-uploaded-data"]["subtitle"] = datasetSubtitle;
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
 
     // Send successful dataset subtitle upload event to Kombucha
     window.electron.ipcRenderer.send(
@@ -13901,7 +14020,7 @@ const guidedAddDatasetDescription = async (
     datasetDescriptionUploadText.innerHTML = `Successfully added dataset description!`;
     guidedUploadStatusIcon("guided-dataset-description-upload-status", "success");
     window.sodaJSONObj["previously-uploaded-data"]["description"] = description;
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
 
     // Send successful dataset description upload event to Kombucha
     window.electron.ipcRenderer.send(
@@ -13988,7 +14107,7 @@ const uploadValidBannerImage = async (bfAccount, datasetName, bannerImagePath) =
     datasetBannerImageUploadText.innerHTML = `Successfully added dataset banner image!`;
     guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "success");
     window.sodaJSONObj["previously-uploaded-data"]["banner-image-path"] = bannerImagePath;
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
 
     // Send successful banner image upload event to Kombucha
     window.electron.ipcRenderer.send(
@@ -14081,7 +14200,7 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
     datasetLicenseUploadText.innerHTML = `Successfully added dataset license: ${datasetLicense}`;
     guidedUploadStatusIcon("guided-dataset-license-upload-status", "success");
     window.sodaJSONObj["previously-uploaded-data"]["license"] = datasetLicense;
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
 
     // Send successful license upload event to Kombucha
     window.electron.ipcRenderer.send(
@@ -14154,7 +14273,7 @@ const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
     datasetTagsUploadText.innerHTML = `Successfully added dataset tags: ${tags.join(", ")}`;
     guidedUploadStatusIcon("guided-dataset-tags-upload-status", "success");
     window.sodaJSONObj["previously-uploaded-data"]["tags"] = tags;
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
 
     // Send successful tags upload event to Kombucha
     window.electron.ipcRenderer.send(
@@ -15673,7 +15792,7 @@ const guidedUploadDatasetToPennsieve = async () => {
         window.sodaJSONObj["digital-metadata"]["name"];
 
       // Save the window.sodaJSONObj after a successful upload
-      await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+      await guidedSaveProgress();
 
       //Display the click next text
       document.getElementById("guided--verify-files").classList.remove("hidden");
@@ -16478,8 +16597,6 @@ $("#guided-next-button").on("click", async function () {
 
   try {
     await savePageChanges(window.pageBeingLeftID);
-    //Save progress onto local storage with the dataset name as the key
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
 
     //Mark page as completed in JSONObj so we know what pages to load when loading local saves
     //(if it hasn't already been marked complete)
@@ -17072,7 +17189,7 @@ const saveSubPageChanges = async (openSubPageID) => {
         "import";
     }
 
-    await saveGuidedProgress(window.sodaJSONObj["digital-metadata"]["name"]);
+    await guidedSaveProgress();
   } catch (error) {
     guidedSetNavLoadingState(false);
     throw error;

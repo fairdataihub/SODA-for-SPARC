@@ -8,6 +8,7 @@ on:
       - staging
       - pre-staging
       - sds3
+      - folder-build
 
 jobs:
   deploy-on-windows:
