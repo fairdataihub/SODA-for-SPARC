@@ -33,6 +33,11 @@ export const getEntityListForEntityType = (entityListName) => {
   return useGlobalStore.getState()?.datasetEntityObj?.[entityListName] || {};
 };
 
+export const getEntitiesForType = (entityType) => {
+  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
+  return datasetEntityObj?.[entityType] || {};
+};
+
 export const setActiveEntity = (activeEntity) => {
   useGlobalStore.setState((state) => ({
     ...state,
@@ -45,6 +50,19 @@ export const setEntityType = (entityType) => {
     ...state,
     entityType,
   }));
+};
+
+export const setEntityListForEntityType = (entityType, entityListObj) => {
+  if (!entityType || !entityListObj) {
+    console.log("Aborting function: entityType or entityListObj is missing");
+    console.log(entityType, entityListObj);
+  }
+
+  useGlobalStore.setState(
+    produce((state) => {
+      state.datasetEntityObj[entityType] = entityListObj;
+    })
+  );
 };
 
 export const setdatasetEntityObj = (datasetEntityObj) => {

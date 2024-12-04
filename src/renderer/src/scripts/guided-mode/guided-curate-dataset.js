@@ -48,6 +48,8 @@ import {
   setEntityList,
   setEntityType,
   getEntityListForEntityType,
+  setEntityListForEntityType,
+  setActiveEntity,
 } from "../../stores/slices/datasetEntitySelectorSlice";
 import {
   setDatasetstructureSearchFilter,
@@ -1357,18 +1359,31 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-manifest-subject-entity-selector-tab") {
-      const subjectsEntitylist = getEntityListForEntityType("subjects");
-      console.log(subjectsEntitylist);
+      window.sodaJSONObj["subject-related-folders-and-files"] = getEntityListForEntityType(
+        "subject-related-folders-and-files"
+      );
+      console.log(
+        "subject-related-folders-and-files",
+        window.sodaJSONObj["subject-related-folders-and-files"]
+      );
     }
     if (pageBeingLeftID === "guided-manifest-sample-entity-selector-tab") {
-      const samplesEntityList = getEntityListForEntityType("samples");
-      console.log(samplesEntityList);
+      window.sodaJSONObj["sample-related-folders-and-files"] = getEntityListForEntityType(
+        "sample-related-folders-and-files"
+      );
+      console.log(
+        "sample-related-folders-and-files",
+        window.sodaJSONObj["sample-related-folders-and-files"]
+      );
     }
     if (pageBeingLeftID === "guided-source-derivative-folders-and-files-selector-tab") {
-      const sourceDerivativeFoldersAndFiles = getEntityListForEntityType(
+      window.sodaJSONObj["source-derivative-folders-and-files"] = getEntityListForEntityType(
         "source-derivative-folders-and-files"
       );
-      console.log(sourceDerivativeFoldersAndFiles);
+      console.log(
+        "source-derivative-folders-and-files",
+        window.sodaJSONObj["source-derivative-folders-and-files"]
+      );
     }
 
     if (pageBeingLeftID === "guided-subject-structure-spreadsheet-importation-tab") {
@@ -3436,8 +3451,11 @@ window.guidedOpenManifestEditSwal = async () => {
       return;
     } else {
       window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
-      window.sodaJSONObj["guided-manifest-file-data"] = result;
 
+      window.sodaJSONObj["guided-manifest-file-data"] = {
+        headers: result[0],
+        data: result[1],
+      };
       await guidedSaveProgress();
       renderManifestCards();
     }
@@ -5516,7 +5534,108 @@ window.openPage = async (targetPageID) => {
         data: manifestRes,
       };
 
-      console.log("newManifestData", newManifestData);
+      const sourceDerivativeFoldersAndFilesObj =
+        window.sodaJSONObj["source-derivative-folders-and-files"];
+      const primaryFoldersAndFilesMarkedAsSource = new Set(
+        sourceDerivativeFoldersAndFilesObj["source"] || []
+      );
+      const primaryFoldersAndFilesMarkedAsDerivative = new Set(
+        sourceDerivativeFoldersAndFilesObj["derivative"] || []
+      );
+      for (let i = 0; i < newManifestData.data.length; i++) {
+        const fileName = newManifestData.data[i][0];
+        const entityColumnIndex = newManifestData.headers.indexOf("entity");
+
+        const subjectRelatedFoldersAndFiles =
+          window.sodaJSONObj["subject-related-folders-and-files"];
+        if (subjectRelatedFoldersAndFiles) {
+          const subjectEntities = Object.keys(subjectRelatedFoldersAndFiles);
+          for (const subjectEntity of subjectEntities) {
+            const subjectFiles = subjectRelatedFoldersAndFiles[subjectEntity];
+            // Loop through the files in the subject entity and if any match the current file name, update the entity column
+            for (const subjectFile of subjectFiles) {
+              if (subjectFile === fileName) {
+                newManifestData.data[i][entityColumnIndex] = subjectEntity;
+                break;
+              }
+            }
+          }
+        }
+
+        const sampleRelatedFoldersAndFiles = window.sodaJSONObj["sample-related-folders-and-files"];
+        if (sampleRelatedFoldersAndFiles) {
+          console.log(sampleRelatedFoldersAndFiles);
+          const sampleEntities = Object.keys(sampleRelatedFoldersAndFiles);
+          for (const sampleEntity of sampleEntities) {
+            const sampleFiles = sampleRelatedFoldersAndFiles[sampleEntity];
+            // Loop through the files in the sample entity and if any match the current file name, update the entity column
+            for (const sampleFile of sampleFiles) {
+              if (sampleFile === fileName) {
+                newManifestData.data[i][entityColumnIndex] = sampleEntity;
+                break;
+              }
+            }
+          }
+        }
+
+        if (primaryFoldersAndFilesMarkedAsSource.has(fileName)) {
+          // replace the first instance of primary/ with source/
+          newManifestData.data[i][0] = fileName.replace("primary/", "source/");
+        }
+
+        if (primaryFoldersAndFilesMarkedAsDerivative.has(fileName)) {
+          // replace the first instance of primary/ with derivative/
+          newManifestData.data[i][0] = fileName.replace("primary/", "derivative/");
+        }
+      }
+
+      const newManifestDataBeforeSort = newManifestData.data;
+      console.log("newManifestDataBeforeSort", newManifestDataBeforeSort);
+
+      // Helper funciton to sort the manifest data rows in the expected order
+      const sortManifestDataRows = (rows) => {
+        // Define the custom folder order
+        const folderOrder = {
+          primary: 1,
+          source: 2,
+          derivative: 3,
+          code: 4,
+          protocol: 5,
+          docs: 6,
+        };
+
+        return rows.sort((rowA, rowB) => {
+          // Extract the file paths from the first column of each row
+          const pathA = rowA[0];
+          const pathB = rowB[0];
+
+          // Extract the top-level folder
+          const getTopLevelFolder = (path) => path.split("/")[0];
+
+          const folderA = getTopLevelFolder(pathA);
+          const folderB = getTopLevelFolder(pathB);
+
+          // Get the priority based on the custom order
+          const priorityA = folderOrder[folderA] || Infinity; // Default to Infinity for unknown folders
+          const priorityB = folderOrder[folderB] || Infinity;
+
+          // Compare by custom priority first
+          if (priorityA !== priorityB) {
+            return priorityA - priorityB;
+          }
+
+          // If priorities are the same, sort lexicographically
+          if (pathA < pathB) return -1;
+          if (pathA > pathB) return 1;
+
+          // If lexicographical comparison is also equal, maintain order
+          return 0;
+        });
+      };
+
+      newManifestData.data = sortManifestDataRows(newManifestData.data);
+      console.log("newManifestDataAfterSort", newManifestData.data);
+
       const existingManifestData = window.sodaJSONObj["guided-manifest-file-data"];
       let updatedManifestData;
 
@@ -5533,17 +5652,32 @@ window.openPage = async (targetPageID) => {
     if (targetPageID === "guided-manifest-subject-entity-selector-tab") {
       setEntityList(window.getExistingSubjectNames(), "Subjects List");
       setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
-      setEntityType("subjects");
+      setEntityType("subject-related-folders-and-files");
+      setEntityListForEntityType(
+        "subject-related-folders-and-files",
+        window.sodaJSONObj["subject-related-folders-and-files"] || {}
+      );
+      setActiveEntity(null);
     }
     if (targetPageID === "guided-manifest-sample-entity-selector-tab") {
       setEntityList(getExistingSampleNames(), "Samples List");
       setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
-      setEntityType("samples");
+      setEntityType("sample-related-folders-and-files");
+      setEntityListForEntityType(
+        "sample-related-folders-and-files",
+        window.sodaJSONObj["sample-related-folders-and-files"] || {}
+      );
+      setActiveEntity(null);
     }
     if (targetPageID === "guided-source-derivative-folders-and-files-selector-tab") {
       setEntityList(["source", "derivative"], "Supplementary data");
       setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       setEntityType("source-derivative-folders-and-files");
+      setEntityListForEntityType(
+        "source-derivative-folders-and-files",
+        window.sodaJSONObj["source-derivative-folders-and-files"] || {}
+      );
+      setActiveEntity(null);
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {

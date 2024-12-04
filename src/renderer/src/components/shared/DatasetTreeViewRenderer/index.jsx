@@ -15,6 +15,7 @@ import {
 import { useHover } from "@mantine/hooks";
 import {
   IconFolder,
+  IconFolderFilled,
   IconFolderOpen,
   IconFile,
   IconFileTypeCsv,
@@ -68,6 +69,7 @@ const getFileTypeIcon = (fileName) => {
 
 const FileItem = ({ name, content, onFileClick, getEntityForRelativePath }) => {
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
+  console.log("datasetEntityObj", datasetEntityObj);
   const entityType = useGlobalStore((state) => state.entityType);
   const activeEntity = useGlobalStore((state) => state.activeEntity);
 

@@ -3719,6 +3719,11 @@ def generate_manifest_file_data(dataset_structure):
                 base_ext = os.path.splitext(os.path.splitext(filename)[0])[1]
                 return base_ext + ext
         return os.path.splitext(filename)[1]
+    
+    def create_folder_entry(folder_name, path_parts):
+        full_path = "/".join(path_parts + [folder_name])
+        namespace_logger.info(f"Creating folder entry for {full_path}")
+        
 
     # Helper function: Build a single manifest entry
     def create_file_entry(item, folder, path_parts, timestamp, filename):
@@ -3775,6 +3780,7 @@ def generate_manifest_file_data(dataset_structure):
 
         if "folders" in folder:
             for subfolder_name, subfolder in folder["folders"].items():
+                create_folder_entry(subfolder_name, path_parts)
                 traverse_folders(subfolder, path_parts + [subfolder_name])
 
     # Initialize variables
