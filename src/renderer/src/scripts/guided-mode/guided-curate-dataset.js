@@ -3463,9 +3463,14 @@ window.guidedOpenManifestEditSwal = async () => {
 };
 
 window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
-  // If the new manifest data is identical to the existing, return the existing manifest
+  // If the new manifest data is identical to the existing, return the new manifest data
   if (JSON.stringify(existingManifestData) === JSON.stringify(newManifestData)) {
-    return existingManifestData;
+    return newManifestData;
+  }
+
+  // If the existing manifest data is empty (or missing crucial keys), return the new manifest data
+  if (!existingManifestData["headers"] || !existingManifestData["data"]) {
+    return newManifestData;
   }
 
   console.log("newManifestData", newManifestData);

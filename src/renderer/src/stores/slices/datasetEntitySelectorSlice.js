@@ -72,6 +72,11 @@ export const setdatasetEntityObj = (datasetEntityObj) => {
   }));
 };
 
+const entityHeirarchies = [
+  ["subject-related-folders-and-files", "sample-related-folders-and-files"], // Sample folders and files are a subset of subject folders and files
+];
+
+// Function to add or update a specific value (relative path) in datasetEntityObj
 // Function to add or update a specific value (relative path) in datasetEntityObj
 export const modifyDatasetEntityForRelativeFilePath = (
   entityType,
@@ -82,91 +87,68 @@ export const modifyDatasetEntityForRelativeFilePath = (
   if (!entityType || !entityName || !entityRelativePath) {
     console.log("Aborting function: entityType, entityName, or entityRelativePath is missing");
     console.log(entityType, entityName, entityRelativePath);
-
     return;
   }
 
-  if (action === "toggle") {
-    console.log("Toggling entity for relative path", entityRelativePath);
-    useGlobalStore.setState(
-      produce((state) => {
-        // Check if entityType exists, if not, create it
-        if (!state.datasetEntityObj[entityType]) {
-          state.datasetEntityObj[entityType] = {};
-        }
+  useGlobalStore.setState(
+    produce((state) => {
+      const datasetEntity = state.datasetEntityObj;
+      if (!datasetEntity[entityType]) {
+        datasetEntity[entityType] = {};
+      }
 
-        // Check if entityName exists within the entityType, if not, create it as an array
-        if (!state.datasetEntityObj[entityType][entityName]) {
-          state.datasetEntityObj[entityType][entityName] = [entityRelativePath];
-        } else {
-          // If entityName exists, check if the entityRelativePath exists in the array
-          // If it does, remove it, otherwise add it
-          const index = state.datasetEntityObj[entityType][entityName].indexOf(entityRelativePath);
-          if (index !== -1) {
-            state.datasetEntityObj[entityType][entityName].splice(index, 1);
+      const entityEntries = datasetEntity[entityType];
+      const targetEntity = entityEntries[entityName] || [];
+
+      // Action handling
+      switch (action) {
+        case "toggle":
+          console.log("Toggling entity for relative path", entityRelativePath);
+          if (targetEntity.includes(entityRelativePath)) {
+            // Remove if it exists
+            entityEntries[entityName] = targetEntity.filter((path) => path !== entityRelativePath);
           } else {
-            state.datasetEntityObj[entityType][entityName].push(entityRelativePath);
+            // Add and ensure exclusivity across other entities
+            entityEntries[entityName] = [...targetEntity, entityRelativePath];
+            removeFromOtherEntities(entityEntries, entityName, entityRelativePath);
           }
-        }
+          break;
 
-        // Remove the entityRelativePath from all other entities in the same entityType
-        Object.keys(state.datasetEntityObj[entityType]).forEach((entity) => {
-          if (entity !== entityName) {
-            const index = state.datasetEntityObj[entityType][entity].indexOf(entityRelativePath);
-            if (index !== -1) {
-              state.datasetEntityObj[entityType][entity].splice(index, 1);
-            }
+        case "add":
+          if (!targetEntity.includes(entityRelativePath)) {
+            entityEntries[entityName] = [...targetEntity, entityRelativePath];
+            removeFromOtherEntities(entityEntries, entityName, entityRelativePath);
           }
-        });
-      })
-    );
-  }
-  if (action === "add") {
-    useGlobalStore.setState(
-      produce((state) => {
-        // Check if entityType exists, if not, create it
-        if (!state.datasetEntityObj[entityType]) {
-          state.datasetEntityObj[entityType] = {};
-        }
+          break;
 
-        // Check if entityName exists within the entityType, if not, create it as an array
-        if (!state.datasetEntityObj[entityType][entityName]) {
-          state.datasetEntityObj[entityType][entityName] = [entityRelativePath];
-        } else {
-          // If entityName exists, check if the entityRelativePath exists in the array
-          // If it does, remove it, otherwise add it
-          const index = state.datasetEntityObj[entityType][entityName].indexOf(entityRelativePath);
-          if (index === -1) {
-            state.datasetEntityObj[entityType][entityName].push(entityRelativePath);
-          }
-        }
+        case "remove":
+          entityEntries[entityName] = targetEntity.filter((path) => path !== entityRelativePath);
+          break;
 
-        // Remove the entityRelativePath from all other entities in the same entityType
-        Object.keys(state.datasetEntityObj[entityType]).forEach((entity) => {
-          if (entity !== entityName) {
-            const index = state.datasetEntityObj[entityType][entity].indexOf(entityRelativePath);
-            if (index !== -1) {
-              state.datasetEntityObj[entityType][entity].splice(index, 1);
-            }
-          }
-        });
-      })
-    );
-  }
-  if (action === "remove") {
-    useGlobalStore.setState(
-      produce((state) => {
-        // Check if entityType exists, if not, create it
-        if (!state?.datasetEntityObj?.[entityType]?.[entityName]) {
-          return;
-        }
-        const index = state.datasetEntityObj[entityType][entityName].indexOf(entityRelativePath);
-        if (index !== -1) {
-          state.datasetEntityObj[entityType][entityName].splice(index, 1);
-        }
-      })
-    );
-  }
+        default:
+          console.log(`Unsupported action: ${action}`);
+      }
+    })
+  );
+};
+
+// Helper function to remove a path from all other entities in the same entityType
+const removeFromOtherEntities = (entityEntries, targetEntityName, entityRelativePath) => {
+  Object.keys(entityEntries).forEach((entity) => {
+    console.log("entity", entity);
+    if (entity !== targetEntityName) {
+      entityEntries[entity] = entityEntries[entity].filter((path) => path !== entityRelativePath);
+    }
+  });
+  // If the entity is a subset of another entity, remove the path from the parent entity
+  const entityExistsInHeirarchy = entityHeirarchies.find((heirarchy) =>
+    heirarchy.includes(targetEntityName)
+  );
+
+  console.log("removeFromOtherEntities");
+  console.log(entityEntries);
+  console.log(targetEntityName);
+  console.log(entityRelativePath);
 };
 
 export const getEntityForRelativePath = (datasetEntityObj, entityType, relativePath) => {

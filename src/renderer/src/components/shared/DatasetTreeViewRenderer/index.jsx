@@ -122,6 +122,8 @@ const FolderItem = ({
   useEffect(() => {
     if (datasetStructureSearchFilter) {
       setIsOpen(true);
+    } else {
+      setIsOpen(false);
     }
   }, [datasetStructureSearchFilter]);
 

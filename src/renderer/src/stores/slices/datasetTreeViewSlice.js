@@ -107,7 +107,7 @@ export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
   // Adds relative paths recursively
   const addRelativePaths = (obj, currentPath = []) => {
     for (const folderName in obj?.folders || {}) {
-      const folderPath = [...currentPath, folderName].join("/");
+      const folderPath = [...currentPath, folderName].join("/") + "/";
       obj.folders[folderName].relativePath = folderPath;
       addRelativePaths(obj.folders[folderName], [...currentPath, folderName]);
     }

@@ -225,7 +225,7 @@ const DatasetEntitySelector = () => {
           ) : (
             <Box p="xl">
               <Text size="xl" c="gray">
-                Select a subject from the list on the left to map files to it.
+                Select an item from the {entityListName} on the left to map files to it.
               </Text>
             </Box>
           )}

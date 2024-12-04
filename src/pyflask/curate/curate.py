@@ -3721,8 +3721,21 @@ def generate_manifest_file_data(dataset_structure):
         return os.path.splitext(filename)[1]
     
     def create_folder_entry(folder_name, path_parts):
-        full_path = "/".join(path_parts + [folder_name])
-        namespace_logger.info(f"Creating folder entry for {full_path}")
+        full_path = "/".join(path_parts + [folder_name]) + "/"
+        entry = [
+            full_path.lstrip("/"),  # Remove leading slash for consistency
+            "", # Timestamp
+            "", # Description
+            "folder", # File type
+            "",  # Entity (empty)
+            "",  # Data modality (empty)
+            "",  # Also in dataset (empty)
+            "",  # Data dictionary path (empty)
+            "",  # Entity is transitive (empty)
+            "", # Additional Metadata
+        ]
+        return entry
+
         
 
     # Helper function: Build a single manifest entry
@@ -3732,15 +3745,15 @@ def generate_manifest_file_data(dataset_structure):
 
         entry = [
             full_path.lstrip("/"),  # Remove leading slash for consistency
-            timestamp,
-            file_info["description"],
-            get_file_extension(filename),
+            timestamp, # Timestamp
+            file_info["description"], # Description
+            get_file_extension(filename), # File type
             "",  # Entity (empty)
             "",  # Data modality (empty)
             "",  # Also in dataset (empty)
             "",  # Data dictionary path (empty)
             "",  # Entity is transitive (empty)
-            file_info.get("additional-metadata", "")
+            file_info.get("additional-metadata", "") # Additional Metadata
         ]
 
         # Add any extra columns dynamically
@@ -3780,7 +3793,8 @@ def generate_manifest_file_data(dataset_structure):
 
         if "folders" in folder:
             for subfolder_name, subfolder in folder["folders"].items():
-                create_folder_entry(subfolder_name, path_parts)
+                # Add folder entry
+                manifest_data.append(create_folder_entry(subfolder_name, path_parts))
                 traverse_folders(subfolder, path_parts + [subfolder_name])
 
     # Initialize variables
