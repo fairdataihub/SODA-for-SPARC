@@ -9,9 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Feature Additions:
 
-- SODA will notify users if it is determined that a network setting may be preventing communication to the Pennsieve platform. 
-- The `Prepare Dataset Step-by-Step` feature allows users to resume curating a dataset even when that dataset saved files that have since been deleted from the computer. 
-
+- SODA will notify users if it is determined that a network setting may be preventing communication to the Pennsieve platform.
+- The `Prepare Dataset Step-by-Step` feature allows users to resume curating a dataset even when that dataset saved files that have since been deleted from the computer.
 
 ## v15.2.3 - 2024-11-20
 
