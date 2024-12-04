@@ -1,10 +1,11 @@
 {
   "15.3.0": {
     "announcements": {
-      "bug-fixes": [
-      ],
-      "features": ["SODA will notify users if it is determined that a network setting may be preventing communication to the Pennsieve platform.",
-    "The `Prepare Dataset Step-by-Step` feature allows users to resume curating a dataset even when that dataset saved files that have since been deleted from the computer."]
+      "bug-fixes": [],
+      "features": [
+        "SODA will notify users if it is determined that a network setting may be preventing communication to the Pennsieve platform.",
+        "The `Prepare Dataset Step-by-Step` feature allows users to resume curating a dataset even when that dataset saved files that have since been deleted from the computer."
+      ]
     }
   },
   "15.2.2": {
