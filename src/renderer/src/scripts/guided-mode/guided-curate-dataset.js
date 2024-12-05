@@ -423,6 +423,10 @@ document.getElementById("guided-button-has-docs-data").addEventListener("click",
 });
 
 const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
+  // TODO: Brioader support for guests who are editing a changed dataset.
+
+  let isGuest = await window.isWorkspaceGuest();
+  if (isGuest) return { shouldShow: false };
   try {
     const changesRes = await client.get(`/prepare_metadata/readme_changes_file`, {
       params: {
@@ -6285,6 +6289,8 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-designate-permissions-tab") {
+      let isGuest = await window.isWorkspaceGuest();
+      if (isGuest) return;
       // Get the users that can be granted permissions
       const usersReq = await client.get(
         `manage_datasets/ps_get_users?selected_account=${window.defaultBfAccount}`
