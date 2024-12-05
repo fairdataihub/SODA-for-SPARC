@@ -1,18 +1,21 @@
 import useGlobalStore from "../globalStore";
 import { produce } from "immer";
+
+// Initial state for managing entities in the dataset
 const initialState = {
-  entityList: [],
-  entityListName: "",
-  activeEntity: null,
-  entityType: null,
-  datasetEntityObj: {},
+  entityList: [], // List of entities for the current context
+  entityListName: "", // Name of the entity list being managed
+  activeEntity: null, // The currently active entity
+  entityType: null, // Type of the currently selected entity
+  datasetEntityObj: {}, // Object storing all entities organized by type
 };
 
-// Slice now only has initial state
+// Define the slice for entity selector state
 export const datasetEntitySelectorSlice = (set) => ({
   ...initialState,
 });
 
+// Resets the entity selector state to its initial configuration
 export const resetDatasetEntitySelectorState = () => {
   useGlobalStore.setState(
     produce((state) => {
@@ -21,6 +24,7 @@ export const resetDatasetEntitySelectorState = () => {
   );
 };
 
+// Sets the entity list and its associated name in the global store
 export const setEntityList = (entityList, entityListName) => {
   useGlobalStore.setState((state) => ({
     ...state,
@@ -29,15 +33,18 @@ export const setEntityList = (entityList, entityListName) => {
   }));
 };
 
+// Retrieves the list of entities for a given entity type
 export const getEntityListForEntityType = (entityListName) => {
   return useGlobalStore.getState()?.datasetEntityObj?.[entityListName] || {};
 };
 
+// Retrieves entities for a specific type from the datasetEntityObj
 export const getEntitiesForType = (entityType) => {
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   return datasetEntityObj?.[entityType] || {};
 };
 
+// Updates the currently active entity in the global store
 export const setActiveEntity = (activeEntity) => {
   useGlobalStore.setState((state) => ({
     ...state,
@@ -45,6 +52,7 @@ export const setActiveEntity = (activeEntity) => {
   }));
 };
 
+// Updates the current entity type in the global store
 export const setEntityType = (entityType) => {
   useGlobalStore.setState((state) => ({
     ...state,
@@ -52,10 +60,12 @@ export const setEntityType = (entityType) => {
   }));
 };
 
+// Updates the list of entities for a given entity type
 export const setEntityListForEntityType = (entityType, entityListObj) => {
   if (!entityType || !entityListObj) {
     console.log("Aborting function: entityType or entityListObj is missing");
     console.log(entityType, entityListObj);
+    return;
   }
 
   useGlobalStore.setState(
@@ -65,19 +75,20 @@ export const setEntityListForEntityType = (entityType, entityListObj) => {
   );
 };
 
-export const setdatasetEntityObj = (datasetEntityObj) => {
+// Sets the dataset entity object in the global store
+export const setDatasetEntityObj = (datasetEntityObj) => {
   useGlobalStore.setState((state) => ({
     ...state,
     datasetEntityObj,
   }));
 };
 
-const entityHeirarchies = [
-  ["subject-related-folders-and-files", "sample-related-folders-and-files"], // Sample folders and files are a subset of subject folders and files
+// Hierarchies defining relationships between entity types
+const entityHierarchies = [
+  ["subject-related-folders-and-files", "sample-related-folders-and-files"], // Sample is a subset of subject
 ];
 
-// Function to add or update a specific value (relative path) in datasetEntityObj
-// Function to add or update a specific value (relative path) in datasetEntityObj
+// Modifies the dataset entity for a specific relative file path
 export const modifyDatasetEntityForRelativeFilePath = (
   entityType,
   entityName,
@@ -100,15 +111,12 @@ export const modifyDatasetEntityForRelativeFilePath = (
       const entityEntries = datasetEntity[entityType];
       const targetEntity = entityEntries[entityName] || [];
 
-      // Action handling
+      // Handle actions: toggle, add, or remove
       switch (action) {
         case "toggle":
-          console.log("Toggling entity for relative path", entityRelativePath);
           if (targetEntity.includes(entityRelativePath)) {
-            // Remove if it exists
             entityEntries[entityName] = targetEntity.filter((path) => path !== entityRelativePath);
           } else {
-            // Add and ensure exclusivity across other entities
             entityEntries[entityName] = [...targetEntity, entityRelativePath];
             removeFromOtherEntities(entityEntries, entityName, entityRelativePath);
           }
@@ -132,42 +140,43 @@ export const modifyDatasetEntityForRelativeFilePath = (
   );
 };
 
-// Helper function to remove a path from all other entities in the same entityType
+// Removes a file path from all entities except the target entity
 const removeFromOtherEntities = (entityEntries, targetEntityName, entityRelativePath) => {
   Object.keys(entityEntries).forEach((entity) => {
-    console.log("entity", entity);
     if (entity !== targetEntityName) {
       entityEntries[entity] = entityEntries[entity].filter((path) => path !== entityRelativePath);
     }
   });
-  // If the entity is a subset of another entity, remove the path from the parent entity
-  const entityExistsInHeirarchy = entityHeirarchies.find((heirarchy) =>
-    heirarchy.includes(targetEntityName)
+
+  // Handle hierarchies: if the entity is a subset of another, remove the path from the parent entity
+  const entityExistsInHierarchy = entityHierarchies.find((hierarchy) =>
+    hierarchy.includes(targetEntityName)
   );
 
-  console.log("removeFromOtherEntities");
-  console.log(entityEntries);
-  console.log(targetEntityName);
-  console.log(entityRelativePath);
+  console.log("removeFromOtherEntities", {
+    entityEntries,
+    targetEntityName,
+    entityRelativePath,
+    entityExistsInHierarchy,
+  });
 };
 
+// Retrieves the entity associated with a specific file path
 export const getEntityForRelativePath = (datasetEntityObj, entityType, relativePath) => {
-  // Ensure the datasetEntityObj and entityType are valid
   if (!datasetEntityObj || !entityType || !datasetEntityObj[entityType]) {
     return null;
   }
 
-  // Iterate through all entities within the specified entityType
   for (const entityName in datasetEntityObj[entityType]) {
-    // If the relativePath exists in the entity's list, return the entityName
     if (datasetEntityObj[entityType][entityName]?.includes(relativePath)) {
       return entityName;
     }
   }
 
-  return null; // Return null if the relativePath is not found
+  return null;
 };
 
+// Gets the number of files associated with a specific entity
 export const getNumberFilesForEntity = (entityName) => {
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const entityType = useGlobalStore((state) => state.entityType);

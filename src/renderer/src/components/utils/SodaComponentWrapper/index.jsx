@@ -1,6 +1,8 @@
 import React from "react";
 import { MantineProvider, createTheme, Stack } from "@mantine/core";
 import FullWidthContainer from "../../containers/FullWidthContainer";
+import { Tooltip } from "bootstrap";
+import { root } from "postcss";
 
 const theme = createTheme({
   colors: {
@@ -24,6 +26,15 @@ const theme = createTheme({
     md: "1rem", // (default)
     lg: "1.2rem",
     xl: "1.4rem",
+  },
+  components: {
+    Tooltip: {
+      styles: {
+        root: {
+          zIndex: 2999,
+        },
+      },
+    },
   },
 });
 

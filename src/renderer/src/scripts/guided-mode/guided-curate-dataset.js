@@ -1358,6 +1358,9 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
+    if (pageBeingLeftID === "guided-denote-derivative-data-tab") {
+    }
+
     if (pageBeingLeftID === "guided-manifest-subject-entity-selector-tab") {
       window.sodaJSONObj["subject-related-folders-and-files"] = getEntityListForEntityType(
         "subject-related-folders-and-files"
@@ -5655,6 +5658,7 @@ window.openPage = async (targetPageID) => {
       renderManifestCards();
     }
     if (targetPageID === "guided-manifest-subject-entity-selector-tab") {
+      const subjects = window.getExistingSubjectNames();
       setEntityList(window.getExistingSubjectNames(), "Subjects List");
       setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       setEntityType("subject-related-folders-and-files");

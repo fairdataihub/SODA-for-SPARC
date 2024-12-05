@@ -136,7 +136,6 @@ const FolderItem = ({
     Object.keys(content.files || {}).length === 0;
 
   const folderHasFiles = Object.keys(content.files || {}).length > 0;
-  const folderHasFolders = Object.keys(content.folders || {}).length > 0;
 
   const isViewOnly = !onFileClick || !onFolderClick || !getEntityForRelativePath;
 
@@ -157,7 +156,7 @@ const FolderItem = ({
           />
         )}
         {!isViewOnly && (
-          <Tooltip label="Select folder" zIndex={2999}>
+          <Tooltip label="Select folder">
             <Checkbox
               readOnly
               onClick={() => onFolderClick(name, content, "folder-select")}
@@ -173,14 +172,14 @@ const FolderItem = ({
         {!isViewOnly && (
           <>
             {folderHasFiles && (
-              <Tooltip label="Select all files in this folder" zIndex={2999}>
+              <Tooltip label="Select all files in this folder">
                 <IconFileDownload
                   size={20}
                   onClick={() => onFolderClick(name, content, "folder-files-select")}
                 />
               </Tooltip>
             )}
-            <Tooltip label="Select this folder and ALL contents" zIndex={2999}>
+            <Tooltip label="Select this folder and ALL contents">
               <IconSelect
                 size={20}
                 onClick={() => onFolderClick(name, content, "folder-recursive-select")}
