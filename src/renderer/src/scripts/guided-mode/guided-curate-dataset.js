@@ -6289,158 +6289,158 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-designate-permissions-tab") {
-      console.log("In permissions tab")
+      console.log("In permissions tab");
       let isGuest = await window.isWorkspaceGuest();
       if (!isGuest) {
-      // Get the users that can be granted permissions
-      const usersReq = await client.get(
-        `manage_datasets/ps_get_users?selected_account=${window.defaultBfAccount}`
-      );
-      const usersThatCanBeGrantedPermissions = usersReq.data.users;
-
-      // Get the teams that can be granted permissions
-      // Note: This is in a try catch because guest accounts do not have access to the teams endpoint
-      // so the request will fail and teamsThatCanBeGrantedPermissions will remain an empty array
-      let teamsThatCanBeGrantedPermissions = [];
-      try {
-        const teamsReq = await client.get(
-          `manage_datasets/ps_get_teams?selected_account=${window.defaultBfAccount}`
+        // Get the users that can be granted permissions
+        const usersReq = await client.get(
+          `manage_datasets/ps_get_users?selected_account=${window.defaultBfAccount}`
         );
-        teamsThatCanBeGrantedPermissions = window.getSortedTeamStrings(teamsReq.data.teams);
-      } catch (error) {
-        const emessage = userErrorMessage(error);
-      }
+        const usersThatCanBeGrantedPermissions = usersReq.data.users;
 
-      // Reset the dropdown with the new users and teams
-      guidedAddUsersAndTeamsToDropdown(
-        usersThatCanBeGrantedPermissions,
-        teamsThatCanBeGrantedPermissions
-      );
-
-      if (pageNeedsUpdateFromPennsieve("guided-designate-permissions-tab")) {
-        // Show the loading page while the page's data is being fetched from Pennsieve
-        setPageLoadingState(true);
+        // Get the teams that can be granted permissions
+        // Note: This is in a try catch because guest accounts do not have access to the teams endpoint
+        // so the request will fail and teamsThatCanBeGrantedPermissions will remain an empty array
+        let teamsThatCanBeGrantedPermissions = [];
         try {
-          let sparcUsersDivided = [];
-
-          //sparc users results needs to be formatted
-          usersThatCanBeGrantedPermissions.forEach((element) => {
-            //first two elements of this array will just be an email with no name
-            sparcUsersDivided.push(element.split(" !|**|!"));
-          });
-
-          const permissions = await api.getDatasetPermissions(
-            window.defaultBfAccount,
-            window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-            false
+          const teamsReq = await client.get(
+            `manage_datasets/ps_get_teams?selected_account=${window.defaultBfAccount}`
           );
-
-          //Filter out the integration user
-          const filteredPermissions = permissions.filter((permission) => {
-            return !permission.includes("Integration User");
-          });
-
-          let partialUserDetails = [];
-          let finalTeamPermissions = [];
-          let piOwner = [];
-
-          //so check for PI owner as well
-          for (const userPermission of filteredPermissions) {
-            // Will include teams and users
-            let userRoleSplit = userPermission.split(",");
-            // Will look like:
-            // ['User: John Doe ', ' role: owner']
-            // need to split above
-            let nameSplit = userRoleSplit[0].split(":"); // will appear as ['Team', ' DRC Team']
-            let roleSplit = userRoleSplit[1].split(":"); // will appear as [' role', ' Viewer']
-            let userName = nameSplit[1].trim();
-            let userPermiss = roleSplit[1].trim();
-            let teamOrUser = nameSplit[0].trim().toLowerCase();
-
-            if (teamOrUser === "team") {
-              finalTeamPermissions.push({
-                UUID: userName,
-                permission: userPermiss,
-                teamString: userName,
-                permissionSource: "Pennsieve",
-                deleteFromPennsieve: false,
-              });
-            } else {
-              partialUserDetails.push({
-                permission: userPermiss,
-                userName: userName,
-              });
-            }
-          }
-          // After loop use the array of objects to find the UUID and email
-          let finalUserPermissions = [];
-
-          partialUserDetails.map((object) => {
-            sparcUsersDivided.forEach((element) => {
-              if (element[0].includes(object["userName"])) {
-                // name was found now get UUID
-                let userEmailSplit = element[0].split(" (");
-                if (object["permission"] === "owner") {
-                  //set for pi owner
-                  piOwner.push({
-                    UUID: object.permission,
-                    name: userEmailSplit[0],
-                    userString: element[0],
-                    permissionSource: "Pennsieve",
-                    deleteFromPennsieve: false,
-                  });
-                  //update PI owner key
-                } else {
-                  finalUserPermissions.push({
-                    UUID: element[1],
-                    permission: object.permission,
-                    userName: userEmailSplit[0],
-                    userString: element[0],
-                    permissonSource: "Pennsieve",
-                    deleteFromPennsieve: false,
-                  });
-                }
-              }
-            });
-          });
-
-          window.sodaJSONObj["digital-metadata"]["team-permissions"] = finalTeamPermissions;
-          window.sodaJSONObj["digital-metadata"]["user-permissions"] = finalUserPermissions;
-          window.sodaJSONObj["digital-metadata"]["pi-owner"] = piOwner[0];
-
-          window.sodaJSONObj["pages-fetched-from-pennsieve"].push(
-            "guided-designate-permissions-tab"
-          );
+          teamsThatCanBeGrantedPermissions = window.getSortedTeamStrings(teamsReq.data.teams);
         } catch (error) {
-          clientError(error);
-          const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage, "guided-designate-permissions-tab");
-          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
-          // so the the fetch does not occur again
-          window.sodaJSONObj["pages-fetched-from-pennsieve"].push(
-            "guided-designate-permissions-tab"
-          );
+          const emessage = userErrorMessage(error);
         }
-      }
 
-      //If the PI owner is empty, set the PI owner to the user that is currently curating
-      if (Object.keys(window.sodaJSONObj["digital-metadata"]["pi-owner"]).length === 0) {
-        //Get the user information of the user that is currently curating
-        const user = await api.getUserInformation();
+        // Reset the dropdown with the new users and teams
+        guidedAddUsersAndTeamsToDropdown(
+          usersThatCanBeGrantedPermissions,
+          teamsThatCanBeGrantedPermissions
+        );
 
-        const loggedInUserString = `${user["firstName"]} ${user["lastName"]} (${user["email"]})`;
-        const loggedInUserUUID = user["id"];
-        const loggedInUserName = `${user["firstName"]} ${user["lastName"]}`;
-        const loggedInUserPiObj = {
-          userString: loggedInUserString,
-          UUID: loggedInUserUUID,
-          name: loggedInUserName,
-        };
-        setGuidedDatasetPiOwner(loggedInUserPiObj);
-      }
+        if (pageNeedsUpdateFromPennsieve("guided-designate-permissions-tab")) {
+          // Show the loading page while the page's data is being fetched from Pennsieve
+          setPageLoadingState(true);
+          try {
+            let sparcUsersDivided = [];
 
-      renderPermissionsTable();
-      guidedResetUserTeamPermissionsDropdowns();
+            //sparc users results needs to be formatted
+            usersThatCanBeGrantedPermissions.forEach((element) => {
+              //first two elements of this array will just be an email with no name
+              sparcUsersDivided.push(element.split(" !|**|!"));
+            });
+
+            const permissions = await api.getDatasetPermissions(
+              window.defaultBfAccount,
+              window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              false
+            );
+
+            //Filter out the integration user
+            const filteredPermissions = permissions.filter((permission) => {
+              return !permission.includes("Integration User");
+            });
+
+            let partialUserDetails = [];
+            let finalTeamPermissions = [];
+            let piOwner = [];
+
+            //so check for PI owner as well
+            for (const userPermission of filteredPermissions) {
+              // Will include teams and users
+              let userRoleSplit = userPermission.split(",");
+              // Will look like:
+              // ['User: John Doe ', ' role: owner']
+              // need to split above
+              let nameSplit = userRoleSplit[0].split(":"); // will appear as ['Team', ' DRC Team']
+              let roleSplit = userRoleSplit[1].split(":"); // will appear as [' role', ' Viewer']
+              let userName = nameSplit[1].trim();
+              let userPermiss = roleSplit[1].trim();
+              let teamOrUser = nameSplit[0].trim().toLowerCase();
+
+              if (teamOrUser === "team") {
+                finalTeamPermissions.push({
+                  UUID: userName,
+                  permission: userPermiss,
+                  teamString: userName,
+                  permissionSource: "Pennsieve",
+                  deleteFromPennsieve: false,
+                });
+              } else {
+                partialUserDetails.push({
+                  permission: userPermiss,
+                  userName: userName,
+                });
+              }
+            }
+            // After loop use the array of objects to find the UUID and email
+            let finalUserPermissions = [];
+
+            partialUserDetails.map((object) => {
+              sparcUsersDivided.forEach((element) => {
+                if (element[0].includes(object["userName"])) {
+                  // name was found now get UUID
+                  let userEmailSplit = element[0].split(" (");
+                  if (object["permission"] === "owner") {
+                    //set for pi owner
+                    piOwner.push({
+                      UUID: object.permission,
+                      name: userEmailSplit[0],
+                      userString: element[0],
+                      permissionSource: "Pennsieve",
+                      deleteFromPennsieve: false,
+                    });
+                    //update PI owner key
+                  } else {
+                    finalUserPermissions.push({
+                      UUID: element[1],
+                      permission: object.permission,
+                      userName: userEmailSplit[0],
+                      userString: element[0],
+                      permissonSource: "Pennsieve",
+                      deleteFromPennsieve: false,
+                    });
+                  }
+                }
+              });
+            });
+
+            window.sodaJSONObj["digital-metadata"]["team-permissions"] = finalTeamPermissions;
+            window.sodaJSONObj["digital-metadata"]["user-permissions"] = finalUserPermissions;
+            window.sodaJSONObj["digital-metadata"]["pi-owner"] = piOwner[0];
+
+            window.sodaJSONObj["pages-fetched-from-pennsieve"].push(
+              "guided-designate-permissions-tab"
+            );
+          } catch (error) {
+            clientError(error);
+            const emessage = error.response.data.message;
+            await guidedShowOptionalRetrySwal(emessage, "guided-designate-permissions-tab");
+            // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+            // so the the fetch does not occur again
+            window.sodaJSONObj["pages-fetched-from-pennsieve"].push(
+              "guided-designate-permissions-tab"
+            );
+          }
+        }
+
+        //If the PI owner is empty, set the PI owner to the user that is currently curating
+        if (Object.keys(window.sodaJSONObj["digital-metadata"]["pi-owner"]).length === 0) {
+          //Get the user information of the user that is currently curating
+          const user = await api.getUserInformation();
+
+          const loggedInUserString = `${user["firstName"]} ${user["lastName"]} (${user["email"]})`;
+          const loggedInUserUUID = user["id"];
+          const loggedInUserName = `${user["firstName"]} ${user["lastName"]}`;
+          const loggedInUserPiObj = {
+            userString: loggedInUserString,
+            UUID: loggedInUserUUID,
+            name: loggedInUserName,
+          };
+          setGuidedDatasetPiOwner(loggedInUserPiObj);
+        }
+
+        renderPermissionsTable();
+        guidedResetUserTeamPermissionsDropdowns();
       }
     }
 
@@ -6963,7 +6963,7 @@ window.openPage = async (targetPageID) => {
 
     // Set the last opened page and save it
     window.sodaJSONObj["page-before-exit"] = targetPageID;
-    console.log("About to save progress")
+    console.log("About to save progress");
     await guidedSaveProgress();
   } catch (error) {
     const eMessage = userErrorMessage(error);
@@ -13953,7 +13953,7 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
 };
 
 const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle) => {
-  let isGuest = await window.isWorkspaceGuest()
+  let isGuest = await window.isWorkspaceGuest();
   if (isGuest) return;
   document.getElementById("guided-dataset-subtitle-upload-tr").classList.remove("hidden");
   const datasetSubtitleUploadText = document.getElementById("guided-dataset-subtitle-upload-text");
@@ -14037,7 +14037,7 @@ const guidedAddDatasetDescription = async (
   dataCollection,
   dataConclusion
 ) => {
-  let isGuest = await window.isWorkspaceGuest()
+  let isGuest = await window.isWorkspaceGuest();
   if (isGuest) return;
   document.getElementById("guided-dataset-description-upload-tr").classList.remove("hidden");
   const datasetDescriptionUploadText = document.getElementById(
@@ -14118,7 +14118,7 @@ const guidedAddDatasetDescription = async (
 };
 
 const uploadValidBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
-  let isGuest = await window.isWorkspaceGuest()
+  let isGuest = await window.isWorkspaceGuest();
   if (isGuest) return;
   document.getElementById("guided-dataset-banner-image-upload-tr").classList.remove("hidden");
   const datasetBannerImageUploadText = document.getElementById(
@@ -14226,7 +14226,7 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
   await uploadValidBannerImage(bfAccount, datasetName, bannerImagePath);
 };
 const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) => {
-  let isGuest = await window.isWorkspaceGuest()
+  let isGuest = await window.isWorkspaceGuest();
   if (isGuest) return;
   document.getElementById("guided-dataset-license-upload-tr").classList.remove("hidden");
   const datasetLicenseUploadText = document.getElementById("guided-dataset-license-upload-text");
@@ -14303,7 +14303,7 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
 };
 
 const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
-  let isGuest = await window.isWorkspaceGuest()
+  let isGuest = await window.isWorkspaceGuest();
   if (isGuest) return;
   document.getElementById("guided-dataset-tags-upload-tr").classList.remove("hidden");
   const datasetTagsUploadText = document.getElementById("guided-dataset-tags-upload-text");
