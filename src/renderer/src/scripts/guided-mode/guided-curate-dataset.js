@@ -425,8 +425,17 @@ document.getElementById("guided-button-has-docs-data").addEventListener("click",
 const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
   // TODO: Brioader support for guests who are editing a changed dataset.
 
-  let isGuest = await window.isWorkspaceGuest();
-  if (isGuest) return { shouldShow: false };
+  // let isGuest = await window.isWorkspaceGuest();
+  let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
+  let ineligible = false;
+  if(existingDataset) {
+    let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
+    if(role === "editor") {
+      ineligible = true;
+    } 
+  }
+
+  if (ineligible) return { shouldShow: false };
   try {
     const changesRes = await client.get(`/prepare_metadata/readme_changes_file`, {
       params: {
@@ -697,6 +706,8 @@ const savePageChanges = async (pageBeingLeftID) => {
           window.defaultBfAccount,
           selectedPennsieveDataset
         );
+
+        console.log("datasetIsLocked", datasetIsLocked);
         if (datasetIsLocked) {
           errorArray.push({
             type: "swal",
@@ -13953,8 +13964,18 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
 };
 
 const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle) => {
-  let isGuest = await window.isWorkspaceGuest();
-  if (isGuest) return;
+  let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
+
+  let ineligible = false;
+  if(existingDataset) {
+    let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
+    if(role === "editor") {
+      ineligible = true;
+    } 
+  }
+
+  if (ineligible) return 
+
   document.getElementById("guided-dataset-subtitle-upload-tr").classList.remove("hidden");
   const datasetSubtitleUploadText = document.getElementById("guided-dataset-subtitle-upload-text");
   datasetSubtitleUploadText.innerHTML = "Adding dataset subtitle...";
@@ -14037,8 +14058,17 @@ const guidedAddDatasetDescription = async (
   dataCollection,
   dataConclusion
 ) => {
-  let isGuest = await window.isWorkspaceGuest();
-  if (isGuest) return;
+  let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
+
+  let ineligible = false;
+  if(existingDataset) {
+    let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
+    if(role === "editor") {
+      ineligible = true;
+    } 
+  }
+
+  if (ineligible) return 
   document.getElementById("guided-dataset-description-upload-tr").classList.remove("hidden");
   const datasetDescriptionUploadText = document.getElementById(
     "guided-dataset-description-upload-text"
@@ -14118,8 +14148,17 @@ const guidedAddDatasetDescription = async (
 };
 
 const uploadValidBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
-  let isGuest = await window.isWorkspaceGuest();
-  if (isGuest) return;
+  let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
+
+  let ineligible = false;
+  if(existingDataset) {
+    let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
+    if(role === "editor") {
+      ineligible = true;
+    } 
+  }
+
+  if (ineligible) return 
   document.getElementById("guided-dataset-banner-image-upload-tr").classList.remove("hidden");
   const datasetBannerImageUploadText = document.getElementById(
     "guided-dataset-banner-image-upload-text"
@@ -14226,8 +14265,16 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
   await uploadValidBannerImage(bfAccount, datasetName, bannerImagePath);
 };
 const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) => {
-  let isGuest = await window.isWorkspaceGuest();
-  if (isGuest) return;
+  let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
+  let ineligible = false;
+  if(existingDataset) {
+    let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
+    if(role === "editor") {
+      ineligible = true;
+    } 
+  }
+
+  if (ineligible) return 
   document.getElementById("guided-dataset-license-upload-tr").classList.remove("hidden");
   const datasetLicenseUploadText = document.getElementById("guided-dataset-license-upload-text");
   datasetLicenseUploadText.innerHTML = "Adding dataset license...";
@@ -14303,8 +14350,16 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
 };
 
 const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
-  let isGuest = await window.isWorkspaceGuest();
-  if (isGuest) return;
+  let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
+  let ineligible = false;
+  if(existingDataset) {
+    let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
+    if(role === "editor") {
+      ineligible = true;
+    } 
+  }
+
+  if (ineligible) return 
   document.getElementById("guided-dataset-tags-upload-tr").classList.remove("hidden");
   const datasetTagsUploadText = document.getElementById("guided-dataset-tags-upload-text");
   datasetTagsUploadText.innerHTML = "Adding dataset tags...";

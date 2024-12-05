@@ -53,7 +53,7 @@ const isDatasetLocked = async (account, datasetNameOrId) => {
       );
       teamsInCurrentUsersOrganization = teamsReq.data.teams;
     } catch (error) {
-      userErrorMessage(error);
+      clientError(error);
     }
 
     // Get the team with the name "Publishers" (if it exists)
