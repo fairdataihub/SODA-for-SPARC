@@ -6289,8 +6289,9 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-designate-permissions-tab") {
+      console.log("In permissions tab")
       let isGuest = await window.isWorkspaceGuest();
-      if (isGuest) return;
+      if (!isGuest) {
       // Get the users that can be granted permissions
       const usersReq = await client.get(
         `manage_datasets/ps_get_users?selected_account=${window.defaultBfAccount}`
@@ -6440,6 +6441,7 @@ window.openPage = async (targetPageID) => {
 
       renderPermissionsTable();
       guidedResetUserTeamPermissionsDropdowns();
+      }
     }
 
     if (targetPageID === "guided-assign-license-tab") {
@@ -6961,6 +6963,7 @@ window.openPage = async (targetPageID) => {
 
     // Set the last opened page and save it
     window.sodaJSONObj["page-before-exit"] = targetPageID;
+    console.log("About to save progress")
     await guidedSaveProgress();
   } catch (error) {
     const eMessage = userErrorMessage(error);
@@ -13950,6 +13953,8 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
 };
 
 const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle) => {
+  let isGuest = await window.isWorkspaceGuest()
+  if (isGuest) return;
   document.getElementById("guided-dataset-subtitle-upload-tr").classList.remove("hidden");
   const datasetSubtitleUploadText = document.getElementById("guided-dataset-subtitle-upload-text");
   datasetSubtitleUploadText.innerHTML = "Adding dataset subtitle...";
@@ -14032,6 +14037,8 @@ const guidedAddDatasetDescription = async (
   dataCollection,
   dataConclusion
 ) => {
+  let isGuest = await window.isWorkspaceGuest()
+  if (isGuest) return;
   document.getElementById("guided-dataset-description-upload-tr").classList.remove("hidden");
   const datasetDescriptionUploadText = document.getElementById(
     "guided-dataset-description-upload-text"
@@ -14111,6 +14118,8 @@ const guidedAddDatasetDescription = async (
 };
 
 const uploadValidBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
+  let isGuest = await window.isWorkspaceGuest()
+  if (isGuest) return;
   document.getElementById("guided-dataset-banner-image-upload-tr").classList.remove("hidden");
   const datasetBannerImageUploadText = document.getElementById(
     "guided-dataset-banner-image-upload-text"
@@ -14217,6 +14226,8 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
   await uploadValidBannerImage(bfAccount, datasetName, bannerImagePath);
 };
 const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) => {
+  let isGuest = await window.isWorkspaceGuest()
+  if (isGuest) return;
   document.getElementById("guided-dataset-license-upload-tr").classList.remove("hidden");
   const datasetLicenseUploadText = document.getElementById("guided-dataset-license-upload-text");
   datasetLicenseUploadText.innerHTML = "Adding dataset license...";
@@ -14292,6 +14303,8 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
 };
 
 const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
+  let isGuest = await window.isWorkspaceGuest()
+  if (isGuest) return;
   document.getElementById("guided-dataset-tags-upload-tr").classList.remove("hidden");
   const datasetTagsUploadText = document.getElementById("guided-dataset-tags-upload-text");
   datasetTagsUploadText.innerHTML = "Adding dataset tags...";
