@@ -428,11 +428,11 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
   // let isGuest = await window.isWorkspaceGuest();
   let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
   let ineligible = false;
-  if(existingDataset) {
+  if (existingDataset) {
     let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
-    if(role === "editor") {
+    if (role === "editor") {
       ineligible = true;
-    } 
+    }
   }
 
   if (ineligible) return { shouldShow: false };
@@ -13967,14 +13967,14 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
   let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
 
   let ineligible = false;
-  if(existingDataset) {
+  if (existingDataset) {
     let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
-    if(role === "editor") {
+    if (role === "editor") {
       ineligible = true;
-    } 
+    }
   }
 
-  if (ineligible) return 
+  if (ineligible) return;
 
   document.getElementById("guided-dataset-subtitle-upload-tr").classList.remove("hidden");
   const datasetSubtitleUploadText = document.getElementById("guided-dataset-subtitle-upload-text");
@@ -14061,14 +14061,14 @@ const guidedAddDatasetDescription = async (
   let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
 
   let ineligible = false;
-  if(existingDataset) {
+  if (existingDataset) {
     let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
-    if(role === "editor") {
+    if (role === "editor") {
       ineligible = true;
-    } 
+    }
   }
 
-  if (ineligible) return 
+  if (ineligible) return;
   document.getElementById("guided-dataset-description-upload-tr").classList.remove("hidden");
   const datasetDescriptionUploadText = document.getElementById(
     "guided-dataset-description-upload-text"
@@ -14151,14 +14151,14 @@ const uploadValidBannerImage = async (bfAccount, datasetName, bannerImagePath) =
   let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
 
   let ineligible = false;
-  if(existingDataset) {
+  if (existingDataset) {
     let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
-    if(role === "editor") {
+    if (role === "editor") {
       ineligible = true;
-    } 
+    }
   }
 
-  if (ineligible) return 
+  if (ineligible) return;
   document.getElementById("guided-dataset-banner-image-upload-tr").classList.remove("hidden");
   const datasetBannerImageUploadText = document.getElementById(
     "guided-dataset-banner-image-upload-text"
@@ -14267,14 +14267,14 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
 const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) => {
   let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
   let ineligible = false;
-  if(existingDataset) {
+  if (existingDataset) {
     let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
-    if(role === "editor") {
+    if (role === "editor") {
       ineligible = true;
-    } 
+    }
   }
 
-  if (ineligible) return 
+  if (ineligible) return;
   document.getElementById("guided-dataset-license-upload-tr").classList.remove("hidden");
   const datasetLicenseUploadText = document.getElementById("guided-dataset-license-upload-text");
   datasetLicenseUploadText.innerHTML = "Adding dataset license...";
@@ -14352,14 +14352,14 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
 const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
   let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
   let ineligible = false;
-  if(existingDataset) {
+  if (existingDataset) {
     let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
-    if(role === "editor") {
+    if (role === "editor") {
       ineligible = true;
-    } 
+    }
   }
 
-  if (ineligible) return 
+  if (ineligible) return;
   document.getElementById("guided-dataset-tags-upload-tr").classList.remove("hidden");
   const datasetTagsUploadText = document.getElementById("guided-dataset-tags-upload-text");
   datasetTagsUploadText.innerHTML = "Adding dataset tags...";
