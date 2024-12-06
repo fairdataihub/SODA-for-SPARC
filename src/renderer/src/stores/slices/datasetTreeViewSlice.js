@@ -26,22 +26,25 @@ const traverseStructureByPath = (structure, pathToRender) => {
 
 // Determines if a folder or its subfolders/files match the search filter
 const folderObjMatchesSearch = (folderObj, searchFilter) => {
-  const relativePath = folderObj.relativePath.toLowerCase();
+  if (!searchFilter) return true; // No search filter applied
 
+  const folderRelativePath = folderObj.relativePath.toLowerCase();
   // Check if the current folder's relative path matches the search filter
-  if (relativePath.includes(searchFilter)) return true;
-
-  // Check if any subfolders match the search filter
-  const foldersMatch = Object.values(folderObj.folders || {}).some((subFolder) =>
-    folderObjMatchesSearch(subFolder, searchFilter)
-  );
+  if (folderRelativePath.includes(searchFilter)) return true;
 
   // Check if any files match the search filter
   const filesMatch = Object.values(folderObj.files || {}).some((file) =>
     file.relativePath.toLowerCase().includes(searchFilter)
   );
+  if (filesMatch) return true;
 
-  return foldersMatch || filesMatch;
+  // Check if any subfolders match the search filter
+  const foldersMatch = Object.values(folderObj.folders || {}).some((subFolder) =>
+    folderObjMatchesSearch(subFolder, searchFilter)
+  );
+  if (foldersMatch) return true;
+
+  return false; // No matches found
 };
 
 // Filters the dataset structure based on the current search filter

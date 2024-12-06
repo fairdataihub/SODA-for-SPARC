@@ -57,6 +57,8 @@ const FILE_ICON_MAP = {
   zip: <IconFileTypeZip size={ICON_SETTINGS.fileSize} />,
   rar: <IconFileTypeZip size={ICON_SETTINGS.fileSize} />,
   jp2: <IconPhoto size={ICON_SETTINGS.fileSize} />,
+  tif: <IconPhoto size={ICON_SETTINGS.fileSize} />,
+  tiff: <IconPhoto size={ICON_SETTINGS.fileSize} />,
 };
 
 const naturalSort = (arr) =>
@@ -96,7 +98,7 @@ const FileItem = ({ name, content, onFileClick, getEntityForRelativePath }) => {
       ml="sm"
     >
       {getFileTypeIcon(name)}
-      <Text size="sm">{content.relativePath}</Text>
+      <Text size="sm">{name}</Text>
     </Group>
   );
 };
@@ -109,9 +111,8 @@ const FolderItem = ({
   getEntityForRelativePath,
   datasetStructureSearchFilter,
 }) => {
-  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
-  const entityType = useGlobalStore((state) => state.entityType);
-  const activeEntity = useGlobalStore((state) => state.activeEntity);
+  const { datasetEntityObj, entityType, activeEntity } = useGlobalStore.getState();
+
   const foldersEntity = getEntityForRelativePath
     ? getEntityForRelativePath(datasetEntityObj, entityType, content.relativePath)
     : null;
@@ -156,10 +157,10 @@ const FolderItem = ({
           />
         )}
         {!isViewOnly && (
-          <Tooltip label="Select folder">
+          <Tooltip label="Select this folder and ALL contents" zIndex={2999}>
             <Checkbox
               readOnly
-              onClick={() => onFolderClick(name, content, "folder-select")}
+              onClick={() => onFolderClick(name, content, "folder-recursive-select")}
               checked={foldersEntity}
               color={foldersEntity === activeEntity ? "blue" : "gray"}
             />
@@ -172,19 +173,13 @@ const FolderItem = ({
         {!isViewOnly && (
           <>
             {folderHasFiles && (
-              <Tooltip label="Select all files in this folder">
+              <Tooltip label="Select all files in this folder" zIndex={2999}>
                 <IconFileDownload
                   size={20}
                   onClick={() => onFolderClick(name, content, "folder-files-select")}
                 />
               </Tooltip>
             )}
-            <Tooltip label="Select this folder and ALL contents">
-              <IconSelect
-                size={20}
-                onClick={() => onFolderClick(name, content, "folder-recursive-select")}
-              />
-            </Tooltip>
           </>
         )}
       </Group>

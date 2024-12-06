@@ -10,18 +10,19 @@ import {
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { setDatasetstructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
 
-const useDatasetEntityStore = () =>
-  useGlobalStore((state) => ({
+const useDatasetEntityStore = () => {
+  return useGlobalStore((state) => ({
     entityList: state.entityList,
     entityListName: state.entityListName,
     activeEntity: state.activeEntity,
     entityType: state.entityType,
     datasetEntityObj: state.datasetEntityObj,
   }));
+};
 
 const handleEntityClick = (entity) => setActiveEntity(entity);
 
-const handleFileClick = (entityType, activeEntity, datasetEntityObj, fileName, fileContents) => {
+const handleFileClick = (entityType, activeEntity, datasetEntityObj, fileContents) => {
   modifyDatasetEntityForRelativeFilePath(
     entityType,
     activeEntity,
@@ -99,19 +100,19 @@ const handleFolderClick = (
   }
 };
 
-const renderEntityList = (entityList, entityListName, activeEntity, datasetEntityObj) =>
+const renderEntityList = (entityList, entityType, activeEntity, datasetEntityObj) =>
   entityList.map((entity) => {
-    const entityItemsCount = Object.keys(
-      datasetEntityObj?.[datasetEntityObj.entityType]?.[entity] || {}
-    ).length;
-    const isActive = activeEntity === entity;
+    const entityItemsCount = datasetEntityObj?.[entityType]?.[entity]?.length || 0;
+    const isActive = entity === activeEntity;
+
+    // Show the search icon for sub-, sam-, and perf- entities
+    const showSearchIcon = ["sub-", "sam-", "perf-"].some((prefix) => entity.startsWith(prefix));
 
     return (
       <Box
         key={entity}
-        component="button"
         onClick={() => handleEntityClick(entity)}
-        p="sm"
+        p="xs"
         style={{
           width: "100%",
           backgroundColor: isActive ? "#e3f2fd" : "transparent",
@@ -122,30 +123,28 @@ const renderEntityList = (entityList, entityListName, activeEntity, datasetEntit
           transition: "background-color 0.2s ease, border-color 0.2s ease",
         }}
       >
-        <Group justify="space-between">
-          <Text>{entity}</Text>
-          <Group spacing="xs">
-            <Text size="sm">{entityItemsCount}</Text>
+        <Group justify="space-between" align="center">
+          <Text size="sm">{entity}</Text>
+          <Group spacing="xs" align="center">
+            <Text size="xs" fw={200}>
+              {entityItemsCount}
+            </Text>
 
-            <Tooltip label="Search dataset for this entity" zIndex={2999}>
-              <IconSearch
-                size={16}
-                onClick={() => {
-                  const knownEntityPrefixes = ["sub-", "sam-", "perf-"];
-                  // Iterate through each prefix and check if the entity starts with it
-                  let entityName = entity;
-                  for (let prefix of knownEntityPrefixes) {
-                    if (entity.startsWith(prefix)) {
-                      // Remove the prefix if it matches
-                      entityName = entity.substring(prefix.length);
-                      break; // Stop once the first match is found
+            {showSearchIcon && (
+              <Tooltip label="Search dataset for this entity" zIndex={2999}>
+                <IconSearch
+                  size={14}
+                  onClick={(event) => {
+                    event.stopPropagation(); // Prevent triggering parent `onClick` event
+                    if (entity !== activeEntity) {
+                      handleEntityClick(entity);
                     }
-                  }
-
-                  setDatasetstructureSearchFilter(entityName);
-                }}
-              />
-            </Tooltip>
+                    const entityName = entity.substring(entity.indexOf("-") + 1);
+                    setDatasetstructureSearchFilter(entityName);
+                  }}
+                />
+              </Tooltip>
+            )}
           </Group>
         </Group>
       </Box>
@@ -161,14 +160,14 @@ const DatasetEntitySelector = () => {
       <Grid gutter="lg">
         <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
           <Paper shadow="lg" p="md" radius="md" withBorder>
-            <Group mb="md" spacing="xs">
+            <Group mb="sm" spacing="xs">
               <Text size="lg" weight={500}>
                 {entityListName}
               </Text>
             </Group>
-            <Divider my="sm" />
+            <Divider my="xs" />
             <Box style={{ maxHeight: "70vh", overflowY: "auto" }}>
-              {renderEntityList(entityList, entityListName, activeEntity, datasetEntityObj)}
+              {renderEntityList(entityList, entityType, activeEntity, datasetEntityObj)}
             </Box>
           </Paper>
         </Grid.Col>
@@ -187,13 +186,7 @@ const DatasetEntitySelector = () => {
                   )
                 }
                 onFileClick={(fileName, fileContents) =>
-                  handleFileClick(
-                    entityType,
-                    activeEntity,
-                    datasetEntityObj,
-                    fileName,
-                    fileContents
-                  )
+                  handleFileClick(entityType, activeEntity, datasetEntityObj, fileContents)
                 }
                 getEntityForRelativePath={getEntityForRelativePath}
               />
