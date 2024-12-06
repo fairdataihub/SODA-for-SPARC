@@ -1379,6 +1379,16 @@ const savePageChanges = async (pageBeingLeftID) => {
         window.sodaJSONObj["sample-related-folders-and-files"]
       );
     }
+    if (pageBeingLeftID === "guided-manifest-performance-entity-selector-tab") {
+      window.sodaJSONObj["performance-related-folders-and-files"] = getEntityListForEntityType(
+        "performance-related-folders-and-files"
+      );
+      console.log(
+        "performance-related-folders-and-files",
+        window.sodaJSONObj["performance-related-folders-and-files"]
+      );
+    }
+
     if (pageBeingLeftID === "guided-source-derivative-folders-and-files-selector-tab") {
       window.sodaJSONObj["source-derivative-folders-and-files"] = getEntityListForEntityType(
         "source-derivative-folders-and-files"
@@ -5586,6 +5596,22 @@ window.openPage = async (targetPageID) => {
           }
         }
 
+        const performanceRelatedFoldersAndFiles =
+          window.sodaJSONObj["performance-related-folders-and-files"];
+        if (performanceRelatedFoldersAndFiles) {
+          const performanceEntities = Object.keys(performanceRelatedFoldersAndFiles);
+          for (const performanceEntity of performanceEntities) {
+            const performanceFiles = performanceRelatedFoldersAndFiles[performanceEntity];
+            // Loop through the files in the performance entity and if any match the current file name, update the entity column
+            for (const performanceFile of performanceFiles) {
+              if (performanceFile === fileName) {
+                newManifestData.data[i][entityColumnIndex] = performanceEntity;
+                break;
+              }
+            }
+          }
+        }
+
         if (primaryFoldersAndFilesMarkedAsSource.has(fileName)) {
           // replace the first instance of primary/ with source/
           newManifestData.data[i][0] = fileName.replace("primary/", "source/");
@@ -5659,6 +5685,9 @@ window.openPage = async (targetPageID) => {
     }
     if (targetPageID === "guided-manifest-subject-entity-selector-tab") {
       const subjects = window.getExistingSubjectNames();
+      const existingSubjectRelatedFoldersAndFiles =
+        window.sodaJSONObj["subject-related-folders-and-files"];
+
       setEntityList(window.getExistingSubjectNames(), "Subjects List");
       setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       setEntityType("subject-related-folders-and-files");
@@ -5675,6 +5704,16 @@ window.openPage = async (targetPageID) => {
       setEntityListForEntityType(
         "sample-related-folders-and-files",
         window.sodaJSONObj["sample-related-folders-and-files"] || {}
+      );
+      setActiveEntity(null);
+    }
+    if (targetPageID === "guided-manifest-performance-entity-selector-tab") {
+      setEntityList(["perf-microscopy", "perf-histology"], "Performances List");
+      setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
+      setEntityType("performance-related-folders-and-files");
+      setEntityListForEntityType(
+        "performance-related-folders-and-files",
+        window.sodaJSONObj["performance-related-folders-and-files"] || {}
       );
       setActiveEntity(null);
     }

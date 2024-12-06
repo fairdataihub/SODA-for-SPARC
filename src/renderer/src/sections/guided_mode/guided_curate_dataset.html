@@ -1001,6 +1001,11 @@
           <div class="guided--capsule" id="guided-manifest-sample-entity-selector-capsule"></div>
           <div
             class="guided--capsule"
+            id="guided-manifest-performance-entity-selector-capsule"
+          ></div>
+
+          <div
+            class="guided--capsule"
             id="guided-source-derivative-folders-and-files-selector-capsule"
           ></div>
 
@@ -1471,6 +1476,25 @@
         </div>
         <div
           class="guided--page"
+          id="guided-manifest-performance-entity-selector-tab"
+          data-page-name="Map data to Performances"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Map data to Performances</h1>
+            <p class="help-text">
+              The SPARC guidelines require all folders and files related to performances to be
+              mapped to their respective performances in the manifest file.
+            </p>
+            <p class="help-text">
+              To map folders and files to performances in the interface below, first select a
+              performance from the list, then choose the folders and files associated with that
+              performance.
+            </p>
+          </div>
+          <div data-component-type="manifest-entity-selector" class="guided--section"></div>
+        </div>
+        <div
+          class="guided--page"
           id="guided-source-derivative-folders-and-files-selector-tab"
           data-page-name="Denote Supplementary Data"
         >
@@ -1494,6 +1518,11 @@
             <p class="help-text">
               If your dataset contains source or derivative data, you can specify these files in the
               interface below (in the same manner as you did for subjects).
+            </p>
+            <p class="help-text">
+              <b>Question:</b> For this dataset, if mouse_1/performances/microscopy/processed is
+              selected as derivative data, if we were to move the data over for the user, would we
+              move it to derivative/processed or derivative/mouse_1/microscopy/processed?
             </p>
           </div>
           <div data-component-type="manifest-entity-selector" class="guided--section"></div>

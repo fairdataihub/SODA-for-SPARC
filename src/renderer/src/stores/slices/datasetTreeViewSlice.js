@@ -145,4 +145,7 @@ export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
   useGlobalStore.setState({
     renderDatasetStructureJSONObj: renderStructureRef,
   });
+
+  // Reset the search filter when the dataset structure is updated
+  setDatasetstructureSearchFilter("");
 };
