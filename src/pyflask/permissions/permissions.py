@@ -29,4 +29,4 @@ def has_edit_permissions(ps_or_token, selected_dataset_id):
     except Exception as e:
         abort(500, "Could not get permissions for this dataset.")
 
-    return role in ["owner", "manager"]  
+    return role in ["owner", "manager", "editor"]  
