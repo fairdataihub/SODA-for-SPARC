@@ -5231,7 +5231,19 @@ window.openPage = async (targetPageID) => {
       if (pageNeedsUpdateFromPennsieve("guided-name-subtitle-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
         setPageLoadingState(true);
+
         try {
+          // get the dataset name from Pennsieve
+          const datasetResponse = await api.getDatasetInformation(
+            window.defaultBfAccount,
+            window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+          );
+          console.log(datasetResponse);
+          let datasetName = datasetResponse["content"]["name"];
+          // Save the dataset name to the JSON and add it to the input
+          window.sodaJSONObj["digital-metadata"]["name"] = datasetName;
+          setGuidedDatasetName(datasetName);
+
           //Try to get the dataset name from Pennsieve
           //If the request fails, the subtitle input will remain blank
           const datasetSubtitle = await api.getDatasetSubtitle(
