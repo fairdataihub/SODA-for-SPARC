@@ -5838,7 +5838,7 @@ window.openPage = async (targetPageID) => {
           let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
               selected_account: window.defaultBfAccount,
-              selected_dataset: window.sodaJSONObj["bf-dataset-selected"]["dataset-name"],
+              selected_dataset: window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "dataset_description.xlsx",
             },
           });
@@ -13428,7 +13428,8 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
               {
                 params: {
                   selected_account: window.defaultBfAccount,
-                  selected_dataset: window.sodaJSONObj["bf-dataset-selected"]["dataset-name"],
+                  selected_dataset:
+                    window.sodaJSONObj["bf-dataset-selected"]["pennsieve-dataset-id"],
                   file_type: "dataset_description.xlsx",
                 },
               }
