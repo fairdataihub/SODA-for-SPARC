@@ -8,6 +8,7 @@ import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
 import DatasetEntitySelector from "../shared/manifest/DatasetEntitySelector";
+import DatasetEntityManager from "../shared/manifest/DatasetEntityManager";
 import DataImporter from "../shared/DataImporter";
 import { Divider } from "@mantine/core";
 
@@ -93,6 +94,15 @@ const componentTypeRenderers = {
     root.render(
       <SodaComponentWrapper>
         <DatasetEntitySelector />
+      </SodaComponentWrapper>
+    );
+  },
+
+  "manifest-entity-manager": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper>
+        <DatasetEntityManager />
       </SodaComponentWrapper>
     );
   },

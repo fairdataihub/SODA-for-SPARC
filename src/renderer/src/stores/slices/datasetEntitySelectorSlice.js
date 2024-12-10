@@ -1,21 +1,19 @@
 import useGlobalStore from "../globalStore";
 import { produce } from "immer";
 
-// Initial state for managing entities in the dataset
+// Initial state for managing dataset entities
 const initialState = {
-  entityList: [], // List of entities for the current context
-  entityListName: "", // Name of the entity list being managed
-  activeEntity: null, // The currently active entity
-  entityType: null, // Type of the currently selected entity
-  datasetEntityObj: {}, // Object storing all entities organized by type
+  activeEntity: null, // Currently active entity
+  entityType: null, // Type of the selected entity
+  datasetEntityObj: {}, // Stores entities grouped by type
 };
 
-// Define the slice for entity selector state
+// Slice initialization for the entity selector state
 export const datasetEntitySelectorSlice = (set) => ({
   ...initialState,
 });
 
-// Resets the entity selector state to its initial configuration
+// Reset the entity selector state to its initial configuration
 export const resetDatasetEntitySelectorState = () => {
   useGlobalStore.setState(
     produce((state) => {
@@ -24,27 +22,39 @@ export const resetDatasetEntitySelectorState = () => {
   );
 };
 
-// Sets the entity list and its associated name in the global store
-export const setEntityList = (entityList, entityListName) => {
-  useGlobalStore.setState((state) => ({
-    ...state,
-    entityList,
-    entityListName,
-  }));
+// Add an entity to the specified entity type's list
+export const addEntityToEntityList = (entityType, entityName) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      const entityList = state.datasetEntityObj[entityType] || [];
+      if (!entityList.includes(entityName)) {
+        state.datasetEntityObj[entityType] = [...entityList, entityName];
+      }
+    })
+  );
 };
 
-// Retrieves the list of entities for a given entity type
-export const getEntityListForEntityType = (entityListName) => {
-  return useGlobalStore.getState()?.datasetEntityObj?.[entityListName] || {};
+// Remove an entity from the specified entity type's list
+export const removeEntityFromEntityList = (entityType, entityName) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      const entityList = state.datasetEntityObj[entityType] || [];
+      state.datasetEntityObj[entityType] = entityList.filter((entity) => entity !== entityName);
+    })
+  );
 };
 
-// Retrieves entities for a specific type from the datasetEntityObj
+// Get the list of entities for a specific entity type
+export const getEntityListForEntityType = (entityType) => {
+  return useGlobalStore.getState()?.datasetEntityObj?.[entityType] || [];
+};
+
+// Get all entities of a specific type
 export const getEntitiesForType = (entityType) => {
-  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
-  return datasetEntityObj?.[entityType] || {};
+  return useGlobalStore((state) => state.datasetEntityObj?.[entityType] || {});
 };
 
-// Updates the currently active entity in the global store
+// Set the currently active entity
 export const setActiveEntity = (activeEntity) => {
   useGlobalStore.setState((state) => ({
     ...state,
@@ -52,7 +62,7 @@ export const setActiveEntity = (activeEntity) => {
   }));
 };
 
-// Updates the current entity type in the global store
+// Set the current entity type
 export const setEntityType = (entityType) => {
   useGlobalStore.setState((state) => ({
     ...state,
@@ -60,11 +70,10 @@ export const setEntityType = (entityType) => {
   }));
 };
 
-// Updates the list of entities for a given entity type
+// Update the list of entities for a specific entity type
 export const setEntityListForEntityType = (entityType, entityListObj) => {
   if (!entityType || !entityListObj) {
-    console.log("Aborting function: entityType or entityListObj is missing");
-    console.log(entityType, entityListObj);
+    console.error("Missing parameters: entityType or entityListObj", { entityType, entityListObj });
     return;
   }
 
@@ -75,7 +84,7 @@ export const setEntityListForEntityType = (entityType, entityListObj) => {
   );
 };
 
-// Sets the dataset entity object in the global store
+// Set the dataset entity object directly
 export const setDatasetEntityObj = (datasetEntityObj) => {
   useGlobalStore.setState((state) => ({
     ...state,
@@ -83,12 +92,12 @@ export const setDatasetEntityObj = (datasetEntityObj) => {
   }));
 };
 
-// Hierarchies defining relationships between entity types
+// Entity type hierarchies for managing subset relationships
 const entityHierarchies = [
   ["subject-related-folders-and-files", "sample-related-folders-and-files"], // Sample is a subset of subject
 ];
 
-// Modifies the dataset entity for a specific relative file path
+// Modify an entity's relative file path based on the specified action
 export const modifyDatasetEntityForRelativeFilePath = (
   entityType,
   entityName,
@@ -96,30 +105,25 @@ export const modifyDatasetEntityForRelativeFilePath = (
   action
 ) => {
   if (!entityType || !entityName || !entityRelativePath) {
-    console.log("Aborting function: entityType, entityName, or entityRelativePath is missing");
-    console.log(entityType, entityName, entityRelativePath);
+    console.error("Missing parameters for modification", {
+      entityType,
+      entityName,
+      entityRelativePath,
+    });
     return;
   }
 
   useGlobalStore.setState(
     produce((state) => {
-      const datasetEntity = state.datasetEntityObj;
-      if (!datasetEntity[entityType]) {
-        datasetEntity[entityType] = {};
-      }
-
-      const entityEntries = datasetEntity[entityType];
+      const entityEntries = state.datasetEntityObj[entityType] || {};
       const targetEntity = entityEntries[entityName] || [];
 
-      // Handle actions: toggle, add, or remove
       switch (action) {
         case "toggle":
-          if (targetEntity.includes(entityRelativePath)) {
-            entityEntries[entityName] = targetEntity.filter((path) => path !== entityRelativePath);
-          } else {
-            entityEntries[entityName] = [...targetEntity, entityRelativePath];
-            removeFromOtherEntities(entityEntries, entityName, entityRelativePath);
-          }
+          entityEntries[entityName] = targetEntity.includes(entityRelativePath)
+            ? targetEntity.filter((path) => path !== entityRelativePath)
+            : [...targetEntity, entityRelativePath];
+          removeFromOtherEntities(entityEntries, entityName, entityRelativePath);
           break;
 
         case "add":
@@ -134,49 +138,33 @@ export const modifyDatasetEntityForRelativeFilePath = (
           break;
 
         default:
-          console.log(`Unsupported action: ${action}`);
+          console.error(`Unsupported action: ${action}`);
       }
+
+      state.datasetEntityObj[entityType] = entityEntries;
     })
   );
 };
 
-// Removes a file path from all entities except the target entity
+// Remove a file path from all entities except the specified target
 const removeFromOtherEntities = (entityEntries, targetEntityName, entityRelativePath) => {
+  // Remove the file path from all other entities
   Object.keys(entityEntries).forEach((entity) => {
     if (entity !== targetEntityName) {
       entityEntries[entity] = entityEntries[entity].filter((path) => path !== entityRelativePath);
     }
   });
-
-  // Handle hierarchies: if the entity is a subset of another, remove the path from the parent entity
-  const entityExistsInHierarchy = entityHierarchies.find((hierarchy) =>
-    hierarchy.includes(targetEntityName)
-  );
-
-  console.log("removeFromOtherEntities", {
-    entityEntries,
-    targetEntityName,
-    entityRelativePath,
-    entityExistsInHierarchy,
-  });
 };
 
-// Retrieves the entity associated with a specific file path
+// Get the entity associated with a specific file path
 export const getEntityForRelativePath = (datasetEntityObj, entityType, relativePath) => {
-  if (!datasetEntityObj || !entityType || !datasetEntityObj[entityType]) {
-    return null;
-  }
+  const entities = datasetEntityObj?.[entityType];
+  if (!entities) return null;
 
-  for (const entityName in datasetEntityObj[entityType]) {
-    if (datasetEntityObj[entityType][entityName]?.includes(relativePath)) {
-      return entityName;
-    }
-  }
-
-  return null;
+  return Object.keys(entities).find((entityName) => entities[entityName]?.includes(relativePath));
 };
 
-// Gets the number of files associated with a specific entity
+// Get the number of files associated with a specific entity
 export const getNumberFilesForEntity = (entityName) => {
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const entityType = useGlobalStore((state) => state.entityType);

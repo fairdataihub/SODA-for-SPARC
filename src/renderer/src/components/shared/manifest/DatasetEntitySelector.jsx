@@ -13,7 +13,6 @@ import { setDatasetstructureSearchFilter } from "../../../stores/slices/datasetT
 const useDatasetEntityStore = () => {
   return useGlobalStore((state) => ({
     entityList: state.entityList,
-    entityListName: state.entityListName,
     activeEntity: state.activeEntity,
     entityType: state.entityType,
     datasetEntityObj: state.datasetEntityObj,
@@ -100,9 +99,13 @@ const handleFolderClick = (
   }
 };
 
-const renderEntityList = (entityList, entityType, activeEntity, datasetEntityObj) =>
-  entityList.map((entity) => {
-    const entityItemsCount = datasetEntityObj?.[entityType]?.[entity]?.length || 0;
+const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
+  if (!datasetEntityObj?.[entityType]) {
+    return null;
+  }
+
+  return Object.keys(datasetEntityObj[entityType]).map((entity) => {
+    const entityItemsCount = datasetEntityObj[entityType][entity].length || 0;
     const isActive = entity === activeEntity;
 
     // Show the search icon for sub-, sam-, and perf- entities
@@ -150,10 +153,10 @@ const renderEntityList = (entityList, entityType, activeEntity, datasetEntityObj
       </Box>
     );
   });
+};
 
 const DatasetEntitySelector = () => {
-  const { entityList, entityListName, activeEntity, entityType, datasetEntityObj } =
-    useDatasetEntityStore();
+  const { entityType, activeEntity, datasetEntityObj } = useDatasetEntityStore();
 
   return (
     <FullWidthContainer>
@@ -162,12 +165,12 @@ const DatasetEntitySelector = () => {
           <Paper shadow="lg" p="md" radius="md" withBorder>
             <Group mb="sm" spacing="xs">
               <Text size="lg" weight={500}>
-                {entityListName}
+                {entityType}
               </Text>
             </Group>
             <Divider my="xs" />
             <Box style={{ maxHeight: "70vh", overflowY: "auto" }}>
-              {renderEntityList(entityList, entityType, activeEntity, datasetEntityObj)}
+              {renderEntityList(entityType, activeEntity, datasetEntityObj)}
             </Box>
           </Paper>
         </Grid.Col>
@@ -194,7 +197,7 @@ const DatasetEntitySelector = () => {
           ) : (
             <Box p="xl">
               <Text size="xl" c="gray">
-                Select an item from the {entityListName} on the left to map files to it.
+                Select an item from the {entityType} on the left to map files to it.
               </Text>
             </Box>
           )}

@@ -25,9 +25,7 @@ import { v4 as uuid } from "uuid";
 import doiRegex from "doi-regex";
 import validator from "validator";
 import client from "../client";
-import jQuery from "jquery";
-import bootstrap from "bootstrap";
-import * as select2 from "select2"; // TODO: select2()
+
 import {
   swalConfirmAction,
   swalShowError,
@@ -45,7 +43,6 @@ import {
   setGuidedDatasetSubtitle,
 } from "../../stores/slices/guidedModeSlice";
 import {
-  setEntityList,
   setEntityType,
   getEntityListForEntityType,
   setEntityListForEntityType,
@@ -5683,12 +5680,18 @@ window.openPage = async (targetPageID) => {
       //Rerender the manifest cards
       renderManifestCards();
     }
+
+    if (targetPageID === "guided-z-entity-addition-tab") {
+      const currentZEntities = window.sodaJSONObj["z-entities"] || [];
+      setActiveEntity("z-entities");
+      setEntityListForEntityType("z-entities", currentZEntities);
+    }
+
     if (targetPageID === "guided-manifest-subject-entity-selector-tab") {
       const subjects = window.getExistingSubjectNames();
       const existingSubjectRelatedFoldersAndFiles =
         window.sodaJSONObj["subject-related-folders-and-files"];
 
-      setEntityList(window.getExistingSubjectNames(), "Subjects List");
       setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       setEntityType("subject-related-folders-and-files");
       setEntityListForEntityType(
@@ -5698,7 +5701,6 @@ window.openPage = async (targetPageID) => {
       setActiveEntity(null);
     }
     if (targetPageID === "guided-manifest-sample-entity-selector-tab") {
-      setEntityList(getExistingSampleNames(), "Samples List");
       setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       setEntityType("sample-related-folders-and-files");
       setEntityListForEntityType(
@@ -5708,7 +5710,6 @@ window.openPage = async (targetPageID) => {
       setActiveEntity(null);
     }
     if (targetPageID === "guided-manifest-performance-entity-selector-tab") {
-      setEntityList(["perf-microscopy", "perf-histology"], "Performances List");
       setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       setEntityType("performance-related-folders-and-files");
       setEntityListForEntityType(
@@ -5718,7 +5719,6 @@ window.openPage = async (targetPageID) => {
       setActiveEntity(null);
     }
     if (targetPageID === "guided-source-derivative-folders-and-files-selector-tab") {
-      setEntityList(["source", "derivative"], "Supplementary data");
       setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       setEntityType("source-derivative-folders-and-files");
       setEntityListForEntityType(
