@@ -9,6 +9,7 @@ on:
       - pre-staging
       - sds3
       - folder-build
+      - gm-data-import-rework
 
 jobs:
   deploy-on-windows:
