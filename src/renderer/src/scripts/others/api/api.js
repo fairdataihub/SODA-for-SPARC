@@ -53,7 +53,7 @@ const isDatasetLocked = async (account, datasetNameOrId) => {
       );
       teamsInCurrentUsersOrganization = teamsReq.data.teams;
     } catch (error) {
-      userErrorMessage(error);
+      clientError(error);
     }
 
     // Get the team with the name "Publishers" (if it exists)
@@ -539,7 +539,6 @@ const getLocalRemoteComparisonResults = async (datasetId, localDatasetPath) => {
   const response = await client.get(
     `/datasets/${datasetId}/comparison_results?local_dataset_path=${localDatasetPath}`
   );
-  console.log(response.data);
   return response.data;
 };
 
