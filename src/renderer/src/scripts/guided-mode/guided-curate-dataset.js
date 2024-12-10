@@ -981,6 +981,12 @@ const savePageChanges = async (pageBeingLeftID) => {
         window.sodaJSONObj["digital-metadata"]["dataset-workspace"] =
           guidedGetCurrentUserWorkSpace();
         guidedSkipPage("guided-pennsieve-intro-tab");
+
+        // check if user is a guest in the worksapce
+        let guest = await window.isWorkspaceGuest();
+        if (guest) {
+          guidedSkipPage("guided-designate-permissions-tab");
+        }
       }
 
       //Skip this page becausae we should not come back to it
