@@ -24,11 +24,22 @@ export const resetDatasetEntitySelectorState = () => {
 
 // Add an entity to the specified entity type's list
 export const addEntityToEntityList = (entityType, entityName) => {
+  console.log("datasetEntityObj: ", useGlobalStore.getState().datasetEntityObj);
+  console.log("Adding entity: ", entityName);
+  console.log("Entity type: ", entityType);
+  console.log("Active entity: ", useGlobalStore.getState().activeEntity);
   useGlobalStore.setState(
     produce((state) => {
-      const entityList = state.datasetEntityObj[entityType] || [];
-      if (!entityList.includes(entityName)) {
-        state.datasetEntityObj[entityType] = [...entityList, entityName];
+      if (!state.datasetEntityObj) {
+        state.datasetEntityObj = {};
+      }
+
+      if (!state.datasetEntityObj[entityType]) {
+        state.datasetEntityObj[entityType] = {};
+      }
+
+      if (!state.datasetEntityObj[entityType][entityName]) {
+        state.datasetEntityObj[entityType][entityName] = []; // Initialize the entity list where folder and file paths will be added
       }
     })
   );
@@ -38,20 +49,16 @@ export const addEntityToEntityList = (entityType, entityName) => {
 export const removeEntityFromEntityList = (entityType, entityName) => {
   useGlobalStore.setState(
     produce((state) => {
-      const entityList = state.datasetEntityObj[entityType] || [];
-      state.datasetEntityObj[entityType] = entityList.filter((entity) => entity !== entityName);
+      console.log("Removing entity: ", entityName);
+
+      delete state.datasetEntityObj?.[entityType]?.[entityName];
     })
   );
 };
 
-// Get the list of entities for a specific entity type
-export const getEntityListForEntityType = (entityType) => {
-  return useGlobalStore.getState()?.datasetEntityObj?.[entityType] || [];
-};
-
-// Get all entities of a specific type
-export const getEntitiesForType = (entityType) => {
-  return useGlobalStore((state) => state.datasetEntityObj?.[entityType] || {});
+// Get the obj of entities for a specific entity type
+export const getEntityObjForEntityType = (entityType) => {
+  return useGlobalStore.getState()?.datasetEntityObj?.[entityType] || {};
 };
 
 // Set the currently active entity
@@ -92,10 +99,9 @@ export const setDatasetEntityObj = (datasetEntityObj) => {
   }));
 };
 
-// Entity type hierarchies for managing subset relationships
-const entityHierarchies = [
-  ["subject-related-folders-and-files", "sample-related-folders-and-files"], // Sample is a subset of subject
-];
+export const getDatasetEntityObj = () => {
+  return useGlobalStore.getState().datasetEntityObj;
+};
 
 // Modify an entity's relative file path based on the specified action
 export const modifyDatasetEntityForRelativeFilePath = (

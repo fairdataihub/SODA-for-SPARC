@@ -44,9 +44,10 @@ import {
 } from "../../stores/slices/guidedModeSlice";
 import {
   setEntityType,
-  getEntityListForEntityType,
+  getEntityObjForEntityType,
   setEntityListForEntityType,
   setActiveEntity,
+  getDatasetEntityObj,
 } from "../../stores/slices/datasetEntitySelectorSlice";
 import {
   setDatasetstructureSearchFilter,
@@ -1355,11 +1356,19 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
-    if (pageBeingLeftID === "guided-denote-derivative-data-tab") {
+    if (pageBeingLeftID === "guided-z-entity-addition-tab") {
+      window.sodaJSONObj["z-entities"] = getEntityObjForEntityType("z-entities");
+      if (Object.keys(window.sodaJSONObj["z-entities"]).length === 0) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please add at least one z-entity",
+        });
+        throw errorArray;
+      }
     }
 
     if (pageBeingLeftID === "guided-manifest-subject-entity-selector-tab") {
-      window.sodaJSONObj["subject-related-folders-and-files"] = getEntityListForEntityType(
+      window.sodaJSONObj["subject-related-folders-and-files"] = getEntityObjForEntityType(
         "subject-related-folders-and-files"
       );
       console.log(
@@ -1368,7 +1377,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       );
     }
     if (pageBeingLeftID === "guided-manifest-sample-entity-selector-tab") {
-      window.sodaJSONObj["sample-related-folders-and-files"] = getEntityListForEntityType(
+      window.sodaJSONObj["sample-related-folders-and-files"] = getEntityObjForEntityType(
         "sample-related-folders-and-files"
       );
       console.log(
@@ -1377,7 +1386,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       );
     }
     if (pageBeingLeftID === "guided-manifest-performance-entity-selector-tab") {
-      window.sodaJSONObj["performance-related-folders-and-files"] = getEntityListForEntityType(
+      window.sodaJSONObj["performance-related-folders-and-files"] = getEntityObjForEntityType(
         "performance-related-folders-and-files"
       );
       console.log(
@@ -1387,7 +1396,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-source-derivative-folders-and-files-selector-tab") {
-      window.sodaJSONObj["source-derivative-folders-and-files"] = getEntityListForEntityType(
+      window.sodaJSONObj["source-derivative-folders-and-files"] = getEntityObjForEntityType(
         "source-derivative-folders-and-files"
       );
       console.log(
@@ -5682,8 +5691,9 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-z-entity-addition-tab") {
-      const currentZEntities = window.sodaJSONObj["z-entities"] || [];
       setActiveEntity("z-entities");
+
+      const currentZEntities = window.sodaJSONObj["z-entities"] || {};
       setEntityListForEntityType("z-entities", currentZEntities);
     }
 

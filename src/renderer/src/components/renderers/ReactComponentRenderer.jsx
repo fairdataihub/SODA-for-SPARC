@@ -99,10 +99,20 @@ const componentTypeRenderers = {
   },
 
   "manifest-entity-manager": (componentSlot) => {
+    const entityType = componentSlot.getAttribute("data-entity-type");
+    const entityTypeStringSingular = componentSlot.getAttribute("data-entity-type-string-singular");
+    const entityTypeStringPlural = componentSlot.getAttribute("data-entity-type-string-plural");
+    const entityTypePrefix = componentSlot.getAttribute("data-entity-type-prefix");
+
     const root = createRoot(componentSlot);
     root.render(
       <SodaComponentWrapper>
-        <DatasetEntityManager />
+        <DatasetEntityManager
+          entityType={entityType}
+          entityTypeStringSingular={entityTypeStringSingular}
+          entityTypeStringPlural={entityTypeStringPlural}
+          entityTypePrefix={entityTypePrefix}
+        />
       </SodaComponentWrapper>
     );
   },
