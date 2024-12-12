@@ -34,7 +34,7 @@ import {
   IconFileDownload,
 } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
-import { setDatasetstructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
+import { setDatasetStructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
 
 const ICON_SETTINGS = {
   folderColor: "#ADD8E6",
@@ -227,7 +227,7 @@ const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntityForRelat
       Object.keys(renderDatasetStructureJSONObj?.files).length === 0);
 
   const handleSearchChange = (event) => {
-    setDatasetstructureSearchFilter(event.target.value);
+    setDatasetStructureSearchFilter(event.target.value);
   };
 
   return (

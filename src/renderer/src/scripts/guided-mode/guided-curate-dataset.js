@@ -50,7 +50,7 @@ import {
   getDatasetEntityObj,
 } from "../../stores/slices/datasetEntitySelectorSlice";
 import {
-  setDatasetstructureSearchFilter,
+  setDatasetStructureSearchFilter,
   setTreeViewDatasetStructure,
 } from "../../stores/slices/datasetTreeViewSlice";
 
@@ -5692,8 +5692,8 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-z-entity-addition-tab") {
       setActiveEntity("z-entities");
-
       const currentZEntities = window.sodaJSONObj["z-entities"] || {};
+      console.log("Setting z-entities", currentZEntities);
       setEntityListForEntityType("z-entities", currentZEntities);
     }
 

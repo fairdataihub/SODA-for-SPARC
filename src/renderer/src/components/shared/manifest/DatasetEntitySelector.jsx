@@ -8,7 +8,7 @@ import {
   modifyDatasetEntityForRelativeFilePath,
   getEntityForRelativePath,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
-import { setDatasetstructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
+import { setDatasetStructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
 
 const useDatasetEntityStore = () => {
   return useGlobalStore((state) => ({
@@ -143,7 +143,7 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
                       handleEntityClick(entity);
                     }
                     const entityName = entity.substring(entity.indexOf("-") + 1);
-                    setDatasetstructureSearchFilter(entityName);
+                    setDatasetStructureSearchFilter(entityName);
                   }}
                 />
               </Tooltip>

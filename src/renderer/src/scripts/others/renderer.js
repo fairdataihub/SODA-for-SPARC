@@ -4303,7 +4303,7 @@ window.replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
 
 const validSparcFolderAndFileNameRegexMatcher = /^[0-9A-Za-z,.\-_ ]*$/;
 const validSparcFolderAndFileNameRegexReplacer = /[^0-9A-Za-z,.\-_ ]/g;
-const identifierConventionsRegex = /^[0-9A-Za-z-_]*$/;
+const identifierConventionsRegex = /^[A-Za-z0-9-]*$/;
 const forbiddenFileNameRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
 const forbiddenFiles = new Set([".DS_Store", "Thumbs.db"]);
 const forbiddenFilesRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;

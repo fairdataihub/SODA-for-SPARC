@@ -83,7 +83,7 @@ const filterStructure = (structure, searchFilter) => {
 };
 
 // Updates the dataset search filter and modifies the rendered structure accordingly
-export const setDatasetstructureSearchFilter = (searchFilter) => {
+export const setDatasetStructureSearchFilter = (searchFilter) => {
   const globalStore = useGlobalStore.getState();
 
   console.log("Before filter set:", globalStore);
@@ -147,5 +147,5 @@ export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
   });
 
   // Reset the search filter when the dataset structure is updated
-  setDatasetstructureSearchFilter("");
+  setDatasetStructureSearchFilter("");
 };

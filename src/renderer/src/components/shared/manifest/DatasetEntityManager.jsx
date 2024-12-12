@@ -8,15 +8,30 @@ import {
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 
-const DatasetEntityManager = ({ entityType, entityTypeStringSingular, entityTypeStringPlural }) => {
+const DatasetEntityManager = ({
+  entityType,
+  entityTypeStringSingular,
+  entityTypeStringPlural,
+  entityTypePrefix,
+}) => {
   const { datasetEntityObj } = useGlobalStore();
   const [newEntityName, setNewEntityName] = useState("");
+
+  const isNewEntityNameValid = window.evaluateStringAgainstSdsRequirements?.(
+    newEntityName,
+    "string-adheres-to-identifier-conventions"
+  );
 
   const entityList = Object.keys(datasetEntityObj?.[entityType] || {});
 
   const handleAddEntity = () => {
-    if (newEntityName.trim()) {
-      addEntityToEntityList(entityType, newEntityName.trim());
+    const trimmedName = newEntityName.trim();
+    if (trimmedName) {
+      const formattedName =
+        entityTypePrefix && !trimmedName.startsWith(entityTypePrefix)
+          ? `${entityTypePrefix}${trimmedName}`
+          : trimmedName;
+      addEntityToEntityList(entityType, formattedName);
       setNewEntityName("");
     }
   };
@@ -25,9 +40,10 @@ const DatasetEntityManager = ({ entityType, entityTypeStringSingular, entityType
     removeEntityFromEntityList(entityType, entityName);
   };
 
-  const isAddDisabled = !newEntityName.trim();
-
-  const items =
+  const handleImportEntitiesFromLocalFoldersClick = () => {
+    window.electron.ipcRenderer.send("open-entity-id-import-selector");
+  };
+  const renderEntityList = () =>
     entityList.length > 0 ? (
       entityList.map((entityName) => (
         <Group
@@ -55,15 +71,33 @@ const DatasetEntityManager = ({ entityType, entityTypeStringSingular, entityType
     );
 
   return (
-    <Box w="500">
-      {/* Add Entity */}
+    <FullWidthContainer>
       <Stack spacing="xs" mb="md">
-        <Group spacing="xs" align="start" w="100%">
+        <Group spacing="xs" align="start" width="100%">
+          <Button
+            size="xs"
+            color="blue"
+            variant="outline"
+            onClick={handleImportEntitiesFromLocalFoldersClick}
+          >
+            Import {entityTypeStringSingular} IDs from local folders/files
+          </Button>
+        </Group>
+        <Group spacing="xs" align="start" width="100%">
           <TextInput
+            flex={1}
             placeholder={`Enter new ${entityTypeStringSingular} name`}
             value={newEntityName}
             onChange={(event) => setNewEntityName(event.currentTarget.value)}
-            error={!newEntityName.trim() && "Name cannot be empty"}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                handleAddEntity();
+              }
+            }}
+            error={
+              !isNewEntityNameValid &&
+              `${entityTypeStringSingular} does not adhere to identifier conventions.`
+            }
           />
           <Button onClick={handleAddEntity} leftIcon={<IconPlus />}>
             Add {entityTypeStringSingular}
@@ -71,11 +105,10 @@ const DatasetEntityManager = ({ entityType, entityTypeStringSingular, entityType
         </Group>
       </Stack>
 
-      {/* Entity List */}
-      <ScrollArea h={300} type="auto">
-        <Box>{items}</Box>
+      <ScrollArea height={300} type="auto">
+        <Box>{renderEntityList()}</Box>
       </ScrollArea>
-    </Box>
+    </FullWidthContainer>
   );
 };
 
