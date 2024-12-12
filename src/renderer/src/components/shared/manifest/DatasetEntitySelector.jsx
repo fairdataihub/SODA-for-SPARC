@@ -10,14 +10,7 @@ import {
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { setDatasetStructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
 
-const useDatasetEntityStore = () => {
-  return useGlobalStore((state) => ({
-    entityList: state.entityList,
-    activeEntity: state.activeEntity,
-    entityType: state.entityType,
-    datasetEntityObj: state.datasetEntityObj,
-  }));
-};
+const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
 
 const handleEntityClick = (entity) => setActiveEntity(entity);
 
@@ -30,13 +23,15 @@ const handleFileClick = (entityType, activeEntity, datasetEntityObj, fileContent
   );
 };
 
-const recursiveFolderAction = (
-  folderContents,
+const handleFolderClick = (
   entityType,
   activeEntity,
   datasetEntityObj,
-  action
+  folderContents,
+  folderWasSelectedBeforeClick
 ) => {
+  const action = folderWasSelectedBeforeClick ? "remove" : "add";
+
   modifyDatasetEntityForRelativeFilePath(
     entityType,
     activeEntity,
@@ -49,67 +44,28 @@ const recursiveFolderAction = (
   });
 
   Object.values(folderContents.folders).forEach((subFolder) => {
-    recursiveFolderAction(subFolder, entityType, activeEntity, datasetEntityObj, action);
-  });
-};
-
-const handleFolderClick = (
-  entityType,
-  activeEntity,
-  datasetEntityObj,
-  folderContents,
-  folderClickAction
-) => {
-  if (folderClickAction === "folder-files-select") {
-    const fileEntities = Object.keys(folderContents.files)
-      .map((file) => folderContents.files[file].relativePath)
-      .filter((fileEntity) => {
-        const entity = getEntityForRelativePath(datasetEntityObj, entityType, fileEntity);
-        return !entity || entity === activeEntity;
-      });
-
-    const allFilesClaimed = fileEntities.every((fileEntity) => {
-      const entity = getEntityForRelativePath(datasetEntityObj, entityType, fileEntity);
-      return entity === activeEntity;
-    });
-
-    fileEntities.forEach((fileEntity) => {
-      modifyDatasetEntityForRelativeFilePath(
-        entityType,
-        activeEntity,
-        fileEntity,
-        allFilesClaimed ? "remove" : "add"
-      );
-    });
-  }
-
-  if (folderClickAction === "folder-recursive-select") {
-    const clickedFoldersEntity = getEntityForRelativePath(
-      datasetEntityObj,
-      entityType,
-      folderContents.relativePath
-    );
-    recursiveFolderAction(
-      folderContents,
+    handleFolderClick(
       entityType,
       activeEntity,
       datasetEntityObj,
-      clickedFoldersEntity === activeEntity ? "remove" : "add"
+      subFolder,
+      folderWasSelectedBeforeClick
     );
-  }
+  });
 };
 
 const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
-  if (!datasetEntityObj?.[entityType]) {
-    return null;
-  }
+  if (!datasetEntityObj?.[entityType]) return null;
 
   return Object.keys(datasetEntityObj[entityType]).map((entity) => {
     const entityItemsCount = datasetEntityObj[entityType][entity].length || 0;
+    console.log("entity", entity);
+    console.log("activeEntity", activeEntity);
     const isActive = entity === activeEntity;
+    console.log("isActive", isActive);
 
-    // Show the search icon for sub-, sam-, and perf- entities
-    const showSearchIcon = ["sub-", "sam-", "perf-"].some((prefix) => entity.startsWith(prefix));
+    // Check if search icon should be shown for specific entities
+    const showSearchIcon = ENTITY_PREFIXES.some((prefix) => entity.startsWith(prefix));
 
     return (
       <Box
@@ -156,7 +112,12 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
 };
 
 const DatasetEntitySelector = () => {
-  const { entityType, activeEntity, datasetEntityObj } = useDatasetEntityStore();
+  const { entityList, activeEntity, entityType, datasetEntityObj } = useGlobalStore((state) => ({
+    entityList: state.entityList,
+    activeEntity: state.activeEntity,
+    entityType: state.entityType,
+    datasetEntityObj: state.datasetEntityObj,
+  }));
 
   return (
     <FullWidthContainer>
@@ -169,7 +130,7 @@ const DatasetEntitySelector = () => {
               </Text>
             </Group>
             <Divider my="xs" />
-            <Box style={{ maxHeight: "70vh", overflowY: "auto" }}>
+            <Box sx={{ maxHeight: "70vh", overflowY: "auto" }}>
               {renderEntityList(entityType, activeEntity, datasetEntityObj)}
             </Box>
           </Paper>
@@ -179,19 +140,37 @@ const DatasetEntitySelector = () => {
           {activeEntity ? (
             <Paper shadow="sm" radius="md">
               <DatasetTreeViewRenderer
-                onFolderClick={(folderName, folderContents, folderClickAction) =>
-                  handleFolderClick(
-                    entityType,
-                    activeEntity,
-                    datasetEntityObj,
-                    folderContents,
-                    folderClickAction
-                  )
-                }
-                onFileClick={(fileName, fileContents) =>
-                  handleFileClick(entityType, activeEntity, datasetEntityObj, fileContents)
-                }
-                getEntityForRelativePath={getEntityForRelativePath}
+                folderActions={{
+                  "on-folder-click": (folderName, folderContents, folderIsSelected) =>
+                    handleFolderClick(
+                      entityType,
+                      activeEntity,
+                      datasetEntityObj,
+                      folderContents,
+                      folderIsSelected
+                    ),
+                  "is-folder-selected": (folderName, folderContents) => {
+                    const entity = getEntityForRelativePath(
+                      datasetEntityObj,
+                      entityType,
+                      folderContents.relativePath
+                    );
+                    return entity === activeEntity;
+                  },
+                }}
+                fileActions={{
+                  "on-file-click": (fileName, fileContents) =>
+                    handleFileClick(entityType, activeEntity, datasetEntityObj, fileContents),
+                  "is-file-selected": (fileContents) => {
+                    console.log("Determining if file is selected", fileContents);
+                    const entity = getEntityForRelativePath(
+                      datasetEntityObj,
+                      entityType,
+                      fileContents.relativePath
+                    );
+                    return entity === activeEntity;
+                  },
+                }}
               />
             </Paper>
           ) : (

@@ -15,7 +15,6 @@ import {
 import { useHover } from "@mantine/hooks";
 import {
   IconFolder,
-  IconFolderFilled,
   IconFolderOpen,
   IconFile,
   IconFileTypeCsv,
@@ -69,27 +68,12 @@ const getFileTypeIcon = (fileName) => {
   return FILE_ICON_MAP[extension] || <IconFile size={ICON_SETTINGS.fileSize} />;
 };
 
-const FileItem = ({ name, content, onFileClick, getEntityForRelativePath }) => {
-  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
-  console.log("datasetEntityObj", datasetEntityObj);
-  const entityType = useGlobalStore((state) => state.entityType);
-  const activeEntity = useGlobalStore((state) => state.activeEntity);
-
-  const filesEntity = getEntityForRelativePath
-    ? getEntityForRelativePath(datasetEntityObj, entityType, content.relativePath)
-    : null;
-
+const FileItem = ({ name, content, onFileClick, isFileSelected }) => {
   return (
     <Group
       gap="sm"
       justify="flex-start"
-      bg={
-        !filesEntity
-          ? "transparent"
-          : filesEntity === activeEntity
-            ? "rgb(227, 242, 253)"
-            : "lightgray"
-      }
+      bg={isFileSelected(content) ? "#e3f2fd" : "transparent"}
       onClick={() => onFileClick && onFileClick(name, content)}
       onContextMenu={(e) => {
         e.preventDefault();
@@ -108,15 +92,10 @@ const FolderItem = ({
   content,
   onFolderClick,
   onFileClick,
-  getEntityForRelativePath,
   datasetStructureSearchFilter,
+  isFolderSelected,
+  isFileSelected,
 }) => {
-  const { datasetEntityObj, entityType, activeEntity } = useGlobalStore.getState();
-
-  const foldersEntity = getEntityForRelativePath
-    ? getEntityForRelativePath(datasetEntityObj, entityType, content.relativePath)
-    : null;
-
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
 
@@ -138,7 +117,7 @@ const FolderItem = ({
 
   const folderHasFiles = Object.keys(content.files || {}).length > 0;
 
-  const isViewOnly = !onFileClick || !onFolderClick || !getEntityForRelativePath;
+  const isViewOnly = !onFileClick || !onFolderClick;
 
   return (
     <Stack gap={1} ml="xs">
@@ -160,9 +139,8 @@ const FolderItem = ({
           <Tooltip label="Select this folder and ALL contents" zIndex={2999}>
             <Checkbox
               readOnly
-              onClick={() => onFolderClick(name, content, "folder-recursive-select")}
-              checked={foldersEntity}
-              color={foldersEntity === activeEntity ? "blue" : "gray"}
+              checked={isFolderSelected(name, content)}
+              onClick={() => onFolderClick(name, content, isFolderSelected(name, content))}
             />
           </Tooltip>
         )}
@@ -170,17 +148,29 @@ const FolderItem = ({
           {name}
         </Text>
         <Space w="lg" />
-        {!isViewOnly && (
-          <>
-            {folderHasFiles && (
-              <Tooltip label="Select all files in this folder" zIndex={2999}>
-                <IconFileDownload
-                  size={20}
-                  onClick={() => onFolderClick(name, content, "folder-files-select")}
-                />
-              </Tooltip>
-            )}
-          </>
+        {!isViewOnly && folderHasFiles && (
+          <Tooltip label="Select all files in this folder" zIndex={2999}>
+            <IconFileDownload
+              size={20}
+              onClick={() => {
+                // Trigger the `onFileClick` callback for all files in the folder
+                const allFilesAreSelected = Object.keys(content.files).every((fileName) =>
+                  isFileSelected(content.files[fileName])
+                );
+                if (allFilesAreSelected) {
+                  Object.keys(content.files).forEach((fileName) =>
+                    onFileClick(fileName, content.files[fileName])
+                  );
+                } else {
+                  Object.keys(content.files).forEach(
+                    (fileName) =>
+                      !isFileSelected(content.files[fileName]) &&
+                      onFileClick(fileName, content.files[fileName])
+                  );
+                }
+              }}
+            />
+          </Tooltip>
         )}
       </Group>
       <Collapse in={isOpen}>
@@ -192,7 +182,7 @@ const FolderItem = ({
                 name={fileName}
                 content={content.files[fileName]}
                 onFileClick={onFileClick}
-                getEntityForRelativePath={getEntityForRelativePath}
+                isFileSelected={isFileSelected}
               />
             ))}
             {naturalSort(Object.keys(content?.folders || {})).map((folderName) => (
@@ -202,8 +192,9 @@ const FolderItem = ({
                 content={content.folders[folderName]}
                 onFolderClick={onFolderClick}
                 onFileClick={onFileClick}
-                getEntityForRelativePath={getEntityForRelativePath}
                 datasetStructureSearchFilter={datasetStructureSearchFilter}
+                isFolderSelected={isFolderSelected}
+                isFileSelected={isFileSelected}
               />
             ))}
           </>
@@ -213,7 +204,7 @@ const FolderItem = ({
   );
 };
 
-const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntityForRelativePath }) => {
+const DatasetTreeViewRenderer = ({ folderActions, fileActions }) => {
   const { renderDatasetStructureJSONObj, datasetStructureSearchFilter } = useGlobalStore(
     (state) => ({
       renderDatasetStructureJSONObj: state.renderDatasetStructureJSONObj,
@@ -259,8 +250,8 @@ const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntityForRelat
                   key={fileName}
                   name={fileName}
                   content={renderDatasetStructureJSONObj.files[fileName]}
-                  onFileClick={onFileClick}
-                  getEntityForRelativePath={getEntityForRelativePath}
+                  onFileClick={fileActions?.["on-file-click"]}
+                  isFileSelected={fileActions?.["is-file-selected"]}
                 />
               )
             )}
@@ -270,10 +261,11 @@ const DatasetTreeViewRenderer = ({ onFolderClick, onFileClick, getEntityForRelat
                   key={folderName}
                   name={folderName}
                   content={renderDatasetStructureJSONObj.folders[folderName]}
-                  onFolderClick={onFolderClick}
-                  onFileClick={onFileClick}
-                  getEntityForRelativePath={getEntityForRelativePath}
+                  onFolderClick={folderActions?.["on-folder-click"]}
+                  onFileClick={fileActions?.["on-file-click"]}
                   datasetStructureSearchFilter={datasetStructureSearchFilter}
+                  isFolderSelected={folderActions?.["is-folder-selected"]}
+                  isFileSelected={fileActions?.["is-file-selected"]}
                 />
               )
             )}
