@@ -15609,6 +15609,8 @@ const guidedPennsieveDatasetUpload = async () => {
       "guided-div-pennsieve-metadata-pennsieve-genration-status-table"
     );
 
+    let guest = await window.isWorkspaceGuest();
+
     // Create the dataset on Pennsieve
     await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
 
@@ -15623,8 +15625,10 @@ const guidedPennsieveDatasetUpload = async () => {
     await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
     await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
     await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
-    await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
-    await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
+    if (!guest) {
+      await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
+      await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
+    }
 
     hideDatasetMetadataGenerationTableRows("pennsieve");
 
