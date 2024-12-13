@@ -8051,6 +8051,8 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     let guest = await window.isWorkspaceGuest();
     if (!guest) {
       guidedUnSkipPage("guided-designate-permissions-tab");
+    } else {
+      guidedSkipPage("guided-designate-permissions-tab");
     }
 
     // Skip this page incase it was not skipped in a previous session
