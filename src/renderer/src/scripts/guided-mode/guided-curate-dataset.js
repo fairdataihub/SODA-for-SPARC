@@ -980,6 +980,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedSkipPage("guided-pennsieve-intro-tab");
 
         // check if user is a guest in the worksapce
+
         let guest = await window.isWorkspaceGuest();
         if (guest) {
           guidedSkipPage("guided-designate-permissions-tab");
@@ -7994,9 +7995,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
           guidedSkipPage("guided-assign-license-tab");
         } else {
           guidedUnSkipPage("guided-banner-image-tab");
-          if (!guest) {
-            guidedUnSkipPage("guided-designate-permissions-tab");
-          }
+          guidedUnSkipPage("guided-designate-permissions-tab");
           guidedUnSkipPage("guided-assign-license-tab");
         }
 
@@ -8065,11 +8064,13 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
       guidedSkipPage(pageID);
     }
 
-    let guest = await window.isWorkspaceGuest();
-    if (!guest) {
-      guidedUnSkipPage("guided-designate-permissions-tab");
-    } else {
-      guidedSkipPage("guided-designate-permissions-tab");
+    if (hasConnectedAccountWithPennsieve()) {
+      let guest = await window.isWorkspaceGuest();
+      if (!guest) {
+        guidedUnSkipPage("guided-designate-permissions-tab");
+      } else {
+        guidedSkipPage("guided-designate-permissions-tab");
+      }
     }
 
     // Skip this page incase it was not skipped in a previous session
