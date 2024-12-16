@@ -7983,6 +7983,21 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
           `);
         }
 
+        // check if the user is an editor
+        let userDatasetRole = await api.getDatasetRole(
+          window.sodaJSONObj["digital-metadata"]["name"]
+        );
+
+        if (userDatasetRole === "editor") {
+          guidedSkipPage("guided-banner-image-tab");
+          guidedSkipPage("guided-designate-permissions-tab");
+          guidedSkipPage("guided-assign-license-tab");
+        } else {
+          guidedUnSkipPage("guided-banner-image-tab");
+          guidedUnSkipPage("guided-designate-permissions-tab");
+          guidedUnSkipPage("guided-assign-license-tab");
+        }
+
         if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
           await Swal.fire({
             icon: "info",
@@ -8048,26 +8063,13 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
       guidedSkipPage(pageID);
     }
 
-    // check if the user is an editor
-    let userDatasetRole = await api.getDatasetRole(
-      window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]
-    );
-
-    if (userDatasetRole === "editor") {
-      guidedSkipPage("guided-banner-image-tab");
-      guidedSkipPage("guided-designate-permissions-tab");
-      guidedSkipPage("guided-assign-license-tab");
-    } else {
-      guidedUnSkipPage("guided-banner-image-tab");
-      guidedUnSkipPage("guided-designate-permissions-tab");
-      guidedUnSkipPage("guided-assign-license-tab");
-    }
-
-    let guest = await window.isWorkspaceGuest();
-    if (!guest) {
-      guidedUnSkipPage("guided-designate-permissions-tab");
-    } else {
-      guidedSkipPage("guided-designate-permissions-tab");
+    if (hasConnectedAccountWithPennsieve()) {
+      let guest = await window.isWorkspaceGuest();
+      if (!guest) {
+        guidedUnSkipPage("guided-designate-permissions-tab");
+      } else {
+        guidedSkipPage("guided-designate-permissions-tab");
+      }
     }
 
     // Skip this page incase it was not skipped in a previous session
