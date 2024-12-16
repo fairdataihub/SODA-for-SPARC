@@ -6205,6 +6205,16 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-banner-image-tab") {
+      // If the user does not have manage permissions, they cannot edit a banner image
+      if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+        const loggedInUsersRole = await api.getDatasetRole(
+          window.sodaJSONObj["digital-metadata"]["name"]
+        );
+        console.log("logged in user role: ", loggedInUsersRole);
+        if (loggedInUsersRole === "editor") {
+        }
+      }
+
       if (pageNeedsUpdateFromPennsieve("guided-banner-image-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
         setPageLoadingState(true);
@@ -7982,11 +7992,18 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
             If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a  target="_blank" rel="noopener noreferrer" href="mailto:curation@sparc.science">curation@sparc.science.</a>
           `);
         }
-
-        // check if the user is an editor
-        let userDatasetRole = await api.getDatasetRole(
-          window.sodaJSONObj["digital-metadata"]["name"]
-        );
+        let userDatasetRole;
+        try {
+          // check if the user is an editor
+          userDatasetRole = await api.getDatasetRole(
+            window.sodaJSONObj["digital-metadata"]["name"]
+          );
+        } catch (error) {
+          console.error(error);
+          throw new Error(
+            `An error occurred while trying to check if you have the correct permissions to edit this dataset. Please try again later.`
+          );
+        }
 
         if (userDatasetRole === "editor") {
           guidedSkipPage("guided-banner-image-tab");
@@ -8044,6 +8061,8 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
         }
       }
     }
+
+    console.log("here");
     window.sodaJSONObj = datasetResumeJsonObj;
     attachGuidedMethodsToSodaJSONObj();
 
