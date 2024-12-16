@@ -610,6 +610,15 @@ const savePageChanges = async (pageBeingLeftID) => {
   try {
     //save changes to the current page
 
+    // Check if the page being left is part of a page set
+    const pageBeingLeftElement = document.getElementById(pageBeingLeftID);
+    const pageSet = pageBeingLeftElement.dataset.pageSet;
+
+    if (pageSet) {
+      if (pageSet === "entity-selector-page") {
+      }
+    }
+
     if (pageBeingLeftID === "guided-select-starting-point-tab") {
       const startingNewCuration = document
         .getElementById("guided-button-start-new-curation")
@@ -12136,9 +12145,9 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
   }
 };
 
-document.getElementById("guided-button-add-subjects").addEventListener("click", async () => {
+/*document.getElementById("guided-button-add-subjects").addEventListener("click", async () => {
   guidedOpenEntityAdditionSwal("subjects");
-});
+});*/
 
 window.addSubjectSpecificationTableRow = () => {
   const subjectSpecificationTableBody = document.getElementById("subject-specification-table-body");

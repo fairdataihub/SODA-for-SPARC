@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { Text, Button, TextInput, ScrollArea, Stack, Group, ActionIcon, Box } from "@mantine/core";
+import {
+  Text,
+  Button,
+  TextInput,
+  ScrollArea,
+  Stack,
+  Group,
+  ActionIcon,
+  Box,
+  Tabs,
+} from "@mantine/core";
 import { IconPlus, IconTrash, IconEdit } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
 import {
@@ -7,6 +17,7 @@ import {
   removeEntityFromEntityList,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import FullWidthContainer from "../../containers/FullWidthContainer";
+import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
 
 const DatasetEntityManager = ({
   entityType,
@@ -72,42 +83,71 @@ const DatasetEntityManager = ({
 
   return (
     <FullWidthContainer>
-      <Stack spacing="xs" mb="md">
-        <Group spacing="xs" align="start" width="100%">
-          <Button
-            size="xs"
-            color="blue"
-            variant="outline"
-            onClick={handleImportEntitiesFromLocalFoldersClick}
-          >
-            Import {entityTypeStringSingular} IDs from local folders/files
-          </Button>
-        </Group>
-        <Group spacing="xs" align="start" width="100%">
-          <TextInput
-            flex={1}
-            placeholder={`Enter new ${entityTypeStringSingular} name`}
-            value={newEntityName}
-            onChange={(event) => setNewEntityName(event.currentTarget.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                handleAddEntity();
-              }
-            }}
-            error={
-              !isNewEntityNameValid &&
-              `${entityTypeStringSingular} does not adhere to identifier conventions.`
-            }
-          />
-          <Button onClick={handleAddEntity} leftIcon={<IconPlus />}>
-            Add {entityTypeStringSingular}
-          </Button>
-        </Group>
-      </Stack>
+      <Tabs color="indigo" variant="pills" defaultValue="gallery">
+        <Tabs.List mb="md">
+          <Tabs.Tab value="manual">manual</Tabs.Tab>
+          <Tabs.Tab value="spreadsheet">spreadsheet</Tabs.Tab>
+          <Tabs.Tab value="folderSelect">folderSelect</Tabs.Tab>
+        </Tabs.List>
 
-      <ScrollArea height={300} type="auto">
-        <Box>{renderEntityList()}</Box>
-      </ScrollArea>
+        <Tabs.Panel value="manual">
+          <Stack spacing="xs" mb="md">
+            <Group spacing="xs" align="start" width="100%">
+              <TextInput
+                flex={1}
+                placeholder={`Enter new ${entityTypeStringSingular} name`}
+                value={newEntityName}
+                onChange={(event) => setNewEntityName(event.currentTarget.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    handleAddEntity();
+                  }
+                }}
+                error={
+                  !isNewEntityNameValid &&
+                  `${entityTypeStringSingular} does not adhere to identifier conventions.`
+                }
+              />
+              <Button onClick={handleAddEntity} leftIcon={<IconPlus />}>
+                Add {entityTypeStringSingular}
+              </Button>
+            </Group>
+          </Stack>
+
+          <ScrollArea height={300} type="auto">
+            <Box>{renderEntityList()}</Box>
+          </ScrollArea>
+        </Tabs.Panel>
+
+        <Tabs.Panel value="spreadsheet">
+          <Group spacing="xs" align="start" width="100%">
+            <Button
+              size="xs"
+              color="blue"
+              variant="outline"
+              onClick={handleImportEntitiesFromLocalFoldersClick}
+            >
+              Import {entityTypeStringSingular} IDs from local folders/files
+            </Button>
+          </Group>
+        </Tabs.Panel>
+
+        <Tabs.Panel value="folderSelect">
+          <DatasetTreeViewRenderer
+            folderActions={{
+              "on-folder-click": (folderName, folderContents, folderIsSelected) => {
+                console.log("folderName", folderName);
+                console.log("folderContents", folderContents);
+                console.log("folderIsSelected", folderIsSelected);
+              },
+              "is-folder-selected": (folderName, folderContents) => {
+                console.log("folderName", folderName);
+                console.log("folderContents", folderContents);
+              },
+            }}
+          />
+        </Tabs.Panel>
+      </Tabs>
     </FullWidthContainer>
   );
 };

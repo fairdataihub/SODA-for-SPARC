@@ -10,6 +10,7 @@ import {
   TextInput,
   Space,
   Center,
+  Button,
 } from "@mantine/core";
 
 import { useHover } from "@mantine/hooks";
@@ -29,7 +30,6 @@ import {
   IconFileTypeZip,
   IconPhoto,
   IconSearch,
-  IconSelect,
   IconFileDownload,
 } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
@@ -73,7 +73,7 @@ const FileItem = ({ name, content, onFileClick, isFileSelected }) => {
     <Group
       gap="sm"
       justify="flex-start"
-      bg={isFileSelected(content) ? "#e3f2fd" : "transparent"}
+      bg={isFileSelected ? (isFileSelected(content) ? "#e3f2fd" : "transparent") : "transparent"}
       onClick={() => onFileClick && onFileClick(name, content)}
       onContextMenu={(e) => {
         e.preventDefault();
@@ -117,8 +117,6 @@ const FolderItem = ({
 
   const folderHasFiles = Object.keys(content.files || {}).length > 0;
 
-  const isViewOnly = !onFileClick || !onFolderClick;
-
   return (
     <Stack gap={1} ml="xs">
       <Group gap={3} justify="flex-start" ref={ref}>
@@ -135,8 +133,8 @@ const FolderItem = ({
             onClick={toggleFolder}
           />
         )}
-        {!isViewOnly && (
-          <Tooltip label="Select this folder and ALL contents" zIndex={2999}>
+        {onFolderClick && (
+          <Tooltip label="Select this folder" zIndex={2999}>
             <Checkbox
               readOnly
               checked={isFolderSelected(name, content)}
@@ -148,7 +146,7 @@ const FolderItem = ({
           {name}
         </Text>
         <Space w="lg" />
-        {!isViewOnly && folderHasFiles && (
+        {onFileClick && folderHasFiles && (
           <Tooltip label="Select all files in this folder" zIndex={2999}>
             <IconFileDownload
               size={20}
@@ -221,6 +219,23 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions }) => {
     setDatasetStructureSearchFilter(event.target.value);
   };
 
+  const handleAllFilesSelectClick = () => {
+    // Trigger the `onFileClick` callback for all files in the search results
+    Object.keys(renderDatasetStructureJSONObj.files).forEach((fileName) =>
+      fileActions["on-file-click"](fileName, renderDatasetStructureJSONObj.files[fileName])
+    );
+  };
+
+  const handleAllFoldersSelectClick = () => {
+    // Trigger the `onFolderClick` callback for all folders in the search results
+    Object.keys(renderDatasetStructureJSONObj.folders).forEach((folderName) =>
+      folderActions["on-folder-click"](
+        folderName,
+        renderDatasetStructureJSONObj.folders[folderName]
+      )
+    );
+  };
+
   return (
     <Paper padding="md" shadow="sm" radius="md" mih={200} p="sm">
       <TextInput
@@ -231,6 +246,20 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions }) => {
         leftSection={<IconSearch stroke={1.5} />}
         mb="sm"
       />
+      {datasetStructureSearchFilter && (
+        <Group gap={3} align="center">
+          {fileActions && (
+            <Button size="xs" color="blue" variant="outline" onClick={handleAllFilesSelectClick}>
+              Select all files in search results
+            </Button>
+          )}
+          {folderActions && (
+            <Button size="xs" color="blue" variant="outline" onClick={handleAllFoldersSelectClick}>
+              Select all folders in search results
+            </Button>
+          )}
+        </Group>
+      )}
       <Stack gap={1} style={{ maxHeight: 700, overflowY: "auto" }} py={3}>
         {renderObjIsEmpty ? (
           <Center mt="md">
