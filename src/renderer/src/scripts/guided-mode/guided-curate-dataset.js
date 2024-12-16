@@ -8048,13 +8048,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
       guidedSkipPage(pageID);
     }
 
-    let guest = await window.isWorkspaceGuest();
-    if (!guest) {
-      guidedUnSkipPage("guided-designate-permissions-tab");
-    } else {
-      guidedSkipPage("guided-designate-permissions-tab");
-    }
-
     // check if the user is an editor
     let userDatasetRole = await api.getDatasetRole(
       window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]
@@ -8066,10 +8059,15 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
       guidedSkipPage("guided-assign-license-tab");
     } else {
       guidedUnSkipPage("guided-banner-image-tab");
-      if (!guest) {
-        guidedUnSkipPage("guided-designate-permissions-tab");
-      }
+      guidedUnSkipPage("guided-designate-permissions-tab");
       guidedUnSkipPage("guided-assign-license-tab");
+    }
+
+    let guest = await window.isWorkspaceGuest();
+    if (!guest) {
+      guidedUnSkipPage("guided-designate-permissions-tab");
+    } else {
+      guidedSkipPage("guided-designate-permissions-tab");
     }
 
     // Skip this page incase it was not skipped in a previous session
