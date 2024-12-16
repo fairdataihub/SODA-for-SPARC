@@ -8055,6 +8055,23 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
       guidedSkipPage("guided-designate-permissions-tab");
     }
 
+    // check if the user is an editor
+    let userDatasetRole = await api.getDatasetRole(
+      window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+    );
+
+    if (userDatasetRole === "editor") {
+      guidedSkipPage("guided-banner-image-tab");
+      guidedSkipPage("guided-designate-permissions-tab");
+      guidedSkipPage("guided-assign-license-tab");
+    } else {
+      guidedUnSkipPage("guided-banner-image-tab");
+      if (!guest) {
+        guidedUnSkipPage("guided-designate-permissions-tab");
+      }
+      guidedUnSkipPage("guided-assign-license-tab");
+    }
+
     // Skip this page incase it was not skipped in a previous session
     guidedSkipPage("guided-select-starting-point-tab");
 
@@ -13989,18 +14006,6 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
 };
 
 const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle) => {
-  let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
-
-  let ineligible = false;
-  if (existingDataset) {
-    let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
-    if (role === "editor") {
-      ineligible = true;
-    }
-  }
-
-  if (ineligible) return;
-
   document.getElementById("guided-dataset-subtitle-upload-tr").classList.remove("hidden");
   const datasetSubtitleUploadText = document.getElementById("guided-dataset-subtitle-upload-text");
   datasetSubtitleUploadText.innerHTML = "Adding dataset subtitle...";
@@ -15565,6 +15570,32 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
   }
 };
 
+const editPennsieveMetadata = async () => {
+  let editingExistingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
+  let userDatasetRole = undefined;
+  if (editingExistingDataset) {
+    userDatasetRole = await api.getDatasetRole(
+      window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+    );
+  }
+
+  if (userDatasetRole === "editor" || userDatasetRole === "viewer") {
+    return;
+  }
+
+  await guidedAddDatasetSubtitle(guidedBfAccount, guidedDatasetName, guidedDatasetSubtitle);
+  await guidedAddDatasetDescription(
+    guidedBfAccount,
+    guidedDatasetName,
+    guidedPennsieveStudyPurpose,
+    guidedPennsieveDataCollection,
+    guidedPennsievePrimaryConclusion
+  );
+  await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
+  await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
+  await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
+};
+
 const guidedPennsieveDatasetUpload = async () => {
   guidedSetNavLoadingState(true);
   try {
@@ -15609,22 +15640,13 @@ const guidedPennsieveDatasetUpload = async () => {
       "guided-div-pennsieve-metadata-pennsieve-genration-status-table"
     );
 
+    await editPennsieveMetadata();
+
     let guest = await window.isWorkspaceGuest();
 
     // Create the dataset on Pennsieve
     await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
 
-    await guidedAddDatasetSubtitle(guidedBfAccount, guidedDatasetName, guidedDatasetSubtitle);
-    await guidedAddDatasetDescription(
-      guidedBfAccount,
-      guidedDatasetName,
-      guidedPennsieveStudyPurpose,
-      guidedPennsieveDataCollection,
-      guidedPennsievePrimaryConclusion
-    );
-    await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
-    await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
-    await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
     if (!guest) {
       await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
       await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
