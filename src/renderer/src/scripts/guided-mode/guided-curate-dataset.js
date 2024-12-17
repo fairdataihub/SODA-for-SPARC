@@ -15583,6 +15583,13 @@ const editPennsieveMetadata = async () => {
     return;
   }
 
+  const guidedBfAccount = window.defaultBfAccount;
+  const guidedDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
+  const guidedDatasetSubtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];
+  const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]?.["banner-image-path"];
+  const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
+  const guidedTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
+
   await guidedAddDatasetSubtitle(guidedBfAccount, guidedDatasetName, guidedDatasetSubtitle);
   await guidedAddDatasetDescription(
     guidedBfAccount,
