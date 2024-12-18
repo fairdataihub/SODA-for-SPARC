@@ -89,6 +89,7 @@ const isDatasetLocked = async (account, datasetNameOrId) => {
 };
 
 const getDatasetAccessDetails = async (datasetNameOrId) => {
+  console.log("getDatasetAccessDetails", datasetNameOrId);
   if (datasetNameOrId) {
     window.defaultBfDataset = datasetNameOrId;
   }
@@ -100,6 +101,8 @@ const getDatasetAccessDetails = async (datasetNameOrId) => {
   const userRole = role.toLowerCase();
   const userCanModifyPennsieveMetadata = ["owner", "manager"].includes(userRole);
 
+  console.log("userRole", userRole);
+  console.log("userCanModifyPennsieveMetadata", userCanModifyPennsieveMetadata);
   return { userRole, userCanModifyPennsieveMetadata };
 };
 

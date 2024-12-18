@@ -1862,16 +1862,17 @@ const savePageChanges = async (pageBeingLeftID) => {
       const loggedInUserIsWorkspaceGuest = await window.isWorkspaceGuest();
       window.sodaJSONObj["last-confirmed-organization-guest-status"] = loggedInUserIsWorkspaceGuest;
 
-      let userDatasetRole = null;
-      let userCanModifyPennsieveMetadata = false;
+      let userRole = null;
+      let userCanModifyPennsieveMetadata = true;
 
       if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
         try {
           ({ userRole, userCanModifyPennsieveMetadata } = await api.getDatasetAccessDetails(
             window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
           ));
-          userDatasetRole = userRole;
-          window.sodaJSONObj["last-confirmed-dataset-role"] = userDatasetRole;
+          console.log("userRole", userRole);
+          console.log("userCanModifyPennsieveMetadata", userCanModifyPennsieveMetadata);
+          window.sodaJSONObj["last-confirmed-dataset-role"] = userRole;
         } catch (error) {
           errorArray.push({
             type: "notyf",
@@ -1882,6 +1883,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
       }
+
       // If the user is a workspace or guest, skip the permissions tab since they do not have permissions to modify them on Pennsieve
       if (loggedInUserIsWorkspaceGuest || !userCanModifyPennsieveMetadata) {
         guidedSkipPage("guided-designate-permissions-tab");
@@ -15569,16 +15571,17 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
 };
 
 const editPennsieveMetadata = async () => {
-  let editingExistingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
-  if (!editingExistingDataset) {
-    const { userRole, userCanModifyPennsieveMetadata } = await api.getDatasetAccessDetails(
+  const editingExistingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
+
+  if (editingExistingDataset) {
+    const { userCanModifyPennsieveMetadata } = await api.getDatasetAccessDetails(
       window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
     );
     if (!userCanModifyPennsieveMetadata) {
+      log.info("Skipping metadata editing because user does not have permission to edit metadata");
       return;
     }
   }
-
   await guidedAddDatasetSubtitle(guidedBfAccount, guidedDatasetName, guidedDatasetSubtitle);
   await guidedAddDatasetDescription(
     guidedBfAccount,
@@ -15625,10 +15628,10 @@ const guidedPennsieveDatasetUpload = async () => {
       "guided-div-pennsieve-metadata-pennsieve-genration-status-table"
     );
 
-    await editPennsieveMetadata();
-
     // Create the dataset on Pennsieve
     await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
+
+    await editPennsieveMetadata();
 
     if (!pageIsSkipped("guided-pennsieve-intro-tab")) {
       // Reconfirm that the user is not a guest before adding permissions
