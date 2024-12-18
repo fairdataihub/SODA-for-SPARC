@@ -423,16 +423,6 @@ document.getElementById("guided-button-has-docs-data").addEventListener("click",
 });
 
 const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
-  let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
-  let ineligible = false;
-  if (existingDataset) {
-    let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
-    if (role === "editor") {
-      ineligible = true;
-    }
-  }
-
-  if (ineligible) return { shouldShow: false };
   try {
     const changesRes = await client.get(`/prepare_metadata/readme_changes_file`, {
       params: {
@@ -1873,11 +1863,14 @@ const savePageChanges = async (pageBeingLeftID) => {
       window.sodaJSONObj["last-confirmed-organization-guest-status"] = loggedInUserIsWorkspaceGuest;
 
       let userDatasetRole = null;
+      let userCanModifyPennsieveMetadata = false;
+
       if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
         try {
-          userDatasetRole = await api.getDatasetRole(
+          ({ userRole, userCanModifyPennsieveMetadata } = await api.getDatasetAccessDetails(
             window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
-          );
+          ));
+          userDatasetRole = userRole;
           window.sodaJSONObj["last-confirmed-dataset-role"] = userDatasetRole;
         } catch (error) {
           errorArray.push({
@@ -1890,13 +1883,13 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }
       // If the user is a workspace or guest, skip the permissions tab since they do not have permissions to modify them on Pennsieve
-      if (loggedInUserIsWorkspaceGuest || userDatasetRole === "editor") {
+      if (loggedInUserIsWorkspaceGuest || !userCanModifyPennsieveMetadata) {
         guidedSkipPage("guided-designate-permissions-tab");
       } else {
         guidedUnSkipPage("guided-designate-permissions-tab");
       }
 
-      if (userDatasetRole === "editor") {
+      if (!userCanModifyPennsieveMetadata) {
         guidedSkipPage("guided-banner-image-tab");
         guidedSkipPage("guided-assign-license-tab");
       } else {
@@ -7758,10 +7751,9 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = async () => {
     }
     if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
       if (window.sodaJSONObj["last-confirmed-dataset-role"]) {
-        const userDatasetRole = await api.getDatasetRole(
-          window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
-        );
-        if (userDatasetRole !== window.sodaJSONObj["last-confirmed-dataset-role"]) {
+        const { userRole, userCanModifyPennsieveMetadata } =
+          await api.getDatasetAccessDetails(currentDataset);
+        if (userRole !== window.sodaJSONObj["last-confirmed-dataset-role"]) {
           await swalShowInfo(
             "Your role in the dataset has changed",
             "You will be taken back to the account details page"
@@ -15578,15 +15570,13 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
 
 const editPennsieveMetadata = async () => {
   let editingExistingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
-  let userDatasetRole = undefined;
-  if (editingExistingDataset) {
-    userDatasetRole = await api.getDatasetRole(
+  if (!editingExistingDataset) {
+    const { userRole, userCanModifyPennsieveMetadata } = await api.getDatasetAccessDetails(
       window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
     );
-  }
-
-  if (userDatasetRole === "editor" || userDatasetRole === "viewer") {
-    return;
+    if (!userCanModifyPennsieveMetadata) {
+      return;
+    }
   }
 
   await guidedAddDatasetSubtitle(guidedBfAccount, guidedDatasetName, guidedDatasetSubtitle);

@@ -608,11 +608,12 @@ window.beginPrepublishingFlow = async (curationMode) => {
       },
     });
   }
-
-  // check if the user is the dataset owner
   let role;
   try {
-    role = await api.getDatasetRole(currentDataset);
+    // check if the user is the dataset owner
+    const { userRole, userCanModifyPennsieveMetadata } =
+      await api.getDatasetAccessDetails(currentDataset);
+    role = userRole;
   } catch (error) {
     // tell the user something went wrong getting access to their dataset permissions
     await Swal.fire({
