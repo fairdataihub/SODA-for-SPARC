@@ -15570,31 +15570,6 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
   }
 };
 
-const editPennsieveMetadata = async () => {
-  const editingExistingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
-
-  if (editingExistingDataset) {
-    const { userCanModifyPennsieveMetadata } = await api.getDatasetAccessDetails(
-      window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
-    );
-    if (!userCanModifyPennsieveMetadata) {
-      log.info("Skipping metadata editing because user does not have permission to edit metadata");
-      return;
-    }
-  }
-  await guidedAddDatasetSubtitle(guidedBfAccount, guidedDatasetName, guidedDatasetSubtitle);
-  await guidedAddDatasetDescription(
-    guidedBfAccount,
-    guidedDatasetName,
-    guidedPennsieveStudyPurpose,
-    guidedPennsieveDataCollection,
-    guidedPennsievePrimaryConclusion
-  );
-  await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
-  await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
-  await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
-};
-
 const guidedPennsieveDatasetUpload = async () => {
   guidedSetNavLoadingState(true);
   try {
@@ -15631,14 +15606,40 @@ const guidedPennsieveDatasetUpload = async () => {
     // Create the dataset on Pennsieve
     await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
 
-    await editPennsieveMetadata();
+    const editingExistingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
+    let userHasPermissionsToModifyPennsieveMetadata = true;
 
-    if (!pageIsSkipped("guided-pennsieve-intro-tab")) {
-      // Reconfirm that the user is not a guest before adding permissions
-      let guest = await window.isWorkspaceGuest();
-      if (!guest) {
-        await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
-        await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
+    if (editingExistingDataset) {
+      const { userCanModifyPennsieveMetadata } = await api.getDatasetAccessDetails(
+        window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+      );
+      if (!userCanModifyPennsieveMetadata) {
+        log.info(
+          "Skipping metadata editing because user does not have permission to edit metadata"
+        );
+        userHasPermissionsToModifyPennsieveMetadata = false;
+      }
+    }
+
+    if (userHasPermissionsToModifyPennsieveMetadata) {
+      await guidedAddDatasetSubtitle(guidedBfAccount, guidedDatasetName, guidedDatasetSubtitle);
+      await guidedAddDatasetDescription(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedPennsieveStudyPurpose,
+        guidedPennsieveDataCollection,
+        guidedPennsievePrimaryConclusion
+      );
+      await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
+      await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
+      await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
+      if (!pageIsSkipped("guided-pennsieve-intro-tab")) {
+        // Reconfirm that the user is not a guest before adding permissions
+        let guest = await window.isWorkspaceGuest();
+        if (!guest) {
+          await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
+          await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
+        }
       }
     }
 
