@@ -2200,9 +2200,10 @@ window.isWorkspaceGuest = async () => {
     });
   } catch (error) {
     clientError(error);
+    console.error("Error fetching organizations", error);
     // TODO: Handle error here
   }
-
+  console.log("currentWorkspace", currentWorkspace);
   // get the current workspace by matching the id
   let currentWorkspaceObj = orgResponse.data.organizations.filter(
     (org) => org.organization.id === currentWorkspace

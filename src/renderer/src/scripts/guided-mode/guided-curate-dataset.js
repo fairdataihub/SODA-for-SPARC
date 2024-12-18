@@ -941,7 +941,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
         await Swal.fire({
           icon: "info",
-          title: "Begining Pennsieve Dataset edit session",
+          title: "Beginning Pennsieve Dataset edit session",
           html: `
             Note: it is imperative that you do not manually make any changes to your dataset folders and files
             directly on Pennsieve while working on this dataset on SODA.
@@ -972,17 +972,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         } else {
           window.sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
           guidedSkipPage("guided-create-changes-metadata-tab");
-        }
-
-        // Skip the page where they confirm their log in and workspace because we should already have it
-        window.sodaJSONObj["digital-metadata"]["dataset-workspace"] =
-          guidedGetCurrentUserWorkSpace();
-        guidedSkipPage("guided-pennsieve-intro-tab");
-
-        // check if user is a guest in the worksapce
-        let guest = await window.isWorkspaceGuest();
-        if (guest) {
-          guidedSkipPage("guided-designate-permissions-tab");
         }
       }
 
@@ -1820,23 +1809,23 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-pennsieve-intro-tab") {
-      const confirmAccountbutton = document.getElementById(
+      const confirmAccountButton = document.getElementById(
         "guided-confirm-pennsieve-account-button"
       );
-      if (!confirmAccountbutton.classList.contains("selected")) {
+      if (!confirmAccountButton.classList.contains("selected")) {
         if (!window.defaultBfAccount) {
-          // If the user has not logged in, throw an error
           errorArray.push({
             type: "notyf",
             message: "Please sign in to Pennsieve before continuing",
           });
+          log.error("User attempted to proceed without signing into Pennsieve.");
           throw errorArray;
         } else {
-          // If the user has not confirmed their account, throw an error
           errorArray.push({
             type: "notyf",
             message: "Please confirm your account before continuing",
           });
+          log.error("User attempted to proceed without confirming their Pennsieve account.");
           throw errorArray;
         }
       }
@@ -1847,37 +1836,73 @@ const savePageChanges = async (pageBeingLeftID) => {
       const userSelectedWorkSpace = guidedGetCurrentUserWorkSpace();
 
       if (!userSelectedWorkSpace) {
-        // If the user has not selected an organization, throw an error
         errorArray.push({
           type: "notyf",
           message: "Please select an organization before continuing",
         });
+        log.error("User attempted to proceed without selecting an organization.");
         throw errorArray;
       } else {
         window.sodaJSONObj["digital-metadata"]["dataset-workspace"] = userSelectedWorkSpace;
       }
 
       if (!confirmOrganizationButton.classList.contains("selected")) {
-        // If the user has not confirmed their organization, throw an error
         errorArray.push({
           type: "notyf",
           message: "Please confirm your organization before continuing",
         });
+        log.error("User attempted to proceed without confirming their organization.");
         throw errorArray;
       }
 
       const pennsieveAgentChecksPassed = await window.getPennsieveAgentStatus();
       if (!pennsieveAgentChecksPassed) {
-        window.unHideAndSmoothScrollToElement("guided-mode-post-log-in-pennsieve-agent-check");
         errorArray.push({
           type: "notyf",
           message: "The Pennsieve Agent must be installed and running to continue.",
         });
+        log.error("Pennsieve Agent is not installed or running.");
+        window.unHideAndSmoothScrollToElement("guided-mode-post-log-in-pennsieve-agent-check");
         throw errorArray;
       }
 
       window.sodaJSONObj["last-confirmed-bf-account-details"] = window.defaultBfAccount;
       window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] = userSelectedWorkSpace;
+
+      const loggedInUserIsWorkspaceGuest = await window.isWorkspaceGuest();
+      window.sodaJSONObj["last-confirmed-organization-guest-status"] = loggedInUserIsWorkspaceGuest;
+
+      let userDatasetRole = null;
+      if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+        try {
+          userDatasetRole = await api.getDatasetRole(
+            window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+          );
+          window.sodaJSONObj["last-confirmed-dataset-role"] = userDatasetRole;
+        } catch (error) {
+          errorArray.push({
+            type: "notyf",
+            message:
+              "SODA was not able to determine if you have the correct permissions to edit this dataset. If you get stuck here, please contact us on the home page.",
+          });
+          log.error("Error determining user dataset role.", error);
+          throw errorArray;
+        }
+      }
+      // If the user is a workspace or guest, skip the permissions tab since they do not have permissions to modify them on Pennsieve
+      if (loggedInUserIsWorkspaceGuest || userDatasetRole === "editor") {
+        guidedSkipPage("guided-designate-permissions-tab");
+      } else {
+        guidedUnSkipPage("guided-designate-permissions-tab");
+      }
+
+      if (userDatasetRole === "editor") {
+        guidedSkipPage("guided-banner-image-tab");
+        guidedSkipPage("guided-assign-license-tab");
+      } else {
+        guidedUnSkipPage("guided-banner-image-tab");
+        guidedUnSkipPage("guided-assign-license-tab");
+      }
     }
 
     if (pageBeingLeftID === "guided-assign-license-tab") {
@@ -6205,16 +6230,6 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-banner-image-tab") {
-      // If the user does not have manage permissions, they cannot edit a banner image
-      if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
-        const loggedInUsersRole = await api.getDatasetRole(
-          window.sodaJSONObj["digital-metadata"]["name"]
-        );
-        console.log("logged in user role: ", loggedInUsersRole);
-        if (loggedInUsersRole === "editor") {
-        }
-      }
-
       if (pageNeedsUpdateFromPennsieve("guided-banner-image-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
         setPageLoadingState(true);
@@ -6326,8 +6341,6 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-designate-permissions-tab") {
-      console.log("In permissions tab");
-
       // Get the users that can be granted permissions
       const usersReq = await client.get(
         `manage_datasets/ps_get_users?selected_account=${window.defaultBfAccount}`
@@ -7693,32 +7706,77 @@ const newEmptyFolderObj = () => {
   };
 };
 
-const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
+const guidedCheckIfUserNeedsToReconfirmAccountDetails = async () => {
   if (!window.sodaJSONObj["completed-tabs"].includes("guided-pennsieve-intro-tab")) {
     return false;
   }
-  // If the user has changed their Pennsieve account, they need to confirm their new Pennsieve account and workspace
-  if (window.sodaJSONObj?.["last-confirmed-bf-account-details"] !== window.defaultBfAccount) {
-    if (window.sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
+  try {
+    // If the user has changed their Pennsieve account, they need to confirm their new Pennsieve account and workspace
+    if (window.sodaJSONObj?.["last-confirmed-bf-account-details"] !== window.defaultBfAccount) {
+      if (window.sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
+        delete window.sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
+      }
+      if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
+        delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+      }
+      await swalShowInfo(
+        "Your Pennsieve account has changed",
+        "You will be taken back to the account details page"
+      );
+      return true;
     }
-    if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+    // If the user has changed their Pennsieve workspace, they need to confirm their new workspace
+    if (
+      guidedGetCurrentUserWorkSpace() !=
+      window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]
+    ) {
+      if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
+        delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+      }
+      await swalShowInfo(
+        "Your Pennsieve workspace has changed",
+        "You will be taken back to the account details page"
+      );
+      return true;
     }
+
+    const currentGuestStatus = await window.isWorkspaceGuest();
+
+    // If the guest status was set and the user's guest status has changed, they need to reconfirm their account details
+    if (
+      window.sodaJSONObj?.["last-confirmed-organization-guest-status"] &&
+      currentGuestStatus !== window.sodaJSONObj?.["last-confirmed-organization-guest-status"]
+    ) {
+      log.info(
+        "The user's guest status has changed so we are returning to the account details page"
+      );
+      await swalShowInfo(
+        "Your guest status in the workspace has changed",
+        "You will be taken back to the account details page"
+      );
+      return true;
+    }
+    if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+      if (window.sodaJSONObj["last-confirmed-dataset-role"]) {
+        const userDatasetRole = await api.getDatasetRole(
+          window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+        );
+        if (userDatasetRole !== window.sodaJSONObj["last-confirmed-dataset-role"]) {
+          await swalShowInfo(
+            "Your role in the dataset has changed",
+            "You will be taken back to the account details page"
+          );
+          return true;
+        }
+      }
+    }
+
+    return false;
+  } catch (error) {
+    log.error("Error checking if user needs to reconfirm account details", error);
+    log.info("Returning true to reconfirm account details");
     return true;
   }
-  // If the user has changed their Pennsieve workspace, they need to confirm their new workspace
-  if (
-    guidedGetCurrentUserWorkSpace() !=
-    window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]
-  ) {
-    if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
-    }
-    return true;
-  }
-  // Return false if the user does not need to reconfirm their account details
-  return false;
 };
 
 const guidedGetPageToReturnTo = async (sodaJSONObj) => {
@@ -7745,7 +7803,7 @@ const guidedGetPageToReturnTo = async (sodaJSONObj) => {
     return firstPageID;
   }
 
-  if (guidedCheckIfUserNeedsToReconfirmAccountDetails() === true) {
+  if ((await guidedCheckIfUserNeedsToReconfirmAccountDetails()) === true) {
     return "guided-pennsieve-intro-tab";
   }
 
@@ -7873,12 +7931,11 @@ const patchPreviousGuidedModeVersions = async () => {
     }
   }
 
-  if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
-    if (!window.sodaJSONObj?.["digital-metadata"]?.["dataset-workspace"]) {
-      // Skip the log in page since we no longer need it
-      guidedSkipPage("guided-pennsieve-intro-tab");
-      window.sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
-    }
+  // No longer skip pennsieve log in tab (even when starting from Pennsieve)
+  if (window.sodaJSONObj["skipped-pages"].includes("guided-pennsieve-intro-tab")) {
+    window.sodaJSONObj["skipped-pages"] = window.sodaJSONObj["skipped-pages"].filter(
+      (page) => page !== "guided-pennsieve-intro-tab"
+    );
   }
 
   // No longer skip validation page for non-sparc datasts ("page should always be unskipped")
@@ -7928,6 +7985,9 @@ const patchPreviousGuidedModeVersions = async () => {
 
 //Loads UI when continue curation button is pressed
 window.guidedResumeProgress = async (datasetNameToResume) => {
+  let userResumingProgressIsAGuest = false;
+  let userResumingProgressIsAnEditor = false;
+
   const loadingSwal = Swal.fire({
     title: "Resuming where you last left off",
     html: `
@@ -7991,28 +8051,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
             <br />
             If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a  target="_blank" rel="noopener noreferrer" href="mailto:curation@sparc.science">curation@sparc.science.</a>
           `);
-        }
-        let userDatasetRole;
-        try {
-          // check if the user is an editor
-          userDatasetRole = await api.getDatasetRole(
-            window.sodaJSONObj["digital-metadata"]["name"]
-          );
-        } catch (error) {
-          console.error(error);
-          throw new Error(
-            `An error occurred while trying to check if you have the correct permissions to edit this dataset. Please try again later.`
-          );
-        }
-
-        if (userDatasetRole === "editor") {
-          guidedSkipPage("guided-banner-image-tab");
-          guidedSkipPage("guided-designate-permissions-tab");
-          guidedSkipPage("guided-assign-license-tab");
-        } else {
-          guidedUnSkipPage("guided-banner-image-tab");
-          guidedUnSkipPage("guided-designate-permissions-tab");
-          guidedUnSkipPage("guided-assign-license-tab");
         }
 
         if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
@@ -8080,15 +8118,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     // Reskip the pages from a previous session
     for (const pageID of prevSessionSkikppedPages) {
       guidedSkipPage(pageID);
-    }
-
-    if (hasConnectedAccountWithPennsieve()) {
-      let guest = await window.isWorkspaceGuest();
-      if (!guest) {
-        guidedUnSkipPage("guided-designate-permissions-tab");
-      } else {
-        guidedSkipPage("guided-designate-permissions-tab");
-      }
     }
 
     // Skip this page incase it was not skipped in a previous session
@@ -14107,17 +14136,6 @@ const guidedAddDatasetDescription = async (
   dataCollection,
   dataConclusion
 ) => {
-  let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
-
-  let ineligible = false;
-  if (existingDataset) {
-    let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
-    if (role === "editor") {
-      ineligible = true;
-    }
-  }
-
-  if (ineligible) return;
   document.getElementById("guided-dataset-description-upload-tr").classList.remove("hidden");
   const datasetDescriptionUploadText = document.getElementById(
     "guided-dataset-description-upload-text"
@@ -14197,17 +14215,6 @@ const guidedAddDatasetDescription = async (
 };
 
 const uploadValidBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
-  let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
-
-  let ineligible = false;
-  if (existingDataset) {
-    let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
-    if (role === "editor") {
-      ineligible = true;
-    }
-  }
-
-  if (ineligible) return;
   document.getElementById("guided-dataset-banner-image-upload-tr").classList.remove("hidden");
   const datasetBannerImageUploadText = document.getElementById(
     "guided-dataset-banner-image-upload-text"
@@ -14314,16 +14321,6 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
   await uploadValidBannerImage(bfAccount, datasetName, bannerImagePath);
 };
 const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) => {
-  let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
-  let ineligible = false;
-  if (existingDataset) {
-    let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
-    if (role === "editor") {
-      ineligible = true;
-    }
-  }
-
-  if (ineligible) return;
   document.getElementById("guided-dataset-license-upload-tr").classList.remove("hidden");
   const datasetLicenseUploadText = document.getElementById("guided-dataset-license-upload-text");
   datasetLicenseUploadText.innerHTML = "Adding dataset license...";
@@ -14399,16 +14396,6 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
 };
 
 const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
-  let existingDataset = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
-  let ineligible = false;
-  if (existingDataset) {
-    let role = await api.getDatasetRole(window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
-    if (role === "editor") {
-      ineligible = true;
-    }
-  }
-
-  if (ineligible) return;
   document.getElementById("guided-dataset-tags-upload-tr").classList.remove("hidden");
   const datasetTagsUploadText = document.getElementById("guided-dataset-tags-upload-text");
   datasetTagsUploadText.innerHTML = "Adding dataset tags...";
@@ -15594,7 +15581,7 @@ const editPennsieveMetadata = async () => {
   let userDatasetRole = undefined;
   if (editingExistingDataset) {
     userDatasetRole = await api.getDatasetRole(
-      window.sodaJSONObj["bf-dataset-selected"]["dataset-name"]
+      window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
     );
   }
 
@@ -15661,14 +15648,16 @@ const guidedPennsieveDatasetUpload = async () => {
 
     await editPennsieveMetadata();
 
-    let guest = await window.isWorkspaceGuest();
-
     // Create the dataset on Pennsieve
     await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
 
-    if (!guest) {
-      await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
-      await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
+    if (!pageIsSkipped("guided-pennsieve-intro-tab")) {
+      // Reconfirm that the user is not a guest before adding permissions
+      let guest = await window.isWorkspaceGuest();
+      if (!guest) {
+        await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
+        await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
+      }
     }
 
     hideDatasetMetadataGenerationTableRows("pennsieve");
