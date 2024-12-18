@@ -15607,20 +15607,9 @@ const guidedPennsieveDatasetUpload = async () => {
   try {
     const guidedBfAccount = window.defaultBfAccount;
     const guidedDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
-    const guidedDatasetSubtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];
     const guidedUsers = window.sodaJSONObj["digital-metadata"]["user-permissions"];
     //const guidedPIOwner = window.sodaJSONObj["digital-metadata"]["pi-owner"];
     const guidedTeams = window.sodaJSONObj["digital-metadata"]["team-permissions"];
-
-    const guidedPennsieveStudyPurpose =
-      window.sodaJSONObj["digital-metadata"]["description"]["study-purpose"];
-    const guidedPennsieveDataCollection =
-      window.sodaJSONObj["digital-metadata"]["description"]["data-collection"];
-    const guidedPennsievePrimaryConclusion =
-      window.sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
-    const guidedTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
-    const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
-    const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]?.["banner-image-path"];
 
     //Hide the upload tables
     document.querySelectorAll(".guided-upload-table").forEach((table) => {
