@@ -15630,8 +15630,16 @@ const guidedPennsieveDatasetUpload = async () => {
         guidedPennsieveDataCollection,
         guidedPennsievePrimaryConclusion
       );
-      await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
-      await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
+      if (!pageIsSkipped("guided-banner-image-tab")) {
+        await guidedAddDatasetBannerImage(
+          guidedBfAccount,
+          guidedDatasetName,
+          guidedBannerImagePath
+        );
+      }
+      if (!pageIsSkipped("guided-assign-license-tab")) {
+        await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
+      }
       await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
       if (!pageIsSkipped("guided-designate-permissions-tab")) {
         try {
