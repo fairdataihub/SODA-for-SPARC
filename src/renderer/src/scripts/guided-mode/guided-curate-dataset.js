@@ -15634,21 +15634,18 @@ const guidedPennsieveDatasetUpload = async () => {
       await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
       await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
       if (!pageIsSkipped("guided-designate-permissions-tab")) {
-        // Reconfirm that the user is not a guest before adding permissions
-
-        let guest = false;
-
         try {
-          guest = await window.isWorkspaceGuest();
+          // Double check if the user is a guest before adding permissions
+          const guest = await window.isWorkspaceGuest();
+
+          if (!guest) {
+            await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
+            await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
+          }
         } catch (error) {
           const errorMessage = userErrorMessage(error);
-          log.error("Error checking if user is a guest during dataset upload", errorMessage);
+          log.error("Error checking guest status during dataset upload", errorMessage);
           throw new Error(errorMessage);
-        }
-
-        if (!guest) {
-          await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
-          await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
         }
       }
     }
