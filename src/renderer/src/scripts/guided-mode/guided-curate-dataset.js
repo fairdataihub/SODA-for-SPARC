@@ -15633,9 +15633,19 @@ const guidedPennsieveDatasetUpload = async () => {
       await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
       await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
       await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
-      if (!pageIsSkipped("guided-pennsieve-intro-tab")) {
+      if (!pageIsSkipped("guided-designate-permissions-tab")) {
         // Reconfirm that the user is not a guest before adding permissions
-        let guest = await window.isWorkspaceGuest();
+
+        let guest = false;
+
+        try {
+          guest = await window.isWorkspaceGuest();
+        } catch (error) {
+          const errorMessage = userErrorMessage(error);
+          log.error("Error checking if user is a guest during dataset upload", errorMessage);
+          throw new Error(errorMessage);
+        }
+
         if (!guest) {
           await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
           await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
