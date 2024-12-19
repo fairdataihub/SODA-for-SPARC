@@ -424,6 +424,13 @@ document.getElementById("guided-button-has-docs-data").addEventListener("click",
 
 const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
   try {
+    // Check and make sure the user has permissions to modify the Pennsieve dataset metadata
+    const { userRole, userCanModifyPennsieveMetadata } =
+      await api.getDatasetAccessDetails(pennsieveDatasetID);
+
+    if (!userCanModifyPennsieveMetadata) {
+      return { shouldShow: false };
+    }
     const changesRes = await client.get(`/prepare_metadata/readme_changes_file`, {
       params: {
         file_type: "CHANGES",
@@ -434,6 +441,7 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
     const changes_text = changesRes.data.text;
     return { shouldShow: true, changesMetadata: changes_text };
   } catch (error) {
+    console.error(error);
     const emessage = userErrorMessage(error);
 
     const datasetInfo = await api.getDatasetInformation(
