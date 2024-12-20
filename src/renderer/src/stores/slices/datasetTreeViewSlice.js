@@ -26,60 +26,83 @@ const traverseStructureByPath = (structure, pathToRender) => {
 
 // Determines if a folder or its subfolders/files match the search filter
 const folderObjMatchesSearch = (folderObj, searchFilter) => {
-  if (!searchFilter) return true; // No search filter applied
+  if (!searchFilter) {
+    return {
+      matchesDirectly: true,
+      matchesFilesDirectly: true,
+      passThrough: false,
+    };
+  }
 
   const folderRelativePath = folderObj.relativePath.toLowerCase();
-  // Check if the current folder's relative path matches the search filter
-  if (folderRelativePath.includes(searchFilter)) return true;
+  const matchesDirectly = folderRelativePath.includes(searchFilter);
 
   // Check if any files match the search filter
   const filesMatch = Object.values(folderObj.files || {}).some((file) =>
     file.relativePath.toLowerCase().includes(searchFilter)
   );
-  if (filesMatch) return true;
 
   // Check if any subfolders match the search filter
-  const foldersMatch = Object.values(folderObj.folders || {}).some((subFolder) =>
-    folderObjMatchesSearch(subFolder, searchFilter)
-  );
-  if (foldersMatch) return true;
+  const subfolderMatches = Object.values(folderObj.folders || {}).some((subFolder) => {
+    const result = folderObjMatchesSearch(subFolder, searchFilter);
+    return result.matchesDirectly || result.matchesFilesDirectly || result.passThrough;
+  });
 
-  return false; // No matches found
+  // Determine if this folder is pass-through
+  const passThrough = !matchesDirectly && !filesMatch && subfolderMatches;
+
+  return {
+    matchesDirectly,
+    matchesFilesDirectly: filesMatch,
+    passThrough,
+  };
 };
 
 // Filters the dataset structure based on the current search filter
 const filterStructure = (structure, searchFilter) => {
-  if (!searchFilter) {
-    // Return the original structure if no search filter is applied
-    return structure;
-  }
+  if (!searchFilter) return structure;
 
   const lowerCaseSearchFilter = searchFilter.toLowerCase();
 
   // Recursively prunes the dataset structure to retain only matching folders/files
-  const pruneStructure = (folderObj) => {
-    // Remove subfolders that do not match the search filter
+  const pruneStructure = (folderObj, searchFilter) => {
+    // Check if the folder matches
+    const { matchesDirectly, matchesFilesDirectly, passThrough } = folderObjMatchesSearch(
+      folderObj,
+      searchFilter
+    );
+
+    // If it doesn't match at all, return null to remove it
+    if (!matchesDirectly && !matchesFilesDirectly && !passThrough) {
+      return null;
+    }
+
+    // Set the keys in the folder object
+    folderObj.matchesDirectly = matchesDirectly;
+    folderObj.matchesFilesDirectly = matchesFilesDirectly;
+    folderObj.passThrough = passThrough;
+
+    // Recursively prune subfolders
     for (const subFolder of Object.keys(folderObj.folders || {})) {
-      if (!folderObjMatchesSearch(folderObj.folders[subFolder], lowerCaseSearchFilter)) {
+      const prunedSubFolder = pruneStructure(folderObj.folders[subFolder], searchFilter);
+      if (prunedSubFolder === null) {
         delete folderObj.folders[subFolder];
-      } else {
-        pruneStructure(folderObj.folders[subFolder]);
       }
     }
 
-    // Remove files that do not match the search filter
+    // Prune files that don't match the search filter
     for (const fileName of Object.keys(folderObj.files || {})) {
-      if (!folderObj.files[fileName].relativePath.toLowerCase().includes(lowerCaseSearchFilter)) {
+      if (!folderObj.files[fileName].relativePath.toLowerCase().includes(searchFilter)) {
         delete folderObj.files[fileName];
       }
     }
 
-    return folderObj; // Return the modified folder object
+    return folderObj;
   };
 
-  // Deep copy the structure to prevent in-place modification
+  // Deep copy the structure to avoid in-place modification
   const structureCopy = JSON.parse(JSON.stringify(structure));
-  return pruneStructure(structureCopy);
+  return pruneStructure(structureCopy, lowerCaseSearchFilter);
 };
 
 // Updates the dataset search filter and modifies the rendered structure accordingly
@@ -137,6 +160,7 @@ export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
 
   // Traverse to the folder structure to be rendered
   const renderStructureRef = traverseStructureByPath(clonedStructure, pathToRender);
+  console.log("Render structure ref:", renderStructureRef);
 
   // Add relative paths for the rendered subset
   addRelativePaths(renderStructureRef, pathToRender);
