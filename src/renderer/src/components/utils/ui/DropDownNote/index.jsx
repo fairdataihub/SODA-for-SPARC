@@ -16,7 +16,7 @@ const DropDownNote = ({ dropDownIcon, dropDownButtonText, dropDownNote }) => {
         {dropDownIcon && dropDownIcons[dropDownIcon]}
         <Text
           td="underline"
-          size="lg"
+          size="md"
           className={classes.dropDownButtonText}
           style={{
             marginLeft: "4px",

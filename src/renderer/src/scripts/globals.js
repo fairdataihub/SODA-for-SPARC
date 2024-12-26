@@ -2187,6 +2187,30 @@ const get_api_key = (login, password, key_name) => {
   });
 };
 
+window.isWorkspaceGuest = async () => {
+  let userInfo = await api.getUserInformation();
+  let currentWorkspace = userInfo["preferredOrganization"];
+
+  let orgResponse;
+  try {
+    orgResponse = await client.get(`user/organizations`, {
+      params: {
+        selected_account: window.defaultBfAccount,
+      },
+    });
+  } catch (error) {
+    clientError(error);
+    console.error("Error fetching organizations", error);
+    // TODO: Handle error here
+  }
+  console.log("currentWorkspace", currentWorkspace);
+  // get the current workspace by matching the id
+  let currentWorkspaceObj = orgResponse.data.organizations.filter(
+    (org) => org.organization.id === currentWorkspace
+  )[0];
+  return currentWorkspaceObj.isGuest;
+};
+
 export {
   currentConTable,
   showHideDropdownButtons,

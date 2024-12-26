@@ -9,10 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Feature Additions:
 
-- SODA notifies the client when a firewall may be blocking access to Pennsieve.
 - Pennsieve guest users can use the Prepare Datset Step-by-Step to edit their Pennsieve datasets.
-- Prepare Dataset Step-by-Step progress can now be resumed when temporary data files on the user machine are saved, and when saved files have been moved.
 - SODA's server starts faster on Mac computers.
+- SODA will notify users if it is determined that a network setting may be preventing communication to the Pennsieve platform.
+- The `Prepare Dataset Step-by-Step` feature allows users to resume curating a dataset even when that dataset saved files that have since been deleted from the computer.
+
 
 ## Bug Fixes:
 
