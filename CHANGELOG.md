@@ -5,6 +5,19 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v15.3.0 - 2024-12-26
+
+## Feature Additions:
+
+- SODA notifies the client when a firewall may be blocking access to Pennsieve. 
+- Pennsieve guest users can use the Prepare Datset Step-by-Step to edit their Pennsieve datasets.
+- Prepare Dataset Step-by-Step progress can now be resumed when temporary data files on the user machine are saved, and when saved files have been moved.
+- SODA's server starts faster on Mac computers.
+
+## Bug Fixes:
+
+- Fixed an uncommon issue where subjects and samples were not being saved in the Prepare Dataset Step-by-Step progress file if the user did not move to the next page before exiting.
+
 ## v15.2.3 - 2024-11-20
 
 ## Bug Fixes:
