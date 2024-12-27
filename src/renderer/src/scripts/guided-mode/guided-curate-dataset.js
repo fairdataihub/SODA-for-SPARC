@@ -972,8 +972,8 @@ const savePageChanges = async (pageBeingLeftID) => {
       guidedSkipPage("guided-select-starting-point-tab");
     }
 
-    if(pageBeingLeftID === "guided-ask-data-set-standard") {
-      // TODO: Store the dataset standard information somewhere and have it play a part in future questions, perhaps. 
+    if (pageBeingLeftID === "guided-ask-data-set-standard") {
+      // TODO: Store the dataset standard information somewhere and have it play a part in future questions, perhaps.
     }
 
     if (pageBeingLeftID === "guided-ask-if-submission-is-sparc-funded-tab") {
