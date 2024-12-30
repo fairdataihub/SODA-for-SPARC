@@ -8065,7 +8065,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     if (!datasetHasAlreadyBeenSuccessfullyUploaded) {
       // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
       if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
-
         // Check to make sure the dataset is not locked
         const datasetIsLocked = await api.isDatasetLocked(
           window.defaultBfAccount,
