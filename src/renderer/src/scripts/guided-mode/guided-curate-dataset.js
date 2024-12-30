@@ -35,6 +35,7 @@ import {
   swalFileListSingleAction,
   swalFileListDoubleAction,
   swalShowInfo,
+  swalAskQuestion,
 } from "../utils/swal-utils";
 
 // Import state management stores
@@ -5465,6 +5466,7 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-manifest-file-generation-tab") {
+      let userMustReturnToPreviousPage = false;
       // Note: manifest file auto-generation is handled by an event listener on the button
       // with the ID: guided-button-auto-generate-manifest-files
 
@@ -5492,7 +5494,7 @@ window.openPage = async (targetPageID) => {
               const fileExists = await window.fs.existsSync(filePath);
 
               if (!fileExists) {
-                nonExistentFiles.push(`${currentPath}${fileName}`);
+                nonExistentFiles.push(filePath);
               }
             }
           }
@@ -5532,20 +5534,49 @@ window.openPage = async (targetPageID) => {
         // Start collecting non-existent files
         await collectNonExistentFiles(datasetStructure);
         if (nonExistentFiles.length > 0) {
-          await swalFileListSingleAction(
+          const userChoseToResolveMissingImportedFilePaths = await swalFileListDoubleAction(
             nonExistentFiles,
             "Files imported into SODA that are no longer on your computer were detected",
-            "The files listed below will be disregarded by SODA and will not be uploaded to Pennsieve.",
+            `
+              The file paths listed below are no longer at their original locations. This issue must be resolved before continuing by selecting one of the options below. <br /><br />
+              - <b>I would like to manually move my files back to their original locations:</b> Choose this option if you still have access to the files and can move them back to their original paths.<br />
+              - <b>Have SODA disregard the removed files:</b> Choose this option <b>only</b> if you no longer have access to the files and want SODA to treat them as if they were never imported. Note that this action can not be undone.
+            `,
+            "I would like to manually move my files back to their original locations",
+            "Have SODA disregard the removed files",
             ""
           );
 
-          // Delete references to the non-existent files
-          deleteNonExistentFiles(datasetStructure);
+          if (userChoseToResolveMissingImportedFilePaths) {
+            userMustReturnToPreviousPage = true;
+          } else {
+            const userChoseToDisregardMissingFiles = await swalAskQuestion(
+              "Are you sure you want to disregard the imported folders/files that are no longer on your computer and treat them as if they were never imported?",
+              "Yes, disregard the missing files",
+              "No, I will move the files back to their original locations"
+            );
+            if (userChoseToDisregardMissingFiles) {
+              // Delete references to non-existent files
+              deleteNonExistentFiles(datasetStructure);
+            } else {
+              userMustReturnToPreviousPage = true;
+            }
+          }
         }
       };
 
       // Purge non-existent files from the dataset structure before generating manifest files
       await purgeNonExistentFilesFromDatasetStructure(window.datasetStructureJSONObj);
+
+      // If the user chose to resolve missing imported file paths, direct them back to the previous page
+      if (userMustReturnToPreviousPage) {
+        await swalShowInfo(
+          "You will be redirected to the previous page.",
+          "Please put the missing files back in their original locations and then click 'Save and Continue' to ensure the missing file paths were resolved."
+        );
+        await window.openPage("guided-dataset-metadata-intro-tab");
+        return;
+      }
 
       // Helper function to check if a folder structure is empty
       const folderObjIsEmpty = (folderStructure) => {
