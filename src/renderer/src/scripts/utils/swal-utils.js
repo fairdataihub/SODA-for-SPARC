@@ -80,7 +80,6 @@ export const swalShowInfo = async (title, infoText) => {
     showConfirmButton: true,
     confirmButtonText: "OK",
   });
-  console.log("finished");
 };
 
 export const swalAskQuestion = async (questionText, confirmButtonText, cancelButtonText) => {

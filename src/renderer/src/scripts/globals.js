@@ -1352,7 +1352,6 @@ var dropdownEventID = "";
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
   if (dropdown === "bf") {
-    console.log("Calling opendropdown here?");
 
     await window.addBfAccount(ev, false);
   } else if (dropdown === "dataset") {
@@ -2203,7 +2202,6 @@ window.isWorkspaceGuest = async () => {
     console.error("Error fetching organizations", error);
     // TODO: Handle error here
   }
-  console.log("currentWorkspace", currentWorkspace);
   // get the current workspace by matching the id
   let currentWorkspaceObj = orgResponse.data.organizations.filter(
     (org) => org.organization.id === currentWorkspace

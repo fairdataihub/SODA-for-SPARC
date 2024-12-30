@@ -1879,8 +1879,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           ({ userRole, userCanModifyPennsieveMetadata } = await api.getDatasetAccessDetails(
             window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
           ));
-          console.log("userRole", userRole);
-          console.log("userCanModifyPennsieveMetadata", userCanModifyPennsieveMetadata);
+
           window.sodaJSONObj["last-confirmed-dataset-role"] = userRole;
         } catch (error) {
           errorArray.push({
@@ -5271,7 +5270,6 @@ window.openPage = async (targetPageID) => {
             window.defaultBfAccount,
             window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
           );
-          console.log(datasetResponse);
           let datasetName = datasetResponse["content"]["name"];
           // Save the dataset name to the JSON and add it to the input
           window.sodaJSONObj["digital-metadata"]["name"] = datasetName;
@@ -7044,7 +7042,6 @@ window.openPage = async (targetPageID) => {
 
     // Set the last opened page and save it
     window.sodaJSONObj["page-before-exit"] = targetPageID;
-    console.log("About to save progress");
     await guidedSaveProgress();
   } catch (error) {
     const eMessage = userErrorMessage(error);
@@ -8066,10 +8063,8 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     }
 
     if (!datasetHasAlreadyBeenSuccessfullyUploaded) {
-      console.log("DOing this resume logic");
       // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
       if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
-        console.log("DOing this resume logic inner");
 
         // Check to make sure the dataset is not locked
         const datasetIsLocked = await api.isDatasetLocked(
@@ -8132,7 +8127,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
       }
     }
 
-    console.log("here");
     window.sodaJSONObj = datasetResumeJsonObj;
     attachGuidedMethodsToSodaJSONObj();
 
