@@ -703,7 +703,7 @@ const promptSpeciesAndStrainSelection = async () => {
         </div>
       </div>
     `,
-    width: 800,
+    width: 900,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     showCancelButton: true,

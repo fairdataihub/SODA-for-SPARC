@@ -5536,14 +5536,13 @@ window.openPage = async (targetPageID) => {
         if (nonExistentFiles.length > 0) {
           const userChoseToResolveMissingImportedFilePaths = await swalFileListDoubleAction(
             nonExistentFiles,
-            "Files imported into SODA that are no longer on your computer were detected",
+            "Some files imported into SODA that are no longer at their original locations were detected",
             `
-              The file paths listed below are no longer at their original locations. This issue must be resolved before continuing by selecting one of the options below. <br /><br />
-              - <b>I would like to manually move my files back to their original locations:</b> Choose this option if you still have access to the files and can move them back to their original paths.<br />
-              - <b>Have SODA disregard the removed files:</b> Choose this option <b>only</b> if you no longer have access to the files and want SODA to treat them as if they were never imported. Note that this action can not be undone.
-            `,
+              Files that were previously imported into SODA are no longer at their original locations, as shown below. This issue must be resolved before continuing by selecting one of the options below. <br /><br />
+              - <b>I would like to manually move my files back to their original locations:</b> Choose this option if you still have access to the files and can move them back to their original paths on your computer.<br />
+              - <b>Have SODA disregard the missing files:</b> Choose this only if you no longer have access to the files or don't want to upload them, and you want SODA to treat them as if they were never imported. This action cannot be undone.            `,
             "I would like to manually move my files back to their original locations",
-            "Have SODA disregard the removed files",
+            "Have SODA disregard the missing files",
             ""
           );
 
@@ -5551,7 +5550,7 @@ window.openPage = async (targetPageID) => {
             userMustReturnToPreviousPage = true;
           } else {
             const userChoseToDisregardMissingFiles = await swalAskQuestion(
-              "Are you sure you want to disregard the imported folders/files that are no longer on your computer and treat them as if they were never imported?",
+              "Are you sure you want to disregard the imported files that are no longer located where they were originally imported from and treat them as if they were never imported?",
               "Yes, disregard the missing files",
               "No, I will move the files back to their original locations"
             );
@@ -7106,7 +7105,7 @@ const guidedOpenEntityEditSwal = async (entityName) => {
         )}" id='input-new-entity-name' class='guided--input' type='text' placeholder='Enter new ${entityNameSingular} name and press edit'/>
       </div>
     `,
-    width: 800,
+    width: 900,
     heightAuto: false,
     backdrop: "rgba(0,0,0,0.4)",
     showConfirmButton: true,

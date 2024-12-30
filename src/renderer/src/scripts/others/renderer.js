@@ -487,7 +487,7 @@ const startupServerAndApiCheck = async () => {
       confirmButtonText: "Restart SODA To Try Again",
       allowOutsideClick: false,
       allowEscapeKey: false,
-      width: 800,
+      width: 900,
     });
     await window.electron.ipcRenderer.invoke("relaunch-soda");
   }
@@ -4429,9 +4429,9 @@ const showFileImportLoadingSweetAlert = (delayBeforeShowingSweetAlert) => {
           <div></div>
         </div>
       `,
-      width: 800,
+      width: 900,
       heightAuto: false,
-      width: 800,
+      width: 900,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       allowOutsideClick: false,
