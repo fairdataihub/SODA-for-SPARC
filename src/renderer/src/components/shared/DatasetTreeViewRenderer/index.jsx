@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Collapse,
   Text,
@@ -12,27 +12,16 @@ import {
   Center,
   Button,
 } from "@mantine/core";
-
 import { useHover } from "@mantine/hooks";
 import {
   IconFolder,
   IconFolderOpen,
   IconFile,
-  IconFileTypeCsv,
-  IconFileTypeDoc,
-  IconFileTypeDocx,
-  IconFileTypeJpg,
-  IconFileTypePdf,
-  IconFileTypePng,
-  IconFileTypeTxt,
-  IconFileTypeXls,
-  IconFileTypeXml,
-  IconFileTypeZip,
-  IconPhoto,
-  IconSearch,
   IconFileDownload,
+  IconSearch,
 } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
+import ContextMenu from "./ContextMenu";
 import { setDatasetStructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
 
 const ICON_SETTINGS = {
@@ -41,47 +30,27 @@ const ICON_SETTINGS = {
   fileSize: 14,
 };
 
-const FILE_ICON_MAP = {
-  csv: <IconFileTypeCsv size={ICON_SETTINGS.fileSize} />,
-  xls: <IconFileTypeXls size={ICON_SETTINGS.fileSize} />,
-  xlsx: <IconFileTypeXls size={ICON_SETTINGS.fileSize} />,
-  txt: <IconFileTypeTxt size={ICON_SETTINGS.fileSize} />,
-  doc: <IconFileTypeDoc size={ICON_SETTINGS.fileSize} />,
-  docx: <IconFileTypeDocx size={ICON_SETTINGS.fileSize} />,
-  pdf: <IconFileTypePdf size={ICON_SETTINGS.fileSize} />,
-  png: <IconFileTypePng size={ICON_SETTINGS.fileSize} />,
-  jpg: <IconFileTypeJpg size={ICON_SETTINGS.fileSize} />,
-  jpeg: <IconFileTypeJpg size={ICON_SETTINGS.fileSize} />,
-  xml: <IconFileTypeXml size={ICON_SETTINGS.fileSize} />,
-  zip: <IconFileTypeZip size={ICON_SETTINGS.fileSize} />,
-  rar: <IconFileTypeZip size={ICON_SETTINGS.fileSize} />,
-  jp2: <IconPhoto size={ICON_SETTINGS.fileSize} />,
-  tif: <IconPhoto size={ICON_SETTINGS.fileSize} />,
-  tiff: <IconPhoto size={ICON_SETTINGS.fileSize} />,
-};
-
 const naturalSort = (arr) =>
   arr.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
 
-const getFileTypeIcon = (fileName) => {
-  const extension = fileName.split(".").pop().toLowerCase();
-  return FILE_ICON_MAP[extension] || <IconFile size={ICON_SETTINGS.fileSize} />;
-};
-
-const FileItem = ({ name, content, onFileClick, isFileSelected }) => {
+const FileItem = ({ name, content, onFileClick, isFileSelected, onContextMenu }) => {
   return (
     <Group
       gap="sm"
       justify="flex-start"
       bg={isFileSelected ? (isFileSelected(content) ? "#e3f2fd" : "transparent") : "transparent"}
-      onClick={() => onFileClick && onFileClick(name, content)}
+      onClick={() => {
+        console.log("File clicked:", name, content);
+        onFileClick && onFileClick(name, content);
+      }}
       onContextMenu={(e) => {
-        e.preventDefault();
-        console.log("add context menu here");
+        console.log("Context menu opened for file:", name, content);
+        e.stopPropagation();
+        onContextMenu(e, "file", name, content);
       }}
       ml="sm"
     >
-      {getFileTypeIcon(name)}
+      <IconFile size={ICON_SETTINGS.fileSize} />
       <Text size="sm">{name}</Text>
     </Group>
   );
@@ -95,6 +64,7 @@ const FolderItem = ({
   datasetStructureSearchFilter,
   isFolderSelected,
   isFileSelected,
+  onContextMenu,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
@@ -119,7 +89,16 @@ const FolderItem = ({
 
   return (
     <Stack gap={1} ml="xs">
-      <Group gap={3} justify="flex-start" ref={ref}>
+      <Group
+        gap={3}
+        justify="flex-start"
+        ref={ref}
+        onContextMenu={(e) => {
+          console.log("Context menu opened for folder:", name, content);
+          e.stopPropagation();
+          onContextMenu(e, "folder", name, content);
+        }}
+      >
         {isOpen ? (
           <IconFolderOpen
             size={ICON_SETTINGS.folderSize}
@@ -138,7 +117,10 @@ const FolderItem = ({
             <Checkbox
               readOnly
               checked={isFolderSelected(name, content)}
-              onClick={() => onFolderClick(name, content, isFolderSelected(name, content))}
+              onClick={() => {
+                console.log("Folder checkbox clicked:", name, content);
+                onFolderClick(name, content, isFolderSelected(name, content));
+              }}
             />
           </Tooltip>
         )}
@@ -151,7 +133,7 @@ const FolderItem = ({
             <IconFileDownload
               size={20}
               onClick={() => {
-                // Trigger the `onFileClick` callback for all files in the folder
+                console.log("Select all files in folder:", name, content);
                 const allFilesAreSelected = Object.keys(content.files).every((fileName) =>
                   isFileSelected(content.files[fileName])
                 );
@@ -181,6 +163,15 @@ const FolderItem = ({
                 content={content.files[fileName]}
                 onFileClick={onFileClick}
                 isFileSelected={isFileSelected}
+                onContextMenu={(e) => {
+                  console.log(
+                    "Context menu opened for file in folder:",
+                    fileName,
+                    content.files[fileName]
+                  );
+                  e.stopPropagation();
+                  onContextMenu(e, "file", fileName, content.files[fileName]);
+                }}
               />
             ))}
             {naturalSort(Object.keys(content?.folders || {})).map((folderName) => (
@@ -193,6 +184,15 @@ const FolderItem = ({
                 datasetStructureSearchFilter={datasetStructureSearchFilter}
                 isFolderSelected={isFolderSelected}
                 isFileSelected={isFileSelected}
+                onContextMenu={(e) => {
+                  console.log(
+                    "Context menu opened for folder in folder:",
+                    folderName,
+                    content.folders[folderName]
+                  );
+                  e.stopPropagation();
+                  onContextMenu(e, "folder", folderName, content.folders[folderName]);
+                }}
               />
             ))}
           </>
@@ -202,7 +202,7 @@ const FolderItem = ({
   );
 };
 
-const DatasetTreeViewRenderer = ({ folderActions, fileActions }) => {
+const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowFileEditing }) => {
   const { renderDatasetStructureJSONObj, datasetStructureSearchFilter } = useGlobalStore(
     (state) => ({
       renderDatasetStructureJSONObj: state.renderDatasetStructureJSONObj,
@@ -210,24 +210,54 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions }) => {
     })
   );
 
-  const renderObjIsEmpty =
-    !renderDatasetStructureJSONObj ||
-    (Object.keys(renderDatasetStructureJSONObj?.folders).length === 0 &&
-      Object.keys(renderDatasetStructureJSONObj?.files).length === 0);
+  const [menuPosition, setMenuPosition] = useState({ x: 550, y: 550 });
+  const [menuOpened, setMenuOpened] = useState(false);
+  const [contextMenuData, setContextMenuData] = useState(null);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutsideContextMenu = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpened(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutsideContextMenu);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutsideContextMenu);
+    };
+  }, []);
+
+  const handleContextMenuOpenClick = (e, type, name, content) => {
+    e.preventDefault(); // Prevent the default context menu
+    e.stopPropagation(); // Prevent event propagation
+
+    if (!allowFileEditing) {
+      return;
+    }
+
+    console.log("Opening context menu for:", type, name, content);
+    setMenuPosition({ x: e.clientX, y: e.clientY });
+    setContextMenuData({ type, name, content });
+    setMenuOpened(true);
+  };
+
+  const handleMenuClose = () => {
+    console.log("Closing context menu");
+    setMenuOpened(false);
+  };
 
   const handleSearchChange = (event) => {
     setDatasetStructureSearchFilter(event.target.value);
   };
 
   const handleAllFilesSelectClick = () => {
-    // Trigger the `onFileClick` callback for all files in the search results
     Object.keys(renderDatasetStructureJSONObj.files).forEach((fileName) =>
       fileActions["on-file-click"](fileName, renderDatasetStructureJSONObj.files[fileName])
     );
   };
 
   const handleAllFoldersSelectClick = () => {
-    // Trigger the `onFolderClick` callback for all folders in the search results
     Object.keys(renderDatasetStructureJSONObj.folders).forEach((folderName) =>
       folderActions["on-folder-click"](
         folderName,
@@ -235,6 +265,11 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions }) => {
       )
     );
   };
+
+  const renderObjIsEmpty =
+    !renderDatasetStructureJSONObj ||
+    (Object.keys(renderDatasetStructureJSONObj?.folders).length === 0 &&
+      Object.keys(renderDatasetStructureJSONObj?.files).length === 0);
 
   return (
     <Paper padding="md" shadow="sm" radius="md" mih={200} p="sm">
@@ -281,6 +316,20 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions }) => {
                   content={renderDatasetStructureJSONObj.files[fileName]}
                   onFileClick={fileActions?.["on-file-click"]}
                   isFileSelected={fileActions?.["is-file-selected"]}
+                  onContextMenu={(e) => {
+                    console.log(
+                      "Context menu opened for file in top level:",
+                      fileName,
+                      renderDatasetStructureJSONObj.files[fileName]
+                    );
+                    e.stopPropagation();
+                    handleContextMenuOpenClick(
+                      e,
+                      "file",
+                      fileName,
+                      renderDatasetStructureJSONObj.files[fileName]
+                    );
+                  }}
                 />
               )
             )}
@@ -295,12 +344,33 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions }) => {
                   datasetStructureSearchFilter={datasetStructureSearchFilter}
                   isFolderSelected={folderActions?.["is-folder-selected"]}
                   isFileSelected={fileActions?.["is-file-selected"]}
+                  onContextMenu={(e) => {
+                    console.log(
+                      "Context menu opened for folder in top level:",
+                      folderName,
+                      renderDatasetStructureJSONObj.folders[folderName]
+                    );
+                    e.stopPropagation();
+                    handleContextMenuOpenClick(
+                      e,
+                      "folder",
+                      folderName,
+                      renderDatasetStructureJSONObj.folders[folderName]
+                    );
+                  }}
                 />
               )
             )}
           </>
         )}
       </Stack>
+      <ContextMenu
+        ref={menuRef}
+        isOpened={menuOpened}
+        position={menuPosition}
+        contextMenuData={contextMenuData}
+        onClose={handleMenuClose}
+      />
     </Paper>
   );
 };

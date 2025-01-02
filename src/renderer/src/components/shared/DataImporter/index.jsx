@@ -61,7 +61,7 @@ const DataImporter = () => {
           </div>
         </Group>
       </Dropzone>
-      <DatasetTreeViewRenderer />
+      <DatasetTreeViewRenderer allowFileEditing={true} />
     </FullWidthContainer>
   );
 };
