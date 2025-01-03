@@ -1,5 +1,3 @@
-// // sourcery skip: merge-nested-ifs
-
 import {
   existingDataset,
   modifyDataset,
@@ -5247,6 +5245,11 @@ window.openPage = async (targetPageID) => {
         setGuidedDatasetSubtitle(datasetSubtitle);
       }
     }
+
+    // TODO: Add logic here
+    // if (targetPageID === "guided-select-destination-tab") {
+
+    // }
 
     if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
       if (pageNeedsUpdateFromPennsieve(targetPageID)) {
@@ -16638,6 +16641,16 @@ $("#guided-next-button").on("click", async function () {
     await window.openPage("guided-dataset-dissemination-tab");
     return;
   }
+
+
+  if(window.pageBeingLeftID === "guided-select-destination-tab") {
+    // check if the guided-button-generate-cloud-sync-folder radio button has been checked
+    const generateCloudSyncFolderButton = document.getElementById("guided-button-generate-cloud-sync-folder");
+    if (generateCloudSyncFolderButton.classList.contains("selected")) {
+      // skip the Pennsieve metadata tab and the Pennsieve related pages in Generate Dataset tab
+      guidedSkipPage("guided-dataset-dissemination-tab")
+  }
+}
 
   try {
     await savePageChanges(window.pageBeingLeftID);
