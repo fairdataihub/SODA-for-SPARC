@@ -141,8 +141,10 @@ const DatasetEntityManager = ({
                 console.log("folderIsSelected", folderIsSelected);
               },
               "is-folder-selected": (folderName, folderContents) => {
+                /*
                 console.log("folderName", folderName);
                 console.log("folderContents", folderContents);
+                */
               },
             }}
           />

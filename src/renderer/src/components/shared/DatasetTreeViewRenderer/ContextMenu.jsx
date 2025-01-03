@@ -1,7 +1,10 @@
 import { Menu } from "@mantine/core";
 import { useEffect } from "react";
 import useGlobalStore from "../../../stores/globalStore";
-import { closeContextMenu } from "../../../stores/slices/datasetTreeViewSlice";
+import {
+  closeContextMenu,
+  deleteFilesByRelativePath,
+} from "../../../stores/slices/datasetTreeViewSlice";
 
 const ContextMenu = () => {
   const {
@@ -13,16 +16,39 @@ const ContextMenu = () => {
   } = useGlobalStore();
 
   useEffect(() => {
+    if (!contextMenuIsOpened) {
+      console.log("🛑 Context menu is not open. Skipping listener setup.");
+      return;
+    }
+
     const handleClickOutside = (event) => {
       const menuElement = document.getElementById("context-menu");
-      if (menuElement && !menuElement.contains(event.target)) {
+      const portalMenuElement = document.querySelector(".mantine-Menu-dropdown");
+
+      console.log("⚡ Click Detected!");
+      console.log("🔍 Event Target:", event.target);
+      console.log("📝 Menu Element:", menuElement);
+      console.log("📝 Portal Menu Element:", portalMenuElement);
+
+      if (!menuElement && !portalMenuElement) {
+        console.warn("🚨 Neither menu element nor portal menu found in the DOM!");
+        return;
+      }
+
+      // Check if the click happened inside the menu or its portal
+      if (event.target.closest("#context-menu") || event.target.closest(".mantine-Menu-dropdown")) {
+        console.log("✅ Click was inside the context menu or portal. Ignoring...");
+      } else {
+        console.log("❌ Click was outside the context menu. Closing menu...");
         closeContextMenu();
       }
     };
 
+    console.log("✅ Adding click outside listener.");
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
+      console.log("🔄 Cleaning up click outside listener.");
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [contextMenuIsOpened]);
@@ -37,9 +63,6 @@ const ContextMenu = () => {
   if (!contextMenuIsOpened) {
     return null;
   }
-  console.log("Context menu data:", contextMenuItemData);
-  console.log("Context menu item type:", contextMenuItemType);
-  console.log("Context menu item name:", contextMenuItemName);
 
   return (
     <div id="context-menu" style={menuStyles}>
@@ -59,9 +82,20 @@ const ContextMenu = () => {
               {contextMenuItemData?.relativePath}
             </Menu.Item>
           )}
-          <Menu.Item onClick={() => console.log("Rename")}>Rename</Menu.Item>
           <Menu.Item onClick={() => console.log("Move")}>Move</Menu.Item>
-          <Menu.Item onClick={() => console.log("Delete")}>Delete</Menu.Item>
+          <Menu.Item
+            onClick={() => {
+              if (contextMenuItemData?.relativePath) {
+                deleteFilesByRelativePath([contextMenuItemData.relativePath]);
+                closeContextMenu(); // Close menu after deletion
+              } else {
+                console.error("No relative path found for deletion");
+              }
+            }}
+          >
+            Delete
+          </Menu.Item>
+          <Menu.Item onClick={() => console.log("Delete")}>qwer</Menu.Item>
         </Menu.Dropdown>
       </Menu>
     </div>

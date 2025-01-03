@@ -180,7 +180,6 @@ export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
 
 // Opens the context menu
 export const openContextMenu = (itemPosition, itemType, itemName, itemContent) => {
-  console.log("itemContentz", itemContent);
   const globalStore = useGlobalStore.getState();
   useGlobalStore.setState({
     ...globalStore,
@@ -203,4 +202,67 @@ export const closeContextMenu = () => {
     contextMenuItemName: null,
     contextMenuData: null,
   });
+};
+
+export const getFolderStructureJsonByPath = (path) => {
+  if (typeof path === "string") {
+    path = path.split("/").filter(Boolean); // Split string and remove empty segments
+  } else if (!Array.isArray(path)) {
+    throw new Error("Path must be a string or an array");
+  }
+
+  const globalStore = useGlobalStore.getState();
+  let structure = globalStore.datasetStructureJSONObj;
+
+  for (const folder of path) {
+    if (!structure.folders || !structure.folders[folder]) {
+      throw new Error(`Folder "${folder}" does not exist in the structure`);
+    }
+    structure = structure.folders[folder];
+  }
+
+  console.log("structure", structure);
+  return structure;
+};
+
+export const getFileStructureJsonByPath = (path) => {
+  if (typeof path === "string") {
+    path = path.split("/").filter(Boolean); // Split string and remove empty segments
+  } else if (!Array.isArray(path)) {
+    throw new Error("Path must be a string or an array");
+  }
+  // The file name is the last segment of the path
+  const fileName = path.pop();
+  console.log("folder path to get file structure", path);
+  const folderStructure = getFolderStructureJsonByPath(path);
+  const fileStructure = folderStructure.files[fileName];
+  console.log("fileStructure", fileStructure);
+  return fileStructure;
+};
+
+export const deleteFilesByRelativePath = (relativePaths) => {
+  console.log("relativePaths to delete", relativePaths);
+  const globalStore = useGlobalStore.getState(); // Get the current state
+  const clonedStructure = JSON.parse(JSON.stringify(globalStore.datasetStructureJSONObj)); // Make a deep copy of the structure
+  console.log("clonedStructure sub-c", clonedStructure["folders"]["primary"]["folders"]["sub-c"]);
+
+  for (const relativePath of relativePaths) {
+    const pathSegments = relativePath.split("/").filter(Boolean);
+    const fileName = pathSegments.pop();
+    console.log("pathSegments", pathSegments);
+    console.log("fileName", fileName);
+    const folderJson = getFolderStructureJsonByPath(pathSegments);
+
+    if (!folderJson.files || !folderJson.files[fileName]) {
+      throw new Error(`File "${fileName}" does not exist in the structure`);
+    }
+    console.log("folderJson before delete", folderJson);
+    delete folderJson.files[fileName]; // Delete the file
+    console.log("folderJson after delete", folderJson);
+
+    // Update the folder and structure to reflect the deletion
+    const updatedStructure = { ...clonedStructure };
+    console.log("updatedStructure", updatedStructure);
+    setTreeViewDatasetStructure(updatedStructure, globalStore.pathToRender);
+  }
 };

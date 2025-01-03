@@ -37,32 +37,36 @@ const naturalSort = (arr) =>
   arr.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
 
 const FileItem = ({ name, content, onFileClick, isFileSelected, allowFileEditing }) => {
+  const { hovered, ref } = useHover();
+
   const handleFileContextMenuOpen = (e) => {
-    e.preventDefault(); // Prevent the default context menu
-    e.stopPropagation(); // Prevent event propagation
-    console.log("allowFileEditing", allowFileEditing);
-    if (!allowFileEditing) {
-      return;
-    }
-    console.log("Position:", { x: e.clientX, y: e.clientY });
-    console.log("Opening context menu for file:", name, content);
+    e.preventDefault();
+    e.stopPropagation();
+    if (!allowFileEditing) return;
     openContextMenu({ x: e.clientX, y: e.clientY }, "file", name, content);
   };
 
   return (
     <Group
+      ref={ref}
       gap="sm"
       justify="flex-start"
-      bg={isFileSelected ? (isFileSelected(content) ? "#e3f2fd" : "transparent") : "transparent"}
-      onClick={() => {
-        console.log("File clicked:", name, content);
-        onFileClick && onFileClick(name, content);
-      }}
+      bg={isFileSelected?.(content) ? "#e3f2fd" : "transparent"}
+      onClick={() => onFileClick?.(name, content)}
       onContextMenu={handleFileContextMenuOpen}
       ml="sm"
     >
       <IconFile size={ICON_SETTINGS.fileSize} />
-      <Text size="sm">{name}</Text>
+      <Text
+        size="sm"
+        style={{
+          borderRadius: "4px",
+          cursor: "pointer",
+          transition: "background-color 0.2s ease-in-out",
+        }}
+      >
+        {name}
+      </Text>
     </Group>
   );
 };
@@ -81,39 +85,21 @@ const FolderItem = ({
   const { hovered, ref } = useHover();
 
   useEffect(() => {
-    if (datasetStructureSearchFilter) {
-      setIsOpen(true);
-    } else {
-      setIsOpen(false);
-    }
+    setIsOpen(!!datasetStructureSearchFilter);
   }, [datasetStructureSearchFilter]);
 
-  const toggleFolder = () => {
-    setIsOpen((prev) => !prev);
-  };
-
-  const isFolderEmpty =
-    Object.keys(content.folders || {}).length === 0 &&
-    Object.keys(content.files || {}).length === 0;
-
-  const folderHasFiles = Object.keys(content.files || {}).length > 0;
+  const toggleFolder = () => setIsOpen((prev) => !prev);
 
   const handleFileContextMenuOpen = (e) => {
-    e.preventDefault(); // Prevent the default context menu
-    e.stopPropagation(); // Prevent event propagation
-    console.log("allowFileEditing", allowFileEditing);
-    if (!allowFileEditing) {
-      return;
-    }
-
-    console.log("Opening context menu for file:", name, content);
-
+    e.preventDefault();
+    e.stopPropagation();
+    if (!allowFileEditing) return;
     openContextMenu({ x: e.clientX, y: e.clientY }, "folder", name, content);
   };
 
   return (
     <Stack gap={1} ml="xs">
-      <Group gap={3} justify="flex-start" ref={ref} onContextMenu={handleFileContextMenuOpen}>
+      <Group ref={ref} gap={3} justify="flex-start" onContextMenu={handleFileContextMenuOpen}>
         {isOpen ? (
           <IconFolderOpen
             size={ICON_SETTINGS.folderSize}
@@ -131,46 +117,27 @@ const FolderItem = ({
           <Tooltip label="Select this folder" zIndex={2999}>
             <Checkbox
               readOnly
-              checked={isFolderSelected(name, content)}
-              onClick={() => {
-                console.log("Folder checkbox clicked:", name, content);
-                onFolderClick(name, content, isFolderSelected(name, content));
-              }}
+              checked={isFolderSelected?.(name, content)}
+              onClick={() => onFolderClick?.(name, content, isFolderSelected?.(name, content))}
             />
           </Tooltip>
         )}
-
-        <Text size="md" px={5} onClick={toggleFolder}>
+        <Text
+          size="md"
+          px={5}
+          onClick={toggleFolder}
+          style={{
+            backgroundColor: hovered ? "#f5f5f5" : "transparent",
+            borderRadius: "4px",
+            cursor: "pointer",
+            transition: "background-color 0.2s ease-in-out",
+          }}
+        >
           {name}
         </Text>
-        <Space w="lg" />
-        {onFileClick && folderHasFiles && (
-          <Tooltip label="Select all files in this folder" zIndex={2999}>
-            <IconFileDownload
-              size={20}
-              onClick={() => {
-                console.log("Select all files in folder:", name, content);
-                const allFilesAreSelected = Object.keys(content.files).every((fileName) =>
-                  isFileSelected(content.files[fileName])
-                );
-                if (allFilesAreSelected) {
-                  Object.keys(content.files).forEach((fileName) =>
-                    onFileClick(fileName, content.files[fileName])
-                  );
-                } else {
-                  Object.keys(content.files).forEach(
-                    (fileName) =>
-                      !isFileSelected(content.files[fileName]) &&
-                      onFileClick(fileName, content.files[fileName])
-                  );
-                }
-              }}
-            />
-          </Tooltip>
-        )}
       </Group>
       <Collapse in={isOpen}>
-        {isOpen && !isFolderEmpty && (
+        {isOpen && (
           <>
             {naturalSort(Object.keys(content?.files || {})).map((fileName) => (
               <FileItem
@@ -249,8 +216,8 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowFileEditing 
         leftSection={<IconSearch stroke={1.5} />}
         mb="sm"
       />
-      {datasetStructureSearchFilter && (
-        <Group gap={3} align="center">
+      {datasetStructureSearchFilter && !renderObjIsEmpty && (
+        <Group gap={3} align="center" bg="aliceblue" p="xs">
           {fileActions && (
             <Button size="xs" color="blue" variant="outline" onClick={handleAllFilesSelectClick}>
               Select all files in search results
@@ -259,6 +226,11 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowFileEditing 
           {folderActions && (
             <Button size="xs" color="blue" variant="outline" onClick={handleAllFoldersSelectClick}>
               Select all folders in search results
+            </Button>
+          )}
+          {allowFileEditing && (
+            <Button size="xs" color="red" variant="outline" onClick={handleMenuClose}>
+              Delete all files and folders containing {datasetStructureSearchFilter} in their name
             </Button>
           )}
         </Group>
