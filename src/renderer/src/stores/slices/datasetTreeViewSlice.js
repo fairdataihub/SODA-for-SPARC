@@ -6,6 +6,10 @@ const initialState = {
   renderDatasetStructureJSONObj: null, // Rendered subset of dataset structure
   datasetStructureSearchFilter: "", // Current search filter text
   pathToRender: [], // Path to the folder currently rendered in the tree view
+  contextMenuIsOpened: false, // Whether the context menu is open
+  contextMenuPosition: { x: 0, y: 0 }, // Position of the context menu
+  contextMenuItemType: null, // Type of item in the context menu
+  contextMenuData: null, // Data for the context menu
 };
 
 // Create the dataset tree view slice for global state
@@ -172,4 +176,31 @@ export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
 
   // Reset the search filter when the dataset structure is updated
   setDatasetStructureSearchFilter("");
+};
+
+// Opens the context menu
+export const openContextMenu = (itemPosition, itemType, itemName, itemContent) => {
+  console.log("itemContentz", itemContent);
+  const globalStore = useGlobalStore.getState();
+  useGlobalStore.setState({
+    ...globalStore,
+    contextMenuIsOpened: true,
+    contextMenuPosition: itemPosition,
+    contextMenuItemType: itemType,
+    contextMenuItemName: itemName,
+    contextMenuItemData: itemContent,
+  });
+};
+
+// Closes the context menu
+export const closeContextMenu = () => {
+  const globalStore = useGlobalStore.getState();
+  useGlobalStore.setState({
+    ...globalStore,
+    contextMenuIsOpened: false,
+    contextMenuPosition: { x: 0, y: 0 },
+    contextMenuItemType: null,
+    contextMenuItemName: null,
+    contextMenuData: null,
+  });
 };

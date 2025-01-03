@@ -22,7 +22,10 @@ import {
 } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
 import ContextMenu from "./ContextMenu";
-import { setDatasetStructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
+import {
+  setDatasetStructureSearchFilter,
+  openContextMenu,
+} from "../../../stores/slices/datasetTreeViewSlice";
 
 const ICON_SETTINGS = {
   folderColor: "#ADD8E6",
@@ -33,7 +36,19 @@ const ICON_SETTINGS = {
 const naturalSort = (arr) =>
   arr.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
 
-const FileItem = ({ name, content, onFileClick, isFileSelected, onContextMenu }) => {
+const FileItem = ({ name, content, onFileClick, isFileSelected, allowFileEditing }) => {
+  const handleFileContextMenuOpen = (e) => {
+    e.preventDefault(); // Prevent the default context menu
+    e.stopPropagation(); // Prevent event propagation
+    console.log("allowFileEditing", allowFileEditing);
+    if (!allowFileEditing) {
+      return;
+    }
+    console.log("Position:", { x: e.clientX, y: e.clientY });
+    console.log("Opening context menu for file:", name, content);
+    openContextMenu({ x: e.clientX, y: e.clientY }, "file", name, content);
+  };
+
   return (
     <Group
       gap="sm"
@@ -43,11 +58,7 @@ const FileItem = ({ name, content, onFileClick, isFileSelected, onContextMenu })
         console.log("File clicked:", name, content);
         onFileClick && onFileClick(name, content);
       }}
-      onContextMenu={(e) => {
-        console.log("Context menu opened for file:", name, content);
-        e.stopPropagation();
-        onContextMenu(e, "file", name, content);
-      }}
+      onContextMenu={handleFileContextMenuOpen}
       ml="sm"
     >
       <IconFile size={ICON_SETTINGS.fileSize} />
@@ -64,7 +75,7 @@ const FolderItem = ({
   datasetStructureSearchFilter,
   isFolderSelected,
   isFileSelected,
-  onContextMenu,
+  allowFileEditing,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
@@ -87,18 +98,22 @@ const FolderItem = ({
 
   const folderHasFiles = Object.keys(content.files || {}).length > 0;
 
+  const handleFileContextMenuOpen = (e) => {
+    e.preventDefault(); // Prevent the default context menu
+    e.stopPropagation(); // Prevent event propagation
+    console.log("allowFileEditing", allowFileEditing);
+    if (!allowFileEditing) {
+      return;
+    }
+
+    console.log("Opening context menu for file:", name, content);
+
+    openContextMenu({ x: e.clientX, y: e.clientY }, "folder", name, content);
+  };
+
   return (
     <Stack gap={1} ml="xs">
-      <Group
-        gap={3}
-        justify="flex-start"
-        ref={ref}
-        onContextMenu={(e) => {
-          console.log("Context menu opened for folder:", name, content);
-          e.stopPropagation();
-          onContextMenu(e, "folder", name, content);
-        }}
-      >
+      <Group gap={3} justify="flex-start" ref={ref} onContextMenu={handleFileContextMenuOpen}>
         {isOpen ? (
           <IconFolderOpen
             size={ICON_SETTINGS.folderSize}
@@ -124,6 +139,7 @@ const FolderItem = ({
             />
           </Tooltip>
         )}
+
         <Text size="md" px={5} onClick={toggleFolder}>
           {name}
         </Text>
@@ -163,15 +179,7 @@ const FolderItem = ({
                 content={content.files[fileName]}
                 onFileClick={onFileClick}
                 isFileSelected={isFileSelected}
-                onContextMenu={(e) => {
-                  console.log(
-                    "Context menu opened for file in folder:",
-                    fileName,
-                    content.files[fileName]
-                  );
-                  e.stopPropagation();
-                  onContextMenu(e, "file", fileName, content.files[fileName]);
-                }}
+                allowFileEditing={allowFileEditing}
               />
             ))}
             {naturalSort(Object.keys(content?.folders || {})).map((folderName) => (
@@ -184,15 +192,7 @@ const FolderItem = ({
                 datasetStructureSearchFilter={datasetStructureSearchFilter}
                 isFolderSelected={isFolderSelected}
                 isFileSelected={isFileSelected}
-                onContextMenu={(e) => {
-                  console.log(
-                    "Context menu opened for folder in folder:",
-                    folderName,
-                    content.folders[folderName]
-                  );
-                  e.stopPropagation();
-                  onContextMenu(e, "folder", folderName, content.folders[folderName]);
-                }}
+                allowFileEditing={allowFileEditing}
               />
             ))}
           </>
@@ -209,38 +209,6 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowFileEditing 
       datasetStructureSearchFilter: state.datasetStructureSearchFilter,
     })
   );
-
-  const [menuPosition, setMenuPosition] = useState({ x: 550, y: 550 });
-  const [menuOpened, setMenuOpened] = useState(false);
-  const [contextMenuData, setContextMenuData] = useState(null);
-  const menuRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutsideContextMenu = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setMenuOpened(false);
-      }
-    };
-    document.addEventListener("click", handleClickOutsideContextMenu);
-
-    return () => {
-      document.removeEventListener("click", handleClickOutsideContextMenu);
-    };
-  }, []);
-
-  const handleContextMenuOpenClick = (e, type, name, content) => {
-    e.preventDefault(); // Prevent the default context menu
-    e.stopPropagation(); // Prevent event propagation
-
-    if (!allowFileEditing) {
-      return;
-    }
-
-    console.log("Opening context menu for:", type, name, content);
-    setMenuPosition({ x: e.clientX, y: e.clientY });
-    setContextMenuData({ type, name, content });
-    setMenuOpened(true);
-  };
 
   const handleMenuClose = () => {
     console.log("Closing context menu");
@@ -316,20 +284,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowFileEditing 
                   content={renderDatasetStructureJSONObj.files[fileName]}
                   onFileClick={fileActions?.["on-file-click"]}
                   isFileSelected={fileActions?.["is-file-selected"]}
-                  onContextMenu={(e) => {
-                    console.log(
-                      "Context menu opened for file in top level:",
-                      fileName,
-                      renderDatasetStructureJSONObj.files[fileName]
-                    );
-                    e.stopPropagation();
-                    handleContextMenuOpenClick(
-                      e,
-                      "file",
-                      fileName,
-                      renderDatasetStructureJSONObj.files[fileName]
-                    );
-                  }}
+                  allowFileEditing={allowFileEditing}
                 />
               )
             )}
@@ -344,33 +299,14 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowFileEditing 
                   datasetStructureSearchFilter={datasetStructureSearchFilter}
                   isFolderSelected={folderActions?.["is-folder-selected"]}
                   isFileSelected={fileActions?.["is-file-selected"]}
-                  onContextMenu={(e) => {
-                    console.log(
-                      "Context menu opened for folder in top level:",
-                      folderName,
-                      renderDatasetStructureJSONObj.folders[folderName]
-                    );
-                    e.stopPropagation();
-                    handleContextMenuOpenClick(
-                      e,
-                      "folder",
-                      folderName,
-                      renderDatasetStructureJSONObj.folders[folderName]
-                    );
-                  }}
+                  allowFileEditing={allowFileEditing}
                 />
               )
             )}
           </>
         )}
       </Stack>
-      <ContextMenu
-        ref={menuRef}
-        isOpened={menuOpened}
-        position={menuPosition}
-        contextMenuData={contextMenuData}
-        onClose={handleMenuClose}
-      />
+      <ContextMenu />
     </Paper>
   );
 };

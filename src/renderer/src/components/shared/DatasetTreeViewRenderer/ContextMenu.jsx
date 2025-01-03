@@ -1,44 +1,50 @@
 import { Menu } from "@mantine/core";
-import { useEffect, forwardRef } from "react";
+import { useEffect } from "react";
+import useGlobalStore from "../../../stores/globalStore";
+import { closeContextMenu } from "../../../stores/slices/datasetTreeViewSlice";
 
-const ContextMenu = forwardRef(({ isOpened, position, onClose, contextMenuData }, ref) => {
-  console.log("isOpened", isOpened);
-  console.log("position", position);
-  console.log("contextMenuData", contextMenuData);
+const ContextMenu = () => {
+  const {
+    contextMenuIsOpened,
+    contextMenuPosition,
+    contextMenuItemType,
+    contextMenuItemName,
+    contextMenuItemData,
+  } = useGlobalStore();
+
   useEffect(() => {
     const handleClickOutside = (event) => {
-      console.log("ref.current", ref.current);
-      console.log(
-        "Click was inside the context menu",
-        ref.current && ref.current.contains(event.target)
-      );
-      if (ref.current && !ref.current.contains(event.target)) {
-        onClose();
+      const menuElement = document.getElementById("context-menu");
+      if (menuElement && !menuElement.contains(event.target)) {
+        closeContextMenu();
       }
     };
 
-    if (isOpened) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpened, onClose, ref]);
+  }, [contextMenuIsOpened]);
 
-  // To prevent menu from being cut off on the screen edges, we can add a little offset.
   const menuStyles = {
-    position: "absolute",
-    top: position.y,
-    left: position.x,
+    position: "absolute", // Changed to fixed to check if that resolves the positioning issue
+    top: (contextMenuPosition?.y || 0) + 5,
+    left: (contextMenuPosition?.x || 0) + 5,
     zIndex: 99999,
   };
 
+  if (!contextMenuIsOpened) {
+    return null;
+  }
+  console.log("Context menu data:", contextMenuItemData);
+  console.log("Context menu item type:", contextMenuItemType);
+  console.log("Context menu item name:", contextMenuItemName);
+
   return (
-    <div ref={ref}>
+    <div id="context-menu" style={menuStyles}>
       <Menu
-        opened={isOpened}
-        onClose={onClose}
+        opened={true}
         position="top" // or any position like 'bottom', 'left', 'right'
         offset={5} // Optional, adjust for more spacing
         styles={{
@@ -48,13 +54,18 @@ const ContextMenu = forwardRef(({ isOpened, position, onClose, contextMenuData }
         }}
       >
         <Menu.Dropdown>
-          <Menu.Item onClick={() => console.log("Open")}>Rename</Menu.Item>
-          <Menu.Item onClick={() => console.log("Rename")}>Move</Menu.Item>
-          <Menu.Item onClick={() => console.log("Delete")}>ddd</Menu.Item>
+          {contextMenuItemData?.relativePath && (
+            <Menu.Item onClick={() => console.log("Open")}>
+              {contextMenuItemData?.relativePath}
+            </Menu.Item>
+          )}
+          <Menu.Item onClick={() => console.log("Rename")}>Rename</Menu.Item>
+          <Menu.Item onClick={() => console.log("Move")}>Move</Menu.Item>
+          <Menu.Item onClick={() => console.log("Delete")}>Delete</Menu.Item>
         </Menu.Dropdown>
       </Menu>
     </div>
   );
-});
+};
 
 export default ContextMenu;
