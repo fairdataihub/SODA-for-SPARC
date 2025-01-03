@@ -16642,15 +16642,16 @@ $("#guided-next-button").on("click", async function () {
     return;
   }
 
-
-  if(window.pageBeingLeftID === "guided-select-destination-tab") {
+  if (window.pageBeingLeftID === "guided-select-destination-tab") {
     // check if the guided-button-generate-cloud-sync-folder radio button has been checked
-    const generateCloudSyncFolderButton = document.getElementById("guided-button-generate-cloud-sync-folder");
+    const generateCloudSyncFolderButton = document.getElementById(
+      "guided-button-generate-cloud-sync-folder"
+    );
     if (generateCloudSyncFolderButton.classList.contains("selected")) {
       // skip the Pennsieve metadata tab and the Pennsieve related pages in Generate Dataset tab
-      guidedSkipPage("guided-dataset-dissemination-tab")
+      guidedSkipPage("guided-dataset-dissemination-tab");
+    }
   }
-}
 
   try {
     await savePageChanges(window.pageBeingLeftID);
