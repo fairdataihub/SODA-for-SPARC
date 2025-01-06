@@ -2155,8 +2155,20 @@ const renderSideBar = (activePage) => {
 
   const highLevelStepElements = Array.from(document.querySelectorAll(".guided--parent-tab"));
 
+  let hidePennsieveMetadataTab = document.querySelector("#guided-button-generate-cloud-sync-folder").classList.contains("selected")
+
   for (const element of highLevelStepElements) {
     const highLevelStepName = element.getAttribute("data-parent-tab-name");
+    if(hidePennsieveMetadataTab && highLevelStepName === "Pennsieve metadata") {
+      guidedSkipPage("guided-pennsieve-metadata-intro-tab")
+      guidedSkipPage("guided-pennsieve-intro-tab")
+      guidedSkipPage("guided-banner-image-tab")
+      guidedSkipPage("guided-designate-permissions-tab")
+      guidedSkipPage("guided-add-description-tab")
+      guidedSkipPage("guided-add-tags-tab")
+      guidedSkipPage("guided-assign-license-tab")
+      continue;
+    }
     pageStructureObject[highLevelStepName] = {};
 
     const notSkippedPages = getNonSkippedGuidedModePages(element);
@@ -3291,25 +3303,25 @@ const guidedRenderProgressCards = async () => {
   progressCardLoadingDiv.classList.remove("hidden");
 
   // if the user has an account connected with Pennsieve then verify the profile and workspace
-  if (
-    window.defaultBfAccount !== undefined ||
-    (window.defaultBfAccount === undefined && hasConnectedAccountWithPennsieve())
-  ) {
-    try {
-      progressCardLoadingDivText.textContent = "Verifying account information";
-      await window.verifyProfile();
-      progressCardLoadingDivText.textContent = "Verifying workspace information";
-      await window.synchronizePennsieveWorkspace();
-    } catch (e) {
-      clientError(e);
-      await swalShowInfo(
-        "Something went wrong while verifying your profile",
-        "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
-      );
-      loadingDiv.classList.add("hidden");
-      return;
-    }
-  }
+  // if (
+  //   window.defaultBfAccount !== undefined ||
+  //   (window.defaultBfAccount === undefined && hasConnectedAccountWithPennsieve())
+  // ) {
+  //   try {
+  //     progressCardLoadingDivText.textContent = "Verifying account information";
+  //     await window.verifyProfile();
+  //     progressCardLoadingDivText.textContent = "Verifying workspace information";
+  //     await window.synchronizePennsieveWorkspace();
+  //   } catch (e) {
+  //     clientError(e);
+  //     await swalShowInfo(
+  //       "Something went wrong while verifying your profile",
+  //       "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
+  //     );
+  //     loadingDiv.classList.add("hidden");
+  //     return;
+  //   }
+  // }
 
   //Check if Guided-Progress folder exists. If not, create it.
   if (!window.fs.existsSync(guidedProgressFilePath)) {
