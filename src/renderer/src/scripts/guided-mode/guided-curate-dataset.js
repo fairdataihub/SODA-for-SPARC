@@ -2155,18 +2155,20 @@ const renderSideBar = (activePage) => {
 
   const highLevelStepElements = Array.from(document.querySelectorAll(".guided--parent-tab"));
 
-  let hidePennsieveMetadataTab = document.querySelector("#guided-button-generate-cloud-sync-folder").classList.contains("selected")
+  let hidePennsieveMetadataTab = document
+    .querySelector("#guided-button-generate-cloud-sync-folder")
+    .classList.contains("selected");
 
   for (const element of highLevelStepElements) {
     const highLevelStepName = element.getAttribute("data-parent-tab-name");
-    if(hidePennsieveMetadataTab && highLevelStepName === "Pennsieve metadata") {
-      guidedSkipPage("guided-pennsieve-metadata-intro-tab")
-      guidedSkipPage("guided-pennsieve-intro-tab")
-      guidedSkipPage("guided-banner-image-tab")
-      guidedSkipPage("guided-designate-permissions-tab")
-      guidedSkipPage("guided-add-description-tab")
-      guidedSkipPage("guided-add-tags-tab")
-      guidedSkipPage("guided-assign-license-tab")
+    if (hidePennsieveMetadataTab && highLevelStepName === "Pennsieve metadata") {
+      guidedSkipPage("guided-pennsieve-metadata-intro-tab");
+      guidedSkipPage("guided-pennsieve-intro-tab");
+      guidedSkipPage("guided-banner-image-tab");
+      guidedSkipPage("guided-designate-permissions-tab");
+      guidedSkipPage("guided-add-description-tab");
+      guidedSkipPage("guided-add-tags-tab");
+      guidedSkipPage("guided-assign-license-tab");
       continue;
     }
     pageStructureObject[highLevelStepName] = {};
