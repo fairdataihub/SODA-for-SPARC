@@ -358,7 +358,7 @@
               <button
                 class="guided--radio-button tile-button"
                 id="guided-button-resume-cloud-dataset"
-                data-next-element="guided-section-select-cloud-folder"
+                data-next-element="guided-section-import-cloud-dataset"
               >
                 <div class="tile-button-icon">
                   <svg
@@ -397,8 +397,8 @@
               </button>
               <button
                 class="guided--radio-button tile-button"
-                id="guided-button-resume-cloud-dataset"
-                data-next-element="guided-section-select-cloud-folder"
+                id="guided-button-resume-local-folder-not-cloud-dataset"
+                data-next-element="guided-section-import-cloud-dataset"
               >
                 <div class="tile-button-icon">
                   <svg
@@ -436,6 +436,23 @@
                 </div>
               </button>
             </div>
+          </div>
+
+          <div class="guided--section" id="guided-section-import-cloud-dataset" style="height: 70%">
+            <label class="guided--form-label centered mb-sm mt-lg">
+              Select the cloud synced folder where your dataset is located below:
+            </label>
+
+            <input placeholder="Enter your dataset folder location here"/>
+            <button
+              class="ui positive button"
+              style="
+                background-color: var(--color-light-green) !important;
+                width: 300px !important;
+              "
+            >
+            Confirm
+          </button>
           </div>
 
           <div
