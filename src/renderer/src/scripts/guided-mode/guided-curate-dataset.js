@@ -614,7 +614,11 @@ const savePageChanges = async (pageBeingLeftID) => {
         .getElementById("guided-button-resume-pennsieve-dataset")
         .classList.contains("selected");
 
-      if (!startingNewCuration && !resumingExistingProgress && !resumingPennsieveDataset) {
+      const resumingCloudSyncDataset = document.getElementById("guided-button-resume-cloud-dataset")
+        .classList.contains("selected");
+      
+
+      if (!startingNewCuration && !resumingExistingProgress && !resumingPennsieveDataset && !resumingCloudSyncDataset) {
         errorArray.push({
           type: "notyf",
           message: "Please select a dataset start location",
@@ -964,6 +968,10 @@ const savePageChanges = async (pageBeingLeftID) => {
         window.sodaJSONObj["digital-metadata"]["dataset-workspace"] =
           guidedGetCurrentUserWorkSpace();
         guidedSkipPage("guided-pennsieve-intro-tab");
+      }
+
+      if(resumingCloudSyncDataset){
+        console.log("Resuming Cloud Sync Dataset");
       }
 
       //Skip this page becausae we should not come back to it

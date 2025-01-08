@@ -85,6 +85,19 @@ ipcMain.on("open-file-dialog-upload-dataset", async (event) => {
   }
 });
 
+ipcMain.on("open-file-dialog-cloud-sync-dataset", async (event) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ["openDirectory"],
+    title: "Select a directory",
+  });
+
+  if (files) {
+    mainWindow.webContents.send("selected-destination-cloud-sync-dataset", files.filePaths);
+  }
+});
+
 ipcMain.on("open-file-dialog-metadata-curate", async (event) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
 
