@@ -971,7 +971,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
 
       if(resumingCloudSyncDataset){
-        console.log("Resuming Cloud Sync Dataset");
+        swalShowInfo("Imported Cloud Dataset", "While editing your dataset do not make any changes to the dataset on the cloud sync folder.")
       }
 
       //Skip this page becausae we should not come back to it
