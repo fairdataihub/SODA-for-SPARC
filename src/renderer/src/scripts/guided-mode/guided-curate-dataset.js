@@ -975,8 +975,11 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedSkipPage("guided-pennsieve-intro-tab");
       }
 
-      if(resumingCloudSyncDataset){
-        swalShowInfo("Imported Cloud Dataset", "While editing your dataset do not make any changes to the dataset on the cloud sync folder.")
+      if (resumingCloudSyncDataset) {
+        swalShowInfo(
+          "Imported Cloud Dataset",
+          "While editing your dataset do not make any changes to the dataset on the cloud sync folder."
+        );
       }
 
       //Skip this page becausae we should not come back to it
