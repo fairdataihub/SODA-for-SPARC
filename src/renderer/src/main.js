@@ -7,7 +7,7 @@ import "./assets/demo-btns";
 import "./assets/nav";
 import "./scripts/client";
 import "./scripts/globals";
-import "./scripts/guided-mode/importCloudSyncDataset"
+import "./scripts/guided-mode/importCloudSyncDataset";
 import "./scripts/guided-mode/guided-curate-dataset";
 import "./scripts/others/renderer";
 import "./scripts/metadata-files/submission";

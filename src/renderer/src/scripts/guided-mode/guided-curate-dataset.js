@@ -614,11 +614,16 @@ const savePageChanges = async (pageBeingLeftID) => {
         .getElementById("guided-button-resume-pennsieve-dataset")
         .classList.contains("selected");
 
-      const resumingCloudSyncDataset = document.getElementById("guided-button-resume-cloud-dataset")
+      const resumingCloudSyncDataset = document
+        .getElementById("guided-button-resume-cloud-dataset")
         .classList.contains("selected");
-      
 
-      if (!startingNewCuration && !resumingExistingProgress && !resumingPennsieveDataset && !resumingCloudSyncDataset) {
+      if (
+        !startingNewCuration &&
+        !resumingExistingProgress &&
+        !resumingPennsieveDataset &&
+        !resumingCloudSyncDataset
+      ) {
         errorArray.push({
           type: "notyf",
           message: "Please select a dataset start location",
