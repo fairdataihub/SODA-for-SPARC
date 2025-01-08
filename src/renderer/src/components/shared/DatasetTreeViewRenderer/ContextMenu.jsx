@@ -5,7 +5,6 @@ import {
   closeContextMenu,
   deleteFilesByRelativePath,
   setFolderMoveMode,
-  setFolderDataToMoveToNewLocation,
 } from "../../../stores/slices/datasetTreeViewSlice";
 
 const ContextMenu = () => {
@@ -65,19 +64,22 @@ const ContextMenu = () => {
     <div id="context-menu" style={menuStyles}>
       <Menu opened position="top" offset={5} styles={{ dropdown: menuStyles }}>
         <Menu.Dropdown>
-          {contextMenuItemData?.relativePath && (
-            <Menu.Item
-              onClick={() => {
-                console.log("data" + JSON.stringify(contextMenuItemData, null, 2));
-                setFolderMoveMode(true);
-                setFolderDataToMoveToNewLocation(contextMenuItemData);
-              }}
-            >
-              Open
-            </Menu.Item>
-          )}
-          <Menu.Item onClick={() => console.log("Move")}>Move</Menu.Item>
-          <Menu.Item onClick={handleDelete}>Delete</Menu.Item>
+          <Menu.Item
+            onClick={() => {
+              console.log("data" + JSON.stringify(contextMenuItemData, null, 2));
+              setFolderMoveMode(true);
+              closeContextMenu();
+            }}
+          >
+            Move
+          </Menu.Item>
+          <Menu.Item
+            onClick={() => {
+              console.log("foo");
+            }}
+          >
+            Delete
+          </Menu.Item>
           <Menu.Item onClick={() => console.log("Delete")}>qwer</Menu.Item>
         </Menu.Dropdown>
       </Menu>

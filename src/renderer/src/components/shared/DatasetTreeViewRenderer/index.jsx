@@ -20,6 +20,7 @@ import {
   setDatasetStructureSearchFilter,
   openContextMenu,
   setFolderMoveMode,
+  moveFolderToNewLocation,
 } from "../../../stores/slices/datasetTreeViewSlice";
 import { naturalSort } from "../utils/util-functions";
 
@@ -81,7 +82,7 @@ const FolderItem = ({
   isFileSelected,
   allowStructureEditing,
 }) => {
-  const { folderMoveMode, folderMoveData } = useGlobalStore();
+  const { folderMoveMode } = useGlobalStore();
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
 
@@ -121,11 +122,11 @@ const FolderItem = ({
             onClick={toggleFolder}
           />
         )}
-        {onFolderClick && (
+        {onFolderClick && !folderMoveMode && (
           <Tooltip label="Select this folder" zIndex={2999}>
             <Checkbox
               readOnly
-              checked={isFolderSelected?.(name, content)}
+              checked={false}
               onClick={() => onFolderClick?.(name, content, isFolderSelected?.(name, content))}
             />
           </Tooltip>
@@ -135,7 +136,7 @@ const FolderItem = ({
             <Checkbox
               readOnly
               onClick={() => {
-                setFolderDataToMoveToNewLocation({ name, content });
+                moveFolderToNewLocation(content.relativePath);
               }}
             />
           </Tooltip>
@@ -251,7 +252,10 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
       )}
       {folderMoveMode && (
         /* make A ui that allows the user to cancel the move operation */
-        <Group gap={3} align="center" bg="aliceblue" p="xs">
+        <Group justify="space-between" bg="aliceblue" p="xs">
+          <Text size="lg" fw={500}>
+            Select a folder to move the data to
+          </Text>
           <Button
             size="xs"
             color="red"
