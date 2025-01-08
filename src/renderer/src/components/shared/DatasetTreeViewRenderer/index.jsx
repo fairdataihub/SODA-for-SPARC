@@ -13,19 +13,15 @@ import {
   Button,
 } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
-import {
-  IconFolder,
-  IconFolderOpen,
-  IconFile,
-  IconFileDownload,
-  IconSearch,
-} from "@tabler/icons-react";
+import { IconFolder, IconFolderOpen, IconFile, IconSearch } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
 import ContextMenu from "./ContextMenu";
 import {
   setDatasetStructureSearchFilter,
   openContextMenu,
+  setFolderMoveMode,
 } from "../../../stores/slices/datasetTreeViewSlice";
+import { naturalSort } from "../utils/util-functions";
 
 const ICON_SETTINGS = {
   folderColor: "#ADD8E6",
@@ -33,16 +29,20 @@ const ICON_SETTINGS = {
   fileSize: 14,
 };
 
-const naturalSort = (arr) =>
-  arr.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
-
-const FileItem = ({ name, content, onFileClick, isFileSelected, allowFileEditing }) => {
+const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEditing }) => {
   const { hovered, ref } = useHover();
 
   const handleFileContextMenuOpen = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!allowFileEditing) return;
+    if (!allowStructureEditing) {
+      window.notyf.open({
+        duration: "2000",
+        type: "info",
+        message: "File editing is disabled in this interface.",
+      });
+      return;
+    }
     openContextMenu({ x: e.clientX, y: e.clientY }, "file", name, content);
   };
 
@@ -79,8 +79,9 @@ const FolderItem = ({
   datasetStructureSearchFilter,
   isFolderSelected,
   isFileSelected,
-  allowFileEditing,
+  allowStructureEditing,
 }) => {
+  const { folderMoveMode, folderMoveData } = useGlobalStore();
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
 
@@ -93,7 +94,14 @@ const FolderItem = ({
   const handleFileContextMenuOpen = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!allowFileEditing) return;
+    if (!allowStructureEditing) {
+      window.notyf.open({
+        duration: "2000",
+        type: "info",
+        message: "Folder editing is disabled in this interface.",
+      });
+      return;
+    }
     openContextMenu({ x: e.clientX, y: e.clientY }, "folder", name, content);
   };
 
@@ -122,6 +130,16 @@ const FolderItem = ({
             />
           </Tooltip>
         )}
+        {folderMoveMode && (
+          <Tooltip label="Move data to this folder" zIndex={2999}>
+            <Checkbox
+              readOnly
+              onClick={() => {
+                setFolderDataToMoveToNewLocation({ name, content });
+              }}
+            />
+          </Tooltip>
+        )}
         <Text
           size="md"
           px={5}
@@ -146,7 +164,7 @@ const FolderItem = ({
                 content={content.files[fileName]}
                 onFileClick={onFileClick}
                 isFileSelected={isFileSelected}
-                allowFileEditing={allowFileEditing}
+                allowStructureEditing={allowStructureEditing}
               />
             ))}
             {naturalSort(Object.keys(content?.folders || {})).map((folderName) => (
@@ -159,7 +177,7 @@ const FolderItem = ({
                 datasetStructureSearchFilter={datasetStructureSearchFilter}
                 isFolderSelected={isFolderSelected}
                 isFileSelected={isFileSelected}
-                allowFileEditing={allowFileEditing}
+                allowStructureEditing={allowStructureEditing}
               />
             ))}
           </>
@@ -169,13 +187,9 @@ const FolderItem = ({
   );
 };
 
-const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowFileEditing }) => {
-  const { renderDatasetStructureJSONObj, datasetStructureSearchFilter } = useGlobalStore(
-    (state) => ({
-      renderDatasetStructureJSONObj: state.renderDatasetStructureJSONObj,
-      datasetStructureSearchFilter: state.datasetStructureSearchFilter,
-    })
-  );
+const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEditing }) => {
+  const { renderDatasetStructureJSONObj, datasetStructureSearchFilter, folderMoveMode } =
+    useGlobalStore();
 
   const handleMenuClose = () => {
     console.log("Closing context menu");
@@ -216,7 +230,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowFileEditing 
         leftSection={<IconSearch stroke={1.5} />}
         mb="sm"
       />
-      {datasetStructureSearchFilter && !renderObjIsEmpty && (
+      {datasetStructureSearchFilter && !renderObjIsEmpty && !folderMoveMode && (
         <Group gap={3} align="center" bg="aliceblue" p="xs">
           {fileActions && (
             <Button size="xs" color="blue" variant="outline" onClick={handleAllFilesSelectClick}>
@@ -228,11 +242,27 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowFileEditing 
               Select all folders in search results
             </Button>
           )}
-          {allowFileEditing && (
+          {allowStructureEditing && (
             <Button size="xs" color="red" variant="outline" onClick={handleMenuClose}>
               Delete all files and folders containing {datasetStructureSearchFilter} in their name
             </Button>
           )}
+        </Group>
+      )}
+      {folderMoveMode && (
+        /* make A ui that allows the user to cancel the move operation */
+        <Group gap={3} align="center" bg="aliceblue" p="xs">
+          <Button
+            size="xs"
+            color="red"
+            variant="outline"
+            onClick={() => {
+              setFolderMoveMode(false);
+              setFolderDataToMoveToNewLocation(null);
+            }}
+          >
+            Cancel data move operation
+          </Button>
         </Group>
       )}
       <Stack gap={1} style={{ maxHeight: 700, overflowY: "auto" }} py={3}>
@@ -256,7 +286,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowFileEditing 
                   content={renderDatasetStructureJSONObj.files[fileName]}
                   onFileClick={fileActions?.["on-file-click"]}
                   isFileSelected={fileActions?.["is-file-selected"]}
-                  allowFileEditing={allowFileEditing}
+                  allowStructureEditing={allowStructureEditing}
                 />
               )
             )}
@@ -271,7 +301,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowFileEditing 
                   datasetStructureSearchFilter={datasetStructureSearchFilter}
                   isFolderSelected={folderActions?.["is-folder-selected"]}
                   isFileSelected={fileActions?.["is-file-selected"]}
-                  allowFileEditing={allowFileEditing}
+                  allowStructureEditing={allowStructureEditing}
                 />
               )
             )}

@@ -54,14 +54,12 @@ const DataImporter = () => {
             />
           </Dropzone.Idle>
 
-          <div>
-            <Text size="xl" inline>
-              Drag experimental data here or click to import from your computer
-            </Text>
-          </div>
+          <Text size="xl" inline>
+            Drag experimental data here or click to import from your computer
+          </Text>
         </Group>
       </Dropzone>
-      <DatasetTreeViewRenderer allowFileEditing={true} />
+      <DatasetTreeViewRenderer allowStructureEditing={true} />
     </FullWidthContainer>
   );
 };

@@ -3021,11 +3021,6 @@ const guidedSaveProgress = async () => {
   }
   var guidedFilePath = window.path.join(guidedProgressFilePath, guidedProgressFileName + ".json");
 
-  // delete window.sodaJSONObj["dataset-structure"] value that was added only for the Preview tree view
-  if ("files" in window.sodaJSONObj["dataset-structure"]) {
-    window.sodaJSONObj["dataset-structure"]["files"] = {};
-  }
-
   // Store global variable values to the progress file before saving
   window.sodaJSONObj["dataset-structure"] = window.datasetStructureJSONObj;
   window.sodaJSONObj["subjects-table-data"] = window.subjectsTableData;
@@ -8018,11 +8013,6 @@ const patchPreviousGuidedModeVersions = async () => {
 
   if (!window.sodaJSONObj["curation-mode"]) {
     window.sodaJSONObj["cuartion-mode"] = "guided";
-  }
-
-  if (window.sodaJSONObj["saved-datset-structure-json-obj"]) {
-    window.sodaJSONObj["dataset-structure"] = window.sodaJSONObj["saved-datset-structure-json-obj"];
-    delete window.sodaJSONObj["saved-datset-structure-json-obj"];
   }
 
   // If no other conditions are met, return the page the user was last on

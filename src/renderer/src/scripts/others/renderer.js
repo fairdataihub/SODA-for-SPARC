@@ -1026,7 +1026,7 @@ const warnUserIfBetaVersionAndDntNotEnabled = async () => {
       );
     }
   } catch (err) {
-    console.error("Error determing if beta pop up should exist:", err);
+    log.error("Error determing if beta pop up should exist:", err);
   }
 };
 

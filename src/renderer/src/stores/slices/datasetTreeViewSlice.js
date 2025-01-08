@@ -1,268 +1,222 @@
+import { produce } from "immer";
 import useGlobalStore from "../globalStore";
 
 // Initial state for managing dataset structure and filters
 const initialState = {
-  datasetStructureJSONObj: null, // Full dataset structure
-  renderDatasetStructureJSONObj: null, // Rendered subset of dataset structure
-  datasetStructureSearchFilter: "", // Current search filter text
-  pathToRender: [], // Path to the folder currently rendered in the tree view
-  contextMenuIsOpened: false, // Whether the context menu is open
-  contextMenuPosition: { x: 0, y: 0 }, // Position of the context menu
-  contextMenuItemType: null, // Type of item in the context menu
-  contextMenuData: null, // Data for the context menu
+  datasetStructureJSONObj: null,
+  renderDatasetStructureJSONObj: null,
+  datasetStructureSearchFilter: "",
+  pathToRender: [],
+  contextMenuIsOpened: false,
+  contextMenuPosition: { x: 0, y: 0 },
+  contextMenuItemType: null,
+  contextMenuData: null,
+  folderMoveMode: false,
+  folderMoveData: null,
 };
 
-// Create the dataset tree view slice for global state
+// Dataset tree view slice
 export const datasetTreeViewSlice = (set) => ({
   ...initialState,
 });
 
-// Traverses the dataset structure using the specified path
-// Returns a reference to the nested folder at the specified path
+// Helper function to traverse dataset structure by path
 const traverseStructureByPath = (structure, pathToRender) => {
-  console.log("traverseStructureByPath", structure, pathToRender);
-  let structureRef = structure;
-  pathToRender.forEach((subFolder) => {
-    structureRef = structureRef.folders[subFolder];
-  });
-  return structureRef;
+  return pathToRender.reduce((current, subFolder) => current?.folders?.[subFolder], structure);
 };
 
-// Determines if a folder or its subfolders/files match the search filter
+// Search filter matching logic
 const folderObjMatchesSearch = (folderObj, searchFilter) => {
-  if (!searchFilter) {
-    return {
-      matchesDirectly: true,
-      matchesFilesDirectly: true,
-      passThrough: false,
-    };
-  }
+  if (!searchFilter)
+    return { matchesDirectly: true, matchesFilesDirectly: true, passThrough: false };
 
+  const lowerSearch = searchFilter.toLowerCase();
   const folderRelativePath = folderObj.relativePath.toLowerCase();
-  const matchesDirectly = folderRelativePath.includes(searchFilter);
+  const matchesDirectly = folderRelativePath.includes(lowerSearch);
 
-  // Check if any files match the search filter
-  const filesMatch = Object.values(folderObj.files || {}).some((file) =>
-    file.relativePath.toLowerCase().includes(searchFilter)
+  const matchesFilesDirectly = Object.values(folderObj.files || {}).some((file) =>
+    file.relativePath.toLowerCase().includes(lowerSearch)
   );
 
-  // Check if any subfolders match the search filter
-  const subfolderMatches = Object.values(folderObj.folders || {}).some((subFolder) => {
+  const passThrough = Object.values(folderObj.folders || {}).some((subFolder) => {
     const result = folderObjMatchesSearch(subFolder, searchFilter);
     return result.matchesDirectly || result.matchesFilesDirectly || result.passThrough;
   });
 
-  // Determine if this folder is pass-through
-  const passThrough = !matchesDirectly && !filesMatch && subfolderMatches;
-
-  return {
-    matchesDirectly,
-    matchesFilesDirectly: filesMatch,
-    passThrough,
-  };
+  return { matchesDirectly, matchesFilesDirectly, passThrough };
 };
 
-// Filters the dataset structure based on the current search filter
+// Filter structure using Immer
 const filterStructure = (structure, searchFilter) => {
   if (!searchFilter) return structure;
 
-  const lowerCaseSearchFilter = searchFilter.toLowerCase();
-
-  // Recursively prunes the dataset structure to retain only matching folders/files
-  const pruneStructure = (folderObj, searchFilter) => {
-    // Check if the folder matches
+  const pruneStructure = (folderObj) => {
     const { matchesDirectly, matchesFilesDirectly, passThrough } = folderObjMatchesSearch(
       folderObj,
       searchFilter
     );
 
-    // If it doesn't match at all, return null to remove it
-    if (!matchesDirectly && !matchesFilesDirectly && !passThrough) {
-      return null;
-    }
+    if (!matchesDirectly && !matchesFilesDirectly && !passThrough) return null;
 
-    // Set the keys in the folder object
-    folderObj.matchesDirectly = matchesDirectly;
-    folderObj.matchesFilesDirectly = matchesFilesDirectly;
-    folderObj.passThrough = passThrough;
+    return produce(folderObj, (draft) => {
+      draft.matchesDirectly = matchesDirectly;
+      draft.matchesFilesDirectly = matchesFilesDirectly;
+      draft.passThrough = passThrough;
 
-    // Recursively prune subfolders
-    for (const subFolder of Object.keys(folderObj.folders || {})) {
-      const prunedSubFolder = pruneStructure(folderObj.folders[subFolder], searchFilter);
-      if (prunedSubFolder === null) {
-        delete folderObj.folders[subFolder];
+      for (const subFolder in draft.folders || {}) {
+        if (!pruneStructure(draft.folders[subFolder])) {
+          delete draft.folders[subFolder];
+        }
       }
-    }
 
-    // Prune files that don't match the search filter
-    for (const fileName of Object.keys(folderObj.files || {})) {
-      if (!folderObj.files[fileName].relativePath.toLowerCase().includes(searchFilter)) {
-        delete folderObj.files[fileName];
+      for (const fileName in draft.files || {}) {
+        if (!draft.files[fileName].relativePath.toLowerCase().includes(searchFilter)) {
+          delete draft.files[fileName];
+        }
       }
-    }
-
-    return folderObj;
+    });
   };
 
-  // Deep copy the structure to avoid in-place modification
-  const structureCopy = JSON.parse(JSON.stringify(structure));
-  return pruneStructure(structureCopy, lowerCaseSearchFilter);
+  return pruneStructure(structure);
 };
 
-// Updates the dataset search filter and modifies the rendered structure accordingly
+// Update dataset search filter
 export const setDatasetStructureSearchFilter = (searchFilter) => {
   const globalStore = useGlobalStore.getState();
 
-  console.log("Before filter set:", globalStore);
-
-  // Deep copy the full dataset structure to prevent mutation
-  const originalStructure = JSON.parse(JSON.stringify(globalStore.datasetStructureJSONObj));
-
-  // Get the portion of the structure to filter based on the current path
-  const structureToFilter = traverseStructureByPath(originalStructure, globalStore.pathToRender);
-
-  // Apply the search filter to the relevant structure
-  const filteredStructure = filterStructure(structureToFilter, searchFilter);
-
-  console.log("Filtered structure result:", filteredStructure);
-
-  // Update global state with the filtered structure and search filter
-  useGlobalStore.setState({
-    ...globalStore,
-    datasetStructureSearchFilter: searchFilter,
-    renderDatasetStructureJSONObj: filteredStructure,
+  const filteredStructure = produce(globalStore.datasetStructureJSONObj, (draft) => {
+    const structureToFilter = traverseStructureByPath(draft, globalStore.pathToRender);
+    return filterStructure(structureToFilter, searchFilter);
   });
+
+  useGlobalStore.setState((state) =>
+    produce(state, (draft) => {
+      draft.datasetStructureSearchFilter = searchFilter;
+      draft.renderDatasetStructureJSONObj = filteredStructure;
+    })
+  );
 };
 
-// Sets the dataset structure and renders the specified path
+// Set dataset structure and prepare path rendering
 export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
-  // Deep copy the dataset structure to prevent mutation
-  const clonedStructure = JSON.parse(JSON.stringify(datasetStructure));
-
-  // Recursively adds relative paths to folders and files in the dataset structure
   const addRelativePaths = (obj, currentPath = []) => {
     for (const folderName in obj?.folders || {}) {
-      const folderPath = [...currentPath, folderName].join("/") + "/";
-      obj.folders[folderName].relativePath = folderPath;
+      obj.folders[folderName].relativePath = [...currentPath, folderName].join("/") + "/";
       addRelativePaths(obj.folders[folderName], [...currentPath, folderName]);
     }
 
     for (const fileName in obj?.files || {}) {
-      const filePath = [...currentPath, fileName].join("/");
-      obj.files[fileName].relativePath = filePath;
+      obj.files[fileName].relativePath = [...currentPath, fileName].join("/");
     }
   };
 
-  // Add relative paths to the full dataset structure
-  addRelativePaths(clonedStructure);
-
-  // Update the full dataset structure and path in the global store
-  useGlobalStore.setState({
-    datasetStructureJSONObj: clonedStructure,
-    pathToRender: pathToRender,
-  });
-
-  // Traverse to the folder structure to be rendered
-  const renderStructureRef = traverseStructureByPath(clonedStructure, pathToRender);
-  console.log("Render structure ref:", renderStructureRef);
-
-  // Add relative paths for the rendered subset
-  addRelativePaths(renderStructureRef, pathToRender);
-
-  // Update the rendered structure in the global store
-  useGlobalStore.setState({
-    renderDatasetStructureJSONObj: renderStructureRef,
-  });
-
-  // Reset the search filter when the dataset structure is updated
-  setDatasetStructureSearchFilter("");
+  useGlobalStore.setState(
+    produce((draft) => {
+      draft.datasetStructureJSONObj = datasetStructure;
+      draft.pathToRender = pathToRender;
+      addRelativePaths(draft.datasetStructureJSONObj);
+      const renderStructureRef = traverseStructureByPath(
+        draft.datasetStructureJSONObj,
+        pathToRender
+      );
+      addRelativePaths(renderStructureRef, pathToRender);
+      draft.renderDatasetStructureJSONObj = renderStructureRef;
+      draft.datasetStructureSearchFilter = "";
+    })
+  );
 };
 
-// Opens the context menu
+// Context menu actions
 export const openContextMenu = (itemPosition, itemType, itemName, itemContent) => {
-  const globalStore = useGlobalStore.getState();
-  useGlobalStore.setState({
-    ...globalStore,
-    contextMenuIsOpened: true,
-    contextMenuPosition: itemPosition,
-    contextMenuItemType: itemType,
-    contextMenuItemName: itemName,
-    contextMenuItemData: itemContent,
-  });
+  useGlobalStore.setState(
+    produce((draft) => {
+      draft.contextMenuIsOpened = true;
+      draft.contextMenuPosition = itemPosition;
+      draft.contextMenuItemType = itemType;
+      draft.contextMenuItemName = itemName;
+      draft.contextMenuItemData = itemContent;
+    })
+  );
 };
 
-// Closes the context menu
 export const closeContextMenu = () => {
-  const globalStore = useGlobalStore.getState();
-  useGlobalStore.setState({
-    ...globalStore,
-    contextMenuIsOpened: false,
-    contextMenuPosition: { x: 0, y: 0 },
-    contextMenuItemType: null,
-    contextMenuItemName: null,
-    contextMenuData: null,
-  });
+  useGlobalStore.setState(
+    produce((draft) => {
+      draft.contextMenuIsOpened = false;
+      draft.contextMenuPosition = { x: 0, y: 0 };
+      draft.contextMenuItemType = null;
+      draft.contextMenuItemName = null;
+      draft.contextMenuData = null;
+    })
+  );
 };
 
+// Get folder structure by path
 export const getFolderStructureJsonByPath = (path) => {
-  if (typeof path === "string") {
-    path = path.split("/").filter(Boolean); // Split string and remove empty segments
-  } else if (!Array.isArray(path)) {
-    throw new Error("Path must be a string or an array");
-  }
+  if (typeof path === "string") path = path.split("/").filter(Boolean);
+  if (!Array.isArray(path)) throw new Error("Path must be a string or an array");
 
-  const globalStore = useGlobalStore.getState();
-  let structure = globalStore.datasetStructureJSONObj;
-
-  for (const folder of path) {
-    if (!structure.folders || !structure.folders[folder]) {
-      throw new Error(`Folder "${folder}" does not exist in the structure`);
-    }
-    structure = structure.folders[folder];
-  }
-
-  console.log("structure", structure);
-  return structure;
+  return path.reduce((current, folder) => {
+    if (!current?.folders?.[folder]) throw new Error(`Folder "${folder}" does not exist`);
+    return current.folders[folder];
+  }, useGlobalStore.getState().datasetStructureJSONObj);
 };
 
+// Get file structure by path
 export const getFileStructureJsonByPath = (path) => {
-  if (typeof path === "string") {
-    path = path.split("/").filter(Boolean); // Split string and remove empty segments
-  } else if (!Array.isArray(path)) {
-    throw new Error("Path must be a string or an array");
-  }
-  // The file name is the last segment of the path
+  if (typeof path === "string") path = path.split("/").filter(Boolean);
+  if (!Array.isArray(path)) throw new Error("Path must be a string or an array");
+
   const fileName = path.pop();
-  console.log("folder path to get file structure", path);
   const folderStructure = getFolderStructureJsonByPath(path);
-  const fileStructure = folderStructure.files[fileName];
-  console.log("fileStructure", fileStructure);
-  return fileStructure;
+  return folderStructure.files?.[fileName];
 };
 
+// Delete files by relative paths
 export const deleteFilesByRelativePath = (relativePaths) => {
-  console.log("relativePaths to delete", relativePaths);
-  const globalStore = useGlobalStore.getState(); // Get the current state
-  const clonedStructure = JSON.parse(JSON.stringify(globalStore.datasetStructureJSONObj)); // Make a deep copy of the structure
-  console.log("clonedStructure sub-c", clonedStructure["folders"]["primary"]["folders"]["sub-c"]);
+  useGlobalStore.setState(
+    produce((draft) => {
+      relativePaths.forEach((relativePath) => {
+        const pathSegments = relativePath.split("/").filter(Boolean);
+        const fileName = pathSegments.pop();
+        const folderJson = traverseStructureByPath(draft.datasetStructureJSONObj, pathSegments);
+        if (folderJson?.files?.[fileName]) delete folderJson.files[fileName];
+      });
+    })
+  );
+};
 
-  for (const relativePath of relativePaths) {
-    const pathSegments = relativePath.split("/").filter(Boolean);
-    const fileName = pathSegments.pop();
-    console.log("pathSegments", pathSegments);
-    console.log("fileName", fileName);
-    const folderJson = getFolderStructureJsonByPath(pathSegments);
+// Folder move operations
+export const setFolderMoveMode = (moveMode) => {
+  useGlobalStore.setState(
+    produce((draft) => {
+      draft.folderMoveMode = moveMode;
+    })
+  );
+};
 
-    if (!folderJson.files || !folderJson.files[fileName]) {
-      throw new Error(`File "${fileName}" does not exist in the structure`);
-    }
-    console.log("folderJson before delete", folderJson);
-    delete folderJson.files[fileName]; // Delete the file
-    console.log("folderJson after delete", folderJson);
+export const setFolderDataToMoveToNewLocation = (folderMoveData) => {
+  useGlobalStore.setState(
+    produce((draft) => {
+      draft.folderMoveData = folderMoveData;
+    })
+  );
+};
 
-    // Update the folder and structure to reflect the deletion
-    const updatedStructure = { ...clonedStructure };
-    console.log("updatedStructure", updatedStructure);
-    setTreeViewDatasetStructure(updatedStructure, globalStore.pathToRender);
-  }
+export const moveFolderToNewLocation = (
+  relativeFolderPathToMoveTarget,
+  relativePathOfDataToMove
+) => {
+  useGlobalStore.setState(
+    produce((draft) => {
+      const folderToMove = getFolderStructureJsonByPath(relativePathOfDataToMove);
+      const folderToMoveParent = getFolderStructureJsonByPath(
+        relativePathOfDataToMove.split("/").slice(0, -1)
+      );
+      const targetFolder = getFolderStructureJsonByPath(relativeFolderPathToMoveTarget);
+
+      targetFolder.folders[folderToMove.name] = folderToMove;
+      delete folderToMoveParent.folders[folderToMove.name];
+    })
+  );
 };
