@@ -5963,27 +5963,20 @@
             </h2>
             <input placeholder="Enter Cloud Sync Folder Location" />
           </div>
-          <div class="guided--section">
-            <h2 class="text-sub-step-title">
-              [if google] Please ensure your cloud folder settings are set to streaming mode for
-              optimal experience.
-            </h2>
-            <input placeholder="Enter Cloud Sync Folder Location" />
-          </div>
         </div>
 
         <div
           id="guided-check-storage-requirements-tab"
           class="guided--page"
-          data-page-name="Generation Options"
+          data-page-name="Select Generation Options"
         >
           <div class="guided--section">
-            <h1 class="text-sub-step-title">Calculate Storage Requirements</h1>
+            <h1 class="text-sub-step-title">Select Generation Options</h1>
             <p class="guided--help-text">
-              SODA can generate your labeled dataset to your specifications on your cloud synced
-              folder. SODA can also help you determine if you have space to accommodate your dataset
-              in your cloud synced folder. Your labeled dataset can only be synced in your cloud
-              folder if you have enough storage space to acommodate for your dataset.
+              SODA can generate your dataset within your cloud synced folder in two ways. 
+              You can either copy all of your data files and generate a new dataset folder in your cloud synced drive,
+              or move existing files and generate a new dataset folder in your cloud synced drive. The copy option takes 
+              more space but allows you to retain your original dataset structure. 
             </p>
           </div>
           <div class="guided--section">
@@ -5994,7 +5987,7 @@
             <button
               class="ui positive basic button guided--radio-button"
               id="guided-button-copy-and-new-folder"
-              data-next-element="guided-section-non-sparc-user-has-contacted-sparc"
+              data-next-element="guided-section-confirm-synced-files-exist-locally"
               data-button-config-value-state="yes"
             >
               Copy all of my data files and generate a new dataset folder in my cloud synced drive
@@ -6008,6 +6001,60 @@
             >
               Move existing files and generate a new dataset folder in my cloud synced drive
             </button>
+          </div>
+
+          <div class="guided--section" id="guided-section-confirm-synced-files-exist-locally">
+            <h2 class="text-sub-step-title">Are your files fully synced to your computer?</h2>
+
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-dataset-files-synced-to-computer"
+                data-next-element="guided-section-calculate-storage-cost"
+                data-button-config-value="dataset-files-synced-to-computer"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-dataset-files-not-synced-to-computer"
+                data-next-element="guided-section-calculate-storage-cost"
+                data-button-config-value="dataset-files-synced-to-computer"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
+          </div>
+
+          <div class="guided--section" id="guided-section-ask-calculate-storage-cost">
+            <h2 class="text-sub-step-title">Do you want SODA to calculate your storage requirements?</h2>
+            <p class="guided--help-text">
+              Your dataset can only be synced to the cloud if you have enough cloud storage space 
+              to acommodate for your selected generation option. SODA can calculate the total space requirement 
+              for your dataset below.
+            </p>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-calculatate-generation-cost"
+                data-next-element="guided-section-calculate-storage-cost"
+                data-button-config-value="calculate-cloud-sync-generation-cost"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-do-not-calculate-generation-cost"
+                data-next-element="guided-section-calculate-storage-cost"
+                data-button-config-value="calculate-cloud-sync-generation-cost"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
           </div>
 
           <div class="guided--section" id="guided-section-calculate-storage-cost">
