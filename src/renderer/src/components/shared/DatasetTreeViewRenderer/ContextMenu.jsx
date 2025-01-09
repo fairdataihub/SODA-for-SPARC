@@ -8,7 +8,7 @@ import {
 } from "../../../stores/slices/datasetTreeViewSlice";
 
 const ContextMenu = () => {
-  const { contextMenuIsOpened, contextMenuPosition, contextMenuItemData } = useGlobalStore();
+  const { contextMenuIsOpened, contextMenuPosition } = useGlobalStore();
 
   const handleClickOutside = useCallback((event) => {
     const menuElement = document.getElementById("context-menu");
@@ -51,22 +51,12 @@ const ContextMenu = () => {
     zIndex: 99999,
   };
 
-  const handleDelete = () => {
-    if (contextMenuItemData?.relativePath) {
-      deleteFilesByRelativePath([contextMenuItemData.relativePath]);
-      closeContextMenu();
-    } else {
-      console.error("No relative path found for deletion");
-    }
-  };
-
   return (
     <div id="context-menu" style={menuStyles}>
       <Menu opened position="top" offset={5} styles={{ dropdown: menuStyles }}>
         <Menu.Dropdown>
           <Menu.Item
             onClick={() => {
-              console.log("data" + JSON.stringify(contextMenuItemData, null, 2));
               setFolderMoveMode(true);
               closeContextMenu();
             }}

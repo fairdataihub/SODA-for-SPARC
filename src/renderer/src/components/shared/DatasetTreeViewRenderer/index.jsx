@@ -44,7 +44,7 @@ const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEd
       });
       return;
     }
-    openContextMenu({ x: e.clientX, y: e.clientY }, "file", name, content);
+    openContextMenu({ x: e.clientX, y: e.clientY }, "file", name, structuredClone(content));
   };
 
   return (
@@ -82,7 +82,7 @@ const FolderItem = ({
   isFileSelected,
   allowStructureEditing,
 }) => {
-  const { folderMoveMode } = useGlobalStore();
+  const { folderMoveModeIsActive } = useGlobalStore();
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
 
@@ -103,7 +103,7 @@ const FolderItem = ({
       });
       return;
     }
-    openContextMenu({ x: e.clientX, y: e.clientY }, "folder", name, content);
+    openContextMenu({ x: e.clientX, y: e.clientY }, "folder", name, structuredClone(content));
   };
 
   return (
@@ -122,7 +122,7 @@ const FolderItem = ({
             onClick={toggleFolder}
           />
         )}
-        {onFolderClick && !folderMoveMode && (
+        {onFolderClick && !folderMoveModeIsActive && (
           <Tooltip label="Select this folder" zIndex={2999}>
             <Checkbox
               readOnly
@@ -131,7 +131,7 @@ const FolderItem = ({
             />
           </Tooltip>
         )}
-        {folderMoveMode && (
+        {folderMoveModeIsActive && (
           <Tooltip label="Move data to this folder" zIndex={2999}>
             <Checkbox
               readOnly
@@ -189,7 +189,7 @@ const FolderItem = ({
 };
 
 const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEditing }) => {
-  const { renderDatasetStructureJSONObj, datasetStructureSearchFilter, folderMoveMode } =
+  const { renderDatasetStructureJSONObj, datasetStructureSearchFilter, folderMoveModeIsActive } =
     useGlobalStore();
 
   const handleMenuClose = () => {
@@ -231,7 +231,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
         leftSection={<IconSearch stroke={1.5} />}
         mb="sm"
       />
-      {datasetStructureSearchFilter && !renderObjIsEmpty && !folderMoveMode && (
+      {datasetStructureSearchFilter && !renderObjIsEmpty && !folderMoveModeIsActive && (
         <Group gap={3} align="center" bg="aliceblue" p="xs">
           {fileActions && (
             <Button size="xs" color="blue" variant="outline" onClick={handleAllFilesSelectClick}>
@@ -250,7 +250,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
           )}
         </Group>
       )}
-      {folderMoveMode && (
+      {folderMoveModeIsActive && (
         /* make A ui that allows the user to cancel the move operation */
         <Group justify="space-between" bg="aliceblue" p="xs">
           <Text size="lg" fw={500}>
@@ -262,7 +262,6 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
             variant="outline"
             onClick={() => {
               setFolderMoveMode(false);
-              setFolderDataToMoveToNewLocation(null);
             }}
           >
             Cancel data move operation

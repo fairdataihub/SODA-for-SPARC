@@ -95,24 +95,12 @@ document.addEventListener("DOMContentLoaded", function () {
   $("select").select2();
 });
 
-// // const prevent_sleep_id = "";
-// // const electron_app = electron.app;
-// const { app } = remote;
-// const Clipboard = electron.clipboard;
-
 window.nextBtnDisabledVariable = true;
 
 window.datasetStructureJSONObj = {
   folders: {},
   files: {},
   type: "",
-};
-
-window.introStatus = {
-  organizeStep3: true,
-  submission: false,
-  subjects: false,
-  samples: false,
 };
 
 // //////////////////////////////////
@@ -4635,6 +4623,8 @@ const mergeLocalAndRemoteDatasetStructure = async (
   datasetStructureToMerge,
   currentFileExplorerPath
 ) => {
+  console.log("datasetStructureToMerge", datasetStructureToMerge);
+  console.log("currentFileExplorerPath", currentFileExplorerPath);
   const duplicateFiles = [];
 
   const traverseAndMergeDatasetJsonObjects = async (datasetStructureToMerge, recursedFilePath) => {
