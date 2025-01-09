@@ -281,18 +281,6 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
           </Center>
         ) : (
           <>
-            {naturalSort(Object.keys(renderDatasetStructureJSONObj?.files || {})).map(
-              (fileName) => (
-                <FileItem
-                  key={fileName}
-                  name={fileName}
-                  content={renderDatasetStructureJSONObj.files[fileName]}
-                  onFileClick={fileActions?.["on-file-click"]}
-                  isFileSelected={fileActions?.["is-file-selected"]}
-                  allowStructureEditing={allowStructureEditing}
-                />
-              )
-            )}
             {naturalSort(Object.keys(renderDatasetStructureJSONObj?.folders || {})).map(
               (folderName) => (
                 <FolderItem
@@ -303,6 +291,18 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
                   onFileClick={fileActions?.["on-file-click"]}
                   datasetStructureSearchFilter={datasetStructureSearchFilter}
                   isFolderSelected={folderActions?.["is-folder-selected"]}
+                  isFileSelected={fileActions?.["is-file-selected"]}
+                  allowStructureEditing={allowStructureEditing}
+                />
+              )
+            )}
+            {naturalSort(Object.keys(renderDatasetStructureJSONObj?.files || {})).map(
+              (fileName) => (
+                <FileItem
+                  key={fileName}
+                  name={fileName}
+                  content={renderDatasetStructureJSONObj.files[fileName]}
+                  onFileClick={fileActions?.["on-file-click"]}
                   isFileSelected={fileActions?.["is-file-selected"]}
                   allowStructureEditing={allowStructureEditing}
                 />
