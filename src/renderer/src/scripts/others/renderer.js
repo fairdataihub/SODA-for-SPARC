@@ -4157,10 +4157,6 @@ organizeDSaddFiles.addEventListener("click", function () {
   window.electron.ipcRenderer.send("open-files-organize-datasets-dialog");
 });
 
-window.electron.ipcRenderer.on("selected-files-organize-datasets", async (event, importedFiles) => {
-  await addDataArrayToDatasetStructureAtPath(importedFiles);
-});
-
 organizeDSaddFolders.addEventListener("click", function () {
   window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog");
 });
@@ -4169,8 +4165,37 @@ organizeDSaddFolders.addEventListener("click", function () {
 window.electron.ipcRenderer.on(
   "selected-folders-organize-datasets",
   async (event, importedFolders) => {
-    // Add the imported folders to the dataset structure
-    await addDataArrayToDatasetStructureAtPath(importedFolders);
+    try {
+      const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
+      console.log("Importing folders at path", currentFileExplorerPath);
+      const builtDatasetStructureFromImportedFolders =
+        await window.buildDatasetStructureJsonFromImportedData(
+          importedFolders,
+          currentFileExplorerPath
+        );
+      console.log(
+        "builtDatasetStructureFromImportedFolders after importing data",
+        builtDatasetStructureFromImportedFolders
+      );
+      // Add the imported folders to the dataset structure
+      await mergeLocalAndRemoteDatasetStructure(
+        builtDatasetStructureFromImportedFolders,
+        currentFileExplorerPath
+      );
+
+      // Step 4: Update successful, show success message
+      window.notyf.open({
+        type: "success",
+        message: `Data successfully imported`,
+        duration: 3000,
+      });
+      /*await mergeNewDatasetStructureToExistingDatasetStructureAtPath(
+      builtDatasetStructureFromImportedFolders,
+      currentFileExplorerPath
+    );*/
+    } catch (error) {
+      console.error("Error importing folders", error);
+    }
   }
 );
 
@@ -4392,8 +4417,6 @@ window.buildDatasetStructureJsonFromImportedData = async (
           emptyFolders.push(pathToExplore);
         } else {
           const folderName = window.path.basename(pathToExplore);
-          const folderRelativePath = `${currentStructurePath}${folderName}/`;
-          console.log("folderRelativePath", folderRelativePath);
           const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
             folderName,
             "folder-or-file-name-is-valid"
@@ -4533,16 +4556,6 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (problematicFolderNames.length > 0) {
-    /*
-      await swalFileListDoubleAction(
-          subjectsWithEmptyFolders.map((subject) => subject.subjectName),
-          `${highLevelFolder} data missing for some subjects`,
-          `The subjects below did not have folders or files containing ${highLevelFolder} data added to them:`,
-          `Continue without adding ${highLevelFolder} data to all subjects`,
-          `Finish adding ${highLevelFolder} data to subjects`,
-          `Would you like to continue without adding ${highLevelFolder} data to all subjects?`
-        );
-    */
     const replaceFoldersForUser = await swalFileListDoubleAction(
       problematicFolderNames,
       "Folder names not compliant with SPARC data standards detected",
@@ -4617,6 +4630,53 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   return datasetStructure;
+};
+
+window.deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
+  for (const relativePathToDelete of arrayOfRelativePaths) {
+    const currentPathArray = window.getGlobalPath(relativePathToDelete);
+    console.log("currentPathArray", currentPathArray);
+    const folderToDeleteName = currentPathArray.pop();
+    const parentFolder = window.getRecursivePath(currentPathArray, window.datasetStructureJSONObj);
+
+    const folderToDeleteIsFromPennsieve =
+      parentFolder["folders"][folderToDeleteName]?.["type"] === "bf";
+    console.log("folderToDeleteIsFromPennsieve", folderToDeleteIsFromPennsieve);
+    if (folderToDeleteIsFromPennsieve) {
+      parentFolder["folders"][folderToDeleteName]["action"].push("deleted");
+    } else {
+      delete parentFolder["folders"][folderToDeleteName];
+    }
+  }
+
+  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
+};
+
+window.deleteFilesByRelativePath = (arrayOfRelativePaths) => {
+  // for example primary/test/abc.txt
+  for (const relativePathToDelete of arrayOfRelativePaths) {
+    const slashDirectlyBeforeFileName = relativePathToDelete.lastIndexOf("/");
+    const relativeFolderPathToFile = relativePathToDelete.slice(0, slashDirectlyBeforeFileName);
+    const fileNameToDelete = relativePathToDelete.slice(slashDirectlyBeforeFileName + 1);
+    console.log("relativeFolderPathToFile", relativeFolderPathToFile);
+    console.log("fileNameToDelete", fileNameToDelete);
+
+    const currentPathArray = window.getGlobalPath(relativeFolderPathToFile);
+    console.log("currentPathArray", currentPathArray);
+
+    const parentFolder = window.getRecursivePath(currentPathArray, window.datasetStructureJSONObj);
+    console.log("parentFolder", parentFolder);
+
+    const fileToDeleteIsFromPennsieve = parentFolder["files"][fileNameToDelete]?.["type"] === "bf";
+
+    if (fileToDeleteIsFromPennsieve) {
+      parentFolder["files"][fileNameToDelete]["action"].push("deleted");
+    } else {
+      delete parentFolder["files"][fileNameToDelete];
+    }
+  }
+
+  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
 };
 
 const mergeLocalAndRemoteDatasetStructure = async (
@@ -4725,32 +4785,37 @@ const mergeLocalAndRemoteDatasetStructure = async (
       }
     }
   }
+
+  console.log("Successfully merged local and remote dataset structure");
+
+  const currentPathArray = window.getGlobalPath(currentFileExplorerPath); // ['dataset_root', 'code']
+  const nestedJsonDatasetStructure = window.getRecursivePath(
+    currentPathArray.slice(1),
+    window.datasetStructureJSONObj
+  );
+  window.listItems(nestedJsonDatasetStructure, "#items", 500, true);
+  window.getInFolder(
+    ".single-item",
+    "#items",
+    window.organizeDSglobalPath,
+    window.datasetStructureJSONObj
+  );
+  console.log("currentPathArray", currentPathArray.slice(1));
+
+  setTreeViewDatasetStructure(window.datasetStructureJSONObj, currentPathArray.slice(1));
 };
 
-const addDataArrayToDatasetStructureAtPath = async (importedData) => {
-  // If no data was imported ()
-  const numberOfItemsToImport = importedData.length;
-  if (numberOfItemsToImport === 0) {
-    window.notyf.open({
-      type: "info",
-      message: "No folders/files were selected to import",
-      duration: 4000,
-    });
-    return;
-  }
+const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
+  builtDatasetStructure,
+  relativePathToMergeObjectInto
+) => {
   try {
-    // STEP 1: Build the JSON object from the imported data
-    // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
-    const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
-
-    const builtDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
-      importedData,
-      currentFileExplorerPath
-    );
-
+    console.log("currentFileExplorerPath", currentFileExplorerPath);
     // Step 2: Add the imported data to the dataset structure (This function handles duplicate files, etc)
     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
-
+    console.log(
+      "Successfully merged the new dataset structure into the existing dataset structure"
+    );
     // Step 3: Update the UI
     const currentPathArray = window.getGlobalPath(window.organizeDSglobalPath); // ['dataset_root', 'code']
     const nestedJsonDatasetStructure = window.getRecursivePath(
@@ -4775,6 +4840,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
       duration: 3000,
     });
   } catch (error) {
+    console.error(error);
     closeFileImportLoadingSweetAlert();
     window.notyf.open({
       type: error.message === "Importation cancelled" ? "info-grey" : "error",
@@ -4852,7 +4918,7 @@ window.drop = async (ev) => {
   }
 
   // Add the items to the dataset structure (This handles problematic files/folders, duplicate files etc)
-  await addDataArrayToDatasetStructureAtPath(accessibleItems);
+  await mergeNewDatasetStructureToExistingDatasetStructureAtPath(accessibleItems);
 };
 
 window.irregularFolderArray = [];

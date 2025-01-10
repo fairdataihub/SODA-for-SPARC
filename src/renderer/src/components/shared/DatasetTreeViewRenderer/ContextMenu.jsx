@@ -1,14 +1,16 @@
 import { Menu } from "@mantine/core";
 import { useEffect, useCallback } from "react";
 import useGlobalStore from "../../../stores/globalStore";
-import {
-  closeContextMenu,
-  deleteFilesByRelativePath,
-  setFolderMoveMode,
-} from "../../../stores/slices/datasetTreeViewSlice";
+import { closeContextMenu, setFolderMoveMode } from "../../../stores/slices/datasetTreeViewSlice";
 
 const ContextMenu = () => {
-  const { contextMenuIsOpened, contextMenuPosition } = useGlobalStore();
+  const {
+    contextMenuIsOpened,
+    contextMenuPosition,
+    contextMenuItemName,
+    contextMenuItemType,
+    contextMenuItemData,
+  } = useGlobalStore();
 
   const handleClickOutside = useCallback((event) => {
     const menuElement = document.getElementById("context-menu");
@@ -55,6 +57,7 @@ const ContextMenu = () => {
     <div id="context-menu" style={menuStyles}>
       <Menu opened position="top" offset={5} styles={{ dropdown: menuStyles }}>
         <Menu.Dropdown>
+          asdf
           <Menu.Item
             onClick={() => {
               setFolderMoveMode(true);
@@ -65,12 +68,23 @@ const ContextMenu = () => {
           </Menu.Item>
           <Menu.Item
             onClick={() => {
-              console.log("foo");
+              if (contextMenuItemType === "file") {
+                window.deleteFilesByRelativePath([contextMenuItemData.relativePath]);
+              }
+              if (contextMenuItemType === "folder") {
+                window.deleteFoldersByRelativePath([contextMenuItemData.relativePath]);
+              }
+              closeContextMenu();
             }}
           >
             Delete
           </Menu.Item>
-          <Menu.Item onClick={() => console.log("Delete")}>qwer</Menu.Item>
+          <Menu.Item>qwer</Menu.Item>
+          {contextMenuItemType === "folder" && (
+            <Menu.Item onClick={() => console.log("Delete")}>
+              Import data into {contextMenuItemName}
+            </Menu.Item>
+          )}
         </Menu.Dropdown>
       </Menu>
     </div>

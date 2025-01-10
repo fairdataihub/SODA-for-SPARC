@@ -106,22 +106,27 @@ const FolderItem = ({
     openContextMenu({ x: e.clientX, y: e.clientY }, "folder", name, structuredClone(content));
   };
 
+  const folderIsEmpty =
+    !content ||
+    (Object.keys(content.folders).length === 0 && Object.keys(content.files).length === 0);
+
   return (
     <Stack gap={1} ml="xs">
       <Group ref={ref} gap={3} justify="flex-start" onContextMenu={handleFileContextMenuOpen}>
-        {isOpen ? (
-          <IconFolderOpen
-            size={ICON_SETTINGS.folderSize}
-            color={ICON_SETTINGS.folderColor}
-            onClick={toggleFolder}
-          />
-        ) : (
+        {folderIsEmpty || !isOpen ? (
           <IconFolder
             size={ICON_SETTINGS.folderSize}
             color={ICON_SETTINGS.folderColor}
             onClick={toggleFolder}
           />
+        ) : (
+          <IconFolderOpen
+            size={ICON_SETTINGS.folderSize}
+            color={ICON_SETTINGS.folderColor}
+            onClick={toggleFolder}
+          />
         )}
+
         {onFolderClick && !folderMoveModeIsActive && (
           <Tooltip label="Select this folder" zIndex={2999}>
             <Checkbox
@@ -151,6 +156,7 @@ const FolderItem = ({
             cursor: "pointer",
             transition: "background-color 0.2s ease-in-out",
           }}
+          c={folderIsEmpty ? "gray" : "black"}
         >
           {name}
         </Text>
@@ -158,16 +164,6 @@ const FolderItem = ({
       <Collapse in={isOpen}>
         {isOpen && (
           <>
-            {naturalSort(Object.keys(content?.files || {})).map((fileName) => (
-              <FileItem
-                key={fileName}
-                name={fileName}
-                content={content.files[fileName]}
-                onFileClick={onFileClick}
-                isFileSelected={isFileSelected}
-                allowStructureEditing={allowStructureEditing}
-              />
-            ))}
             {naturalSort(Object.keys(content?.folders || {})).map((folderName) => (
               <FolderItem
                 key={folderName}
@@ -177,6 +173,16 @@ const FolderItem = ({
                 onFileClick={onFileClick}
                 datasetStructureSearchFilter={datasetStructureSearchFilter}
                 isFolderSelected={isFolderSelected}
+                isFileSelected={isFileSelected}
+                allowStructureEditing={allowStructureEditing}
+              />
+            ))}
+            {naturalSort(Object.keys(content?.files || {})).map((fileName) => (
+              <FileItem
+                key={fileName}
+                name={fileName}
+                content={content.files[fileName]}
+                onFileClick={onFileClick}
                 isFileSelected={isFileSelected}
                 allowStructureEditing={allowStructureEditing}
               />
@@ -216,6 +222,12 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
     );
   };
 
+  const handleDeleteAllItemsClick = () => {
+    console.log(
+      'Deleting all items containing "' + datasetStructureSearchFilter + '" in their name'
+    );
+  };
+
   const renderObjIsEmpty =
     !renderDatasetStructureJSONObj ||
     (Object.keys(renderDatasetStructureJSONObj?.folders).length === 0 &&
@@ -244,7 +256,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
             </Button>
           )}
           {allowStructureEditing && (
-            <Button size="xs" color="red" variant="outline" onClick={handleMenuClose}>
+            <Button size="xs" color="red" variant="outline" onClick={handleDeleteAllItemsClick}>
               Delete all files and folders containing {datasetStructureSearchFilter} in their name
             </Button>
           )}

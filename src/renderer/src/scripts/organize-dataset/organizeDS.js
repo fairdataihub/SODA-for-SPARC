@@ -583,11 +583,9 @@ window.renameFolder = (
 };
 
 window.getGlobalPath = (path) => {
-  let currentPath = path.value.trim();
+  let currentPath = (typeof path === "string" ? path : path.value || "").trim();
   let jsonPathArray = currentPath.split("/");
-  return jsonPathArray.filter((el) => {
-    return el != "";
-  });
+  return jsonPathArray.filter((el) => el !== "");
 };
 
 window.getGlobalPathFromString = (pathString) => {

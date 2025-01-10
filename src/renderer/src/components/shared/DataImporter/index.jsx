@@ -2,25 +2,25 @@ import { Group, Text, rem } from "@mantine/core";
 import { Dropzone } from "@mantine/dropzone";
 import { IconUpload, IconFile, IconX } from "@tabler/icons-react";
 import FullWidthContainer from "../../containers/FullWidthContainer";
-import useGlobalStore from "../../../stores/globalStore";
 import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
 
 const DataImporter = () => {
-  const allowDrop = (event) => {
-    event.preventDefault();
-  };
+  // Handles preventing default drop action
+  const allowDrop = (event) => event.preventDefault();
 
+  // Handles the file drop logic
   const handleDrop = async (files) => {
-    // Create a synthetic drop event with the dropped files (digestable by the window.drop function)
-    const syntheticDropEvent = {
-      preventDefault: () => {},
-      dataTransfer: { files }, // Pass dropped files directly
-    };
-
-    // Call your existing window.drop function with the constructed event
+    const syntheticDropEvent = createSyntheticDropEvent(files);
     await window.drop(syntheticDropEvent);
   };
 
+  // Creates a synthetic drop event for window.drop
+  const createSyntheticDropEvent = (files) => ({
+    preventDefault: () => {},
+    dataTransfer: { files },
+  });
+
+  // Opens the dataset dialog on click
   const handleClick = async (event) => {
     event.preventDefault();
     window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog");
@@ -36,22 +36,13 @@ const DataImporter = () => {
       >
         <Group justify="center" gap="xl" mih={120} style={{ pointerEvents: "none" }}>
           <Dropzone.Accept>
-            <IconUpload
-              style={{ width: rem(52), height: rem(52), color: "var(--mantine-color-blue-6)" }}
-              stroke={1.5}
-            />
+            <IconUpload style={iconStyle("blue")} stroke={1.5} />
           </Dropzone.Accept>
           <Dropzone.Reject>
-            <IconX
-              style={{ width: rem(52), height: rem(52), color: "var(--mantine-color-red-6)" }}
-              stroke={1.5}
-            />
+            <IconX style={iconStyle("red")} stroke={1.5} />
           </Dropzone.Reject>
           <Dropzone.Idle>
-            <IconFile
-              style={{ width: rem(52), height: rem(52), color: "var(--mantine-color-dimmed)" }}
-              stroke={1.5}
-            />
+            <IconFile style={iconStyle("dimmed")} stroke={1.5} />
           </Dropzone.Idle>
 
           <Text size="xl" inline>
@@ -63,5 +54,12 @@ const DataImporter = () => {
     </FullWidthContainer>
   );
 };
+
+// Helper function to generate consistent icon styles
+const iconStyle = (color) => ({
+  width: rem(52),
+  height: rem(52),
+  color: `var(--mantine-color-${color}-6)`,
+});
 
 export default DataImporter;
