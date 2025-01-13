@@ -28,7 +28,6 @@ message: If you use this software, please cite it using the metadata from this f
 type: software
 identifiers:
   - type: doi
-    value: 10.5281/zenodo.13910024
 abstract: Simplifying data curation for researchers funded by the NIH SPARC initiative
 keywords:
   - SPARC
@@ -41,5 +40,6 @@ keywords:
   - windows
 license: MIT
 repository-code: https://github.com/fairdataihub/SODA-for-SPARC
-version: 15.2.2
-date-released: 2024-10-09
+version: 15.3.0
+date-released: '2024-12-31'
+doi: 10.5281/zenodo.14580017
