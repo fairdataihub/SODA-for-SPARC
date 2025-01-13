@@ -846,7 +846,6 @@
           <div class="guided--section">
             <p class="help-text">
               Once you align your dataset in SODA it will be time to generate the compliant version.
-              Take this opportunity to determine where you would like your dataset to be generated.
             </p>
             <h2 class="text-sub-step-title">
               Where you would like your compliant dataset to be generated:
@@ -857,7 +856,6 @@
                 id="guided-button-generate-local-folder"
                 data-button-config-value="generate-local-folder"
                 data-button-config-value-state="yes"
-                data-next-element="guided-section-ask-if-cloud-dataset"
               >
                 <div class="tile-button-icon">
                   <svg
@@ -910,10 +908,9 @@
               </button>
               <button
                 class="guided--radio-button tile-button"
-                id="guided-button-generate-on-cloud"
+                id="guided-button-generate-cloud-sync-folder"
                 data-button-config-value="generate-local-folder"
                 data-button-config-value-state="yes"
-                data-next-element="guided-section-ask-if-cloud-dataset"
               >
                 <div class="tile-button-icon">
                   <svg
@@ -1015,32 +1012,6 @@
                   <h2>Pennsieve Repository</h2>
                   <p>Select this option if you want to share your dataset on sparc.science.</p>
                 </div>
-              </button>
-            </div>
-          </div>
-
-          <div class="guided--section" id="guided-section-ask-if-cloud-dataset">
-            <h2 class="text-sub-step-title">
-              Do you want the dataset to be synced with the cloud (e.g. Dropbox, Google Drive)?
-            </h2>
-            <div class="guided--radio-button-container">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-generate-cloud-sync-folder"
-                data-next-element="guided-section-ask-if-dataset-contains-code"
-                data-button-config-value="dataset-in-cloud-synced-folder"
-                data-button-config-value-state="yes"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-dataset-does-not-contain-subjects"
-                data-next-element="guided-section-ask-if-dataset-contains-code"
-                data-button-config-value="dataset-in-cloud-synced-folder"
-                data-button-config-value-state="no"
-              >
-                No
               </button>
             </div>
           </div>
@@ -6057,7 +6028,7 @@
               <button
                 class="ui positive basic button guided--radio-button"
                 id="guided-button-dataset-files-synced-to-computer"
-                data-next-element="guided-section-calculate-storage-cost"
+                data-next-element="guided-section-ask-calculate-storage-cost"
                 data-button-config-value="dataset-files-synced-to-computer"
                 data-button-config-value-state="yes"
               >
@@ -6066,13 +6037,20 @@
               <button
                 class="ui negative basic button guided--radio-button"
                 id="guided-button-dataset-files-not-synced-to-computer"
-                data-next-element="guided-section-calculate-storage-cost"
+                data-next-element="guided-section-please-sync-cloud-files"
                 data-button-config-value="dataset-files-synced-to-computer"
                 data-button-config-value-state="no"
               >
                 No
               </button>
             </div>
+          </div>
+
+          <div class="guided--section" id="guided-section-please-sync-cloud-files">
+            <h2>
+              Please ensure your files are fully synced to your computer. SODA cannot copy your
+              files otherwise.
+            </h2>
           </div>
 
           <div class="guided--section" id="guided-section-ask-calculate-storage-cost">
@@ -6097,7 +6075,6 @@
               <button
                 class="ui negative basic button guided--radio-button"
                 id="guided-button-do-not-calculate-generation-cost"
-                data-next-element="guided-section-calculate-storage-cost"
                 data-button-config-value="calculate-cloud-sync-generation-cost"
                 data-button-config-value-state="no"
               >
