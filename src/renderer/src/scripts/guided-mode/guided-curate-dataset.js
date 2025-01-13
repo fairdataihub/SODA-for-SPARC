@@ -15001,6 +15001,13 @@ const guidedGenerateSamplesMetadata = async (destination) => {
 
     samplesMetadataUploadText.innerHTML = "Uploading samples metadata...";
     guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "loading");
+  } else {
+    document
+      .getElementById("guided-samples-metadata-pennsieve-genration-tr")
+      .classList.remove("hidden");
+
+    samplesMetadataUploadText.innerHTML = "Generating samples metadata...";
+    guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "loading");
   }
 
   try {
@@ -15023,6 +15030,9 @@ const guidedGenerateSamplesMetadata = async (destination) => {
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "success");
       samplesMetadataUploadText.innerHTML = `Samples metadata successfully uploaded`;
+    } else {
+      guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "success");
+      samplesMetadataUploadText.innerHTML = `Samples metadata successfully generated`;
     }
 
     window.electron.ipcRenderer.send(
@@ -15090,6 +15100,12 @@ const guidedGenerateSubmissionMetadata = async (destination) => {
       .classList.remove("hidden");
     submissionMetadataUploadText.innerHTML = "Uploading submission metadata...";
     guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "loading");
+  } else {
+    document
+      .getElementById("guided-submission-metadata-pennsieve-genration-tr")
+      .classList.remove("hidden");
+    submissionMetadataUploadText.innerHTML = "Generating submission metadata...";
+    guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "loading");
   }
 
   try {
@@ -15111,6 +15127,9 @@ const guidedGenerateSubmissionMetadata = async (destination) => {
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "success");
       submissionMetadataUploadText.innerHTML = `Submission metadata successfully uploaded`;
+    } else {
+      guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "success");
+      submissionMetadataUploadText.innerHTML = `Submission metadata successfully generated`;
     }
 
     // Send successful submission metadata generation event to Kombucha
@@ -15204,6 +15223,16 @@ const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
       "guided-dataset-description-metadata-pennsieve-genration-status",
       "loading"
     );
+  } else {
+    document
+      .getElementById("guided-dataset-description-metadata-pennsieve-genration-tr")
+      .classList.remove("hidden");
+
+    datasetDescriptionMetadataUploadText.innerHTML = "Generating dataset description metadata...";
+    guidedUploadStatusIcon(
+      "guided-dataset-description-metadata-pennsieve-genration-status",
+      "loading"
+    );
   }
 
   try {
@@ -15233,6 +15262,13 @@ const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
       );
       datasetDescriptionMetadataUploadText.innerHTML =
         "Dataset description metadata successfully uploaded";
+    } else {
+      guidedUploadStatusIcon(
+        "guided-dataset-description-metadata-pennsieve-genration-status",
+        "success"
+      );
+      datasetDescriptionMetadataUploadText.innerHTML =
+        "Dataset description metadata successfully generated";
     }
 
     // Send successful dataset_description metadata generation event to Kombucha
@@ -15296,6 +15332,16 @@ const guidedGenerateCodeDescriptionMetadata = async (destination) => {
       "guided-code-description-metadata-pennsieve-genration-status",
       "loading"
     );
+  } else {
+    document
+      .getElementById("guided-code-description-metadata-pennsieve-genration-tr")
+      .classList.remove("hidden");
+
+    codeDescriptionMetadataUploadText.innerHTML = "Generating code description metadata...";
+    guidedUploadStatusIcon(
+      "guided-code-description-metadata-pennsieve-genration-status",
+      "loading"
+    );
   }
   try {
     if (generationDestination === "Pennsieve") {
@@ -15315,6 +15361,13 @@ const guidedGenerateCodeDescriptionMetadata = async (destination) => {
         "success"
       );
       codeDescriptionMetadataUploadText.innerHTML = "Code description metadata added to Pennsieve";
+    } else {
+      guidedUploadStatusIcon(
+        "guided-code-description-metadata-pennsieve-genration-status",
+        "success"
+      );
+      codeDescriptionMetadataUploadText.innerHTML =
+        "Code description metadata generated successfully";
     }
 
     // Send successful code_description metadata generation event to Kombucha
@@ -15362,6 +15415,12 @@ const guidedGenerateReadmeMetadata = async (destination) => {
       .classList.remove("hidden");
     readmeMetadataUploadText.innerHTML = "Uploading README metadata...";
     guidedUploadStatusIcon("guided-readme-metadata-pennsieve-genration-status", "loading");
+  } else {
+    document
+      .getElementById("guided-readme-metadata-pennsieve-genration-tr")
+      .classList.remove("hidden");
+    readmeMetadataUploadText.innerHTML = "Generating README metadata...";
+    guidedUploadStatusIcon("guided-readme-metadata-pennsieve-genration-status", "loading");
   }
 
   try {
@@ -15387,6 +15446,9 @@ const guidedGenerateReadmeMetadata = async (destination) => {
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon("guided-readme-metadata-pennsieve-genration-status", "success");
       readmeMetadataUploadText.innerHTML = "README metadata successfully uploaded";
+    } else {
+      guidedUploadStatusIcon("guided-readme-metadata-pennsieve-genration-status", "success");
+      readmeMetadataUploadText.innerHTML = "README metadata successfully generated";
     }
 
     // Send successful README metadata generation event to Kombucha
@@ -15438,6 +15500,12 @@ const guidedGenerateChangesMetadata = async (destination) => {
       .classList.remove("hidden");
     changesMetadataUploadText.innerHTML = "Uploading CHANGES metadata...";
     guidedUploadStatusIcon("guided-changes-metadata-pennsieve-genration-status", "loading");
+  } else {
+    document
+      .getElementById("guided-changes-metadata-pennsieve-genration-tr")
+      .classList.remove("hidden");
+    changesMetadataUploadText.innerHTML = "Generating CHANGES metadata...";
+    guidedUploadStatusIcon("guided-changes-metadata-pennsieve-genration-status", "loading");
   }
 
   try {
@@ -15463,6 +15531,9 @@ const guidedGenerateChangesMetadata = async (destination) => {
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon("guided-changes-metadata-pennsieve-genration-status", "success");
       changesMetadataUploadText.innerHTML = "CHANGES metadata successfully uploaded";
+    } else {
+      guidedUploadStatusIcon("guided-changes-metadata-pennsieve-genration-status", "success");
+      changesMetadataUploadText.innerHTML = "CHANGES metadata successfully generated";
     }
 
     // Send successful CHANGES metadata generation event to Kombucha
@@ -15622,7 +15693,7 @@ const guidedPennsieveDatasetUpload = async () => {
       // await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
       // await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
 
-      let testPath = window.path.join(window.homeDirectory, "SODA", "test", "subjects.xlsx");
+      let testPath = window.path.join(window.homeDirectory, "SODA", "test");
 
       hideDatasetMetadataGenerationTableRows("pennsieve");
 
@@ -15630,22 +15701,26 @@ const guidedPennsieveDatasetUpload = async () => {
         "guided-div-dataset-metadata-pennsieve-genration-status-table"
       );
 
-      await guidedGenerateSubjectsMetadata(testPath);
-      // await guidedGenerateSamplesMetadata("Pennsieve");
-      // await guidedGenerateSubmissionMetadata("Pennsieve");
-      // await guidedGenerateDatasetDescriptionMetadata("Pennsieve");
-      // await guidedGenerateReadmeMetadata("Pennsieve");
-      // await guidedGenerateChangesMetadata("Pennsieve");
+      await guidedGenerateSubjectsMetadata(window.path.join(testPath, "subjects.xlsx"));
+      await guidedGenerateSamplesMetadata(window.path.join(testPath, "samples.xlsx"));
+      await guidedGenerateSubmissionMetadata(window.path.join(testPath, "submission.xlsx"));
+      await guidedGenerateDatasetDescriptionMetadata(
+        window.path.join(testPath, "dataset_description.xlsx")
+      );
+      await guidedGenerateReadmeMetadata(window.path.join(testPath, "README.txt"));
+      await guidedGenerateChangesMetadata(window.path.join(testPath, "CHANGES.txt"));
 
-      // await guidedGenerateCodeDescriptionMetadata("Pennsieve");
+      await guidedGenerateCodeDescriptionMetadata(
+        window.path.join(testPath, "code_description.xlsx")
+      );
 
-      // //Reset Upload Progress Bar and then scroll to it
-      // setGuidedProgressBarValue("pennsieve", 0);
+      //Reset Upload Progress Bar and then scroll to it
+      setGuidedProgressBarValue("pennsieve", 0);
 
-      // updateDatasetUploadProgressTable("pennsieve", {
-      //   "Upload status": `Preparing dataset for upload`,
-      // });
-      // window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
+      updateDatasetUploadProgressTable("pennsieve", {
+        "Upload status": `Preparing dataset for generation`,
+      });
+      window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
       // await guidedCreateManifestFilesAndAddToDatasetStructure();
     } else {
