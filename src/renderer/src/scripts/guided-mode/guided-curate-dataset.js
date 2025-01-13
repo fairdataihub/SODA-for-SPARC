@@ -14920,6 +14920,12 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
       .classList.remove("hidden");
     subjectsMetadataGenerationText.innerHTML = "Uploading subjects metadata...";
     guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "loading");
+  } else {
+    document
+      .getElementById(`guided-subjects-metadata-pennsieve-genration-tr`)
+      .classList.remove("hidden");
+    subjectsMetadataGenerationText.innerHTML = "Generating subjects metadata...";
+    guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "loading");
   }
 
   try {
@@ -14944,6 +14950,9 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "success");
       subjectsMetadataGenerationText.innerHTML = `Subjects metadata successfully generated`;
+    } else {
+      guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "success");
+      subjectsMetadataGenerationText.innerHTML = `Subjects metadata successfully generated`;
     }
     window.electron.ipcRenderer.send(
       "track-kombucha",
@@ -14955,8 +14964,6 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
     );
   } catch (error) {
     const emessage = userErrorMessage(error);
-    userErrorMessage(error);
-    userErrorMessage(error);
     userErrorMessage(error);
     // Update UI for generation failure (Pennsieve) and send failure event
     if (generationDestination === "Pennsieve") {
@@ -15504,6 +15511,7 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
 };
 
 const guidedPennsieveDatasetUpload = async () => {
+  console.log("In upload");
   guidedSetNavLoadingState(true);
   try {
     const guidedBfAccount = window.defaultBfAccount;
@@ -15547,50 +15555,102 @@ const guidedPennsieveDatasetUpload = async () => {
       "guided-div-pennsieve-metadata-pennsieve-genration-status-table"
     );
 
-    // Create the dataset on Pennsieve
-    await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
+    let generatingOnPennsieve = false;
+    let generatingOnCloud = true;
+    let generatingOnLocalFolder = false;
+    if (generatingOnPennsieve) {
+      // Create the dataset on Pennsieve
+      await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
 
-    await guidedAddDatasetSubtitle(guidedBfAccount, guidedDatasetName, guidedDatasetSubtitle);
-    await guidedAddDatasetDescription(
-      guidedBfAccount,
-      guidedDatasetName,
-      guidedPennsieveStudyPurpose,
-      guidedPennsieveDataCollection,
-      guidedPennsievePrimaryConclusion
-    );
-    await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
-    await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
-    await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
-    await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
-    await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
+      await guidedAddDatasetSubtitle(guidedBfAccount, guidedDatasetName, guidedDatasetSubtitle);
+      await guidedAddDatasetDescription(
+        guidedBfAccount,
+        guidedDatasetName,
+        guidedPennsieveStudyPurpose,
+        guidedPennsieveDataCollection,
+        guidedPennsievePrimaryConclusion
+      );
+      await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
+      await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
+      await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
+      await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
+      await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
 
-    hideDatasetMetadataGenerationTableRows("pennsieve");
+      hideDatasetMetadataGenerationTableRows("pennsieve");
 
-    window.unHideAndSmoothScrollToElement(
-      "guided-div-dataset-metadata-pennsieve-genration-status-table"
-    );
+      window.unHideAndSmoothScrollToElement(
+        "guided-div-dataset-metadata-pennsieve-genration-status-table"
+      );
 
-    await guidedGenerateSubjectsMetadata("Pennsieve");
-    await guidedGenerateSamplesMetadata("Pennsieve");
-    await guidedGenerateSubmissionMetadata("Pennsieve");
-    await guidedGenerateDatasetDescriptionMetadata("Pennsieve");
-    await guidedGenerateReadmeMetadata("Pennsieve");
-    await guidedGenerateChangesMetadata("Pennsieve");
+      await guidedGenerateSubjectsMetadata("Pennsieve");
+      await guidedGenerateSamplesMetadata("Pennsieve");
+      await guidedGenerateSubmissionMetadata("Pennsieve");
+      await guidedGenerateDatasetDescriptionMetadata("Pennsieve");
+      await guidedGenerateReadmeMetadata("Pennsieve");
+      await guidedGenerateChangesMetadata("Pennsieve");
 
-    await guidedGenerateCodeDescriptionMetadata("Pennsieve");
+      await guidedGenerateCodeDescriptionMetadata("Pennsieve");
 
-    //Reset Upload Progress Bar and then scroll to it
-    setGuidedProgressBarValue("pennsieve", 0);
+      //Reset Upload Progress Bar and then scroll to it
+      setGuidedProgressBarValue("pennsieve", 0);
 
-    updateDatasetUploadProgressTable("pennsieve", {
-      "Upload status": `Preparing dataset for upload`,
-    });
-    window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
+      updateDatasetUploadProgressTable("pennsieve", {
+        "Upload status": `Preparing dataset for upload`,
+      });
+      window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
-    await guidedCreateManifestFilesAndAddToDatasetStructure();
+      await guidedCreateManifestFilesAndAddToDatasetStructure();
 
-    //Upload the dataset files
-    await guidedUploadDatasetToPennsieve();
+      //Upload the dataset files
+      await guidedUploadDatasetToPennsieve();
+    } else if (generatingOnCloud) {
+      console.log("Generating on cloud flow: ");
+      // Create the dataset on Pennsieve
+      // await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
+
+      // await guidedAddDatasetSubtitle(guidedBfAccount, guidedDatasetName, guidedDatasetSubtitle);
+      // await guidedAddDatasetDescription(
+      //   guidedBfAccount,
+      //   guidedDatasetName,
+      //   guidedPennsieveStudyPurpose,
+      //   guidedPennsieveDataCollection,
+      //   guidedPennsievePrimaryConclusion
+      // );
+      // await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
+      // await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
+      // await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
+      // await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
+      // await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
+
+      let testPath = window.path.join(window.homeDirectory, "SODA", "test", "subjects.xlsx");
+
+      hideDatasetMetadataGenerationTableRows("pennsieve");
+
+      window.unHideAndSmoothScrollToElement(
+        "guided-div-dataset-metadata-pennsieve-genration-status-table"
+      );
+
+      await guidedGenerateSubjectsMetadata(testPath);
+      // await guidedGenerateSamplesMetadata("Pennsieve");
+      // await guidedGenerateSubmissionMetadata("Pennsieve");
+      // await guidedGenerateDatasetDescriptionMetadata("Pennsieve");
+      // await guidedGenerateReadmeMetadata("Pennsieve");
+      // await guidedGenerateChangesMetadata("Pennsieve");
+
+      // await guidedGenerateCodeDescriptionMetadata("Pennsieve");
+
+      // //Reset Upload Progress Bar and then scroll to it
+      // setGuidedProgressBarValue("pennsieve", 0);
+
+      // updateDatasetUploadProgressTable("pennsieve", {
+      //   "Upload status": `Preparing dataset for upload`,
+      // });
+      // window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
+
+      // await guidedCreateManifestFilesAndAddToDatasetStructure();
+    } else {
+      // generating dataset on local folder not connected to the cloud
+    }
   } catch (error) {
     clientError(error);
     let emessage = userErrorMessage(error);
@@ -16434,35 +16494,41 @@ $("#guided-generate-changes-file").on("click", () => {
 });
 
 document.getElementById("guided-generate-dataset-button").addEventListener("click", async () => {
-  // Ensure that the current workspace is the workspace the user confirmed
-  const currentWorkspace = guidedGetCurrentUserWorkSpace();
-  const datasetWorkspace = window.sodaJSONObj["digital-metadata"]["dataset-workspace"];
+  let generatingOnPennsieve = document
+    .getElementById("guided-button-generate-pennsieve-folder")
+    .classList.contains("selected");
 
-  if (!currentWorkspace) {
-    Swal.fire({
-      width: 700,
-      icon: "info",
-      title: "You are not logged in to any workspace.",
-      html: `
-          Please select a workspace by clicking on the pencil icon to the right of the Dataset workspace field
-          on this page.
-        `,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: `OK`,
-      focusConfirm: true,
-      allowOutsideClick: false,
-    });
-    return;
-  }
+  console.log("Generating on Pennsieve value: ", generatingOnPennsieve);
+  if (generatingOnPennsieve) {
+    // Ensure that the current workspace is the workspace the user confirmed
+    const currentWorkspace = guidedGetCurrentUserWorkSpace();
+    const datasetWorkspace = window.sodaJSONObj["digital-metadata"]["dataset-workspace"];
 
-  if (currentWorkspace != datasetWorkspace) {
-    if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+    if (!currentWorkspace) {
       Swal.fire({
         width: 700,
         icon: "info",
-        title: "You are not logged in to the workspace you pulled this dataset from.",
+        title: "You are not logged in to any workspace.",
         html: `
+          Please select a workspace by clicking on the pencil icon to the right of the Dataset workspace field
+          on this page.
+        `,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: `OK`,
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+      return;
+    }
+
+    if (currentWorkspace != datasetWorkspace) {
+      if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+        Swal.fire({
+          width: 700,
+          icon: "info",
+          title: "You are not logged in to the workspace you pulled this dataset from.",
+          html: `
           <p class="text-left">
             You pulled this dataset from the workspace <b>${datasetWorkspace}</b>, but you are currently
             logged in to the workspace <b>${currentWorkspace}</b>.
@@ -16475,18 +16541,18 @@ document.getElementById("guided-generate-dataset-button").addEventListener("clic
             the right of the Dataset workspace field on this page.
           </p>
         `,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: `OK`,
-        focusConfirm: true,
-        allowOutsideClick: false,
-      });
-    } else {
-      Swal.fire({
-        width: 700,
-        icon: "info",
-        title: "You are not logged in to the workspace you confirmed earlier.",
-        html: `
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: `OK`,
+          focusConfirm: true,
+          allowOutsideClick: false,
+        });
+      } else {
+        Swal.fire({
+          width: 700,
+          icon: "info",
+          title: "You are not logged in to the workspace you confirmed earlier.",
+          html: `
           You previously confirmed that the Dataset workspace is <b>${datasetWorkspace}</b>.
           <br />
           <br />
@@ -16503,23 +16569,26 @@ document.getElementById("guided-generate-dataset-button").addEventListener("clic
             change your workspace to <b>${currentWorkspace}</b>.
           </p>
         `,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: `OK`,
-        focusConfirm: true,
-        allowOutsideClick: false,
-      });
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: `OK`,
+          focusConfirm: true,
+          allowOutsideClick: false,
+        });
+      }
+      return;
     }
-    return;
-  }
 
-  //run pre flight checks and abort if any fail
-  let supplementary_checks = await window.run_pre_flight_checks(
-    "guided-mode-pre-generate-pennsieve-agent-check"
-  );
-  if (!supplementary_checks) {
-    return;
+    //run pre flight checks and abort if any fail
+    let supplementary_checks = await window.run_pre_flight_checks(
+      "guided-mode-pre-generate-pennsieve-agent-check"
+    );
+    if (!supplementary_checks) {
+      return;
+    }
+    await window.openPage("guided-dataset-generation-tab");
   }
+  console.log("Calling upload");
   await window.openPage("guided-dataset-generation-tab");
   guidedPennsieveDatasetUpload();
 });

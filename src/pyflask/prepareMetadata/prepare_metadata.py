@@ -542,13 +542,17 @@ def upload_code_description_metadata(filepath, bfAccount, bfDataset):
 
 
 def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
+    global namespace_logger
     source = join(TEMPLATE_PATH, "subjects.xlsx")
+
+
 
     if upload_boolean:
         destination = join(METADATA_UPLOAD_BF_PATH, "subjects.xlsx")
 
     else:
         destination = filepath
+
 
     shutil.copyfile(source, destination)
     wb = load_workbook(destination)
