@@ -6789,10 +6789,14 @@
                 </div>
                 <div class="guided--tile-body">
                   <h2>Yes, share the folder for me</h2>
-                </div></button
-              ><button
+                </div>
+              </button>
+              <button
                 class="guided--radio-button tile-button"
                 id="guided-button-onedrive-cloud-sync-folder"
+                data-next-element="guided-section-manual-share-instructions"
+                data-button-config-value="share-with-k-core-team-automatically"
+                data-button-config-value-state="no"
               >
                 <div class="tile-button-icon">
                   <svg
@@ -6926,6 +6930,49 @@
                 <div class="guided--tile-body">
                   <h2>No, I will share my dataset with the K-Core team myself</h2>
                 </div>
+              </button>
+            </div>
+          </div>
+
+          <div class="guided--section" id="guided-section-manual-share-instructions">
+            <h2 class="text-sub-step-title">Share your cloud synced folder with the K-Core team</h2>
+            <p class="help-text">
+              Sharing with the K-Core team is essential part of the publishing workflow. After you
+              have shared it the K-Core team will be in contact with you regarding the next steps in
+              the publishing workflows.
+            </p>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui primary basic button"
+                style="margin: 5px 7px !important"
+                id="guided--manual-share-instructions-button"
+              >
+                <a
+                  href="https://support.google.com/drive/answer/7166529?hl=en&co=GENIE.Platform%3DDesktop"
+                  target="_blank"
+                  >See instructions for sharing your dataset manually</a
+                >
+              </button>
+            </div>
+          </div>
+
+          <div class="guided--section" id="guided-section-soda-share-instructions">
+            <h2 class="text-sub-step-title">Share your cloud synced folder with the K-Core team</h2>
+            <p class="help-text">
+              SODA can share the dataset folder with the K-Core team for you. This will allow the
+              K-Core team to access your dataset and ensure it follows the SDS 3.0 guidelines.
+            </p>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui primary basic button"
+                style="margin: 5px 7px !important"
+                id="guided--manual-share-instructions-button"
+              >
+                <a
+                  href="https://support.google.com/drive/answer/7166529?hl=en&co=GENIE.Platform%3DDesktop"
+                  target="_blank"
+                  >Allow SODA to share your folder with the K-Core team</a
+                >
               </button>
             </div>
           </div>
