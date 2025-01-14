@@ -15876,6 +15876,11 @@ const guidedPennsieveDatasetUpload = async () => {
         "Percent generated": `100%`,
       });
       setGuidedProgressBarValue("pennsieve", 100);
+
+      scrollToBottomOfGuidedBody();
+
+      // Show the next button
+      $("#guided-next-button").css("visibility", "visible");
     } else {
       // generating dataset on local folder not connected to the cloud
     }
@@ -16964,9 +16969,22 @@ $("#guided-next-button").on("click", async function () {
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
   if (window.pageBeingLeftID === "guided-dataset-generation-tab") {
-    guidedUnSkipPage("guided-dataset-dissemination-tab");
-    await window.openPage("guided-dataset-dissemination-tab");
-    return;
+    // check if pennsieve button is selected on dataset destination page
+    const generateOnPennsieveButton = document.getElementById(
+      "guided-button-generate-pennsieve-folder"
+    );
+    if (generateOnPennsieveButton.classList.contains("selected")) {
+      guidedUnSkipPage("guided-dataset-dissemination-tab");
+      guidedSkipPage("guided-share-cloud-sync-folder-with-kcore-team-tab");
+      await window.openPage("guided-dataset-dissemination-tab");
+      return;
+    } else {
+      // local or cloud TODO: ONly do this for cloud
+      guidedSkipPage("guided-dataset-dissemination-tab");
+      guidedUnSkipPage("guided-share-cloud-sync-folder-with-kcore-team-tab");
+      await window.openPage("guided-share-cloud-sync-folder-with-kcore-team-tab");
+      return;
+    }
   }
 
   if (window.pageBeingLeftID === "guided-select-destination-tab") {
