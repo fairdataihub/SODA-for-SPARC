@@ -14718,6 +14718,8 @@ const countFilesInDatasetStructure = (datasetStructure) => {
   return totalFiles;
 };
 
+const generateLocalDataset = async () => {};
+
 // Listen for the selected path for local dataset generation
 window.electron.ipcRenderer.on(
   "selected-guided-local-dataset-generation-path",
@@ -15581,6 +15583,85 @@ const hideDatasetMetadataGenerationTableRows = (destination) => {
   }
 };
 
+const gist = async () => {
+  // Remove unnecessary key from sodaJSONObjCopy since we don't need to
+  // check if the account details are valid during local generation
+  delete sodaJSONObjCopy["bf-account-selected"];
+  delete sodaJSONObjCopy["bf-dataset-selected"];
+
+  updateDatasetUploadProgressTable("local", {
+    "Current action": `Preparing dataset for local generation`,
+  });
+
+  // Start the local dataset generation process
+  client.post(
+    `/curate_datasets/curation`,
+    { soda_json_structure: sodaJSONObjCopy, resume: false },
+    { timeout: 0 }
+  );
+
+  let userHasBeenScrolledToProgressTable = false;
+
+  // Track the status of local dataset generation
+  const trackLocalDatasetGenerationProgress = async () => {
+    // Get the number of files that need to be generated to calculate the progress
+    const numberOfFilesToGenerate = countFilesInDatasetStructure(window.datasetStructureJSONObj);
+    while (true) {
+      try {
+        const response = await client.get(`/curate_datasets/curation/progress`);
+        const { data } = response;
+        const main_curate_progress_message = data["main_curate_progress_message"];
+        const main_curate_status = data["main_curate_status"];
+        if (
+          main_curate_progress_message === "Success: COMPLETED!" ||
+          main_curate_status === "Done"
+        ) {
+          break; // Exit the loop when generation is done
+        }
+        const elapsed_time_formatted = data["elapsed_time_formatted"];
+        const totalUploadedFiles = data["total_files_uploaded"];
+
+        // Get the current progress of local dataset generation
+        // Note: The progress is calculated based on the number of files that have been generated
+        // and the total number of files that need to be generated
+        const localGenerationProgressPercentage = Math.min(
+          100,
+          Math.max(0, (totalUploadedFiles / numberOfFilesToGenerate) * 100)
+        );
+        setGuidedProgressBarValue("local", localGenerationProgressPercentage);
+        updateDatasetUploadProgressTable("local", {
+          "Files generated": `${totalUploadedFiles} of ${numberOfFilesToGenerate}`,
+          "Percent generated": `${localGenerationProgressPercentage.toFixed(2)}%`,
+          "Elapsed time": `${elapsed_time_formatted}`,
+        });
+
+        // Scroll the user down to the progress table if they haven't been scrolled down yet
+        // (This only happens once)
+        if (!userHasBeenScrolledToProgressTable) {
+          unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
+          userHasBeenScrolledToProgressTable = true;
+        }
+
+        // Wait 1 second before checking the progress again
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
+      } catch (error) {
+        console.error("Error tracking progress:", error);
+        throw new Error(userErrorMessage(error)); // Re-throw with user-friendly message
+      }
+    }
+  };
+
+  // set a timeout for .5 seconds to allow the server to start generating the dataset
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  await trackLocalDatasetGenerationProgress();
+
+  setGuidedProgressBarValue("local", 100);
+  updateDatasetUploadProgressTable("local", {
+    "Current action": `Generating metadata files`,
+  });
+};
+
 const guidedPennsieveDatasetUpload = async () => {
   console.log("In upload");
   guidedSetNavLoadingState(true);
@@ -15676,22 +15757,6 @@ const guidedPennsieveDatasetUpload = async () => {
       await guidedUploadDatasetToPennsieve();
     } else if (generatingOnCloud) {
       console.log("Generating on cloud flow: ");
-      // Create the dataset on Pennsieve
-      // await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
-
-      // await guidedAddDatasetSubtitle(guidedBfAccount, guidedDatasetName, guidedDatasetSubtitle);
-      // await guidedAddDatasetDescription(
-      //   guidedBfAccount,
-      //   guidedDatasetName,
-      //   guidedPennsieveStudyPurpose,
-      //   guidedPennsieveDataCollection,
-      //   guidedPennsievePrimaryConclusion
-      // );
-      // await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
-      // await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
-      // await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
-      // await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
-      // await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
 
       let testPath = window.path.join(window.homeDirectory, "SODA", "test");
 
@@ -15722,7 +15787,95 @@ const guidedPennsieveDatasetUpload = async () => {
       });
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
-      // await guidedCreateManifestFilesAndAddToDatasetStructure();
+      await guidedCreateManifestFilesAndAddToDatasetStructure();
+
+      window.sodaJSONObj["generate-dataset"] = {
+        "dataset-name": guidedDatasetName,
+        destination: "local",
+        "generate-option": "new",
+        "if-existing": "new",
+        path: testPath,
+      };
+
+      // check if the account details are valid during local generation
+      delete window.sodaJSONObj["bf-account-selected"];
+      delete window.sodaJSONObj["bf-dataset-selected"];
+
+      updateDatasetUploadProgressTable("pennsieve", {
+        "Current action": `Preparing dataset for local generation`,
+      });
+
+      // Start the local dataset generation process
+      client.post(
+        `/curate_datasets/curation`,
+        { soda_json_structure: window.sodaJSONObj, resume: false },
+        { timeout: 0 }
+      );
+
+      let userHasBeenScrolledToProgressTable = false;
+      let numberOfFilesToGenerate = 0;
+
+      // Track the status of local dataset generation
+      const trackLocalDatasetGenerationProgress = async () => {
+        // Get the number of files that need to be generated to calculate the progress
+        numberOfFilesToGenerate = countFilesInDatasetStructure(window.datasetStructureJSONObj);
+        while (true) {
+          try {
+            const response = await client.get(`/curate_datasets/curation/progress`);
+            const { data } = response;
+            const main_curate_progress_message = data["main_curate_progress_message"];
+            const main_curate_status = data["main_curate_status"];
+            if (
+              main_curate_progress_message === "Success: COMPLETED!" ||
+              main_curate_status === "Done"
+            ) {
+              break; // Exit the loop when generation is done
+            }
+            const elapsed_time_formatted = data["elapsed_time_formatted"];
+            const totalUploadedFiles = data["total_files_uploaded"];
+
+            // Get the current progress of local dataset generation
+            // Note: The progress is calculated based on the number of files that have been generated
+            // and the total number of files that need to be generated
+            const localGenerationProgressPercentage = Math.min(
+              100,
+              Math.max(0, (totalUploadedFiles / numberOfFilesToGenerate) * 100)
+            );
+            setGuidedProgressBarValue("pennsieve", localGenerationProgressPercentage);
+            updateDatasetUploadProgressTable("pennsieve", {
+              "Files generated": `${totalUploadedFiles} of ${numberOfFilesToGenerate}`,
+              "Percent generated": `${localGenerationProgressPercentage.toFixed(2)}%`,
+              "Elapsed time": `${elapsed_time_formatted}`,
+            });
+
+            // Scroll the user down to the progress table if they haven't been scrolled down yet
+            // (This only happens once)
+            // if (!userHasBeenScrolledToProgressTable) {
+            //   unHideAndSmoothScrollToElement("guided-section-pennsieve-generation-status-table");
+            //   //guided-tbody-${destination}-generation-status
+            //   userHasBeenScrolledToProgressTable = true;
+            // }
+
+            // Wait 1 second before checking the progress again
+            await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
+          } catch (error) {
+            console.error("Error tracking progress:", error);
+            throw new Error(userErrorMessage(error)); // Re-throw with user-friendly message
+          }
+        }
+      };
+
+      // set a timeout for .5 seconds to allow the server to start generating the dataset
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      await trackLocalDatasetGenerationProgress();
+      console.log("REached this part");
+
+      updateDatasetUploadProgressTable("pennsieve", {
+        "Files generated": `${numberOfFilesToGenerate} of ${numberOfFilesToGenerate}`,
+        "Percent generated": `100%`,
+      });
+      setGuidedProgressBarValue("pennsieve", 100);
     } else {
       // generating dataset on local folder not connected to the cloud
     }
