@@ -98,6 +98,19 @@ ipcMain.on("open-file-dialog-cloud-sync-dataset", async (event) => {
   }
 });
 
+ipcMain.on("open-file-dialog-select-cloud-synced-folder-location", async () => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let files = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ["openDirectory"],
+    title: "Select cloud synced directory",
+  });
+
+  if (files) {
+    mainWindow.webContents.send("selected-cloud-synced-folder-location", files.filePaths);
+  }
+})
+
 ipcMain.on("open-file-dialog-metadata-curate", async (event) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
 

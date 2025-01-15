@@ -5812,6 +5812,7 @@
             <div class="guided--radio-button-container">
               <button
                 class="guided--radio-button tile-button"
+                data-next-element="guided-section-user-has-selected-cloud-drive"
                 id="guided-button-run-google=drive-cloud-sync-folder"
               >
                 <div class="tile-button-icon">
@@ -5841,6 +5842,7 @@
               ><button
                 class="guided--radio-button tile-button"
                 id="guided-button-onedrive-cloud-sync-folder"
+                data-next-element="guided-section-user-has-selected-cloud-drive"
               >
                 <div class="tile-button-icon">
                   <svg
@@ -5977,6 +5979,12 @@
               </button>
             </div>
           </div>
+          <div class="guided--section" id="guided-section-user-has-selected-cloud-drive">
+            <h2 class="guided--text-user-directions">
+              Click the "<span class="next-button-span"></span>" button below to go to the next
+              page.
+            </h2>
+          </div>
         </div>
 
         <div
@@ -5987,15 +5995,29 @@
           <div class="guided--section">
             <h1 class="text-sub-step-title">Select Your Cloud Sync Folder</h1>
             <p class="guided--help-text">
-              Your labeled dataset will only be synced with the cloud if it is generated within your
-              cloud synced folder.
+              Please enter the location of your cloud synced folder below. SODA will generate your 
+              dataset at the root of this folder. If you pick a folder that isn't synced to the cloud 
+              your dataset will not be synced to the cloud.
+            
             </p>
           </div>
           <div class="guided--section">
-            <h2 class="text-sub-step-title">
-              Enter the location of your cloud synced folder below:
+            <div class="guided--flex-center mt-sm" style="width: 45%">
+              <input
+                class="guided--input"
+                id="guided-select-cloud-sync-folder-location-input"
+                type="text"
+                placeholder="Enter cloud sync folder location"
+                onclick="window.electron.ipcRenderer.send('open-file-dialog-select-cloud-synced-folder-location')"
+              />
+            </div>
+          </div>
+
+          <div class="guided--section hidden" id="guided-section-user-has-selected-cloud-folder-location">
+            <h2 class="guided--text-user-directions">
+              Click the "<span class="next-button-span"></span>" button below to go to the next
+              page.
             </h2>
-            <input placeholder="Enter Cloud Sync Folder Location" />
           </div>
         </div>
 
@@ -6031,7 +6053,7 @@
             <button
               class="ui positive basic button guided--radio-button"
               id="guided-button-move-and-new-folder"
-              data-next-element="guided-section-non-sparc-user-has-contacted-sparc"
+              data-next-element="guided-section-ask-calculate-storage-cost"
               data-button-config-value-state="yes"
             >
               Move existing files and generate a new dataset folder in my cloud synced drive
@@ -6094,6 +6116,7 @@
                 id="guided-button-do-not-calculate-generation-cost"
                 data-button-config-value="calculate-cloud-sync-generation-cost"
                 data-button-config-value-state="no"
+                data-next-element="guided-section-user-has-made-storage-calc-decision"
               >
                 No
               </button>
@@ -6118,6 +6141,13 @@
             </div>
 
             <p>Total Space Requirement: 125GB</p>
+          </div>
+
+          <div class="guided--section hidden" id="guided-section-user-has-made-storage-calc-decision">
+            <h2 class="guided--text-user-directions">
+              Click the "<span class="next-button-span"></span>" button below to go to the next
+              page.
+            </h2>
           </div>
         </div>
 
