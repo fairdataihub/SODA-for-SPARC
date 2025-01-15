@@ -109,7 +109,7 @@ ipcMain.on("open-file-dialog-select-cloud-synced-folder-location", async () => {
   if (files) {
     mainWindow.webContents.send("selected-cloud-synced-folder-location", files.filePaths);
   }
-})
+});
 
 ipcMain.on("open-file-dialog-metadata-curate", async (event) => {
   let mainWindow = BrowserWindow.getFocusedWindow();

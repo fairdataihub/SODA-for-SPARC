@@ -14699,8 +14699,10 @@ const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsA
 
 window.electron.ipcRenderer.on("selected-cloud-synced-folder-location", (event, folders) => {
   document.getElementById("guided-select-cloud-sync-folder-location-input").value = folders[0];
-  document.getElementById("guided-section-user-has-selected-cloud-folder-location").classList.remove("hidden");
-})
+  document
+    .getElementById("guided-section-user-has-selected-cloud-folder-location")
+    .classList.remove("hidden");
+});
 
 //********************************************************************************************************
 // Add click event listener to the button triggering local dataset generation
