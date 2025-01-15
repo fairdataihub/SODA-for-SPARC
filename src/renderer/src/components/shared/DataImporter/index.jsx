@@ -23,7 +23,9 @@ const DataImporter = () => {
   // Opens the dataset dialog on click
   const handleClick = async (event) => {
     event.preventDefault();
-    window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog");
+    window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
+      importRelativePath: "primary/",
+    });
   };
 
   return (

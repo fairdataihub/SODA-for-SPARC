@@ -1,7 +1,18 @@
-import { Menu } from "@mantine/core";
+import { Menu, Group, Text, Divider } from "@mantine/core";
 import { useEffect, useCallback } from "react";
 import useGlobalStore from "../../../stores/globalStore";
 import { closeContextMenu, setFolderMoveMode } from "../../../stores/slices/datasetTreeViewSlice";
+import {
+  deleteFilesByRelativePath,
+  deleteFoldersByRelativePath,
+} from "../../../stores/utils/folderAndFileActions";
+import { IconFolder, IconFolderOpen } from "@tabler/icons-react";
+
+const ICON_SETTINGS = {
+  folderColor: "#ADD8E6",
+  folderSize: 16,
+  fileSize: 14,
+};
 
 const ContextMenu = () => {
   const {
@@ -57,7 +68,17 @@ const ContextMenu = () => {
     <div id="context-menu" style={menuStyles}>
       <Menu opened position="top" offset={5} styles={{ dropdown: menuStyles }}>
         <Menu.Dropdown>
-          asdf
+          <Group position="apart" spacing="sm">
+            {contextMenuItemType === "folder" ? (
+              <IconFolder size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
+            ) : (
+              <IconFolderOpen size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
+            )}
+            <Text fw={500} size="md">
+              {contextMenuItemName}
+            </Text>
+          </Group>
+          <Divider my={3} />
           <Menu.Item
             onClick={() => {
               setFolderMoveMode(true);
@@ -69,19 +90,18 @@ const ContextMenu = () => {
           <Menu.Item
             onClick={() => {
               if (contextMenuItemType === "file") {
-                window.deleteFilesByRelativePath([contextMenuItemData.relativePath]);
+                deleteFilesByRelativePath([contextMenuItemData.relativePath]);
               }
               if (contextMenuItemType === "folder") {
-                window.deleteFoldersByRelativePath([contextMenuItemData.relativePath]);
+                deleteFoldersByRelativePath([contextMenuItemData.relativePath]);
               }
               closeContextMenu();
             }}
           >
             Delete
           </Menu.Item>
-          <Menu.Item>qwer</Menu.Item>
           {contextMenuItemType === "folder" && (
-            <Menu.Item onClick={() => console.log("Delete")}>
+            <Menu.Item onClick={() => console.log("Import data")}>
               Import data into {contextMenuItemName}
             </Menu.Item>
           )}

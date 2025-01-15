@@ -22,6 +22,7 @@ import {
   setFolderMoveMode,
   moveFolderToNewLocation,
 } from "../../../stores/slices/datasetTreeViewSlice";
+import { moveFoldersToTargetLocation } from "../../../stores/utils/folderAndFileActions";
 import { naturalSort } from "../utils/util-functions";
 
 const ICON_SETTINGS = {
@@ -82,7 +83,7 @@ const FolderItem = ({
   isFileSelected,
   allowStructureEditing,
 }) => {
-  const { folderMoveModeIsActive } = useGlobalStore();
+  const { folderMoveModeIsActive, contextMenuItemType, contextMenuItemData } = useGlobalStore();
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
 
@@ -109,6 +110,13 @@ const FolderItem = ({
   const folderIsEmpty =
     !content ||
     (Object.keys(content.folders).length === 0 && Object.keys(content.files).length === 0);
+
+  console.log("content", content);
+
+  const folderIsPassThrough = content.folderIsPassThrough === true;
+  if (folderIsPassThrough) {
+    console.log("Folder is pass through", name);
+  }
 
   return (
     <Stack gap={1} ml="xs">
@@ -140,8 +148,13 @@ const FolderItem = ({
           <Tooltip label="Move data to this folder" zIndex={2999}>
             <Checkbox
               readOnly
+              disabled={content.relativePath.includes(contextMenuItemData.relativePath)}
               onClick={() => {
-                moveFolderToNewLocation(content.relativePath);
+                moveFoldersToTargetLocation(
+                  [contextMenuItemData.relativePath],
+                  content.relativePath
+                );
+                setFolderMoveMode(false);
               }}
             />
           </Tooltip>

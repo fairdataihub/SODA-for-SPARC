@@ -60,14 +60,25 @@ const filterStructure = (structure, searchFilter) => {
       searchFilter
     );
 
+    // If the folder does not match and is not a pass-through, return null (exclude it)
     if (!matchesDirectly && !matchesFilesDirectly && !passThrough) return null;
 
+    // If the folder is pass-through, it should still be included in the structure
     return produce(folderObj, (draft) => {
+      // If it's a pass-through, we include it even if it doesn't match directly
+      if (passThrough) {
+        console.log("Pass-through folder:", draft.relativePath); // Debug log
+        draft.folderIsPassThrough = true; // Mark it as pass-through in the JSON
+      }
+
+      // Recursively prune subfolders that don't match
       for (const subFolder in draft.folders || {}) {
         if (!pruneStructure(draft.folders[subFolder], searchFilter)) {
           delete draft.folders[subFolder];
         }
       }
+
+      // Remove files that don't match the filter
       for (const fileName in draft.files || {}) {
         if (!draft.files[fileName].relativePath.toLowerCase().includes(searchFilter)) {
           delete draft.files[fileName];
@@ -76,6 +87,7 @@ const filterStructure = (structure, searchFilter) => {
     });
   };
 
+  // Start the filtering process
   return pruneStructure(structure, searchFilter.toLowerCase());
 };
 
