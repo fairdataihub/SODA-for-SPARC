@@ -87,7 +87,14 @@ const FolderItem = ({
   isFileSelected,
   allowStructureEditing,
 }) => {
-  const { folderMoveModeIsActive, contextMenuItemType, contextMenuItemData } = useGlobalStore();
+  const { folderMoveModeIsActive, contextMenuItemType, contextMenuItemData } = useGlobalStore(
+    (state) => ({
+      folderMoveModeIsActive: state.folderMoveModeIsActive,
+      contextMenuItemType: state.contextMenuItemType,
+      contextMenuItemData: state.contextMenuItemData,
+    })
+  );
+
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
 
@@ -217,7 +224,11 @@ const FolderItem = ({
 
 const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEditing }) => {
   const { renderDatasetStructureJSONObj, datasetStructureSearchFilter, folderMoveModeIsActive } =
-    useGlobalStore();
+    useGlobalStore((state) => ({
+      renderDatasetStructureJSONObj: state.renderDatasetStructureJSONObj,
+      datasetStructureSearchFilter: state.datasetStructureSearchFilter,
+      folderMoveModeIsActive: state.folderMoveModeIsActive,
+    }));
 
   const searcDebounceTime = 300; // Set the debounce time for the search filter (in milliseconds)
 

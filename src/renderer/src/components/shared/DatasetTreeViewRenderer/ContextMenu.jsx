@@ -21,7 +21,13 @@ const ContextMenu = () => {
     contextMenuItemName,
     contextMenuItemType,
     contextMenuItemData,
-  } = useGlobalStore();
+  } = useGlobalStore((state) => ({
+    contextMenuIsOpened: state.contextMenuIsOpened,
+    contextMenuPosition: state.contextMenuPosition,
+    contextMenuItemName: state.contextMenuItemName,
+    contextMenuItemType: state.contextMenuItemType,
+    contextMenuItemData: state.contextMenuItemData,
+  }));
 
   const handleClickOutside = useCallback((event) => {
     const menuElement = document.getElementById("context-menu");

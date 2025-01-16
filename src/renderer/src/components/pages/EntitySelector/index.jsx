@@ -14,7 +14,6 @@ const NameAndSubtitlePage = () => {
     guidedDatasetName: state.guidedDatasetName,
     guidedDatasetSubtitle: state.guidedDatasetSubtitle,
   }));
-
   return (
     <GuidedModePage pageHeader="Dataset name and subtitle">
       <GuidedModeSection>

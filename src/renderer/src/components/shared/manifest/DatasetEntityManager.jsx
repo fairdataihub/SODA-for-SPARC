@@ -25,7 +25,9 @@ const DatasetEntityManager = ({
   entityTypeStringPlural,
   entityTypePrefix,
 }) => {
-  const { datasetEntityObj } = useGlobalStore();
+  const { datasetEntityObj } = useGlobalStore((state) => ({
+    datasetEntityObj: state.datasetEntityObj,
+  }));
   const [newEntityName, setNewEntityName] = useState("");
 
   const isNewEntityNameValid = window.evaluateStringAgainstSdsRequirements?.(
