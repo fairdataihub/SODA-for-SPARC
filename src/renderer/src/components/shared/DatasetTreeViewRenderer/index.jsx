@@ -11,6 +11,7 @@ import {
   Space,
   Center,
   Button,
+  Loader,
 } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 import { IconFolder, IconFolderOpen, IconFile, IconSearch } from "@tabler/icons-react";
@@ -22,7 +23,10 @@ import {
   setFolderMoveMode,
   moveFolderToNewLocation,
 } from "../../../stores/slices/datasetTreeViewSlice";
-import { moveFoldersToTargetLocation } from "../../../stores/utils/folderAndFileActions";
+import {
+  moveFoldersToTargetLocation,
+  moveFilesToTargetLocation,
+} from "../../../stores/utils/folderAndFileActions";
 import { naturalSort } from "../utils/util-functions";
 
 const ICON_SETTINGS = {
@@ -111,8 +115,6 @@ const FolderItem = ({
     !content ||
     (Object.keys(content.folders).length === 0 && Object.keys(content.files).length === 0);
 
-  console.log("content", content);
-
   const folderIsPassThrough = content.folderIsPassThrough === true;
   if (folderIsPassThrough) {
     console.log("Folder is pass through", name);
@@ -150,10 +152,16 @@ const FolderItem = ({
               readOnly
               disabled={content.relativePath.includes(contextMenuItemData.relativePath)}
               onClick={() => {
-                moveFoldersToTargetLocation(
-                  [contextMenuItemData.relativePath],
-                  content.relativePath
-                );
+                contextMenuItemType === "folder"
+                  ? moveFoldersToTargetLocation(
+                      [contextMenuItemData.relativePath],
+                      content.relativePath
+                    )
+                  : moveFilesToTargetLocation(
+                      [contextMenuItemData.relativePath],
+                      content.relativePath
+                    );
+
                 setFolderMoveMode(false);
               }}
             />
@@ -211,13 +219,39 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
   const { renderDatasetStructureJSONObj, datasetStructureSearchFilter, folderMoveModeIsActive } =
     useGlobalStore();
 
+  const searcDebounceTime = 300; // Set the debounce time for the search filter (in milliseconds)
+
+  const [inputSearchFilter, setInputSearchFilter] = useState(datasetStructureSearchFilter); // Local state for input
+  const searchTimeoutRef = useRef(null);
+
+  // Debounce the search filter change
+  const handleSearchChange = (event) => {
+    const value = event.target.value;
+    setInputSearchFilter(value); // Update the input immediately
+
+    // Clear the previous timeout if there is one
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // Set a new timeout to update the global state
+    searchTimeoutRef.current = setTimeout(() => {
+      setDatasetStructureSearchFilter(value); // Update the global state after the debounce delay
+    }, searcDebounceTime);
+  };
+
+  useEffect(() => {
+    return () => {
+      // Cleanup the timeout on component unmount
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleMenuClose = () => {
     console.log("Closing context menu");
     setMenuOpened(false);
-  };
-
-  const handleSearchChange = (event) => {
-    setDatasetStructureSearchFilter(event.target.value);
   };
 
   const handleAllFilesSelectClick = () => {
@@ -236,9 +270,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
   };
 
   const handleDeleteAllItemsClick = () => {
-    console.log(
-      'Deleting all items containing "' + datasetStructureSearchFilter + '" in their name'
-    );
+    console.log('Deleting all items containing "' + inputSearchFilter + '" in their name');
   };
 
   const renderObjIsEmpty =
@@ -246,12 +278,14 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
     (Object.keys(renderDatasetStructureJSONObj?.folders).length === 0 &&
       Object.keys(renderDatasetStructureJSONObj?.files).length === 0);
 
+  const searchDebounceIsActive = datasetStructureSearchFilter !== inputSearchFilter;
+
   return (
     <Paper padding="md" shadow="sm" radius="md" mih={200} p="sm">
       <TextInput
         label="Search files and folders:"
         placeholder="Search files and folders..."
-        value={datasetStructureSearchFilter}
+        value={inputSearchFilter}
         onChange={handleSearchChange}
         leftSection={<IconSearch stroke={1.5} />}
         mb="sm"
@@ -306,32 +340,40 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
           </Center>
         ) : (
           <>
-            {naturalSort(Object.keys(renderDatasetStructureJSONObj?.folders || {})).map(
-              (folderName) => (
-                <FolderItem
-                  key={folderName}
-                  name={folderName}
-                  content={renderDatasetStructureJSONObj.folders[folderName]}
-                  onFolderClick={folderActions?.["on-folder-click"]}
-                  onFileClick={fileActions?.["on-file-click"]}
-                  datasetStructureSearchFilter={datasetStructureSearchFilter}
-                  isFolderSelected={folderActions?.["is-folder-selected"]}
-                  isFileSelected={fileActions?.["is-file-selected"]}
-                  allowStructureEditing={allowStructureEditing}
-                />
-              )
-            )}
-            {naturalSort(Object.keys(renderDatasetStructureJSONObj?.files || {})).map(
-              (fileName) => (
-                <FileItem
-                  key={fileName}
-                  name={fileName}
-                  content={renderDatasetStructureJSONObj.files[fileName]}
-                  onFileClick={fileActions?.["on-file-click"]}
-                  isFileSelected={fileActions?.["is-file-selected"]}
-                  allowStructureEditing={allowStructureEditing}
-                />
-              )
+            {searchDebounceIsActive ? (
+              <Center w="100%">
+                <Loader size="md" m="xs" />
+              </Center>
+            ) : (
+              <>
+                {naturalSort(Object.keys(renderDatasetStructureJSONObj?.folders || {})).map(
+                  (folderName) => (
+                    <FolderItem
+                      key={folderName}
+                      name={folderName}
+                      content={renderDatasetStructureJSONObj.folders[folderName]}
+                      onFolderClick={folderActions?.["on-folder-click"]}
+                      onFileClick={fileActions?.["on-file-click"]}
+                      datasetStructureSearchFilter={datasetStructureSearchFilter}
+                      isFolderSelected={folderActions?.["is-folder-selected"]}
+                      isFileSelected={fileActions?.["is-file-selected"]}
+                      allowStructureEditing={allowStructureEditing}
+                    />
+                  )
+                )}
+                {naturalSort(Object.keys(renderDatasetStructureJSONObj?.files || {})).map(
+                  (fileName) => (
+                    <FileItem
+                      key={fileName}
+                      name={fileName}
+                      content={renderDatasetStructureJSONObj.files[fileName]}
+                      onFileClick={fileActions?.["on-file-click"]}
+                      isFileSelected={fileActions?.["is-file-selected"]}
+                      allowStructureEditing={allowStructureEditing}
+                    />
+                  )
+                )}
+              </>
             )}
           </>
         )}

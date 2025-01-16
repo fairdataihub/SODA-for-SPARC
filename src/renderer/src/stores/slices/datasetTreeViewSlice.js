@@ -31,64 +31,68 @@ const traverseStructureByPath = (structure, pathToRender) => {
 };
 
 // Determines if a folder or its subfolders/files match the search filter
-const folderObjMatchesSearch = (folderObj, searchFilter) => {
-  if (!searchFilter) {
-    return { matchesDirectly: true, matchesFilesDirectly: true, passThrough: false };
-  }
-
-  const folderRelativePath = folderObj.relativePath.toLowerCase();
+const folderMatchesSearch = (folder, searchFilter) => {
+  const folderRelativePath = folder.relativePath.toLowerCase();
   const matchesDirectly = folderRelativePath.includes(searchFilter);
-  const matchesFilesDirectly = Object.values(folderObj.files || {}).some((file) =>
+  const matchesFilesDirectly = Object.values(folder.files || {}).some((file) =>
     file.relativePath.toLowerCase().includes(searchFilter)
   );
-  const subfolderMatches = Object.values(folderObj.folders || {}).some((subFolder) => {
-    const result = folderObjMatchesSearch(subFolder, searchFilter);
-    return result.matchesDirectly || result.matchesFilesDirectly || result.passThrough;
-  });
-  const passThrough = !matchesDirectly && !matchesFilesDirectly && subfolderMatches;
+  const subfolderMatches = Object.values(folder.folders || {}).some((subFolder) =>
+    folderMatchesSearch(subFolder, searchFilter)
+  );
 
-  return { matchesDirectly, matchesFilesDirectly, passThrough };
+  return { matchesDirectly, matchesFilesDirectly, subfolderMatches };
 };
 
-// Filters the dataset structure based on the current search filter
-const filterStructure = (structure, searchFilter) => {
-  if (!searchFilter) return structure;
+// Determines if a folder should be kept or pruned based on search filter
+const pruneFolder = (folder, searchFilter) => {
+  // Check if the folder itself or its contents match the search filter
+  const { matchesDirectly, matchesFilesDirectly, subfolderMatches } = folderMatchesSearch(
+    folder,
+    searchFilter
+  );
 
-  const pruneStructure = (folderObj, searchFilter) => {
-    const { matchesDirectly, matchesFilesDirectly, passThrough } = folderObjMatchesSearch(
-      folderObj,
-      searchFilter
-    );
+  // If nothing matches and the folder has no subfolders or files to pass through, return null
+  if (!matchesDirectly && !matchesFilesDirectly && !subfolderMatches) return null;
 
-    // If the folder does not match and is not a pass-through, return null (exclude it)
-    if (!matchesDirectly && !matchesFilesDirectly && !passThrough) return null;
+  // Mark if the folder should pass through (i.e., it has matching subfolders or files but itself does not match)
+  const passThrough = !matchesDirectly && !matchesFilesDirectly && subfolderMatches;
 
-    // If the folder is pass-through, it should still be included in the structure
-    return produce(folderObj, (draft) => {
-      // If it's a pass-through, we include it even if it doesn't match directly
-      if (passThrough) {
-        console.log("Pass-through folder:", draft.relativePath); // Debug log
-        draft.folderIsPassThrough = true; // Mark it as pass-through in the JSON
-      }
-
-      // Recursively prune subfolders that don't match
-      for (const subFolder in draft.folders || {}) {
-        if (!pruneStructure(draft.folders[subFolder], searchFilter)) {
-          delete draft.folders[subFolder];
-        }
-      }
-
-      // Remove files that don't match the filter
-      for (const fileName in draft.files || {}) {
-        if (!draft.files[fileName].relativePath.toLowerCase().includes(searchFilter)) {
-          delete draft.files[fileName];
-        }
-      }
-    });
+  // Keep the folder and its properties
+  const prunedFolder = {
+    ...folder,
+    matchesDirectly,
+    matchesFilesDirectly,
+    passThrough,
   };
 
-  // Start the filtering process
-  return pruneStructure(structure, searchFilter.toLowerCase());
+  // Prune subfolders recursively
+  if (prunedFolder.folders) {
+    prunedFolder.folders = Object.entries(prunedFolder.folders)
+      .map(([key, subFolder]) => {
+        const prunedSubFolder = pruneFolder(subFolder, searchFilter);
+        if (!prunedSubFolder) return null;
+        return { [key]: prunedSubFolder };
+      })
+      .filter(Boolean)
+      .reduce((acc, curr) => ({ ...acc, ...curr }), {});
+  }
+
+  // Prune files based on the search filter
+  if (prunedFolder.files) {
+    prunedFolder.files = Object.entries(prunedFolder.files)
+      .filter(([_, file]) => file.relativePath.toLowerCase().includes(searchFilter))
+      .reduce((acc, [key, file]) => ({ ...acc, [key]: file }), {});
+  }
+
+  return prunedFolder;
+};
+
+// Filter structure based on search filter
+const filterStructure = (structure, searchFilter) => {
+  if (!searchFilter) return structure;
+  const lowerCaseSearchFilter = searchFilter.toLowerCase();
+  return pruneFolder(structure, lowerCaseSearchFilter);
 };
 
 // Updates the dataset search filter and modifies the rendered structure
@@ -96,7 +100,9 @@ export const setDatasetStructureSearchFilter = (searchFilter) => {
   const globalStore = useGlobalStore.getState();
 
   const originalStructure = globalStore.datasetStructureJSONObj;
-  const structureToFilter = traverseStructureByPath(originalStructure, globalStore.pathToRender);
+  let structureToFilter = traverseStructureByPath(originalStructure, globalStore.pathToRender);
+  structureToFilter = JSON.parse(JSON.stringify(structureToFilter)); // Avoid proxy-related issues
+
   const filteredStructure = filterStructure(structureToFilter, searchFilter);
 
   useGlobalStore.setState({

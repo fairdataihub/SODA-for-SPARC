@@ -95,3 +95,27 @@ export const moveFoldersToTargetLocation = (
   // Update the tree view structure to reflect the changes.
   setTreeViewDatasetStructure(window.datasetStructureJSONObj);
 };
+
+export const moveFilesToTargetLocation = (arrayOfRelativePathsToMove, destionationRelativePath) => {
+  const {
+    parentFolder: destinationParentFolder,
+    itemName: destinationItemName,
+    itemObject: destinationItemObject,
+  } = getItemAtPath(destionationRelativePath, "folder");
+
+  for (const relativePathToMove of arrayOfRelativePathsToMove) {
+    const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToMove, "file");
+    console.log("parentFolder for file", parentFolder);
+    console.log("itemName for file", itemName);
+    console.log("itemObject for file", itemObject);
+
+    // Move the file to the destination folder.
+    destinationItemObject["files"][itemName] = itemObject;
+
+    // Remove the file from its original location.
+    delete parentFolder["files"][itemName];
+  }
+
+  // Update the tree view structure to reflect the changes.
+  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
+};

@@ -85,6 +85,7 @@ import {
   blockedMessage,
   hostFirewallMessage,
 } from "../check-firewall/checkFirewall";
+import { setDatasetEntityObj } from "../../stores/slices/datasetEntitySelectorSlice";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -4163,41 +4164,52 @@ organizeDSaddFolders.addEventListener("click", function () {
 // Event listener for when folder(s) are imported into the file explorer
 window.electron.ipcRenderer.on(
   "selected-folders-organize-datasets",
-  async (event, importedFolders) => {
+  async (event, { filePaths: importedFolders, importRelativePath }) => {
     try {
-      const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
-      console.log("Importing folders at path", currentFileExplorerPath);
+      if (!importRelativePath) {
+        throw new Error("The 'importRelativePath' property is missing in the response.");
+      }
+
+      // Use the current file explorer path or the provided relative path
+      const currentFileExplorerPath = `dataset_root/${importRelativePath}`;
+
+      console.log("currentFileExplorerPath we are merging into at", currentFileExplorerPath);
+
       const builtDatasetStructureFromImportedFolders =
         await window.buildDatasetStructureJsonFromImportedData(
           importedFolders,
           currentFileExplorerPath
         );
+
       console.log(
         "builtDatasetStructureFromImportedFolders after importing data",
         builtDatasetStructureFromImportedFolders
       );
+
       // Add the imported folders to the dataset structure
       await mergeLocalAndRemoteDatasetStructure(
         builtDatasetStructureFromImportedFolders,
         currentFileExplorerPath
       );
 
-      // Step 4: Update successful, show success message
+      // Show success message
       window.notyf.open({
         type: "success",
         message: `Data successfully imported`,
         duration: 3000,
       });
-      /*await mergeNewDatasetStructureToExistingDatasetStructureAtPath(
-      builtDatasetStructureFromImportedFolders,
-      currentFileExplorerPath
-    );*/
     } catch (error) {
       console.error("Error importing folders", error);
+
+      // Optionally show an error notification
+      window.notyf.open({
+        type: "error",
+        message: `Error importing data: ${error.message}`,
+        duration: 3000,
+      });
     }
   }
 );
-
 /* ################################################################################## */
 /* ################################################################################## */
 /* ################################################################################## */
@@ -4801,7 +4813,7 @@ const mergeLocalAndRemoteDatasetStructure = async (
   );
   console.log("currentPathArray", currentPathArray.slice(1));
 
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj, currentPathArray.slice(1));
+  setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
 };
 
 const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (

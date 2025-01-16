@@ -68,13 +68,13 @@ const ContextMenu = () => {
     <div id="context-menu" style={menuStyles}>
       <Menu opened position="top" offset={5} styles={{ dropdown: menuStyles }}>
         <Menu.Dropdown>
-          <Group position="apart" spacing="sm">
+          <Group position="start">
             {contextMenuItemType === "folder" ? (
               <IconFolder size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
             ) : (
               <IconFolderOpen size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
             )}
-            <Text fw={500} size="md">
+            <Text fw={300} size="md">
               {contextMenuItemName}
             </Text>
           </Group>
@@ -85,7 +85,7 @@ const ContextMenu = () => {
               closeContextMenu();
             }}
           >
-            Move
+            Move {contextMenuItemType}
           </Menu.Item>
           <Menu.Item
             onClick={() => {
@@ -98,10 +98,17 @@ const ContextMenu = () => {
               closeContextMenu();
             }}
           >
-            Delete
+            Delete {contextMenuItemType}
           </Menu.Item>
           {contextMenuItemType === "folder" && (
-            <Menu.Item onClick={() => console.log("Import data")}>
+            <Menu.Item
+              onClick={(e) => {
+                e.preventDefault();
+                window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
+                  importRelativePath: contextMenuItemData.relativePath,
+                });
+              }}
+            >
               Import data into {contextMenuItemName}
             </Menu.Item>
           )}

@@ -593,17 +593,31 @@ ipcMain.on("open-files-organize-datasets-dialog", async (event) => {
   }
 });
 
-ipcMain.on("open-folders-organize-datasets-dialog", async (event) => {
+ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
+  if (!args?.importRelativePath) {
+    throw new Error("The 'importRelativePath' property is required but was not provided.");
+  }
+
+  console.log("args.importRelativePath:", args.importRelativePath);
+
   let mainWindow = BrowserWindow.getFocusedWindow();
+
+  const importRelativePath = args.importRelativePath;
 
   let folders = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory", "multiSelections"],
-    title: "Import a folder",
+    title: `Import a folder to ${importRelativePath}`,
   });
 
-  if (folders) {
-    mainWindow.webContents.send("selected-folders-organize-datasets", folders.filePaths);
+  if (folders.canceled) {
+    return; // Exit if the dialog is canceled
   }
+
+  // Send the selected folders and the relative path back to the renderer
+  mainWindow.webContents.send("selected-folders-organize-datasets", {
+    filePaths: folders.filePaths,
+    importRelativePath,
+  });
 });
 
 // Generate manifest file locally
