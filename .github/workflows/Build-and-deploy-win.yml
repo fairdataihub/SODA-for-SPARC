@@ -43,7 +43,22 @@ jobs:
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
 
-      - name: Deploy the app to GitHub
+      - name: Sign files with Trusted Signing
+        uses: azure/trusted-signing-action@v0.5.1
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: https://eus.codesigning.azure.net/
+          trusted-signing-account-name: fdih-signing-account
+          certificate-profile-name: california-medical-innovations-institute
+          files-folder: ${{ github.workspace }}\App\App\bin\Release\net8.0-windows
+          files-folder-filter: exe,dll
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+
+      - name: Deploy the app to GitHubWh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
