@@ -64,35 +64,39 @@ const EntitySelectorPage = ({
     window.electron.ipcRenderer.send("open-entity-id-import-selector");
   };
 
-  const renderEntityList = (width) =>
-    entityList.length > 0 ? (
-      <Stack w={width}>
-        {entityList.map((entityName) => (
-          <Group
-            key={entityName}
-            justify="space-between"
-            px="sm"
-            py="xs"
-            style={{ borderBottom: "1px solid #eaeaea" }}
-          >
-            <Text>{entityName}</Text>
-            <Group gap="xs">
-              <ActionIcon color="blue">
-                <IconEdit size={16} />
-              </ActionIcon>
-              <ActionIcon color="red" onClick={() => handleRemoveEntity(entityName)}>
-                <IconTrash size={16} />
-              </ActionIcon>
-            </Group>
-          </Group>
-        ))}
-      </Stack>
-    ) : (
-      <Text align="center" c="dimmed" px="sm" py="xs">
-        No {entityTypeStringPlural} added yet.
-      </Text>
-    );
-
+  const renderEntityList = (width) => (
+    <ScrollArea h={700} type="auto">
+      <Box>
+        {entityList.length > 0 ? (
+          <Stack w={width}>
+            {entityList.map((entityName) => (
+              <Group
+                key={entityName}
+                justify="space-between"
+                px="sm"
+                py="xs"
+                style={{ borderBottom: "1px solid #eaeaea" }}
+              >
+                <Text>{entityName}</Text>
+                <Group gap="xs">
+                  <ActionIcon color="blue">
+                    <IconEdit size={16} />
+                  </ActionIcon>
+                  <ActionIcon color="red" onClick={() => handleRemoveEntity(entityName)}>
+                    <IconTrash size={16} />
+                  </ActionIcon>
+                </Group>
+              </Group>
+            ))}
+          </Stack>
+        ) : (
+          <Text align="center" c="dimmed" px="sm" py="xs">
+            No {entityTypeStringPlural} added yet.
+          </Text>
+        )}
+      </Box>
+    </ScrollArea>
+  );
   return (
     <GuidedModePage pageHeader={pageName}>
       <InstructionalTextSection textSectionKey={entityTypePrefix} />
@@ -128,9 +132,7 @@ const EntitySelectorPage = ({
                 </Group>
               </Stack>
 
-              <ScrollArea height={300} type="auto">
-                <Box>{renderEntityList()}</Box>
-              </ScrollArea>
+              {renderEntityList()}
             </Tabs.Panel>
 
             <Tabs.Panel value="spreadsheet">

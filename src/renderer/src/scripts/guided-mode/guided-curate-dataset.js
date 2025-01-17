@@ -612,10 +612,16 @@ const savePageChanges = async (pageBeingLeftID) => {
 
     // Check if the page being left is part of a page set
     const pageBeingLeftElement = document.getElementById(pageBeingLeftID);
-    const pageSet = pageBeingLeftElement.dataset.pageSet;
+    const pageBeingLeftDataSet = pageBeingLeftElement.dataset;
 
-    if (pageSet) {
-      if (pageSet === "entity-selector-page") {
+    if (pageBeingLeftDataSet.componentType) {
+      const pageBeingLeftComponentType = pageBeingLeftDataSet.componentType;
+      if (pageBeingLeftComponentType === "entity-management-page") {
+        const datasetEntityObj = getDatasetEntityObj();
+        console.log("datasetEntityObj", datasetEntityObj);
+      }
+      if (pageBeingLeftComponentType === "entity-selection-page") {
+        console.log("BONGO");
       }
     }
 
@@ -5066,6 +5072,7 @@ window.openPage = async (targetPageID) => {
   const targetPage = document.getElementById(targetPageID);
   const targetPageName = targetPage.dataset.pageName || targetPageID;
   const targetPageParentTab = targetPage.closest(".guided--parent-tab");
+  const targetPageDataset = targetPage.dataset;
 
   //when the promise completes there is a catch for error handling
   //upon resolving it will set navLoadingstate to false
@@ -5143,6 +5150,16 @@ window.openPage = async (targetPageID) => {
     if (currentActiveProgressionTab) {
       if (currentActiveProgressionTab.id === "curation-preparation-progression-tab") {
       } else {
+      }
+    }
+
+    if (targetPageDataset.componentType) {
+      const targetPageComponentType = targetPageDataset.componentType;
+      if (targetPageComponentType === "entity-management-page") {
+        console.log("DINGO");
+      }
+      if (targetPageComponentType === "entity-selection-page") {
+        console.log("DONGO");
       }
     }
 

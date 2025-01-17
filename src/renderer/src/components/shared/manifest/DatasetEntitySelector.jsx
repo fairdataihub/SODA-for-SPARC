@@ -111,7 +111,7 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
   });
 };
 
-const DatasetEntitySelector = () => {
+const OldDatasetEntitySelector = () => {
   const { entityList, activeEntity, entityType, datasetEntityObj } = useGlobalStore((state) => ({
     entityList: state.entityList,
     activeEntity: state.activeEntity,
@@ -186,4 +186,4 @@ const DatasetEntitySelector = () => {
   );
 };
 
-export default DatasetEntitySelector;
+export default OldDatasetEntitySelector;

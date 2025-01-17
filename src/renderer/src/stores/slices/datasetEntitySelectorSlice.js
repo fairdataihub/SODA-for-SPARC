@@ -14,7 +14,7 @@ export const datasetEntitySelectorSlice = (set) => ({
 });
 
 // Reset the entity selector state to its initial configuration
-export const resetDatasetEntitySelectorState = () => {
+export const resetOldDatasetEntitySelectorState = () => {
   useGlobalStore.setState(
     produce((state) => {
       Object.assign(state, initialState);

@@ -1403,6 +1403,7 @@
           data-entity-type-string-plural="subjects"
           data-entity-type-prefix="sub-"
         ></div>
+        <!--
         <div
           id="guided-sample-entity-addition-tab"
           data-page-name="Samples management"
@@ -1433,107 +1434,49 @@
           data-entity-type-string-plural="sites"
           data-entity-type-prefix="site-"
         ></div>
-
+        -->
         <div
-          id="guided-samples-addition-tab"
+          id="guided-subject-entity-selection-tab"
+          data-page-name="Subjects data selection"
           class="guided--page"
-          data-page-name="Samples addition"
-        >
-          <h1 class="text-sub-step-title">Samples specification</h1>
-          <div class="guided--section">
-            <p class="help-text">
-              If any measurements were taken from samples collected from subjects (e.g. tissue
-              samples), you can specify the samples in the interface below.
-            </p>
-          </div>
-          <div class="guided--section">
-            <label class="guided--form-label centered">
-              Did you collect data from samples in this study?
-            </label>
-            <div class="guided--radio-button-container">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-samples-page-subjects-have-samples"
-                data-next-element="guided-section-samples-tables"
-                data-button-config-value="dataset-contains-samples"
-                data-button-config-value-state="yes"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-samples-page-subjects-do-not-have-samples"
-                data-next-element="guided-section-no-samples"
-                data-button-config-value="dataset-contains-samples"
-                data-button-config-value-state="no"
-              >
-                No
-              </button>
-            </div>
-          </div>
-          <div class="guided--section" id="guided-section-samples-tables"></div>
-          <div class="guided--section" id="guided-section-no-samples">
-            <h2 class="guided--text-user-directions">
-              Click "<span class="next-button-span"></span>" to continue.
-            </h2>
-          </div>
-        </div>
-
+          data-component-type="entity-selection-page"
+          data-entity-type="subjects"
+          data-entity-type-string-singular="subject"
+          data-entity-type-string-plural="subjects"
+          data-entity-type-prefix="sub-"
+        ></div>
+        <!--
         <div
+          id="guided-sample-entity-selection-tab"
+          data-page-name="Samples data selection"
           class="guided--page"
-          id="guided-manifest-subject-entity-selector-tab"
-          data-page-name="Map data to Subjects"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Map data to Subjects</h1>
-            <p class="help-text">
-              The SPARC guidelines require all folders and files related to subjects to be mapped to
-              their respective subjects in the manifest file.
-            </p>
-            <p class="help-text">
-              To map folders and files to subjects in the interface below, first select a subject
-              from the list, then choose the folders and files associated with that subject.
-            </p>
-          </div>
-          <div data-component-type="manifest-entity-selector" class="guided--section"></div>
-        </div>
+          data-component-type="entity-selection-page"
+          data-entity-type="samples"
+          data-entity-type-string-singular="sample"
+          data-entity-type-string-plural="samples"
+          data-entity-type-prefix="sam-"
+        ></div>
         <div
+          id="guided-performances-entity-selection-tab"
+          data-page-name="Performances data selection"
           class="guided--page"
-          id="guided-manifest-sample-entity-selector-tab"
-          data-page-name="Map data to Samples"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Map data to Samples</h1>
-            <p class="help-text">
-              The SPARC guidelines require all folders and files related to samples to be mapped to
-              their respective subjects in the manifest file.
-            </p>
-            <p class="help-text">
-              To map folders and files to subjects in the interface below, first select a subject
-              from the list, then choose the folders and files associated with that subject.
-            </p>
-          </div>
-          <div data-component-type="manifest-entity-selector" class="guided--section"></div>
-        </div>
+          data-component-type="entity-selection-page"
+          data-entity-type="performances"
+          data-entity-type-string-singular="performance"
+          data-entity-type-string-plural="performances"
+          data-entity-type-prefix="perf-"
+        ></div>
         <div
+          id="guided-site-entity-selection-tab"
+          data-page-name="Sites data selection"
           class="guided--page"
-          id="guided-manifest-performance-entity-selector-tab"
-          data-page-name="Map data to Performances"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Map data to Performances</h1>
-            <p class="help-text">
-              The SPARC guidelines require all folders and files related to performances to be
-              mapped to their respective performances in the manifest file.
-            </p>
-            <p class="help-text">
-              To map folders and files to performances in the interface below, first select a
-              performance from the list, then choose the folders and files associated with that
-              performance.
-            </p>
-          </div>
-          <div data-component-type="manifest-entity-selector" class="guided--section"></div>
-        </div>
+          data-component-type="entity-selection-page"
+          data-entity-type="sites"
+          data-entity-type-string-singular="site"
+          data-entity-type-string-plural="sites"
+          data-entity-type-prefix="site-"
+        ></div>
+        -->
         <div
           class="guided--page"
           id="guided-source-derivative-folders-and-files-selector-tab"
@@ -1566,7 +1509,7 @@
               move it to derivative/processed or derivative/mouse_1/microscopy/processed?
             </p>
           </div>
-          <div data-component-type="manifest-entity-selector" class="guided--section"></div>
+          <div data-component-typez="manifest-entity-selector" class="guided--section"></div>
         </div>
 
         <!--<div

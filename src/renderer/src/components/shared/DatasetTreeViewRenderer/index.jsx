@@ -100,13 +100,13 @@ const FolderItem = ({
   allowStructureEditing,
   folderClickHoverText,
 }) => {
-  const { folderMoveModeIsActive, contextMenuItemType, contextMenuItemData } = useGlobalStore(
-    (state) => ({
+  const { folderMoveModeIsActive, contextMenuItemType, contextMenuItemData, contextMenuIsOpened } =
+    useGlobalStore((state) => ({
       folderMoveModeIsActive: state.folderMoveModeIsActive,
       contextMenuItemType: state.contextMenuItemType,
       contextMenuItemData: state.contextMenuItemData,
-    })
-  );
+      contextMenuIsOpened: state.contextMenuIsOpened,
+    }));
 
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
@@ -137,6 +137,9 @@ const FolderItem = ({
 
   const folderIsPassThrough = content.passThrough;
 
+  const folderRelativePathEqualsContextMenuItemRelativePath =
+    contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath;
+
   return (
     <Stack gap={1} ml="xs">
       <Group
@@ -144,7 +147,11 @@ const FolderItem = ({
         justify="flex-start"
         onContextMenu={handleFileContextMenuOpen}
         ref={ref}
-        bg={hovered ? "rgba(0, 0, 0, 0.05)" : undefined}
+        bg={
+          hovered || folderRelativePathEqualsContextMenuItemRelativePath
+            ? "rgba(0, 0, 0, 0.05)"
+            : undefined
+        }
       >
         {folderIsEmpty || !isOpen ? (
           <IconFolder
@@ -165,7 +172,7 @@ const FolderItem = ({
               <Tooltip label={folderClickHoverText || "Select this folder"} zIndex={2999}>
                 <Checkbox
                   readOnly
-                  checked={false}
+                  checked={isFolderSelected?.(name, content) || false}
                   onClick={() => onFolderClick?.(name, content, isFolderSelected?.(name, content))}
                 />
               </Tooltip>
@@ -320,7 +327,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
         leftSection={<IconSearch stroke={1.5} />}
         mb="sm"
       />
-      {datasetStructureSearchFilter && !renderObjIsEmpty && !folderMoveModeIsActive && (
+      {/*datasetStructureSearchFilter && !renderObjIsEmpty && !folderMoveModeIsActive && (
         <Group gap={3} align="center" bg="aliceblue" p="xs">
           {fileActions && (
             <Button size="xs" color="blue" variant="outline" onClick={handleAllFilesSelectClick}>
@@ -338,7 +345,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
             </Button>
           )}
         </Group>
-      )}
+      )*/}
       {folderMoveModeIsActive && (
         /* make A ui that allows the user to cancel the move operation */
         <Group justify="space-between" bg="aliceblue" p="xs">

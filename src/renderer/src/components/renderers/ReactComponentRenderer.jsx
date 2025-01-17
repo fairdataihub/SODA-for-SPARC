@@ -3,12 +3,12 @@ import SodaComponentWrapper from "../utils/SodaComponentWrapper";
 import ExternalLink from "../buttons/ExternalLink";
 import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
-import EntitySelectorPage from "../pages/EntitySelector";
 import DropdownSelect from "../common/DropdownSelect";
 import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
-import DatasetEntitySelector from "../shared/manifest/DatasetEntitySelector";
+import EntitySelectorPage from "../pages/EntitySelector";
+import EntityDataSelectorPage from "../pages/EntityDataSelector";
 import DatasetEntityManager from "../shared/manifest/DatasetEntityManager";
 import DataImporter from "../shared/DataImporter";
 import { Divider } from "@mantine/core";
@@ -90,30 +90,6 @@ const componentTypeRenderers = {
       </SodaComponentWrapper>
     );
   },
-  "manifest-entity-selector": (componentSlot) => {
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <DatasetEntitySelector />
-      </SodaComponentWrapper>
-    );
-  },
-
-  "manifest-entity-manager": (componentSlot) => {
-    const props = {
-      entityType: componentSlot.getAttribute("data-entity-type"),
-      entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
-      entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
-      entityTypePrefix: componentSlot.getAttribute("data-entity-type-prefix"),
-    };
-    console.log("bing", props);
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <DatasetEntityManager {...props} />
-      </SodaComponentWrapper>
-    );
-  },
 
   "data-importer": (componentSlot) => {
     const root = createRoot(componentSlot);
@@ -136,6 +112,22 @@ const componentTypeRenderers = {
     root.render(
       <SodaComponentWrapper>
         <EntitySelectorPage {...props} />
+      </SodaComponentWrapper>
+    );
+  },
+  "entity-selection-page": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    const props = {
+      pageName: componentSlot.getAttribute("data-page-name"),
+      entityType: componentSlot.getAttribute("data-entity-type"),
+      entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
+      entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
+      entityTypePrefix: componentSlot.getAttribute("data-entity-type-prefix"),
+    };
+
+    root.render(
+      <SodaComponentWrapper>
+        <EntityDataSelectorPage {...props} />
       </SodaComponentWrapper>
     );
   },
