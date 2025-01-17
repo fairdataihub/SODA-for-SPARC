@@ -3,6 +3,7 @@ import SodaComponentWrapper from "../utils/SodaComponentWrapper";
 import ExternalLink from "../buttons/ExternalLink";
 import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
+import EntitySelectorPage from "../pages/EntitySelector";
 import DropdownSelect from "../common/DropdownSelect";
 import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
@@ -99,20 +100,17 @@ const componentTypeRenderers = {
   },
 
   "manifest-entity-manager": (componentSlot) => {
-    const entityType = componentSlot.getAttribute("data-entity-type");
-    const entityTypeStringSingular = componentSlot.getAttribute("data-entity-type-string-singular");
-    const entityTypeStringPlural = componentSlot.getAttribute("data-entity-type-string-plural");
-    const entityTypePrefix = componentSlot.getAttribute("data-entity-type-prefix");
-
+    const props = {
+      entityType: componentSlot.getAttribute("data-entity-type"),
+      entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
+      entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
+      entityTypePrefix: componentSlot.getAttribute("data-entity-type-prefix"),
+    };
+    console.log("bing", props);
     const root = createRoot(componentSlot);
     root.render(
       <SodaComponentWrapper>
-        <DatasetEntityManager
-          entityType={entityType}
-          entityTypeStringSingular={entityTypeStringSingular}
-          entityTypeStringPlural={entityTypeStringPlural}
-          entityTypePrefix={entityTypePrefix}
-        />
+        <DatasetEntityManager {...props} />
       </SodaComponentWrapper>
     );
   },
@@ -122,6 +120,21 @@ const componentTypeRenderers = {
     root.render(
       <SodaComponentWrapper>
         <DataImporter />
+      </SodaComponentWrapper>
+    );
+  },
+  "entity-management-page": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    const props = {
+      entityType: componentSlot.getAttribute("data-entity-type"),
+      entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
+      entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
+      entityTypePrefix: componentSlot.getAttribute("data-entity-type-prefix"),
+    };
+
+    root.render(
+      <SodaComponentWrapper>
+        <EntitySelectorPage {...props} />
       </SodaComponentWrapper>
     );
   },

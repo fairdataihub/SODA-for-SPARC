@@ -1,76 +1,176 @@
+import { useState } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import DropDownNote from "../../utils/ui/DropDownNote";
-import { TextInput, Textarea, Text } from "@mantine/core";
-import ExternalLink from "../../buttons/ExternalLink";
-import useGlobalStore from "../../../stores/globalStore";
+import { IconPlus, IconTrash, IconEdit } from "@tabler/icons-react";
 import {
-  setGuidedDatasetName,
-  setGuidedDatasetSubtitle,
-} from "../../../stores/slices/guidedModeSlice";
+  TextInput,
+  Textarea,
+  ActionIcon,
+  Text,
+  Tabs,
+  Stack,
+  Group,
+  Button,
+  ScrollArea,
+  Box,
+} from "@mantine/core";
+import useGlobalStore from "../../../stores/globalStore";
+import DatasetTreeViewRenderer from "../../shared/DatasetTreeViewRenderer";
+import InstructionalTextSection from "../../common/InstructionalTextSection";
+import {
+  addEntityToEntityList,
+  removeEntityFromEntityList,
+} from "../../../stores/slices/datasetEntitySelectorSlice";
 
-const NameAndSubtitlePage = () => {
-  const { guidedDatasetName, guidedDatasetSubtitle } = useGlobalStore((state) => ({
-    guidedDatasetName: state.guidedDatasetName,
-    guidedDatasetSubtitle: state.guidedDatasetSubtitle,
+const EntitySelectorPage = ({
+  entityType,
+  entityTypeStringSingular,
+  entityTypeStringPlural,
+  entityTypePrefix,
+}) => {
+  const { datasetEntityObj } = useGlobalStore((state) => ({
+    datasetEntityObj: state.datasetEntityObj,
   }));
+  const [newEntityName, setNewEntityName] = useState("");
+  const [activeTab, setActiveTab] = useState("manual");
+
+  const isNewEntityNameValid = window.evaluateStringAgainstSdsRequirements?.(
+    newEntityName,
+    "string-adheres-to-identifier-conventions"
+  );
+
+  const entityList = Object.keys(datasetEntityObj?.[entityType] || {});
+
+  const handleAddEntity = () => {
+    const trimmedName = newEntityName.trim();
+    if (trimmedName) {
+      const formattedName =
+        entityTypePrefix && !trimmedName.startsWith(entityTypePrefix)
+          ? `${entityTypePrefix}${trimmedName}`
+          : trimmedName;
+      addEntityToEntityList(entityType, formattedName);
+      setNewEntityName("");
+    }
+  };
+
+  const handleRemoveEntity = (entityName) => {
+    removeEntityFromEntityList(entityType, entityName);
+  };
+
+  const handleImportEntitiesFromLocalFoldersClick = () => {
+    window.electron.ipcRenderer.send("open-entity-id-import-selector");
+  };
+
+  const renderEntityList = (width) =>
+    entityList.length > 0 ? (
+      <Stack w={width}>
+        {entityList.map((entityName) => (
+          <Group
+            key={entityName}
+            justify="space-between"
+            px="sm"
+            py="xs"
+            style={{ borderBottom: "1px solid #eaeaea" }}
+          >
+            <Text>{entityName}</Text>
+            <Group gap="xs">
+              <ActionIcon color="blue">
+                <IconEdit size={16} />
+              </ActionIcon>
+              <ActionIcon color="red" onClick={() => handleRemoveEntity(entityName)}>
+                <IconTrash size={16} />
+              </ActionIcon>
+            </Group>
+          </Group>
+        ))}
+      </Stack>
+    ) : (
+      <Text align="center" c="dimmed" px="sm" py="xs">
+        No {entityTypeStringPlural} added yet.
+      </Text>
+    );
+
   return (
-    <GuidedModePage pageHeader="Dataset name and subtitle">
+    <GuidedModePage pageHeader={`${entityTypeStringSingular} management`}>
+      <InstructionalTextSection textSectionKey={entityTypePrefix} />
       <GuidedModeSection>
-        <TextInput
-          label="Dataset Name:"
-          placeholder="Enter dataset name"
-          value={guidedDatasetName}
-          onChange={(event) => setGuidedDatasetName(event.target.value)}
-        />
-        <DropDownNote
-          dropDownIcon="info"
-          dropDownButtonText="What is the dataset name used for?"
-          dropDownNote={
-            <Text>
-              This field will be displayed in public as the title of the dataset once it is
-              published on the
-              <ExternalLink
-                href="https://sparc.science/"
-                buttonText="SPARC Data Portal"
-                buttonType="anchor"
-              />
-              . Please make sure that your dataset name is unique and relatively informative.
-            </Text>
-          }
-        />
-      </GuidedModeSection>
-      <GuidedModeSection>
-        <Textarea
-          label="Dataset Subtitle:"
-          placeholder="Enter dataset subtitle"
-          autosize
-          minRows={5}
-          value={guidedDatasetSubtitle}
-          onChange={(event) => setGuidedDatasetSubtitle(event.target.value)}
-          maxLength={255}
-        />
-        <Text align="right" style={{ marginTop: "-35px", zIndex: "10", marginRight: "10px" }}>
-          {255 - guidedDatasetSubtitle.length} characters remaining
-        </Text>
-        <DropDownNote
-          dropDownIcon="info"
-          dropDownButtonText="What is the dataset subtitle used for?"
-          dropDownNote={
-            <Text>
-              This field will become the short description visible immediately under the title of
-              your dataset once it is published on the
-              <ExternalLink
-                href="https://sparc.science/"
-                buttonText="SPARC Data Portal"
-                buttonType="anchor"
-              />
-            </Text>
-          }
-        />
+        <Group>
+          <Tabs color="indigo" variant="pills" value={activeTab} onChange={setActiveTab} w="100%">
+            <Tabs.List mb="md">
+              <Tabs.Tab value="manual">manual</Tabs.Tab>
+              <Tabs.Tab value="spreadsheet">spreadsheet</Tabs.Tab>
+              <Tabs.Tab value="folderSelect">folderSelect</Tabs.Tab>
+            </Tabs.List>
+            <Tabs.Panel value="manual">
+              <Stack spacing="xs" mb="md">
+                <Group spacing="xs" align="start" width="100%">
+                  <TextInput
+                    flex={1}
+                    placeholder={`Enter new ${entityTypeStringSingular} name`}
+                    value={newEntityName}
+                    onChange={(event) => setNewEntityName(event.currentTarget.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        handleAddEntity();
+                      }
+                    }}
+                    error={
+                      !isNewEntityNameValid &&
+                      `${entityTypeStringSingular} does not adhere to identifier conventions.`
+                    }
+                  />
+                  <Button onClick={handleAddEntity} leftIcon={<IconPlus />}>
+                    Add {entityTypeStringSingular}
+                  </Button>
+                </Group>
+              </Stack>
+
+              <ScrollArea height={300} type="auto">
+                <Box>{renderEntityList()}</Box>
+              </ScrollArea>
+            </Tabs.Panel>
+
+            <Tabs.Panel value="spreadsheet">
+              <Group spacing="xs" align="start" width="100%">
+                {renderEntityList("300px")}
+                <Button
+                  size="xs"
+                  color="blue"
+                  variant="outline"
+                  onClick={handleImportEntitiesFromLocalFoldersClick}
+                >
+                  Import {entityTypeStringSingular} IDs from local folders/files
+                </Button>
+              </Group>
+            </Tabs.Panel>
+
+            <Tabs.Panel value="folderSelect">
+              <Group spacing="xs" align="start" width="100%">
+                {renderEntityList("300px")}
+
+                <DatasetTreeViewRenderer
+                  folderActions={{
+                    "on-folder-click": (folderName, folderContents, folderIsSelected) => {
+                      console.log("folderName", folderName);
+                      console.log("folderContents", folderContents);
+                      console.log("folderIsSelected", folderIsSelected);
+                    },
+                    "is-folder-selected": (folderName, folderContents) => {
+                      /*
+                console.log("folderName", folderName);
+                console.log("folderContents", folderContents);
+                */
+                    },
+                  }}
+                />
+              </Group>
+            </Tabs.Panel>
+          </Tabs>
+        </Group>
       </GuidedModeSection>
     </GuidedModePage>
   );
 };
 
-export default NameAndSubtitlePage;
+export default EntitySelectorPage;
