@@ -1930,9 +1930,11 @@ const savePageChanges = async (pageBeingLeftID) => {
     if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
     }
 
-    if(pageBeingLeftID === "guided-ask-where-data-should-be-generated-tab") {
-      const datasetGenerationLocation = document.getElementById("guided-select-cloud-sync-folder-location-input").value;
-      window.sodaJSONObj["generate-dataset"]["path"]  = datasetGenerationLocation;
+    if (pageBeingLeftID === "guided-ask-where-data-should-be-generated-tab") {
+      const datasetGenerationLocation = document.getElementById(
+        "guided-select-cloud-sync-folder-location-input"
+      ).value;
+      window.sodaJSONObj["generate-dataset"]["path"] = datasetGenerationLocation;
     }
 
     if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
