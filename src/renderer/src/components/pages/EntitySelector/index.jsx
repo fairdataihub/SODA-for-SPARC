@@ -22,8 +22,10 @@ import {
   addEntityToEntityList,
   removeEntityFromEntityList,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
+import { naturalSort } from "../../shared/utils/util-functions";
 
 const EntitySelectorPage = ({
+  pageName,
   entityType,
   entityTypeStringSingular,
   entityTypeStringPlural,
@@ -92,7 +94,7 @@ const EntitySelectorPage = ({
     );
 
   return (
-    <GuidedModePage pageHeader={`${entityTypeStringSingular} management`}>
+    <GuidedModePage pageHeader={pageName}>
       <InstructionalTextSection textSectionKey={entityTypePrefix} />
       <GuidedModeSection>
         <Group>
@@ -152,16 +154,18 @@ const EntitySelectorPage = ({
                 <DatasetTreeViewRenderer
                   folderActions={{
                     "on-folder-click": (folderName, folderContents, folderIsSelected) => {
-                      console.log("folderName", folderName);
-                      console.log("folderContents", folderContents);
-                      console.log("folderIsSelected", folderIsSelected);
+                      const childFolderNames = Object.keys(folderContents.folders);
+                      console.log("childFolderNames: ", naturalSort(childFolderNames));
+
+                      for (const childFolderName of naturalSort(childFolderNames)) {
+                        const formattedName =
+                          entityTypePrefix && !childFolderName.startsWith(entityTypePrefix)
+                            ? `${entityTypePrefix}${childFolderName}`
+                            : childFolderName;
+                        addEntityToEntityList(entityType, formattedName);
+                      }
                     },
-                    "is-folder-selected": (folderName, folderContents) => {
-                      /*
-                console.log("folderName", folderName);
-                console.log("folderContents", folderContents);
-                */
-                    },
+                    "folder-click-hover-text": `Import ${entityTypeStringSingular} IDs from folders in this folder`,
                   }}
                 />
               </Group>

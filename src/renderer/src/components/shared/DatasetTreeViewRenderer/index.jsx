@@ -38,6 +38,14 @@ const ICON_SETTINGS = {
 const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEditing }) => {
   const { hovered, ref } = useHover();
 
+  const { contextMenuItemData, contextMenuIsOpened } = useGlobalStore((state) => ({
+    contextMenuItemData: state.contextMenuItemData,
+    contextMenuIsOpened: state.contextMenuIsOpened,
+  }));
+
+  const fileRelativePathEqualsContextMenuItemRelativePath =
+    contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath;
+
   const handleFileContextMenuOpen = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -57,7 +65,11 @@ const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEd
       ref={ref}
       gap="sm"
       justify="flex-start"
-      bg={isFileSelected?.(content) ? "#e3f2fd" : "transparent"}
+      bg={
+        hovered || fileRelativePathEqualsContextMenuItemRelativePath
+          ? "rgba(0, 0, 0, 0.05)"
+          : undefined
+      }
       onClick={() => onFileClick?.(name, content)}
       onContextMenu={handleFileContextMenuOpen}
       ml="sm"
@@ -86,6 +98,7 @@ const FolderItem = ({
   isFolderSelected,
   isFileSelected,
   allowStructureEditing,
+  folderClickHoverText,
 }) => {
   const { folderMoveModeIsActive, contextMenuItemType, contextMenuItemData } = useGlobalStore(
     (state) => ({
@@ -122,14 +135,17 @@ const FolderItem = ({
     !content ||
     (Object.keys(content.folders).length === 0 && Object.keys(content.files).length === 0);
 
-  const folderIsPassThrough = content.folderIsPassThrough === true;
-  if (folderIsPassThrough) {
-    console.log("Folder is pass through", name);
-  }
+  const folderIsPassThrough = content.passThrough;
 
   return (
     <Stack gap={1} ml="xs">
-      <Group ref={ref} gap={3} justify="flex-start" onContextMenu={handleFileContextMenuOpen}>
+      <Group
+        gap={3}
+        justify="flex-start"
+        onContextMenu={handleFileContextMenuOpen}
+        ref={ref}
+        bg={hovered ? "rgba(0, 0, 0, 0.05)" : undefined}
+      >
         {folderIsEmpty || !isOpen ? (
           <IconFolder
             size={ICON_SETTINGS.folderSize}
@@ -143,48 +159,50 @@ const FolderItem = ({
             onClick={toggleFolder}
           />
         )}
+        {!folderIsPassThrough && (
+          <>
+            {onFolderClick && !folderMoveModeIsActive && (
+              <Tooltip label={folderClickHoverText || "Select this folder"} zIndex={2999}>
+                <Checkbox
+                  readOnly
+                  checked={false}
+                  onClick={() => onFolderClick?.(name, content, isFolderSelected?.(name, content))}
+                />
+              </Tooltip>
+            )}
+            {folderMoveModeIsActive && (
+              <Tooltip label="Move data to this folder" zIndex={2999}>
+                <Checkbox
+                  readOnly
+                  disabled={content.relativePath.includes(contextMenuItemData.relativePath)}
+                  onClick={() => {
+                    contextMenuItemType === "folder"
+                      ? moveFoldersToTargetLocation(
+                          [contextMenuItemData.relativePath],
+                          content.relativePath
+                        )
+                      : moveFilesToTargetLocation(
+                          [contextMenuItemData.relativePath],
+                          content.relativePath
+                        );
 
-        {onFolderClick && !folderMoveModeIsActive && (
-          <Tooltip label="Select this folder" zIndex={2999}>
-            <Checkbox
-              readOnly
-              checked={false}
-              onClick={() => onFolderClick?.(name, content, isFolderSelected?.(name, content))}
-            />
-          </Tooltip>
-        )}
-        {folderMoveModeIsActive && (
-          <Tooltip label="Move data to this folder" zIndex={2999}>
-            <Checkbox
-              readOnly
-              disabled={content.relativePath.includes(contextMenuItemData.relativePath)}
-              onClick={() => {
-                contextMenuItemType === "folder"
-                  ? moveFoldersToTargetLocation(
-                      [contextMenuItemData.relativePath],
-                      content.relativePath
-                    )
-                  : moveFilesToTargetLocation(
-                      [contextMenuItemData.relativePath],
-                      content.relativePath
-                    );
-
-                setFolderMoveMode(false);
-              }}
-            />
-          </Tooltip>
+                    setFolderMoveMode(false);
+                  }}
+                />
+              </Tooltip>
+            )}
+          </>
         )}
         <Text
           size="md"
           px={5}
           onClick={toggleFolder}
           style={{
-            backgroundColor: hovered ? "#f5f5f5" : "transparent",
             borderRadius: "4px",
             cursor: "pointer",
             transition: "background-color 0.2s ease-in-out",
           }}
-          c={folderIsEmpty ? "gray" : "black"}
+          c={folderIsEmpty ? "gray" : folderIsPassThrough ? "silver" : "black"}
         >
           {name}
         </Text>
@@ -203,6 +221,7 @@ const FolderItem = ({
                 isFolderSelected={isFolderSelected}
                 isFileSelected={isFileSelected}
                 allowStructureEditing={allowStructureEditing}
+                folderClickHoverText={folderClickHoverText}
               />
             ))}
             {naturalSort(Object.keys(content?.files || {})).map((fileName) => (
@@ -292,7 +311,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
   const searchDebounceIsActive = datasetStructureSearchFilter !== inputSearchFilter;
 
   return (
-    <Paper padding="md" shadow="sm" radius="md" mih={200} p="sm">
+    <Paper padding="md" shadow="sm" radius="md" mih={200} p="sm" flex={1}>
       <TextInput
         label="Search files and folders:"
         placeholder="Search files and folders..."
@@ -365,6 +384,9 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
                       content={renderDatasetStructureJSONObj.folders[folderName]}
                       onFolderClick={folderActions?.["on-folder-click"]}
                       onFileClick={fileActions?.["on-file-click"]}
+                      folderClickHoverText={
+                        folderActions?.["folder-click-hover-text"] || "Select this folder"
+                      }
                       datasetStructureSearchFilter={datasetStructureSearchFilter}
                       isFolderSelected={folderActions?.["is-folder-selected"]}
                       isFileSelected={fileActions?.["is-file-selected"]}

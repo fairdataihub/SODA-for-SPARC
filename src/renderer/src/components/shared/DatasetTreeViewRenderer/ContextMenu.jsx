@@ -6,7 +6,7 @@ import {
   deleteFilesByRelativePath,
   deleteFoldersByRelativePath,
 } from "../../../stores/utils/folderAndFileActions";
-import { IconFolder, IconFolderOpen } from "@tabler/icons-react";
+import { IconFolder, IconFile } from "@tabler/icons-react";
 
 const ICON_SETTINGS = {
   folderColor: "#ADD8E6",
@@ -74,11 +74,11 @@ const ContextMenu = () => {
     <div id="context-menu" style={menuStyles}>
       <Menu opened position="top" offset={5} styles={{ dropdown: menuStyles }}>
         <Menu.Dropdown>
-          <Group position="start">
+          <Group position="start" gap={6}>
             {contextMenuItemType === "folder" ? (
               <IconFolder size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
             ) : (
-              <IconFolderOpen size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
+              <IconFile size={ICON_SETTINGS.fileSize} />
             )}
             <Text fw={300} size="md">
               {contextMenuItemName}

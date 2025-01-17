@@ -17995,6 +17995,7 @@ const continueHackGm = true;
 
 const doTheHack = async () => {
   console.log("Doing the hack");
+  return;
   // wait for a second
   await new Promise((resolve) => setTimeout(resolve, 5000));
   document.getElementById("button-homepage-guided-mode").click();

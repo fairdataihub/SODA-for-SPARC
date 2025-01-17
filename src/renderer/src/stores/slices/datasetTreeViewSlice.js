@@ -30,69 +30,66 @@ const traverseStructureByPath = (structure, pathToRender) => {
   return structureRef;
 };
 
-// Determines if a folder or its subfolders/files match the search filter
-const folderMatchesSearch = (folder, searchFilter) => {
-  const folderRelativePath = folder.relativePath.toLowerCase();
-  const matchesDirectly = folderRelativePath.includes(searchFilter);
-  const matchesFilesDirectly = Object.values(folder.files || {}).some((file) =>
-    file.relativePath.toLowerCase().includes(searchFilter)
-  );
-  const subfolderMatches = Object.values(folder.folders || {}).some((subFolder) =>
-    folderMatchesSearch(subFolder, searchFilter)
-  );
-
-  return { matchesDirectly, matchesFilesDirectly, subfolderMatches };
-};
-
-// Determines if a folder should be kept or pruned based on search filter
 const pruneFolder = (folder, searchFilter) => {
-  // Check if the folder itself or its contents match the search filter
-  const { matchesDirectly, matchesFilesDirectly, subfolderMatches } = folderMatchesSearch(
-    folder,
-    searchFilter
-  );
+  const lowerCaseSearchFilter = searchFilter.toLowerCase();
 
-  // If nothing matches and the folder has no subfolders or files to pass through, return null
-  if (!matchesDirectly && !matchesFilesDirectly && !subfolderMatches) return null;
-
-  // Mark if the folder should pass through (i.e., it has matching subfolders or files but itself does not match)
-  const passThrough = !matchesDirectly && !matchesFilesDirectly && subfolderMatches;
-
-  // Keep the folder and its properties
-  const prunedFolder = {
-    ...folder,
-    matchesDirectly,
-    matchesFilesDirectly,
-    passThrough,
-  };
-
-  // Prune subfolders recursively
-  if (prunedFolder.folders) {
-    prunedFolder.folders = Object.entries(prunedFolder.folders)
-      .map(([key, subFolder]) => {
-        const prunedSubFolder = pruneFolder(subFolder, searchFilter);
-        if (!prunedSubFolder) return null;
-        return { [key]: prunedSubFolder };
-      })
-      .filter(Boolean)
-      .reduce((acc, curr) => ({ ...acc, ...curr }), {});
-  }
+  // Check if the folder's path matches the search filter
+  const folderMatches = folder.relativePath.toLowerCase().includes(lowerCaseSearchFilter);
 
   // Prune files based on the search filter
-  if (prunedFolder.files) {
-    prunedFolder.files = Object.entries(prunedFolder.files)
-      .filter(([_, file]) => file.relativePath.toLowerCase().includes(searchFilter))
-      .reduce((acc, [key, file]) => ({ ...acc, [key]: file }), {});
+  const files = folder.files || {};
+  let hasMatchingFiles = false;
+
+  Object.keys(files).forEach((key) => {
+    if (!files[key].relativePath.toLowerCase().includes(lowerCaseSearchFilter)) {
+      delete files[key];
+    } else {
+      hasMatchingFiles = true; // Found a matching file
+    }
+  });
+
+  // If the folder matches or has matching files, skip pruning subfolders
+  if (folderMatches || hasMatchingFiles) {
+    folder.passThrough = false;
+    folder.files = files;
+    return folder;
   }
 
-  return prunedFolder;
+  // Prune subfolders recursively
+  const subfolders = folder.folders || {};
+  let hasMatchingDescendant = false;
+
+  Object.keys(subfolders).forEach((key) => {
+    const result = pruneFolder(subfolders[key], lowerCaseSearchFilter);
+    if (!result) {
+      delete subfolders[key]; // Remove subfolder if it doesn't match
+    } else {
+      hasMatchingDescendant = true; // Found a matching descendant
+    }
+  });
+
+  // If there are no matches at this level or in descendants, remove the folder
+  if (!hasMatchingDescendant) {
+    return null;
+  }
+
+  // Folder is a pass-through if it doesn't match directly or have matching files
+  folder.passThrough = true;
+  folder.folders = subfolders;
+  folder.files = files;
+
+  return folder;
 };
 
-// Filter structure based on search filter
+// Entry point to filter the folder structure based on the search filter
 const filterStructure = (structure, searchFilter) => {
-  if (!searchFilter) return structure;
-  const lowerCaseSearchFilter = searchFilter.toLowerCase();
-  return pruneFolder(structure, lowerCaseSearchFilter);
+  if (!searchFilter) return structure; // If no filter, return the structure as is
+
+  console.time("Filter Structure");
+  const result = pruneFolder(structure, searchFilter);
+  console.timeEnd("Filter Structure");
+
+  return result;
 };
 
 // Updates the dataset search filter and modifies the rendered structure
