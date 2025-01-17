@@ -1930,6 +1930,11 @@ const savePageChanges = async (pageBeingLeftID) => {
     if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
     }
 
+    if(pageBeingLeftID === "guided-ask-where-data-should-be-generated-tab") {
+      const datasetGenerationLocation = document.getElementById("guided-select-cloud-sync-folder-location-input").value;
+      window.sodaJSONObj["generate-dataset"]["path"]  = datasetGenerationLocation;
+    }
+
     if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
       const award = document.getElementById("guided-submission-sparc-award-manual").value;
       const milestones = window.getTagsFromTagifyElement(window.guidedSubmissionTagsTagifyManual);
@@ -15776,7 +15781,7 @@ const guidedPennsieveDatasetUpload = async () => {
     } else if (generatingOnCloud) {
       console.log("Generating on cloud flow: ");
 
-      let testPath = window.path.join(window.homeDirectory, "SODA", "test");
+      let testPath = window.sodaJSONObj["generate-dataset"]["path"];
 
       hideDatasetMetadataGenerationTableRows("pennsieve");
 
