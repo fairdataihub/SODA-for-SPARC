@@ -46,7 +46,7 @@ jobs:
       - name: Build the app for Windows
         run: npm run build-win
 
-      - name: Sign files with Trusted Signing V1
+      - name: Sign files with Trusted Signing V1.1
         uses: azure/trusted-signing-action@v0.5.1
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
