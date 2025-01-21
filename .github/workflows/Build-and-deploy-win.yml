@@ -55,16 +55,7 @@ jobs:
           endpoint: https://eus.codesigning.azure.net/
           trusted-signing-account-name: fdih-signing-account
           certificate-profile-name: california-medical-innovations-institute
-          files-folder: ${{ github.workspace }}\dist\win-unpacked\soda-for-sparc.exe
-          files-folder-filter: exe,dll
+          files: ${{ github.workspace }}\dist\win-unpacked\resources\app.exe
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ${{ github.workspace }}\dist\win-unpacked\soda-for-sparc.exe
-          asset_name: soda-for-sparc.exe
-          asset_content_type: application/octet-stream
