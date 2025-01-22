@@ -90,10 +90,10 @@ const componentTypeRenderers = {
     const props = {
       dropDownIcon: componentSlot.getAttribute("data-dropdown-icon"),
       dropDownButtonText: componentSlot.getAttribute("data-dropdown-text"),
-      dropDownNote: componentSlot.getAttribute("data-dropdown-note")
-    }
+      dropDownNote: componentSlot.getAttribute("data-dropdown-note"),
+    };
 
-    renderComponent(componentSlot, <DropDownNote{...props} />)
+    renderComponent(componentSlot, <DropDownNote {...props} />);
   },
   divider: (componentSlot) => {
     const root = createRoot(componentSlot);

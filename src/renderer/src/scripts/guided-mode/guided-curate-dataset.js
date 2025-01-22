@@ -15902,7 +15902,7 @@ const guidedPennsieveDatasetUpload = async () => {
       });
       setGuidedProgressBarValue("pennsieve", 100);
 
-      document.getElementById("guided--cloud-upload-monitor-section").classList.remove("hidden")
+      document.getElementById("guided--cloud-upload-monitor-section").classList.remove("hidden");
 
       scrollToBottomOfGuidedBody();
 
