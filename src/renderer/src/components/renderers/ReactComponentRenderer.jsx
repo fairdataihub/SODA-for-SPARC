@@ -7,6 +7,7 @@ import DropdownSelect from "../common/DropdownSelect";
 import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
+import DropDownNote from "../utils/ui/DropDownNote";
 import { Divider } from "@mantine/core";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
@@ -69,7 +70,6 @@ const componentTypeRenderers = {
     };
     renderComponent(componentSlot, <GenericButton {...props} />);
   },
-
   "pennsieve-agent-check-display": (componentSlot) => {
     const props = {};
     renderComponent(componentSlot, <PennsieveAgentCheckDisplay {...props} />);
@@ -85,6 +85,15 @@ const componentTypeRenderers = {
         <SingleColumnTable id={id} columnName={columnName} />
       </SodaComponentWrapper>
     );
+  },
+  "dropdown-note": (componentSlot) => {
+    const props = {
+      dropDownIcon: componentSlot.getAttribute("data-dropdown-icon"),
+      dropDownButtonText: componentSlot.getAttribute("data-dropdown-text"),
+      dropDownNote: componentSlot.getAttribute("data-dropdown-note")
+    }
+
+    renderComponent(componentSlot, <DropDownNote{...props} />)
   },
   divider: (componentSlot) => {
     const root = createRoot(componentSlot);
