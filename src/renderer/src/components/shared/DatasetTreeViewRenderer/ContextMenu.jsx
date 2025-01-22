@@ -113,6 +113,7 @@ const ContextMenu = () => {
                 window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
                   importRelativePath: contextMenuItemData.relativePath,
                 });
+                closeContextMenu();
               }}
             >
               Import data into {contextMenuItemName}

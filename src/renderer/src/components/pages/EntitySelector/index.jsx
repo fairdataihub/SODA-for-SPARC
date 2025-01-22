@@ -23,6 +23,7 @@ import {
   removeEntityFromEntityList,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { naturalSort } from "../../shared/utils/util-functions";
+import { swalFileListDoubleAction } from "../../../scripts/utils/swal-utils";
 
 const EntitySelectorPage = ({
   pageName,
@@ -35,7 +36,7 @@ const EntitySelectorPage = ({
     datasetEntityObj: state.datasetEntityObj,
   }));
   const [newEntityName, setNewEntityName] = useState("");
-  const [activeTab, setActiveTab] = useState("manual");
+  const [activeTab, setActiveTab] = useState("instructions");
 
   const isNewEntityNameValid = window.evaluateStringAgainstSdsRequirements?.(
     newEntityName,
@@ -102,22 +103,30 @@ const EntitySelectorPage = ({
       <InstructionalTextSection textSectionKey={entityTypePrefix} />
       <GuidedModeSection>
         <Group>
-          <Tabs color="indigo" variant="pills" value={activeTab} onChange={setActiveTab} w="100%">
-            <Tabs.List mb="md">
+          <Tabs color="indigo" variant="default" value={activeTab} onChange={setActiveTab} w="100%">
+            <Tabs.List mb="md" justify="center" grow={1}>
+              <Tabs.Tab value="instructions" style={{ display: "none" }}>
+                Instructions
+              </Tabs.Tab>
               <Tabs.Tab value="manual">manual</Tabs.Tab>
               <Tabs.Tab value="spreadsheet">spreadsheet</Tabs.Tab>
-              <Tabs.Tab value="folderSelect">folderSelect</Tabs.Tab>
+              <Tabs.Tab value="folderSelect">Extract from folder names</Tabs.Tab>
             </Tabs.List>
+            <Tabs.Panel value="instructions">
+              <Text align="center" c="dimmed" pt="md">
+                Select a tab above to begin specifying {entityTypeStringPlural}.
+              </Text>
+            </Tabs.Panel>
             <Tabs.Panel value="manual">
               <Stack spacing="xs" mb="md">
                 <Group spacing="xs" align="start" width="100%">
                   <TextInput
                     flex={1}
-                    placeholder={`Enter new ${entityTypeStringSingular} name`}
+                    placeholder={`Enter ${entityTypeStringSingular} name`}
                     value={newEntityName}
                     onChange={(event) => setNewEntityName(event.currentTarget.value)}
                     onKeyDown={(event) => {
-                      if (event.key === "Enter") {
+                      if (event.which === 13) {
                         handleAddEntity();
                       }
                     }}
@@ -155,16 +164,31 @@ const EntitySelectorPage = ({
 
                 <DatasetTreeViewRenderer
                   folderActions={{
-                    "on-folder-click": (folderName, folderContents, folderIsSelected) => {
+                    "on-folder-click": async (folderName, folderContents, folderIsSelected) => {
                       const childFolderNames = Object.keys(folderContents.folders);
-                      console.log("childFolderNames: ", naturalSort(childFolderNames));
+                      const potentialEntities = naturalSort(childFolderNames).map(
+                        (childFolderName) => {
+                          const formattedName =
+                            entityTypePrefix && !childFolderName.startsWith(entityTypePrefix)
+                              ? `${entityTypePrefix}${childFolderName}`
+                              : childFolderName;
+                          return formattedName;
+                        }
+                      );
 
-                      for (const childFolderName of naturalSort(childFolderNames)) {
-                        const formattedName =
-                          entityTypePrefix && !childFolderName.startsWith(entityTypePrefix)
-                            ? `${entityTypePrefix}${childFolderName}`
-                            : childFolderName;
-                        addEntityToEntityList(entityType, formattedName);
+                      const continueWithEntityIdImport = await swalFileListDoubleAction(
+                        potentialEntities,
+                        `Confirm ${entityTypeStringPlural} Import`,
+                        `The following ${entityTypeStringPlural} have been detected in the selected folder. If you proceed, they will be added to your list of ${entityTypeStringPlural}:`,
+                        `Import Selected ${entityTypeStringPlural}`,
+                        `Cancel Import`,
+                        ""
+                      );
+
+                      if (continueWithEntityIdImport) {
+                        for (const entityName of potentialEntities) {
+                          addEntityToEntityList(entityType, entityName);
+                        }
                       }
                     },
                     "folder-click-hover-text": `Import ${entityTypeStringSingular} IDs from folders in this folder`,

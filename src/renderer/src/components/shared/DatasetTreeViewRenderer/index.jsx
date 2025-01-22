@@ -46,6 +46,13 @@ const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEd
   const fileRelativePathEqualsContextMenuItemRelativePath =
     contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath;
 
+  const fileIsSelected = isFileSelected?.(content);
+
+  if (fileIsSelected) {
+    console.log("File is selected");
+    console.log(content.relativePath);
+  }
+
   const handleFileContextMenuOpen = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -100,13 +107,19 @@ const FolderItem = ({
   allowStructureEditing,
   folderClickHoverText,
 }) => {
-  const { folderMoveModeIsActive, contextMenuItemType, contextMenuItemData, contextMenuIsOpened } =
-    useGlobalStore((state) => ({
-      folderMoveModeIsActive: state.folderMoveModeIsActive,
-      contextMenuItemType: state.contextMenuItemType,
-      contextMenuItemData: state.contextMenuItemData,
-      contextMenuIsOpened: state.contextMenuIsOpened,
-    }));
+  const {
+    folderMoveModeIsActive,
+    contextMenuItemType,
+    contextMenuItemData,
+    contextMenuIsOpened,
+    contextMenuItemName,
+  } = useGlobalStore((state) => ({
+    folderMoveModeIsActive: state.folderMoveModeIsActive,
+    contextMenuItemType: state.contextMenuItemType,
+    contextMenuItemData: state.contextMenuItemData,
+    contextMenuIsOpened: state.contextMenuIsOpened,
+    contextMenuItemName: state.contextMenuItemName,
+  }));
 
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
@@ -134,9 +147,11 @@ const FolderItem = ({
   const folderIsEmpty =
     !content ||
     (Object.keys(content.folders).length === 0 && Object.keys(content.files).length === 0);
-
   const folderIsPassThrough = content.passThrough;
-
+  const folderOnlyHasFolders =
+    Object.keys(content.folders).length > 0 && Object.keys(content.files).length === 0;
+  const folderOnlyHasFiles =
+    Object.keys(content.folders).length === 0 && Object.keys(content.files).length > 0;
   const folderRelativePathEqualsContextMenuItemRelativePath =
     contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath;
 
@@ -249,14 +264,26 @@ const FolderItem = ({
 };
 
 const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEditing }) => {
-  const { renderDatasetStructureJSONObj, datasetStructureSearchFilter, folderMoveModeIsActive } =
-    useGlobalStore((state) => ({
-      renderDatasetStructureJSONObj: state.renderDatasetStructureJSONObj,
-      datasetStructureSearchFilter: state.datasetStructureSearchFilter,
-      folderMoveModeIsActive: state.folderMoveModeIsActive,
-    }));
+  const {
+    renderDatasetStructureJSONObj,
+    datasetStructureSearchFilter,
+    folderMoveModeIsActive,
+    contextMenuItemType,
+    contextMenuItemData,
+    contextMenuIsOpened,
+    contextMenuItemName,
+  } = useGlobalStore((state) => ({
+    renderDatasetStructureJSONObj: state.renderDatasetStructureJSONObj,
+    datasetStructureSearchFilter: state.datasetStructureSearchFilter,
+    folderMoveModeIsActive: state.folderMoveModeIsActive,
+    folderMoveModeIsActive: state.folderMoveModeIsActive,
+    contextMenuItemType: state.contextMenuItemType,
+    contextMenuItemData: state.contextMenuItemData,
+    contextMenuIsOpened: state.contextMenuIsOpened,
+    contextMenuItemName: state.contextMenuItemName,
+  }));
 
-  const searcDebounceTime = 300; // Set the debounce time for the search filter (in milliseconds)
+  const searchDebounceTime = 300; // Set the debounce time for the search filter (in milliseconds)
 
   const [inputSearchFilter, setInputSearchFilter] = useState(datasetStructureSearchFilter); // Local state for input
   const searchTimeoutRef = useRef(null);
@@ -274,7 +301,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
     // Set a new timeout to update the global state
     searchTimeoutRef.current = setTimeout(() => {
       setDatasetStructureSearchFilter(value); // Update the global state after the debounce delay
-    }, searcDebounceTime);
+    }, searchDebounceTime);
   };
 
   useEffect(() => {
@@ -350,7 +377,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
         /* make A ui that allows the user to cancel the move operation */
         <Group justify="space-between" bg="aliceblue" p="xs">
           <Text size="lg" fw={500}>
-            Select a folder to move the data to
+            Select a folder to move the {contextMenuItemType} '{contextMenuItemName}' to:
           </Text>
           <Button
             size="xs"

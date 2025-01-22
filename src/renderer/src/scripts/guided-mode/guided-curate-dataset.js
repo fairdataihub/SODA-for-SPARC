@@ -48,6 +48,7 @@ import {
   setEntityListForEntityType,
   setActiveEntity,
   getDatasetEntityObj,
+  setDatasetEntityObj,
 } from "../../stores/slices/datasetEntitySelectorSlice";
 import {
   setDatasetStructureSearchFilter,
@@ -613,12 +614,26 @@ const savePageChanges = async (pageBeingLeftID) => {
     // Check if the page being left is part of a page set
     const pageBeingLeftElement = document.getElementById(pageBeingLeftID);
     const pageBeingLeftDataSet = pageBeingLeftElement.dataset;
+    console.log("pageBeingLeftDataSet", pageBeingLeftDataSet);
 
+    // Handle page exit logic for pages that are controlled by React components
     if (pageBeingLeftDataSet.componentType) {
       const pageBeingLeftComponentType = pageBeingLeftDataSet.componentType;
       if (pageBeingLeftComponentType === "entity-management-page") {
+        const entityType = pageBeingLeftDataSet.entityType;
+        const entityTypeSingular = pageBeingLeftDataSet.entityTypeStringSingular;
         const datasetEntityObj = getDatasetEntityObj();
         console.log("datasetEntityObj", datasetEntityObj);
+        console.log("entityType", entityType);
+        if (!datasetEntityObj?.[entityType]) {
+          errorArray.push({
+            type: "notyf",
+            message: `Please select at least one ${entityTypeSingular} to continue`,
+          });
+          throw errorArray;
+        }
+        // Save the dataset entity object to the progress file
+        window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
       }
       if (pageBeingLeftComponentType === "entity-selection-page") {
         console.log("BONGO");
@@ -5156,10 +5171,13 @@ window.openPage = async (targetPageID) => {
     if (targetPageDataset.componentType) {
       const targetPageComponentType = targetPageDataset.componentType;
       if (targetPageComponentType === "entity-management-page") {
-        console.log("DINGO");
+        // Set the dataset entity object to the saved dataset entity object from the JSON
+        const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+        setDatasetEntityObj(savedDatasetEntityObj);
+        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       }
       if (targetPageComponentType === "entity-selection-page") {
-        console.log("DONGO");
+        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       }
     }
 
@@ -11578,14 +11596,14 @@ const setUiBasedOnSavedDatasetStructurePath = (pathToSpreadsheet) => {
   }
 };
 
-document
+/*document
   .getElementById("guided-button-choose-dataset-structure-spreadsheet-path")
   .addEventListener("click", () => {
     // Create a new spreadsheet based on the dataset structure
     window.electron.ipcRenderer.send(
       "open-create-dataset-structure-spreadsheet-path-selection-dialog"
     );
-  });
+  });*/
 
 window.electron.ipcRenderer.on(
   "selected-create-dataset-structure-spreadsheet-path",
@@ -11628,7 +11646,7 @@ window.electron.ipcRenderer.on(
   }
 );
 
-document
+/* document
   .getElementById("guided-button-open-dataset-structure-spreadsheet")
   .addEventListener("click", async () => {
     const savedTemplatePath = window.sodaJSONObj["dataset-structure-spreadsheet-path"];
@@ -11637,7 +11655,7 @@ document
       return;
     }
     window.electron.ipcRenderer.send("open-file-at-path", savedTemplatePath);
-  });
+  }); */
 
 const validateDatasetStructureSpreadsheet = async (sheetData) => {
   const invalidSubjectNames = [];
@@ -11778,6 +11796,7 @@ const validateDatasetStructureSpreadsheet = async (sheetData) => {
 };
 
 // CLICK HANDLER THAT EXTRACTS THE DATASET STRUCTURE FROM A SPREADSHEET
+/*
 document
   .getElementById("guided-button-import-dataset-structure-from-spreadsheet")
   .addEventListener("click", async () => {
@@ -11837,6 +11856,7 @@ document
     $("#guided-next-button").click();
   });
 
+*/
 const guidedExtractEntityNamesFromFolders = async (entityType) => {
   if (entityType === "subjects") {
     window.electron.ipcRenderer.send("open-subject-multi-folder-import-dialog");
@@ -18012,7 +18032,6 @@ const continueHackGm = true;
 
 const doTheHack = async () => {
   console.log("Doing the hack");
-  return;
   // wait for a second
   await new Promise((resolve) => setTimeout(resolve, 5000));
   document.getElementById("button-homepage-guided-mode").click();

@@ -29,8 +29,6 @@ import {
   getEntityForRelativePath,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 
-import { naturalSort } from "../../shared/utils/util-functions";
-
 const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
 
 const handleEntityClick = (entity) => setActiveEntity(entity);
