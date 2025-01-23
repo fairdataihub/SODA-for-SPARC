@@ -1,14 +1,13 @@
 import Swal from "sweetalert2";
 import "bootstrap-select";
 import DragSort from "@yaireo/dragsort";
-
 import api from "./others/api/api";
 import { clientError, userErrorMessage } from "./others/http-error-handler/error-handler";
 import client from "./client";
-import { swalShowError } from "./utils/swal-utils";
-// import { window.clearValidationResults } from './validator/validate'
+import { swalShowError, swalShowInfo } from "./utils/swal-utils";
 // // Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
 // //          needed by the renderer process in order to run.
+import { clientBlockedByExternalFirewall, blockedMessage } from "./check-firewall/checkFirewall";
 
 // // Contributors table for the dataset description editing page
 const currentConTable = document.getElementById("table-current-contributors");
@@ -907,6 +906,13 @@ window.resetFFMUI = (ev) => {
 };
 
 window.addBfAccount = async (ev, verifyingOrganization = False) => {
+  // check for external firewall interference (aspirational in that may not be foolproof)
+  const pennsieveURL = "https://api.pennsieve.io/discover/datasets";
+  const blocked = await clientBlockedByExternalFirewall(pennsieveURL);
+  if (blocked) {
+    await swalShowInfo("Potential Network Issues", blockedMessage);
+    return;
+  }
   let footerMessage = "No existing accounts to load. Please add an account.";
   if (window.bfAccountOptionsStatus === "") {
     if (Object.keys(bfAccountOptions).length === 1) {
@@ -2177,6 +2183,29 @@ const get_api_key = (login, password, key_name) => {
       resolve(["failed", userErrorMessage(error)]);
     }
   });
+};
+
+window.isWorkspaceGuest = async () => {
+  let userInfo = await api.getUserInformation();
+  let currentWorkspace = userInfo["preferredOrganization"];
+
+  let orgResponse;
+  try {
+    orgResponse = await client.get(`user/organizations`, {
+      params: {
+        selected_account: window.defaultBfAccount,
+      },
+    });
+  } catch (error) {
+    clientError(error);
+    console.error("Error fetching organizations", error);
+    // TODO: Handle error here
+  }
+  // get the current workspace by matching the id
+  let currentWorkspaceObj = orgResponse.data.organizations.filter(
+    (org) => org.organization.id === currentWorkspace
+  )[0];
+  return currentWorkspaceObj.isGuest;
 };
 
 export {

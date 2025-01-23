@@ -53,7 +53,7 @@ const isDatasetLocked = async (account, datasetNameOrId) => {
       );
       teamsInCurrentUsersOrganization = teamsReq.data.teams;
     } catch (error) {
-      userErrorMessage(error);
+      clientError(error);
     }
 
     // Get the team with the name "Publishers" (if it exists)
@@ -88,16 +88,19 @@ const isDatasetLocked = async (account, datasetNameOrId) => {
   }
 };
 
-const getDatasetRole = async (datasetNameOrId) => {
-  if (datasetNameOrId != undefined || datasetNameOrId != "") {
+const getDatasetAccessDetails = async (datasetNameOrId) => {
+  if (datasetNameOrId) {
     window.defaultBfDataset = datasetNameOrId;
   }
 
-  let datasetRoleResponse = await client.get(`/datasets/${window.defaultBfDataset}/role`);
+  const {
+    data: { role },
+  } = await client.get(`/datasets/${window.defaultBfDataset}/role`);
 
-  let { role } = datasetRoleResponse.data;
+  const userRole = role.toLowerCase();
+  const userCanModifyPennsieveMetadata = ["owner", "manager"].includes(userRole);
 
-  return role;
+  return { userRole, userCanModifyPennsieveMetadata };
 };
 
 const getDatasetInformation = async (account, datasetNameOrId) => {
@@ -539,7 +542,6 @@ const getLocalRemoteComparisonResults = async (datasetId, localDatasetPath) => {
   const response = await client.get(
     `/datasets/${datasetId}/comparison_results?local_dataset_path=${localDatasetPath}`
   );
-  console.log(response.data);
   return response.data;
 };
 
@@ -555,7 +557,7 @@ const api = {
   getDataset,
   getDatasetReadme,
   getDatasetBannerImageURL,
-  getDatasetRole,
+  getDatasetAccessDetails,
   withdrawDatasetReviewSubmission,
   getDatasetMetadataFiles,
   getDatasetPermissions,

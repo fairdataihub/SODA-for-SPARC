@@ -1,4 +1,4 @@
-import { contextBridge } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 import { electronAPI } from "@electron-toolkit/preload";
 import os from "os";
 import fs from "fs-extra";
@@ -404,6 +404,12 @@ if (process.contextIsolated) {
             pennsieveAgentOutputLog.push(agentVersionSpawnError);
           });
         });
+      },
+    });
+    contextBridge.exposeInMainWorld("server", {
+      serverIsLive: async () => {
+        const status = await ipcRenderer.invoke("get-server-live-status");
+        return status;
       },
     });
   } catch (error) {

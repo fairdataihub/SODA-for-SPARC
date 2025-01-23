@@ -7,6 +7,7 @@ on:
       - main
       - staging
       - pre-staging
+      - azure-trusted-signing
 
 jobs:
   deploy-on-windows:
@@ -42,8 +43,19 @@ jobs:
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
 
-      - name: Deploy the app to GitHub
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          npm run deploy-win
+      - name: Build the app for Windows
+        run: npm run build-win
+
+      - name: Sign files with Trusted Signing V1.1
+        uses: azure/trusted-signing-action@v0.5.1
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: https://eus.codesigning.azure.net/
+          trusted-signing-account-name: fdih-signing-account
+          certificate-profile-name: california-medical-innovations-institute
+          files: ${{ github.workspace }}\dist\win-unpacked\resources\app.exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
