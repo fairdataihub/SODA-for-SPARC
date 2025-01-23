@@ -49,6 +49,7 @@ import {
   setActiveEntity,
   getDatasetEntityObj,
   setDatasetEntityObj,
+  autoSelectDatasetFoldersAndFilesForEnteredEntityIds,
 } from "../../stores/slices/datasetEntitySelectorSlice";
 import {
   setDatasetStructureSearchFilter,
@@ -5170,6 +5171,7 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageDataset.componentType) {
       const targetPageComponentType = targetPageDataset.componentType;
+      console.log("targetPageDataset", targetPageDataset);
       if (targetPageComponentType === "entity-management-page") {
         // Set the dataset entity object to the saved dataset entity object from the JSON
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
@@ -5177,7 +5179,18 @@ window.openPage = async (targetPageID) => {
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       }
       if (targetPageComponentType === "entity-selection-page") {
+        const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+        setDatasetEntityObj(savedDatasetEntityObj);
+
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
+
+        if (window.sodaJSONObj["completed-tabs"].includes(targetPageID)) {
+          console.log("Calling autoSelectDatasetFoldersAndFilesForEnteredEntityIds");
+          autoSelectDatasetFoldersAndFilesForEnteredEntityIds(
+            window.datasetStructureJSONObj["folders"]["primary"],
+            targetPageDataset.entityType
+          );
+        }
       }
     }
 

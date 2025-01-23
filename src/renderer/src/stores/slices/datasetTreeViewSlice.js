@@ -7,6 +7,7 @@ const initialState = {
   datasetStructureJSONObjHistory: [],
   datasetstructureJSONObjHistoryIndex: -1,
   renderDatasetStructureJSONObj: null,
+  renderDatasetStructureJSONObjIsLoading: false,
   datasetStructureSearchFilter: "",
   pathToRender: [],
   contextMenuIsOpened: false,
@@ -14,6 +15,7 @@ const initialState = {
   contextMenuItemName: null,
   contextMenuItemType: null,
   contextMenuItemData: null,
+  externallySetSearchFilterValue: "",
 };
 
 // Create the dataset tree view slice for global state
@@ -30,70 +32,75 @@ const traverseStructureByPath = (structure, pathToRender) => {
   return structureRef;
 };
 
+export const setRenderDatasetStructureJSONObjIsLoading = (isLoading) => {
+  useGlobalStore.setState({
+    renderDatasetStructureJSONObjIsLoading: isLoading,
+  });
+};
+
 const pruneFolder = (folder, searchFilter) => {
   const lowerCaseSearchFilter = searchFilter.toLowerCase();
-
-  // Check if the folder's path matches the search filter
   const folderMatches = folder.relativePath.toLowerCase().includes(lowerCaseSearchFilter);
 
-  // Prune files based on the search filter
+  // Prune files
   const files = folder.files || {};
-  let hasMatchingFiles = false;
+  const hasMatchingFiles =
+    Object.keys(files).filter((key) =>
+      files[key].relativePath.toLowerCase().includes(lowerCaseSearchFilter)
+    ).length > 0;
 
-  Object.keys(files).forEach((key) => {
-    if (!files[key].relativePath.toLowerCase().includes(lowerCaseSearchFilter)) {
-      delete files[key];
-    } else {
-      hasMatchingFiles = true; // Found a matching file
-    }
-  });
-
-  // If the folder matches or has matching files, skip pruning subfolders
   if (folderMatches || hasMatchingFiles) {
-    folder.passThrough = false;
-    folder.files = files;
-    return folder;
+    return {
+      ...folder,
+      passThrough: false,
+      files,
+    };
   }
 
-  // Prune subfolders recursively
+  // Prune subfolders
   const subfolders = folder.folders || {};
-  let hasMatchingDescendant = false;
+  const prunedSubfolders = Object.fromEntries(
+    Object.entries(subfolders)
+      .map(([key, subfolder]) => [key, pruneFolder(subfolder, lowerCaseSearchFilter)])
+      .filter(([_, subfolder]) => subfolder !== null)
+  );
 
-  Object.keys(subfolders).forEach((key) => {
-    const result = pruneFolder(subfolders[key], lowerCaseSearchFilter);
-    if (!result) {
-      delete subfolders[key]; // Remove subfolder if it doesn't match
-    } else {
-      hasMatchingDescendant = true; // Found a matching descendant
-    }
-  });
-
-  // If there are no matches at this level or in descendants, remove the folder
-  if (!hasMatchingDescendant) {
+  if (Object.keys(prunedSubfolders).length === 0) {
+    console.log("Folder did not match search filter and has no subfolders or files:", folder); // Debug log
+    console.log("Search filter:", lowerCaseSearchFilter); // Debug log
     return null;
   }
 
-  // Folder is a pass-through if it doesn't match directly or have matching files
-  folder.passThrough = true;
-  folder.folders = subfolders;
-  folder.files = files;
-
-  return folder;
+  return {
+    ...folder,
+    passThrough: true,
+    folders: prunedSubfolders,
+    files,
+  };
 };
 
 // Entry point to filter the folder structure based on the search filter
-const filterStructure = (structure, searchFilter) => {
+export const filterStructure = (structure, searchFilter) => {
   if (!searchFilter) return structure; // If no filter, return the structure as is
-
-  console.time("Filter Structure");
+  console.log("Filter structure called on structure: ", JSON.stringify(structure, null, 2)); // Debug log
+  console.log("Search filter:", searchFilter); // Debug log
+  console.time("Filter Structure"); // Debug log
+  console.log(JSON.stringify(structure, null, 2)); // Debug log
   const result = pruneFolder(structure, searchFilter);
   console.timeEnd("Filter Structure");
+  console.log("Result of filterStructure:", JSON.stringify(result, null, 2)); // Debug log
 
   return result;
 };
 
 // Updates the dataset search filter and modifies the rendered structure
 export const setDatasetStructureSearchFilter = (searchFilter) => {
+  // Set the loading state for the rendered structure
+  useGlobalStore.setState({
+    datasetStructureSearchFilter: searchFilter,
+    renderDatasetStructureJSONObjIsLoading: true,
+  });
+
   const globalStore = useGlobalStore.getState();
 
   const originalStructure = globalStore.datasetStructureJSONObj;
@@ -103,27 +110,39 @@ export const setDatasetStructureSearchFilter = (searchFilter) => {
   const filteredStructure = filterStructure(structureToFilter, searchFilter);
 
   useGlobalStore.setState({
-    datasetStructureSearchFilter: searchFilter,
     renderDatasetStructureJSONObj: filteredStructure,
+    renderDatasetStructureJSONObjIsLoading: false,
   });
+};
+
+export const externallySetSearchFilterValue = (searchFilterValue) => {
+  useGlobalStore.setState({
+    externallySetSearchFilterValue: searchFilterValue,
+  });
+};
+
+export const addRelativePaths = (obj, currentPath = []) => {
+  if (!obj) {
+    console.log("object is null but had addRelativePaths called on it");
+    return;
+  }
+  obj.relativePath = currentPath.join("/") + "/";
+  for (const folderName in obj?.folders || {}) {
+    const folderPath = [...currentPath, folderName].join("/") + "/";
+    obj.folders[folderName].relativePath = folderPath;
+    addRelativePaths(obj.folders[folderName], [...currentPath, folderName]);
+  }
+
+  for (const fileName in obj?.files || {}) {
+    const filePath = [...currentPath, fileName].join("/");
+    obj.files[fileName].relativePath = filePath;
+  }
 };
 
 // Set the dataset structure and prepare it for rendering
 export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
   pathToRender = pathToRender ? pathToRender : useGlobalStore.getState().pathToRender;
   // Recursively adds relative paths to folders and files in the dataset structure
-  const addRelativePaths = (obj, currentPath = []) => {
-    for (const folderName in obj?.folders || {}) {
-      const folderPath = [...currentPath, folderName].join("/") + "/";
-      obj.folders[folderName].relativePath = folderPath;
-      addRelativePaths(obj.folders[folderName], [...currentPath, folderName]);
-    }
-
-    for (const fileName in obj?.files || {}) {
-      const filePath = [...currentPath, fileName].join("/");
-      obj.files[fileName].relativePath = filePath;
-    }
-  };
 
   // Ensure immutability of the updated structure
   const updatedStructure = JSON.parse(JSON.stringify(datasetStructure)); // Avoid direct mutation
@@ -132,6 +151,9 @@ export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
   // Traverse to the folder structure to be rendered and add relative paths
   const renderStructureRef = traverseStructureByPath(updatedStructure, pathToRender);
   addRelativePaths(renderStructureRef, pathToRender);
+
+  // Add relative path to the window dataset structure
+  addRelativePaths(window.datasetStructureJSONObj, []);
 
   // Update global store safely
   useGlobalStore.setState({

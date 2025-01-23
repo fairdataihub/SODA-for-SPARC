@@ -1,4 +1,7 @@
+import { get } from "jquery";
 import useGlobalStore from "../globalStore";
+import { filterStructure, addRelativePaths } from "./datasetTreeViewSlice";
+import { swalFileListDoubleAction } from "../../scripts/utils/swal-utils";
 import { produce } from "immer";
 
 // Initial state for managing dataset entities
@@ -12,15 +15,6 @@ const initialState = {
 export const datasetEntitySelectorSlice = (set) => ({
   ...initialState,
 });
-
-// Reset the entity selector state to its initial configuration
-export const resetOldDatasetEntitySelectorState = () => {
-  useGlobalStore.setState(
-    produce((state) => {
-      Object.assign(state, initialState);
-    })
-  );
-};
 
 // Add an entity to the specified entity type's list
 export const addEntityToEntityList = (entityType, entityName) => {
@@ -91,6 +85,72 @@ export const setEntityListForEntityType = (entityType, entityListObj) => {
   );
 };
 
+// Write a function that will take a dataset structure and a search term and return a list of relative paths that match the search term
+export const gatherRelativePathsForSearchTerm = (datasetStructure, searchTerm) => {
+  const filteredStructure = filterStructure(datasetStructure, searchTerm);
+  const matchingPaths = [];
+  findMatchingRelativePaths(filteredStructure, searchTerm, matchingPaths);
+  return matchingPaths;
+};
+
+export const autoSelectDatasetFoldersAndFilesForEnteredEntityIds = async (
+  datasetStructure,
+  entityType
+) => {
+  console.log("datasetStructure: ", datasetStructure);
+  console.log("entityType: ", entityType);
+
+  // Create a deep copy of the dataset structure and add relative paths to each file and folder
+  const structureCopy = JSON.parse(JSON.stringify(datasetStructure));
+  console.log("structureCopy: ", structureCopy);
+  // Filter the structure to only include folders and files that match the entity type
+  const entityTypeLowerCased = entityType.toLowerCase();
+
+  const datasetEntityObj = getDatasetEntityObj();
+
+  const entityList = Object.keys(datasetEntityObj[entityType] || {});
+  console.log("entityList: ", entityList);
+
+  for (const entityID of entityList) {
+    // Extract the entity name from the entity ID
+    const entityName = entityID.toLocaleLowerCase().split("-").slice(-1)[0];
+
+    const matchingPaths = [];
+    findMatchingRelativePaths(structureCopy, entityName, matchingPaths);
+    console.log("entity: ", entityID);
+    console.log("matchingPaths: ", matchingPaths);
+
+    // Update the global store with the matching paths for the current entity
+    matchingPaths.forEach((relativePath) => {
+      modifyDatasetEntityForRelativeFilePath(entityType, entityID, relativePath, "add");
+    });
+  }
+};
+
+// Helper function to recursively traverse the dataset structure and collect matching paths
+const findMatchingRelativePaths = (obj, entityTypeLowerCased, matchingPaths) => {
+  // Check files for matches
+  for (const fileName in obj?.files || {}) {
+    const file = obj.files[fileName];
+    const fileRelativePath = file.relativePath.toLowerCase();
+    console.log("fileRelativePath: ", fileRelativePath);
+    console.log("entityTypeLowerCased: ", entityTypeLowerCased);
+    if (file.relativePath.toLowerCase().includes(entityTypeLowerCased)) {
+      console.log("Found matching file: ", file.relativePath);
+      matchingPaths.push(file.relativePath);
+    }
+  }
+
+  // Check folders and recurse
+  for (const folderName in obj?.folders || {}) {
+    const folder = obj.folders[folderName];
+    if (folder.relativePath.toLowerCase().includes(entityTypeLowerCased)) {
+      matchingPaths.push(folder.relativePath);
+    }
+    findMatchingRelativePaths(folder, entityTypeLowerCased, matchingPaths);
+  }
+};
+
 // Set the dataset entity object directly
 export const setDatasetEntityObj = (datasetEntityObj) => {
   useGlobalStore.setState((state) => ({
@@ -98,7 +158,6 @@ export const setDatasetEntityObj = (datasetEntityObj) => {
     datasetEntityObj,
   }));
 };
-
 export const getDatasetEntityObj = () => {
   return useGlobalStore.getState().datasetEntityObj;
 };
@@ -164,6 +223,9 @@ const removeFromOtherEntities = (entityEntries, targetEntityName, entityRelative
 
 // Get the entity associated with a specific file path
 export const getEntityForRelativePath = (datasetEntityObj, entityType, relativePath) => {
+  console.log("datasetEntityObj: ", datasetEntityObj);
+  console.log("entityType: ", entityType);
+  console.log("relativePath: ", relativePath);
   const entities = datasetEntityObj?.[entityType];
   if (!entities) return null;
 

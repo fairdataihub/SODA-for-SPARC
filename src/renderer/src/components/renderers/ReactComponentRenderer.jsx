@@ -9,7 +9,6 @@ import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
 import EntitySelectorPage from "../pages/EntitySelector";
 import EntityDataSelectorPage from "../pages/EntityDataSelector";
-import DatasetEntityManager from "../shared/manifest/DatasetEntityManager";
 import DataImporter from "../shared/DataImporter";
 import { Divider } from "@mantine/core";
 

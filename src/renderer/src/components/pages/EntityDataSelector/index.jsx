@@ -22,12 +22,13 @@ import {
 import useGlobalStore from "../../../stores/globalStore";
 import DatasetTreeViewRenderer from "../../shared/DatasetTreeViewRenderer";
 import InstructionalTextSection from "../../common/InstructionalTextSection";
-import { setDatasetStructureSearchFilter } from "../../../stores/slices/datasetTreeViewSlice";
+import { externallySetSearchFilterValue } from "../../../stores/slices/datasetTreeViewSlice";
 import {
   setActiveEntity,
   modifyDatasetEntityForRelativeFilePath,
   getEntityForRelativePath,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
+import { naturalSort } from "../../shared/utils/util-functions";
 
 const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
 
@@ -76,7 +77,7 @@ const handleFolderClick = (
 const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
   if (!datasetEntityObj?.[entityType]) return null;
 
-  return Object.keys(datasetEntityObj[entityType]).map((entity) => {
+  return naturalSort(Object.keys(datasetEntityObj[entityType])).map((entity) => {
     const entityItemsCount = datasetEntityObj[entityType][entity].length || 0;
     console.log("entity", entity);
     console.log("activeEntity", activeEntity);
@@ -118,7 +119,7 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
                       handleEntityClick(entity);
                     }
                     const entityName = entity.substring(entity.indexOf("-") + 1);
-                    setDatasetStructureSearchFilter(entityName);
+                    externallySetSearchFilterValue(entityName);
                   }}
                 />
               </Tooltip>
@@ -194,7 +195,7 @@ const EntityDataSelectorPage = ({
                   fileActions={{
                     "on-file-click": (fileName, fileContents) =>
                       handleFileClick(entityType, activeEntity, datasetEntityObj, fileContents),
-                    "is-file-selected": (fileContents) => {
+                    "is-file-selected": (fileName, fileContents) => {
                       const entity = getEntityForRelativePath(
                         datasetEntityObj,
                         entityType,

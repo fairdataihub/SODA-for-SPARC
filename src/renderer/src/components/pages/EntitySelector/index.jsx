@@ -57,10 +57,6 @@ const EntitySelectorPage = ({
     }
   };
 
-  const handleRemoveEntity = (entityName) => {
-    removeEntityFromEntityList(entityType, entityName);
-  };
-
   const handleImportEntitiesFromLocalFoldersClick = () => {
     window.electron.ipcRenderer.send("open-entity-id-import-selector");
   };
@@ -69,13 +65,12 @@ const EntitySelectorPage = ({
     <ScrollArea h={700} type="auto">
       <Box>
         {entityList.length > 0 ? (
-          <Stack w={width}>
-            {entityList.map((entityName) => (
+          <Stack w={width} gap={0}>
+            {naturalSort(entityList).map((entityName) => (
               <Group
                 key={entityName}
                 justify="space-between"
-                px="sm"
-                py="xs"
+                py={4}
                 style={{ borderBottom: "1px solid #eaeaea" }}
               >
                 <Text>{entityName}</Text>
@@ -83,7 +78,12 @@ const EntitySelectorPage = ({
                   <ActionIcon color="blue">
                     <IconEdit size={16} />
                   </ActionIcon>
-                  <ActionIcon color="red" onClick={() => handleRemoveEntity(entityName)}>
+                  <ActionIcon
+                    color="red"
+                    onClick={() => {
+                      removeEntityFromEntityList(entityType, entityName);
+                    }}
+                  >
                     <IconTrash size={16} />
                   </ActionIcon>
                 </Group>
@@ -132,7 +132,7 @@ const EntitySelectorPage = ({
                     }}
                     error={
                       !isNewEntityNameValid &&
-                      `${entityTypeStringSingular} does not adhere to identifier conventions.`
+                      `${entityTypeStringPlural} IDs can only contain letters, numbers, and hypens.`
                     }
                   />
                   <Button onClick={handleAddEntity} leftIcon={<IconPlus />}>
@@ -166,6 +166,7 @@ const EntitySelectorPage = ({
                   folderActions={{
                     "on-folder-click": async (folderName, folderContents, folderIsSelected) => {
                       const childFolderNames = Object.keys(folderContents.folders);
+                      console.log("childFolderNames", childFolderNames);
                       const potentialEntities = naturalSort(childFolderNames).map(
                         (childFolderName) => {
                           const formattedName =
@@ -178,9 +179,9 @@ const EntitySelectorPage = ({
 
                       const continueWithEntityIdImport = await swalFileListDoubleAction(
                         potentialEntities,
-                        `Confirm ${entityTypeStringPlural} Import`,
-                        `The following ${entityTypeStringPlural} have been detected in the selected folder. If you proceed, they will be added to your list of ${entityTypeStringPlural}:`,
-                        `Import Selected ${entityTypeStringPlural}`,
+                        `${potentialEntities.length} ${entityTypeStringSingular} IDs detected`,
+                        `The following ${entityTypeStringPlural} have been detected in the selected folder. If you select 'Import ${entityTypeStringPlural}', these ${entityTypeStringPlural} will be added to the list of ${entityTypeStringPlural} for this dataset. Do you want to proceed?`,
+                        `Import ${entityTypeStringSingular} IDs`,
                         `Cancel Import`,
                         ""
                       );
