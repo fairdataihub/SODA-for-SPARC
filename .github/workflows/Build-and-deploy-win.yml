@@ -55,7 +55,7 @@ jobs:
           endpoint: https://eus.codesigning.azure.net/
           trusted-signing-account-name: fdih-signing-account
           certificate-profile-name: california-medical-innovations-institute
-          files: ${{ github.workspace }}\dist\win-unpacked\resources\app.exe
+          files: ${{ github.workspace }}\dist\latest.yml
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
