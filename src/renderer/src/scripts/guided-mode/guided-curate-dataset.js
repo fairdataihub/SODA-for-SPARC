@@ -1405,11 +1405,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       );
     }
 
-    if (pageBeingLeftID === "guided-source-derivative-folders-and-files-selector-tab") {
-      addEntityToEntityList("source-derivative-folders-and-files", "source");
-      addEntityToEntityList("source-derivative-folders-and-files", "derivative");
-    }
-
     if (pageBeingLeftID === "guided-subject-structure-spreadsheet-importation-tab") {
       const userChoseToImportSubsSamsPoolsViaSpreadsheet = document
         .getElementById("guided-button-import-subject-structure-from-spreadsheet")
@@ -5022,7 +5017,7 @@ window.openPage = async (targetPageID) => {
         setDatasetEntityObj(savedDatasetEntityObj);
 
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
-
+        /*
         if (!window.sodaJSONObj["completed-tabs"].includes(targetPageID)) {
           console.log("Calling autoSelectDatasetFoldersAndFilesForEnteredEntityIds");
           autoSelectDatasetFoldersAndFilesForEnteredEntityIds(
@@ -5031,6 +5026,7 @@ window.openPage = async (targetPageID) => {
             targetPageDataset.entityTypeStringSingular
           );
         }
+        */
       }
     }
 

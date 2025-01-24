@@ -19,6 +19,7 @@ import {
   Tooltip,
   Box,
 } from "@mantine/core";
+import { IconWand } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
 import DatasetTreeViewRenderer from "../../shared/DatasetTreeViewRenderer";
 import InstructionalTextSection from "../../common/InstructionalTextSection";
@@ -27,14 +28,11 @@ import {
   setActiveEntity,
   modifyDatasetEntityForRelativeFilePath,
   getEntityForRelativePath,
+  autoSelectDatasetFoldersAndFilesForEnteredEntityIds,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { naturalSort } from "../../shared/utils/util-functions";
 
 const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
-
-const upperCaseFirstLetter = (str) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
 
 const handleEntityClick = (entity) => setActiveEntity(entity);
 
@@ -164,12 +162,33 @@ const EntityDataSelectorPage = ({
             <Text>Annotate your data as source or derivative in the interface below.</Text>
           </Stack>
         ) : (
-          <Text>
-            For each {entityTypeStringSingular} ID you entered on the previous page, associate the
-            relevant files from the dataset. To do this, select a {entityTypeStringSingular} ID from
-            the list on the left, then choose the corresponding folders and files from your data on
-            the right.
-          </Text>
+          <Stack>
+            <Text>
+              For each {entityTypeStringSingular} ID you entered on the previous page, associate the
+              relevant files from the dataset. To do this, select a {entityTypeStringSingular} ID
+              from the list on the left, then choose the corresponding folders and files from your
+              data on the right.
+            </Text>
+            <Text>
+              If you have data with folder or file names that match the {entityTypeStringSingular}{" "}
+              IDs you entered, you can automatically associate them by clicking the button below.
+            </Text>
+            <Button
+              w="500px"
+              mt="-5px"
+              mb="lg"
+              onClick={() => {
+                autoSelectDatasetFoldersAndFilesForEnteredEntityIds(
+                  window.datasetStructureJSONObj["folders"]["primary"],
+                  entityType,
+                  entityTypeStringSingular
+                );
+              }}
+              leftSection={<IconWand />}
+            >
+              Auto-associate folders and files containing {entityTypeStringPlural} IDs
+            </Button>
+          </Stack>
         )}
       </GuidedModeSection>
       <GuidedModeSection>

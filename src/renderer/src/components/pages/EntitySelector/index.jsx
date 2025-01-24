@@ -62,7 +62,13 @@ const EntitySelectorPage = ({
   };
 
   const handleImportEntitiesFromLocalFoldersClick = () => {
-    window.electron.ipcRenderer.send("open-entity-id-import-selector");
+    window.electron.ipcRenderer.send(
+      "open-create-dataset-structure-spreadsheet-path-selection-dialog",
+      {
+        entityTypeStringSingular,
+        entityTypePrefix,
+      }
+    );
   };
 
   const renderEntityList = (width) => {
@@ -176,16 +182,20 @@ const EntitySelectorPage = ({
                 <EntityListContainer title={`${entityTypeStringSingular} IDs`}>
                   {renderEntityList("300px")}
                 </EntityListContainer>
-                <Button
-                  size="xs"
-                  color="blue"
-                  variant="outline"
-                  onClick={handleImportEntitiesFromLocalFoldersClick}
-                  ml="xl"
-                  mt="md"
-                >
-                  Generate a spreadsheet to add {entityTypeStringPlural} IDs into
-                </Button>
+                <Stack>
+                  <Text>
+                    <b>Step 1:</b> Generate a spreadsheet template to input{" "}
+                    {entityTypeStringSingular} IDs.
+                  </Text>
+                  <Button
+                    size="xs"
+                    color="blue"
+                    variant="outline"
+                    onClick={handleImportEntitiesFromLocalFoldersClick}
+                  >
+                    Generate a spreadsheet to add {entityTypeStringPlural} IDs into
+                  </Button>
+                </Stack>
               </Group>
             </Tabs.Panel>
 
