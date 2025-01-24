@@ -43,6 +43,11 @@ jobs:
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
 
+      - name: Build the app for Windows
+        run: npm run build-win
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Sign files with Trusted Signing V1.1
         uses: azure/trusted-signing-action@v0.5.1
         with:
@@ -52,7 +57,9 @@ jobs:
           endpoint: https://eus.codesigning.azure.net/
           trusted-signing-account-name: fdih-signing-account
           certificate-profile-name: california-medical-innovations-institute
-          files: ${{ github.workspace }}\src\main\analytics.js
+          files: |
+            ${{ github.workspace }}\dist\soda-for-sparc-15.3.2-beta-setup.exe
+            ${{ github.workspace }}\dist\win-unpacked\resources\app.exe
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
