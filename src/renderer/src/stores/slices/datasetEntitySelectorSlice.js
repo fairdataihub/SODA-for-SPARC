@@ -85,45 +85,70 @@ export const setEntityListForEntityType = (entityType, entityListObj) => {
   );
 };
 
-// Write a function that will take a dataset structure and a search term and return a list of relative paths that match the search term
-export const gatherRelativePathsForSearchTerm = (datasetStructure, searchTerm) => {
-  const filteredStructure = filterStructure(datasetStructure, searchTerm);
-  const matchingPaths = [];
-  findMatchingRelativePaths(filteredStructure, searchTerm, matchingPaths);
-  return matchingPaths;
-};
-
 export const autoSelectDatasetFoldersAndFilesForEnteredEntityIds = async (
   datasetStructure,
-  entityType
+  entityType,
+  entityTypeStringSingular
 ) => {
-  console.log("datasetStructure: ", datasetStructure);
-  console.log("entityType: ", entityType);
+  console.log("Starting auto-selection process", { datasetStructure, entityType });
 
-  // Create a deep copy of the dataset structure and add relative paths to each file and folder
+  // Deep copy the dataset structure to ensure original data remains untouched
   const structureCopy = JSON.parse(JSON.stringify(datasetStructure));
-  console.log("structureCopy: ", structureCopy);
-  // Filter the structure to only include folders and files that match the entity type
-  const entityTypeLowerCased = entityType.toLowerCase();
 
+  // Retrieve the dataset entity object and extract the relevant entity list
   const datasetEntityObj = getDatasetEntityObj();
-
   const entityList = Object.keys(datasetEntityObj[entityType] || {});
-  console.log("entityList: ", entityList);
 
-  for (const entityID of entityList) {
-    // Extract the entity name from the entity ID
-    const entityName = entityID.toLocaleLowerCase().split("-").slice(-1)[0];
+  // Collect matching paths for each entity ID
+  const additions = entityList.reduce((acc, entityID) => {
+    console.log("Searching entityID" + entityID);
+
+    // Extract everything after the first dash
+    const entityName = entityID.substring(entityID.indexOf("-") + 1);
+
+    console.log("Searching entityName" + entityName);
 
     const matchingPaths = [];
     findMatchingRelativePaths(structureCopy, entityName, matchingPaths);
-    console.log("entity: ", entityID);
-    console.log("matchingPaths: ", matchingPaths);
 
-    // Update the global store with the matching paths for the current entity
-    matchingPaths.forEach((relativePath) => {
-      modifyDatasetEntityForRelativeFilePath(entityType, entityID, relativePath, "add");
-    });
+    console.log("Entity processing", { entityID, entityName, matchingPaths });
+
+    if (matchingPaths.length > 0) {
+      acc[entityID] = matchingPaths;
+    }
+
+    return acc;
+  }, {});
+
+  // Create a list of confirmation items
+  const confirmationItems = Object.entries(additions).flatMap(([entityID, paths]) =>
+    paths.map((path) => `${entityID} - ${path}`)
+  );
+
+  console.log("confirmationItems", confirmationItems);
+  if (confirmationItems.length > 0) {
+    // Display confirmation dialog with SweetAlert
+    const autoSelectDetectedEntityItems = await swalFileListDoubleAction(
+      confirmationItems,
+      `SODA detected ${confirmationItems.length} folders and files that match the ${entityTypeStringSingular} IDs entered`,
+      ``,
+      "Auto-associate detected folders and files",
+      "Do not auto-associate",
+      "Would you like SODA to auto-associate these folders and files with the entered IDs?"
+    );
+
+    if (autoSelectDetectedEntityItems) {
+      // Apply the additions
+      Object.entries(additions).forEach(([entityID, paths]) => {
+        paths.forEach((relativePath) => {
+          modifyDatasetEntityForRelativeFilePath(entityType, entityID, relativePath, "add");
+          console.log("Added path to dataset entity", { entityType, entityID, relativePath });
+        });
+      });
+      console.log("All additions confirmed and applied.");
+    } else {
+      console.log("Additions were canceled by the user.");
+    }
   }
 };
 

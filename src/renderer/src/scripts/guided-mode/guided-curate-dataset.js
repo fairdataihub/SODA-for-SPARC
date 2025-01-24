@@ -50,6 +50,7 @@ import {
   getDatasetEntityObj,
   setDatasetEntityObj,
   autoSelectDatasetFoldersAndFilesForEnteredEntityIds,
+  addEntityToEntityList,
 } from "../../stores/slices/datasetEntitySelectorSlice";
 import {
   setDatasetStructureSearchFilter,
@@ -404,28 +405,6 @@ document.getElementById("guided-button-dataset-contains-code").addEventListener(
       // If the code folder is imported from Pennsieve, unmark it as deleted
       guidedModifyPennsieveFolder(codeFolder, "restore");
       // NOTE: We do not need to update the UI since this button is not on the ui structuring page
-    }
-  }
-});
-
-document.getElementById("guided-button-has-protocol-data").addEventListener("click", () => {
-  const protocolFolder = window.datasetStructureJSONObj["folders"]["protocol"];
-  if (protocolFolder) {
-    if (folderImportedFromPennsieve(protocolFolder)) {
-      // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
-      guidedModifyPennsieveFolder(protocolFolder, "restore");
-      guidedUpdateFolderStructureUI("protocol/");
-    }
-  }
-});
-
-document.getElementById("guided-button-has-docs-data").addEventListener("click", () => {
-  const docsFolder = window.datasetStructureJSONObj["folders"]["docs"];
-  if (docsFolder) {
-    if (folderImportedFromPennsieve(docsFolder)) {
-      // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
-      guidedModifyPennsieveFolder(docsFolder, "restore");
-      guidedUpdateFolderStructureUI("docs/");
     }
   }
 });
@@ -1427,13 +1406,8 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-source-derivative-folders-and-files-selector-tab") {
-      window.sodaJSONObj["source-derivative-folders-and-files"] = getEntityObjForEntityType(
-        "source-derivative-folders-and-files"
-      );
-      console.log(
-        "source-derivative-folders-and-files",
-        window.sodaJSONObj["source-derivative-folders-and-files"]
-      );
+      addEntityToEntityList("source-derivative-folders-and-files", "source");
+      addEntityToEntityList("source-derivative-folders-and-files", "derivative");
     }
 
     if (pageBeingLeftID === "guided-subject-structure-spreadsheet-importation-tab") {
@@ -1521,135 +1495,9 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-protocol-folder-tab") {
-      const guidedButtonUserHasProtocolData = document.getElementById(
-        "guided-button-has-protocol-data"
-      );
-      const guidedButtonUserNoProtocolData = document.getElementById(
-        "guided-button-no-protocol-data"
-      );
-
-      const protocolFolder = window.datasetStructureJSONObj["folders"]["protocol"];
-
-      if (
-        !guidedButtonUserHasProtocolData.classList.contains("selected") &&
-        !guidedButtonUserNoProtocolData.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate if your dataset contains protocol data",
-        });
-        throw errorArray;
-      }
-      if (guidedButtonUserHasProtocolData.classList.contains("selected")) {
-        if (
-          Object.keys(protocolFolder.folders).length === 0 &&
-          Object.keys(protocolFolder.files).length === 0
-        ) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please add docs protocol or indicate that you do not have protocol data",
-          });
-          throw errorArray;
-        }
-      }
-      if (guidedButtonUserNoProtocolData.classList.contains("selected")) {
-        if (
-          Object.keys(protocolFolder.folders).length === 0 &&
-          Object.keys(protocolFolder.files).length === 0
-        ) {
-          if (folderImportedFromPennsieve(protocolFolder)) {
-            guidedModifyPennsieveFolder(protocolFolder, "delete");
-          } else {
-            delete window.datasetStructureJSONObj["folders"]["protocol"];
-          }
-        } else {
-          const { value: deleteProtocolFolderWithData } = await Swal.fire({
-            title: "Delete protocol folder?",
-            text: "You indicated that your dataset does not contain protocol data, however, you previously added protocol data to your dataset. Do you want to delete the protocol folder?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!",
-            cancelButtonText: "No, keep it!",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-          if (deleteProtocolFolderWithData) {
-            if (folderImportedFromPennsieve(protocolFolder)) {
-              guidedModifyPennsieveFolder(protocolFolder, "delete");
-            } else {
-              delete window.datasetStructureJSONObj["folders"]["protocol"];
-            }
-          } else {
-            guidedButtonUserHasProtocolData.click();
-          }
-        }
-      }
     }
 
     if (pageBeingLeftID === "guided-docs-folder-tab") {
-      const guidedButtonUserHasDocsData = document.getElementById("guided-button-has-docs-data");
-      const guidedButtonUserNoDocsData = document.getElementById("guided-button-no-docs-data");
-
-      const docsFolder = window.datasetStructureJSONObj["folders"]["docs"];
-
-      if (
-        !guidedButtonUserHasDocsData.classList.contains("selected") &&
-        !guidedButtonUserNoDocsData.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate if your dataset contains docs data",
-        });
-        throw errorArray;
-      }
-      if (guidedButtonUserHasDocsData.classList.contains("selected")) {
-        if (
-          Object.keys(docsFolder.folders).length === 0 &&
-          Object.keys(docsFolder.files).length === 0
-        ) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please add docs data or indicate that you do not have docs data",
-          });
-          throw errorArray;
-        }
-      }
-      if (guidedButtonUserNoDocsData.classList.contains("selected")) {
-        if (
-          Object.keys(docsFolder.folders).length === 0 &&
-          Object.keys(docsFolder.files).length === 0
-        ) {
-          if (folderImportedFromPennsieve(docsFolder)) {
-            guidedModifyPennsieveFolder(docsFolder, "delete");
-          } else {
-            delete window.datasetStructureJSONObj["folders"]["docs"];
-          }
-        } else {
-          const { value: deleteDocsFolderWithData } = await Swal.fire({
-            title: "Delete docs folder?",
-            text: "You indicated that your dataset does not contain docs data, however, you previously added docs data to your dataset. Do you want to delete the docs folder?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!",
-            cancelButtonText: "No, keep it!",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-          if (deleteDocsFolderWithData) {
-            if (folderImportedFromPennsieve(docsFolder)) {
-              guidedModifyPennsieveFolder(docsFolder, "delete");
-            } else {
-              delete window.datasetStructureJSONObj["folders"]["docs"];
-            }
-          } else {
-            guidedButtonUserHasDocsData.click();
-          }
-        }
-      }
     }
 
     if (pageBeingLeftID === "guided-create-subjects-metadata-tab") {
@@ -4313,15 +4161,6 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
   }
 };
 
-const guidedTestResetPennsievePage = (tabID) => {
-  window.sodaJSONObj["completed-tabs"] = window.sodaJSONObj["completed-tabs"].filter(
-    (tab) => tab != tabID
-  );
-  window.sodaJSONObj["pages-fetched-from-pennsieve"] = window.sodaJSONObj[
-    "pages-fetched-from-pennsieve"
-  ].filter((tab) => tab != tabID);
-};
-
 const guidedResetSkippedPages = () => {
   const pagesThatShouldAlwaysBeskipped = [
     "guided-dataset-generation-tab",
@@ -5184,11 +5023,12 @@ window.openPage = async (targetPageID) => {
 
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
 
-        if (window.sodaJSONObj["completed-tabs"].includes(targetPageID)) {
+        if (!window.sodaJSONObj["completed-tabs"].includes(targetPageID)) {
           console.log("Calling autoSelectDatasetFoldersAndFilesForEnteredEntityIds");
           autoSelectDatasetFoldersAndFilesForEnteredEntityIds(
             window.datasetStructureJSONObj["folders"]["primary"],
-            targetPageDataset.entityType
+            targetPageDataset.entityType,
+            targetPageDataset.entityTypeStringSingular
           );
         }
       }
@@ -5357,6 +5197,7 @@ window.openPage = async (targetPageID) => {
     if (targetPageID === "guided-unstructured-data-import-tab") {
       guidedUpdateFolderStructureUI("primary/");
     }
+
     if (targetPageID === "guided-denote-derivative-data-tab") {
       // Set the folder structure as the primary folder since the user is
       // denoting data as derivative which will be moved to the derivative folder
@@ -5392,34 +5233,13 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-protocol-folder-tab") {
-      itemsContainer.classList.add("border-styling");
-      const protocolFolder = window.datasetStructureJSONObj["folders"]["protocol"];
-      if (!protocolFolder) {
-        //create a docs folder
-        window.datasetStructureJSONObj["folders"]["protocol"] = newEmptyFolderObj();
-      }
-      //Append the guided-file-explorer element to the docs folder organization container
-      $("#guided-file-explorer-elements").appendTo($("#guided-user-has-protocol-data"));
       guidedUpdateFolderStructureUI("protocol/");
-
-      //Remove hidden class from file explorer element in case it was hidden
-      //when showing the intro for prim/src/deriv organization
-      document.getElementById("guided-file-explorer-elements").classList.remove("hidden");
+      setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["protocol"]);
     }
 
     if (targetPageID === "guided-docs-folder-tab") {
-      itemsContainer.classList.add("border-styling");
-      const docsFolder = window.datasetStructureJSONObj["folders"]["docs"];
-      if (!docsFolder) {
-        //create a docs folder
-        window.datasetStructureJSONObj["folders"]["docs"] = newEmptyFolderObj();
-      }
-      //Append the guided-file-explorer element to the docs folder organization container
-      $("#guided-file-explorer-elements").appendTo($("#guided-user-has-docs-data"));
       guidedUpdateFolderStructureUI("docs/");
-      //Remove hidden class from file explorer element in case it was hidden
-      //when showing the intro for prim/src/deriv organization
-      document.getElementById("guided-file-explorer-elements").classList.remove("hidden");
+      setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["docs"]);
     }
 
     if (targetPageID === "guided-dataset-structure-review-tab") {
@@ -5781,12 +5601,8 @@ window.openPage = async (targetPageID) => {
       setActiveEntity(null);
     }
     if (targetPageID === "guided-source-derivative-folders-and-files-selector-tab") {
-      setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
-      setEntityType("source-derivative-folders-and-files");
-      setEntityListForEntityType(
-        "source-derivative-folders-and-files",
-        window.sodaJSONObj["source-derivative-folders-and-files"] || {}
-      );
+      addEntityToEntityList("source-derivative-folders-and-files", "source");
+      addEntityToEntityList("source-derivative-folders-and-files", "derivative");
       setActiveEntity(null);
     }
 

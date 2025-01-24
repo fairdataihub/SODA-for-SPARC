@@ -4,7 +4,7 @@ import { IconUpload, IconFile, IconX } from "@tabler/icons-react";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
 
-const DataImporter = () => {
+const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
   // Handles preventing default drop action
   const allowDrop = (event) => event.preventDefault();
 
@@ -24,7 +24,7 @@ const DataImporter = () => {
   const handleClick = async (event) => {
     event.preventDefault();
     window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
-      importRelativePath: "primary/",
+      importRelativePath: relativeFolderPathToImportDataInto,
     });
   };
 
@@ -48,7 +48,7 @@ const DataImporter = () => {
           </Dropzone.Idle>
 
           <Text size="xl" inline>
-            Drag experimental data here or click to import from your computer
+            Drag {dataType} data here or click to import from your computer
           </Text>
         </Group>
       </Dropzone>

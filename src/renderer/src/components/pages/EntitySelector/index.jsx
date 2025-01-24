@@ -1,7 +1,7 @@
 import { useState } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
-import DropDownNote from "../../utils/ui/DropDownNote";
+import EntityListContainer from "../../containers/EntityListContainer";
 import { IconPlus, IconTrash, IconEdit } from "@tabler/icons-react";
 import {
   TextInput,
@@ -61,43 +61,39 @@ const EntitySelectorPage = ({
     window.electron.ipcRenderer.send("open-entity-id-import-selector");
   };
 
-  const renderEntityList = (width) => (
-    <ScrollArea h={700} type="auto">
-      <Box>
-        {entityList.length > 0 ? (
-          <Stack w={width} gap={0}>
-            {naturalSort(entityList).map((entityName) => (
-              <Group
-                key={entityName}
-                justify="space-between"
-                py={4}
-                style={{ borderBottom: "1px solid #eaeaea" }}
+  const renderEntityList = (width) => {
+    return entityList.length > 0 ? (
+      <Box w={width}>
+        {naturalSort(entityList).map((entityName) => (
+          <Group
+            key={entityName}
+            justify="space-between"
+            py={4}
+            style={{ borderBottom: "1px solid #eaeaea" }}
+          >
+            <Text>{entityName}</Text>
+            <Group gap="xs">
+              <ActionIcon color="blue">
+                <IconEdit size={16} />
+              </ActionIcon>
+              <ActionIcon
+                color="red"
+                onClick={() => {
+                  removeEntityFromEntityList(entityType, entityName);
+                }}
               >
-                <Text>{entityName}</Text>
-                <Group gap="xs">
-                  <ActionIcon color="blue">
-                    <IconEdit size={16} />
-                  </ActionIcon>
-                  <ActionIcon
-                    color="red"
-                    onClick={() => {
-                      removeEntityFromEntityList(entityType, entityName);
-                    }}
-                  >
-                    <IconTrash size={16} />
-                  </ActionIcon>
-                </Group>
-              </Group>
-            ))}
-          </Stack>
-        ) : (
-          <Text align="center" c="dimmed" px="sm" py="xs">
-            No {entityTypeStringPlural} added yet.
-          </Text>
-        )}
+                <IconTrash size={16} />
+              </ActionIcon>
+            </Group>
+          </Group>
+        ))}
       </Box>
-    </ScrollArea>
-  );
+    ) : (
+      <Text align="center" c="dimmed" px="sm" py="xs">
+        No {entityTypeStringPlural} added yet.
+      </Text>
+    );
+  };
   return (
     <GuidedModePage pageHeader={pageName}>
       <InstructionalTextSection textSectionKey={entityTypePrefix} />
@@ -132,7 +128,7 @@ const EntitySelectorPage = ({
                     }}
                     error={
                       !isNewEntityNameValid &&
-                      `${entityTypeStringPlural} IDs can only contain letters, numbers, and hypens.`
+                      `${entityTypeStringPlural} IDs can only contain letters, numbers, and hyphens.`
                     }
                   />
                   <Button onClick={handleAddEntity} leftIcon={<IconPlus />}>
@@ -141,26 +137,34 @@ const EntitySelectorPage = ({
                 </Group>
               </Stack>
 
-              {renderEntityList()}
+              <EntityListContainer title={`${entityTypeStringSingular} IDs`}>
+                {renderEntityList()}
+              </EntityListContainer>
             </Tabs.Panel>
 
             <Tabs.Panel value="spreadsheet">
               <Group spacing="xs" align="start" width="100%">
-                {renderEntityList("300px")}
+                <EntityListContainer title={`${entityTypeStringPlural} IDs`}>
+                  {renderEntityList("300px")}
+                </EntityListContainer>
                 <Button
                   size="xs"
                   color="blue"
                   variant="outline"
                   onClick={handleImportEntitiesFromLocalFoldersClick}
+                  ml="xl"
+                  mt="md"
                 >
-                  Import {entityTypeStringSingular} IDs from local folders/files
+                  Generate a spreadsheet to add {entityTypeStringPlural} IDs into
                 </Button>
               </Group>
             </Tabs.Panel>
 
             <Tabs.Panel value="folderSelect">
               <Group spacing="xs" align="start" width="100%">
-                {renderEntityList("300px")}
+                <EntityListContainer title={`${entityTypeStringPlural} IDs`}>
+                  {renderEntityList("300px")}
+                </EntityListContainer>
 
                 <DatasetTreeViewRenderer
                   folderActions={{

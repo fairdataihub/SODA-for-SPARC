@@ -606,7 +606,7 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
 
   let folders = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory", "multiSelections"],
-    title: `Import a folder to ${importRelativePath}`,
+    title: `Select data folder(s) to import into ${importRelativePath}`,
   });
 
   if (folders.canceled) {

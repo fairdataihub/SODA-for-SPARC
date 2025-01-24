@@ -225,7 +225,7 @@ const FolderItem = ({
           }}
           c={folderIsEmpty ? "gray" : folderIsPassThrough ? "silver" : "black"}
         >
-          {content.relativePath}
+          {name}
         </Text>
       </Group>
       <Collapse in={isOpen}>

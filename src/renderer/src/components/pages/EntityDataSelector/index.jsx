@@ -1,7 +1,7 @@
 import { useState } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
-import DropDownNote from "../../utils/ui/DropDownNote";
+import EntityListContainer from "../../containers/EntityListContainer";
 import { IconSearch } from "@tabler/icons-react";
 import {
   TextInput,
@@ -152,17 +152,9 @@ const EntityDataSelectorPage = ({
       <GuidedModeSection>
         <Grid gutter="lg">
           <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
-            <Paper shadow="lg" p="md" radius="md" withBorder>
-              <Group mb="sm" spacing="xs">
-                <Text size="lg" weight={500}>
-                  {entityType}
-                </Text>
-              </Group>
-              <Divider my="xs" />
-              <Box sx={{ maxHeight: "70vh", overflowY: "auto" }}>
-                {renderEntityList(entityType, activeEntity, datasetEntityObj)}
-              </Box>
-            </Paper>
+            <EntityListContainer title={entityTypeStringPlural}>
+              {renderEntityList(entityType, activeEntity, datasetEntityObj)}
+            </EntityListContainer>
           </Grid.Col>
 
           <Grid.Col span={8}>
@@ -209,7 +201,8 @@ const EntityDataSelectorPage = ({
             ) : (
               <Box p="xl">
                 <Text size="xl" c="gray">
-                  Select an item from the {entityType} on the left to map files to it.
+                  Select an item from the {entityTypeStringSingular} list on the left to map files
+                  to it.
                 </Text>
               </Box>
             )}

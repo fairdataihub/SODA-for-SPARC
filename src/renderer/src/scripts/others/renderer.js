@@ -4361,15 +4361,17 @@ const showFileImportLoadingSweetAlert = (delayBeforeShowingSweetAlert) => {
     loadingSweetAlert = Swal.fire({
       title: "Importing your files and folders into SODA...",
       html: `
-        <div class="lds-roller">
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
+        <div class="flex-center">
+          <div class="lds-roller">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
         </div>
       `,
       width: 800,
@@ -4813,7 +4815,7 @@ const mergeLocalAndRemoteDatasetStructure = async (
   );
   console.log("currentPathArray", currentPathArray.slice(1));
 
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
+  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
 };
 
 const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
@@ -4842,7 +4844,7 @@ const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
     );
     console.log("currentPathArray", currentPathArray.slice(1));
 
-    setTreeViewDatasetStructure(window.datasetStructureJSONObj, currentPathArray.slice(1));
+    setTreeViewDatasetStructure(window.datasetStructureJSONObj);
 
     // Step 4: Update successful, show success message
     window.notyf.open({

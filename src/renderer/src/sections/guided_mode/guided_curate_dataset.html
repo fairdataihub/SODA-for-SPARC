@@ -1359,12 +1359,19 @@
           <div class="guided--section">
             <h1 class="text-sub-step-title">Import your dataset's folders and files</h1>
             <p class="help-text">
-              This is the first page in the end to end curation mode where users will import their
-              experimental data. Note that this could be data that will later be classified into
-              other high level folders (source and derivative).
+              Import all of the experimental data that was collected in your study into SODA's
+              virtual file explorer below. Once you have imported your data, click '<span
+                class="next-button-span"
+              ></span
+              >' to begin the dataset annotation process.
             </p>
           </div>
-          <div data-component-type="data-importer" class="guided--section"></div>
+          <div
+            data-component-type="data-importer"
+            data-data-type="experimental"
+            data-relative-folder-path-to-import-data-into="primary/"
+            class="guided--section"
+          ></div>
         </div>
         <!--
         <div
@@ -1409,17 +1416,8 @@
           data-entity-type-string-plural="subjects"
           data-entity-type-prefix="sub-"
         ></div>
+
         <!--
-        <div
-          id="guided-sample-entity-addition-tab"
-          data-page-name="Manage Sample IDs"
-          class="guided--page"
-          data-component-type="entity-management-page"
-          data-entity-type="samples"
-          data-entity-type-string-singular="sample"
-          data-entity-type-string-plural="samples"
-          data-entity-type-prefix="sam-"
-        ></div>
         <div
           id="guided-performances-entity-addition-tab"
           data-page-name="Performances management"
@@ -1451,7 +1449,16 @@
           data-entity-type-string-plural="subjects"
           data-entity-type-prefix="sub-"
         ></div>
-        <!--
+        <div
+          id="guided-sample-entity-addition-tab"
+          data-page-name="Manage Sample IDs"
+          class="guided--page"
+          data-component-type="entity-management-page"
+          data-entity-type="samples"
+          data-entity-type-string-singular="sample"
+          data-entity-type-string-plural="samples"
+          data-entity-type-prefix="sam-"
+        ></div>
         <div
           id="guided-sample-entity-selection-tab"
           data-page-name="Samples data selection"
@@ -1462,6 +1469,17 @@
           data-entity-type-string-plural="samples"
           data-entity-type-prefix="sam-"
         ></div>
+        <div
+          id="guided-source-derivative-folders-and-files-selector-tab"
+          data-page-name="Denote Supplementary Data"
+          class="guided--page"
+          data-component-type="entity-selection-page"
+          data-entity-type="source-derivative-folders-and-files"
+          data-entity-type-string-singular="Supplementary Data"
+          data-entity-type-string-plural="Supplementary Data"
+          data-entity-type-prefix=""
+        ></div>
+        <!--
         <div
           id="guided-performances-entity-selection-tab"
           data-page-name="Performances data selection"
@@ -1482,7 +1500,7 @@
           data-entity-type-string-plural="sites"
           data-entity-type-prefix="site-"
         ></div>
-        -->
+      
         <div
           class="guided--page"
           id="guided-source-derivative-folders-and-files-selector-tab"
@@ -1517,6 +1535,7 @@
           </div>
           <div data-component-typez="manifest-entity-selector" class="guided--section"></div>
         </div>
+        -->
 
         <!--<div
           id="guided-primary-data-organization-tab"
@@ -1890,32 +1909,12 @@
               protocols that must be submitted to protocols.io (more on that at a later step).
             </p>
           </div>
-          <div class="guided--section">
-            <label class="guided--form-label centered"
-              >Do you have protocol data associated with your dataset?
-            </label>
-
-            <div class="guided--radio-button-container">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-has-protocol-data"
-                data-next-element="guided-user-has-protocol-data"
-                data-button-config-value="dataset-contains-protocol-data"
-                data-button-config-value-state="yes"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-no-protocol-data"
-                data-button-config-value="dataset-contains-protocol-data"
-                data-button-config-value-state="no"
-              >
-                No
-              </button>
-            </div>
-          </div>
-          <div class="guided--panel hidden" id="guided-user-has-protocol-data"></div>
+          <div
+            data-component-type="data-importer"
+            data-data-type="protocol"
+            data-relative-folder-path-to-import-data-into="protocol/"
+            class="guided--section"
+          ></div>
         </div>
         <div id="guided-docs-folder-tab" class="guided--page" data-page-name="Docs data">
           <div class="guided--section">
@@ -1926,32 +1925,12 @@
               data).
             </p>
           </div>
-          <div class="guided--section">
-            <label class="guided--form-label centered"
-              >Do you have docs data associated with your dataset?
-            </label>
-
-            <div class="guided--radio-button-container">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-has-docs-data"
-                data-next-element="guided-user-has-docs-data"
-                data-button-config-value="dataset-contains-docs-data"
-                data-button-config-value-state="yes"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-no-docs-data"
-                data-button-config-value="dataset-contains-docs-data"
-                data-button-config-value-state="no"
-              >
-                No
-              </button>
-            </div>
-          </div>
-          <div class="guided--panel hidden" id="guided-user-has-docs-data"></div>
+          <div
+            data-component-type="data-importer"
+            data-data-type="documentation"
+            data-relative-folder-path-to-import-data-into="docs/"
+            class="guided--section"
+          ></div>
         </div>
 
         <div

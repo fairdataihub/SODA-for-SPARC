@@ -1,16 +1,29 @@
 import GuidedModeSection from "../../containers/GuidedModeSection";
-import useGlobalStore from "../../../stores/globalStore";
-import { Text, Image } from "@mantine/core";
+import { Text, Image, Group } from "@mantine/core";
+import { IconPig, IconMickey } from "@tabler/icons-react";
 
 // Content lookup object that maps keys to arrays of content sections.
-// Each section specifies its type (e.g., text, image) and associated data.
-
 const InstructionalTextSection = ({ textSectionKey }) => {
   const contentLookup = {
     "sub-": [
       {
         type: "text",
-        data: "Each subject must be uniquely identified with a subject ID. SODA provides three options for specifying subject IDs based on the number of subjects and your preference:",
+        data: "Every subject that data was extracted from must be given a unique ID that can be used to associate data with. SODA provides three options for specifying subject IDs based on the number of subjects and your preference:",
+      },
+      {
+        type: "double-pictogram",
+        leftData: {
+          icon: <IconMickey />,
+          textArray: ["sub-mouse-1", "sub-mouse-2", "sub-mouse-3"],
+        },
+        rightData: {
+          icon: <IconPig />,
+          textArray: ["sub-pig-1", "sub-pig-2", "sub-pig-3"],
+        },
+      },
+      {
+        type: "text",
+        data: "Every subject that data was extracted from must be given a unique ID that can be used to associate data with. SODA provides three options for specifying subject IDs based on the number of subjects and your preference:",
       },
       {
         type: "text",
@@ -51,15 +64,27 @@ const InstructionalTextSection = ({ textSectionKey }) => {
       {contentSections.map((section, index) => {
         switch (section.type) {
           case "text":
-            // Render a text section
-            // Use the dangerouslySetInnerHTML prop to render HTML content because the text
-            // may contain HTML tags (e.g., <b>Manual</b>)
             return <Text key={index} dangerouslySetInnerHTML={{ __html: section.data }} />;
           case "image":
-            // Render an image section
             return <Image key={index} src={section.data} alt={`Section image ${index}`} />;
+          case "double-pictogram":
+            return (
+              <Group key={index} w="100%" style={{ marginTop: 20 }}>
+                <div>
+                  {section.leftData.icon}
+                  {section.leftData.textArray.map((text, idx) => (
+                    <Text key={idx}>{text}</Text>
+                  ))}
+                </div>
+                <div>
+                  {section.rightData.icon}
+                  {section.rightData.textArray.map((text, idx) => (
+                    <Text key={idx}>{text}</Text>
+                  ))}
+                </div>
+              </Group>
+            );
           default:
-            // Handle unknown or unsupported section types
             return null;
         }
       })}

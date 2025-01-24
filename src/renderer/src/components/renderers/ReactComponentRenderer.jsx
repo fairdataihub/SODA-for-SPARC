@@ -92,9 +92,15 @@ const componentTypeRenderers = {
 
   "data-importer": (componentSlot) => {
     const root = createRoot(componentSlot);
+    const props = {
+      dataType: componentSlot.getAttribute("data-data-type"),
+      relativeFolderPathToImportDataInto: componentSlot.getAttribute(
+        "data-relative-folder-path-to-import-data-into"
+      ),
+    };
     root.render(
       <SodaComponentWrapper>
-        <DataImporter />
+        <DataImporter {...props} />
       </SodaComponentWrapper>
     );
   },
