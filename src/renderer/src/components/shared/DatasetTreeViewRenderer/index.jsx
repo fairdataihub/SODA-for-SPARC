@@ -43,11 +43,7 @@ const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEd
     contextMenuIsOpened: state.contextMenuIsOpened,
   }));
 
-  const fileIsSelected = isFileSelected ? isFileSelected(name, content) : false;
-
-  if (fileIsSelected) {
-    console.log("File is selected", name);
-  }
+  const fileIsSelected = isFileSelected ? isFileSelected(name, content) : null;
 
   const handleFileContextMenuOpen = (e) => {
     e.preventDefault();
@@ -66,18 +62,19 @@ const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEd
   const isHoveredOrSelected =
     hovered || (contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath);
 
+  const getFileColor = () => {
+    if (fileIsSelected) return "var(--color-transparent-soda-green)";
+    if (fileIsSelected === false) return "#DCDCDC";
+    if (isHoveredOrSelected) return "rgba(0, 0, 0, 0.05)";
+    return undefined;
+  };
+
   return (
     <Group
       ref={ref}
       gap="sm"
       justify="flex-start"
-      bg={
-        fileIsSelected
-          ? "var(--color-transparent-soda-green)"
-          : isHoveredOrSelected
-            ? "rgba(0, 0, 0, 0.05)"
-            : undefined
-      }
+      bg={getFileColor()}
       onClick={() => onFileClick?.(name, content)}
       onContextMenu={handleFileContextMenuOpen}
       ml="sm"
@@ -142,16 +139,34 @@ const FolderItem = ({
   const folderIsEmpty =
     !content ||
     (Object.keys(content.folders).length === 0 && Object.keys(content.files).length === 0);
+
+  if (folderIsEmpty) return null; // Don't render empty folders
+
   const folderIsPassThrough = content.passThrough;
 
   // Check if the folder is selected
-  const folderIsSelected = isFolderSelected ? isFolderSelected(name, content) : false;
+  // True means the folder is selected
+  // False return means the folder should be grayed out
+  // Null means the folder should be normal
+  const folderIsSelected = isFolderSelected ? isFolderSelected(name, content) : null;
   console.log("Folder is selected", folderIsSelected);
 
   const folderRelativePathEqualsContextMenuItemRelativePath =
     contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath;
 
-  if (folderIsEmpty) return null;
+  // Helper function for determining background color
+  const getBackgroundColor = () => {
+    if (folderIsSelected) return "var(--color-transparent-soda-green)";
+    if (folderIsSelected === false) return "#DCDCDC";
+
+    if (
+      hovered ||
+      (contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath)
+    ) {
+      return "rgba(0, 0, 0, 0.05)";
+    }
+    return undefined;
+  };
 
   return (
     <Stack gap={1} ml="xs">
@@ -160,13 +175,7 @@ const FolderItem = ({
         justify="flex-start"
         onContextMenu={handleFolderContextMenuOpen}
         ref={ref}
-        bg={
-          folderIsSelected
-            ? "var(--color-transparent-soda-green)"
-            : hovered || folderRelativePathEqualsContextMenuItemRelativePath
-              ? "rgba(0, 0, 0, 0.05)"
-              : undefined
-        }
+        bg={getBackgroundColor()}
       >
         {folderIsEmpty || !isOpen ? (
           <IconFolder
@@ -187,8 +196,9 @@ const FolderItem = ({
               <Tooltip label={folderClickHoverText || "Select this folder"} zIndex={2999}>
                 <Checkbox
                   readOnly
-                  checked={folderIsSelected}
+                  checked={folderIsSelected !== null}
                   onClick={() => onFolderClick?.(name, content, folderIsSelected)}
+                  disabled={folderIsSelected === false}
                 />
               </Tooltip>
             )}
@@ -304,7 +314,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
 
   if (renderObjIsEmpty) {
     return (
-      <Paper padding="md" shadow="sm" radius="md" mih={200} p="sm" flex={1}>
+      <Paper padding="md" shadow="sm" radius="md" mih={200} p="sm" flex={1} w="100%">
         <TextInput
           label="Search files and folders:"
           placeholder="Search files and folders..."
@@ -323,7 +333,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
   }
 
   return (
-    <Paper padding="md" shadow="sm" radius="md" mih={200} p="sm" flex={1}>
+    <Paper padding="md" shadow="sm" radius="md" mih={200} p="sm" flex={1} w="100%">
       <TextInput
         label="Search files and folders:"
         placeholder="Search files and folders..."

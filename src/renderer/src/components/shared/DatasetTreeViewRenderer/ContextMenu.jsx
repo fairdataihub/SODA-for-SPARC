@@ -85,6 +85,7 @@ const ContextMenu = () => {
             </Text>
           </Group>
           <Divider my={3} />
+          {/*
           <Menu.Item
             onClick={() => {
               setFolderMoveMode(true);
@@ -93,6 +94,7 @@ const ContextMenu = () => {
           >
             Move {contextMenuItemType}
           </Menu.Item>
+          */}
           <Menu.Item
             onClick={() => {
               if (contextMenuItemType === "file") {

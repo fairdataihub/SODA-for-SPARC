@@ -8,17 +8,17 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
   // Handles preventing default drop action
   const allowDrop = (event) => event.preventDefault();
 
-  // Handles the file drop logic
-  const handleDrop = async (files) => {
-    const syntheticDropEvent = createSyntheticDropEvent(files);
-    await window.drop(syntheticDropEvent);
-  };
-
   // Creates a synthetic drop event for window.drop
   const createSyntheticDropEvent = (files) => ({
     preventDefault: () => {},
     dataTransfer: { files },
   });
+
+  // Handles the file drop logic
+  const handleDrop = async (files) => {
+    const syntheticDropEvent = createSyntheticDropEvent(files);
+    await window.drop(syntheticDropEvent);
+  };
 
   // Opens the dataset dialog on click
   const handleClick = async (event) => {

@@ -5243,6 +5243,8 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-dataset-structure-review-tab") {
+      setTreeViewDatasetStructure(window.datasetStructureJSONObj, []);
+      /*
       // Remove empty guided high-level folders (primary, source, derivative)
       guidedHighLevelFolders.forEach((folder) => {
         const rootFolderPath = window.datasetStructureJSONObj?.folders?.[folder];
@@ -5254,7 +5256,7 @@ window.openPage = async (targetPageID) => {
       guidedShowTreePreview(
         window.sodaJSONObj?.["digital-metadata"]?.name,
         "guided-folder-structure-review"
-      );
+      );*/
     }
 
     if (targetPageID === "guided-manifest-file-generation-tab") {

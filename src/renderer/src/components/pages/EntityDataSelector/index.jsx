@@ -32,6 +32,10 @@ import { naturalSort } from "../../shared/utils/util-functions";
 
 const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
 
+const upperCaseFirstLetter = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 const handleEntityClick = (entity) => setActiveEntity(entity);
 
 const handleFileClick = (entityType, activeEntity, datasetEntityObj, fileContents) => {
@@ -148,7 +152,26 @@ const EntityDataSelectorPage = ({
 
   return (
     <GuidedModePage pageHeader={pageName}>
-      <InstructionalTextSection textSectionKey={entityTypePrefix} />
+      <GuidedModeSection>
+        {entityType === "source-derivative-folders-and-files" ? (
+          <Stack>
+            <Text>
+              <b>Source data</b> is raw, unaltered data such as ...
+            </Text>
+            <Text>
+              <b>Derivative data</b> processed or transformed data such as ...
+            </Text>
+            <Text>Annotate your data as source or derivative in the interface below.</Text>
+          </Stack>
+        ) : (
+          <Text>
+            For each {entityTypeStringSingular} ID you entered on the previous page, associate the
+            relevant files from the dataset. To do this, select a {entityTypeStringSingular} ID from
+            the list on the left, then choose the corresponding folders and files from your data on
+            the right.
+          </Text>
+        )}
+      </GuidedModeSection>
       <GuidedModeSection>
         <Grid gutter="lg">
           <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
@@ -181,6 +204,7 @@ const EntityDataSelectorPage = ({
                         entityType,
                         folderContents.relativePath
                       );
+                      if (!entity) return null;
                       return entity === activeEntity;
                     },
                   }}
@@ -193,6 +217,7 @@ const EntityDataSelectorPage = ({
                         entityType,
                         fileContents.relativePath
                       );
+                      if (!entity) return null;
                       return entity === activeEntity;
                     },
                   }}

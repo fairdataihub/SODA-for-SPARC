@@ -25,6 +25,10 @@ import {
 import { naturalSort } from "../../shared/utils/util-functions";
 import { swalFileListDoubleAction } from "../../../scripts/utils/swal-utils";
 
+const upperCaseFirstLetter = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 const EntitySelectorPage = ({
   pageName,
   entityType,
@@ -96,7 +100,32 @@ const EntitySelectorPage = ({
   };
   return (
     <GuidedModePage pageHeader={pageName}>
-      <InstructionalTextSection textSectionKey={entityTypePrefix} />
+      <GuidedModeSection>
+        <Text>
+          Every {entityTypeStringSingular} that data was extracted from must be given a unique ID.{" "}
+          {upperCaseFirstLetter(entityTypeStringSingular)} IDs can be added via the three following
+          methods:
+        </Text>
+
+        <Text>
+          <b>1. Manual Entry:</b> Enter {entityTypeStringSingular} IDs manually in the interface
+          below.
+        </Text>
+
+        <Text>
+          <b>2. Spreadsheet Entry (Recommended for more than 10 {entityTypeStringPlural}):</b>{" "}
+          Generate a spreadsheet template to input {entityTypeStringSingular} IDs in bulk.
+        </Text>
+
+        <Text>
+          <b>
+            3. Extract from Folder Names (Recommended for more than 10 {entityTypeStringPlural}):
+          </b>{" "}
+          Automatically create {entityTypeStringSingular} IDs by extracting them from folder names.
+          This method is useful if your data is organized in a way that the folder names contain the
+          {entityTypeStringSingular} IDs.
+        </Text>
+      </GuidedModeSection>
       <GuidedModeSection>
         <Group>
           <Tabs color="indigo" variant="default" value={activeTab} onChange={setActiveTab} w="100%">
@@ -104,9 +133,9 @@ const EntitySelectorPage = ({
               <Tabs.Tab value="instructions" style={{ display: "none" }}>
                 Instructions
               </Tabs.Tab>
-              <Tabs.Tab value="manual">manual</Tabs.Tab>
-              <Tabs.Tab value="spreadsheet">spreadsheet</Tabs.Tab>
-              <Tabs.Tab value="folderSelect">Extract from folder names</Tabs.Tab>
+              <Tabs.Tab value="manual">Manual Entry</Tabs.Tab>
+              <Tabs.Tab value="spreadsheet">Spreadsheet Entry</Tabs.Tab>
+              {<Tabs.Tab value="folderSelect">Extract from folder names</Tabs.Tab>}
             </Tabs.List>
             <Tabs.Panel value="instructions">
               <Text align="center" c="dimmed" pt="md">
@@ -144,7 +173,7 @@ const EntitySelectorPage = ({
 
             <Tabs.Panel value="spreadsheet">
               <Group spacing="xs" align="start" width="100%">
-                <EntityListContainer title={`${entityTypeStringPlural} IDs`}>
+                <EntityListContainer title={`${entityTypeStringSingular} IDs`}>
                   {renderEntityList("300px")}
                 </EntityListContainer>
                 <Button
@@ -162,7 +191,7 @@ const EntitySelectorPage = ({
 
             <Tabs.Panel value="folderSelect">
               <Group spacing="xs" align="start" width="100%">
-                <EntityListContainer title={`${entityTypeStringPlural} IDs`}>
+                <EntityListContainer title={`${entityTypeStringSingular} IDs`}>
                   {renderEntityList("300px")}
                 </EntityListContainer>
 

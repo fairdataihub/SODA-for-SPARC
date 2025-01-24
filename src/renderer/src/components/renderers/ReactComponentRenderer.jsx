@@ -4,6 +4,7 @@ import ExternalLink from "../buttons/ExternalLink";
 import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 import DropdownSelect from "../common/DropdownSelect";
+import DatasetTreeViewRenderer from "../shared/DatasetTreeViewRenderer";
 import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
@@ -89,7 +90,17 @@ const componentTypeRenderers = {
       </SodaComponentWrapper>
     );
   },
-
+  "dataset-tree-view-renderer": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    const props = {
+      fw: componentSlot.getAttribute("data-full-width") === "true",
+    };
+    root.render(
+      <SodaComponentWrapper>
+        <DatasetTreeViewRenderer />
+      </SodaComponentWrapper>
+    );
+  },
   "data-importer": (componentSlot) => {
     const root = createRoot(componentSlot);
     const props = {

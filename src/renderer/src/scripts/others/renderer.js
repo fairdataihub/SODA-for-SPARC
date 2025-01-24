@@ -4823,7 +4823,9 @@ const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
   relativePathToMergeObjectInto
 ) => {
   try {
+    console.log("relativePathToMergeObjectInto", relativePathToMergeObjectInto);
     console.log("currentFileExplorerPath", currentFileExplorerPath);
+
     // Step 2: Add the imported data to the dataset structure (This function handles duplicate files, etc)
     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
     console.log(

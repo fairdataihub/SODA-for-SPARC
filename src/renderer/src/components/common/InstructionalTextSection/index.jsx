@@ -8,34 +8,20 @@ const InstructionalTextSection = ({ textSectionKey }) => {
     "sub-": [
       {
         type: "text",
-        data: "Every subject that data was extracted from must be given a unique ID that can be used to associate data with. SODA provides three options for specifying subject IDs based on the number of subjects and your preference:",
+        data: "Every subject that data was extracted from must be given a unique ID that can be used to associate data with. Subject IDs can be added via the three following methods:",
       },
+
       {
-        type: "double-pictogram",
-        leftData: {
-          icon: <IconMickey />,
-          textArray: ["sub-mouse-1", "sub-mouse-2", "sub-mouse-3"],
-        },
-        rightData: {
-          icon: <IconPig />,
-          textArray: ["sub-pig-1", "sub-pig-2", "sub-pig-3"],
-        },
+        type: "text",
+        data: "<b>1. Manual Entry:</b> Enter subject IDs manually in the interface below.",
       },
       {
         type: "text",
-        data: "Every subject that data was extracted from must be given a unique ID that can be used to associate data with. SODA provides three options for specifying subject IDs based on the number of subjects and your preference:",
+        data: "<b>2. Spreadsheet Entry (Recommended for more than 10 subjects):</b> Generate a spreadsheet template to input subject IDs in bulk. Use auto-fill to save time if the IDs follow a pattern.",
       },
       {
         type: "text",
-        data: "<b>1. Manual Entry (Recommended for fewer than 10 subjects):</b> Manually enter subject IDs directly into the interface below. This is ideal for small datasets or if you prefer not to use automated methods.",
-      },
-      {
-        type: "text",
-        data: "<b>2. Spreadsheet Entry (Recommended for more than 10 subjects):</b> Upload a spreadsheet file containing subject IDs. This method is suited for larger datasets or when you already have the subject IDs organized in a file.",
-      },
-      {
-        type: "text",
-        data: "<b>3. Extract from Folder Names (Recommended if you imported folders with names that subject IDs can be extracted from):</b> Automatically generate subject IDs by extracting them from folder names. Use this method if your data is already organized into folders named after the subjects.",
+        data: "<b>3. Extract from Folder Names (Recommended for more than 10 subjects):</b> Automatically create subject IDs by extracting them from folder names. This method is useful if your data is organized in a way that the folder names contain the subject IDs.",
       },
     ],
     "sam-": [
