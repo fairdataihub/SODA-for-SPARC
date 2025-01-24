@@ -63,3 +63,34 @@ jobs:
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v15.3.1-beta
+          release_name: 15.3.1-beta
+          draft: true
+          prerelease: false
+
+      - name: Upload Signed Setup to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}\dist\soda-for-sparc-15.3.2-beta-setup.exe
+          asset_name: soda-for-sparc-15.3.2-beta-setup.exe
+          asset_content_type: application/octet-stream
+
+      - name: Upload Signed App to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}\dist\win-unpacked\resources\app.exe
+          asset_name: app.exe
+          asset_content_type: application/octet-stream
