@@ -48,6 +48,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get version from package.json
+        id: get_version
+        run: echo "VERSION=$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
+
       - name: Sign files with Trusted Signing V1.1
         uses: azure/trusted-signing-action@v0.5.1
         with:
@@ -58,7 +62,7 @@ jobs:
           trusted-signing-account-name: fdih-signing-account
           certificate-profile-name: california-medical-innovations-institute
           files: |
-            ${{ github.workspace }}\dist\soda-for-sparc-15.3.2-beta-setup.exe
+            ${{ github.workspace }}\dist\soda-for-sparc-${{env.VERSION}}-setup.exe
             ${{ github.workspace }}\dist\win-unpacked\resources\app.exe
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
@@ -70,8 +74,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v15.3.1-beta
-          release_name: 15.3.1-beta
+          tag_name: v{{env.VERSION}}
+          release_name: ${{env.VERSION}}
           draft: true
           prerelease: false
 
@@ -81,8 +85,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}\dist\soda-for-sparc-15.3.2-beta-setup.exe
-          asset_name: soda-for-sparc-15.3.2-beta-setup.exe
+          asset_path: ${{ github.workspace }}\dist\soda-for-sparc-${{env.VERSION}}-setup.exe
+          asset_name: soda-for-sparc-${{env.VERSION}}-setup.exe
           asset_content_type: application/octet-stream
 
       - name: Upload Signed App to Release
