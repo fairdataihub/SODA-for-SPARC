@@ -89,12 +89,22 @@ jobs:
           asset_name: soda-for-sparc-${{env.VERSION}}-setup.exe
           asset_content_type: application/octet-stream
 
-      - name: Upload Signed App to Release
+      - name: Upload Blockmap to Release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}\dist\win-unpacked\resources\app.exe
-          asset_name: app.exe
+          asset_path: ${{ github.workspace }}\dist\soda-for-sparc-${{env.VERSION}}-setup.exe.blockmap
+          asset_name: soda-for-sparc-${{env.VERSION}}-setup.exe.blockmap
+          asset_content_type: application/octet-stream
+
+      - name: Upload yaml to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}\dist\latest.yml
+          asset_name: latest.yml
           asset_content_type: application/octet-stream
