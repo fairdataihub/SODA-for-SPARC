@@ -7,7 +7,7 @@ on:
       - main
       - staging
       - pre-staging
-      - guest-contributor-fixes-ui-update
+      - azure-trusted-signing
 
 jobs:
   deploy-on-mac:
