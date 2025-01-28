@@ -11,6 +11,7 @@ import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentChec
 import EntitySelectorPage from "../pages/EntitySelector";
 import EntityDataSelectorPage from "../pages/EntityDataSelector";
 import DataImporter from "../shared/DataImporter";
+import DatasetContentSelector from "../shared/DatasetContentSelector";
 import { Divider } from "@mantine/core";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
@@ -98,6 +99,14 @@ const componentTypeRenderers = {
     root.render(
       <SodaComponentWrapper>
         <DatasetTreeViewRenderer />
+      </SodaComponentWrapper>
+    );
+  },
+  "dataset-content-selector": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper>
+        <DatasetContentSelector />
       </SodaComponentWrapper>
     );
   },

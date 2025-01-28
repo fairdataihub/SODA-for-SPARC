@@ -122,7 +122,7 @@ const EntitySelectorPage = ({
           <b>2. Spreadsheet Entry (Recommended for more than 10 {entityTypeStringPlural}):</b>{" "}
           Generate a spreadsheet template to input {entityTypeStringSingular} IDs in bulk.
         </Text>
-
+        {/*
         <Text>
           <b>
             3. Extract from Folder Names (Recommended for more than 10 {entityTypeStringPlural}):
@@ -130,7 +130,7 @@ const EntitySelectorPage = ({
           Automatically create {entityTypeStringSingular} IDs by extracting them from folder names.
           This method is useful if your data is organized in a way that the folder names contain the
           {entityTypeStringSingular} IDs.
-        </Text>
+        </Text>*/}
       </GuidedModeSection>
       <GuidedModeSection>
         <Group>
@@ -141,7 +141,7 @@ const EntitySelectorPage = ({
               </Tabs.Tab>
               <Tabs.Tab value="manual">Manual Entry</Tabs.Tab>
               <Tabs.Tab value="spreadsheet">Spreadsheet Entry</Tabs.Tab>
-              {<Tabs.Tab value="folderSelect">Extract from folder names</Tabs.Tab>}
+              {/*<Tabs.Tab value="folderSelect">Extract from folder names</Tabs.Tab>*/}
             </Tabs.List>
             <Tabs.Panel value="instructions">
               <Text align="center" c="dimmed" pt="md">

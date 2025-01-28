@@ -1,4 +1,3 @@
-import { get } from "jquery";
 import useGlobalStore from "../globalStore";
 import { filterStructure, addRelativePaths } from "./datasetTreeViewSlice";
 import { swalFileListDoubleAction } from "../../scripts/utils/swal-utils";

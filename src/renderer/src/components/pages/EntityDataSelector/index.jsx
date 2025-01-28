@@ -169,6 +169,7 @@ const EntityDataSelectorPage = ({
               from the list on the left, then choose the corresponding folders and files from your
               data on the right.
             </Text>
+            {/*
             <Text>
               If you have data with folder or file names that match the {entityTypeStringSingular}{" "}
               IDs you entered, you can automatically associate them by clicking the button below.
@@ -187,7 +188,7 @@ const EntityDataSelectorPage = ({
               leftSection={<IconWand />}
             >
               Auto-associate folders and files containing {entityTypeStringPlural} IDs
-            </Button>
+            </Button>*/}
           </Stack>
         )}
       </GuidedModeSection>

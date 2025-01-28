@@ -7,6 +7,7 @@ import { singleColumnTableSlice } from "./slices/tableRowSlice";
 import { backgroundServicesSlice } from "./slices/backgroundServicesSlice";
 import { datasetEntitySelectorSlice } from "./slices/datasetEntitySelectorSlice";
 import { datasetTreeViewSlice } from "./slices/datasetTreeViewSlice";
+import { datasetContentSelectorSlice } from "./slices/datasetContentSelectorSlice";
 
 const useGlobalStore = create(
   immer((...a) => ({
@@ -17,6 +18,7 @@ const useGlobalStore = create(
     ...backgroundServicesSlice(...a),
     ...datasetEntitySelectorSlice(...a),
     ...datasetTreeViewSlice(...a),
+    ...datasetContentSelectorSlice(...a),
   }))
 );
 

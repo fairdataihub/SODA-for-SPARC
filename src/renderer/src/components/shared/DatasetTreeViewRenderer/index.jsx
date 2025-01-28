@@ -314,7 +314,17 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
 
   if (renderObjIsEmpty) {
     return (
-      <Paper padding="md" shadow="sm" radius="md" mih={200} p="sm" flex={1} w="100%">
+      <Paper
+        padding="md"
+        shadow="sm"
+        radius="md"
+        mih={200}
+        p="sm"
+        flex={1}
+        w="100%"
+        withBorder
+        mt="md"
+      >
         <TextInput
           label="Search files and folders:"
           placeholder="Search files and folders..."
@@ -325,7 +335,9 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
         />
         <Center mt="md">
           <Text size="sm" c="gray">
-            No files or folders found matching the search criteria.
+            {inputSearchFilter.length > 0
+              ? "No files or folders found matching the search criteria."
+              : "No folders or files to display."}
           </Text>
         </Center>
       </Paper>
@@ -333,7 +345,17 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
   }
 
   return (
-    <Paper padding="md" shadow="sm" radius="md" mih={200} p="sm" flex={1} w="100%">
+    <Paper
+      padding="md"
+      shadow="sm"
+      radius="md"
+      mih={200}
+      p="sm"
+      flex={1}
+      w="100%"
+      withBorder
+      mt="md"
+    >
       <TextInput
         label="Search files and folders:"
         placeholder="Search files and folders..."

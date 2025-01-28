@@ -55,6 +55,7 @@ import {
 import {
   setDatasetStructureSearchFilter,
   setTreeViewDatasetStructure,
+  externallySetSearchFilterValue,
 } from "../../stores/slices/datasetTreeViewSlice";
 
 import "bootstrap-select";
@@ -4934,6 +4935,9 @@ window.openPage = async (targetPageID) => {
     //Show the main nav bar
     //Note: if other nav bar needs to be shown, it will be handled later in this function
     hideSubNavAndShowMainNav(false);
+
+    // Reset the zustand store search filter value
+    externallySetSearchFilterValue("");
 
     if (
       targetPageID === "guided-dataset-generation-tab" ||
