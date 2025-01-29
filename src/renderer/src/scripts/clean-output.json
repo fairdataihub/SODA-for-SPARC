@@ -377,6 +377,7 @@
             },
             "fix": {
               "range": [2346, 2349],
+              "range": [2346, 2349],
               "text": " /* empty */ "
             },
             "desc": "Add comment inside empty block statement."
@@ -990,6 +991,7 @@
             },
             "fix": {
               "range": [189242, 189249],
+              "range": [189242, 189249],
               "text": " /* empty */ "
             },
             "desc": "Add comment inside empty block statement."
@@ -1013,6 +1015,7 @@
               "type": "block"
             },
             "fix": {
+              "range": [189257, 189264],
               "range": [189257, 189264],
               "text": " /* empty */ "
             },
@@ -1332,6 +1335,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [396343, 396344],
+              "range": [396343, 396344],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -1339,6 +1343,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [396343, 396343],
               "range": [396343, 396343],
               "text": "\\"
             },
@@ -1361,6 +1366,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [396366, 396367],
+              "range": [396366, 396367],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -1368,6 +1374,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [396366, 396366],
               "range": [396366, 396366],
               "text": "\\"
             },
@@ -3526,6 +3533,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [34228, 34229],
+              "range": [34228, 34229],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3533,6 +3541,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [34228, 34228],
               "range": [34228, 34228],
               "text": "\\"
             },
@@ -3555,6 +3564,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [34247, 34248],
+              "range": [34247, 34248],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3562,6 +3572,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [34247, 34247],
               "range": [34247, 34247],
               "text": "\\"
             },
@@ -3584,6 +3595,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [34256, 34257],
+              "range": [34256, 34257],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3591,6 +3603,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [34256, 34256],
               "range": [34256, 34256],
               "text": "\\"
             },
@@ -3613,6 +3626,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [34270, 34271],
+              "range": [34270, 34271],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3620,6 +3634,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [34270, 34270],
               "range": [34270, 34270],
               "text": "\\"
             },
@@ -3642,6 +3657,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [34280, 34281],
+              "range": [34280, 34281],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3649,6 +3665,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [34280, 34280],
               "range": [34280, 34280],
               "text": "\\"
             },
@@ -3671,6 +3688,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [34288, 34289],
+              "range": [34288, 34289],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3678,6 +3696,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [34288, 34288],
               "range": [34288, 34288],
               "text": "\\"
             },
@@ -3700,6 +3719,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [34690, 34691],
+              "range": [34690, 34691],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3707,6 +3727,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [34690, 34690],
               "range": [34690, 34690],
               "text": "\\"
             },
@@ -3729,6 +3750,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [34697, 34698],
+              "range": [34697, 34698],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3736,6 +3758,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [34697, 34697],
               "range": [34697, 34697],
               "text": "\\"
             },
@@ -3758,6 +3781,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [35128, 35129],
+              "range": [35128, 35129],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3765,6 +3789,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [35128, 35128],
               "range": [35128, 35128],
               "text": "\\"
             },
@@ -3787,6 +3812,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [35135, 35136],
+              "range": [35135, 35136],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3794,6 +3820,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [35135, 35135],
               "range": [35135, 35135],
               "text": "\\"
             },
@@ -3816,6 +3843,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [35200, 35201],
+              "range": [35200, 35201],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3823,6 +3851,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [35200, 35200],
               "range": [35200, 35200],
               "text": "\\"
             },
@@ -3845,6 +3874,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [35246, 35247],
+              "range": [35246, 35247],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3852,6 +3882,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [35246, 35246],
               "range": [35246, 35246],
               "text": "\\"
             },
@@ -3874,6 +3905,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [35256, 35257],
+              "range": [35256, 35257],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3881,6 +3913,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [35256, 35256],
               "range": [35256, 35256],
               "text": "\\"
             },
@@ -3903,6 +3936,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [35264, 35265],
+              "range": [35264, 35265],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3910,6 +3944,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [35264, 35264],
               "range": [35264, 35264],
               "text": "\\"
             },
@@ -3932,6 +3967,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [35273, 35274],
+              "range": [35273, 35274],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3939,6 +3975,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [35273, 35273],
               "range": [35273, 35273],
               "text": "\\"
             },
@@ -3961,6 +3998,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [35287, 35288],
+              "range": [35287, 35288],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -3968,6 +4006,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [35287, 35287],
               "range": [35287, 35287],
               "text": "\\"
             },
@@ -4457,6 +4496,7 @@
             },
             "fix": {
               "range": [12673, 12686],
+              "range": [12673, 12686],
               "text": " /* empty */ "
             },
             "desc": "Add comment inside empty block statement."
@@ -4590,6 +4630,7 @@
               "type": "block"
             },
             "fix": {
+              "range": [38522, 38529],
               "range": [38522, 38529],
               "text": " /* empty */ "
             },
@@ -6401,6 +6442,7 @@
             },
             "fix": {
               "range": [14989, 14989],
+              "range": [14989, 14989],
               "text": " /* empty */ "
             },
             "desc": "Add comment inside empty block statement."
@@ -6424,6 +6466,7 @@
               "type": "block"
             },
             "fix": {
+              "range": [15317, 15317],
               "range": [15317, 15317],
               "text": " /* empty */ "
             },
@@ -6856,6 +6899,7 @@
             },
             "fix": {
               "range": [75922, 75969],
+              "range": [75922, 75969],
               "text": "Object.prototype.hasOwnProperty.call(datasetStructureCopy[\"folders\"], "
             },
             "desc": "Call Object.prototype.hasOwnProperty explicitly."
@@ -6880,6 +6924,7 @@
             },
             "fix": {
               "range": [76378, 76414],
+              "range": [76378, 76414],
               "text": "Object.prototype.hasOwnProperty.call(datasetStructureCopy, "
             },
             "desc": "Call Object.prototype.hasOwnProperty explicitly."
@@ -6903,6 +6948,7 @@
               "prop": "hasOwnProperty"
             },
             "fix": {
+              "range": [78147, 78183],
               "range": [78147, 78183],
               "text": "Object.prototype.hasOwnProperty.call(datasetStructureCopy, "
             },
@@ -7070,6 +7116,7 @@
               "type": "block"
             },
             "fix": {
+              "range": [101666, 101675],
               "range": [101666, 101675],
               "text": " /* empty */ "
             },
@@ -7315,6 +7362,7 @@
               "prop": "hasOwnProperty"
             },
             "fix": {
+              "range": [7273, 7301],
               "range": [7273, 7301],
               "text": "Object.prototype.hasOwnProperty.call(myPath[type], "
             },
@@ -7637,6 +7685,7 @@
             },
             "fix": {
               "range": [39564, 39588],
+              "range": [39564, 39588],
               "text": "Object.prototype.hasOwnProperty.call(keyCheck, "
             },
             "desc": "Call Object.prototype.hasOwnProperty explicitly."
@@ -7660,6 +7709,7 @@
               "prop": "hasOwnProperty"
             },
             "fix": {
+              "range": [40053, 40077],
               "range": [40053, 40077],
               "text": "Object.prototype.hasOwnProperty.call(keyCheck, "
             },
@@ -7696,6 +7746,7 @@
             },
             "fix": {
               "range": [40606, 40630],
+              "range": [40606, 40630],
               "text": "Object.prototype.hasOwnProperty.call(keyCheck, "
             },
             "desc": "Call Object.prototype.hasOwnProperty explicitly."
@@ -7719,6 +7770,7 @@
               "prop": "hasOwnProperty"
             },
             "fix": {
+              "range": [40879, 40903],
               "range": [40879, 40903],
               "text": "Object.prototype.hasOwnProperty.call(keyCheck, "
             },
@@ -7787,6 +7839,7 @@
               "prop": "hasOwnProperty"
             },
             "fix": {
+              "range": [41914, 41947],
               "range": [41914, 41947],
               "text": "Object.prototype.hasOwnProperty.call(myPath[\"folders\"], "
             },
@@ -7888,6 +7941,7 @@
               "prop": "hasOwnProperty"
             },
             "fix": {
+              "range": [42988, 43019],
               "range": [42988, 43019],
               "text": "Object.prototype.hasOwnProperty.call(myPath[\"files\"], "
             },
@@ -8185,6 +8239,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [55648, 55649],
+              "range": [55648, 55649],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -8192,6 +8247,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [55648, 55648],
               "range": [55648, 55648],
               "text": "\\"
             },
@@ -8214,6 +8270,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [55651, 55652],
+              "range": [55651, 55652],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -8221,6 +8278,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [55651, 55651],
               "range": [55651, 55651],
               "text": "\\"
             },
@@ -8342,6 +8400,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [66350, 66351],
+              "range": [66350, 66351],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -8349,6 +8408,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [66350, 66350],
               "range": [66350, 66350],
               "text": "\\"
             },
@@ -8371,6 +8431,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [66353, 66354],
+              "range": [66353, 66354],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -8378,6 +8439,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [66353, 66353],
               "range": [66353, 66353],
               "text": "\\"
             },
@@ -8457,6 +8519,7 @@
               "prop": "hasOwnProperty"
             },
             "fix": {
+              "range": [77769, 77801],
               "range": [77769, 77801],
               "text": "Object.prototype.hasOwnProperty.call(elementPrototype, "
             },
@@ -8909,6 +8972,7 @@
         "endLine": 79,
         "endColumn": 26,
         "fix": {
+          "range": [2921, 2940],
           "range": [2921, 2940],
           "text": "progressContainer"
         }
@@ -10007,6 +10071,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [138168, 138169],
+              "range": [138168, 138169],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -10014,6 +10079,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [138168, 138168],
               "range": [138168, 138168],
               "text": "\\"
             },
@@ -10058,6 +10124,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [152495, 152496],
+              "range": [152495, 152496],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -10065,6 +10132,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [152495, 152495],
               "range": [152495, 152495],
               "text": "\\"
             },
@@ -10087,6 +10155,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [152509, 152510],
+              "range": [152509, 152510],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -10094,6 +10163,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [152509, 152509],
               "range": [152509, 152509],
               "text": "\\"
             },
@@ -10240,6 +10310,7 @@
             },
             "fix": {
               "range": [197361, 197364],
+              "range": [197361, 197364],
               "text": " /* empty */ "
             },
             "desc": "Add comment inside empty block statement."
@@ -10286,6 +10357,7 @@
             },
             "fix": {
               "range": [199251, 199273],
+              "range": [199251, 199273],
               "text": "Object.prototype.hasOwnProperty.call(object, "
             },
             "desc": "Call Object.prototype.hasOwnProperty explicitly."
@@ -10309,6 +10381,7 @@
               "prop": "hasOwnProperty"
             },
             "fix": {
+              "range": [199434, 199456],
               "range": [199434, 199456],
               "text": "Object.prototype.hasOwnProperty.call(object, "
             },
@@ -10774,6 +10847,7 @@
             },
             "fix": {
               "range": [263112, 263159],
+              "range": [263112, 263159],
               "text": "Object.prototype.hasOwnProperty.call(sodaJSONObj[\"generate-dataset\"], "
             },
             "desc": "Call Object.prototype.hasOwnProperty explicitly."
@@ -11104,6 +11178,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [47186, 47187],
+              "range": [47186, 47187],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11111,6 +11186,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [47186, 47186],
               "range": [47186, 47186],
               "text": "\\"
             },
@@ -11133,6 +11209,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [47188, 47189],
+              "range": [47188, 47189],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11140,6 +11217,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [47188, 47188],
               "range": [47188, 47188],
               "text": "\\"
             },
@@ -11162,6 +11240,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [47521, 47522],
+              "range": [47521, 47522],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11169,6 +11248,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [47521, 47521],
               "range": [47521, 47521],
               "text": "\\"
             },
@@ -11191,6 +11271,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [47523, 47524],
+              "range": [47523, 47524],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11198,6 +11279,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [47523, 47523],
               "range": [47523, 47523],
               "text": "\\"
             },
@@ -11231,6 +11313,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [50160, 50161],
+              "range": [50160, 50161],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11238,6 +11321,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [50160, 50160],
               "range": [50160, 50160],
               "text": "\\"
             },
@@ -11260,6 +11344,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [50162, 50163],
+              "range": [50162, 50163],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11267,6 +11352,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [50162, 50162],
               "range": [50162, 50162],
               "text": "\\"
             },
@@ -11289,6 +11375,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [50495, 50496],
+              "range": [50495, 50496],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11296,6 +11383,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [50495, 50495],
               "range": [50495, 50495],
               "text": "\\"
             },
@@ -11318,6 +11406,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [50497, 50498],
+              "range": [50497, 50498],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11325,6 +11414,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [50497, 50497],
               "range": [50497, 50497],
               "text": "\\"
             },
@@ -11347,6 +11437,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [53724, 53725],
+              "range": [53724, 53725],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11354,6 +11445,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [53724, 53724],
               "range": [53724, 53724],
               "text": "\\"
             },
@@ -11376,6 +11468,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [53726, 53727],
+              "range": [53726, 53727],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11383,6 +11476,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [53726, 53726],
               "range": [53726, 53726],
               "text": "\\"
             },
@@ -11471,6 +11565,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [58615, 58616],
+              "range": [58615, 58616],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11478,6 +11573,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [58615, 58615],
               "range": [58615, 58615],
               "text": "\\"
             },
@@ -11500,6 +11596,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [58617, 58618],
+              "range": [58617, 58618],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11507,6 +11604,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [58617, 58617],
               "range": [58617, 58617],
               "text": "\\"
             },
@@ -11529,6 +11627,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [60438, 60439],
+              "range": [60438, 60439],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11536,6 +11635,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [60438, 60438],
               "range": [60438, 60438],
               "text": "\\"
             },
@@ -11558,6 +11658,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [60440, 60441],
+              "range": [60440, 60441],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11565,6 +11666,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [60440, 60440],
               "range": [60440, 60440],
               "text": "\\"
             },
@@ -11653,6 +11755,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [64275, 64276],
+              "range": [64275, 64276],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11660,6 +11763,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [64275, 64275],
               "range": [64275, 64275],
               "text": "\\"
             },
@@ -11682,6 +11786,7 @@
             "messageId": "removeEscape",
             "fix": {
               "range": [64277, 64278],
+              "range": [64277, 64278],
               "text": ""
             },
             "desc": "Remove the `\\`. This maintains the current functionality."
@@ -11689,6 +11794,7 @@
           {
             "messageId": "escapeBackslash",
             "fix": {
+              "range": [64277, 64277],
               "range": [64277, 64277],
               "text": "\\"
             },
@@ -11856,6 +11962,7 @@
               "type": "block"
             },
             "fix": {
+              "range": [103095, 103102],
               "range": [103095, 103102],
               "text": " /* empty */ "
             },
