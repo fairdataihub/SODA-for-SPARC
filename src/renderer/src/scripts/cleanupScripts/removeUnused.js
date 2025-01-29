@@ -1,5 +1,5 @@
-const fs = require('fs');
-const linesToRemove = JSON.parse(fs.readFileSync('lines-to-remove.json', 'utf8'));
+const fs = require("fs");
+const linesToRemove = JSON.parse(fs.readFileSync("lines-to-remove.json", "utf8"));
 
 // Sort linesToRemove in reverse order based on line and column
 linesToRemove.sort((a, b) => {
@@ -12,8 +12,7 @@ linesToRemove.sort((a, b) => {
   return b.column - a.column;
 });
 
-
-module.exports = function(fileInfo, api) {
+module.exports = function (fileInfo, api) {
   const j = api.jscodeshift;
   const root = j(fileInfo.source);
 
@@ -24,7 +23,6 @@ module.exports = function(fileInfo, api) {
   linesToRemove.forEach(({ filePath, line, column }) => {
     // Debugging: Log the file path, line, and column being checked
     // console.log(`Checking: ${filePath} at line ${line}, column ${column}`);
-
 
     // remove identifiers matching the line and column from the esLint list of items to remove
     // root.find(j.Identifier, { name: 'event' })
@@ -37,19 +35,21 @@ module.exports = function(fileInfo, api) {
     //   .remove();
 
     // transform identifiers matching the line and column from the esLint list of items to transform
-    root.find(j.Identifier, { name: 'path' })
-      .filter(p => {
+    root
+      .find(j.Identifier, { name: "path" })
+      .filter((p) => {
         const start = p.node.loc.start;
         // Debugging: Log the position of the identifier
-        if (start.line === line) {console.log(`Found 'path' at line ${start.line}, column ${start.column}`)}
+        if (start.line === line) {
+          console.log(`Found 'path' at line ${start.line}, column ${start.column}`);
+        }
         return start.line === line && start.column === column - 1;
       })
-      .replaceWith(p => {
+      .replaceWith((p) => {
         // Debugging: Log the node being replaced
         // console.log(`Replacing 'identifier' at line ${path.node.loc.start.line}, column ${path.node.loc.start.column}`);
-        return j.memberExpression(j.identifier('window'), j.identifier('path'));
+        return j.memberExpression(j.identifier("window"), j.identifier("path"));
       });
-
   });
 
   return root.toSource();
