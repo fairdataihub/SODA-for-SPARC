@@ -38,7 +38,6 @@ import {
 import useGlobalStore from "../../stores/globalStore";
 import { setDropdownState } from "../../stores/slices/dropDownSlice";
 import {
-  setGuidedModePage,
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
 } from "../../stores/slices/guidedModeSlice";
@@ -162,7 +161,7 @@ const guidedGetCurrentUserWorkSpace = () => {
   return workSpaceFromUI;
 };
 
-window.verifyProfile = async (showNotyfs = false) => {
+window.verifyProfile = async () => {
   const accountValid = await window.check_api_key();
 
   if (!accountValid) {
@@ -394,8 +393,6 @@ const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
       }
     }
   }
-  if (invalidFolders.length > 0 && invalidFiles.length > 0) {
-  }
   return [invalidFolders, invalidFiles];
 };
 
@@ -422,8 +419,6 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
     const changes_text = changesRes.data.text;
     return { shouldShow: true, changesMetadata: changes_text };
   } catch (error) {
-    const emessage = userErrorMessage(error);
-
     const datasetInfo = await api.getDatasetInformation(
       window.defaultBfAccount,
       pennsieveDatasetID
@@ -435,25 +430,6 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
     } else {
       return { shouldShow: false };
     }
-  }
-};
-
-const skipOrUnSkipCodeDescriptionPage = async (pennsieveDatasetID) => {
-  try {
-    await client.get(`/prepare_metadata/import_metadata_file`, {
-      params: {
-        selected_account: window.defaultBfAccount,
-        selected_dataset: pennsieveDatasetID,
-        file_type: "code_description.xlsx",
-      },
-    });
-    // If the response resolves, the file exists, so skip the page
-    guidedSkipPage("guided-add-code-metadata-tab");
-  } catch (error) {
-    const emessage = userErrorMessage(error);
-    // If there is an error or the file does not exist, unskip the page
-    // (User has to add the code_description file))
-    guidedUnSkipPage("guided-add-code-metadata-tab");
   }
 };
 
@@ -758,8 +734,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         // If there are folders and/or files in the dataset on Pennsieve, validate the structure and
         // extract various metadata from the dataset structure to prepare the guided workflow.
         if (
-          Object.keys(datasetStructureJSONObj["folders"]).length > 0 ||
-          Object.keys(datasetStructureJSONObj["files"]).length > 0
+          Object.keys(window.datasetStructureJSONObj["folders"]).length > 0 ||
+          Object.keys(window.datasetStructureJSONObj["files"]).length > 0
         ) {
           // Reject if any non-sparc folders are in the root of the dataset
           let invalidBaseFolders = [];
@@ -1490,12 +1466,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
-    if (pageBeingLeftID === "guided-protocol-folder-tab") {
-    }
-
-    if (pageBeingLeftID === "guided-docs-folder-tab") {
-    }
-
     if (pageBeingLeftID === "guided-create-subjects-metadata-tab") {
       //Save the subject metadata from the subject currently being modified
       window.addSubject("guided");
@@ -1971,7 +1941,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     try {
       await guidedSaveProgress();
     } catch (error) {
-      log.error(error);
+      window.log.error(error);
     }
   } catch (error) {
     guidedSetNavLoadingState(false);
@@ -3721,7 +3691,6 @@ document
       window.sodaJSONObj["dataset-validated"] = "true";
       window.sodaJSONObj["dataset-validation-errors"] = errors;
     } catch (error) {
-      const emessage = userErrorMessage(error);
       clientError(error);
       // Hide the loading div
       validationLoadingDiv.classList.add("hidden");
@@ -5312,7 +5281,9 @@ window.openPage = async (targetPageID) => {
               const isNonExistent = !window.fs.existsSync(filePath);
 
               if (isNonExistent) {
-                log.info(`Deleting reference to non-existent file: ${currentPath}${fileName}`);
+                window.log.info(
+                  `Deleting reference to non-existent file: ${currentPath}${fileName}`
+                );
                 delete files[fileName];
               }
             }
@@ -6217,7 +6188,7 @@ window.openPage = async (targetPageID) => {
                   fullBase64Image = "data:image/jpg;base64," + img_base64;
                   imageType = "jpg";
                 } else {
-                  log.error(`An error happened: ${guided_img_url}`);
+                  window.log.error(`An error happened: ${guided_img_url}`);
                   Swal.fire({
                     icon: "error",
                     text: "An error occurred when importing the image. Please try again later.",
@@ -6305,7 +6276,7 @@ window.openPage = async (targetPageID) => {
         );
         teamsThatCanBeGrantedPermissions = window.getSortedTeamStrings(teamsReq.data.teams);
       } catch (error) {
-        const emessage = userErrorMessage(error);
+        clientError(error);
       }
 
       // Reset the dropdown with the new users and teams
@@ -14386,7 +14357,7 @@ const guidedGrantUserPermission = async (
 ) => {
   let userPermissionUploadElement = "";
   if (selectedRole === "remove current permissions") {
-    log.info("Removing a permission for a user on a dataset");
+    window.log.info("Removing a permission for a user on a dataset");
     userPermissionUploadElement = `
       <tr id="guided-dataset-${userUUID}-permissions-upload-tr" class="permissions-upload-tr">
         <td class="middle aligned" id="guided-dataset-${userUUID}-permissions-upload-text">
@@ -14401,7 +14372,7 @@ const guidedGrantUserPermission = async (
       </tr>
     `;
   } else {
-    log.info("Adding a permission for a user on a dataset");
+    window.log.info("Adding a permission for a user on a dataset");
     userPermissionUploadElement = `
       <tr id="guided-dataset-${userUUID}-permissions-upload-tr" class="permissions-upload-tr">
         <td class="middle aligned" id="guided-dataset-${userUUID}-permissions-upload-text">
@@ -14446,11 +14417,11 @@ const guidedGrantUserPermission = async (
     if (selectedRole === "remove current permissions") {
       guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "success");
       userPermissionUploadStatusText.innerHTML = `${selectedRole} permissions removed for user: ${userName}`;
-      log.info(`${selectedRole} permissions granted to ${userName}`);
+      window.log.info(`${selectedRole} permissions granted to ${userName}`);
     } else {
       guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "success");
       userPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to user: ${userName}`;
-      log.info(`${selectedRole} permissions granted to ${userName}`);
+      window.log.info(`${selectedRole} permissions granted to ${userName}`);
     }
 
     // Send successful user permissions modification event to Kombucha
@@ -14475,7 +14446,7 @@ const guidedGrantUserPermission = async (
       userPermissionUploadStatusText.innerHTML = `Failed to grant ${selectedRole} permissions to ${userName}`;
     }
     let emessage = userErrorMessage(error);
-    log.error(emessage);
+    window.log.error(emessage);
 
     // Send failed user permissions modification event to Kombucha
     window.electron.ipcRenderer.send(
@@ -14591,10 +14562,10 @@ const guidedGrantTeamPermission = async (
     guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "success");
     if (selectedRole === "remove current permissions") {
       teamPermissionUploadStatusText.innerHTML = `Permissions removed from team: ${teamString}`;
-      log.info(`Permissions remove from: ${teamString}`);
+      window.log.info(`Permissions remove from: ${teamString}`);
     } else {
       teamPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to team: ${teamString}`;
-      log.info(`${selectedRole} permissions granted to ${teamString}`);
+      window.log.info(`${selectedRole} permissions granted to ${teamString}`);
     }
 
     // Send successful team permissions modification event to Kombucha
@@ -14619,7 +14590,7 @@ const guidedGrantTeamPermission = async (
     }
     guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "error");
     let emessage = userErrorMessage(error);
-    log.error(emessage);
+    window.log.error(emessage);
 
     // Send failed team permissions modification event to Kombucha
     window.electron.ipcRenderer.send(
@@ -15634,7 +15605,7 @@ const guidedPennsieveDatasetUpload = async () => {
     try {
       await savePageChanges(currentPageID);
     } catch (error) {
-      log.error("Error saving page changes", error);
+      window.log.error("Error saving page changes", error);
     }
     guidedTransitionToHome();
   }
@@ -16065,7 +16036,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       try {
         await savePageChanges(currentPageID);
       } catch (error) {
-        log.error("Error saving page changes", error);
+        window.log.error("Error saving page changes", error);
       }
       guidedTransitionToHome();
     });
@@ -16131,7 +16102,7 @@ const guidedUploadDatasetToPennsieve = async () => {
     //If the curate function is complete, clear the interval
     if (main_curate_status === "Done") {
       $("#sidebarCollapse").prop("disabled", false);
-      log.info("Done curate track");
+      window.log.info("Done curate track");
       // then show the sidebar again
       // forceActionSidebar("show");
       clearInterval(timerProgress);
@@ -16350,8 +16321,8 @@ const guidedSaveRCFile = async (type) => {
   window.fs.writeFile(destinationPath, data, (err) => {
     if (err) {
       console.log(err);
-      log.error(err);
-      var emessage = userErrorMessage(error);
+      window.log.error(err);
+      var emessage = userErrorMessage(err);
       Swal.fire({
         title: `Failed to generate the existing ${type}.txt file`,
         html: emessage,
@@ -16370,7 +16341,7 @@ const guidedSaveRCFile = async (type) => {
       window.fs.rename(destinationPath, newName, async (err) => {
         if (err) {
           console.log(err);
-          log.error(err);
+          window.log.error(err);
           Swal.fire({
             title: `Failed to generate the ${type}.txt file`,
             html: err,
@@ -16670,7 +16641,7 @@ $("#guided-next-button").on("click", async function () {
 
     await window.openPage(targetPageID);
   } catch (error) {
-    log.error(error);
+    window.log.error(error);
     if (Array.isArray(error)) {
       error.map((error) => {
         // get the total number of words in error.message
@@ -17284,7 +17255,7 @@ $("#guided-button-sub-page-continue").on("click", async () => {
     }
   } catch (error) {
     console.log(error);
-    log.error(error);
+    window.log.error(error);
     error.map((error) => {
       window.notyf.open({
         duration: "5500",
