@@ -1977,7 +1977,6 @@ const renderSideBar = (activePage) => {
   guidedPageNavigationHeader.classList.remove("hidden");
 
   const completedTabs = window.sodaJSONObj["completed-tabs"];
-  const skippedPages = window.sodaJSONObj["skipped-pages"];
 
   const pageStructureObject = {};
 
@@ -2043,7 +2042,7 @@ const renderSideBar = (activePage) => {
 
   const guidedNavBarDropdowns = Array.from(document.querySelectorAll(".guided--nav-bar-dropdown"));
   for (const guidedNavBarDropdown of guidedNavBarDropdowns) {
-    guidedNavBarDropdown.addEventListener("click", (event) => {
+    guidedNavBarDropdown.addEventListener("click", () => {
       //remove hidden from child elements with guided--nav-bar-section-page class
       const guidedNavBarSectionPage = guidedNavBarDropdown.parentElement.querySelectorAll(
         ".guided--nav-bar-section-page"
@@ -2067,7 +2066,7 @@ const renderSideBar = (activePage) => {
     document.querySelectorAll(".guided--nav-bar-section-page")
   );
   for (const guidedNavBarSectionPage of guidedNavBarSectionPages) {
-    guidedNavBarSectionPage.addEventListener("click", async (event) => {
+    guidedNavBarSectionPage.addEventListener("click", async () => {
       const currentPageUserIsLeaving = window.CURRENT_PAGE.id;
       const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
       const pageToNaviatetoName = document
@@ -16517,7 +16516,7 @@ const guidedSaveBannerImage = async () => {
   });
 };
 // /**************************************/
-$("#guided-save-banner-image").click(async (event) => {
+$("#guided-save-banner-image").click(async () => {
   $("#guided-para-dataset-banner-image-status").html("");
 
   if (window.guidedBfViewImportedImage.src.length > 0) {
