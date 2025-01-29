@@ -399,6 +399,7 @@ const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
   return [invalidFolders, invalidFiles];
 };
 
+/* 
 document.getElementById("guided-button-dataset-contains-code").addEventListener("click", () => {
   const codeFolder = window.datasetStructureJSONObj["folders"]["code"];
   if (codeFolder) {
@@ -409,6 +410,7 @@ document.getElementById("guided-button-dataset-contains-code").addEventListener(
     }
   }
 });
+*/
 
 const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
   try {
@@ -5043,6 +5045,7 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-prepare-dataset-structure-tab") {
+      /*
       // If the user has already added subjects, disallow them from selecting no (they have to go to the subject
       // page to delete subjects but this would be a very strange case anyways)
       const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
@@ -5055,7 +5058,7 @@ window.openPage = async (targetPageID) => {
       } else {
         subjectQuerySectioin.classList.remove("section-disabled");
         infoText.classList.add("hidden");
-      }
+      }*/
     }
 
     if (targetPageID === "guided-prepare-helpers-tab") {
