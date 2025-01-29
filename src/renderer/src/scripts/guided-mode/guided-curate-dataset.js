@@ -2679,17 +2679,17 @@ const enableProgressButton = () => {
   $("#guided-next-button").prop("disabled", false);
 };
 
-const disableElementById = (id) => {
-  elementToDisable = document.getElementById(id);
-  elementToDisable.style.opacity = "0.5";
-  elementToDisable.style.pointerEvents = "none";
-};
 
-const enableElementById = (id) => {
-  elementToEnable = document.getElementById(id);
-  elementToEnable.style.opacity = "1";
-  elementToEnable.style.pointerEvents = "auto";
-};
+
+
+
+
+
+
+
+
+
+
 
 const hideEleShowEle = (elementIdToHide, elementIdToShow) => {
   let elementToHide = document.getElementById(elementIdToHide);
