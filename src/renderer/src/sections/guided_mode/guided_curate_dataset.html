@@ -719,9 +719,7 @@
         >
           <h1 class="text-sub-step-title">Describe the content of your dataset</h1>
           <div class="guided--section">
-            <p class="help-text">
-              Select all dataset entities relevant to your study based on the data you collected.
-            </p>
+            <p class="help-text">Select the types of entities that are included in your dataset.</p>
           </div>
           <div data-component-type="dataset-content-selector" class="guided--section"></div>
         </div>
@@ -1111,13 +1109,13 @@
           <div class="guided--section">
             <h1 class="text-sub-step-title">Import Your Data</h1>
             <p class="help-text w-100">
-              Import all of the experimental data collected during your study using the interface
-              below.
+              Use the interface below to import all the experimental data you collected during your
+              study.
             </p>
             <p class="help-text">
               <b>Note:</b> If your data is organized into subfolders (e.g., "microscopy,"
-              "imaging"), import the subfolders directly instead of the parent folder containing
-              them.
+              "imaging"), make sure to import the subfolders directly rather than the parent folder
+              they’re in.
             </p>
           </div>
           <div
@@ -1224,6 +1222,27 @@
           data-entity-type-string-plural="samples"
           data-entity-type-prefix="sam-"
         ></div>
+        <div
+          id="guided-sites-entity-addition-tab"
+          data-page-name="Manage Site IDs"
+          class="guided--page"
+          data-component-type="entity-management-page"
+          data-entity-type="sites"
+          data-entity-type-string-singular="site"
+          data-entity-type-string-plural="sites"
+          data-entity-type-prefix="site-"
+        ></div>
+        <div
+          id="guided-sites-entity-selection-tab"
+          data-page-name="Sites data selection"
+          class="guided--page"
+          data-component-type="entity-selection-page"
+          data-entity-type="sites"
+          data-entity-type-string-singular="site"
+          data-entity-type-string-plural="sites"
+          data-entity-type-prefix="site-"
+        ></div>
+
         <div
           id="guided-source-derivative-folders-and-files-selector-tab"
           data-page-name="Annotate Source and Derivative data"
@@ -1645,23 +1664,26 @@
           </div>
         </div>-->
 
-        <div id="guided-code-folder-tab" class="guided--page" data-page-name="Code files">
+        <div id="guided-code-folder-tab" class="guided--page" data-page-name="Code import">
           <div class="guided--section">
-            <h1 class="text-sub-step-title">Code files</h1>
+            <h1 class="text-sub-step-title">Code importation</h1>
             <p class="help-text">
-              You mentioned at the beginning that you have code files in your dataset. Add those
-              code files into the interface below. Make sure you include a README file that
-              describes the code and how to use it.
+              Import any scripts, computational models, analysis pipelines, or other code/tools used
+              during the study for data processing or analysis below.
             </p>
           </div>
-          <div class="guided--panel" id="guided-user-has-code-data"></div>
+          <div
+            data-component-type="data-importer"
+            data-data-type="code"
+            data-relative-folder-path-to-import-data-into="code/"
+            class="guided--section"
+          ></div>
         </div>
-        <div id="guided-protocol-folder-tab" class="guided--page" data-page-name="Protocol data">
+        <div id="guided-protocol-folder-tab" class="guided--page" data-page-name="Protocols import">
           <div class="guided--section">
-            <h1 class="text-sub-step-title">Protocol data</h1>
+            <h1 class="text-sub-step-title">Protocol importation</h1>
             <p class="help-text">
-              Protocol data refers to supplementary folders and files to accompany the experimental
-              protocols that must be submitted to protocols.io (more on that at a later step).
+              Import any files that describe the experimental procedures used in your study below.
             </p>
           </div>
           <div
@@ -1671,13 +1693,11 @@
             class="guided--section"
           ></div>
         </div>
-        <div id="guided-docs-folder-tab" class="guided--page" data-page-name="Docs data">
+        <div id="guided-docs-folder-tab" class="guided--page" data-page-name="Docs import">
           <div class="guided--section">
-            <h1 class="text-sub-step-title">Docs data</h1>
+            <h1 class="text-sub-step-title">Docs importation</h1>
             <p class="help-text">
-              Docs data refers to any data to be included in your dataset that does not belong to
-              any of the other five categories (primary, source, derivative, code, or protocol
-              data).
+              Import any files that provide documentation related to your study below.
             </p>
           </div>
           <div
@@ -1696,11 +1716,9 @@
           <div class="guided--section">
             <h1 class="text-sub-step-title">Dataset structure review</h1>
             <p class="help-text">
-              The SDS compliant dataset structure shown below will be generated by SODA (during the
-              last step of this process) based on the data files you specified in the previous
-              steps. Review and go back to make changes if needed. Please note that all empty
-              folders will be deleted before generating the dataset since empty folders are not
-              allowed in the SDS.
+              The interface below displays the structure of your dataset as it will be generated by
+              SODA. Review the structure to ensure that all data has been imported correctly, and
+              then click <span class="next-button-span"></span> to proceed.
             </p>
           </div>
 

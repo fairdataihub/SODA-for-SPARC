@@ -1,87 +1,107 @@
-import { Card, Stack, Text, Group } from "@mantine/core";
+import { Card, Stack, Text, Group, Tooltip } from "@mantine/core";
+import { IconCheck } from "@tabler/icons-react";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 import useGlobalStore from "../../../stores/globalStore";
-import { toggleComponent } from "../../../stores/slices/datasetContentSelectorSlice";
+import { toggleEntitySelection } from "../../../stores/slices/datasetContentSelectorSlice";
+
+const upperCaseFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
 const DatasetContentSelector = () => {
-  const selectedComponents = useGlobalStore((state) => state.selectedComponents);
+  const selectedEntities = useGlobalStore((state) => state.selectedEntities);
 
-  const options = [
+  const contentOptions = [
     {
       value: "subjects",
-      label: "Subjects",
       description:
-        "Individual entities, such as humans, animals, or other organisms, that participated in the study.",
+        "Individual entities, such as humans, animals, or other biological specimens, from which data was collected during the study.",
     },
     {
       value: "samples",
-      label: "Samples",
       description:
-        "Biological or chemical specimens collected from subjects for further analysis or experimentation.",
+        "Biological specimens, such as tissue, blood, or fluid, collected from subjects for analysis or experimentation.",
       dependsOn: "subjects",
     },
     {
       value: "sites",
-      label: "Sites",
       description:
-        "Specific locations in the body, environment, or experimental setup where data or samples were collected. Conditionally required if data were gathered from multiple distinct locations or experimental setups for the same subject or sample.",
+        "Multiple distinct anatomical or geographical locations where data was collected from subjects during the study.",
       dependsOn: "subjects",
     },
     {
       value: "performances",
-      label: "Performances",
       description:
-        "Multiple distinct performances of one type of experimental protocol on the same subject or same sample (i.e. multiple visits, runs, sessions, or execution).",
+        "Multiple distinct performances of the same experimental protocol on the same subject or sample (e.g., multiple visits, runs, sessions, or executions).",
       dependsOn: "subjects",
     },
     {
       value: "code",
-      label: "Code",
       description:
-        "Scripts, computational models, analysis pipelines, or other code/tools used in the study.",
+        "Scripts, computational models, analysis pipelines, or other code/tools used during the study for data processing or analysis.",
     },
   ];
 
-  const toggleSelection = (value) => {
-    toggleComponent(value);
+  const handleEntitySelection = (value) => {
+    const isSelected = selectedEntities.includes(value);
+
+    // Deselect dependent entities if the value is deselected
+    if (isSelected) {
+      contentOptions.forEach((option) => {
+        if (option.dependsOn === value && selectedEntities.includes(option.value)) {
+          toggleEntitySelection(option.value);
+        }
+      });
+    }
+
+    // Toggle the selection of the current entity
+    toggleEntitySelection(value);
   };
 
   return (
     <FullWidthContainer>
       <Stack spacing="md">
-        {options.map((option) => {
-          const isDisabled = option.dependsOn && !selectedComponents.includes(option.dependsOn);
-          const isSelected = selectedComponents.includes(option.value);
+        {contentOptions.map((option) => {
+          const isDisabled = option.dependsOn && !selectedEntities.includes(option.dependsOn);
+          const isSelected = selectedEntities.includes(option.value) && !isDisabled;
 
           return (
-            <Card
+            <Tooltip
               key={option.value}
-              withBorder
-              shadow="sm"
-              padding="lg"
-              style={{
-                opacity: isDisabled ? 0.6 : 1,
-                cursor: isDisabled ? "not-allowed" : "pointer",
-                backgroundColor: isSelected ? "#e8f5e9" : "white", // Light green for selected
-                borderColor: isSelected ? "var(--color-light-green)" : "#e0e0e0",
-                borderWidth: isSelected ? 2 : 1,
-                borderStyle: "solid",
-              }}
-              onClick={() => {
-                if (!isDisabled) {
-                  toggleSelection(option.value);
-                }
-              }}
+              label={
+                isDisabled
+                  ? `Requires ${upperCaseFirstLetter(option.dependsOn)} to be selected`
+                  : isSelected
+                    ? `${upperCaseFirstLetter(option.value)} is selected`
+                    : ""
+              }
+              disabled={!isDisabled && !isSelected}
             >
-              <Group position="apart" align="flex-start">
-                <Text weight={500} size="lg">
-                  {option.label}
+              <Card
+                withBorder
+                shadow="sm"
+                padding="lg"
+                style={{
+                  opacity: isDisabled ? 0.6 : 1,
+                  cursor: isDisabled ? "not-allowed" : "pointer",
+                  backgroundColor: isSelected ? "#e8f5e9" : "white",
+                  borderColor: isSelected ? "var(--color-light-green)" : "#e0e0e0",
+                  borderWidth: isSelected ? 2 : 1,
+                  borderStyle: "solid",
+                }}
+                onClick={() => {
+                  if (!isDisabled) handleEntitySelection(option.value);
+                }}
+              >
+                <Group position="apart" align="flex-start">
+                  <Text fw={700} size="lg">
+                    {upperCaseFirstLetter(option.value)}
+                  </Text>
+                  {isSelected && <IconCheck size={18} color="var(--color-light-green)" />}
+                </Group>
+                <Text size="sm" mt="xs">
+                  {option.description}
                 </Text>
-              </Group>
-              <Text c="dimmed" size="sm" mt="xs">
-                {option.description}
-              </Text>
-            </Card>
+              </Card>
+            </Tooltip>
           );
         })}
       </Stack>

@@ -247,9 +247,6 @@ const removeFromOtherEntities = (entityEntries, targetEntityName, entityRelative
 
 // Get the entity associated with a specific file path
 export const getEntityForRelativePath = (datasetEntityObj, entityType, relativePath) => {
-  console.log("datasetEntityObj: ", datasetEntityObj);
-  console.log("entityType: ", entityType);
-  console.log("relativePath: ", relativePath);
   const entities = datasetEntityObj?.[entityType];
   if (!entities) return null;
 

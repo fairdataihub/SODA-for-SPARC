@@ -289,10 +289,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
     datasetEntityObj: state.datasetEntityObj,
   }));
 
-  console.log("datasetEntityObj: ", datasetEntityObj);
-
   const [inputSearchFilter, setInputSearchFilter] = useState(datasetStructureSearchFilter);
-  console.log("inputSearchFilter::", inputSearchFilter);
   const [debouncedSearchFilter] = useDebouncedValue(inputSearchFilter, 300); // 300ms debounce
 
   useEffect(() => {

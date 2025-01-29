@@ -1168,6 +1168,25 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-prepare-dataset-structure-tab") {
+      const selectedEntities = useGlobalStore.getState()["selectedEntities"];
+      console.log("selectedEntities", selectedEntities);
+      if (selectedEntities.length === 0) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please select at least one entity to continue",
+        });
+        throw errorArray;
+      }
+
+      /* ********************
+      if (selectedEntities.length === 0) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please select at least one entity to continue",
+        });
+        throw errorArray;
+      }
+
       const buttonDatasetContainsSubjects = document.getElementById(
         "guided-button-dataset-contains-subjects"
       );
@@ -1296,6 +1315,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedSkipPage("guided-code-folder-tab");
         guidedSkipPage("guided-add-code-metadata-tab");
       }
+      
+      *********************** */
     }
 
     if (pageBeingLeftID === "guided-subjects-addition-tab") {
@@ -1482,17 +1503,10 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-code-folder-tab") {
-      const codeFolder = window.datasetStructureJSONObj["folders"]["code"];
-      if (folderIsEmpty(codeFolder)) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please add code used to generate your dataset",
-        });
-        throw errorArray;
-      }
     }
 
     if (pageBeingLeftID === "guided-protocol-folder-tab") {
+      guidedUnSkipPage("guided-code-folder-tab");
     }
 
     if (pageBeingLeftID === "guided-docs-folder-tab") {

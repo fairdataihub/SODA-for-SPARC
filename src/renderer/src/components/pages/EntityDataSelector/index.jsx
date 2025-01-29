@@ -154,12 +154,13 @@ const EntityDataSelectorPage = ({
         {entityType === "source-derivative-folders-and-files" ? (
           <Stack>
             <Text>
-              <b>Source data</b> is raw, unaltered data such as ...
+              <b>Source data</b> is raw, unaltered data from an experiment such as recorded neural
+              signals or unprocessed microscope images.
             </Text>
             <Text>
-              <b>Derivative data</b> processed or transformed data such as ...
+              <b>Derivative data</b> is data that has been processed or transformed data such as ...
             </Text>
-            <Text>Annotate your data as source or derivative in the interface below.</Text>
+            <Text>If you have source or derivative data, annotate it in the interface below.</Text>
           </Stack>
         ) : (
           <Stack>

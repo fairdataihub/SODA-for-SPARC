@@ -1,26 +1,31 @@
 import useGlobalStore from "../globalStore";
-import { produce } from "immer";
 
 export const datasetContentSelectorSlice = (set) => ({
-  selectedDatasetContent: [],
+  selectedEntities: [],
 });
 
-export const toggleComponent = (value) => {
-  useGlobalStore.setState(
-    produce((state) => {
-      if (state.selectedComponents.includes(value)) {
-        state.selectedComponents = state.selectedComponents.filter((item) => item !== value);
-      } else {
-        state.selectedComponents.push(value);
-      }
-    })
-  );
+export const getSelectedEntities = (state) => state.selectedEntities;
+
+export const setSelectedEntities = (selectedEntities) => {
+  useGlobalStore.setState({
+    selectedEntities,
+  });
 };
 
-export const resetSelection = () => {
-  useGlobalStore.setState(
-    produce((state) => {
-      state.selectedComponents = [];
-    })
-  );
+export const toggleEntitySelection = (entity) => {
+  useGlobalStore.setState((state) => {
+    const updatedSelectedEntities = [...state.selectedEntities];
+    const entityIndex = updatedSelectedEntities.indexOf(entity);
+
+    if (entityIndex === -1) {
+      updatedSelectedEntities.push(entity);
+    } else {
+      updatedSelectedEntities.splice(entityIndex, 1);
+    }
+
+    return {
+      ...state,
+      selectedEntities: updatedSelectedEntities,
+    };
+  });
 };

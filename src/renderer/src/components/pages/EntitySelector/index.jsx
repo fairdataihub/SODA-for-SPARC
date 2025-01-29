@@ -108,19 +108,20 @@ const EntitySelectorPage = ({
     <GuidedModePage pageHeader={pageName}>
       <GuidedModeSection>
         <Text>
-          Every {entityTypeStringSingular} that data was extracted from must be given a unique ID.{" "}
-          {upperCaseFirstLetter(entityTypeStringSingular)} IDs can be added via the three following
-          methods:
+          Every {entityTypeStringSingular} in your dataset must be assigned a unique{" "}
+          {entityTypeStringSingular} ID. {upperCaseFirstLetter(entityTypeStringSingular)} IDs can be
+          added via the two following methods:
         </Text>
 
         <Text>
-          <b>1. Manual Entry:</b> Enter {entityTypeStringSingular} IDs manually in the interface
-          below.
+          <b>1. Manual Entry (Recommended if less than 10 {entityTypeStringPlural}):</b> Enter{" "}
+          {entityTypeStringSingular} IDs manually by typing them out individually.
         </Text>
 
         <Text>
           <b>2. Spreadsheet Entry (Recommended for more than 10 {entityTypeStringPlural}):</b>{" "}
-          Generate a spreadsheet template to input {entityTypeStringSingular} IDs in bulk.
+          Generate a spreadsheet template to input {entityTypeStringSingular} IDs into and then
+          import them in bulk.
         </Text>
         {/*
         <Text>
