@@ -719,7 +719,9 @@
         >
           <h1 class="text-sub-step-title">Describe the content of your dataset</h1>
           <div class="guided--section">
-            <p class="help-text">Select the types of entities that are included in your dataset.</p>
+            <p class="help-text">
+              Select all of the following that apply to the data you collected:
+            </p>
           </div>
           <div data-component-type="dataset-content-selector" class="guided--section"></div>
         </div>
@@ -1704,6 +1706,21 @@
             data-component-type="data-importer"
             data-data-type="documentation"
             data-relative-folder-path-to-import-data-into="docs/"
+            class="guided--section"
+          ></div>
+        </div>
+        <div id="guided-aux-folder-tab" class="guided--page" data-page-name="Auxiliary data import">
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Auxiliary data importation</h1>
+            <p class="help-text">
+              Import any files that may be needed as part of a publication process to support the
+              needs of a particular publication platform
+            </p>
+          </div>
+          <div
+            data-component-type="data-importer"
+            data-data-type="Auxiliary data"
+            data-relative-folder-path-to-import-data-into="aux/"
             class="guided--section"
           ></div>
         </div>

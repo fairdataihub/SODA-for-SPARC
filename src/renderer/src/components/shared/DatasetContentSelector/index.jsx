@@ -1,4 +1,4 @@
-import { Card, Stack, Text, Group, Tooltip } from "@mantine/core";
+import { Card, Stack, Text, Group, Tooltip, Checkbox, Box } from "@mantine/core";
 import { IconCheck } from "@tabler/icons-react";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 import useGlobalStore from "../../../stores/globalStore";
@@ -12,31 +12,32 @@ const DatasetContentSelector = () => {
   const contentOptions = [
     {
       value: "subjects",
+      label: "I collected data from subjects",
       description:
-        "Individual entities, such as humans, animals, or other biological specimens, from which data was collected during the study.",
+        "Subjects are individual entities, such as humans, animals, or other biological specimens, from which data was collected during the study.",
     },
     {
       value: "samples",
+      label: "I collected samples from subjects",
       description:
-        "Biological specimens, such as tissue, blood, or fluid, collected from subjects for analysis or experimentation.",
+        "Samples are biological or physical specimens collected from subjects, such as tissue samples, blood samples, or other biological materials.",
       dependsOn: "subjects",
     },
     {
       value: "sites",
-      description:
-        "Multiple distinct anatomical or geographical locations where data was collected from subjects during the study.",
+      label: "I collected data from multiple physical locations on the same subject or sample",
       dependsOn: "subjects",
     },
     {
       value: "performances",
-      description:
-        "Multiple distinct performances of the same experimental protocol on the same subject or sample (e.g., multiple visits, runs, sessions, or executions).",
+      label: "I collected data from multiple performances of the same protocol",
       dependsOn: "subjects",
     },
     {
       value: "code",
+      label: "I used code to generate or analyze the collected data",
       description:
-        "Scripts, computational models, analysis pipelines, or other code/tools used during the study for data processing or analysis.",
+        "Code includes scripts, computational models, analysis pipelines, or other software used to generate, process, or analyze the data.",
     },
   ];
 
@@ -67,18 +68,19 @@ const DatasetContentSelector = () => {
             <Tooltip
               key={option.value}
               label={
-                isDisabled
-                  ? `Requires ${upperCaseFirstLetter(option.dependsOn)} to be selected`
-                  : isSelected
-                    ? `${upperCaseFirstLetter(option.value)} is selected`
-                    : ""
+                option.dependsOn &&
+                `${upperCaseFirstLetter(
+                  option.dependsOn
+                )} must be selected before choosing this option.`
               }
-              disabled={!isDisabled && !isSelected}
+              disabled={!isDisabled}
+              zIndex={2999}
             >
               <Card
                 withBorder
                 shadow="sm"
                 padding="lg"
+                ml={option.dependsOn ? "xl" : 0}
                 style={{
                   opacity: isDisabled ? 0.6 : 1,
                   cursor: isDisabled ? "not-allowed" : "pointer",
@@ -91,15 +93,26 @@ const DatasetContentSelector = () => {
                   if (!isDisabled) handleEntitySelection(option.value);
                 }}
               >
-                <Group position="apart" align="flex-start">
+                <Group position="apart" align="center">
+                  <Checkbox
+                    checked={isSelected}
+                    onChange={() => {
+                      if (!isDisabled) handleEntitySelection(option.value);
+                    }}
+                    style={{
+                      cursor: isDisabled ? "not-allowed" : "pointer",
+                    }}
+                    onClick={(event) => event.stopPropagation()}
+                  />
                   <Text fw={700} size="lg">
-                    {upperCaseFirstLetter(option.value)}
+                    {option.label}
                   </Text>
-                  {isSelected && <IconCheck size={18} color="var(--color-light-green)" />}
                 </Group>
-                <Text size="sm" mt="xs">
-                  {option.description}
-                </Text>
+                {option.description && (
+                  <Text size="sm" mt="xs">
+                    {option.description}
+                  </Text>
+                )}
               </Card>
             </Tooltip>
           );

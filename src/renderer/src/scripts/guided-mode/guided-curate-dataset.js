@@ -1173,7 +1173,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       if (selectedEntities.length === 0) {
         errorArray.push({
           type: "notyf",
-          message: "Please select at least one entity to continue",
+          message: "Please select at least one option that applies to your dataset",
         });
         throw errorArray;
       }
@@ -5256,6 +5256,10 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-docs-folder-tab") {
       guidedUpdateFolderStructureUI("docs/");
+      setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["docs"]);
+    }
+    if (targetPageID === "guided-aux-folder-tab") {
+      guidedUpdateFolderStructureUI("aux/");
       setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["docs"]);
     }
 
