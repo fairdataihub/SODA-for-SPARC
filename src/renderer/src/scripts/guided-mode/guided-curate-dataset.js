@@ -1183,33 +1183,43 @@ const savePageChanges = async (pageBeingLeftID) => {
       if (selectedEntities.includes("subjects")) {
         guidedUnSkipPage("guided-subjects-entity-addition-tab");
         guidedUnSkipPage("guided-subjects-entity-selection-tab");
+        guidedUnSkipPage("guided-unstructured-data-import-tab");
+        guidedUnSkipPage("guided-create-subjects-metadata-tab");
       } else {
         guidedSkipPage("guided-subjects-entity-addition-tab");
         guidedSkipPage("guided-subjects-entity-selection-tab");
+        guidedSkipPage("guided-unstructured-data-import-tab");
+        guidedSkipPage("guided-create-subjects-metadata-tab");
       }
 
       if (selectedEntities.includes("samples")) {
         guidedUnSkipPage("guided-samples-entity-addition-tab");
         guidedUnSkipPage("guided-samples-entity-selection-tab");
+        guidedUnSkipPage("guided-create-samples-metadata-tab");
       } else {
         guidedSkipPage("guided-samples-entity-addition-tab");
         guidedSkipPage("guided-samples-entity-selection-tab");
+        guidedSkipPage("guided-create-samples-metadata-tab");
       }
 
       if (selectedEntities.includes("sites")) {
         guidedUnSkipPage("guided-sites-entity-addition-tab");
         guidedUnSkipPage("guided-sites-entity-selection-tab");
+        guidedUnSkipPage("guided-create-sites-metadata-tab");
       } else {
         guidedSkipPage("guided-sites-entity-addition-tab");
         guidedSkipPage("guided-sites-entity-selection-tab");
+        guidedSkipPage("guided-create-sites-metadata-tab");
       }
 
       if (selectedEntities.includes("performances")) {
         guidedUnSkipPage("guided-performances-entity-addition-tab");
         guidedUnSkipPage("guided-performances-entity-selection-tab");
+        guidedUnSkipPage("guided-create-performances-metadata-tab");
       } else {
         guidedSkipPage("guided-performances-entity-addition-tab");
         guidedSkipPage("guided-performances-entity-selection-tab");
+        guidedSkipPage("guided-create-performances-metadata-tab");
       }
 
       if (selectedEntities.includes("code")) {
