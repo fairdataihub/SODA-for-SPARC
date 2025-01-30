@@ -12,6 +12,8 @@ linesToRemove.sort((a, b) => {
   return b.column - a.column;
 });
 
+let hits = 0;
+
 
 module.exports = function(fileInfo, api) {
   const j = api.jscodeshift;
@@ -38,19 +40,19 @@ module.exports = function(fileInfo, api) {
 
     // transform identifiers matching the line and column from the esLint list of items to transform
     root.find(j.Identifier, { name: 'path' })
-      .filter(p => {
-        const start = p.node.loc.start;
-        // Debugging: Log the position of the identifier
-        if (start.line === line) {console.log(`Found 'path' at line ${start.line}, column ${start.column}`)}
-        return start.line === line && start.column === column - 1;
-      })
-      .replaceWith(p => {
-        // Debugging: Log the node being replaced
-        // console.log(`Replacing 'identifier' at line ${path.node.loc.start.line}, column ${path.node.loc.start.column}`);
-        return j.memberExpression(j.identifier('window'), j.identifier('path'));
-      });
-
+    .forEach(path => {
+      const start = path?.node?.loc?.start;
+      if(start) {
+        console.log(start)
+        if(start.line === line && start.column === column - 1) {
+          hits = hits + 1;
+          j(path).replaceWith(j.memberExpression(j.identifier('window'), j.identifier('path')));
+        }
+      }
+      
+    });
   });
 
+  console.log(`Total hits for path: ${hits}`);
   return root.toSource();
 };
