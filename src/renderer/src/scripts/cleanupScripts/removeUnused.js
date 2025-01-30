@@ -38,27 +38,29 @@ module.exports = function(fileInfo, api) {
     //   .remove();
 
     // transform identifiers matching the line and column from the esLint list of items to transform
-    root.find(j.Identifier, { name: 'path' })
-    .forEach(path => {
-      const start = path?.node?.loc?.start;
-      if(start) {
-        console.log(start)
-        if(start.line === line && start.column === column - 1) {
-          hits = hits + 1;
-          j(path).replaceWith(j.memberExpression(j.identifier('window'), j.identifier('path')));
-        }
-      }
-    });
+    // root.find(j.Identifier, { name: 'path' })
+    // .forEach(path => {
+    //   const start = path?.node?.loc?.start;
+    //   if(start) {
+    //     console.log(start)
+    //     if(start.line === line && start.column === column - 1) {
+    //       hits = hits + 1;
+    //       j(path).replaceWith(j.memberExpression(j.identifier('window'), j.identifier('path')));
+    //     }
+    //   }
+    // });
 
 
     // Remove empty block statements
     root.find(j.BlockStatement)
-      .filter(path => path.node.body.length === 0)
-      .forEach(path => {
+      .filter( path => {
         const start = path.node.loc.start;
-        console.log(`Removing empty block statement at line ${start.line}, column ${start.column}`);
-        j(path).remove();
-      });
+        if (start.line === line) {
+          hits = hits + 1;
+          return path;
+        }
+      }).remove()
+      
   });
 
   console.log(`Total hits for path: ${hits}`);
