@@ -73,6 +73,7 @@
     "intro.js": "^7.2.0",
     "jimp": "^0.22.10",
     "jquery": "3.6.0",
+    "jscodeshift": "^17.1.2",
     "jspreadsheet": "^10.3.3",
     "jstree": "^3.3.16",
     "lottie-web": "^5.12.2",
