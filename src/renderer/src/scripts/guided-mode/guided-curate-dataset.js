@@ -1728,8 +1728,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
-    if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
-    }
 
     if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
       const award = document.getElementById("guided-submission-sparc-award-manual").value;
@@ -4953,15 +4951,8 @@ window.openPage = async (targetPageID) => {
       guidedLockSideBar(true);
     }
 
-    // Get the element with the classes .guided--progression-tab and selected-tab
-    const currentActiveProgressionTab = document.querySelector(
-      ".guided--progression-tab.selected-tab"
-    );
-    if (currentActiveProgressionTab) {
-      if (currentActiveProgressionTab.id === "curation-preparation-progression-tab") {
-      } else {
-      }
-    }
+
+
 
     if (targetPageDataset.componentType) {
       const targetPageComponentType = targetPageDataset.componentType;
