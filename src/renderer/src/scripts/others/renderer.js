@@ -5672,34 +5672,6 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let currentPageID = window.CURRENT_PAGE.id;
     //capsules need to determine if sample or subjects section
     //subjects initially display two folder levels meanwhile samples will initially only show one folder level
-    let primarySampleCapsule = document.getElementById(
-      "guided-primary-samples-organization-page-capsule"
-    );
-    let primarySubjectCapsule = document.getElementById(
-      "guided-primary-subjects-organization-page-capsule"
-    );
-    let primaryPoolCapsule = document.getElementById(
-      "guided-primary-pools-organization-page-capsule"
-    );
-    let sourceSampleCapsule = document.getElementById(
-      "guided-source-samples-organization-page-capsule"
-    );
-    let sourceSubjectCapsule = document.getElementById(
-      "guided-source-subjects-organization-page-capsule"
-    );
-    let sourcePoolCapsule = document.getElementById(
-      "guided-source-pools-organization-page-capsule"
-    );
-
-    let derivativeSampleCapsule = document.getElementById(
-      "guided-derivative-samples-organization-page-capsule"
-    );
-    let derivativeSubjectCapsule = document.getElementById(
-      "guided-derivative-subjects-organization-page-capsule"
-    );
-    let derivativePoolCapsule = document.getElementById(
-      "guided-derivative-pools-organization-page-capsule"
-    );
 
     //remove my_dataset_folder and if any of the ROOT FOLDER names is included
     if (splitPath[0] === "dataset_root") splitPath.shift();

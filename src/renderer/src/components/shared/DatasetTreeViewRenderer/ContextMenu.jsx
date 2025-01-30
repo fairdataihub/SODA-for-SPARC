@@ -15,19 +15,11 @@ const ICON_SETTINGS = {
 };
 
 const ContextMenu = () => {
-  const {
-    contextMenuIsOpened,
-    contextMenuPosition,
-    contextMenuItemName,
-    contextMenuItemType,
-    contextMenuItemData,
-  } = useGlobalStore((state) => ({
-    contextMenuIsOpened: state.contextMenuIsOpened,
-    contextMenuPosition: state.contextMenuPosition,
-    contextMenuItemName: state.contextMenuItemName,
-    contextMenuItemType: state.contextMenuItemType,
-    contextMenuItemData: state.contextMenuItemData,
-  }));
+  const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
+  const contextMenuPosition = useGlobalStore((state) => state.contextMenuPosition);
+  const contextMenuItemName = useGlobalStore((state) => state.contextMenuItemName);
+  const contextMenuItemType = useGlobalStore((state) => state.contextMenuItemType);
+  const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
 
   const handleClickOutside = useCallback((event) => {
     const menuElement = document.getElementById("context-menu");

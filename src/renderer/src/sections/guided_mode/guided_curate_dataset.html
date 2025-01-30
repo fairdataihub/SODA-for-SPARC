@@ -705,20 +705,6 @@
         </div>
 
         <div
-          class="guided--page"
-          id="guided-prepare-dataset-structure-tab"
-          data-page-name="Dataset content"
-        >
-          <h1 class="text-sub-step-title">Describe the content of your dataset</h1>
-          <div class="guided--section">
-            <p class="help-text">
-              Select all of the following that apply to the data you collected:
-            </p>
-          </div>
-          <div data-component-type="dataset-content-selector" class="guided--section"></div>
-        </div>
-
-        <div
           id="guided-name-subtitle-tab"
           class="guided--page"
           data-component-type="guided-mode-page"
@@ -1060,9 +1046,22 @@
         </div>
         -->
         <div
+          class="guided--page"
+          id="guided-prepare-dataset-structure-tab"
+          data-page-name="Dataset content"
+        >
+          <h1 class="text-sub-step-title">Describe the content of your dataset</h1>
+          <div class="guided--section">
+            <p class="help-text">
+              Select all of the following that apply to the data you collected:
+            </p>
+          </div>
+          <div data-component-type="dataset-content-selector" class="guided--section"></div>
+        </div>
+        <div
           id="guided-unstructured-data-import-tab"
           class="guided--page"
-          data-page-name="Data importation"
+          data-page-name="Experimental data"
         >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Import Your Data</h1>
@@ -1083,136 +1082,6 @@
             class="guided--section"
           ></div>
         </div>
-
-        <div
-          id="guided-subject-entity-addition-tab"
-          data-page-name="Manage Subject IDs"
-          class="guided--page"
-          data-component-type="entity-management-page"
-          data-entity-type="subjects"
-          data-entity-type-string-singular="subject"
-          data-entity-type-string-plural="subjects"
-          data-entity-type-prefix="sub-"
-        ></div>
-
-        <div
-          id="guided-subject-entity-selection-tab"
-          data-page-name="Subjects data selection"
-          class="guided--page"
-          data-component-type="entity-selection-page"
-          data-entity-type="subjects"
-          data-entity-type-string-singular="subject"
-          data-entity-type-string-plural="subjects"
-          data-entity-type-prefix="sub-"
-        ></div>
-        <div
-          id="guided-sample-entity-addition-tab"
-          data-page-name="Manage Sample IDs"
-          class="guided--page"
-          data-component-type="entity-management-page"
-          data-entity-type="samples"
-          data-entity-type-string-singular="sample"
-          data-entity-type-string-plural="samples"
-          data-entity-type-prefix="sam-"
-        ></div>
-        <div
-          id="guided-sample-entity-selection-tab"
-          data-page-name="Samples data selection"
-          class="guided--page"
-          data-component-type="entity-selection-page"
-          data-entity-type="samples"
-          data-entity-type-string-singular="sample"
-          data-entity-type-string-plural="samples"
-          data-entity-type-prefix="sam-"
-        ></div>
-        <div
-          id="guided-sites-entity-addition-tab"
-          data-page-name="Manage Site IDs"
-          class="guided--page"
-          data-component-type="entity-management-page"
-          data-entity-type="sites"
-          data-entity-type-string-singular="site"
-          data-entity-type-string-plural="sites"
-          data-entity-type-prefix="site-"
-        ></div>
-        <div
-          id="guided-sites-entity-selection-tab"
-          data-page-name="Sites data selection"
-          class="guided--page"
-          data-component-type="entity-selection-page"
-          data-entity-type="sites"
-          data-entity-type-string-singular="site"
-          data-entity-type-string-plural="sites"
-          data-entity-type-prefix="site-"
-        ></div>
-
-        <div
-          id="guided-source-derivative-folders-and-files-selector-tab"
-          data-page-name="Annotate Source and Derivative data"
-          class="guided--page"
-          data-component-type="entity-selection-page"
-          data-entity-type="source-derivative-folders-and-files"
-          data-entity-type-string-singular="Supplementary Data"
-          data-entity-type-string-plural="Supplementary Data"
-          data-entity-type-prefix=""
-        ></div>
-        <!--
-        <div
-          id="guided-performances-entity-selection-tab"
-          data-page-name="Performances data selection"
-          class="guided--page"
-          data-component-type="entity-selection-page"
-          data-entity-type="performances"
-          data-entity-type-string-singular="performance"
-          data-entity-type-string-plural="performances"
-          data-entity-type-prefix="perf-"
-        ></div>
-        <div
-          id="guided-site-entity-selection-tab"
-          data-page-name="Sites data selection"
-          class="guided--page"
-          data-component-type="entity-selection-page"
-          data-entity-type="sites"
-          data-entity-type-string-singular="site"
-          data-entity-type-string-plural="sites"
-          data-entity-type-prefix="site-"
-        ></div>
-      
-        <div
-          class="guided--page"
-          id="guided-source-derivative-folders-and-files-selector-tab"
-          data-page-name="Denote Supplementary Data"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Source and Derivative Data</h1>
-            <p class="help-text">
-              The SPARC guidelines require that supplementary data, such as source and derivative
-              files, be stored in separate folders from the primary experimental data.
-            </p>
-            <p class="help-text">
-              <b>Source data:</b> unaltered, raw files from an experiment. For example, this may
-              include the "truly" raw k-space data for a Magnetic Resonance (MR) image that has not
-              yet been reconstructed (in this case, the reconstructed DICOM or NIFTI files would be
-              found within the primary folder).
-            </p>
-            <p class="help-text">
-              <b>Derivative data:</b> data products derived from the original data (i.e., primary or
-              source data). Derivative data includes data such as measurements from images, 3d
-              reconstructions from serial sections, or file conversions.
-            </p>
-            <p class="help-text">
-              If your dataset contains source or derivative data, you can specify these files in the
-              interface below (in the same manner as you did for subjects).
-            </p>
-            <p class="help-text">
-              <b>Question:</b> For this dataset, if mouse_1/performances/microscopy/processed is
-              selected as derivative data, if we were to move the data over for the user, would we
-              move it to derivative/processed or derivative/mouse_1/microscopy/processed?
-            </p>
-          </div>
-          <div data-component-typez="manifest-entity-selector" class="guided--section"></div>
-        </div>
-        -->
 
         <div id="guided-code-folder-tab" class="guided--page" data-page-name="Code import">
           <div class="guided--section">
@@ -1272,7 +1141,16 @@
             class="guided--section"
           ></div>
         </div>
-
+        <div
+          id="guided-source-derivative-folders-and-files-selector-tab"
+          data-page-name="Annotate Source and Derivative data"
+          class="guided--page"
+          data-component-type="entity-selection-page"
+          data-entity-type="source-derivative-folders-and-files"
+          data-entity-type-string-singular="Supplementary Data"
+          data-entity-type-string-plural="Supplementary Data"
+          data-entity-type-prefix=""
+        ></div>
         <div
           id="guided-dataset-structure-review-tab"
           class="guided--page"
@@ -1323,6 +1201,89 @@
             </h2>
           </div>
         </div>
+        <!-- Beginning of entity management/selection tabs -->
+        <div
+          id="guided-subjects-entity-addition-tab"
+          data-page-name="Manage Subject IDs"
+          class="guided--page"
+          data-component-type="entity-management-page"
+          data-entity-type="subjects"
+          data-entity-type-string-singular="subject"
+          data-entity-type-string-plural="subjects"
+          data-entity-type-prefix="sub-"
+        ></div>
+
+        <div
+          id="guided-subjects-entity-selection-tab"
+          data-page-name="Subjects data selection"
+          class="guided--page"
+          data-component-type="entity-selection-page"
+          data-entity-type="subjects"
+          data-entity-type-string-singular="subject"
+          data-entity-type-string-plural="subjects"
+          data-entity-type-prefix="sub-"
+        ></div>
+        <div
+          id="guided-samples-entity-addition-tab"
+          data-page-name="Manage Sample IDs"
+          class="guided--page"
+          data-component-type="entity-management-page"
+          data-entity-type="samples"
+          data-entity-type-string-singular="sample"
+          data-entity-type-string-plural="samples"
+          data-entity-type-prefix="sam-"
+        ></div>
+        <div
+          id="guided-samples-entity-selection-tab"
+          data-page-name="Samples data selection"
+          class="guided--page"
+          data-component-type="entity-selection-page"
+          data-entity-type="samples"
+          data-entity-type-string-singular="sample"
+          data-entity-type-string-plural="samples"
+          data-entity-type-prefix="sam-"
+        ></div>
+        <div
+          id="guided-sites-entity-addition-tab"
+          data-page-name="Manage Site IDs"
+          class="guided--page"
+          data-component-type="entity-management-page"
+          data-entity-type="sites"
+          data-entity-type-string-singular="site"
+          data-entity-type-string-plural="sites"
+          data-entity-type-prefix="site-"
+        ></div>
+        <div
+          id="guided-sites-entity-selection-tab"
+          data-page-name="Sites data selection"
+          class="guided--page"
+          data-component-type="entity-selection-page"
+          data-entity-type="sites"
+          data-entity-type-string-singular="site"
+          data-entity-type-string-plural="sites"
+          data-entity-type-prefix="site-"
+        ></div>
+        <div
+          id="guided-performances-entity-addition-tab"
+          data-page-name="Manage Performance IDs"
+          class="guided--page"
+          data-component-type="entity-management-page"
+          data-entity-type="performances"
+          data-entity-type-string-singular="performance"
+          data-entity-type-string-plural="performances"
+          data-entity-type-prefix="perf-"
+        ></div>
+        <div
+          id="guided-performances-entity-selection-tab"
+          data-page-name="Performances data selection"
+          class="guided--page"
+          data-component-type="entity-selection-page"
+          data-entity-type="performances"
+          data-entity-type-string-singular="performance"
+          data-entity-type-string-plural="performances"
+          data-entity-type-prefix="perf-"
+        ></div>
+        <!-- End of entity management/selection tabs -->
 
         <div
           class="guided--page"

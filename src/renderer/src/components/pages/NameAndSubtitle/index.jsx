@@ -10,11 +10,8 @@ import {
 } from "../../../stores/slices/guidedModeSlice";
 
 const NameAndSubtitlePage = () => {
-  const { guidedDatasetName, guidedDatasetSubtitle } = useGlobalStore((state) => ({
-    guidedDatasetName: state.guidedDatasetName,
-    guidedDatasetSubtitle: state.guidedDatasetSubtitle,
-  }));
-
+  const guidedDatasetName = useGlobalStore((state) => state.guidedDatasetName);
+  const setGuidedDatasetName = useGlobalStore((state) => state.setGuidedDatasetName);
   return (
     <GuidedModePage pageHeader="Dataset name and subtitle">
       <GuidedModeSection>

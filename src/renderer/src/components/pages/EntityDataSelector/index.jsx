@@ -141,12 +141,9 @@ const EntityDataSelectorPage = ({
   entityTypePrefix,
 }) => {
   console.log("entityType", entityType);
-  const { entityList, activeEntity, datasetEntityObj } = useGlobalStore((state) => ({
-    entityList: state.entityList,
-    activeEntity: state.activeEntity,
-    entityType: state.entityType,
-    datasetEntityObj: state.datasetEntityObj,
-  }));
+
+  const activeEntity = useGlobalStore((state) => state.activeEntity);
+  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
 
   return (
     <GuidedModePage pageHeader={pageName}>

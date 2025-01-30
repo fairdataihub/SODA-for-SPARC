@@ -36,9 +36,7 @@ const EntitySelectorPage = ({
   entityTypeStringPlural,
   entityTypePrefix,
 }) => {
-  const { datasetEntityObj } = useGlobalStore((state) => ({
-    datasetEntityObj: state.datasetEntityObj,
-  }));
+  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const [newEntityName, setNewEntityName] = useState("");
   const [activeTab, setActiveTab] = useState("instructions");
 

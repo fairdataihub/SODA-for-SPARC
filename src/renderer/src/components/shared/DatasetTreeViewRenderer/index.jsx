@@ -38,10 +38,9 @@ const ICON_SETTINGS = {
 
 const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEditing }) => {
   const { hovered, ref } = useHover();
-  const { contextMenuItemData, contextMenuIsOpened } = useGlobalStore((state) => ({
-    contextMenuItemData: state.contextMenuItemData,
-    contextMenuIsOpened: state.contextMenuIsOpened,
-  }));
+
+  const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
+  const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
 
   const fileIsSelected = isFileSelected ? isFileSelected(name, content) : null;
 
@@ -105,13 +104,10 @@ const FolderItem = ({
   allowStructureEditing,
   folderClickHoverText,
 }) => {
-  const { folderMoveModeIsActive, contextMenuItemData, contextMenuIsOpened, contextMenuItemType } =
-    useGlobalStore((state) => ({
-      folderMoveModeIsActive: state.folderMoveModeIsActive,
-      contextMenuItemData: state.contextMenuItemData,
-      contextMenuIsOpened: state.contextMenuIsOpened,
-      contextMenuItemType: state.contextMenuItemType,
-    }));
+  const folderMoveModeIsActive = useGlobalStore((state) => state.folderMoveModeIsActive);
+  const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
+  const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
+  const contextMenuItemType = useGlobalStore((state) => state.contextMenuItemType);
 
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
@@ -269,25 +265,21 @@ const FolderItem = ({
 };
 
 const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEditing }) => {
-  const {
-    renderDatasetStructureJSONObj,
-    renderDatasetStructureJSONObjIsLoading,
-    datasetStructureSearchFilter,
-    folderMoveModeIsActive,
-    contextMenuItemType,
-    contextMenuItemName,
-    externallySetSearchFilterValue,
-    datasetEntityObj,
-  } = useGlobalStore((state) => ({
-    renderDatasetStructureJSONObj: state.renderDatasetStructureJSONObj,
-    renderDatasetStructureJSONObjIsLoading: state.renderDatasetStructureJSONObjIsLoading,
-    datasetStructureSearchFilter: state.datasetStructureSearchFilter,
-    folderMoveModeIsActive: state.folderMoveModeIsActive,
-    contextMenuItemType: state.contextMenuItemType,
-    contextMenuItemName: state.contextMenuItemName,
-    externallySetSearchFilterValue: state.externallySetSearchFilterValue,
-    datasetEntityObj: state.datasetEntityObj,
-  }));
+  const renderDatasetStructureJSONObj = useGlobalStore(
+    (state) => state.renderDatasetStructureJSONObj
+  );
+  const renderDatasetStructureJSONObjIsLoading = useGlobalStore(
+    (state) => state.renderDatasetStructureJSONObjIsLoading
+  );
+  const datasetStructureSearchFilter = useGlobalStore(
+    (state) => state.datasetStructureSearchFilter
+  );
+  const folderMoveModeIsActive = useGlobalStore((state) => state.folderMoveModeIsActive);
+  const contextMenuItemType = useGlobalStore((state) => state.contextMenuItemType);
+  const contextMenuItemName = useGlobalStore((state) => state.contextMenuItemName);
+  const externallySetSearchFilterValue = useGlobalStore(
+    (state) => state.externallySetSearchFilterValue
+  );
 
   const [inputSearchFilter, setInputSearchFilter] = useState(datasetStructureSearchFilter);
   const [debouncedSearchFilter] = useDebouncedValue(inputSearchFilter, 300); // 300ms debounce

@@ -602,7 +602,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         if (!datasetEntityObj?.[entityType]) {
           errorArray.push({
             type: "notyf",
-            message: `Please select at least one ${entityTypeSingular} to continue`,
+            message: `Please add at least one ${entityTypeSingular} to continue`,
           });
           throw errorArray;
         }
@@ -1168,149 +1168,57 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
-
+      console.log("selectedEntities", selectedEntities);
       window.sodaJSONObj["selected-entities"] = selectedEntities;
       console.log("selectedEntities", selectedEntities);
 
-      /* ********************
-      if (selectedEntities.length === 0) {
+      if (!selectedEntities.includes("subjects") && !selectedEntities.includes("code")) {
         errorArray.push({
           type: "notyf",
-          message: "Please select at least one entity to continue",
+          message: "You must indicate that your dataset contains subjects and/or code",
         });
         throw errorArray;
       }
 
-      const buttonDatasetContainsSubjects = document.getElementById(
-        "guided-button-dataset-contains-subjects"
-      );
-      const buttonDatasetDoesNotContainSubjects = document.getElementById(
-        "guided-button-dataset-does-not-contain-subjects"
-      );
-      if (
-        !buttonDatasetContainsSubjects.classList.contains("selected") &&
-        !buttonDatasetDoesNotContainSubjects.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate whether or not the dataset contains subjects",
-        });
-        throw errorArray;
-      }
-
-      const buttonContainsCode = document.getElementById("guided-button-dataset-contains-code");
-      const buttonDoesNotContainCode = document.getElementById(
-        "guided-button-dataset-does-not-contain-code"
-      );
-      if (
-        !buttonContainsCode.classList.contains("selected") &&
-        !buttonDoesNotContainCode.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate whether or not the dataset contains code",
-        });
-        throw errorArray;
-      }
-
-      if (window.sodaJSONObj["dataset-type"] === "selection-does-not-make-sense") {
-        errorArray.push({
-          type: "notyf",
-          message: "Selected subject and code answers do not lead to a viable curation path",
-        });
-        throw errorArray;
-      }
-
-      if (window.sodaJSONObj["dataset-type"] === "requires-manual-selection") {
-        const buttonDatasetTypeExperimental = document.getElementById(
-          "guided-button-dataset-type-experimental"
-        );
-        const buttonDatasetTypeComputational = document.getElementById(
-          "guided-button-dataset-type-computational"
-        );
-        if (
-          !buttonDatasetTypeExperimental.classList.contains("selected") &&
-          !buttonDatasetTypeComputational.classList.contains("selected")
-        ) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please indicate whether the dataset is experimental or computational",
-          });
-          throw errorArray;
-        }
-        if (buttonDatasetTypeExperimental.classList.contains("selected")) {
-          window.sodaJSONObj["dataset-type"] = "experimental";
-        }
-        if (buttonDatasetTypeComputational.classList.contains("selected")) {
-          window.sodaJSONObj["dataset-type"] = "computational";
-        }
-      }
-
-      // This shouldn't happen but just in case the dataset type is not computational or experimental, throw an error
-      // otherwise save the dataset type in a new key to be used if the user goes back to this page
-      if (
-        window.sodaJSONObj["dataset-type"] !== "experimental" &&
-        window.sodaJSONObj["dataset-type"] !== "computational"
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Selected subject and code answers do not lead to a viable curation path",
-        });
-        throw errorArray;
+      if (selectedEntities.includes("subjects")) {
+        guidedUnSkipPage("guided-subjects-entity-addition-tab");
+        guidedUnSkipPage("guided-subjects-entity-selection-tab");
       } else {
-        window.sodaJSONObj["saved-dataset-type"] = window.sodaJSONObj["dataset-type"];
+        guidedSkipPage("guided-subjects-entity-addition-tab");
+        guidedSkipPage("guided-subjects-entity-selection-tab");
       }
 
-      const datasetHasSubjects = window.sodaJSONObj["dataset-contains-subjects"];
-      const datasetHasCode = window.sodaJSONObj["dataset-contains-code"];
-
-      if (datasetHasSubjects) {
-        guidedUnSkipPage("guided-subjects-addition-tab");
-        guidedUnSkipPage("guided-samples-addition-tab");
-
-        guidedUnSkipPage("guided-primary-data-organization-tab");
-        guidedUnSkipPage("guided-source-data-organization-tab");
-        guidedUnSkipPage("guided-derivative-data-selection-tab");
-        guidedUnSkipPage("guided-create-subjects-metadata-tab");
-        guidedUnSkipPage("guided-create-samples-metadata-tab");
+      if (selectedEntities.includes("samples")) {
+        guidedUnSkipPage("guided-samples-entity-addition-tab");
+        guidedUnSkipPage("guided-samples-entity-selection-tab");
       } else {
-        guidedSkipPage("guided-subjects-addition-tab");
-        guidedSkipPage("guided-samples-addition-tab");
-
-        guidedSkipPage("guided-primary-data-organization-tab");
-        guidedSkipPage("guided-source-data-organization-tab");
-        guidedSkipPage("guided-derivative-data-selection-tab");
-        guidedSkipPage("guided-create-subjects-metadata-tab");
-        guidedSkipPage("guided-create-samples-metadata-tab");
-
-        if (datasetHasCode) {
-          // If Protocol and Docs are empty, skip the Protocol and Docs tabs
-          // This is checked so if the user starts from Pennsieve and they have Protocol and Docs data, they can still modify it
-          // but the protocol and docs pages will be skipped if the user is started a new computational dataset without subjects
-          if (folderIsEmpty(window.datasetStructureJSONObj?.["folders"]?.["protocol"])) {
-            guidedSkipPage("guided-protocol-folder-tab");
-          } else {
-            guidedUnSkipPage("guided-protocol-folder-tab");
-          }
-
-          if (folderIsEmpty(window.datasetStructureJSONObj?.["folders"]?.["docs"])) {
-            guidedSkipPage("guided-docs-folder-tab");
-          } else {
-            guidedUnSkipPage("guided-docs-folder-tab");
-          }
-        }
+        guidedSkipPage("guided-samples-entity-addition-tab");
+        guidedSkipPage("guided-samples-entity-selection-tab");
       }
 
-      // If the dataset does not contain code, skip the code pages
-      if (datasetHasCode) {
-        guidedUnSkipPage("guided-code-folder-tab");
-        guidedUnSkipPage("guided-add-code-metadata-tab");
+      if (selectedEntities.includes("sites")) {
+        guidedUnSkipPage("guided-sites-entity-addition-tab");
+        guidedUnSkipPage("guided-sites-entity-selection-tab");
       } else {
-        guidedSkipPage("guided-code-folder-tab");
-        guidedSkipPage("guided-add-code-metadata-tab");
+        guidedSkipPage("guided-sites-entity-addition-tab");
+        guidedSkipPage("guided-sites-entity-selection-tab");
       }
-      
-      *********************** */
+
+      if (selectedEntities.includes("performances")) {
+        guidedUnSkipPage("guided-performances-entity-addition-tab");
+        guidedUnSkipPage("guided-performances-entity-selection-tab");
+      } else {
+        guidedSkipPage("guided-performances-entity-addition-tab");
+        guidedSkipPage("guided-performances-entity-selection-tab");
+      }
+
+      if (selectedEntities.includes("code")) {
+        guidedUnSkipPage("guided-code-entity-addition-tab");
+        guidedUnSkipPage("guided-code-entity-selection-tab");
+      } else {
+        guidedSkipPage("guided-code-entity-addition-tab");
+        guidedSkipPage("guided-code-entity-selection-tab");
+      }
     }
 
     if (pageBeingLeftID === "guided-subjects-addition-tab") {
@@ -1381,17 +1289,6 @@ const savePageChanges = async (pageBeingLeftID) => {
           "HEAL";
         window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
           "REJOIN-HEAL";
-      }
-    }
-
-    if (pageBeingLeftID === "guided-z-entity-addition-tab") {
-      window.sodaJSONObj["z-entities"] = getEntityObjForEntityType("z-entities");
-      if (Object.keys(window.sodaJSONObj["z-entities"]).length === 0) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please add at least one z-entity",
-        });
-        throw errorArray;
       }
     }
 
@@ -5446,13 +5343,6 @@ window.openPage = async (targetPageID) => {
       window.sodaJSONObj["guided-manifest-file-data"] = updatedManifestData;
       //Rerender the manifest cards
       renderManifestCards();
-    }
-
-    if (targetPageID === "guided-z-entity-addition-tab") {
-      setActiveEntity("z-entities");
-      const currentZEntities = window.sodaJSONObj["z-entities"] || {};
-      console.log("Setting z-entities", currentZEntities);
-      setEntityListForEntityType("z-entities", currentZEntities);
     }
 
     if (targetPageID === "guided-manifest-subject-entity-selector-tab") {
