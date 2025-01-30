@@ -49,8 +49,17 @@ module.exports = function(fileInfo, api) {
           j(path).replaceWith(j.memberExpression(j.identifier('window'), j.identifier('path')));
         }
       }
-      
     });
+
+
+    // Remove empty block statements
+    root.find(j.BlockStatement)
+      .filter(path => path.node.body.length === 0)
+      .forEach(path => {
+        const start = path.node.loc.start;
+        console.log(`Removing empty block statement at line ${start.line}, column ${start.column}`);
+        j(path).remove();
+      });
   });
 
   console.log(`Total hits for path: ${hits}`);
