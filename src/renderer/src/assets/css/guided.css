@@ -627,28 +627,6 @@
   background-color: var(--color-light-green);
 }
 
-.guided--capsule-container-sub-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-.guided--capsule-sub-page {
-  height: 5px;
-  width: 50px;
-  margin-left: 5px;
-  margin-right: 5px;
-  background-color: #d5eaff;
-  border: none;
-  display: inline-block;
-  cursor: pointer;
-  transform: skewx(-25deg);
-}
-.guided--capsule-sub-page.active {
-  background-color: #007bff !important;
-}
-
 .guided--form-label {
   width: 100%;
   margin: 0 0 0.45rem 0;
