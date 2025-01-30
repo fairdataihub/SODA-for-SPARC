@@ -1,5 +1,5 @@
-const fs = require('fs');
-const linesToRemove = JSON.parse(fs.readFileSync('lines-to-remove.json', 'utf8'));
+const fs = require("fs");
+const linesToRemove = JSON.parse(fs.readFileSync("lines-to-remove.json", "utf8"));
 
 // Sort linesToRemove in reverse order based on line and column
 linesToRemove.sort((a, b) => {
@@ -26,7 +26,6 @@ module.exports = function(fileInfo, api) {
   linesToRemove.forEach(({ filePath, line, column }) => {
     // Debugging: Log the file path, line, and column being checked
     // console.log(`Checking: ${filePath} at line ${line}, column ${column}`);
-
 
     // remove identifiers matching the line and column from the esLint list of items to remove
     // root.find(j.Identifier, { name: 'event' })
