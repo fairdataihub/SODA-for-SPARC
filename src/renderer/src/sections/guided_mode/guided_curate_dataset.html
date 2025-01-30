@@ -152,14 +152,6 @@
         class="guided--parent-tab hidden"
         data-parent-tab-name="Curation Preparation"
       >
-        <div class="guided--capsule-container" id="structure-dataset-capsule-container">
-          <div class="guided--capsule" id="guided-select-starting-point-capsule"></div>
-          <div class="guided--capsule" id="guided-curation-preparation-intro-capsule"></div>
-          <div class="guided--capsule" id="guided-ask-if-submission-is-sparc-funded-capsule"></div>
-          <div class="guided--capsule" id="guided-prepare-helpers-capsule"></div>
-          <div class="guided--capsule" id="guided-prepare-dataset-structure-capsule"></div>
-          <div class="guided--capsule" id="guided-name-subtitle-capsule"></div>
-        </div>
         <div
           id="guided-select-starting-point-tab"
           class="guided--page h-100 hidden"
@@ -740,42 +732,6 @@
         class="guided--parent-tab hidden"
         data-parent-tab-name="Dataset Structure"
       >
-        <div class="guided--capsule-container" style="display: none">
-          <div class="guided--capsule" id="guided-dataset-structure-intro-capsule"></div>
-          <div
-            class="guided--capsule"
-            id="guided-subject-structure-spreadsheet-importation-capsule"
-          ></div>
-          <div class="guided--capsule" id="guided-subjects-addition-capsule"></div>
-          <div class="guided--capsule" id="guided-z-entity-addition-capsule"></div>
-          <div class="guided--capsule" id="guided-samples-addition-capsule"></div>
-          <div class="guided--capsule" id="guided-unstructured-data-import-capsule"></div>
-          <div class="guided--capsule" id="guided-subject-entity-addition-capsule"></div>
-          <div class="guided--capsule" id="guided-sample-entity-addition-capsule"></div>
-          <div class="guided--capsule" id="guided-subject-entity-selection-capsule"></div>
-          <div class="guided--capsule" id="guided-sample-entity-selection-capsule"></div>
-          <div class="guided--capsule" id="guided-manifest-subject-entity-selector-capsule"></div>
-          <div class="guided--capsule" id="guided-manifest-sample-entity-selector-capsule"></div>
-          <div
-            class="guided--capsule"
-            id="guided-manifest-performance-entity-selector-capsule"
-          ></div>
-
-          <div
-            class="guided--capsule"
-            id="guided-source-derivative-folders-and-files-selector-capsule"
-          ></div>
-
-          <div class="guided--capsule" id="guided-denote-derivative-data-capsule"></div>
-          <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
-          <div class="guided--capsule" id="source-data-selection-capsule"></div>
-          <div class="guided--capsule" id="guided-derivative-data-selection-capsule"></div>
-          <div class="guided--capsule" id="guided-code-folder-capsule"></div>
-          <div class="guided--capsule" id="guided-protocol-folder-capsule"></div>
-          <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
-          <div class="guided--capsule" id="guided-dataset-structure-review-capsule"></div>
-        </div>
-
         <div class="guided--page" id="guided-dataset-structure-intro-tab" data-page-name="Intro">
           <h1 class="text-sub-step-title">Dataset Structure Introduction</h1>
           <div class="guided--section">
@@ -1128,39 +1084,6 @@
           ></div>
         </div>
 
-        <!--
-        <div
-          id="guided-subjects-addition-tab"
-          class="guided--page"
-          data-page-name="Subject addition"
-        >
-          <h1 class="text-sub-step-title">Subjects specification</h1>
-          <div class="guided--section">
-            <p class="help-text">
-              Enter a unique ID for each of the subjects that data was collected from in the table
-              below.
-            </p>
-          </div>
-          <div class="guided--section">
-            <button
-              class="ui positive button soda-green-background"
-              id="guided-button-add-subjects"
-            >
-              Add subjects
-            </button>
-          </div>
-          <div class="guided--section" id="guided-section-subjects-table">
-            <table class="ui celled striped table mt-md" style="margin-bottom: 10px; width: 800px">
-              <thead>
-                <tr>
-                  <th class="text-center" colspan="2">Dataset subjects</th>
-                </tr>
-              </thead>
-              <tbody id="subject-specification-table-body"></tbody>
-            </table>
-          </div>
-        </div>
-        -->
         <div
           id="guided-subject-entity-addition-tab"
           data-page-name="Manage Subject IDs"
@@ -1172,28 +1095,6 @@
           data-entity-type-prefix="sub-"
         ></div>
 
-        <!--
-        <div
-          id="guided-performances-entity-addition-tab"
-          data-page-name="Performances management"
-          class="guided--page"
-          data-component-type="entity-management-page"
-          data-entity-type="performances"
-          data-entity-type-string-singular="performance"
-          data-entity-type-string-plural="performances"
-          data-entity-type-prefix="perf-"
-        ></div>
-        <div
-          id="guided-site-entity-addition-tab"
-          data-page-name="Sites management"
-          class="guided--page"
-          data-component-type="entity-management-page"
-          data-entity-type="sites"
-          data-entity-type-string-singular="site"
-          data-entity-type-string-plural="sites"
-          data-entity-type-prefix="site-"
-        ></div>
-        -->
         <div
           id="guided-subject-entity-selection-tab"
           data-page-name="Subjects data selection"
@@ -1313,359 +1214,6 @@
         </div>
         -->
 
-        <!--<div
-          id="guided-primary-data-organization-tab"
-          class="guided--page"
-          data-page-name="Primary data"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Primary data for samples and subjects</h1>
-            <p class="help-text">
-              Primary data refers to all data collected from subjects and/or samples (e.g., time
-              series data, tabular data, clinical imaging data, genomic, metabolomic, or microscopy
-              data). The data generally have been minimally processed so they are in a form ready
-              for analysis.
-            </p>
-          </div>
-
-          <div class="guided--panel" id="guided-add-sample-primary-data">
-            <div class="guided--section">
-              <div class="guided--capsule-container-sub-page">
-                <div
-                  class="guided--capsule-sub-page"
-                  id="guided-primary-samples-organization-page-capsule"
-                ></div>
-                <div
-                  class="guided--capsule-sub-page"
-                  id="guided-primary-subjects-organization-page-capsule"
-                ></div>
-                <div
-                  class="guided--capsule-sub-page"
-                  id="guided-primary-pools-organization-page-capsule"
-                ></div>
-              </div>
-            </div>
-            <div class="guided--panel mt-md sub-page" id="guided-primary-samples-organization-page">
-              <div class="guided--section" id="guided-primary-samples-prompt">
-                <label class="guided--form-label centered">
-                  Do you have primary data for your samples?
-                </label>
-                <div class="guided--radio-button-container" style="margin-bottom: 7px">
-                  <button
-                    class="ui positive basic button guided--radio-button"
-                    id="guided-button-add-sample-primary-data"
-                    data-next-element="guided-primary-samples-container"
-                    data-button-config-value="dataset-contains-primary-sample-data"
-                    data-button-config-value-state="yes"
-                  >
-                    Yes
-                  </button>
-                  <button
-                    class="ui negative basic button guided--radio-button"
-                    id="guided-button-no-sample-primary-data"
-                    data-next-element="guided-warning-before-deleting-primary-samples-container"
-                    data-button-config-value="dataset-contains-primary-sample-data"
-                    data-button-config-value-state="no"
-                  >
-                    No
-                  </button>
-                </div>
-              </div>
-              <div class="guided--panel hidden" id="guided-primary-samples-container">
-                <div class="guided--section">
-                  <h2 class="text-sub-step-title mt-0">
-                    Specify the primary data for your samples through the interface below
-                  </h2>
-                  <p class="help-text">
-                    You can also virtually structure the data and rename files/folders as you would
-                    like to have them in your dataset when it is generated (note that none of your
-                    original data will be modified).
-                  </p>
-                </div>
-
-                <div
-                  class="guided--container-subject-samples mt-md"
-                  id="guided-primary-samples-file-explorer-container"
-                  style="
-                    margin-right: 0.5rem;
-                    padding-top: 0;
-                    border: 2px solid lightgray;
-                    max-width: 1153px !important;
-                  "
-                >
-                  <div
-                    class="guided--hlf-selection-container"
-                    style="
-                      padding-top: 0 !important;
-                      border-right: 2px solid lightgray;
-                      padding-bottom: 0;
-                      border-radius: 0;
-                      border-top: 2px;
-                    "
-                  >
-                    <label
-                      class="guided--form-label centered"
-                      style="
-                        border-bottom: 2px solid lightgray;
-                        padding-bottom: 30px;
-                        padding-top: 31px;
-                        background: lightgray;
-                        color: black;
-                        height: 85px;
-                        margin-top: 0 !important;
-                      "
-                      >Dataset samples:
-                    </label>
-                    <aside
-                      class="guided--hlf-selection-aside"
-                      id="guided-primary-samples-aside"
-                      style="direction: rtl"
-                    ></aside>
-                  </div>
-                  <div
-                    id="guided-primary-samples-file-explorer-intro"
-                    class="guided--panel mb-0"
-                    style="
-                      height: 476px;
-                      padding: 25px;
-                      border: black solid 2px;
-                      width: 800px;
-                      border-radius: 4px;
-                    "
-                  >
-                    <div class="guided--section" style="justify-content: flex-start">
-                      <h1 class="text-sub-step-title">
-                        Select a sample on the left to add its primary data.
-                      </h1>
-                      <div
-                        id="primary-samples-file-explorer-black-arrow-lottie-container"
-                        class="black-arrow-lottie-container"
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="guided--panel hidden"
-                id="guided-warning-before-deleting-primary-samples-container"
-              >
-                <div class="guided--section w-100">
-                  <p class="help-text">
-                    Click Next to confirm you have no primary data for your samples.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div
-              class="guided--panel mt-md sub-page hidden"
-              id="guided-primary-subjects-organization-page"
-            >
-              <div class="guided--section" id="guided-primary-subjects-prompt">
-                <label class="guided--form-label centered">
-                  Do you have primary data for your subjects?
-                </label>
-                <div class="guided--radio-button-container" style="margin-bottom: 7px">
-                  <button
-                    class="ui positive basic button guided--radio-button"
-                    id="guided-button-add-subject-primary-data"
-                    data-next-element="guided-primary-subjects-container"
-                    data-button-config-value="dataset-contains-primary-subject-data"
-                    data-button-config-value-state="yes"
-                  >
-                    Yes
-                  </button>
-                  <button
-                    class="ui negative basic button guided--radio-button"
-                    id="guided-button-no-subject-primary-data"
-                    data-next-element="guided-warning-before-deleting-primary-pools-and-subjects-container"
-                    data-button-config-value="dataset-contains-primary-subject-data"
-                    data-button-config-value-state="no"
-                  >
-                    No
-                  </button>
-                </div>
-              </div>
-
-              <div class="guided--panel hidden" id="guided-primary-subjects-container">
-                <div class="guided--section">
-                  <h2 class="text-sub-step-title mt-0">
-                    Specify the primary data for your subjects through the interface below
-                  </h2>
-                  <p class="help-text">
-                    You can also virtually structure the data and rename files/folders as you would
-                    like to have them in your dataset when it is generated (note that none of your
-                    original data will be modified).
-                  </p>
-                </div>
-                <div
-                  class="guided--container-subject-samples mt-md"
-                  id="guided-primary-subjects-file-explorer-container"
-                  style="border: 2px solid lightgray"
-                >
-                  <div
-                    class="guided--hlf-selection-container"
-                    style="
-                      padding-top: 0;
-                      border-right: 2px solid lightgray;
-                      width: 350px;
-                      border-radius: 0;
-                      height: 476px;
-                      margin: 0 !important;
-                      border-top: 2px solid lightgray;
-                      border-left: 2px;
-                    "
-                  >
-                    <label
-                      class="guided--form-label centered"
-                      style="
-                        padding: 31px 0 12px 0;
-                        border-bottom: 2px solid lightgray;
-                        height: 48px;
-                        color: black;
-                        background: lightgray;
-                        height: 84px;
-                      "
-                      >Dataset subjects:
-                    </label>
-                    <aside
-                      class="guided--hlf-selection-aside"
-                      id="guided-primary-subjects-aside"
-                      style="font-weight: 600; direction: rtl"
-                    ></aside>
-                  </div>
-                  <div
-                    id="guided-primary-subjects-file-explorer-intro"
-                    class="guided--panel mb-0"
-                    style="height: 475px; padding: 25px; border: black solid 2px"
-                  >
-                    <div class="guided--section" style="justify-content: flex-start">
-                      <h1 class="text-sub-step-title">
-                        Select a subject on the left to add its primary data.
-                      </h1>
-                      <div
-                        id="primary-subjects-file-explorer-black-arrow-lottie-container"
-                        class="black-arrow-lottie-container"
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="guided--panel hidden"
-                id="guided-warning-before-deleting-primary-pools-and-subjects-container"
-              >
-                <div class="guided--section w-100">
-                  <p class="help-text">
-                    Click Next to confirm you have no primary data for your subjects.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div
-              class="guided--panel mt-md sub-page hidden"
-              id="guided-primary-pools-organization-page"
-            >
-              <div class="guided--section">
-                <label class="guided--form-label centered">
-                  Do you have primary data for your pools?
-                </label>
-                <div class="guided--radio-button-container" style="margin-bottom: 7px">
-                  <button
-                    class="ui positive basic button guided--radio-button"
-                    id="guided-button-add-pool-primary-data"
-                    data-next-element="guided-primary-pools-container"
-                    data-button-config-value="dataset-contains-primary-pool-data"
-                    data-button-config-value-state="yes"
-                  >
-                    Yes
-                  </button>
-                  <button
-                    class="ui negative basic button guided--radio-button"
-                    id="guided-button-no-pool-primary-data"
-                    data-next-element="guided-warning-before-deleting-primary-pools-data-container"
-                    data-button-config-value="dataset-contains-primary-pool-data"
-                    data-button-config-value-state="no"
-                  >
-                    No
-                  </button>
-                </div>
-              </div>
-              <div class="guided--panel" id="guided-primary-pools-container">
-                <div class="guided--section">
-                  <h2 class="text-sub-step-title mt-0">
-                    Specify the primary data for your pools through the interface below
-                  </h2>
-                  <p class="help-text">
-                    You can also virtually structure the data and rename files/folders as you would
-                    like to have them in your dataset when it is generated (note that none of your
-                    original data will be modified).
-                  </p>
-                </div>
-                <div
-                  class="guided--container-subject-samples mt-md"
-                  id="guided-primary-pools-file-explorer-container"
-                  style="border: 2px solid lightgray"
-                >
-                  <div
-                    class="guided--hlf-selection-container"
-                    style="
-                      padding-top: 0;
-                      border-right: 2px solid lightgray;
-                      width: 350px;
-                      border-radius: 0;
-                      height: 476px;
-                      margin: 0 !important;
-                      border-top: 2px solid lightgray;
-                      border-left: 2px;
-                    "
-                  >
-                    <label
-                      class="guided--form-label centered"
-                      style="
-                        padding: 31px 0 12px 0;
-                        border-bottom: 2px solid lightgray;
-                        height: 48px;
-                        color: black;
-                        background: lightgray;
-                        height: 84px;
-                      "
-                      >Dataset pools:
-                    </label>
-                    <aside
-                      class="guided--hlf-selection-aside"
-                      id="guided-primary-pools-aside"
-                      style="font-weight: 600; direction: rtl"
-                    ></aside>
-                  </div>
-                  <div
-                    id="guided-primary-pools-file-explorer-intro"
-                    class="guided--panel mb-0"
-                    style="height: 475px; padding: 25px; border: black solid 2px"
-                  >
-                    <div class="guided--section" style="justify-content: flex-start">
-                      <h1 class="text-sub-step-title">
-                        Select a pool on the left to add its primary data.
-                      </h1>
-                      <div
-                        id="primary-pools-file-explorer-black-arrow-lottie-container"
-                        class="black-arrow-lottie-container"
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="guided--panel"
-                id="guided-warning-before-deleting-primary-pools-data-container"
-              >
-                <p class="help-text">
-                  Click Next to confirm you have no primary data for your pools.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>-->
-
         <div id="guided-code-folder-tab" class="guided--page" data-page-name="Code import">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Code importation</h1>
@@ -1752,21 +1300,6 @@
         class="guided--parent-tab hidden"
         data-parent-tab-name="Dataset metadata"
       >
-        <div class="guided--capsule-container">
-          <div class="guided--capsule" id="guided-dataset-metadata-intro-capsule"></div>
-          <div class="guided--capsule" id="guided-manifest-file-generation-capsule"></div>
-          <div class="guided--capsule" id="guided-create-submission-metadata-capsule"></div>
-          <div class="guided--capsule" id="guided-contributors-capsule"></div>
-          <div class="guided--capsule" id="guided-protocols-capsule"></div>
-          <div class="guided--capsule" id="guided-create-description-metadata-capsule"></div>
-          <div class="guided--capsule" id="guided-create-subjects-metadata-capsule"></div>
-          <div class="guided--capsule" id="guided-create-samples-metadata-capsule"></div>
-          <div class="guided--capsule" id="guided-add-code-metadata-capsule"></div>
-          <div class="guided--capsule" id="guided-create-readme-metadata-capsule"></div>
-          <div class="guided--capsule" id="guided-create-changes-metadata-capsule"></div>
-          <div class="guided--capsule" id="guided-create-local-copy-capsule"></div>
-        </div>
-
         <div class="guided--page" id="guided-dataset-metadata-intro-tab" data-page-name="Intro">
           <h1 class="text-sub-step-title">Dataset Metadata Introduction</h1>
           <div class="guided--section">
@@ -3792,16 +3325,6 @@
         class="guided--parent-tab hidden"
         data-parent-tab-name="Pennsieve metadata"
       >
-        <div class="guided--capsule-container">
-          <div class="guided--capsule" id="guided-pennsieve-metadata-intro-capsule"></div>
-          <div class="guided--capsule" id="guided-pennsieve-intro-capsule"></div>
-          <div class="guided--capsule" id="guided-banner-image-capsule"></div>
-          <div class="guided--capsule" id="guided-designate-permissions-capsule"></div>
-          <div class="guided--capsule" id="guided-add-description-capsule"></div>
-          <div class="guided--capsule" id="guided-add-tags-capsule"></div>
-          <div class="guided--capsule" id="guided-assign-license-capsule"></div>
-        </div>
-
         <div class="guided--page" id="guided-pennsieve-metadata-intro-tab" data-page-name="Intro">
           <h1 class="text-sub-step-title">Pennsieve metadata Introduction</h1>
           <div class="guided--section">
@@ -4310,13 +3833,6 @@
         class="guided--parent-tab hidden"
         data-parent-tab-name="Generate dataset"
       >
-        <div class="guided--capsule-container">
-          <div class="guided--capsule" id="guided-dataset-validation-capsule"></div>
-          <div class="guided--capsule" id="guided-dataset-generation-confirmation-capsule"></div>
-          <div class="guided--capsule" id="guided-dataset-generation-capsule"></div>
-          <div class="guided--capsule" id="guided-dataset-dissemination-capsule"></div>
-        </div>
-
         <div
           id="guided-dataset-validation-tab"
           class="guided--page"
@@ -5502,7 +5018,7 @@
         </div>
       </div>
     </div>
-    <footer class="footer-container hidden" id="guided-footer-div">
+    <footer class="footer-container" id="guided-footer-div">
       <div class="guided--container-footer-buttons flex-end">
         <div
           data-component-type="navigation-button"
@@ -5525,35 +5041,6 @@
         <div
           data-component-type="navigation-button"
           data-button-id="guided-button-save-and-exit"
-          data-button-text="Save and Exit"
-          data-nav-icon="save"
-          data-button-size="md"
-        ></div>
-      </div>
-    </footer>
-    <footer class="footer-container hidden" id="guided-sub-page-navigation-footer-div">
-      <div class="guided--container-footer-buttons flex-end">
-        <div
-          data-component-type="navigation-button"
-          data-button-id="guided-button-sub-page-back"
-          data-button-text="Back"
-          data-nav-icon="left-arrow"
-          data-button-size="md"
-          data-button-custom-width="120px"
-        ></div>
-      </div>
-      <div class="guided--container-footer-buttons flex-between">
-        <div
-          data-component-type="navigation-button"
-          data-button-id="guided-button-sub-page-continue"
-          data-button-text="Next"
-          data-nav-icon="right-arrow"
-          data-button-size="md"
-          data-button-custom-width="120px"
-        ></div>
-        <div
-          data-component-type="navigation-button"
-          data-button-id="guided-button-sub-page-save-and-exit"
           data-button-text="Save and Exit"
           data-nav-icon="save"
           data-button-size="md"

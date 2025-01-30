@@ -57,6 +57,7 @@ import {
   setTreeViewDatasetStructure,
   externallySetSearchFilterValue,
 } from "../../stores/slices/datasetTreeViewSlice";
+import { setSelectedEntities } from "../../stores/slices/datasetContentSelectorSlice";
 
 import "bootstrap-select";
 import Cropper from "cropperjs";
@@ -510,10 +511,6 @@ const setPageLoadingState = (boolLoadingState) => {
 const guidedSetNavLoadingState = (loadingState) => {
   //depending on the boolean loading state will determine whether or not
   //to disable the primary and sub buttons along with the nav menu
-  const subBackButton = document.getElementById("guided-button-sub-page-back");
-  const subContinueButton = document.getElementById("guided-button-sub-page-continue");
-  const subSaveAndExitButton = document.getElementById("guided-button-sub-page-save-and-exit");
-
   const mainBackButton = document.getElementById("guided-back-button");
   const mainContinueButton = document.getElementById("guided-next-button");
   const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
@@ -521,9 +518,6 @@ const guidedSetNavLoadingState = (loadingState) => {
   const navItems = document.querySelectorAll(".guided--nav-bar-section-page");
 
   if (loadingState === true) {
-    subBackButton.disabled = true;
-    subContinueButton.disabled = true;
-    subSaveAndExitButton.disabled = true;
     mainBackButton.disabled = true;
     mainContinueButton.disabled = true;
     saveAndExitButton.disabled = true;
@@ -536,9 +530,6 @@ const guidedSetNavLoadingState = (loadingState) => {
   }
 
   if (loadingState === false) {
-    subBackButton.disabled = false;
-    subContinueButton.disabled = false;
-    subSaveAndExitButton.disabled = false;
     mainBackButton.disabled = false;
     mainContinueButton.disabled = false;
     mainBackButton.classList.remove("loading");
@@ -1177,6 +1168,9 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
+
+      window.sodaJSONObj["selected-entities"] = selectedEntities;
+      console.log("selectedEntities", selectedEntities);
 
       /* ********************
       if (selectedEntities.length === 0) {
@@ -2431,9 +2425,6 @@ const guidedLockSideBar = (boolShowNavBar) => {
   const guidedModeSection = document.getElementById("guided_mode-section");
   const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
   const guidedNav = document.getElementById("guided-nav");
-  const curationPreparationGreenPills = document.getElementById(
-    "structure-dataset-capsule-container"
-  );
 
   if (!sidebar.classList.contains("active")) {
     sidebar.click();
@@ -2445,11 +2436,9 @@ const guidedLockSideBar = (boolShowNavBar) => {
   if (boolShowNavBar) {
     guidedDatsetTab.style.marginLeft = "215px";
     guidedNav.style.display = "flex";
-    curationPreparationGreenPills.classList.remove("hidden");
   } else {
     guidedDatsetTab.style.marginLeft = "0px";
     guidedNav.style.display = "none";
-    curationPreparationGreenPills.classList.add("hidden");
   }
 };
 
@@ -2745,23 +2734,6 @@ const hideEleShowEle = (elementIdToHide, elementIdToShow) => {
   elementToShow.classList.remove("hidden");
 };
 
-const hideSubNavAndShowMainNav = (navButtonToClick) => {
-  $("#guided-sub-page-navigation-footer-div").hide();
-  $("#guided-footer-div").removeClass("hidden");
-  $("#guided-footer-div").css("display", "flex");
-  //show the buttons incase they were hidden
-  $("#guided-next-button").show();
-  $("#guided-back-button").show();
-  if (navButtonToClick) {
-    if (navButtonToClick === "next") {
-      $("#guided-next-button").click();
-    }
-    if (navButtonToClick === "back") {
-      $("#guided-back-button").click();
-    }
-  }
-};
-
 document.querySelectorAll(".pass-button-click-to-next-button").forEach((element) => {
   element.addEventListener("click", () => {
     document.getElementById("guided-next-button").click();
@@ -2771,51 +2743,6 @@ document.querySelectorAll(".pass-button-click-to-next-button").forEach((element)
 const scrollToBottomOfGuidedBody = () => {
   const elementToScrollTo = document.querySelector(".guided--body");
   elementToScrollTo.scrollTop = elementToScrollTo.scrollHeight;
-};
-
-const getOpenSubPageInPage = (pageID) => {
-  const subPageContainer = document.getElementById(pageID);
-  const openSubPage = subPageContainer.querySelector(".sub-page:not(.hidden)");
-  return openSubPage.id;
-};
-
-const getNonSkippedGuidedModeSubPages = (parentElementID) => {
-  let childSubPages = Array.from(
-    document.getElementById(parentElementID).querySelectorAll(".sub-page")
-  );
-  const nonSkippedChildSubPages = childSubPages
-    .filter((page) => {
-      return page.dataset.skipPage != "true";
-    })
-    .map((page) => page.id);
-
-  return nonSkippedChildSubPages;
-};
-
-const openSubPageNavigation = (pageBeingNavigatedTo) => {
-  //Get the id of the page that's currently open and might need a refresh
-  const nonSkippedSubPages = getNonSkippedGuidedModeSubPages(pageBeingNavigatedTo);
-  const completedSubPages = nonSkippedSubPages.filter((page) => {
-    return window.sodaJSONObj["completed-tabs"].includes(page);
-  });
-
-  // If the sub-pages have already been completed, go to the last one
-  // If not, go to the first one
-  let subPageIDtoOpen;
-  if (completedSubPages.length > 0) {
-    subPageIDtoOpen = completedSubPages[completedSubPages.length - 1];
-  } else {
-    subPageIDtoOpen = nonSkippedSubPages[0];
-  }
-
-  //Refresh data on the open sub-page
-  setActiveSubPage(subPageIDtoOpen);
-  //Hide the footer div while user is in sub-page navigation
-  $("#guided-footer-div").hide();
-  $("#guided-footer-div").addClass("hidden");
-  //Show the sub-page navigation footer
-  $("#guided-sub-page-navigation-footer-div").removeClass("hidden");
-  $("#guided-sub-page-navigation-footer-div").css("display", "flex");
 };
 
 const guidedTransitionFromHome = async () => {
@@ -2835,16 +2762,6 @@ const guidedTransitionFromHome = async () => {
   });
 
   window.CURRENT_PAGE = document.getElementById("guided-select-starting-point-tab");
-
-  //reset sub-page navigation (Set the first sub-page to be the active sub-page
-  //for all pages with sub-pages)
-  const subPageCapsuleContainers = Array.from(
-    document.querySelectorAll(".guided--capsule-container-sub-page")
-  );
-  for (const pageCapsule of subPageCapsuleContainers) {
-    const firstSubPage = pageCapsule.querySelector(".guided--capsule-sub-page");
-    setActiveSubPage(firstSubPage.id.replace("-capsule", ""));
-  }
 
   //Unskip all pages besides the ones that should always be skipped
   guidedResetSkippedPages();
@@ -2866,8 +2783,6 @@ const guidedTransitionToHome = () => {
   document.getElementById("guided-header-div").classList.add("hidden");
   $("#guided-footer-div").addClass("hidden");
   $("#guided-footer-div").hide();
-  $("#guided-sub-page-navigation-footer-div").hide();
-  $("#guided-sub-page-navigation-footer-div").addClass("hidden");
 };
 
 const guidedTransitionFromDatasetNameSubtitlePage = () => {
@@ -3852,13 +3767,6 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   }
 };
 
-const setActiveCapsule = (targetPageID) => {
-  $(".guided--capsule").removeClass("active");
-  let targetCapsuleID = targetPageID.replace("-tab", "-capsule");
-  let targetCapsule = $(`#${targetCapsuleID}`);
-  targetCapsule.addClass("active");
-};
-
 const setActiveProgressionTab = (targetPageID) => {
   $(".guided--progression-tab").removeClass("selected-tab");
   let targetPageParentID = $(`#${targetPageID}`).parent().attr("id");
@@ -4192,13 +4100,6 @@ const guidedResetSkippedPages = () => {
   for (const pageID of parentPagesToResetSkip) {
     guidedUnSkipPage(pageID);
   }
-  // Reset sub pages
-  const subPagesToResetSkip = Array.from(document.querySelectorAll(".sub-page")).map(
-    (page) => page.id
-  );
-  for (const subPageID of subPagesToResetSkip) {
-    guidedUnSkipPage(subPageID);
-  }
 };
 
 const guidedSkipPage = (pageId) => {
@@ -4210,17 +4111,6 @@ const guidedSkipPage = (pageId) => {
   }
 
   page.dataset.skipPage = "true";
-
-  //Hide the parent page or sub page capsule
-  if (page.classList.contains("guided--page")) {
-    // replace -tab with -capsule  in pageId string
-    const pagesCapsule = pageId.replace("-tab", "-capsule");
-    document.getElementById(pagesCapsule).classList.add("hidden");
-  }
-  if (page.classList.contains("sub-page")) {
-    const subPagesCapsule = `${pageId}-capsule`;
-    document.getElementById(subPagesCapsule).classList.add("hidden");
-  }
 
   // add the page to window.sodaJSONObj array if it isn't there already
   if (!window.sodaJSONObj["skipped-pages"].includes(pageId)) {
@@ -4238,19 +4128,6 @@ const guidedUnSkipPage = (pageId) => {
 
   page.dataset.skipPage = "false";
 
-  //Show the parent page or sub page capsule
-  if (page.classList.contains("guided--page")) {
-    const pagesCapsuleID = pageId.replace("-tab", "-capsule");
-    const domElement = document.getElementById(pagesCapsuleID);
-    if (!domElement) {
-      console.error(`Could not find element with id ${pagesCapsuleID}`);
-    }
-    document.getElementById(pagesCapsuleID).classList.remove("hidden");
-  }
-  if (page.classList.contains("sub-page")) {
-    const subPagesCapsule = `${pageId}-capsule`;
-    document.getElementById(subPagesCapsule).classList.remove("hidden");
-  }
   // remove the page from window.sodaJSONObj array if it is there
   if (window.sodaJSONObj["skipped-pages"].includes(pageId)) {
     window.sodaJSONObj["skipped-pages"].splice(
@@ -4948,9 +4825,6 @@ window.openPage = async (targetPageID) => {
     resetGuidedRadioButtons(targetPageID);
     //update the radio buttons using the button config from window.sodaJSONObj
     updateGuidedRadioButtonsFromJSON(targetPageID);
-    //Show the main nav bar
-    //Note: if other nav bar needs to be shown, it will be handled later in this function
-    hideSubNavAndShowMainNav(false);
 
     // Reset the zustand store search filter value
     externallySetSearchFilterValue("");
@@ -5059,6 +4933,7 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-prepare-dataset-structure-tab") {
+      setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
       /*
       // If the user has already added subjects, disallow them from selecting no (they have to go to the subject
       // page to delete subjects but this would be a very strange case anyways)
@@ -5219,18 +5094,6 @@ window.openPage = async (targetPageID) => {
       // Set the folder structure as the primary folder since the user is
       // denoting data as derivative which will be moved to the derivative folder
       guidedUpdateFolderStructureUI("primary/");
-    }
-
-    if (targetPageID === "guided-primary-data-organization-tab") {
-      openSubPageNavigation(targetPageID);
-    }
-
-    if (targetPageID === "guided-source-data-organization-tab") {
-      openSubPageNavigation(targetPageID);
-    }
-
-    if (targetPageID === "guided-derivative-data-selection-tab") {
-      openSubPageNavigation(targetPageID);
     }
 
     if (targetPageID === "guided-code-folder-tab") {
@@ -6946,7 +6809,6 @@ window.openPage = async (targetPageID) => {
     let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
 
     //Set all capsules to grey and set capsule of page being traversed to green
-    setActiveCapsule(targetPageID);
     setActiveProgressionTab(targetPageID);
     renderSideBar(targetPageID);
 
@@ -7210,425 +7072,6 @@ const renderSamplesTable = () => {
       await guidedOpenEntityEditSwal(sampleName);
     });
   });
-};
-
-const setActiveSubPage = (pageIdToActivate) => {
-  const pageElementToActivate = document.getElementById(pageIdToActivate);
-
-  //create a switch statement for pageIdToActivate to load data from sodaJSONObj
-  //depending on page being opened
-
-  if (pageIdToActivate === "guided-organize-subjects-into-pools-page") {
-    document.getElementById("guided-section-dataset-subjects-text").classList.add("hidden");
-    document.getElementById("guided-section-dataset-pools-text").classList.remove("hidden");
-    document.getElementById("guided-section-dataset-samples-text").classList.add("hidden");
-  }
-  if (pageIdToActivate === "guided-specify-samples-page") {
-    document.getElementById("guided-section-dataset-subjects-text").classList.add("hidden");
-    document.getElementById("guided-section-dataset-pools-text").classList.add("hidden");
-    document.getElementById("guided-section-dataset-samples-text").classList.remove("hidden");
-    renderSamplesTable();
-  }
-  if (pageIdToActivate === "guided-primary-samples-organization-page") {
-    renderSamplesHighLevelFolderAsideItems("primary");
-    guidedUpdateFolderStructure("primary", "samples");
-
-    $("#guided-file-explorer-elements").appendTo(
-      $("#guided-primary-samples-file-explorer-container")
-    );
-
-    //Hide the file explorer and show the intro
-    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-    document
-      .getElementById("guided-primary-samples-file-explorer-intro")
-      .classList.remove("hidden");
-
-    //Load the black arrow lottie animation
-    const primarySamplesFileExplorerBlackArrowLottieContainer = document.getElementById(
-      "primary-samples-file-explorer-black-arrow-lottie-container"
-    );
-    primarySamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
-    lottie.loadAnimation({
-      container: primarySamplesFileExplorerBlackArrowLottieContainer,
-      animationData: blackArrow,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-    });
-  }
-  if (pageIdToActivate === "guided-primary-subjects-organization-page") {
-    renderSubjectsHighLevelFolderAsideItems("primary");
-    guidedUpdateFolderStructure("primary", "subjects");
-    $("#guided-file-explorer-elements").appendTo(
-      $("#guided-primary-subjects-file-explorer-container")
-    );
-    //Hide the file explorer and show the intro
-    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-    document
-      .getElementById("guided-primary-subjects-file-explorer-intro")
-      .classList.remove("hidden");
-
-    //Load the black arrow lottie animation
-    const primarySubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
-      "primary-subjects-file-explorer-black-arrow-lottie-container"
-    );
-    primarySubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-    lottie.loadAnimation({
-      container: primarySubjectsFileExplorerBlackArrowLottieContainer,
-      animationData: blackArrow,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-    });
-  }
-  if (pageIdToActivate === "guided-primary-pools-organization-page") {
-    guidedUpdateFolderStructure("primary", "pools");
-    renderPoolsHighLevelFolderAsideItems("primary");
-    //guidedUpdateFolderStructure("primary", "pools"); Don't need because pools already generated
-    $("#guided-file-explorer-elements").appendTo(
-      $("#guided-primary-pools-file-explorer-container")
-    );
-    //Hide the file explorer and show the intro
-    hideEleShowEle("guided-file-explorer-elements", "guided-primary-pools-file-explorer-intro");
-
-    const primaryPoolsFileExplorerBlackArrowLottieContainer = document.getElementById(
-      "primary-pools-file-explorer-black-arrow-lottie-container"
-    );
-    primaryPoolsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-    //Load the black arrow lottie animation
-    lottie.loadAnimation({
-      container: primaryPoolsFileExplorerBlackArrowLottieContainer,
-      animationData: blackArrow,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-    });
-  }
-  if (pageIdToActivate === "guided-source-samples-organization-page") {
-    renderSamplesHighLevelFolderAsideItems("source");
-    guidedUpdateFolderStructure("source", "samples");
-    $("#guided-file-explorer-elements").appendTo(
-      $("#guided-source-samples-file-explorer-container")
-    );
-
-    //Hide the file explorer and show the intro
-    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-    document.getElementById("guided-source-samples-file-explorer-intro").classList.remove("hidden");
-
-    //Load the black arrow lottie animation
-    const sourceSamplesFileExplorerBlackArrowLottieContainer = document.getElementById(
-      "source-samples-file-explorer-black-arrow-lottie-container"
-    );
-    sourceSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
-    lottie.loadAnimation({
-      container: sourceSamplesFileExplorerBlackArrowLottieContainer,
-      animationData: blackArrow,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-    });
-  }
-  if (pageIdToActivate === "guided-source-subjects-organization-page") {
-    renderSubjectsHighLevelFolderAsideItems("source");
-    guidedUpdateFolderStructure("source", "subjects");
-    $("#guided-file-explorer-elements").appendTo(
-      $("#guided-source-subjects-file-explorer-container")
-    );
-    //Hide the file explorer and show the intro
-    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-    document
-      .getElementById("guided-source-subjects-file-explorer-intro")
-      .classList.remove("hidden");
-
-    //Load the black arrow lottie animation
-    const sourceSubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
-      "source-subjects-file-explorer-black-arrow-lottie-container"
-    );
-    sourceSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-    lottie.loadAnimation({
-      container: sourceSubjectsFileExplorerBlackArrowLottieContainer,
-      animationData: blackArrow,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-    });
-  }
-
-  if (pageIdToActivate === "guided-source-pools-organization-page") {
-    guidedUpdateFolderStructure("source", "pools");
-    renderPoolsHighLevelFolderAsideItems("source");
-    $("#guided-file-explorer-elements").appendTo($("#guided-source-pools-file-explorer-container"));
-    //Hide the file explorer and show the intro
-    hideEleShowEle("guided-file-explorer-elements", "guided-source-pools-file-explorer-intro");
-
-    const sourcePoolsFileExplorerBlackArrowLottieContainer = document.getElementById(
-      "source-pools-file-explorer-black-arrow-lottie-container"
-    );
-    sourcePoolsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-    //Load the black arrow lottie animation
-    lottie.loadAnimation({
-      container: sourcePoolsFileExplorerBlackArrowLottieContainer,
-      animationData: blackArrow,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-    });
-  }
-
-  if (pageIdToActivate === "guided-derivative-subjects-organization-page") {
-    renderSubjectsHighLevelFolderAsideItems("derivative");
-    guidedUpdateFolderStructure("derivative", "subjects");
-    $("#guided-file-explorer-elements").appendTo(
-      $("#guided-derivative-subjects-file-explorer-container")
-    );
-    //Hide the file explorer and show the intro
-    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-    document
-      .getElementById("guided-derivative-subjects-file-explorer-intro")
-      .classList.remove("hidden");
-
-    //Load the black arrow lottie animation
-    const sourceSubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
-      "derivative-subjects-file-explorer-black-arrow-lottie-container"
-    );
-    sourceSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-    lottie.loadAnimation({
-      container: sourceSubjectsFileExplorerBlackArrowLottieContainer,
-      animationData: blackArrow,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-    });
-  }
-  if (pageIdToActivate === "guided-derivative-samples-organization-page") {
-    renderSamplesHighLevelFolderAsideItems("derivative");
-    guidedUpdateFolderStructure("derivative", "samples");
-    $("#guided-file-explorer-elements").appendTo(
-      $("#guided-derivative-samples-file-explorer-container")
-    );
-
-    //Hide the file explorer and show the intro
-    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-    document
-      .getElementById("guided-derivative-samples-file-explorer-intro")
-      .classList.remove("hidden");
-
-    //Load the black arrow lottie animation
-    const derivativeSamplesFileExplorerBlackArrowLottieContainer = document.getElementById(
-      "derivative-samples-file-explorer-black-arrow-lottie-container"
-    );
-    derivativeSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
-    lottie.loadAnimation({
-      container: derivativeSamplesFileExplorerBlackArrowLottieContainer,
-      animationData: blackArrow,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-    });
-  }
-
-  if (pageIdToActivate === "guided-derivative-pools-organization-page") {
-    renderSubjectsHighLevelFolderAsideItems("derivative");
-    guidedUpdateFolderStructure("derivative", "subjects");
-    $("#guided-file-explorer-elements").appendTo(
-      $("#guided-derivative-subjects-file-explorer-container")
-    );
-    //Hide the file explorer and show the intro
-    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-    document
-      .getElementById("guided-derivative-subjects-file-explorer-intro")
-      .classList.remove("hidden");
-
-    //Load the black arrow lottie animation
-    const derivativeSubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
-      "derivative-subjects-file-explorer-black-arrow-lottie-container"
-    );
-    derivativeSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-    lottie.loadAnimation({
-      container: derivativeSubjectsFileExplorerBlackArrowLottieContainer,
-      animationData: blackArrow,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-    });
-  }
-  if (pageIdToActivate === "guided-derivative-pools-organization-page") {
-    guidedUpdateFolderStructure("derivative", "pools");
-    renderPoolsHighLevelFolderAsideItems("derivative");
-    $("#guided-file-explorer-elements").appendTo(
-      $("#guided-derivative-pools-file-explorer-container")
-    );
-    //Hide the file explorer and show the intro
-    hideEleShowEle("guided-file-explorer-elements", "guided-derivative-pools-file-explorer-intro");
-
-    const derivativePoolsFileExplorerBlackArrowLottieContainer = document.getElementById(
-      "derivative-pools-file-explorer-black-arrow-lottie-container"
-    );
-    derivativePoolsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-    //Load the black arrow lottie animation
-    lottie.loadAnimation({
-      container: derivativePoolsFileExplorerBlackArrowLottieContainer,
-      animationData: blackArrow,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-    });
-  }
-  if (pageIdToActivate === "guided-data-derivative-import-page") {
-    const dataDeliverableLottieContainer = document.getElementById(
-      "data-deliverable-lottie-container"
-    );
-    const dataDeliverableParaText = document.getElementById("guided-data-deliverable-para-text");
-
-    const importedMilestones =
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-imported-milestones"];
-
-    if (importedMilestones) {
-      // set the data deliverable import lottie as complete
-      dataDeliverableLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: dataDeliverableLottieContainer,
-        animationData: successCheck,
-        renderer: "svg",
-        loop: false,
-        autoplay: true,
-      });
-      dataDeliverableParaText.innerHTML =
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
-
-      renderMilestoneSelectionTable(importedMilestones);
-      const tempSelectedMilestones =
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
-      if (tempSelectedMilestones) {
-        //Check the checkboxes for previously selected milestones
-        const milestoneDescriptionsToCheck = tempSelectedMilestones.map((milestone) => {
-          return milestone["description"];
-        });
-        for (const milestone of milestoneDescriptionsToCheck) {
-          //find the checkbox with name milestone and value of milestone
-          const milestoneCheckbox = document.querySelector(
-            `input[name="milestone"][value="${milestone}"]`
-          );
-          if (milestoneCheckbox) {
-            milestoneCheckbox.checked = true;
-          }
-        }
-      }
-      window.unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
-    } else {
-      //reset the submission metadata lotties and para text
-      dataDeliverableLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: dataDeliverableLottieContainer,
-        animationData: dragDrop,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      dataDeliverableParaText.innerHTML = "";
-      document.getElementById("guided-div-data-deliverables-import").classList.add("hidden");
-    }
-  }
-  if (pageIdToActivate === "guided-completion-date-selection-page") {
-    const selectedMilestoneData =
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
-
-    // get a unique set of completionDates from checkedMilestoneData
-    const uniqueCompletionDates = Array.from(
-      new Set(selectedMilestoneData.map((milestone) => milestone.completionDate))
-    );
-
-    if (uniqueCompletionDates.length === 1) {
-      //save the completion date into window.sodaJSONObj
-      const uniqueCompletionDate = uniqueCompletionDates[0];
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
-        uniqueCompletionDate;
-
-      document.getElementById("guided-completion-date-container").innerHTML =
-        createCompletionDateRadioElement("completion-date", uniqueCompletionDate);
-      //check the completion date
-      document.querySelector(
-        `input[name="completion-date"][value="${uniqueCompletionDate}"]`
-      ).checked = true;
-    }
-
-    if (uniqueCompletionDates.length > 1) {
-      //filter value 'N/A' from uniqueCompletionDates
-      const filteredUniqueCompletionDates = uniqueCompletionDates.filter((date) => date !== "N/A");
-
-      //create a radio button for each unique date
-      const completionDateCheckMarks = filteredUniqueCompletionDates
-        .map((completionDate) => {
-          return createCompletionDateRadioElement("completion-date", completionDate);
-        })
-        .join("\n");
-      document.getElementById("guided-completion-date-container").innerHTML =
-        completionDateCheckMarks;
-
-      //If a completion date has already been selected, select it's radio button
-      const selectedCompletionDate =
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
-      if (selectedCompletionDate) {
-        const selectedCompletionDateRadioElement = document.querySelector(
-          `input[name="completion-date"][value="${selectedCompletionDate}"]`
-        );
-        if (selectedCompletionDateRadioElement) {
-          selectedCompletionDateRadioElement.checked = true;
-        }
-      }
-    }
-  }
-
-  if (pageIdToActivate === "guided-submission-metadata-page") {
-    const sparcAward = window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-    const selectedMilestones =
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
-
-    const completionDate =
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
-
-    const sparcAwardInput = document.getElementById("guided-submission-sparc-award");
-    const completionDateInput = document.getElementById("guided-submission-completion-date");
-
-    guidedSubmissionTagsTagify.removeAllTags();
-
-    sparcAwardInput.value = sparcAward;
-
-    const uniqueMilestones = Array.from(
-      new Set(selectedMilestones.map((milestone) => milestone.milestone))
-    );
-    guidedSubmissionTagsTagify.addTags(uniqueMilestones);
-
-    completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
-    //select the completion date that was added
-    completionDateInput.value = completionDate;
-  }
-
-  //Show target page and hide its siblings
-  pageElementToActivate.classList.remove("hidden");
-  const pageElementSiblings = pageElementToActivate.parentElement.children;
-  //filter pageElementSiblings to only contain elements with class "sub-page"
-  const pageElementSiblingsToHide = Array.from(pageElementSiblings).filter((pageElementSibling) => {
-    return (
-      pageElementSibling.classList.contains("sub-page") &&
-      pageElementSibling.id !== pageIdToActivate
-    );
-  });
-  //hide all pageElementSiblingsToHide
-  pageElementSiblingsToHide.forEach((pageElementSibling) => {
-    pageElementSibling.classList.add("hidden");
-  });
-
-  //Set page's capsule to active and remove active from sibling capsules
-  const pageCapsuleToActivate = document.getElementById(`${pageIdToActivate}-capsule`);
-  pageCapsuleToActivate.classList.add("active");
-  const siblingCapsules = pageCapsuleToActivate.parentElement.children;
-  for (const siblingCapsule of siblingCapsules) {
-    if (siblingCapsule.id !== `${pageIdToActivate}-capsule`) {
-      siblingCapsule.classList.remove("active");
-    }
-  }
-  // renderSideBar(window.CURRENT_PAGE.id);
 };
 
 function setGuidedProgressBarValue(destination, value) {
@@ -8037,11 +7480,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
 
     // Skip this page incase it was not skipped in a previous session
     guidedSkipPage("guided-select-starting-point-tab");
-
-    //Hide the sub-page navigation and show the main page navigation footer
-    //If the user traverses to a page that requires the sub-page navigation,
-    //the sub-page will be shown during window.openPage() function
-    hideSubNavAndShowMainNav(false);
 
     // pageToReturnTo will be set to the page the user will return to
     const pageToReturnTo = await guidedGetPageToReturnTo(window.sodaJSONObj);
@@ -16725,11 +16163,6 @@ $("#guided-next-button").on("click", async function () {
 document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
   await guidedSaveAndExit();
 });
-document
-  .getElementById("guided-button-sub-page-save-and-exit")
-  .addEventListener("click", async () => {
-    await guidedSaveAndExit();
-  });
 
 const getPrevPageNotSkipped = (currentPageID) => {
   const parentContainer = document.getElementById(currentPageID).closest(".guided--parent-tab");
@@ -16761,588 +16194,6 @@ $("#guided-back-button").on("click", async () => {
 
   // open the target page
   await window.openPage(targetPageID);
-});
-
-const saveSubPageChanges = async (openSubPageID) => {
-  guidedSetNavLoadingState(true);
-  const errorArray = [];
-  try {
-    // temp logic that clicks the next button if the user is on the submission metadata page:
-
-    if (openSubPageID === "guided-specify-subjects-page") {
-      //Get the count of all subjects in and outside of pools
-      const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
-      const subjectsCount = [...subjectsInPools, ...subjectsOutsidePools].length;
-
-      //Check to see if any subjects were added, and if not, disallow the user
-      //from progressing until they add at least one subject or select that they do not
-      if (subjectsCount === 0) {
-        errorArray.push({
-          type: "error",
-          message: "Please add at least one subject to your dataset.",
-        });
-        throw errorArray;
-      }
-    }
-
-    if (openSubPageID === "guided-organize-subjects-into-pools-page") {
-      const buttonYesPools = document.getElementById("guided-button-organize-subjects-into-pools");
-      const buttonNoPools = document.getElementById("guided-button-no-pools");
-      if (
-        !buttonYesPools.classList.contains("selected") &&
-        !buttonNoPools.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "error",
-          message: "Please indicate if you would like to organize your subjects into pools.",
-        });
-        throw errorArray;
-      }
-
-      if (buttonYesPools.classList.contains("selected")) {
-        const pools =
-          window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
-
-        //Check to see if any pools were added, and if not, disallow the user
-        //from progressing until they add at least one pool or select that they do not
-        //have any pools
-        if (Object.keys(pools).length === 0) {
-          errorArray.push({
-            type: "error",
-            message:
-              "Please add at least one pool or go back and indicate that your dataset does not contain pools.",
-          });
-          throw errorArray;
-        }
-        //delete empty pools
-        for (const pool of Object.keys(pools)) {
-          if (
-            Object.keys(
-              window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][pool]
-            ).length === 0
-          ) {
-            errorArray.push({
-              type: "error",
-              message:
-                "Empty data pools are not allowed. Please add at least one subject to each pool or delete the empty pool.",
-            });
-            throw errorArray;
-          }
-        }
-
-        //Unkip the pool data organization pages
-        guidedUnSkipPage(`guided-primary-pools-organization-page`);
-        guidedUnSkipPage(`guided-source-pools-organization-page`);
-        guidedUnSkipPage(`guided-derivative-pools-organization-page`);
-      }
-
-      if (buttonNoPools.classList.contains("selected")) {
-        //If any pools exist, delete them
-        const pools =
-          window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
-        for (const pool of Object.keys(pools)) {
-          window.sodaJSONObj.deletePool(pool);
-        }
-
-        //Skip the pool data organization pages
-        guidedSkipPage(`guided-primary-pools-organization-page`);
-        guidedSkipPage(`guided-source-pools-organization-page`);
-        guidedSkipPage(`guided-derivative-pools-organization-page`);
-      }
-    }
-
-    if (openSubPageID === "guided-specify-samples-page") {
-      const buttonYesSamples = document.getElementById("guided-button-add-samples-tables");
-      const buttonNoSamples = document.getElementById("guided-button-no-samples");
-      if (
-        !buttonYesSamples.classList.contains("selected") &&
-        !buttonNoSamples.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "error",
-          message: "Please indicate if your dataset's subjects have samples.",
-        });
-        throw errorArray;
-      }
-      if (buttonYesSamples.classList.contains("selected")) {
-        const [samplesInPools, samplesOutsidePools] =
-          window.sodaJSONObj.getAllSamplesFromSubjects();
-        //Combine sample data from samples in and out of pools
-        const samplesCount = [...samplesInPools, ...samplesOutsidePools].length;
-        //Check to see if any samples were added, and if not, disallow the user
-        //from progressing until they add at least one sample or select that they do not
-        //have any samples
-        if (samplesCount === 0) {
-          errorArray.push({
-            type: "error",
-            message:
-              "Please add at least one sample or indicate that your dataset does not contain samples.",
-          });
-          throw errorArray;
-        }
-
-        //Unskip the sample data organization pages
-        guidedUnSkipPage(`guided-primary-samples-organization-page`);
-        guidedUnSkipPage(`guided-source-samples-organization-page`);
-        guidedUnSkipPage(`guided-derivative-samples-organization-page`);
-
-        //Unskip the samples metadata page
-        guidedUnSkipPage(`guided-create-samples-metadata-tab`);
-      }
-      if (buttonNoSamples.classList.contains("selected")) {
-        //Skip the sample data organization pages
-        guidedSkipPage(`guided-primary-samples-organization-page`);
-        guidedSkipPage(`guided-source-samples-organization-page`);
-        guidedSkipPage(`guided-derivative-samples-organization-page`);
-
-        //Skip the samples metadata page
-        guidedSkipPage(`guided-create-samples-metadata-tab`);
-      }
-    }
-
-    if (openSubPageID === "guided-primary-samples-organization-page") {
-      const buttonYesPrimarySampleData = document.getElementById(
-        "guided-button-add-sample-primary-data"
-      );
-      const buttonNoPrimarySampleData = document.getElementById(
-        "guided-button-no-sample-primary-data"
-      );
-      if (
-        !buttonYesPrimarySampleData.classList.contains("selected") &&
-        !buttonNoPrimarySampleData.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "error",
-          message: "Please indicate if you have primary data to add to your samples.",
-        });
-        throw errorArray;
-      }
-
-      if (buttonYesPrimarySampleData.classList.contains("selected")) {
-        const continueWithoutAddingPrimaryDataToAllSamples =
-          await cleanUpEmptyGuidedStructureFolders("primary", "samples", false);
-        if (!continueWithoutAddingPrimaryDataToAllSamples) {
-          errorArray.push({
-            type: "info",
-            message: "Please add primary data to all samples before continuing.",
-          });
-          throw errorArray;
-        }
-      }
-      if (buttonNoPrimarySampleData.classList.contains("selected")) {
-        await cleanUpEmptyGuidedStructureFolders("primary", "samples", true);
-      }
-    }
-
-    if (openSubPageID === "guided-primary-subjects-organization-page") {
-      const buttonYesPrimarySubjectData = document.getElementById(
-        "guided-button-add-subject-primary-data"
-      );
-      const buttonNoPrimarySubjectData = document.getElementById(
-        "guided-button-no-subject-primary-data"
-      );
-      if (
-        !buttonYesPrimarySubjectData.classList.contains("selected") &&
-        !buttonNoPrimarySubjectData.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "error",
-          message: "Please indicate if you have primary data to add to your subjects.",
-        });
-        throw errorArray;
-      }
-      if (buttonYesPrimarySubjectData.classList.contains("selected")) {
-        const continueWithoutAddingPrimaryDataToAllSubjects =
-          await cleanUpEmptyGuidedStructureFolders("primary", "subjects", false);
-        if (!continueWithoutAddingPrimaryDataToAllSubjects) {
-          errorArray.push({
-            type: "info",
-            message: "Please add primary data to all subjects before continuing.",
-          });
-          throw errorArray;
-        }
-      }
-      if (buttonNoPrimarySubjectData.classList.contains("selected")) {
-        await cleanUpEmptyGuidedStructureFolders("primary", "subjects", true);
-      }
-    }
-
-    if (openSubPageID === "guided-primary-pools-organization-page") {
-      const buttonYesPrimaryPoolData = document.getElementById(
-        "guided-button-add-pool-primary-data"
-      );
-      const buttonNoPrimaryPoolData = document.getElementById("guided-button-no-pool-primary-data");
-      if (
-        !buttonYesPrimaryPoolData.classList.contains("selected") &&
-        !buttonNoPrimaryPoolData.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "error",
-          message: "Please indicate if you have primary data to add to your pools.",
-        });
-        throw errorArray;
-      }
-      if (buttonYesPrimaryPoolData.classList.contains("selected")) {
-        const continueWithoutAddingPrimaryDataToAllPools = await cleanUpEmptyGuidedStructureFolders(
-          "primary",
-          "pools",
-          false
-        );
-        if (!continueWithoutAddingPrimaryDataToAllPools) {
-          errorArray.push({
-            type: "info",
-            message: "Please add primary data to all pools before continuing.",
-          });
-          throw errorArray;
-        }
-      }
-      if (buttonNoPrimaryPoolData.classList.contains("selected")) {
-        await cleanUpEmptyGuidedStructureFolders("primary", "pools", true);
-      }
-    }
-
-    if (openSubPageID === "guided-source-samples-organization-page") {
-      const buttonYesSourceSampleData = document.getElementById(
-        "guided-button-add-sample-source-data"
-      );
-      const buttonNoSourceSampleData = document.getElementById(
-        "guided-button-no-sample-source-data"
-      );
-      if (
-        !buttonYesSourceSampleData.classList.contains("selected") &&
-        !buttonNoSourceSampleData.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "error",
-          message: "Please indicate if you have source data to add to your samples.",
-        });
-        throw errorArray;
-      }
-
-      if (buttonYesSourceSampleData.classList.contains("selected")) {
-        const continueWithoutAddingSourceDataToAllSamples =
-          await cleanUpEmptyGuidedStructureFolders("source", "samples", false);
-        if (!continueWithoutAddingSourceDataToAllSamples) {
-          errorArray.push({
-            type: "info",
-            message: "Please add source data to all samples before continuing.",
-          });
-          throw errorArray;
-        }
-      }
-      if (buttonNoSourceSampleData.classList.contains("selected")) {
-        await cleanUpEmptyGuidedStructureFolders("source", "samples", true);
-      }
-    }
-
-    if (openSubPageID === "guided-source-subjects-organization-page") {
-      const buttonYesSourceSubjectData = document.getElementById(
-        "guided-button-add-subject-source-data"
-      );
-      const buttonNoSourceSubjectData = document.getElementById(
-        "guided-button-no-subject-source-data"
-      );
-      if (
-        !buttonYesSourceSubjectData.classList.contains("selected") &&
-        !buttonNoSourceSubjectData.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "error",
-          message: "Please indicate if you have source data to add to your subjects.",
-        });
-        throw errorArray;
-      }
-
-      if (buttonYesSourceSubjectData.classList.contains("selected")) {
-        const continueWithoutAddingSourceDataToAllSubjects =
-          await cleanUpEmptyGuidedStructureFolders("source", "subjects", false);
-        if (!continueWithoutAddingSourceDataToAllSubjects) {
-          errorArray.push({
-            type: "info",
-            message: "Please add source data to all subjects before continuing.",
-          });
-          throw errorArray;
-        }
-      }
-      if (buttonNoSourceSubjectData.classList.contains("selected")) {
-        await cleanUpEmptyGuidedStructureFolders("source", "subjects", true);
-      }
-    }
-
-    if (openSubPageID === "guided-source-pools-organization-page") {
-      const buttonYesSourcePoolData = document.getElementById("guided-button-add-pool-source-data");
-      const buttonNoSourcePoolData = document.getElementById("guided-button-no-pool-source-data");
-      if (
-        !buttonYesSourcePoolData.classList.contains("selected") &&
-        !buttonNoSourcePoolData.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "error",
-          message: "Please indicate if you have source data to add to your pools.",
-        });
-        throw errorArray;
-      }
-      if (buttonYesSourcePoolData.classList.contains("selected")) {
-        const continueWithoutAddingSourceDataToAllPools = await cleanUpEmptyGuidedStructureFolders(
-          "source",
-          "pools",
-          false
-        );
-        if (!continueWithoutAddingSourceDataToAllPools) {
-          errorArray.push({
-            type: "info",
-            message: "Please add source data to all pools before continuing.",
-          });
-          throw errorArray;
-        }
-      }
-      if (buttonNoSourcePoolData.classList.contains("selected")) {
-        await cleanUpEmptyGuidedStructureFolders("source", "pools", true);
-      }
-    }
-
-    if (openSubPageID === "guided-derivative-samples-organization-page") {
-      const buttonYesDerivativeSampleData = document.getElementById(
-        "guided-button-add-sample-derivative-data"
-      );
-      const buttonNoDerivativeSampleData = document.getElementById(
-        "guided-button-no-sample-derivative-data"
-      );
-      if (
-        !buttonYesDerivativeSampleData.classList.contains("selected") &&
-        !buttonNoDerivativeSampleData.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "error",
-          message: "Please indicate if you have derivative data to add to your samples.",
-        });
-        throw errorArray;
-      }
-      if (buttonYesDerivativeSampleData.classList.contains("selected")) {
-        const continueWithoutAddingDerivativeDataToAllSamples =
-          await cleanUpEmptyGuidedStructureFolders("derivative", "samples", false);
-        if (!continueWithoutAddingDerivativeDataToAllSamples) {
-          errorArray.push({
-            type: "info",
-            message: "Please add derivative data to all samples before continuing.",
-          });
-          throw errorArray;
-        }
-      }
-      if (buttonNoDerivativeSampleData.classList.contains("selected")) {
-        await cleanUpEmptyGuidedStructureFolders("derivative", "samples", true);
-      }
-    }
-
-    if (openSubPageID === "guided-derivative-subjects-organization-page") {
-      const buttonYesDerivativeSubjectData = document.getElementById(
-        "guided-button-add-subject-derivative-data"
-      );
-      const buttonNoDerivativeSubjectData = document.getElementById(
-        "guided-button-no-subject-derivative-data"
-      );
-      if (
-        !buttonYesDerivativeSubjectData.classList.contains("selected") &&
-        !buttonNoDerivativeSubjectData.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "error",
-          message: "Please indicate if you have derivative data to add to your subjects.",
-        });
-        throw errorArray;
-      }
-      if (buttonYesDerivativeSubjectData.classList.contains("selected")) {
-        const continueWithoutAddingDerivativeDataToAllSubjects =
-          await cleanUpEmptyGuidedStructureFolders("derivative", "subjects", false);
-        if (!continueWithoutAddingDerivativeDataToAllSubjects) {
-          errorArray.push({
-            type: "info",
-            message: "Please add derivative data to all subjects before continuing.",
-          });
-          throw errorArray;
-        }
-      }
-      if (buttonNoDerivativeSubjectData.classList.contains("selected")) {
-        await cleanUpEmptyGuidedStructureFolders("derivative", "subjects", true);
-      }
-    }
-
-    if (openSubPageID === "guided-derivative-pools-organization-page") {
-      const buttonYesDerivativePoolData = document.getElementById(
-        "guided-button-add-pool-derivative-data"
-      );
-      const buttonNoDerivativePoolData = document.getElementById(
-        "guided-button-no-pool-derivative-data"
-      );
-      if (
-        !buttonYesDerivativePoolData.classList.contains("selected") &&
-        !buttonNoDerivativePoolData.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "error",
-          message: "Please indicate if you have derivative data to add to your pools.",
-        });
-        throw errorArray;
-      }
-      if (buttonYesDerivativePoolData.classList.contains("selected")) {
-        const continueWithoutAddingPrimaryDataToAllPools = await cleanUpEmptyGuidedStructureFolders(
-          "derivative",
-          "pools",
-          false
-        );
-        if (!continueWithoutAddingPrimaryDataToAllPools) {
-          errorArray.push({
-            type: "info",
-            message: "Please add derivative data to all pools before continuing.",
-          });
-          throw errorArray;
-        }
-      }
-      if (buttonNoDerivativePoolData.classList.contains("selected")) {
-        await cleanUpEmptyGuidedStructureFolders("derivative", "pools", true);
-      }
-    }
-
-    if (openSubPageID === "guided-data-derivative-import-page") {
-      const checkedMilestoneData = getCheckedMilestones();
-      if (checkedMilestoneData.length === 0) {
-        errorArray.push({
-          type: "error",
-          message: "Please select at least one milestone",
-        });
-        throw errorArray;
-      }
-
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"] =
-        checkedMilestoneData;
-    }
-
-    if (openSubPageID === "guided-completion-date-selection-page") {
-      const selectedCompletionDate = document.querySelector(
-        "input[name='completion-date']:checked"
-      );
-      if (!selectedCompletionDate) {
-        errorArray.push({
-          type: "error",
-          message: "Please select a completion date",
-        });
-        throw errorArray;
-      }
-
-      const completionDate = selectedCompletionDate.value;
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
-        completionDate;
-    }
-
-    if (openSubPageID === "guided-submission-metadata-page") {
-      const award = $("#guided-submission-sparc-award").val();
-      const date = $("#guided-submission-completion-date").val();
-      const milestones = window.getTagsFromTagifyElement(guidedSubmissionTagsTagify);
-
-      if (award === "") {
-        errorArray.push({
-          type: "error",
-          message: "Please add a SPARC award number to your submission metadata",
-        });
-      }
-      if (date === "Enter my own date") {
-        errorArray.push({
-          type: "error",
-          message: "Please add a completion date to your submission metadata",
-        });
-      }
-      if (milestones.length === 0) {
-        errorArray.push({
-          type: "error",
-          message: "Please add at least one milestone to your submission metadata",
-        });
-      }
-      if (errorArray.length > 0) {
-        throw errorArray;
-      }
-      // save the award string to JSONObj to be shared with other award inputs
-      window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = award;
-      //Save the data and milestones to the window.sodaJSONObj
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = milestones;
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = date;
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["submission-data-entry"] =
-        "import";
-    }
-
-    await guidedSaveProgress();
-  } catch (error) {
-    guidedSetNavLoadingState(false);
-    throw error;
-  }
-  guidedSetNavLoadingState(false);
-};
-
-//sub page next button click handler
-$("#guided-button-sub-page-continue").on("click", async () => {
-  //Get the id of the parent page that's currently open
-  const currentParentPageID = window.CURRENT_PAGE.id;
-
-  //Get the id of the sub-page that's currently open
-  const openSubPageID = getOpenSubPageInPage(currentParentPageID);
-  try {
-    await saveSubPageChanges(openSubPageID);
-
-    if (!window.sodaJSONObj["completed-tabs"].includes(openSubPageID)) {
-      window.sodaJSONObj["completed-tabs"].push(openSubPageID);
-    }
-    //Get an array of all the sub pages that are children of the parent page
-    const nonSkippedSiblingPages = getNonSkippedSubPages(currentParentPageID);
-
-    // Get the index of the sub-page that's currently open
-    const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);
-    if (openSubPageIndex < nonSkippedSiblingPages.length - 1) {
-      //If the sub-page that's currently open is not the last sub-page in the parent page
-      //Get the id of the next sub-page and open it
-      const nextSubPageID = nonSkippedSiblingPages[openSubPageIndex + 1];
-      setActiveSubPage(nextSubPageID);
-    } else {
-      hideSubNavAndShowMainNav("next");
-    }
-  } catch (error) {
-    console.log(error);
-    log.error(error);
-    error.map((error) => {
-      window.notyf.open({
-        duration: "5500",
-        type: error.type,
-        message: error.message,
-      });
-    });
-  }
-});
-
-const getNonSkippedSubPages = (parentPageID) => {
-  return Array.from(document.getElementById(parentPageID).querySelectorAll(".sub-page"))
-    .filter((subPage) => subPage.dataset.skipPage !== "true")
-    .map((subPage) => subPage.id);
-};
-
-//sub page back button click handler
-$("#guided-button-sub-page-back").on("click", () => {
-  //Get the id of the parent page that's currently open
-  const currentParentPageID = window.CURRENT_PAGE.id;
-
-  //Get the id of the sub-page that's currently open
-  const openSubPageID = getOpenSubPageInPage(currentParentPageID);
-
-  const nonSkippedSiblingPages = getNonSkippedSubPages(currentParentPageID);
-
-  // Get the index of the sub-page that's currently open
-  const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);
-
-  if (openSubPageIndex > 0) {
-    //If the sub-page that's currently open is not the first sub-page in the parent page
-    //Get the id of the previous sub-page and open it
-    const previousSubPageID = nonSkippedSiblingPages[openSubPageIndex - 1];
-    setActiveSubPage(previousSubPageID);
-  } else {
-    hideSubNavAndShowMainNav("back");
-  }
 });
 
 //tagify initializations

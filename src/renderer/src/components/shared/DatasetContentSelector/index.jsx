@@ -104,7 +104,7 @@ const DatasetContentSelector = () => {
                     }}
                     onClick={(event) => event.stopPropagation()}
                   />
-                  <Text fw={700} size="lg">
+                  <Text fw={600} size="lg">
                     {option.label}
                   </Text>
                 </Group>
