@@ -2881,14 +2881,14 @@ const readFileAsync = async (path) => {
 const getAllProgressFileData = async (progressFiles) => {
   return Promise.all(
     progressFiles.map((progressFile) => {
-      let progressFilePath = path.join(guidedProgressFilePath, progressFile);
+      let progressFilePath = window.path.join(guidedProgressFilePath, progressFile);
       return readFileAsync(progressFilePath);
     })
   );
 };
 
 const getProgressFileData = async (progressFile) => {
-  let progressFilePath = path.join(guidedProgressFilePath, progressFile + ".json");
+  let progressFilePath = window.path.join(guidedProgressFilePath, progressFile + ".json");
   return readFileAsync(progressFilePath);
 };
 
@@ -11757,12 +11757,12 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
 };
 
 window.electron.ipcRenderer.on("selected-subject-names-from-dialog", async (event, folders) => {
-  const subjectNames = folders.map((folder) => path.basename(folder));
+  const subjectNames = folders.map((folder) => window.path.basename(folder));
   guidedAddListOfSubjects(subjectNames, true);
 });
 
 window.electron.ipcRenderer.on("selected-sample-names-from-dialog", async (event, folders) => {
-  const sampleNames = folders.map((folder) => path.basename(folder));
+  const sampleNames = folders.map((folder) => window.path.basename(folder));
 });
 
 const convertArrayToCommaSeparatedString = (array) => {
@@ -16313,9 +16313,9 @@ const guidedSaveRCFile = async (type) => {
   let data = $(`#guided-textarea-create-${type}`).val().trim();
   let destinationPath;
   if (type === "changes") {
-    destinationPath = path.join($("#guided-dataset-path").text().trim(), "CHANGES.xlsx");
+    destinationPath = window.path.join($("#guided-dataset-path").text().trim(), "CHANGES.xlsx");
   } else {
-    destinationPath = path.join($("#guided-dataset-path").text().trim(), "README.xlsx");
+    destinationPath = window.path.join($("#guided-dataset-path").text().trim(), "README.xlsx");
   }
   window.fs.writeFile(destinationPath, data, (err) => {
     if (err) {
@@ -16335,8 +16335,8 @@ const guidedSaveRCFile = async (type) => {
     } else {
       var newName =
         type === "changes"
-          ? path.join(path.dirname(destinationPath), "CHANGES.txt")
-          : path.join(path.dirname(destinationPath), "README.txt");
+          ? window.path.join(window.path.dirname(destinationPath), "CHANGES.txt")
+          : window.path.join(window.path.dirname(destinationPath), "README.txt");
       window.fs.rename(destinationPath, newName, async (err) => {
         if (err) {
           console.log(err);
@@ -16479,7 +16479,7 @@ document.getElementById("guided-generate-dataset-button").addEventListener("clic
 const guidedSaveBannerImage = async () => {
   $("#guided-para-dataset-banner-image-status").html("Please wait...");
   //Save cropped image locally and check size
-  let imageFolder = path.join(homeDirectory, "SODA", "guided-banner-images");
+  let imageFolder = window.path.join(homeDirectory, "SODA", "guided-banner-images");
   let imageType = "";
 
   if (!window.fs.existsSync(imageFolder)) {
@@ -16492,7 +16492,7 @@ const guidedSaveBannerImage = async () => {
     imageType = "image/jpeg";
   }
   let datasetName = window.sodaJSONObj["digital-metadata"]["name"];
-  let imagePath = path.join(imageFolder, `${datasetName}.` + window.imageExtension);
+  let imagePath = window.path.join(imageFolder, `${datasetName}.` + window.imageExtension);
   let croppedImageDataURI = window.myCropper.getCroppedCanvas().toDataURL(imageType);
 
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
@@ -17716,7 +17716,7 @@ const createRandomFiles = (
 ) => {
   for (let i = 0; i < numberOfFilesInEachFolder; i++) {
     const fileFormat = "txt"; // Always create a text file
-    const filePath = path.join(
+    const filePath = window.path.join(
       folderPath,
       `${generateRandomFolderOrFileName(boolIncludeProblematicFileNames)}.${fileFormat}`
     );
@@ -17737,7 +17737,7 @@ const createNestedFolders = (
     return;
   }
   for (let i = 0; i < numberOfFolders; i++) {
-    const folderPath = path.join(
+    const folderPath = window.path.join(
       baseDirectory,
       generateRandomFolderOrFileName(boolIncludeProblematicFileNames)
     );
@@ -17799,13 +17799,13 @@ const createTestDataset = (
     return;
   }
 
-  const testDatasetsPath = path.join(homeDirectory, "SODA", "test-datasets");
+  const testDatasetsPath = window.path.join(homeDirectory, "SODA", "test-datasets");
 
   // return if the root directory does not exist
   if (!window.fs.existsSync(testDatasetsPath)) {
     window.fs.mkdirSync(testDatasetsPath);
   }
-  const newTestDatasetPath = path.join(testDatasetsPath, datasetName);
+  const newTestDatasetPath = window.path.join(testDatasetsPath, datasetName);
   if (window.fs.existsSync(newTestDatasetPath)) {
     console.error("A test dataset with this name already exists please choose a different name");
     return;
@@ -17816,7 +17816,7 @@ const createTestDataset = (
   const rootFolders = ["primary", "source", "derivative", "docs", "code", "protocol"];
   // Add folders to each of the high level folders
   for (const folder of rootFolders) {
-    const folderPath = path.join(newTestDatasetPath, folder);
+    const folderPath = window.path.join(newTestDatasetPath, folder);
     window.fs.mkdirSync(folderPath);
     createNestedFolders(
       folderPath,
