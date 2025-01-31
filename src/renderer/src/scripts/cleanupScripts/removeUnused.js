@@ -36,19 +36,53 @@ module.exports = function (fileInfo, api) {
     //   .remove();
 
     // remove unused function expressions of type const name = () => {}
-    root
-      .find(j.VariableDeclaration)
-      .filter((varPath) => {
-        const varStart = varPath?.node?.loc.start.line;
-        // get column
-        // const varColumn = varPath?.node?.loc.start.column;
-        if (varStart && varStart === line && varPath.node.kind === "const" && column === 7) {
-          return true;
-        } else {
+    // root
+    //   .find(j.VariableDeclaration)
+    //   .filter((varPath) => {
+    //     const varStart = varPath?.node?.loc.start.line;
+    //     // get column
+    //     // const varColumn = varPath?.node?.loc.start.column;
+    //     if (varStart && varStart === line && varPath.node.kind === "const" && column === 7) {
+    //       return true;
+    //     } else {
+    //       return false;
+    //     }
+    //   })
+    //   .remove();
+
+
+    // remove all unused vars (should be identifiers)
+    let hitAtLine = {}
+    root.find(j.Identifier)
+      .filter((path) => {
+        if (!path || !path.node) {
           return false;
         }
+
+        if(hits > 18) { 
+          console.log("Failed hit at line ", line)
+          return false
+        }
+        const start = path.node.loc?.start;
+        if (start && start.line === line && start.column === column - 1 && !hitAtLine[start.line]) {
+          console.log(`Found 'event' at line ${start.line}, column ${start.column}`);
+          hitAtLine[line] = true;
+          hits = hits + 1;
+          return true
+        }
+        return false
       })
-      .remove();
+      .remove()
+
+    // Remove empty block statements
+    // root.find(j.BlockStatement)
+    //   .filter( path => {
+    //     const start = path.node.loc.start;
+    //     if (start.line === line) {
+    //       hits = hits + 1;
+    //       return path;
+    //     }
+    //   }).remove()
 
     // Debugging: Log the file path, line, and column being checked
     // console.log(`Checking: ${filePath} at line ${line}, column ${column}`);
@@ -73,37 +107,8 @@ module.exports = function (fileInfo, api) {
     //     }
     //   }
     // });
-    // Remove empty block statements
-    // root.find(j.BlockStatement)
-    //   .filter( path => {
-    //     const start = path.node.loc.start;
-    //     if (start.line === line) {
-    //       hits = hits + 1;
-    //       return path;
-    //     }
-    //   }).remove()
-    // remove all unused vars (should be identifiers)
-    // let rs = root.find(j.Identifier);
-    // for (const r of rs) {
-    //   console.log(r);
-    // }
-    // .filter((path) => {
-    //   if (!path || !path.node) {
-    //     return false;
-    //   }
-    //   const start = path.node.loc?.start;
-    //   if (start) {
-    //     return linesToRemove.some(
-    //       (loc) => start.line === loc.line && start.column === loc.column - 1
-    //     );
-    //   } else {
-    //     return false;
-    //   }
-    // })
-    // .forEach((path) => {
-    //   hits = hits + 1;
-    //   j(path).remove();
-    // });
+
+
     // root.find(j.Identifier).forEach((path) => {
     //   const start = path?.node?.loc?.start;
     //   if (start && start.line === 17747) {
