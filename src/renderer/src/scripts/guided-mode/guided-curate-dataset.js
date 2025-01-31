@@ -9135,7 +9135,7 @@ window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       document.getElementById("guided-contributor-orcid").value = contributorORCID;
     },
 
-    preConfirm: async (inputValue) => {
+    preConfirm: async () => {
       const contributorFirstName = document.getElementById("guided-contributor-first-name").value;
       const contributorLastName = document.getElementById("guided-contributor-last-name").value;
       const contributorOrcid = document.getElementById("guided-contributor-orcid").value;
@@ -9409,7 +9409,7 @@ window.openGuidedAddContributorSwal = async () => {
         style: "SODA-select-picker",
       });
       $("#guided-stored-contributors-select").selectpicker("refresh");
-      $("#guided-stored-contributors-select").on("change", function (e) {
+      $("#guided-stored-contributors-select").on("change", function() {
         const selectedFirstName = $("#guided-stored-contributors-select option:selected").data(
           "first-name"
         );
@@ -9752,7 +9752,7 @@ window.openProtocolSwal = async (protocolElement) => {
     protocolURL = protocolElement.dataset.protocolUrl;
     protocolDescription = protocolElement.dataset.protocolDescription;
   }
-  const { value: values } = await Swal.fire({
+  await Swal.fire({
     title: "Add a protocol",
     html:
       `<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL" value="${protocolURL}">` +
@@ -10784,7 +10784,7 @@ const keydownListener = (event) => {
   }
 };
 
-const onBlurEvent = (element) => {
+const onBlurEvent = () => {
   if (event.path[0].value.length > 0) {
     if (enterKey === false) {
       window.confirmEnter(event.path[1].children[2]);
@@ -10834,7 +10834,7 @@ window.getExistingSubjectNames = () => {
 };
 
 const getSubjectsPool = (subjectName) => {
-  const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
+  const [subjectsInPools, _] = window.sodaJSONObj.getAllSubjects();
   for (const subject of subjectsInPools) {
     if (subject["subjectName"] === subjectName) {
       return subject["poolName"];
@@ -11023,9 +11023,7 @@ window.electron.ipcRenderer.on("selected-subject-names-from-dialog", async (even
   guidedAddListOfSubjects(subjectNames, true);
 });
 
-window.electron.ipcRenderer.on("selected-sample-names-from-dialog", async (event, folders) => {
-  const sampleNames = folders.map((folder) => window.path.basename(folder));
-});
+
 
 const convertArrayToCommaSeparatedString = (array) => {
   // Convert the array to a comma separated string with an "and" before the last element if there are more than 2 elements
@@ -11325,7 +11323,6 @@ window.addPoolTableRow = () => {
   const poolsTableBody = document.getElementById("pools-specification-table-body");
   const poolSpecificationTableInput = poolsTableBody.querySelector("input[name='guided-pool-id']");
 
-  const re = new RegExp("/^(d|w)+$/g");
 
   if (poolSpecificationTableInput) {
     //focus on the input that already exists
@@ -11413,7 +11410,6 @@ window.removePennsievePermission = (clickedPermissionRemoveButton) => {
   let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
   let permissionEntityType = permissionElementToRemove.attr("data-entity-type");
   let permissionNameToRemove = permissionElementToRemove.find(".permission-name-cell").text();
-  let permissionTypeToRemove = permissionElementToRemove.find(".permission-type-cell").text();
 
   if (permissionElementToRemove.prevObject[0].classList.contains("btn-danger")) {
     permissionElementToRemove.prevObject[0].style.display = "none";
@@ -11885,7 +11881,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
     return acc;
   }, {});
   //loop through the pools and create an aside element for each sample in the pools subjects
-  for (const [poolName, subjects] of Object.entries(subjectsWithSamplesInPools)) {
+  for (const [_, subjects] of Object.entries(subjectsWithSamplesInPools)) {
     asideElementTemplateLiteral += `
     ${subjects
       .map((subject) => {
@@ -13246,7 +13242,7 @@ const guidedAddDatasetDescription = async (
   }
 
   try {
-    let res = await client.put(
+    await client.put(
       `/manage_datasets/datasets/${datasetName}/readme`,
       { updated_readme: description },
       { params: { selected_account: bfAccount } }
@@ -13604,7 +13600,7 @@ const guidedGrantUserPermission = async (
   guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "loading");
 
   try {
-    let ps_add_permission = await client.patch(
+    await client.patch(
       `/manage_datasets/bf_dataset_permissions`,
       {
         input_role: selectedRole,
@@ -13698,7 +13694,7 @@ const guidedAddUserPermissions = async (bfAccount, datasetName, userPermissionsA
       );
     }
   });
-  const result = await Promise.allSettled(promises);
+  await Promise.allSettled(promises);
 };
 
 const guidedGrantTeamPermission = async (
@@ -13750,7 +13746,7 @@ const guidedGrantTeamPermission = async (
   guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "loading");
 
   try {
-    let ps_add_permission = await client.patch(
+    await client.patch(
       `/manage_datasets/bf_dataset_permissions`,
       {
         input_role: selectedRole,
@@ -13841,7 +13837,7 @@ const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsA
       );
     }
   });
-  const result = await Promise.allSettled(promises);
+  await Promise.allSettled(promises);
 };
 
 //********************************************************************************************************
@@ -15301,8 +15297,6 @@ const guidedUploadDatasetToPennsieve = async () => {
       });
     }
 
-    // TODO: Update to new conventions
-    // logProgressToAnalytics(totalUploadedFiles, main_generated_dataset_size);
 
     //If the curate function is complete, clear the interval
     if (main_curate_status === "Done") {
@@ -15320,64 +15314,7 @@ const guidedUploadDatasetToPennsieve = async () => {
 
   let bytesOnPreviousLogPage = 0;
   let filesOnPreviousLogPage = 0;
-  const logProgressToAnalytics = (files, bytes) => {
-    // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
-    if (files >= filesOnPreviousLogPage + 500) {
-      filesOnPreviousLogPage += 500;
-      window.electron.ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.GUIDED_MODE,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.FILES,
-        kombuchaEnums.Status.SUCCCESS,
-        {
-          value: 500,
-          dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-          dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-          origin: guidedGetDatasetOrigin(window.sodaJSONObj),
-          destination: "Pennsieve",
-          upload_session: datasetUploadSession.id,
-          dataset_int_id: window.defaultBfDatasetIntId,
-        }
-      );
 
-      window.electron.ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Guided Mode - Generate - Dataset - Number of Files",
-        `${datasetUploadSession.id}`,
-        500
-      );
-
-      let differenceInBytes = bytes - bytesOnPreviousLogPage;
-      bytesOnPreviousLogPage = bytes;
-
-      window.electron.ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.GUIDED_MODE,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.SIZE,
-        kombuchaEnums.Status.SUCCCESS,
-        {
-          value: differenceInBytes,
-          dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-          dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-          origin: guidedGetDatasetOrigin(window.sodaJSONObj),
-          destination: "Pennsieve",
-          upload_session: datasetUploadSession.id,
-          dataset_int_id: window.defaultBfDatasetIntId,
-        }
-      );
-
-      window.electron.ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Guided Mode - Generate - Dataset - Size",
-        `${datasetUploadSession.id}`,
-        differenceInBytes
-      );
-    }
-  };
 };
 
 $("#guided-add-subject-button").on("click", () => {
@@ -15428,11 +15365,7 @@ $("#guided-button-save-other-link-fields").on("click", () => {
     } else {
       linkRelation.style.setProperty("border-color", "hsl(0, 0%, 88%)", "important");
     }
-    const contributorInputObj = {
-      linkUrl: linkUrl.value,
-      linkDescription: linkDescription.value,
-      linkRelation: linkRelation.value,
-    };
+
   });
   ///////////////////////////////////////////////////////////////////////////////
   if (!allInputsValid) {
@@ -15728,7 +15661,7 @@ $("#guided-save-banner-image").click(async () => {
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
-      }).then(async (result) => {
+      }).then(async () => {
         if (window.guidedFormBannerHeight.value < 1024) {
           Swal.fire({
             icon: "warning",
@@ -16561,7 +16494,6 @@ $("#guided-button-back").on("click", function () {
     $("#items").empty();
     window.already_created_elem = [];
     let items = window.loadFileFolder(myPath); //array -
-    let total_item_count = items[1].length + items[0].length;
     //we have some items to display
     window.listItems(myPath, "#items", 500, true);
     window.organizeLandingUIEffect();
@@ -16824,100 +16756,7 @@ const guidedSaveDescriptionContributorInformation = () => {
   };
 };
 
-const generateRandomFolderOrFileName = (boolIncludeProblematicFileNames) => {
-  // create a random string of 20 characters
-  let randomString =
-    Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
-  if (boolIncludeProblematicFileNames && Math.random() < 0.5) {
-    // convert the string to an array to modify it
-    const randomStringArray = randomString.split("");
 
-    // add problematic characters to random positions in the array
-    const problematicCharacters = ["&", "%"];
-    for (let i = 0; i < 5; i++) {
-      if (Math.random() > 0.5) {
-        // Choose a random problematic character
-        const problematicCharacter =
-          problematicCharacters[Math.floor(Math.random() * problematicCharacters.length)];
 
-        // Choose a random index to replace
-        const replaceIndex = Math.floor(Math.random() * randomStringArray.length);
 
-        // Replace the character at the chosen index
-        randomStringArray[replaceIndex] = problematicCharacter;
-      }
-    }
-
-    // convert the array back to a string
-    randomString = randomStringArray.join("");
-  }
-
-  return randomString;
-};
-
-const generateFileText = (fileSize) => {
-  let text = "";
-  let numberOfLines = 0;
-
-  if (fileSize == "small") {
-    numberOfLines = 100;
-  } else if (fileSize == "medium") {
-    numberOfLines = 10000;
-  } else if (fileSize == "large") {
-    numberOfLines = 100000;
-  }
-
-  for (let i = 0; i < numberOfLines; i++) {
-    text += "The quick brown fox jumped over the lazy dog\n";
-  }
-
-  return text;
-};
-
-const createRandomFiles = (
-  folderPath,
-  numberOfFilesInEachFolder,
-  fileSize,
-  boolIncludeProblematicFileNames
-) => {
-  for (let i = 0; i < numberOfFilesInEachFolder; i++) {
-    const fileFormat = "txt"; // Always create a text file
-    const filePath = window.path.join(
-      folderPath,
-      `${generateRandomFolderOrFileName(boolIncludeProblematicFileNames)}.${fileFormat}`
-    );
-    const fileText = generateFileText(fileSize);
-    window.fs.writeFileSync(filePath, fileText);
-  }
-};
-
-const continueHackGm = true;
-
-const doTheHack = async () => {
-  console.log("Doing the hack");
-  // wait for a second
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-  document.getElementById("button-homepage-guided-mode").click();
-  document.getElementById("guided-button-resume-progress-file").click();
-  // wait for 5 seconds
-  await new Promise((resolve) => setTimeout(resolve, 4000));
-
-  // Search the dom for a button with the classes "ui positive button guided--progress-button-resume-curation"
-  const resumeCurationButton = document.querySelector(
-    ".ui.positive.button.guided--progress-button-resume-curation"
-  );
-  if (resumeCurationButton) {
-    resumeCurationButton.click();
-  } else {
-    // wait for 3 more seconds then click
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    document.querySelector(".ui.positive.button.guided--progress-button-resume-curation").click();
-  }
-  // wait for 4 seconds then click the next button
-  await new Promise((resolve) => setTimeout(resolve, 4000));
-  document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
-};
-if (continueHackGm) {
-  doTheHack();
-}
