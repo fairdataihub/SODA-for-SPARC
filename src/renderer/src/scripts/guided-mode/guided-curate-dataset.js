@@ -2809,18 +2809,6 @@ const guidedTransitionToHome = () => {
   $("#guided-sub-page-navigation-footer-div").addClass("hidden");
 };
 
-const guidedTransitionFromDatasetNameSubtitlePage = () => {
-  //Hide dataset name and subtitle parent tab
-  document.getElementById("curation-preparation-parent-tab").classList.add("hidden");
-  //hide the intro footer
-  document.getElementById("guided-footer-intro").classList.add("hidden");
-
-  //Show the dataset structure page
-  $("#prepare-dataset-parent-tab").css("display", "flex");
-  $("#guided-header-div").css("display", "flex");
-  $("#guided-footer-div").css("display", "flex");
-};
-
 const guidedSaveProgress = async () => {
   const guidedProgressFileName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
   //return if guidedProgressFileName is not a strnig greater than 0
@@ -3220,32 +3208,6 @@ const renderManifestCards = () => {
   manifestFilesCardsContainer.innerHTML = manifestCard;
 
   window.smoothScrollToElement(manifestFilesCardsContainer);
-};
-
-const generateManifestEditCard = (highLevelFolderName) => {
-  return `
-    <div class="dataset-card">        
-      <div class="dataset-card-body shrink">
-        <div class="dataset-card-row">
-          <h1 class="dataset-card-title-text">
-            <span class="manifest-folder-name">${highLevelFolderName}</span>
-          </h1>
-        </div>
-      </div>
-      <div class="dataset-card-button-container">
-        <button
-          class="ui primary button dataset-card-button-confirm"
-          style="
-            width: 302px !important;
-            height: 40px;
-          "
-          onClick="window.guidedOpenManifestEditSwal('${highLevelFolderName}')"
-        >
-          Preview/Edit ${highLevelFolderName} manifest file
-        </button>
-      </div>
-    </div>
-  `;
 };
 
 const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
@@ -4210,10 +4172,6 @@ const folderIsEmpty = (folder) => {
   return Object.keys(folder.folders).length === 0 && Object.keys(folder.files).length === 0;
 };
 
-const folderHasNoFiles = (folder) => {
-  return Object.keys(folder.files).length === 0;
-};
-
 const cleanUpEmptyGuidedStructureFolders = async (
   highLevelFolder,
   subjectsOrSamples,
@@ -4713,18 +4671,6 @@ const copyLink = (link) => {
     type: "success",
     message: "Link copied!",
   });
-};
-
-const validatePageArray = async (arrayOfPagesToCheck) => {
-  const nonSkippedPages = getNonSkippedGuidedModePages(document);
-  for (const page of nonSkippedPages) {
-    try {
-      await checkIfPageIsValid(page.id);
-    } catch (error) {
-      await window.openPage(page.id);
-      break;
-    }
-  }
 };
 
 const checkIfPageIsValid = async (pageID) => {
@@ -8893,94 +8839,6 @@ const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
   `;
 };
 
-const generateContributorField = (
-  contributorLastName,
-  contributorFirstName,
-  contributorORCID,
-  contributorAffiliations,
-  contributorRoles
-) => {
-  const initialContributorAffiliationString = contributorAffiliations
-    ? contributorAffiliations.join(",")
-    : "";
-  const initialContributorRoleString = contributorRoles ? contributorRoles.join(",") : "";
-
-  return `
-      <div
-        class="guided--section mt-lg neumorphic guided-contributor-field-container"
-        style="width: 100%; position: relative;"
-        data-contributor-first-name="${contributorFirstName ? contributorFirstName : ""}"
-        data-contributor-last-name="${contributorLastName ? contributorLastName : ""}"
-      >
-        <i 
-          class="fas fa-times fa-2x"
-          style="
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            color: black;
-            cursor: pointer;
-          "
-          onclick="window.removeContributorField(this)"
-        >
-        </i>
-        <h2 class="text-sub-step-title">
-          Enter 
-          <span class="contributor-first-name">${
-            contributorFirstName ? contributorFirstName : "contributor's"
-          }</span>'s
-          contributor details
-        </h2>
-        <div class="space-between w-100">
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required">Last name: </label>
-            <input
-              class="
-                guided--input
-                guided-last-name-input
-              "
-              type="text"
-              placeholder="Enter last name here"
-              value="${contributorLastName ? contributorLastName : ""}"
-            />
-          </div>
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required">First name: </label>
-            <input
-              class="
-                guided--input
-                guided-first-name-input
-              "
-              type="text"
-              placeholder="Enter first name here"
-              value="${contributorFirstName ? contributorFirstName : ""}"
-            />
-          </div>
-        </div>
-        <label class="guided--form-label mt-md required">ORCID: </label>
-        <input
-          class="
-            guided--input
-            guided-orcid-input
-          "
-          type="text"
-          placeholder="Enter ORCID here"
-          value="${contributorORCID ? contributorORCID : ""}"
-        />
-        <label class="guided--form-label mt-md required">Affiliation(s): </label>
-        <input class="guided-contributor-affiliation-input"
-          contenteditable="true"
-          data-initial-contributor-affiliation="${initialContributorAffiliationString}"
-        />
-        <label class="guided--form-label mt-md required">Role(s): </label>
-        <input class="guided-contributor-role-input"
-          contenteditable="true"
-          data-initial-contributor-roles="${initialContributorRoleString}"
-        />
-      </div>
-    `;
-};
-
 window.removeContributorField = (contributorDeleteButton) => {
   const contributorField = contributorDeleteButton.parentElement;
   const { contributorFirstName, contributorLastName } = contributorField.dataset;
@@ -9127,18 +8985,6 @@ const getContributorByOrcid = (orcid) => {
     return contributor.conID == orcid;
   });
   return contributor;
-};
-
-const verifyOrcidID = (event) => {
-  let userInput = event.value;
-  //17 chars
-  if (userInput.length > 17) {
-    if (userInput.substr(0, 18) === "https://orcid.org/") {
-      //verify every four characters forward if they are a number
-      let afterLink = userInput.substr(18);
-    }
-    //char 18 will be after the forward slash
-  }
 };
 
 window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
@@ -9840,125 +9686,6 @@ const renderDatasetDescriptionContributorsTable = () => {
   contributorsTable.innerHTML = contributorsTableHTML;
 };
 
-const addContributorField = () => {
-  const contributorsContainer = document.getElementById("contributors-container");
-  //create a new div to hold contributor fields
-  const newContributorField = document.createElement("div");
-  newContributorField.classList.add("guided--section");
-  newContributorField.classList.add("mt-lg");
-  newContributorField.classList.add("neumorphic");
-  newContributorField.classList.add("guided-contributor-field-container");
-  newContributorField.style.width = "100%";
-  newContributorField.style.position = "relative";
-
-  newContributorField.innerHTML = `
-    <i 
-      class="fas fa-times fa-2x"
-      style="
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        color: black;
-        cursor: pointer;
-      "
-      onclick="window.removeContributorField(this)"
-    >
-    </i>
-    <h2 class="text-sub-step-title">
-      Enter contributor details
-    </h2>
-    <div class="space-between w-100">
-      <div class="guided--flex-center mt-sm" style="width: 45%">
-        <label class="guided--form-label required">Last name: </label>
-        <input
-          class="guided--input guided-last-name-input"
-          type="text"
-          placeholder="Enter last name here"
-          onkeyup="validateInput(window.$(this))"
-        />
-      </div>
-      <div class="guided--flex-center mt-sm" style="width: 45%">
-        <label class="guided--form-label required">First name: </label>
-        <input
-          class="guided--input guided-first-name-input"
-          type="text"
-          placeholder="Enter first name here"
-          onkeyup="validateInput(window.$(this))"
-        />
-      </div>
-    </div>
-    <label class="guided--form-label required mt-md">ORCID: </label>
-    <input
-      class="guided--input guided-orcid-input"
-      type="text"
-      placeholder="Enter ORCID here"
-    />
-    <label class="guided--form-label required mt-md">Affiliation(s): </label>
-    <input class="guided-contributor-affiliation-input"
-          contenteditable="true"
-    />
-
-    <label class="guided--form-label required mt-md">Role(s): </label>
-    <input class="guided-contributor-role-input"
-      contenteditable="true"
-      placeholder='Type here to view and add contributor roles from the list of standard roles'
-    />
-  `;
-
-  contributorsContainer.appendChild(newContributorField);
-
-  //select the last contributor role input (the one that was just added)
-  const newlyAddedContributorField = contributorsContainer.lastChild;
-
-  //Create Affiliation(s) tagify for each contributor
-  const contributorAffiliationInput = newlyAddedContributorField.querySelector(
-    ".guided-contributor-affiliation-input"
-  );
-  const affiliationTagify = new Tagify(contributorAffiliationInput, {
-    duplicate: false,
-  });
-
-  window.createDragSort(affiliationTagify);
-
-  const newContributorRoleElement = newlyAddedContributorField.querySelector(
-    ".guided-contributor-role-input"
-  );
-  //Add a new tagify for the contributor role field for the new contributor field
-  const tagify = new Tagify(newContributorRoleElement, {
-    whitelist: [
-      "PrincipalInvestigator",
-      "Creator",
-      "CoInvestigator",
-      "CorrespondingAuthor",
-      "DataCollector",
-      "DataCurator",
-      "DataManager",
-      "Distributor",
-      "Editor",
-      "Producer",
-      "ProjectLeader",
-      "ProjectManager",
-      "ProjectMember",
-      "RelatedPerson",
-      "Researcher",
-      "ResearchGroup",
-      "Sponsor",
-      "Supervisor",
-      "WorkPackageLeader",
-      "Other",
-    ],
-    enforceWhitelist: true,
-    dropdown: {
-      enabled: 0,
-      closeOnSelect: true,
-      position: "auto",
-    },
-  });
-  //scroll to the new element
-
-  window.createDragSort(tagify);
-  window.smoothScrollToElement(newlyAddedContributorField);
-};
 const getGuidedProtocolLinks = () => {
   try {
     return window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"].map(
@@ -10093,42 +9820,6 @@ window.guidedDeleteProtocol = (protocolElement) => {
     "dataset-metadata"
   ]["description-metadata"]["protocols"].filter((protocol) => protocol.link !== linkToDelete);
   renderProtocolsTable();
-};
-
-const removeProtocolField = (protocolElement) => {
-  const protocolURL = protocolElement.dataset.protocolUrl;
-  const { protocolDescription } = protocolElement.dataset;
-
-  const protocolsBeforeDelete =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
-  //If the protocol has data-protocol-url and data-protocol-description, then it is a protocol that
-  //already been added. Delete it from the protocols array.
-  if (protocolsBeforeDelete != undefined) {
-    //protocolsBeforeDelete will be undefined on a new dataset with no protocols yet
-    //until protocols are saved we won't need to go through this
-    const filteredProtocols = protocolsBeforeDelete.filter((protocol) => {
-      //remove protocols with matching protocol url and protocol description
-      return !(protocol.link == protocolURL && protocol.description == protocolDescription);
-    });
-
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = filteredProtocols;
-  }
-
-  protocolElement.remove();
-  //if all are deleted then append message
-  let protocolsContainer = document.getElementById("protocols-container");
-  if (protocolsContainer.children.length === 0) {
-    const emptyRowWarning = generateAlertElement(
-      "warning",
-      "You currently have no protocols for your dataset. To add, click the 'Add a new protocol' button"
-    );
-    let warningRowElement = `<tr id="protocolAlert"><td colspan="5">${emptyRowWarning}</td></tr>`;
-    document.getElementById("protocols-container").innerHTML = warningRowElement;
-  }
-};
-
-const protocolRowIsValid = (url, description, type) => {
-  return url && description && type;
 };
 
 //TODO: handle new blank protocol fields (when parameter are blank)
@@ -10348,118 +10039,6 @@ const openAddAdditionLinkSwal = async () => {
     renderAdditionalLinksTable();
   }
 };
-/*const addOtherLinkField = () => {
-  const otherLinksContainer = document.getElementById("other-links-container");
-  //create a new div to hold other link fields
-  const newOtherLink = document.createElement("div");
-  newOtherLink.classList.add("guided--section");
-  newOtherLink.classList.add("mt-lg");
-  newOtherLink.classList.add("neumorphic");
-  newOtherLink.classList.add("guided-other-links-field-container");
-  newOtherLink.style.position = "relative";
-
-  newOtherLink.innerHTML = `
-    <i
-      class="fas fa-times fa-2x"
-      style="
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        color: black;
-        cursor: pointer;
-      "
-      onclick="removeOtherLinkField(this)"
-    >
-    </i>
-    <h2 class="text-sub-step-title">Enter link information</h2>
-    <label class="guided--form-label mt-lg">Link URL: </label>
-    <input
-      class="guided--input guided-other-link-url-input"
-      type="text"
-      placeholder="Enter link URL here"
-    />
-    <label class="guided--form-label mt-lg"
-      >Link description:</label
-    >
-    <textarea
-      class="guided--input guided--text-area guided-other-link-description-input"
-      type="text"
-      placeholder="Enter link description here"
-      style="height: 7.5em; padding-bottom: 20px"
-    ></textarea>
-    <label class="guided--form-label mt-lg"
-      >Dataset relation:</label
-    >
-    <div style="display: flex; width:100%; align-items: center;">
-      <p class="help-text m-0">
-        Text to put here (A)?
-      </p>
-      <div class="form-group mx-2">
-        <select class="form-control guided-other-link-relation-dropdown" style="background-color: white !important">
-          <option value="Select">Select a relation</option>
-          <option value="IsCitedBy">IsCitedBy</option>
-          <option value="Cites">Cites</option>
-          <option value="IsSupplementTo">IsSupplementTo</option>
-          <option value="IsSupplementedBy">IsSupplementedBy</option>
-          <option value="IsContinuedByContinues">IsContinuedByContinues</option>
-          <option value="IsDescribedBy">IsDescribedBy</option>
-          <option value="Describes">Describes</option>
-          <option value="HasMetadata">HasMetadata</option>
-          <option value="IsMetadataFor">IsMetadataFor</option>
-          <option value="HasVersion">HasVersion</option>
-          <option value="IsVersionOf">IsVersionOf</option>
-          <option value="IsNewVersionOf">IsNewVersionOf</option>
-          <option value="IsPreviousVersionOf">IsPreviousVersionOf</option>
-          <option value="IsPreviousVersionOf">IsPreviousVersionOf</option>
-          <option value="HasPart">HasPart</option>
-          <option value="IsPublishedIn">IsPublishedIn</option>
-          <option value="IsReferencedBy">IsReferencedBy</option>
-          <option value="References">References</option>
-          <option value="IsDocumentedBy">IsDocumentedBy</option>
-          <option value="Documents">Documents</option>
-          <option value="IsCompiledBy">IsCompiledBy</option>
-          <option value="Compiles">Compiles</option>
-          <option value="IsVariantFormOf">IsVariantFormOf</option>
-          <option value="IsOriginalFormOf">IsOriginalFormOf</option>
-          <option value="IsIdenticalTo">IsIdenticalTo</option>
-          <option value="IsReviewedBy">IsReviewedBy</option>
-          <option value="Reviews">Reviews</option>
-          <option value="IsDerivedFrom">IsDerivedFrom</option>
-          <option value="IsSourceOf">IsSourceOf</option>
-          <option value="IsRequiredBy">IsRequiredBy</option>
-          <option value="Requires">Requires</option>
-          <option value="IsObsoletedBy">IsObsoletedBy</option>
-          <option value="Obsoletes">Obsoletes</option>
-        </select>
-      </div>
-          <p class="help-text m-0">
-        Text to put here (B)?
-      </p>
-    </div>
-  `;
-  otherLinksContainer.appendChild(newOtherLink);
-  //select the last protocol field (the one that was just added)
-  const newlyAddedOtherLinkField = otherLinksContainer.lastChild;
-  window.smoothScrollToElement(newlyAddedOtherLinkField);
-};
-
-const removeOtherLinkField = (otherLinkDeleteButton) => {
-  const otherLinkField = protocolDeleteButton.parentElement;
-  otherLinkField.remove();
-};*/
-
-//SUBJECT TABLE FUNCTIONS
-const returnToTableFromFolderStructure = (clickedBackButton) => {
-  previousFolderStructurePage = clickedBackButton.attr("data-prev-page");
-  window.openPage(previousFolderStructurePage);
-  $("#guided-footer-div").css("display", "flex");
-  clickedBackButton.remove();
-};
-
-const returnToSubjectMetadataTableFromSubjectMetadataForm = () => {
-  //Clear metadata form inputs
-  window.clearAllSubjectFormFields(window.guidedSubjectsFormDiv);
-};
 const returnToSampleMetadataTableFromSampleMetadataForm = () => {
   //Clear metadata form inputs
   window.clearAllSubjectFormFields(window.guidedSamplesFormDiv);
@@ -10497,18 +10076,6 @@ const renderSubjectSampleAdditionTable = (subject) => {
       </tbody>
     </table>
   `;
-};
-
-const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
-  //loop through all window.subjectsTableData elements besides the first one
-  for (let i = 0; i < window.subjectsTableData.length; i++) {
-    //check through elements of tableData to find a subject ID match
-    if (window.subjectsTableData[i][0] === subjectMetadataId) {
-      //if the id matches, load the metadata into the form
-      window.populateForms(subjectMetadataId, "", "guided");
-      return;
-    }
-  }
 };
 
 const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
@@ -11026,39 +10593,6 @@ window.openSubjectRenameInput = (subjectNameEditButton) => {
   `;
   subjectIdCellToRename.html(subjectRenameElement);
 };
-const openPoolRenameInput = (poolNameEditButton) => {
-  const poolIdCellToRename = poolNameEditButton.closest("td");
-  const prevPoolName = poolIdCellToRename.find(".pool-id").text();
-  const prevPoolInput = prevPoolName.substr(prevPoolName.search("-") + 1);
-  const poolRenameElement = `
-    <div class="space-between" style="align-items: center; width: 250px;">
-      <span style="margin-right: 5px;">pool-</span>
-      <input
-        class="guided--input"
-        type="text"
-        name="guided-pool-id"
-        value=${prevPoolInput}
-        placeholder="Enter new pool ID"
-        onkeyup="window.specifyPool(event, window.$(this))"
-        data-alert-message="Pool IDs may not contain spaces or special characters"
-        data-alert-type="danger"
-        data-prev-name="${prevPoolName}"
-        style="width: 180px;"
-      />
-      <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
-    </div>
-  `;
-  poolIdCellToRename.html(poolRenameElement);
-};
-
-//updates the indices for guided tables using class given to spans in index cells
-const updateGuidedTableIndices = (tableIndexClass) => {
-  const indiciesToUpdate = $(`.${tableIndexClass}`);
-  indiciesToUpdate.each((index, indexElement) => {
-    let newIndex = index + 1;
-    indexElement.innerHTML = newIndex;
-  });
-};
 
 const generateSubjectRowElement = (subjectName) => {
   return `
@@ -11269,11 +10803,6 @@ const onBlurEvent = (element) => {
   }
 };
 
-const endConfirmOnBlur = (element) => {
-  window.removeEventListener("keydown", keydownListener);
-  document.getElementById(element).removeEventListener("blur", onBlurEvent);
-};
-
 var enterKey = false;
 const confirmOnBlur = (element) => {
   window.addEventListener("keydown", keydownListener);
@@ -11323,21 +10852,6 @@ const getSubjectsPool = (subjectName) => {
     }
   }
   return "";
-};
-
-const getSubjectsSamples = (subjectName) => {
-  const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
-  for (const subject of subjectsInPools) {
-    if (subject["subjectName"] === subjectName) {
-      return subject["samples"];
-    }
-  }
-  for (const subject of subjectsOutsidePools) {
-    if (subject["subjectName"] === subjectName) {
-      return subject["samples"];
-    }
-  }
-  return [];
 };
 
 const getExistingPoolNames = () => {
@@ -11425,226 +10939,6 @@ window.electron.ipcRenderer.on(
     }
   }
 );
-
-/* document
-  .getElementById("guided-button-open-dataset-structure-spreadsheet")
-  .addEventListener("click", async () => {
-    const savedTemplatePath = window.sodaJSONObj["dataset-structure-spreadsheet-path"];
-    if (!savedTemplatePath) {
-      notyf.error("No dataset structure spreadsheet has been saved");
-      return;
-    }
-    window.electron.ipcRenderer.send("open-file-at-path", savedTemplatePath);
-  }); */
-
-const validateDatasetStructureSpreadsheet = async (sheetData) => {
-  const invalidSubjectNames = [];
-  const invalidPoolNames = [];
-  const invalidSampleNames = [];
-  const duplicateSampleNames = [];
-  const validSampleNames = [];
-  const subjectsWithMismatchedPools = [];
-  const pooledSubjects = new Map();
-
-  if (sheetData.length === 0) {
-    await swalShowError(
-      "Empty subject spreadsheet structure",
-      "Please add data to the spreadsheet and try again"
-    );
-    return false;
-  }
-  // 1. Loop through the spreadsheet rows and find subs, pools, and sams that do not have valid names
-  for (const row of sheetData) {
-    const subjectName = lowercaseFirstLetter(row["subject id"]);
-    if (!subjectName) {
-      continue;
-    }
-    if (!subjectName.startsWith("sub-")) {
-      invalidSubjectNames.push(subjectName);
-      continue;
-    }
-    const subjectNameIsValid = window.evaluateStringAgainstSdsRequirements(
-      subjectName,
-      "string-adheres-to-identifier-conventions"
-    );
-    if (!subjectNameIsValid) {
-      invalidSubjectNames.push(subjectName);
-      continue;
-    }
-
-    const poolName = lowercaseFirstLetter(row["pool id"]);
-
-    if (poolName) {
-      if (!poolName.startsWith("pool-")) {
-        invalidPoolNames.push(poolName);
-        continue;
-      }
-
-      const poolNameIsValid = window.evaluateStringAgainstSdsRequirements(
-        poolName,
-        "string-adheres-to-identifier-conventions"
-      );
-      if (!poolNameIsValid) {
-        invalidPoolNames.push(poolName);
-        continue;
-      }
-
-      if (pooledSubjects.has(subjectName)) {
-        const subjectsPool = pooledSubjects.get(subjectName);
-        if (subjectsPool !== poolName) {
-          subjectsWithMismatchedPools.push(subjectName);
-        }
-      } else {
-        pooledSubjects.set(subjectName, poolName);
-      }
-    }
-
-    const sampleName = lowercaseFirstLetter(row["sample id"]);
-    if (sampleName) {
-      if (!sampleName.startsWith("sam-")) {
-        invalidSampleNames.push(sampleName);
-        continue;
-      }
-
-      const sampleNameIsValid = window.evaluateStringAgainstSdsRequirements(
-        sampleName,
-        "string-adheres-to-identifier-conventions"
-      );
-      if (!sampleNameIsValid) {
-        invalidSampleNames.push(sampleName);
-      } else if (validSampleNames.includes(sampleName)) {
-        duplicateSampleNames.push(sampleName);
-      } else {
-        validSampleNames.push(sampleName);
-      }
-    }
-  }
-
-  let spreadsheetIsValid = true;
-
-  if (invalidSubjectNames.length > 0) {
-    await swalFileListSingleAction(
-      invalidSubjectNames,
-      "Invalid subject names detected",
-      "Subject names must start with 'sub-' and may not contain spaces or special characters",
-      "Please fix the invalid subject names in the spreadsheet and try again"
-    );
-    spreadsheetIsValid = false;
-  }
-
-  if (invalidPoolNames.length > 0) {
-    await swalFileListSingleAction(
-      invalidPoolNames,
-      "Invalid pool names detected",
-      "Pool names must start with 'pool-' and may not contain spaces or special characters",
-      "Please fix the invalid pool names in the spreadsheet and try again"
-    );
-    spreadsheetIsValid = false;
-  }
-
-  if (invalidSampleNames.length > 0) {
-    await swalFileListSingleAction(
-      invalidSampleNames,
-      "Invalid sample names detected",
-      "Sample names must start with 'sam-' and may not contain spaces or special characters",
-      "Please fix the invalid sample names in the spreadsheet and try again"
-    );
-    spreadsheetIsValid = false;
-  }
-
-  if (duplicateSampleNames.length > 0) {
-    await swalFileListSingleAction(
-      duplicateSampleNames,
-      "Duplicate sample names detected",
-      "Sample names must be unique",
-      "Please fix the duplicate sample names in the spreadsheet and try again"
-    );
-    spreadsheetIsValid = false;
-  }
-
-  if (subjectsWithMismatchedPools.length > 0) {
-    await swalFileListSingleAction(
-      subjectsWithMismatchedPools,
-      "Subjects with mismatched pools detected",
-      "Subjects can only be in one pool",
-      "Please fix the subjects with mismatched pools in the spreadsheet and try again"
-    );
-    spreadsheetIsValid = false;
-  }
-
-  return spreadsheetIsValid;
-};
-
-// CLICK HANDLER THAT EXTRACTS THE DATASET STRUCTURE FROM A SPREADSHEET
-/*
-document
-  .getElementById("guided-button-import-dataset-structure-from-spreadsheet")
-  .addEventListener("click", async () => {
-    const savedTemplatePath = window.sodaJSONObj["dataset-structure-spreadsheet-path"];
-    if (!savedTemplatePath) {
-      notyf.error("No dataset structure spreadsheet has been saved");
-      return;
-    }
-    if (!window.fs.existsSync(savedTemplatePath)) {
-      notyf.error("The saved dataset structure spreadsheet no longer exists at the saved path");
-      return;
-    }
-
-    const sheetData = await window.electron.ipcRenderer.invoke("get-sheet-data", savedTemplatePath);
-
-    // Validate the spreadsheet structure and return if it is invalid (Error swals are shown in the function)
-    const spreadsheetIsValid = await validateDatasetStructureSpreadsheet(sheetData);
-    if (!spreadsheetIsValid) {
-      return;
-    }
-
-    for (const row of sheetData) {
-      const subjectName = lowercaseFirstLetter(row["subject id"]);
-      const subjectsPool = lowercaseFirstLetter(row["pool id"]);
-      const sampleName = lowercaseFirstLetter(row["sample id"]);
-
-      // Check to see if the subject already exists
-      const subjectAlreadyExists = window.getExistingSubjectNames().includes(subjectName);
-      if (!subjectAlreadyExists) {
-        window.sodaJSONObj.addSubject(subjectName);
-        if (subjectsPool) {
-          const poolAlreadyExists = getExistingPoolNames().includes(subjectsPool);
-          if (!poolAlreadyExists) {
-            window.sodaJSONObj.addPool(subjectsPool);
-          }
-          window.sodaJSONObj.moveSubjectIntoPool(subjectName, subjectsPool);
-        }
-      }
-
-      if (sampleName) {
-        const sampleAlreadyExists = getExistingSampleNames().includes(sampleName);
-        if (!sampleAlreadyExists) {
-          window.sodaJSONObj.addSampleToSubject(sampleName, subjectsPool, subjectName);
-        }
-      }
-    }
-
-    await swalShowInfo(
-      "Subject structure successfully imported",
-      `
-        You will now be taken to the next step where you can review/edit the imported data.
-        <br />
-        <br />
-        <b>Note:</b> You will not be able to return to this step once you proceed.
-      `
-    );
-    $("#guided-next-button").click();
-  });
-
-*/
-const guidedExtractEntityNamesFromFolders = async (entityType) => {
-  if (entityType === "subjects") {
-    window.electron.ipcRenderer.send("open-subject-multi-folder-import-dialog");
-  }
-  if (entityType === "samples") {
-    window.electron.ipcRenderer.send("open-multi-folder-dialog");
-  }
-};
 
 const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingSubjects) => {
   // Check to see if any of the subject names are invalid
@@ -12036,26 +11330,6 @@ const generateNewSampleRowTd = () => {
       ></i>
     </td>
   `;
-};
-const addSampleTableRow = () => {
-  const sampleSpecificationTableBody = document.getElementById("samples-specification-table-body");
-  //check if sample specification table body has an input with the name guided-sample-id
-  const sampleSpecificationTableInput = sampleSpecificationTableBody.querySelector(
-    "input[name='guided-sample-id']"
-  );
-  if (sampleSpecificationTableInput) {
-    //focus on the input that already exists
-    sampleSpecificationTableInput.focus();
-  } else {
-    //create a new table row on
-    const newSamplesTableRow = sampleSpecificationTableBody.insertRow(-1);
-    newSamplesTableRow.innerHTML = generateNewSampleRowTd();
-    const newSampleRow = sampleSpecificationTableBody.querySelector("tr:last-child");
-    //get the input element in newSampleRow
-    const newSampleInput = newSampleRow.querySelector("input[name='guided-sample-id']");
-    window.smoothScrollToElement(newSampleRow);
-    newSampleInput.focus();
-  }
 };
 
 const generatePoolSpecificationRowElement = () => {
@@ -12608,7 +11882,6 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
   window.sodaJSONObj["digital-metadata"]["user-permissions"].push(newUserPermissionObj);
   renderPermissionsTable();
 };
-const guidedRemoveUserPermission = (userParentElement) => {};
 
 const guidedAddTeamPermission = (newTeamPermissionObj) => {
   //If an existing team with the same ID already exists, update the existing team's position
@@ -12625,11 +11898,6 @@ const guidedAddTeamPermission = (newTeamPermissionObj) => {
   //add a new user permission
   window.sodaJSONObj["digital-metadata"]["team-permissions"].push(newTeamPermissionObj);
   renderPermissionsTable();
-};
-const guidedRemoveTeamPermission = (teamParentElement) => {};
-
-const setGuidedLicense = (newLicense) => {
-  window.sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
 };
 
 const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
@@ -16158,21 +15426,6 @@ $("#guided-add-subject-button").on("click", () => {
   $("#guided-add-subject-div").show();
 });
 
-const getCheckedContributors = () => {
-  const checkedContributors = document.querySelectorAll("input[name='contributor']:checked");
-  const checkedContributorsArray = Array.from(checkedContributors);
-  checkedContributorData = checkedContributorsArray.map((checkedContributor) => {
-    const tableRow = checkedContributor.parentElement.parentElement.parentElement;
-    const contributorLastName = tableRow.children[1].innerHTML.trim();
-    const contributorFirstName = tableRow.children[2].innerHTML.trim();
-    return {
-      contributorFirstName: contributorFirstName,
-      contributorLastName: contributorLastName,
-    };
-  });
-  return checkedContributorData;
-};
-
 $("#guided-button-edit-protocol-fields").on("click", () => {
   enableElementById("protocols-container");
   enableElementById("guided-button-add-protocol");
@@ -17612,30 +16865,6 @@ const guidedSaveDescriptionContributorInformation = () => {
   };
 };
 
-const guidedCombineLinkSections = () => {
-  var protocolLinks = getGuidedProtocolSection();
-  var otherLinks = getGuidedAdditionalLinkSection();
-  protocolLinks.push.apply(protocolLinks, otherLinks);
-  return protocolLinks;
-};
-
-const guidedSaveParticipantInformation = () => {
-  let numSubjects = $("#guided-ds-samples-no").val();
-  let numSamples = $("#guided-ds-samples-no").val();
-  if (numSubjects.length == 0 || numSamples.length == 0) {
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      icon: "error",
-      text: "Please fill in all of the required participant information fields.",
-      title: "Incomplete information",
-    });
-  } else {
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["numSubjects"] = numSubjects;
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["numSamples"] = numSamples;
-  }
-};
-
 const generateRandomFolderOrFileName = (boolIncludeProblematicFileNames) => {
   // create a random string of 20 characters
   let randomString =
@@ -17730,80 +16959,6 @@ const createNestedFolders = (
       depth - 1,
       fileSize,
       numberOfFilesInEachFolder
-    );
-  }
-};
-/*
- * Creates a test dataset with the given parameters
- * @param {string} datasetName - The name of the dataset (must be unique)
- * @param {number} numberOfFolders - The number of folders to create in each folder
- * @param {number} depth - The depth of the folder structure (eg. 3 = 5 folders in root, with 5 folders (and files), with 5 folders (and files) in each of those folders)
- * @param {string} fileSize - The size of the text files to create
- * @param {number} numberOfFilesInEachFolder - The number of files to create in each folder
- * @param {boolean} boolIncludeProblematicFileNames - Whether or not to include problematic characters in the file names
- * @example
- * createTestDataset("test-dataset", 5, 3, "small", 5);
- */
-const createTestDataset = (
-  datasetName,
-  numberOfFolders,
-  depth,
-  fileSize,
-  numberOfFilesInEachFolder,
-  boolIncludeProblematicFileNames = false
-) => {
-  const fileSizeOptions = ["small", "medium", "large"];
-  if (!fileSizeOptions.includes(fileSize)) {
-    console.error("File size must be small medium or large");
-    return;
-  }
-
-  const maxDepth = 5;
-  if (depth > maxDepth) {
-    console.error(`Depth must be less than or equal to ${maxDepth}`);
-    return;
-  }
-
-  const maxNumberOfFilesInEachFolder = 30;
-  if (numberOfFilesInEachFolder > maxNumberOfFilesInEachFolder) {
-    console.error(
-      `Number of files in each folder must be less than or equal to ${maxNumberOfFilesInEachFolder}`
-    );
-    return;
-  }
-
-  const maxNumberOfFolders = 50;
-  if (numberOfFolders > maxNumberOfFolders) {
-    console.error(`Number of folders must be less than or equal to ${maxNumberOfFolders}`);
-    return;
-  }
-
-  const testDatasetsPath = window.path.join(homeDirectory, "SODA", "test-datasets");
-
-  // return if the root directory does not exist
-  if (!window.fs.existsSync(testDatasetsPath)) {
-    window.fs.mkdirSync(testDatasetsPath);
-  }
-  const newTestDatasetPath = window.path.join(testDatasetsPath, datasetName);
-  if (window.fs.existsSync(newTestDatasetPath)) {
-    console.error("A test dataset with this name already exists please choose a different name");
-    return;
-  }
-  // Create the test datasets folder
-  window.fs.mkdirSync(newTestDatasetPath);
-
-  const rootFolders = ["primary", "source", "derivative", "docs", "code", "protocol"];
-  // Add folders to each of the high level folders
-  for (const folder of rootFolders) {
-    const folderPath = window.path.join(newTestDatasetPath, folder);
-    window.fs.mkdirSync(folderPath);
-    createNestedFolders(
-      folderPath,
-      numberOfFolders,
-      depth,
-      fileSize,
-      numberOfFilesInEachFolder,
-      boolIncludeProblematicFileNames
     );
   }
 };
