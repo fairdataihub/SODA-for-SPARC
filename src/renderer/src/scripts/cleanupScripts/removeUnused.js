@@ -59,7 +59,7 @@ module.exports = function (fileInfo, api) {
           return false;
         }
 
-        if(hits > 18) { 
+        if(hits > 10) { 
           console.log("Failed hit at line ", line)
           return false
         }
