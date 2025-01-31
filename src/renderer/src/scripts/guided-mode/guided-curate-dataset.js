@@ -170,17 +170,6 @@ window.verifyProfile = async () => {
   }
 };
 
-// document.querySelector("#guided-confirm-pennsieve-account-button").addEventListener("click", async () => {
-//   verifyProfile()
-// })
-
-const lowercaseFirstLetter = (string) => {
-  if (!string) {
-    return string;
-  }
-  return string.charAt(0).toLowerCase() + string.slice(1);
-};
-
 const lottieAnimationManager = {
   animationData: {
     "guided-curation-preparation-intro-lottie": {
@@ -11302,36 +11291,6 @@ window.addSampleSpecificationTableRow = (clickedSubjectAddSampleButton) => {
   }
 };
 
-const generateNewSampleRowTd = () => {
-  return `
-    <td class="middle aligned pool-cell collapsing">
-      <div class="space-between" style="align-items: center; width: 250px;">
-        <span style="margin-right: 5px;">sam-</span>
-        <input
-          class="guided--input"
-          type="text"
-          name="guided-sample-id"
-          placeholder="Enter sample ID"
-          onkeyup="specifySample(event, window.$(this))"
-          data-alert-message="Sample IDs may not contain spaces or special characters"
-          data-alert-type="danger"
-          style="width: 250px"
-        />
-      </div>
-    </td>
-    <td
-      class="middle aligned samples-subject-dropdown-cell remove-left-border"
-    ></td>
-    <td class="middle aligned collapsing text-center remove-left-border">
-      <i
-        class="far fa-trash-alt"
-        style="color: red; cursor: pointer"
-        onclick="window.deleteSample(window.$(this))"
-      ></i>
-    </td>
-  `;
-};
-
 const generatePoolSpecificationRowElement = () => {
   return `
     <td class="middle aligned pool-cell collapsing">
@@ -16930,36 +16889,6 @@ const createRandomFiles = (
     );
     const fileText = generateFileText(fileSize);
     window.fs.writeFileSync(filePath, fileText);
-  }
-};
-
-const createNestedFolders = (
-  baseDirectory,
-  numberOfFolders,
-  depth,
-  fileSize,
-  numberOfFilesInEachFolder,
-  boolIncludeProblematicFileNames
-) => {
-  if (depth === 0) {
-    return;
-  }
-  for (let i = 0; i < numberOfFolders; i++) {
-    const folderPath = window.path.join(
-      baseDirectory,
-      generateRandomFolderOrFileName(boolIncludeProblematicFileNames)
-    );
-    window.fs.mkdirSync(folderPath);
-    // Add the random files to the folder
-    createRandomFiles(folderPath, numberOfFilesInEachFolder, fileSize); // Creating multiple files in the folder
-    // Recursively create more folders inside of the current folder
-    createNestedFolders(
-      folderPath,
-      numberOfFolders,
-      depth - 1,
-      fileSize,
-      numberOfFilesInEachFolder
-    );
   }
 };
 
