@@ -48,11 +48,9 @@ import {
   setActiveEntity,
   getDatasetEntityObj,
   setDatasetEntityObj,
-  autoSelectDatasetFoldersAndFilesForEnteredEntityIds,
   addEntityToEntityList,
 } from "../../stores/slices/datasetEntitySelectorSlice";
 import {
-  setDatasetStructureSearchFilter,
   setTreeViewDatasetStructure,
   externallySetSearchFilterValue,
 } from "../../stores/slices/datasetTreeViewSlice";
