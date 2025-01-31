@@ -5456,9 +5456,6 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-manifest-subject-entity-selector-tab") {
-      const subjects = window.getExistingSubjectNames();
-      const existingSubjectRelatedFoldersAndFiles =
-        window.sodaJSONObj["subject-related-folders-and-files"];
 
       setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       setEntityType("subject-related-folders-and-files");
@@ -6021,10 +6018,6 @@ window.openPage = async (targetPageID) => {
         document.querySelectorAll(".show-when-logged-in");
       const elementsToShowWhenNotLoggedInToPennsieve =
         document.querySelectorAll(".show-when-logged-out");
-      const confirmPennsieveAccountDiv = document.getElementById(
-        "guided-confirm-pennsieve-account"
-      );
-      const selectPennsieveAccountDiv = document.getElementById("guided-select-pennsieve-account");
       if (!window.defaultBfAccount) {
         elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
           element.classList.add("hidden");
@@ -6697,7 +6690,6 @@ window.openPage = async (targetPageID) => {
         window.sodaJSONObj["digital-metadata"]["description"]
       )
         .map((key) => {
-          const description = window.sodaJSONObj["digital-metadata"]["description"][key];
           //change - to spaces in description and then capitalize
           const descriptionTitle = key
             .split("-")
@@ -6758,7 +6750,6 @@ window.openPage = async (targetPageID) => {
 
       const pennsieveDatasetCopyIcon = document.getElementById("guided-pennsieve-copy-icon");
 
-      const pennsieveDOICopy = document.getElementById("guided-pennsieve-copy-doi");
 
       pennsieveDatasetCopyIcon.classList.add("fa-copy");
 
@@ -6769,12 +6760,6 @@ window.openPage = async (targetPageID) => {
       pennsieveDatasetLink.href = datasetLink;
 
       if (removeEventListener) {
-        /*
-        TODO: FIX COPY TO CLIPBOARD POST-BUNDLE
-        pennsieveDOICopy.removeEventListener("click", () => {
-          copyLink(doiInfo), true;
-        });
-        */
 
         pennsieveCopy.removeEventListener(
           "click",
@@ -7579,7 +7564,7 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
   return false;
 };
 
-const guidedGetPageToReturnTo = async (sodaJSONObj) => {
+const guidedGetPageToReturnTo = async () => {
   // Set by window.openPage function
   const usersPageBeforeExit = window.sodaJSONObj["page-before-exit"];
 
@@ -8472,7 +8457,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       }
     }
   };
-  window.sodaJSONObj.deleteSample = async function (sampleName, showWarningIfSampleFoldersExist) {
+  window.sodaJSONObj.deleteSample = async function(sampleName) {
     const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
     //Combine sample data from samples in and out of pools
     let samples = [...samplesInPools, ...samplesOutsidePools];
@@ -16493,7 +16478,7 @@ $("#guided-button-back").on("click", function () {
     // construct UI with files and folders
     $("#items").empty();
     window.already_created_elem = [];
-    let items = window.loadFileFolder(myPath); //array -
+    let  items = window.loadFileFolder(myPath); //array -
     //we have some items to display
     window.listItems(myPath, "#items", 500, true);
     window.organizeLandingUIEffect();
