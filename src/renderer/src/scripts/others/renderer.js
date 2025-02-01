@@ -1103,9 +1103,7 @@ const organizeDSbackButton = document.getElementById("button-back");
 const organizeDSaddFiles = document.getElementById("add-files");
 const organizeDSaddNewFolder = document.getElementById("new-folder");
 const organizeDSaddFolders = document.getElementById("add-folders");
-const contextMenu = document.getElementById("mycontext");
 const fullNameValue = document.querySelector(".hoverFullName");
-const homePathButton = document.getElementById("home-path");
 window.menuFolder = document.querySelector(".menu.reg-folder");
 window.menuFile = document.querySelector(".menu.file");
 window.menuHighLevelFolders = document.querySelector(".menu.high-level-folder");
@@ -1113,35 +1111,12 @@ const organizeNextStepBtn = document.getElementById("button-organize-confirm-cre
 const organizePrevStepBtn = document.getElementById("button-organize-prev");
 window.manifestFileCheck = document.getElementById("generate-manifest-curate");
 
-// Organize dataset //
-const selectImportFileOrganizationBtn = document.getElementById(
-  "button-select-upload-file-organization"
-);
-const tableMetadata = document.getElementById("metadata-table");
 let tableMetadataCount = 0;
-
-// Validate dataset //
-const validateCurrentDSBtn = document.getElementById("button-validate-current-ds");
-const validateCurrentDatasetReport = document.querySelector("#textarea-validate-current-dataset");
-const currentDatasetReportBtn = document.getElementById("button-generate-report-current-ds");
-const validateLocalDSBtn = document.getElementById("button-validate-local-ds");
-const validateLocalDatasetReport = document.querySelector("#textarea-validate-local-dataset");
-const localDatasetReportBtn = document.getElementById("button-generate-report-local-ds");
-const validateLocalProgressBar = document.getElementById("div-indetermiate-bar-validate-local");
-const validateSODAProgressBar = document.getElementById("div-indetermiate-bar-validate-soda");
-
-// Generate dataset //
-// var window.subjectsTableData = [];
-// var window.samplesTableData = [];
-
-const newDatasetName = document.querySelector("#new-dataset-name");
-const manifestStatus = document.querySelector("#generate-manifest");
 
 // Manage datasets //
 
 window.sodaCopy = {};
 let datasetStructCopy = {};
-const bfUploadRefreshDatasetBtn = document.getElementById("button-upload-refresh-dataset-list");
 
 window.pathSubmitDataset = document.querySelector("#selected-local-dataset-submit");
 // const progressUploadBf = document.getElementById("div-progress-submit");
@@ -1155,13 +1130,9 @@ window.bfCurrentBannerImg = document.getElementById("current-banner-img");
 window.bfViewImportedImage = document.querySelector("#image-banner");
 window.guidedBfViewImportedImage = document.querySelector("#guided-image-banner");
 
-const bfSaveBannerImageBtn = document.getElementById("save-banner-image");
-const datasetBannerImageStatus = document.querySelector("#para-dataset-banner-image-status");
 window.formBannerHeight = document.getElementById("form-banner-height");
 window.guidedFormBannerHeight = document.getElementById("guided-form-banner-height");
 window.currentDatasetLicense = document.querySelector("#para-dataset-license-current");
-const bfListLicense = document.querySelector("#bf-license-list");
-const bfAddLicenseBtn = document.getElementById("button-add-license");
 
 // // Pennsieve dataset permission //
 window.currentDatasetPermission = document.querySelector("#para-dataset-permission-current");
@@ -1178,8 +1149,6 @@ const bfListUsersPI = document.querySelector("#bf_list_users_pi");
 // );
 const bfListUsers = document.querySelector("#bf_list_users");
 const bfListTeams = document.querySelector("#bf_list_teams");
-const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
-const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-team");
 
 //Pennsieve dataset status
 window.bfCurrentDatasetStatusProgress = document.querySelector(
@@ -1207,21 +1176,6 @@ window.delayAnimation = 250;
 
 // Sidebar Navigation //
 let open = false;
-const openSidebar = (buttonElement) => {
-  if (!open) {
-    window.electron.ipcRenderer.send("resize-window", "up");
-    $("#main-nav").css("width", "250px");
-    $("#SODA-logo").css("display", "block");
-    $(buttonSidebarIcon).css("display", "none");
-    open = true;
-  } else {
-    window.electron.ipcRenderer.send("resize-window", "down");
-    $("#main-nav").css("width", "70px");
-    $("#SODA-logo").css("display", "block");
-    $(buttonSidebarIcon).css("display", "none");
-    open = false;
-  }
-};
 
 // Assign dragable area in the code to allow for dragging and selecting items//
 let drag_event_fired = false;
@@ -3998,15 +3952,6 @@ const showDetailsFile = () => {
   $(".div-display-details.file").toggleClass("show");
 };
 
-const pasteFromClipboard = (event, target_element) => {
-  event.preventDefault();
-  let key = Clipboard.readText();
-
-  if (target_element == "bootbox-api-key" || target_element == "bootbox-api-secret") {
-    $(`#${target_element}`).val(key);
-  }
-};
-
 var bfAddAccountBootboxMessage = `<form>
     <div class="form-group row" style="justify-content: center; margin-top: .5rem; margin-bottom: 2rem;">
       <div style="display: flex; width: 100%">
@@ -4112,24 +4057,6 @@ window.hideMenu = (category, menu1, menu2, menu3) => {
     menu3.style.display = "none";
     menu3.style.top = "-210%";
     menu3.style.left = "-210%";
-  }
-};
-
-const changeStepOrganize = (step) => {
-  if (step.id === "button-organize-prev") {
-    document.getElementById("div-step-1-organize").style.display = "block";
-    document.getElementById("div-step-2-organize").style.display = "none";
-    document.getElementById("dash-title").innerHTML =
-      "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>High-level folders";
-    organizeNextStepBtn.style.display = "block";
-    organizePrevStepBtn.style.display = "none";
-  } else {
-    document.getElementById("div-step-1-organize").style.display = "none";
-    document.getElementById("div-step-2-organize").style.display = "block";
-    document.getElementById("dash-title").innerHTML =
-      "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>Generate dataset";
-    organizePrevStepBtn.style.display = "block";
-    organizeNextStepBtn.style.display = "none";
   }
 };
 
@@ -7259,71 +7186,6 @@ const initiate_generate = async (e) => {
   };
 }; // end initiate_generate
 
-const show_curation_shortcut = async () => {
-  Swal.fire({
-    backdrop: "rgba(0,0,0, 0.4)",
-    cancelButtonText: "No. I'll do it later",
-    confirmButtonText: "Yes, I want to share it",
-    heightAuto: false,
-    icon: "success",
-    allowOutsideClick: false,
-    reverseButtons: window.reverseSwalButtons,
-    showCancelButton: true,
-    text: "Now that your dataset is uploaded, do you want to share it with the Curation Team?",
-    showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
-  }).then(async (result) => {
-    //window.dismissStatus("status-bar-curate-progress");
-    window.uploadComplete.open({
-      type: "success",
-      message: "Upload to Pennsieve completed",
-    });
-    let statusBarContainer = document.getElementById("status-bar-curate-progress");
-    //statusBarContainer.remove();
-
-    if (result.isConfirmed) {
-      let datasetName = "";
-      if (!sodaJSONObj["generate-dataset"].hasOwnProperty("dataset-name")) {
-        datasetName = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-      } else {
-        datasetName = sodaJSONObj["generate-dataset"]["dataset-name"];
-      }
-      $(".bf-dataset-span").html(datasetName);
-      $("#current-bf-dataset").text(datasetName);
-      $("#current-bf-dataset-generate").text(datasetName);
-      $(".bf-dataset-span").html(datasetName);
-      confirm_click_function();
-
-      window.defaultBfDataset = datasetName;
-      // document.getElementById("ds-description").innerHTML = "";
-      window.refreshDatasetList();
-      $("#dataset-loaded-message").hide();
-
-      // showHideDropdownButtons("dataset", "show");
-      confirm_click_function();
-      $("#guided_mode_view").click();
-      $(".swal2-confirm").click();
-      $(".vertical-progress-bar-step").removeClass("is-current");
-      $(".vertical-progress-bar-step").removeClass("done");
-      $(".getting-started").removeClass("prev");
-      $(".getting-started").removeClass("show");
-      $(".getting-started").removeClass("test2");
-      $("#Question-getting-started-1").addClass("show");
-      $("#generate-dataset-progress-tab").css("display", "none");
-
-      window.currentTab = 0;
-      window.wipeOutCurateProgress();
-      $("#guided-button-start-modify-component").click();
-      $("#disseminate_dataset_tab").click();
-      $("#submit_prepublishing_review_btn").click();
-    }
-  });
-};
-
 window.get_num_files_and_folders = (dataset_folders) => {
   if ("files" in dataset_folders) {
     for (let file in dataset_folders["files"]) {
@@ -8146,11 +8008,6 @@ document.getElementById("button-display-client-id").addEventListener("click", as
     allowEscapeKey: true,
   });
 });
-
-const gettingStarted = () => {
-  let getting_started = document.getElementById("main_tabs_view");
-  getting_started.click();
-};
 
 const directToGuidedMode = () => {
   const guidedModeLinkButton = document.getElementById("guided_mode_view");
