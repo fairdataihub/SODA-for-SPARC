@@ -6,9 +6,7 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-import * as os from "os";
 import * as path from "path";
-import Editor from "@toast-ui/editor";
 // const remote = require("@electron/remote");
 import { Notyf } from "notyf";
 import { v4 as uuidv4 } from "uuid";
@@ -33,7 +31,6 @@ import lottie from "lottie-web";
 import { dragDrop, successCheck } from "../../assets/lotties/lotties";
 import autoComplete from "@tarekraafat/autocomplete.js/dist/autoComplete.min.js";
 import Cropper from "cropperjs";
-import DragSort from "@yaireo/dragsort";
 import axios from "axios";
 import Swal from "sweetalert2";
 import DatePicker from "tui-date-picker";
@@ -62,10 +59,7 @@ import {
   swalFileListDoubleAction,
   swalShowError,
   swalShowInfo,
-  swalConfirmAction,
 } from "../utils/swal-utils";
-import canSmiley from "/img/can-smiley.png";
-import canSad from "/img/can-sad.png";
 
 import useGlobalStore from "../../stores/globalStore";
 import { setTreeViewDatasetStructure } from "../../stores/slices/datasetTreeViewSlice";
@@ -85,7 +79,6 @@ import {
   blockedMessage,
   hostFirewallMessage,
 } from "../check-firewall/checkFirewall";
-import { setDatasetEntityObj } from "../../stores/slices/datasetEntitySelectorSlice";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -298,7 +291,6 @@ window.notyf = new Notyf({
   ],
 });
 
-let connected_to_internet = false;
 let update_available_notification = "";
 let update_downloaded_notification = "";
 
@@ -316,7 +308,7 @@ const connectToServer = async () => {
   const totalNumberOfRetries = Math.floor(maxWaitTime / retryInterval);
   for (let i = 0; i < totalNumberOfRetries; i++) {
     try {
-      const res = await client.get("/startup/echo?arg=server ready");
+      await client.get("/startup/echo?arg=server ready");
 
       // Log the successful connection to the server
       window.log.info("Connected to Python back-end successfully");
@@ -385,7 +377,7 @@ const startBackgroundServices = async () => {
       console.error("Error retrieving BF accounts: ", error);
     }
 
-    notyf.open({
+    window.notyf.open({
       duration: "2000",
       type: "success",
       message: `Connected to SODA's background services successfully.`,
@@ -621,11 +613,10 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       return false;
     }
 
-    let agentDownloadUrl;
     let latestPennsieveAgentVersion;
 
     try {
-      [agentDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
+      latestPennsieveAgentVersion = await getLatestPennsieveAgentVersion()[1];
     } catch (error) {
       const emessage = userErrorMessage(error);
       setPennsieveAgentCheckError(
@@ -679,7 +670,7 @@ window.synchronizePennsieveWorkspace = async () => {
   //           under the default profile does not mean that key is associated with the user's current workspace.
   const profileMatches = await window.defaultProfileMatchesCurrentWorkspace();
   if (!profileMatches) {
-    log.info("Default api key is for a different workspace");
+    window.log.info("Default api key is for a different workspace");
     await window.switchToCurrentWorkspace();
   }
 };
@@ -701,7 +692,7 @@ window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
     }
 
     // Check the internet connection and if available check the rest.
-    const userConnectedToInternet = await checkInternetConnection();
+    const userConnectedToInternet = await window.checkInternetConnection();
     if (!userConnectedToInternet) {
       throw new Error(
         "It seems that you are not connected to the internet. Please check your connection and try again."
@@ -877,7 +868,7 @@ window.check_api_key = async (showNotyfs = false) => {
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
   } catch (e) {
-    log.info("Current default profile API Key is obsolete");
+    window.log.info("Current default profile API Key is obsolete");
     clientError(e);
     if (showNotyfs) {
       window.notyf.dismiss(notification);
@@ -892,7 +883,7 @@ window.check_api_key = async (showNotyfs = false) => {
   let res = responseObject.data["accounts"];
 
   if (res[0] === "Select" && res.length === 1) {
-    log.info("No api keys found");
+    window.log.info("No api keys found");
     //no api key found
     if (showNotyfs) {
       window.notyf.dismiss(notification);
@@ -903,7 +894,7 @@ window.check_api_key = async (showNotyfs = false) => {
     }
     return false;
   } else {
-    log.info("Found non obsolete api key in default profile");
+    window.log.info("Found non obsolete api key in default profile");
 
     if (showNotyfs) {
       window.notyf.dismiss(notification);
@@ -920,7 +911,7 @@ const getPlatformSpecificAgentDownloadURL = async () => {
   // Try to the direct download url for the platform specific agent
   // If that fails, then return the generic download url
   try {
-    const [directDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
+    const [directDownloadUrl, _] = await getLatestPennsieveAgentVersion();
     return directDownloadUrl;
   } catch (error) {
     return "https://github.com/Pennsieve/pennsieve-agent/releases";
@@ -1014,7 +1005,7 @@ const warnUserIfBetaVersionAndDntNotEnabled = async () => {
       );
     }
   } catch (err) {
-    log.error("Error determing if beta pop up should exist:", err);
+    window.log.error("Error determing if beta pop up should exist:", err);
   }
 };
 
@@ -1092,11 +1083,6 @@ const restartApp = async () => {
 // // Get html elements from UI
 // //////////////////////////////////
 
-// // Navigator button //
-// const buttonSidebar = document.getElementById("button-hamburger");
-// const buttonSidebarIcon = document.getElementById("button-soda-icon");
-// const buttonSidebarBigIcon = document.getElementById("button-soda-big-icon");
-
 // /////// New Organize Datasets /////////////////////
 
 const organizeDSbackButton = document.getElementById("button-back");
@@ -1107,16 +1093,10 @@ const fullNameValue = document.querySelector(".hoverFullName");
 window.menuFolder = document.querySelector(".menu.reg-folder");
 window.menuFile = document.querySelector(".menu.file");
 window.menuHighLevelFolders = document.querySelector(".menu.high-level-folder");
-const organizeNextStepBtn = document.getElementById("button-organize-confirm-create");
-const organizePrevStepBtn = document.getElementById("button-organize-prev");
 window.manifestFileCheck = document.getElementById("generate-manifest-curate");
 
-let tableMetadataCount = 0;
-
 // Manage datasets //
-
 window.sodaCopy = {};
-let datasetStructCopy = {};
 
 window.pathSubmitDataset = document.querySelector("#selected-local-dataset-submit");
 // const progressUploadBf = document.getElementById("div-progress-submit");
@@ -1141,12 +1121,6 @@ window.currentAddEditDatasetPermission = document.querySelector(
 );
 const bfListUsersPI = document.querySelector("#bf_list_users_pi");
 
-// const bfAddPermissionCurationTeamBtn = document.getElementById(
-//   "button-add-permission-curation-team"
-// );
-// const datasetPermissionStatusCurationTeam = document.querySelector(
-//   "#para-dataset-permission-status-curation-team"
-// );
 const bfListUsers = document.querySelector("#bf_list_users");
 const bfListTeams = document.querySelector("#bf_list_teams");
 
@@ -1393,7 +1367,7 @@ window.electron.ipcRenderer.on(
   (event, dirpath, filename) => {
     if (dirpath.length > 0) {
       var destinationPath = window.path.join(dirpath[0], filename);
-      if (fs.existsSync(destinationPath)) {
+      if (window.fs.existsSync(destinationPath)) {
         var emessage =
           "File '" +
           filename +
@@ -1423,7 +1397,7 @@ window.electron.ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then(() => {});
             window.generateSubjectsFileHelper(false);
           }
         });
@@ -1602,58 +1576,6 @@ window.generateSubjectsFileHelper = async (uploadBFBoolean) => {
     );
   }
 };
-
-// generate samples file
-window.electron.ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
-  if (dirpath.length > 0) {
-    var destinationPath = window.path.join(dirpath[0], filename);
-    if (fs.existsSync(destinationPath)) {
-      var emessage =
-        "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
-      Swal.fire({
-        icon: "warning",
-        title: "Metadata file already exists",
-        text: `${emessage}`,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        showConfirmButton: true,
-        showCancelButton: true,
-        cancelButtonText: "No",
-        confirmButtonText: "Yes",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire({
-            title: "Generating the samples.xlsx file",
-            html: "Please wait...",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            allowEscapeKey: false,
-            allowOutsideClick: false,
-            timerProgressBar: false,
-            didOpen: () => {
-              Swal.showLoading();
-            },
-          }).then((result) => {});
-          window.generateSamplesFileHelper(uploadBFBoolean);
-        }
-      });
-    } else {
-      Swal.fire({
-        title: "Generating the samples.xlsx file",
-        html: "Please wait...",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        timerProgressBar: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      }).then((result) => {});
-      window.generateSamplesFileHelper(uploadBFBoolean);
-    }
-  }
-});
 
 window.generateSamplesFileHelper = async (uploadBFBoolean) => {
   let bfDataset = $("#bf_dataset_load_samples").text().trim();
@@ -5797,7 +5719,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
     select_items(items, event, isDragging);
   });
 
-  dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
+  dragselect_area.subscribe("dragstart", ({ event }) => {
     select_items_ctrl(event);
   });
   drag_event_fired = false;
@@ -6182,11 +6104,11 @@ const preGenerateSetup = async (e, elementContext) => {
   document.getElementById("contact-us-view").style.pointerEvents = "none";
 
   // updateJSON structure after Generate dataset tab
-  window.updateJSONStructureGenerate(false, sodaJSONObj);
+  window.updateJSONStructureGenerate(false, window.sodaJSONObj);
 
-  window.setSodaJSONStartingPoint(sodaJSONObj);
+  window.setSodaJSONStartingPoint(window.sodaJSONObj);
 
-  let [_, dataset_destination] = setDatasetNameAndDestination(sodaJSONObj);
+  let dataset_destination = setDatasetNameAndDestination(window.sodaJSONObj)[1];
 
   let resume = e.target.textContent.trim() == "Retry";
   if (!resume) {
