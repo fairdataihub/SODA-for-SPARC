@@ -73,6 +73,7 @@ import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
 import hasConnectedAccountWithPennsieve from "../others/authentication/auth";
+import { data } from "jquery";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -575,6 +576,8 @@ const updateGuidedDatasetName = (newDatasetName) => {
   window.sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
 };
 
+window.getDatasetEntityObj = getDatasetEntityObj;
+
 const savePageChanges = async (pageBeingLeftID) => {
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
@@ -597,8 +600,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         const entityType = pageBeingLeftDataSet.entityType;
         const entityTypeSingular = pageBeingLeftDataSet.entityTypeStringSingular;
         const datasetEntityObj = getDatasetEntityObj();
-        console.log("datasetEntityObj", datasetEntityObj);
-        console.log("entityType", entityType);
+        console.log("datasetEntityObj when leaving" + pageBeingLeftID, datasetEntityObj);
+        console.log("pageBeingLeftDataSet.entityType", entityType);
         if (!datasetEntityObj?.[entityType]) {
           errorArray.push({
             type: "notyf",
@@ -610,7 +613,33 @@ const savePageChanges = async (pageBeingLeftID) => {
         window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
       }
       if (pageBeingLeftComponentType === "entity-selection-page") {
-        console.log("BONGO");
+        const entityType = pageBeingLeftDataSet.entityType;
+        const entityTypeSingular = pageBeingLeftDataSet.entityTypeStringSingular;
+        const datasetEntityObj = getDatasetEntityObj();
+        console.log("datasetEntityObj when leaving" + pageBeingLeftID, datasetEntityObj);
+        console.log("pageBeingLeftDataSet.entityType", entityType);
+        const entityItems = Object.keys(datasetEntityObj?.[entityType] || {});
+        console.log("entityItems", entityItems);
+
+        let noDataAddedToEntities = false; // Changed from const to let
+
+        for (const item of entityItems) {
+          if (datasetEntityObj[entityType][item].length !== 0) {
+            noDataAddedToEntities = true;
+            break;
+          }
+        }
+        /*
+        if (!noDataAddedToEntities) {
+          errorArray.push({
+            type: "notyf",
+            message: `Please add data to at least one ${entityTypeSingular} to continue`,
+          });
+          throw errorArray;
+        }*/
+
+        // Save the dataset entity object to the progress file
+        window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
       }
     }
 
@@ -1223,11 +1252,9 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
 
       if (selectedEntities.includes("code")) {
-        guidedUnSkipPage("guided-code-entity-addition-tab");
-        guidedUnSkipPage("guided-code-entity-selection-tab");
+        guidedUnSkipPage("guided-code-folder-tab");
       } else {
-        guidedSkipPage("guided-code-entity-addition-tab");
-        guidedSkipPage("guided-code-entity-selection-tab");
+        guidedSkipPage("guided-code-folder-tab");
       }
     }
 
@@ -1407,7 +1434,6 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-protocol-folder-tab") {
-      guidedUnSkipPage("guided-code-folder-tab");
     }
 
     if (pageBeingLeftID === "guided-docs-folder-tab") {
@@ -2670,6 +2696,9 @@ const guidedTransitionFromHome = async () => {
 
   window.CURRENT_PAGE = document.getElementById("guided-select-starting-point-tab");
 
+  $("#guided-footer-div").removeClass("hidden");
+  $("#guided-footer-div").show();
+
   //Unskip all pages besides the ones that should always be skipped
   guidedResetSkippedPages();
 };
@@ -2685,23 +2714,10 @@ const guidedTransitionToHome = () => {
     guidedParentTab.classList.add("hidden");
   }
   window.CURRENT_PAGE = undefined;
-
-  //Hide guided headers and footers
-  document.getElementById("guided-header-div").classList.add("hidden");
   $("#guided-footer-div").addClass("hidden");
   $("#guided-footer-div").hide();
-};
-
-const guidedTransitionFromDatasetNameSubtitlePage = () => {
-  //Hide dataset name and subtitle parent tab
-  document.getElementById("curation-preparation-parent-tab").classList.add("hidden");
-  //hide the intro footer
-  document.getElementById("guided-footer-intro").classList.add("hidden");
-
-  //Show the dataset structure page
-  $("#prepare-dataset-parent-tab").css("display", "flex");
-  $("#guided-header-div").css("display", "flex");
-  $("#guided-footer-div").css("display", "flex");
+  //Hide guided headers and footers
+  document.getElementById("guided-header-div").classList.add("hidden");
 };
 
 const guidedSaveProgress = async () => {
@@ -4811,13 +4827,13 @@ window.openPage = async (targetPageID) => {
         // Set the dataset entity object to the saved dataset entity object from the JSON
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
         setDatasetEntityObj(savedDatasetEntityObj);
-        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
+        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
       }
       if (targetPageComponentType === "entity-selection-page") {
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
         setDatasetEntityObj(savedDatasetEntityObj);
 
-        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
+        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
         /*
         if (!window.sodaJSONObj["completed-tabs"].includes(targetPageID)) {
           console.log("Calling autoSelectDatasetFoldersAndFilesForEnteredEntityIds");
@@ -4994,43 +5010,28 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-unstructured-data-import-tab") {
-      guidedUpdateFolderStructureUI("primary/");
+      guidedUpdateFolderStructureUI("data/");
     }
 
     if (targetPageID === "guided-denote-derivative-data-tab") {
       // Set the folder structure as the primary folder since the user is
       // denoting data as derivative which will be moved to the derivative folder
-      guidedUpdateFolderStructureUI("primary/");
+      guidedUpdateFolderStructureUI("data/");
     }
 
     if (targetPageID === "guided-code-folder-tab") {
-      itemsContainer.classList.add("border-styling");
-      const codeFolder = window.datasetStructureJSONObj["folders"]["code"];
-      if (!codeFolder) {
-        //create a docs folder
-        window.datasetStructureJSONObj["folders"]["code"] = newEmptyFolderObj();
-      }
-      //Append the guided-file-explorer element to the code folder organization container
-      $("#guided-file-explorer-elements").appendTo($("#guided-user-has-code-data"));
       guidedUpdateFolderStructureUI("code/");
-
-      //Remove hidden class from file explorer element in case it was hidden
-      //when showing the intro for prim/src/deriv organization
-      document.getElementById("guided-file-explorer-elements").classList.remove("hidden");
     }
 
     if (targetPageID === "guided-protocol-folder-tab") {
       guidedUpdateFolderStructureUI("protocol/");
-      setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["protocol"]);
     }
 
     if (targetPageID === "guided-docs-folder-tab") {
       guidedUpdateFolderStructureUI("docs/");
-      setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["docs"]);
     }
     if (targetPageID === "guided-aux-folder-tab") {
       guidedUpdateFolderStructureUI("aux/");
-      setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["docs"]);
     }
 
     if (targetPageID === "guided-dataset-structure-review-tab") {
@@ -5051,256 +5052,118 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-manifest-file-generation-tab") {
-      // Note: manifest file auto-generation is handled by an event listener on the button
-      // with the ID: guided-button-auto-generate-manifest-files
+      // Delete existing manifest files in the dataset structure
+      Object.values(window.datasetStructureJSONObj.folders).forEach((folder) => {
+        delete folder.files["manifest.xlsx"];
+      });
 
-      //Delete any manifest files in the dataset structure.
-      for (const folder of Object.keys(window.datasetStructureJSONObj["folders"])) {
-        if (window.datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"]) {
-          delete window.datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"];
-        }
-      }
-
-      const purgeNonExistentFilesFromDatasetStructure = async (datasetStructure) => {
+      /**
+       * Purge non-existent files from the dataset structure.
+       */
+      const purgeNonExistentFiles = async (datasetStructure) => {
         const nonExistentFiles = [];
 
-        /**
-         * Recursively collects non-existent files from the dataset structure.
-         * @param {Object} currentStructure - The current level of the dataset structure.
-         * @param {string} currentPath - The relative path to the current structure.
-         */
         const collectNonExistentFiles = async (currentStructure, currentPath = "") => {
-          const files = currentStructure?.files || {};
-          for (const fileName in files) {
-            const fileData = files[fileName];
-            if (fileData.type === "local") {
-              const filePath = fileData.path;
-              const fileExists = await window.fs.existsSync(filePath);
-
-              if (!fileExists) {
-                nonExistentFiles.push(`${currentPath}${fileName}`);
-              }
+          for (const [fileName, fileData] of Object.entries(currentStructure.files || {})) {
+            if (fileData.type === "local" && !(await window.fs.existsSync(fileData.path))) {
+              nonExistentFiles.push(`${currentPath}${fileName}`);
             }
           }
-
-          const folders = currentStructure?.folders || {};
-          for (const folderName in folders) {
-            await collectNonExistentFiles(folders[folderName], `${currentPath}${folderName}/`);
-          }
+          await Promise.all(
+            Object.entries(currentStructure.folders || {}).map(([folderName, folder]) =>
+              collectNonExistentFiles(folder, `${currentPath}${folderName}/`)
+            )
+          );
         };
 
-        /**
-         * Recursively deletes references to non-existent files from the dataset structure.
-         * @param {Object} currentStructure - The current level of the dataset structure.
-         * @param {string} currentPath - The relative path to the current structure.
-         */
-        const deleteNonExistentFiles = (currentStructure, currentPath = "") => {
-          const files = currentStructure?.files || {};
-          for (const fileName in files) {
-            const fileData = files[fileName];
-            if (fileData.type === "local") {
-              const filePath = fileData.path;
-              const isNonExistent = !window.fs.existsSync(filePath);
-
-              if (isNonExistent) {
-                log.info(`Deleting reference to non-existent file: ${currentPath}${fileName}`);
-                delete files[fileName];
-              }
+        const deleteNonExistentFiles = (currentStructure) => {
+          for (const [fileName, fileData] of Object.entries(currentStructure.files || {})) {
+            if (fileData.type === "local" && !window.fs.existsSync(fileData.path)) {
+              log.info(`Deleting reference to non-existent file: ${fileName}`);
+              delete currentStructure.files[fileName];
             }
           }
-
-          const folders = currentStructure?.folders || {};
-          for (const folderName in folders) {
-            deleteNonExistentFiles(folders[folderName], `${currentPath}${folderName}/`);
-          }
+          Object.entries(currentStructure.folders || {}).forEach(([folderName, folder]) =>
+            deleteNonExistentFiles(folder)
+          );
         };
 
-        // Start collecting non-existent files
         await collectNonExistentFiles(datasetStructure);
         if (nonExistentFiles.length > 0) {
           await swalFileListSingleAction(
             nonExistentFiles,
             "Files imported into SODA that are no longer on your computer were detected",
-            "The files listed below will be disregarded by SODA and will not be uploaded to Pennsieve.",
+            "These files will be disregarded and not uploaded to Pennsieve.",
             ""
           );
-
-          // Delete references to the non-existent files
           deleteNonExistentFiles(datasetStructure);
         }
       };
 
-      // Purge non-existent files from the dataset structure before generating manifest files
-      await purgeNonExistentFilesFromDatasetStructure(window.datasetStructureJSONObj);
+      await purgeNonExistentFiles(window.datasetStructureJSONObj);
 
-      // Helper function to check if a folder structure is empty
-      const folderObjIsEmpty = (folderStructure) => {
-        // Check if there are no files at this level
-        const hasFiles = folderStructure.files && Object.keys(folderStructure.files).length > 0;
-        if (hasFiles) return false;
-
-        // Check if there are no non-empty subfolders
-        const subfolders = folderStructure.folders || {};
-        for (const subfolderName in subfolders) {
-          const subfolderStructure = subfolders[subfolderName];
-          if (!folderObjIsEmpty(subfolderStructure)) {
-            return false; // Found a non-empty subfolder
-          }
-        }
-
-        // If no files and all subfolders are empty, the folder is empty
-        return true;
-      };
-
-      // Recursively delete empty folders from the dataset structure
+      /**
+       * Recursively delete empty folders from the dataset structure.
+       */
       const deleteEmptyFolders = (currentStructure) => {
-        const folders = currentStructure?.folders || {};
-
-        for (const folderName in folders) {
-          const folderStructure = folders[folderName];
-
-          // Recursively clean subfolders first
-          deleteEmptyFolders(folderStructure);
-
-          // Check if the folder is empty and delete it
-          if (folderObjIsEmpty(folderStructure)) {
-            delete folders[folderName];
+        Object.entries(currentStructure.folders || {}).forEach(([folderName, folder]) => {
+          deleteEmptyFolders(folder);
+          if (
+            !Object.keys(folder.files || {}).length &&
+            !Object.keys(folder.folders || {}).length
+          ) {
+            delete currentStructure.folders[folderName];
           }
-        }
+        });
       };
 
-      // Trigger the deletion of empty folders
       deleteEmptyFolders(window.datasetStructureJSONObj);
 
-      // If no folders or files are left in the dataset structure,
-      // then direct them back to the beginning of the dataset structuring section
-      // (This is an unlikely edge case that would only happen if SODA could not detect
-      // literally all files that they added to the dataset structure)
-      if (Object.keys(window.datasetStructureJSONObj.folders).length === 0) {
+      if (!Object.keys(window.datasetStructureJSONObj.folders).length) {
         await swalShowInfo(
           "No files or folders are currently imported into SODA",
           "You will be returned to the beginning of the dataset structuring section to import your data."
         );
         await window.openPage("guided-dataset-structure-intro-tab");
-
         return;
       }
 
-      const manifestFilesCardsContainer = document.getElementById(
-        "guided-container-manifest-file-cards"
-      );
+      document.getElementById("guided-container-manifest-file-cards").innerHTML = `
+    <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    Updating your dataset's manifest files...
+  `;
 
-      // Show the loading spinner
-      manifestFilesCardsContainer.innerHTML = `
-        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-        Updating your dataset's manifest files...
-      `;
-
-      const sodaCopy = { ...window.sodaJSONObj };
-      delete sodaCopy["generate-dataset"];
-      sodaCopy["metadata-files"] = {};
-      sodaCopy["dataset-structure"] = window.datasetStructureJSONObj;
-
-      const cleanJson = await client.post(
-        `/curate_datasets/clean-dataset`,
-        { soda_json_structure: sodaCopy },
-        { timeout: 0 }
-      );
-      let response = cleanJson.data.soda_json_structure;
-      let responseDataStructure = response["dataset-structure"];
-
-      const res = await client.post(
-        `/curate_datasets/generate_manifest_file_data`,
-        {
-          dataset_structure_obj: responseDataStructure,
-        },
-        { timeout: 0 }
-      );
-      const manifestRes = res.data;
-
-      const newManifestData = {
-        headers: manifestRes.shift(),
-        data: manifestRes,
+      const sodaCopy = {
+        ...window.sodaJSONObj,
+        "metadata-files": {},
+        "dataset-structure": window.datasetStructureJSONObj,
       };
+      delete sodaCopy["generate-dataset"];
 
-      const sourceDerivativeFoldersAndFilesObj =
-        window.sodaJSONObj["source-derivative-folders-and-files"];
-      const primaryFoldersAndFilesMarkedAsSource = new Set(
-        sourceDerivativeFoldersAndFilesObj["source"] || []
-      );
-      const primaryFoldersAndFilesMarkedAsDerivative = new Set(
-        sourceDerivativeFoldersAndFilesObj["derivative"] || []
-      );
-      for (let i = 0; i < newManifestData.data.length; i++) {
-        const fileName = newManifestData.data[i][0];
-        const entityColumnIndex = newManifestData.headers.indexOf("entity");
+      const response = (
+        await client.post(
+          "/curate_datasets/clean-dataset",
+          { soda_json_structure: sodaCopy },
+          { timeout: 0 }
+        )
+      ).data.soda_json_structure;
+      const manifestRes = (
+        await client.post(
+          "/curate_datasets/generate_manifest_file_data",
+          { dataset_structure_obj: response["dataset-structure"] },
+          { timeout: 0 }
+        )
+      ).data;
 
-        const subjectRelatedFoldersAndFiles =
-          window.sodaJSONObj["subject-related-folders-and-files"];
-        if (subjectRelatedFoldersAndFiles) {
-          const subjectEntities = Object.keys(subjectRelatedFoldersAndFiles);
-          for (const subjectEntity of subjectEntities) {
-            const subjectFiles = subjectRelatedFoldersAndFiles[subjectEntity];
-            // Loop through the files in the subject entity and if any match the current file name, update the entity column
-            for (const subjectFile of subjectFiles) {
-              if (subjectFile === fileName) {
-                newManifestData.data[i][entityColumnIndex] = subjectEntity;
-                break;
-              }
-            }
-          }
-        }
+      const newManifestData = { headers: manifestRes.shift(), data: manifestRes };
+      const entityColumnIndex = newManifestData.headers.indexOf("entity");
 
-        const sampleRelatedFoldersAndFiles = window.sodaJSONObj["sample-related-folders-and-files"];
-        if (sampleRelatedFoldersAndFiles) {
-          console.log(sampleRelatedFoldersAndFiles);
-          const sampleEntities = Object.keys(sampleRelatedFoldersAndFiles);
-          for (const sampleEntity of sampleEntities) {
-            const sampleFiles = sampleRelatedFoldersAndFiles[sampleEntity];
-            // Loop through the files in the sample entity and if any match the current file name, update the entity column
-            for (const sampleFile of sampleFiles) {
-              if (sampleFile === fileName) {
-                newManifestData.data[i][entityColumnIndex] = sampleEntity;
-                break;
-              }
-            }
-          }
-        }
-
-        const performanceRelatedFoldersAndFiles =
-          window.sodaJSONObj["performance-related-folders-and-files"];
-        if (performanceRelatedFoldersAndFiles) {
-          const performanceEntities = Object.keys(performanceRelatedFoldersAndFiles);
-          for (const performanceEntity of performanceEntities) {
-            const performanceFiles = performanceRelatedFoldersAndFiles[performanceEntity];
-            // Loop through the files in the performance entity and if any match the current file name, update the entity column
-            for (const performanceFile of performanceFiles) {
-              if (performanceFile === fileName) {
-                newManifestData.data[i][entityColumnIndex] = performanceEntity;
-                break;
-              }
-            }
-          }
-        }
-
-        if (primaryFoldersAndFilesMarkedAsSource.has(fileName)) {
-          // replace the first instance of primary/ with source/
-          newManifestData.data[i][0] = fileName.replace("primary/", "source/");
-        }
-
-        if (primaryFoldersAndFilesMarkedAsDerivative.has(fileName)) {
-          // replace the first instance of primary/ with derivative/
-          newManifestData.data[i][0] = fileName.replace("primary/", "derivative/");
-        }
-      }
-
-      const newManifestDataBeforeSort = newManifestData.data;
-      console.log("newManifestDataBeforeSort", newManifestDataBeforeSort);
-
-      // Helper funciton to sort the manifest data rows in the expected order
+      /**
+       * Sort manifest data rows based on predefined folder order.
+       */
       const sortManifestDataRows = (rows) => {
-        // Define the custom folder order
         const folderOrder = {
+          data: 0,
           primary: 1,
           source: 2,
           derivative: 3,
@@ -5310,48 +5173,85 @@ window.openPage = async (targetPageID) => {
         };
 
         return rows.sort((rowA, rowB) => {
-          // Extract the file paths from the first column of each row
-          const pathA = rowA[0];
-          const pathB = rowB[0];
+          const pathA = rowA[0] || "";
+          const pathB = rowB[0] || "";
 
-          // Extract the top-level folder
-          const getTopLevelFolder = (path) => path.split("/")[0];
+          const getTopLevelFolder = (path) => (path.includes("/") ? path.split("/")[0] : path);
 
           const folderA = getTopLevelFolder(pathA);
           const folderB = getTopLevelFolder(pathB);
 
-          // Get the priority based on the custom order
-          const priorityA = folderOrder[folderA] || Infinity; // Default to Infinity for unknown folders
-          const priorityB = folderOrder[folderB] || Infinity;
+          const priorityA = folderOrder[folderA] ?? Infinity;
+          const priorityB = folderOrder[folderB] ?? Infinity;
 
-          // Compare by custom priority first
           if (priorityA !== priorityB) {
             return priorityA - priorityB;
           }
 
-          // If priorities are the same, sort lexicographically
-          if (pathA < pathB) return -1;
-          if (pathA > pathB) return 1;
+          // Ensure 'data' always comes before lexicographical sorting
+          if (folderA === "data" && folderB !== "data") return -1;
+          if (folderB === "data" && folderA !== "data") return 1;
 
-          // If lexicographical comparison is also equal, maintain order
-          return 0;
+          return pathA.localeCompare(pathB);
         });
       };
 
+      console.log("Before sort: ", newManifestData.data);
+
       newManifestData.data = sortManifestDataRows(newManifestData.data);
-      console.log("newManifestDataAfterSort", newManifestData.data);
 
-      const existingManifestData = window.sodaJSONObj["guided-manifest-file-data"];
-      let updatedManifestData;
+      const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
 
-      if (existingManifestData) {
-        updatedManifestData = window.diffCheckManifestFiles(newManifestData, existingManifestData);
-      } else {
-        updatedManifestData = newManifestData;
-      }
+      const updateEntityColumn = (manifestDataRows, datasetEntityObj) => {
+        manifestDataRows.forEach((row) => {
+          const path = row[0]; // Path is in the first column
+          let entityList = [];
 
-      window.sodaJSONObj["guided-manifest-file-data"] = updatedManifestData;
-      //Rerender the manifest cards
+          // Check for subjects
+          for (const [entity, paths] of Object.entries(datasetEntityObj.subjects || {})) {
+            if (paths.includes(path)) {
+              console.log("Subject found: ", entity);
+              entityList.push(entity);
+              break; // Stop checking subjects after the first match
+            }
+          }
+
+          // Check for samples
+          for (const [entity, paths] of Object.entries(datasetEntityObj.samples || {})) {
+            if (paths.includes(path)) {
+              entityList.push(entity);
+              break; // Stop checking samples after the first match
+            }
+          }
+
+          // Check for performances
+          for (const [entity, paths] of Object.entries(datasetEntityObj.performances || {})) {
+            if (paths.includes(path)) {
+              entityList.push(entity);
+              break; // Stop checking performances after the first match
+            }
+          }
+
+          // Update the entity column (index from headers)
+          row[entityColumnIndex] = entityList.join(" ");
+        });
+
+        return manifestDataRows; // Return updated data
+      };
+
+      // Apply the function
+      updateEntityColumn(newManifestData.data, datasetEntityObj);
+
+      console.log("After sort: ", newManifestData.data);
+      window.sodaJSONObj["guided-manifest-file-data"] = window.sodaJSONObj[
+        "guided-manifest-file-data"
+      ]
+        ? window.diffCheckManifestFiles(
+            newManifestData,
+            window.sodaJSONObj["guided-manifest-file-data"]
+          )
+        : newManifestData;
+
       renderManifestCards();
     }
 
@@ -5390,6 +5290,13 @@ window.openPage = async (targetPageID) => {
       addEntityToEntityList("source-derivative-folders-and-files", "source");
       addEntityToEntityList("source-derivative-folders-and-files", "derivative");
       setActiveEntity(null);
+      console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
+    }
+    if (targetPageID === "guided-modalities-selection-tab") {
+      addEntityToEntityList("modalities", "microscopy");
+      addEntityToEntityList("modalities", "electrophysiology");
+      setActiveEntity(null);
+      console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {
@@ -8251,7 +8158,7 @@ const guidedUpdateFolderStructureUI = (folderPathSeperatedBySlashes) => {
     window.organizeDSglobalPath,
     window.datasetStructureJSONObj
   );
-  console.log("Called window.getInFolder for interactive folder behavior.");
+  console.log("arrayPathToNestedJsonToRender:", arrayPathToNestedJsonToRender);
 
   // Refresh the tree view to match the current folder structure
   setTreeViewDatasetStructure(window.datasetStructureJSONObj, arrayPathToNestedJsonToRender);
@@ -9857,25 +9764,6 @@ const removeOtherLinkField = (otherLinkDeleteButton) => {
   const otherLinkField = protocolDeleteButton.parentElement;
   otherLinkField.remove();
 };*/
-
-//SUBJECT TABLE FUNCTIONS
-const returnToTableFromFolderStructure = (clickedBackButton) => {
-  previousFolderStructurePage = clickedBackButton.attr("data-prev-page");
-  window.openPage(previousFolderStructurePage);
-  $("#guided-footer-div").css("display", "flex");
-  clickedBackButton.remove();
-};
-
-const returnToSubjectMetadataTableFromSubjectMetadataForm = () => {
-  //Clear metadata form inputs
-  window.clearAllSubjectFormFields(window.guidedSubjectsFormDiv);
-};
-const returnToSampleMetadataTableFromSampleMetadataForm = () => {
-  //Clear metadata form inputs
-  window.clearAllSubjectFormFields(window.guidedSamplesFormDiv);
-  window.openPage("guided-create-samples-metadata-tab");
-  $("#guided-footer-div").css("display", "flex");
-};
 
 const renderSubjectSampleAdditionTable = (subject) => {
   return `
@@ -15450,10 +15338,7 @@ $("#guided-generate-subjects-file").on("click", () => {
   window.addSubject("guided");
   window.clearAllSubjectFormFields(window.guidedSubjectsFormDiv);
 });
-$("#guided-generate-samples-file").on("click", () => {
-  window.addSample("guided");
-  returnToSampleMetadataTableFromSampleMetadataForm();
-});
+
 $("#guided-generate-submission-file").on("click", () => {
   guidedSaveSubmissionFile();
 });

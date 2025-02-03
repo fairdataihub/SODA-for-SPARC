@@ -11,7 +11,6 @@ import {
 
 const NameAndSubtitlePage = () => {
   const guidedDatasetName = useGlobalStore((state) => state.guidedDatasetName);
-  const setGuidedDatasetName = useGlobalStore((state) => state.setGuidedDatasetName);
   const guidedDatasetSubtitle = useGlobalStore((state) => state.guidedDatasetSubtitle);
   return (
     <GuidedModePage pageHeader="Dataset name and subtitle">
