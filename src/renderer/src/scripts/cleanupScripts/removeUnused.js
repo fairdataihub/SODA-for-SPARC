@@ -34,7 +34,6 @@ module.exports = function (fileInfo, api) {
     //     }
     //   })
     //   .remove();
-
     // remove unused function expressions of type const name = () => {}
     // root
     //   .find(j.VariableDeclaration)
@@ -49,31 +48,28 @@ module.exports = function (fileInfo, api) {
     //     }
     //   })
     //   .remove();
-
-
     // remove all unused vars (should be identifiers)
-    let hitAtLine = {}
-    root.find(j.Identifier)
+    let hitAtLine = {};
+    root
+      .find(j.Identifier)
       .filter((path) => {
         if (!path || !path.node) {
           return false;
         }
-
-        if(hits > 10) { 
-          console.log("Failed hit at line ", line)
-          return false
+        if (hits > 2) {
+          // console.log("Failed hit at line ", line);
+          return false;
         }
         const start = path.node.loc?.start;
         if (start && start.line === line && start.column === column - 1 && !hitAtLine[start.line]) {
           console.log(`Found 'event' at line ${start.line}, column ${start.column}`);
           hitAtLine[line] = true;
           hits = hits + 1;
-          return true
+          return true;
         }
-        return false
+        return false;
       })
-      .remove()
-
+      .remove();
     // Remove empty block statements
     // root.find(j.BlockStatement)
     //   .filter( path => {
@@ -83,7 +79,6 @@ module.exports = function (fileInfo, api) {
     //       return path;
     //     }
     //   }).remove()
-
     // Debugging: Log the file path, line, and column being checked
     // console.log(`Checking: ${filePath} at line ${line}, column ${column}`);
     // remove identifiers matching the line and column from the esLint list of items to remove
@@ -107,8 +102,6 @@ module.exports = function (fileInfo, api) {
     //     }
     //   }
     // });
-
-
     // root.find(j.Identifier).forEach((path) => {
     //   const start = path?.node?.loc?.start;
     //   if (start && start.line === 17747) {

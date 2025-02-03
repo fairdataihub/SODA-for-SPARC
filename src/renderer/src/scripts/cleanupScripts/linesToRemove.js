@@ -1,7 +1,7 @@
 const fs = require("fs");
 
 // Read the ESLint output file
-const eslintOutput = JSON.parse(fs.readFileSync("../formatted-eslint-output.json", "utf8"));
+const eslintOutput = JSON.parse(fs.readFileSync("../others/formatted-eslint-output.json", "utf8"));
 
 const messages = [
   "'event' is not defined.",
