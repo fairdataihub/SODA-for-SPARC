@@ -482,20 +482,6 @@ ipcMain.on("open-folder-dialog-save-subjects", async (event, filename) => {
   }
 });
 
-// Generate samples file
-ipcMain.on("open-folder-dialog-save-samples", async (event, filename) => {
-  let mainWindow = BrowserWindow.getFocusedWindow();
-
-  let files = await dialog.showOpenDialog(mainWindow, {
-    properties: ["openDirectory"],
-    title: "Select a directory",
-  });
-
-  if (files) {
-    mainWindow.webContents.send("selected-generate-metadata-samples", files.filePaths, filename);
-  }
-});
-
 // Generate changes file
 ipcMain.on("open-folder-dialog-save-changes", async (event, filename) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
