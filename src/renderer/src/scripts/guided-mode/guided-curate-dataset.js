@@ -38,7 +38,6 @@ import {
 import useGlobalStore from "../../stores/globalStore";
 import { setDropdownState } from "../../stores/slices/dropDownSlice";
 import {
-  setGuidedModePage,
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
 } from "../../stores/slices/guidedModeSlice";
@@ -49,11 +48,9 @@ import {
   setActiveEntity,
   getDatasetEntityObj,
   setDatasetEntityObj,
-  autoSelectDatasetFoldersAndFilesForEnteredEntityIds,
   addEntityToEntityList,
 } from "../../stores/slices/datasetEntitySelectorSlice";
 import {
-  setDatasetStructureSearchFilter,
   setTreeViewDatasetStructure,
   externallySetSearchFilterValue,
 } from "../../stores/slices/datasetTreeViewSlice";
@@ -164,24 +161,13 @@ const guidedGetCurrentUserWorkSpace = () => {
   return workSpaceFromUI;
 };
 
-window.verifyProfile = async (showNotyfs = false) => {
+window.verifyProfile = async () => {
   const accountValid = await window.check_api_key();
 
   if (!accountValid) {
     await window.addBfAccount(null, false);
     return;
   }
-};
-
-// document.querySelector("#guided-confirm-pennsieve-account-button").addEventListener("click", async () => {
-//   verifyProfile()
-// })
-
-const lowercaseFirstLetter = (string) => {
-  if (!string) {
-    return string;
-  }
-  return string.charAt(0).toLowerCase() + string.slice(1);
 };
 
 const lottieAnimationManager = {
@@ -396,8 +382,6 @@ const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
       }
     }
   }
-  if (invalidFolders.length > 0 && invalidFiles.length > 0) {
-  }
   return [invalidFolders, invalidFiles];
 };
 
@@ -426,8 +410,6 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
     const changes_text = changesRes.data.text;
     return { shouldShow: true, changesMetadata: changes_text };
   } catch (error) {
-    const emessage = userErrorMessage(error);
-
     const datasetInfo = await api.getDatasetInformation(
       window.defaultBfAccount,
       pennsieveDatasetID
@@ -439,25 +421,6 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
     } else {
       return { shouldShow: false };
     }
-  }
-};
-
-const skipOrUnSkipCodeDescriptionPage = async (pennsieveDatasetID) => {
-  try {
-    await client.get(`/prepare_metadata/import_metadata_file`, {
-      params: {
-        selected_account: window.defaultBfAccount,
-        selected_dataset: pennsieveDatasetID,
-        file_type: "code_description.xlsx",
-      },
-    });
-    // If the response resolves, the file exists, so skip the page
-    guidedSkipPage("guided-add-code-metadata-tab");
-  } catch (error) {
-    const emessage = userErrorMessage(error);
-    // If there is an error or the file does not exist, unskip the page
-    // (User has to add the code_description file))
-    guidedUnSkipPage("guided-add-code-metadata-tab");
   }
 };
 
@@ -780,8 +743,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         // If there are folders and/or files in the dataset on Pennsieve, validate the structure and
         // extract various metadata from the dataset structure to prepare the guided workflow.
         if (
-          Object.keys(datasetStructureJSONObj["folders"]).length > 0 ||
-          Object.keys(datasetStructureJSONObj["files"]).length > 0
+          Object.keys(window.datasetStructureJSONObj["folders"]).length > 0 ||
+          Object.keys(window.datasetStructureJSONObj["files"]).length > 0
         ) {
           // Reject if any non-sparc folders are in the root of the dataset
           let invalidBaseFolders = [];
@@ -1701,9 +1664,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
-    if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
-    }
-
     if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
       const award = document.getElementById("guided-submission-sparc-award-manual").value;
       const milestones = window.getTagsFromTagifyElement(window.guidedSubmissionTagsTagifyManual);
@@ -1914,7 +1874,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     try {
       await guidedSaveProgress();
     } catch (error) {
-      log.error(error);
+      window.log.error(error);
     }
   } catch (error) {
     guidedSetNavLoadingState(false);
@@ -1950,7 +1910,6 @@ const renderSideBar = (activePage) => {
   guidedPageNavigationHeader.classList.remove("hidden");
 
   const completedTabs = window.sodaJSONObj["completed-tabs"];
-  const skippedPages = window.sodaJSONObj["skipped-pages"];
 
   const pageStructureObject = {};
 
@@ -2016,7 +1975,7 @@ const renderSideBar = (activePage) => {
 
   const guidedNavBarDropdowns = Array.from(document.querySelectorAll(".guided--nav-bar-dropdown"));
   for (const guidedNavBarDropdown of guidedNavBarDropdowns) {
-    guidedNavBarDropdown.addEventListener("click", (event) => {
+    guidedNavBarDropdown.addEventListener("click", () => {
       //remove hidden from child elements with guided--nav-bar-section-page class
       const guidedNavBarSectionPage = guidedNavBarDropdown.parentElement.querySelectorAll(
         ".guided--nav-bar-section-page"
@@ -2040,7 +1999,7 @@ const renderSideBar = (activePage) => {
     document.querySelectorAll(".guided--nav-bar-section-page")
   );
   for (const guidedNavBarSectionPage of guidedNavBarSectionPages) {
-    guidedNavBarSectionPage.addEventListener("click", async (event) => {
+    guidedNavBarSectionPage.addEventListener("click", async () => {
       const currentPageUserIsLeaving = window.CURRENT_PAGE.id;
       const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
       const pageToNaviatetoName = document
@@ -2648,18 +2607,6 @@ const enableProgressButton = () => {
   $("#guided-next-button").prop("disabled", false);
 };
 
-const disableElementById = (id) => {
-  elementToDisable = document.getElementById(id);
-  elementToDisable.style.opacity = "0.5";
-  elementToDisable.style.pointerEvents = "none";
-};
-
-const enableElementById = (id) => {
-  elementToEnable = document.getElementById(id);
-  elementToEnable.style.opacity = "1";
-  elementToEnable.style.pointerEvents = "auto";
-};
-
 const hideEleShowEle = (elementIdToHide, elementIdToShow) => {
   let elementToHide = document.getElementById(elementIdToHide);
   let elementToShow = document.getElementById(elementIdToShow);
@@ -2716,8 +2663,11 @@ const guidedTransitionToHome = () => {
   window.CURRENT_PAGE = undefined;
   $("#guided-footer-div").addClass("hidden");
   $("#guided-footer-div").hide();
+<<<<<<< HEAD
   //Hide guided headers and footers
   document.getElementById("guided-header-div").classList.add("hidden");
+=======
+>>>>>>> 029040960dc6aa5fdbb6cd14658d33aceb2ddbce
 };
 
 const guidedSaveProgress = async () => {
@@ -2766,14 +2716,14 @@ const readFileAsync = async (path) => {
 const getAllProgressFileData = async (progressFiles) => {
   return Promise.all(
     progressFiles.map((progressFile) => {
-      let progressFilePath = path.join(guidedProgressFilePath, progressFile);
+      let progressFilePath = window.path.join(guidedProgressFilePath, progressFile);
       return readFileAsync(progressFilePath);
     })
   );
 };
 
 const getProgressFileData = async (progressFile) => {
-  let progressFilePath = path.join(guidedProgressFilePath, progressFile + ".json");
+  let progressFilePath = window.path.join(guidedProgressFilePath, progressFile + ".json");
   return readFileAsync(progressFilePath);
 };
 
@@ -3121,38 +3071,12 @@ const renderManifestCards = () => {
   window.smoothScrollToElement(manifestFilesCardsContainer);
 };
 
-const generateManifestEditCard = (highLevelFolderName) => {
-  return `
-    <div class="dataset-card">        
-      <div class="dataset-card-body shrink">
-        <div class="dataset-card-row">
-          <h1 class="dataset-card-title-text">
-            <span class="manifest-folder-name">${highLevelFolderName}</span>
-          </h1>
-        </div>
-      </div>
-      <div class="dataset-card-button-container">
-        <button
-          class="ui primary button dataset-card-button-confirm"
-          style="
-            width: 302px !important;
-            height: 40px;
-          "
-          onClick="window.guidedOpenManifestEditSwal('${highLevelFolderName}')"
-        >
-          Preview/Edit ${highLevelFolderName} manifest file
-        </button>
-      </div>
-    </div>
-  `;
-};
-
 const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
   // First, empty the guided_manifest_files so we can add the new manifest files
   window.fs.emptyDirSync(window.guidedManifestFilePath);
 
   const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"];
-  for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
+  for (const [highLevelFolder, _] of Object.entries(guidedManifestData)) {
     let manifestJSON = window.processManifestInfo(
       guidedManifestData[highLevelFolder]["headers"],
       guidedManifestData[highLevelFolder]["data"]
@@ -3575,7 +3499,6 @@ document
       window.sodaJSONObj["dataset-validated"] = "true";
       window.sodaJSONObj["dataset-validation-errors"] = errors;
     } catch (error) {
-      const emessage = userErrorMessage(error);
       clientError(error);
       // Hide the loading div
       validationLoadingDiv.classList.add("hidden");
@@ -4070,10 +3993,6 @@ const folderIsEmpty = (folder) => {
   }
 
   return Object.keys(folder.folders).length === 0 && Object.keys(folder.files).length === 0;
-};
-
-const folderHasNoFiles = (folder) => {
-  return Object.keys(folder.files).length === 0;
 };
 
 const cleanUpEmptyGuidedStructureFolders = async (
@@ -4577,18 +4496,6 @@ const copyLink = (link) => {
   });
 };
 
-const validatePageArray = async (arrayOfPagesToCheck) => {
-  const nonSkippedPages = getNonSkippedGuidedModePages(document);
-  for (const page of nonSkippedPages) {
-    try {
-      await checkIfPageIsValid(page.id);
-    } catch (error) {
-      await window.openPage(page.id);
-      break;
-    }
-  }
-};
-
 const checkIfPageIsValid = async (pageID) => {
   try {
     await window.openPage(pageID);
@@ -4808,16 +4715,6 @@ window.openPage = async (targetPageID) => {
         span.innerHTML = "Save and Continue";
       });
       guidedLockSideBar(true);
-    }
-
-    // Get the element with the classes .guided--progression-tab and selected-tab
-    const currentActiveProgressionTab = document.querySelector(
-      ".guided--progression-tab.selected-tab"
-    );
-    if (currentActiveProgressionTab) {
-      if (currentActiveProgressionTab.id === "curation-preparation-progression-tab") {
-      } else {
-      }
     }
 
     if (targetPageDataset.componentType) {
@@ -5076,11 +4973,33 @@ window.openPage = async (targetPageID) => {
           );
         };
 
+<<<<<<< HEAD
         const deleteNonExistentFiles = (currentStructure) => {
           for (const [fileName, fileData] of Object.entries(currentStructure.files || {})) {
             if (fileData.type === "local" && !window.fs.existsSync(fileData.path)) {
               log.info(`Deleting reference to non-existent file: ${fileName}`);
               delete currentStructure.files[fileName];
+=======
+        /**
+         * Recursively deletes references to non-existent files from the dataset structure.
+         * @param {Object} currentStructure - The current level of the dataset structure.
+         * @param {string} currentPath - The relative path to the current structure.
+         */
+        const deleteNonExistentFiles = (currentStructure, currentPath = "") => {
+          const files = currentStructure?.files || {};
+          for (const fileName in files) {
+            const fileData = files[fileName];
+            if (fileData.type === "local") {
+              const filePath = fileData.path;
+              const isNonExistent = !window.fs.existsSync(filePath);
+
+              if (isNonExistent) {
+                window.log.info(
+                  `Deleting reference to non-existent file: ${currentPath}${fileName}`
+                );
+                delete files[fileName];
+              }
+>>>>>>> 029040960dc6aa5fdbb6cd14658d33aceb2ddbce
             }
           }
           Object.entries(currentStructure.folders || {}).forEach(([folderName, folder]) =>
@@ -5256,10 +5175,6 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-manifest-subject-entity-selector-tab") {
-      const subjects = window.getExistingSubjectNames();
-      const existingSubjectRelatedFoldersAndFiles =
-        window.sodaJSONObj["subject-related-folders-and-files"];
-
       setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
       setEntityType("subject-related-folders-and-files");
       setEntityListForEntityType(
@@ -5828,10 +5743,6 @@ window.openPage = async (targetPageID) => {
         document.querySelectorAll(".show-when-logged-in");
       const elementsToShowWhenNotLoggedInToPennsieve =
         document.querySelectorAll(".show-when-logged-out");
-      const confirmPennsieveAccountDiv = document.getElementById(
-        "guided-confirm-pennsieve-account"
-      );
-      const selectPennsieveAccountDiv = document.getElementById("guided-select-pennsieve-account");
       if (!window.defaultBfAccount) {
         elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
           element.classList.add("hidden");
@@ -5908,7 +5819,7 @@ window.openPage = async (targetPageID) => {
                   fullBase64Image = "data:image/jpg;base64," + img_base64;
                   imageType = "jpg";
                 } else {
-                  log.error(`An error happened: ${guided_img_url}`);
+                  window.log.error(`An error happened: ${guided_img_url}`);
                   Swal.fire({
                     icon: "error",
                     text: "An error occurred when importing the image. Please try again later.",
@@ -5996,7 +5907,7 @@ window.openPage = async (targetPageID) => {
         );
         teamsThatCanBeGrantedPermissions = window.getSortedTeamStrings(teamsReq.data.teams);
       } catch (error) {
-        const emessage = userErrorMessage(error);
+        clientError(error);
       }
 
       // Reset the dropdown with the new users and teams
@@ -6504,7 +6415,6 @@ window.openPage = async (targetPageID) => {
         window.sodaJSONObj["digital-metadata"]["description"]
       )
         .map((key) => {
-          const description = window.sodaJSONObj["digital-metadata"]["description"][key];
           //change - to spaces in description and then capitalize
           const descriptionTitle = key
             .split("-")
@@ -6565,8 +6475,6 @@ window.openPage = async (targetPageID) => {
 
       const pennsieveDatasetCopyIcon = document.getElementById("guided-pennsieve-copy-icon");
 
-      const pennsieveDOICopy = document.getElementById("guided-pennsieve-copy-doi");
-
       pennsieveDatasetCopyIcon.classList.add("fa-copy");
 
       let datasetLink = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
@@ -6576,13 +6484,6 @@ window.openPage = async (targetPageID) => {
       pennsieveDatasetLink.href = datasetLink;
 
       if (removeEventListener) {
-        /*
-        TODO: FIX COPY TO CLIPBOARD POST-BUNDLE
-        pennsieveDOICopy.removeEventListener("click", () => {
-          copyLink(doiInfo), true;
-        });
-        */
-
         pennsieveCopy.removeEventListener(
           "click",
           () => {
@@ -6966,7 +6867,7 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
   return false;
 };
 
-const guidedGetPageToReturnTo = async (sodaJSONObj) => {
+const guidedGetPageToReturnTo = async () => {
   // Set by window.openPage function
   const usersPageBeforeExit = window.sodaJSONObj["page-before-exit"];
 
@@ -7854,7 +7755,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       }
     }
   };
-  window.sodaJSONObj.deleteSample = async function (sampleName, showWarningIfSampleFoldersExist) {
+  window.sodaJSONObj.deleteSample = async function (sampleName) {
     const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
     //Combine sample data from samples in and out of pools
     let samples = [...samplesInPools, ...samplesOutsidePools];
@@ -8210,94 +8111,6 @@ const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
   `;
 };
 
-const generateContributorField = (
-  contributorLastName,
-  contributorFirstName,
-  contributorORCID,
-  contributorAffiliations,
-  contributorRoles
-) => {
-  const initialContributorAffiliationString = contributorAffiliations
-    ? contributorAffiliations.join(",")
-    : "";
-  const initialContributorRoleString = contributorRoles ? contributorRoles.join(",") : "";
-
-  return `
-      <div
-        class="guided--section mt-lg neumorphic guided-contributor-field-container"
-        style="width: 100%; position: relative;"
-        data-contributor-first-name="${contributorFirstName ? contributorFirstName : ""}"
-        data-contributor-last-name="${contributorLastName ? contributorLastName : ""}"
-      >
-        <i 
-          class="fas fa-times fa-2x"
-          style="
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            color: black;
-            cursor: pointer;
-          "
-          onclick="window.removeContributorField(this)"
-        >
-        </i>
-        <h2 class="text-sub-step-title">
-          Enter 
-          <span class="contributor-first-name">${
-            contributorFirstName ? contributorFirstName : "contributor's"
-          }</span>'s
-          contributor details
-        </h2>
-        <div class="space-between w-100">
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required">Last name: </label>
-            <input
-              class="
-                guided--input
-                guided-last-name-input
-              "
-              type="text"
-              placeholder="Enter last name here"
-              value="${contributorLastName ? contributorLastName : ""}"
-            />
-          </div>
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required">First name: </label>
-            <input
-              class="
-                guided--input
-                guided-first-name-input
-              "
-              type="text"
-              placeholder="Enter first name here"
-              value="${contributorFirstName ? contributorFirstName : ""}"
-            />
-          </div>
-        </div>
-        <label class="guided--form-label mt-md required">ORCID: </label>
-        <input
-          class="
-            guided--input
-            guided-orcid-input
-          "
-          type="text"
-          placeholder="Enter ORCID here"
-          value="${contributorORCID ? contributorORCID : ""}"
-        />
-        <label class="guided--form-label mt-md required">Affiliation(s): </label>
-        <input class="guided-contributor-affiliation-input"
-          contenteditable="true"
-          data-initial-contributor-affiliation="${initialContributorAffiliationString}"
-        />
-        <label class="guided--form-label mt-md required">Role(s): </label>
-        <input class="guided-contributor-role-input"
-          contenteditable="true"
-          data-initial-contributor-roles="${initialContributorRoleString}"
-        />
-      </div>
-    `;
-};
-
 window.removeContributorField = (contributorDeleteButton) => {
   const contributorField = contributorDeleteButton.parentElement;
   const { contributorFirstName, contributorLastName } = contributorField.dataset;
@@ -8444,18 +8257,6 @@ const getContributorByOrcid = (orcid) => {
     return contributor.conID == orcid;
   });
   return contributor;
-};
-
-const verifyOrcidID = (event) => {
-  let userInput = event.value;
-  //17 chars
-  if (userInput.length > 17) {
-    if (userInput.substr(0, 18) === "https://orcid.org/") {
-      //verify every four characters forward if they are a number
-      let afterLink = userInput.substr(18);
-    }
-    //char 18 will be after the forward slash
-  }
 };
 
 window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
@@ -8617,7 +8418,7 @@ window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       document.getElementById("guided-contributor-orcid").value = contributorORCID;
     },
 
-    preConfirm: async (inputValue) => {
+    preConfirm: async () => {
       const contributorFirstName = document.getElementById("guided-contributor-first-name").value;
       const contributorLastName = document.getElementById("guided-contributor-last-name").value;
       const contributorOrcid = document.getElementById("guided-contributor-orcid").value;
@@ -8891,7 +8692,7 @@ window.openGuidedAddContributorSwal = async () => {
         style: "SODA-select-picker",
       });
       $("#guided-stored-contributors-select").selectpicker("refresh");
-      $("#guided-stored-contributors-select").on("change", function (e) {
+      $("#guided-stored-contributors-select").on("change", function () {
         const selectedFirstName = $("#guided-stored-contributors-select option:selected").data(
           "first-name"
         );
@@ -9157,125 +8958,6 @@ const renderDatasetDescriptionContributorsTable = () => {
   contributorsTable.innerHTML = contributorsTableHTML;
 };
 
-const addContributorField = () => {
-  const contributorsContainer = document.getElementById("contributors-container");
-  //create a new div to hold contributor fields
-  const newContributorField = document.createElement("div");
-  newContributorField.classList.add("guided--section");
-  newContributorField.classList.add("mt-lg");
-  newContributorField.classList.add("neumorphic");
-  newContributorField.classList.add("guided-contributor-field-container");
-  newContributorField.style.width = "100%";
-  newContributorField.style.position = "relative";
-
-  newContributorField.innerHTML = `
-    <i 
-      class="fas fa-times fa-2x"
-      style="
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        color: black;
-        cursor: pointer;
-      "
-      onclick="window.removeContributorField(this)"
-    >
-    </i>
-    <h2 class="text-sub-step-title">
-      Enter contributor details
-    </h2>
-    <div class="space-between w-100">
-      <div class="guided--flex-center mt-sm" style="width: 45%">
-        <label class="guided--form-label required">Last name: </label>
-        <input
-          class="guided--input guided-last-name-input"
-          type="text"
-          placeholder="Enter last name here"
-          onkeyup="validateInput(window.$(this))"
-        />
-      </div>
-      <div class="guided--flex-center mt-sm" style="width: 45%">
-        <label class="guided--form-label required">First name: </label>
-        <input
-          class="guided--input guided-first-name-input"
-          type="text"
-          placeholder="Enter first name here"
-          onkeyup="validateInput(window.$(this))"
-        />
-      </div>
-    </div>
-    <label class="guided--form-label required mt-md">ORCID: </label>
-    <input
-      class="guided--input guided-orcid-input"
-      type="text"
-      placeholder="Enter ORCID here"
-    />
-    <label class="guided--form-label required mt-md">Affiliation(s): </label>
-    <input class="guided-contributor-affiliation-input"
-          contenteditable="true"
-    />
-
-    <label class="guided--form-label required mt-md">Role(s): </label>
-    <input class="guided-contributor-role-input"
-      contenteditable="true"
-      placeholder='Type here to view and add contributor roles from the list of standard roles'
-    />
-  `;
-
-  contributorsContainer.appendChild(newContributorField);
-
-  //select the last contributor role input (the one that was just added)
-  const newlyAddedContributorField = contributorsContainer.lastChild;
-
-  //Create Affiliation(s) tagify for each contributor
-  const contributorAffiliationInput = newlyAddedContributorField.querySelector(
-    ".guided-contributor-affiliation-input"
-  );
-  const affiliationTagify = new Tagify(contributorAffiliationInput, {
-    duplicate: false,
-  });
-
-  window.createDragSort(affiliationTagify);
-
-  const newContributorRoleElement = newlyAddedContributorField.querySelector(
-    ".guided-contributor-role-input"
-  );
-  //Add a new tagify for the contributor role field for the new contributor field
-  const tagify = new Tagify(newContributorRoleElement, {
-    whitelist: [
-      "PrincipalInvestigator",
-      "Creator",
-      "CoInvestigator",
-      "CorrespondingAuthor",
-      "DataCollector",
-      "DataCurator",
-      "DataManager",
-      "Distributor",
-      "Editor",
-      "Producer",
-      "ProjectLeader",
-      "ProjectManager",
-      "ProjectMember",
-      "RelatedPerson",
-      "Researcher",
-      "ResearchGroup",
-      "Sponsor",
-      "Supervisor",
-      "WorkPackageLeader",
-      "Other",
-    ],
-    enforceWhitelist: true,
-    dropdown: {
-      enabled: 0,
-      closeOnSelect: true,
-      position: "auto",
-    },
-  });
-  //scroll to the new element
-
-  window.createDragSort(tagify);
-  window.smoothScrollToElement(newlyAddedContributorField);
-};
 const getGuidedProtocolLinks = () => {
   try {
     return window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"].map(
@@ -9353,7 +9035,7 @@ window.openProtocolSwal = async (protocolElement) => {
     protocolURL = protocolElement.dataset.protocolUrl;
     protocolDescription = protocolElement.dataset.protocolDescription;
   }
-  const { value: values } = await Swal.fire({
+  await Swal.fire({
     title: "Add a protocol",
     html:
       `<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL" value="${protocolURL}">` +
@@ -9410,42 +9092,6 @@ window.guidedDeleteProtocol = (protocolElement) => {
     "dataset-metadata"
   ]["description-metadata"]["protocols"].filter((protocol) => protocol.link !== linkToDelete);
   renderProtocolsTable();
-};
-
-const removeProtocolField = (protocolElement) => {
-  const protocolURL = protocolElement.dataset.protocolUrl;
-  const { protocolDescription } = protocolElement.dataset;
-
-  const protocolsBeforeDelete =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
-  //If the protocol has data-protocol-url and data-protocol-description, then it is a protocol that
-  //already been added. Delete it from the protocols array.
-  if (protocolsBeforeDelete != undefined) {
-    //protocolsBeforeDelete will be undefined on a new dataset with no protocols yet
-    //until protocols are saved we won't need to go through this
-    const filteredProtocols = protocolsBeforeDelete.filter((protocol) => {
-      //remove protocols with matching protocol url and protocol description
-      return !(protocol.link == protocolURL && protocol.description == protocolDescription);
-    });
-
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = filteredProtocols;
-  }
-
-  protocolElement.remove();
-  //if all are deleted then append message
-  let protocolsContainer = document.getElementById("protocols-container");
-  if (protocolsContainer.children.length === 0) {
-    const emptyRowWarning = generateAlertElement(
-      "warning",
-      "You currently have no protocols for your dataset. To add, click the 'Add a new protocol' button"
-    );
-    let warningRowElement = `<tr id="protocolAlert"><td colspan="5">${emptyRowWarning}</td></tr>`;
-    document.getElementById("protocols-container").innerHTML = warningRowElement;
-  }
-};
-
-const protocolRowIsValid = (url, description, type) => {
-  return url && description && type;
 };
 
 //TODO: handle new blank protocol fields (when parameter are blank)
@@ -9665,6 +9311,7 @@ const openAddAdditionLinkSwal = async () => {
     renderAdditionalLinksTable();
   }
 };
+<<<<<<< HEAD
 /*const addOtherLinkField = () => {
   const otherLinksContainer = document.getElementById("other-links-container");
   //create a new div to hold other link fields
@@ -9765,6 +9412,15 @@ const removeOtherLinkField = (otherLinkDeleteButton) => {
   otherLinkField.remove();
 };*/
 
+=======
+const returnToSampleMetadataTableFromSampleMetadataForm = () => {
+  //Clear metadata form inputs
+  window.clearAllSubjectFormFields(window.guidedSamplesFormDiv);
+  window.openPage("guided-create-samples-metadata-tab");
+  $("#guided-footer-div").css("display", "flex");
+};
+
+>>>>>>> 029040960dc6aa5fdbb6cd14658d33aceb2ddbce
 const renderSubjectSampleAdditionTable = (subject) => {
   return `
     <table
@@ -9795,18 +9451,6 @@ const renderSubjectSampleAdditionTable = (subject) => {
       </tbody>
     </table>
   `;
-};
-
-const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
-  //loop through all window.subjectsTableData elements besides the first one
-  for (let i = 0; i < window.subjectsTableData.length; i++) {
-    //check through elements of tableData to find a subject ID match
-    if (window.subjectsTableData[i][0] === subjectMetadataId) {
-      //if the id matches, load the metadata into the form
-      window.populateForms(subjectMetadataId, "", "guided");
-      return;
-    }
-  }
 };
 
 const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
@@ -10304,17 +9948,12 @@ const keydownListener = (event) => {
   }
 };
 
-const onBlurEvent = (element) => {
+const onBlurEvent = () => {
   if (event.path[0].value.length > 0) {
     if (enterKey === false) {
       window.confirmEnter(event.path[1].children[2]);
     }
   }
-};
-
-const endConfirmOnBlur = (element) => {
-  window.removeEventListener("keydown", keydownListener);
-  document.getElementById(element).removeEventListener("blur", onBlurEvent);
 };
 
 var enterKey = false;
@@ -10359,28 +9998,13 @@ window.getExistingSubjectNames = () => {
 };
 
 const getSubjectsPool = (subjectName) => {
-  const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
+  const [subjectsInPools, _] = window.sodaJSONObj.getAllSubjects();
   for (const subject of subjectsInPools) {
     if (subject["subjectName"] === subjectName) {
       return subject["poolName"];
     }
   }
   return "";
-};
-
-const getSubjectsSamples = (subjectName) => {
-  const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
-  for (const subject of subjectsInPools) {
-    if (subject["subjectName"] === subjectName) {
-      return subject["samples"];
-    }
-  }
-  for (const subject of subjectsOutsidePools) {
-    if (subject["subjectName"] === subjectName) {
-      return subject["samples"];
-    }
-  }
-  return [];
 };
 
 const getExistingPoolNames = () => {
@@ -10468,226 +10092,6 @@ window.electron.ipcRenderer.on(
     }
   }
 );
-
-/* document
-  .getElementById("guided-button-open-dataset-structure-spreadsheet")
-  .addEventListener("click", async () => {
-    const savedTemplatePath = window.sodaJSONObj["dataset-structure-spreadsheet-path"];
-    if (!savedTemplatePath) {
-      notyf.error("No dataset structure spreadsheet has been saved");
-      return;
-    }
-    window.electron.ipcRenderer.send("open-file-at-path", savedTemplatePath);
-  }); */
-
-const validateDatasetStructureSpreadsheet = async (sheetData) => {
-  const invalidSubjectNames = [];
-  const invalidPoolNames = [];
-  const invalidSampleNames = [];
-  const duplicateSampleNames = [];
-  const validSampleNames = [];
-  const subjectsWithMismatchedPools = [];
-  const pooledSubjects = new Map();
-
-  if (sheetData.length === 0) {
-    await swalShowError(
-      "Empty subject spreadsheet structure",
-      "Please add data to the spreadsheet and try again"
-    );
-    return false;
-  }
-  // 1. Loop through the spreadsheet rows and find subs, pools, and sams that do not have valid names
-  for (const row of sheetData) {
-    const subjectName = lowercaseFirstLetter(row["subject id"]);
-    if (!subjectName) {
-      continue;
-    }
-    if (!subjectName.startsWith("sub-")) {
-      invalidSubjectNames.push(subjectName);
-      continue;
-    }
-    const subjectNameIsValid = window.evaluateStringAgainstSdsRequirements(
-      subjectName,
-      "string-adheres-to-identifier-conventions"
-    );
-    if (!subjectNameIsValid) {
-      invalidSubjectNames.push(subjectName);
-      continue;
-    }
-
-    const poolName = lowercaseFirstLetter(row["pool id"]);
-
-    if (poolName) {
-      if (!poolName.startsWith("pool-")) {
-        invalidPoolNames.push(poolName);
-        continue;
-      }
-
-      const poolNameIsValid = window.evaluateStringAgainstSdsRequirements(
-        poolName,
-        "string-adheres-to-identifier-conventions"
-      );
-      if (!poolNameIsValid) {
-        invalidPoolNames.push(poolName);
-        continue;
-      }
-
-      if (pooledSubjects.has(subjectName)) {
-        const subjectsPool = pooledSubjects.get(subjectName);
-        if (subjectsPool !== poolName) {
-          subjectsWithMismatchedPools.push(subjectName);
-        }
-      } else {
-        pooledSubjects.set(subjectName, poolName);
-      }
-    }
-
-    const sampleName = lowercaseFirstLetter(row["sample id"]);
-    if (sampleName) {
-      if (!sampleName.startsWith("sam-")) {
-        invalidSampleNames.push(sampleName);
-        continue;
-      }
-
-      const sampleNameIsValid = window.evaluateStringAgainstSdsRequirements(
-        sampleName,
-        "string-adheres-to-identifier-conventions"
-      );
-      if (!sampleNameIsValid) {
-        invalidSampleNames.push(sampleName);
-      } else if (validSampleNames.includes(sampleName)) {
-        duplicateSampleNames.push(sampleName);
-      } else {
-        validSampleNames.push(sampleName);
-      }
-    }
-  }
-
-  let spreadsheetIsValid = true;
-
-  if (invalidSubjectNames.length > 0) {
-    await swalFileListSingleAction(
-      invalidSubjectNames,
-      "Invalid subject names detected",
-      "Subject names must start with 'sub-' and may not contain spaces or special characters",
-      "Please fix the invalid subject names in the spreadsheet and try again"
-    );
-    spreadsheetIsValid = false;
-  }
-
-  if (invalidPoolNames.length > 0) {
-    await swalFileListSingleAction(
-      invalidPoolNames,
-      "Invalid pool names detected",
-      "Pool names must start with 'pool-' and may not contain spaces or special characters",
-      "Please fix the invalid pool names in the spreadsheet and try again"
-    );
-    spreadsheetIsValid = false;
-  }
-
-  if (invalidSampleNames.length > 0) {
-    await swalFileListSingleAction(
-      invalidSampleNames,
-      "Invalid sample names detected",
-      "Sample names must start with 'sam-' and may not contain spaces or special characters",
-      "Please fix the invalid sample names in the spreadsheet and try again"
-    );
-    spreadsheetIsValid = false;
-  }
-
-  if (duplicateSampleNames.length > 0) {
-    await swalFileListSingleAction(
-      duplicateSampleNames,
-      "Duplicate sample names detected",
-      "Sample names must be unique",
-      "Please fix the duplicate sample names in the spreadsheet and try again"
-    );
-    spreadsheetIsValid = false;
-  }
-
-  if (subjectsWithMismatchedPools.length > 0) {
-    await swalFileListSingleAction(
-      subjectsWithMismatchedPools,
-      "Subjects with mismatched pools detected",
-      "Subjects can only be in one pool",
-      "Please fix the subjects with mismatched pools in the spreadsheet and try again"
-    );
-    spreadsheetIsValid = false;
-  }
-
-  return spreadsheetIsValid;
-};
-
-// CLICK HANDLER THAT EXTRACTS THE DATASET STRUCTURE FROM A SPREADSHEET
-/*
-document
-  .getElementById("guided-button-import-dataset-structure-from-spreadsheet")
-  .addEventListener("click", async () => {
-    const savedTemplatePath = window.sodaJSONObj["dataset-structure-spreadsheet-path"];
-    if (!savedTemplatePath) {
-      notyf.error("No dataset structure spreadsheet has been saved");
-      return;
-    }
-    if (!window.fs.existsSync(savedTemplatePath)) {
-      notyf.error("The saved dataset structure spreadsheet no longer exists at the saved path");
-      return;
-    }
-
-    const sheetData = await window.electron.ipcRenderer.invoke("get-sheet-data", savedTemplatePath);
-
-    // Validate the spreadsheet structure and return if it is invalid (Error swals are shown in the function)
-    const spreadsheetIsValid = await validateDatasetStructureSpreadsheet(sheetData);
-    if (!spreadsheetIsValid) {
-      return;
-    }
-
-    for (const row of sheetData) {
-      const subjectName = lowercaseFirstLetter(row["subject id"]);
-      const subjectsPool = lowercaseFirstLetter(row["pool id"]);
-      const sampleName = lowercaseFirstLetter(row["sample id"]);
-
-      // Check to see if the subject already exists
-      const subjectAlreadyExists = window.getExistingSubjectNames().includes(subjectName);
-      if (!subjectAlreadyExists) {
-        window.sodaJSONObj.addSubject(subjectName);
-        if (subjectsPool) {
-          const poolAlreadyExists = getExistingPoolNames().includes(subjectsPool);
-          if (!poolAlreadyExists) {
-            window.sodaJSONObj.addPool(subjectsPool);
-          }
-          window.sodaJSONObj.moveSubjectIntoPool(subjectName, subjectsPool);
-        }
-      }
-
-      if (sampleName) {
-        const sampleAlreadyExists = getExistingSampleNames().includes(sampleName);
-        if (!sampleAlreadyExists) {
-          window.sodaJSONObj.addSampleToSubject(sampleName, subjectsPool, subjectName);
-        }
-      }
-    }
-
-    await swalShowInfo(
-      "Subject structure successfully imported",
-      `
-        You will now be taken to the next step where you can review/edit the imported data.
-        <br />
-        <br />
-        <b>Note:</b> You will not be able to return to this step once you proceed.
-      `
-    );
-    $("#guided-next-button").click();
-  });
-
-*/
-const guidedExtractEntityNamesFromFolders = async (entityType) => {
-  if (entityType === "subjects") {
-    window.electron.ipcRenderer.send("open-subject-multi-folder-import-dialog");
-  }
-  if (entityType === "samples") {
-    window.electron.ipcRenderer.send("open-multi-folder-dialog");
-  }
-};
 
 const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingSubjects) => {
   // Check to see if any of the subject names are invalid
@@ -10779,12 +10183,8 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
 };
 
 window.electron.ipcRenderer.on("selected-subject-names-from-dialog", async (event, folders) => {
-  const subjectNames = folders.map((folder) => path.basename(folder));
+  const subjectNames = folders.map((folder) => window.path.basename(folder));
   guidedAddListOfSubjects(subjectNames, true);
-});
-
-window.electron.ipcRenderer.on("selected-sample-names-from-dialog", async (event, folders) => {
-  const sampleNames = folders.map((folder) => path.basename(folder));
 });
 
 const convertArrayToCommaSeparatedString = (array) => {
@@ -11168,7 +10568,6 @@ window.removePennsievePermission = (clickedPermissionRemoveButton) => {
   let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
   let permissionEntityType = permissionElementToRemove.attr("data-entity-type");
   let permissionNameToRemove = permissionElementToRemove.find(".permission-name-cell").text();
-  let permissionTypeToRemove = permissionElementToRemove.find(".permission-type-cell").text();
 
   if (permissionElementToRemove.prevObject[0].classList.contains("btn-danger")) {
     permissionElementToRemove.prevObject[0].style.display = "none";
@@ -11596,7 +10995,6 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
   window.sodaJSONObj["digital-metadata"]["user-permissions"].push(newUserPermissionObj);
   renderPermissionsTable();
 };
-const guidedRemoveUserPermission = (userParentElement) => {};
 
 const guidedAddTeamPermission = (newTeamPermissionObj) => {
   //If an existing team with the same ID already exists, update the existing team's position
@@ -11613,11 +11011,6 @@ const guidedAddTeamPermission = (newTeamPermissionObj) => {
   //add a new user permission
   window.sodaJSONObj["digital-metadata"]["team-permissions"].push(newTeamPermissionObj);
   renderPermissionsTable();
-};
-const guidedRemoveTeamPermission = (teamParentElement) => {};
-
-const setGuidedLicense = (newLicense) => {
-  window.sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
 };
 
 const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
@@ -11646,7 +11039,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
     return acc;
   }, {});
   //loop through the pools and create an aside element for each sample in the pools subjects
-  for (const [poolName, subjects] of Object.entries(subjectsWithSamplesInPools)) {
+  for (const [_, subjects] of Object.entries(subjectsWithSamplesInPools)) {
     asideElementTemplateLiteral += `
     ${subjects
       .map((subject) => {
@@ -13007,7 +12400,7 @@ const guidedAddDatasetDescription = async (
   }
 
   try {
-    let res = await client.put(
+    await client.put(
       `/manage_datasets/datasets/${datasetName}/readme`,
       { updated_readme: description },
       { params: { selected_account: bfAccount } }
@@ -13323,7 +12716,7 @@ const guidedGrantUserPermission = async (
 ) => {
   let userPermissionUploadElement = "";
   if (selectedRole === "remove current permissions") {
-    log.info("Removing a permission for a user on a dataset");
+    window.log.info("Removing a permission for a user on a dataset");
     userPermissionUploadElement = `
       <tr id="guided-dataset-${userUUID}-permissions-upload-tr" class="permissions-upload-tr">
         <td class="middle aligned" id="guided-dataset-${userUUID}-permissions-upload-text">
@@ -13338,7 +12731,7 @@ const guidedGrantUserPermission = async (
       </tr>
     `;
   } else {
-    log.info("Adding a permission for a user on a dataset");
+    window.log.info("Adding a permission for a user on a dataset");
     userPermissionUploadElement = `
       <tr id="guided-dataset-${userUUID}-permissions-upload-tr" class="permissions-upload-tr">
         <td class="middle aligned" id="guided-dataset-${userUUID}-permissions-upload-text">
@@ -13365,7 +12758,7 @@ const guidedGrantUserPermission = async (
   guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "loading");
 
   try {
-    let ps_add_permission = await client.patch(
+    await client.patch(
       `/manage_datasets/bf_dataset_permissions`,
       {
         input_role: selectedRole,
@@ -13383,11 +12776,11 @@ const guidedGrantUserPermission = async (
     if (selectedRole === "remove current permissions") {
       guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "success");
       userPermissionUploadStatusText.innerHTML = `${selectedRole} permissions removed for user: ${userName}`;
-      log.info(`${selectedRole} permissions granted to ${userName}`);
+      window.log.info(`${selectedRole} permissions granted to ${userName}`);
     } else {
       guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "success");
       userPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to user: ${userName}`;
-      log.info(`${selectedRole} permissions granted to ${userName}`);
+      window.log.info(`${selectedRole} permissions granted to ${userName}`);
     }
 
     // Send successful user permissions modification event to Kombucha
@@ -13412,7 +12805,7 @@ const guidedGrantUserPermission = async (
       userPermissionUploadStatusText.innerHTML = `Failed to grant ${selectedRole} permissions to ${userName}`;
     }
     let emessage = userErrorMessage(error);
-    log.error(emessage);
+    window.log.error(emessage);
 
     // Send failed user permissions modification event to Kombucha
     window.electron.ipcRenderer.send(
@@ -13459,7 +12852,7 @@ const guidedAddUserPermissions = async (bfAccount, datasetName, userPermissionsA
       );
     }
   });
-  const result = await Promise.allSettled(promises);
+  await Promise.allSettled(promises);
 };
 
 const guidedGrantTeamPermission = async (
@@ -13511,7 +12904,7 @@ const guidedGrantTeamPermission = async (
   guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "loading");
 
   try {
-    let ps_add_permission = await client.patch(
+    await client.patch(
       `/manage_datasets/bf_dataset_permissions`,
       {
         input_role: selectedRole,
@@ -13528,10 +12921,10 @@ const guidedGrantTeamPermission = async (
     guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "success");
     if (selectedRole === "remove current permissions") {
       teamPermissionUploadStatusText.innerHTML = `Permissions removed from team: ${teamString}`;
-      log.info(`Permissions remove from: ${teamString}`);
+      window.log.info(`Permissions remove from: ${teamString}`);
     } else {
       teamPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to team: ${teamString}`;
-      log.info(`${selectedRole} permissions granted to ${teamString}`);
+      window.log.info(`${selectedRole} permissions granted to ${teamString}`);
     }
 
     // Send successful team permissions modification event to Kombucha
@@ -13556,7 +12949,7 @@ const guidedGrantTeamPermission = async (
     }
     guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "error");
     let emessage = userErrorMessage(error);
-    log.error(emessage);
+    window.log.error(emessage);
 
     // Send failed team permissions modification event to Kombucha
     window.electron.ipcRenderer.send(
@@ -13602,7 +12995,7 @@ const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsA
       );
     }
   });
-  const result = await Promise.allSettled(promises);
+  await Promise.allSettled(promises);
 };
 
 //********************************************************************************************************
@@ -14571,7 +13964,7 @@ const guidedPennsieveDatasetUpload = async () => {
     try {
       await savePageChanges(currentPageID);
     } catch (error) {
-      log.error("Error saving page changes", error);
+      window.log.error("Error saving page changes", error);
     }
     guidedTransitionToHome();
   }
@@ -15002,7 +14395,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       try {
         await savePageChanges(currentPageID);
       } catch (error) {
-        log.error("Error saving page changes", error);
+        window.log.error("Error saving page changes", error);
       }
       guidedTransitionToHome();
     });
@@ -15062,13 +14455,10 @@ const guidedUploadDatasetToPennsieve = async () => {
       });
     }
 
-    // TODO: Update to new conventions
-    // logProgressToAnalytics(totalUploadedFiles, main_generated_dataset_size);
-
     //If the curate function is complete, clear the interval
     if (main_curate_status === "Done") {
       $("#sidebarCollapse").prop("disabled", false);
-      log.info("Done curate track");
+      window.log.info("Done curate track");
       // then show the sidebar again
       // forceActionSidebar("show");
       clearInterval(timerProgress);
@@ -15081,85 +14471,12 @@ const guidedUploadDatasetToPennsieve = async () => {
 
   let bytesOnPreviousLogPage = 0;
   let filesOnPreviousLogPage = 0;
-  const logProgressToAnalytics = (files, bytes) => {
-    // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
-    if (files >= filesOnPreviousLogPage + 500) {
-      filesOnPreviousLogPage += 500;
-      window.electron.ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.GUIDED_MODE,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.FILES,
-        kombuchaEnums.Status.SUCCCESS,
-        {
-          value: 500,
-          dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-          dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-          origin: guidedGetDatasetOrigin(window.sodaJSONObj),
-          destination: "Pennsieve",
-          upload_session: datasetUploadSession.id,
-          dataset_int_id: window.defaultBfDatasetIntId,
-        }
-      );
-
-      window.electron.ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Guided Mode - Generate - Dataset - Number of Files",
-        `${datasetUploadSession.id}`,
-        500
-      );
-
-      let differenceInBytes = bytes - bytesOnPreviousLogPage;
-      bytesOnPreviousLogPage = bytes;
-
-      window.electron.ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.GUIDED_MODE,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.SIZE,
-        kombuchaEnums.Status.SUCCCESS,
-        {
-          value: differenceInBytes,
-          dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-          dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-          origin: guidedGetDatasetOrigin(window.sodaJSONObj),
-          destination: "Pennsieve",
-          upload_session: datasetUploadSession.id,
-          dataset_int_id: window.defaultBfDatasetIntId,
-        }
-      );
-
-      window.electron.ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Guided Mode - Generate - Dataset - Size",
-        `${datasetUploadSession.id}`,
-        differenceInBytes
-      );
-    }
-  };
 };
 
 $("#guided-add-subject-button").on("click", () => {
   $("#guided-subjects-intro").hide();
   $("#guided-add-subject-div").show();
 });
-
-const getCheckedContributors = () => {
-  const checkedContributors = document.querySelectorAll("input[name='contributor']:checked");
-  const checkedContributorsArray = Array.from(checkedContributors);
-  checkedContributorData = checkedContributorsArray.map((checkedContributor) => {
-    const tableRow = checkedContributor.parentElement.parentElement.parentElement;
-    const contributorLastName = tableRow.children[1].innerHTML.trim();
-    const contributorFirstName = tableRow.children[2].innerHTML.trim();
-    return {
-      contributorFirstName: contributorFirstName,
-      contributorLastName: contributorLastName,
-    };
-  });
-  return checkedContributorData;
-};
 
 $("#guided-button-edit-protocol-fields").on("click", () => {
   enableElementById("protocols-container");
@@ -15204,11 +14521,6 @@ $("#guided-button-save-other-link-fields").on("click", () => {
     } else {
       linkRelation.style.setProperty("border-color", "hsl(0, 0%, 88%)", "important");
     }
-    const contributorInputObj = {
-      linkUrl: linkUrl.value,
-      linkDescription: linkDescription.value,
-      linkRelation: linkRelation.value,
-    };
   });
   ///////////////////////////////////////////////////////////////////////////////
   if (!allInputsValid) {
@@ -15280,15 +14592,15 @@ const guidedSaveRCFile = async (type) => {
   let data = $(`#guided-textarea-create-${type}`).val().trim();
   let destinationPath;
   if (type === "changes") {
-    destinationPath = path.join($("#guided-dataset-path").text().trim(), "CHANGES.xlsx");
+    destinationPath = window.path.join($("#guided-dataset-path").text().trim(), "CHANGES.xlsx");
   } else {
-    destinationPath = path.join($("#guided-dataset-path").text().trim(), "README.xlsx");
+    destinationPath = window.path.join($("#guided-dataset-path").text().trim(), "README.xlsx");
   }
   window.fs.writeFile(destinationPath, data, (err) => {
     if (err) {
       console.log(err);
-      log.error(err);
-      var emessage = userErrorMessage(error);
+      window.log.error(err);
+      var emessage = userErrorMessage(err);
       Swal.fire({
         title: `Failed to generate the existing ${type}.txt file`,
         html: emessage,
@@ -15302,12 +14614,12 @@ const guidedSaveRCFile = async (type) => {
     } else {
       var newName =
         type === "changes"
-          ? path.join(path.dirname(destinationPath), "CHANGES.txt")
-          : path.join(path.dirname(destinationPath), "README.txt");
+          ? window.path.join(window.path.dirname(destinationPath), "CHANGES.txt")
+          : window.path.join(window.path.dirname(destinationPath), "README.txt");
       window.fs.rename(destinationPath, newName, async (err) => {
         if (err) {
           console.log(err);
-          log.error(err);
+          window.log.error(err);
           Swal.fire({
             title: `Failed to generate the ${type}.txt file`,
             html: err,
@@ -15443,7 +14755,7 @@ document.getElementById("guided-generate-dataset-button").addEventListener("clic
 const guidedSaveBannerImage = async () => {
   $("#guided-para-dataset-banner-image-status").html("Please wait...");
   //Save cropped image locally and check size
-  let imageFolder = path.join(homeDirectory, "SODA", "guided-banner-images");
+  let imageFolder = window.path.join(homeDirectory, "SODA", "guided-banner-images");
   let imageType = "";
 
   if (!window.fs.existsSync(imageFolder)) {
@@ -15456,7 +14768,7 @@ const guidedSaveBannerImage = async () => {
     imageType = "image/jpeg";
   }
   let datasetName = window.sodaJSONObj["digital-metadata"]["name"];
-  let imagePath = path.join(imageFolder, `${datasetName}.` + window.imageExtension);
+  let imagePath = window.path.join(imageFolder, `${datasetName}.` + window.imageExtension);
   let croppedImageDataURI = window.myCropper.getCroppedCanvas().toDataURL(imageType);
 
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
@@ -15480,7 +14792,7 @@ const guidedSaveBannerImage = async () => {
   });
 };
 // /**************************************/
-$("#guided-save-banner-image").click(async (event) => {
+$("#guided-save-banner-image").click(async () => {
   $("#guided-para-dataset-banner-image-status").html("");
 
   if (window.guidedBfViewImportedImage.src.length > 0) {
@@ -15501,7 +14813,7 @@ $("#guided-save-banner-image").click(async (event) => {
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
-      }).then(async (result) => {
+      }).then(async () => {
         if (window.guidedFormBannerHeight.value < 1024) {
           Swal.fire({
             icon: "warning",
@@ -15604,7 +14916,7 @@ $("#guided-next-button").on("click", async function () {
 
     await window.openPage(targetPageID);
   } catch (error) {
-    log.error(error);
+    window.log.error(error);
     if (Array.isArray(error)) {
       error.map((error) => {
         // get the total number of words in error.message
@@ -15747,7 +15059,6 @@ $("#guided-button-back").on("click", function () {
     $("#items").empty();
     window.already_created_elem = [];
     let items = window.loadFileFolder(myPath); //array -
-    let total_item_count = items[1].length + items[0].length;
     //we have some items to display
     window.listItems(myPath, "#items", 500, true);
     window.organizeLandingUIEffect();
@@ -16009,229 +15320,3 @@ const guidedSaveDescriptionContributorInformation = () => {
     acknowledgment: acknowledgements,
   };
 };
-
-const guidedCombineLinkSections = () => {
-  var protocolLinks = getGuidedProtocolSection();
-  var otherLinks = getGuidedAdditionalLinkSection();
-  protocolLinks.push.apply(protocolLinks, otherLinks);
-  return protocolLinks;
-};
-
-const guidedSaveParticipantInformation = () => {
-  let numSubjects = $("#guided-ds-samples-no").val();
-  let numSamples = $("#guided-ds-samples-no").val();
-  if (numSubjects.length == 0 || numSamples.length == 0) {
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      icon: "error",
-      text: "Please fill in all of the required participant information fields.",
-      title: "Incomplete information",
-    });
-  } else {
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["numSubjects"] = numSubjects;
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["numSamples"] = numSamples;
-  }
-};
-
-const generateRandomFolderOrFileName = (boolIncludeProblematicFileNames) => {
-  // create a random string of 20 characters
-  let randomString =
-    Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-
-  if (boolIncludeProblematicFileNames && Math.random() < 0.5) {
-    // convert the string to an array to modify it
-    const randomStringArray = randomString.split("");
-
-    // add problematic characters to random positions in the array
-    const problematicCharacters = ["&", "%"];
-    for (let i = 0; i < 5; i++) {
-      if (Math.random() > 0.5) {
-        // Choose a random problematic character
-        const problematicCharacter =
-          problematicCharacters[Math.floor(Math.random() * problematicCharacters.length)];
-
-        // Choose a random index to replace
-        const replaceIndex = Math.floor(Math.random() * randomStringArray.length);
-
-        // Replace the character at the chosen index
-        randomStringArray[replaceIndex] = problematicCharacter;
-      }
-    }
-
-    // convert the array back to a string
-    randomString = randomStringArray.join("");
-  }
-
-  return randomString;
-};
-
-const generateFileText = (fileSize) => {
-  let text = "";
-  let numberOfLines = 0;
-
-  if (fileSize == "small") {
-    numberOfLines = 100;
-  } else if (fileSize == "medium") {
-    numberOfLines = 10000;
-  } else if (fileSize == "large") {
-    numberOfLines = 100000;
-  }
-
-  for (let i = 0; i < numberOfLines; i++) {
-    text += "The quick brown fox jumped over the lazy dog\n";
-  }
-
-  return text;
-};
-
-const createRandomFiles = (
-  folderPath,
-  numberOfFilesInEachFolder,
-  fileSize,
-  boolIncludeProblematicFileNames
-) => {
-  for (let i = 0; i < numberOfFilesInEachFolder; i++) {
-    const fileFormat = "txt"; // Always create a text file
-    const filePath = path.join(
-      folderPath,
-      `${generateRandomFolderOrFileName(boolIncludeProblematicFileNames)}.${fileFormat}`
-    );
-    const fileText = generateFileText(fileSize);
-    window.fs.writeFileSync(filePath, fileText);
-  }
-};
-
-const createNestedFolders = (
-  baseDirectory,
-  numberOfFolders,
-  depth,
-  fileSize,
-  numberOfFilesInEachFolder,
-  boolIncludeProblematicFileNames
-) => {
-  if (depth === 0) {
-    return;
-  }
-  for (let i = 0; i < numberOfFolders; i++) {
-    const folderPath = path.join(
-      baseDirectory,
-      generateRandomFolderOrFileName(boolIncludeProblematicFileNames)
-    );
-    window.fs.mkdirSync(folderPath);
-    // Add the random files to the folder
-    createRandomFiles(folderPath, numberOfFilesInEachFolder, fileSize); // Creating multiple files in the folder
-    // Recursively create more folders inside of the current folder
-    createNestedFolders(
-      folderPath,
-      numberOfFolders,
-      depth - 1,
-      fileSize,
-      numberOfFilesInEachFolder
-    );
-  }
-};
-/*
- * Creates a test dataset with the given parameters
- * @param {string} datasetName - The name of the dataset (must be unique)
- * @param {number} numberOfFolders - The number of folders to create in each folder
- * @param {number} depth - The depth of the folder structure (eg. 3 = 5 folders in root, with 5 folders (and files), with 5 folders (and files) in each of those folders)
- * @param {string} fileSize - The size of the text files to create
- * @param {number} numberOfFilesInEachFolder - The number of files to create in each folder
- * @param {boolean} boolIncludeProblematicFileNames - Whether or not to include problematic characters in the file names
- * @example
- * createTestDataset("test-dataset", 5, 3, "small", 5);
- */
-const createTestDataset = (
-  datasetName,
-  numberOfFolders,
-  depth,
-  fileSize,
-  numberOfFilesInEachFolder,
-  boolIncludeProblematicFileNames = false
-) => {
-  const fileSizeOptions = ["small", "medium", "large"];
-  if (!fileSizeOptions.includes(fileSize)) {
-    console.error("File size must be small medium or large");
-    return;
-  }
-
-  const maxDepth = 5;
-  if (depth > maxDepth) {
-    console.error(`Depth must be less than or equal to ${maxDepth}`);
-    return;
-  }
-
-  const maxNumberOfFilesInEachFolder = 30;
-  if (numberOfFilesInEachFolder > maxNumberOfFilesInEachFolder) {
-    console.error(
-      `Number of files in each folder must be less than or equal to ${maxNumberOfFilesInEachFolder}`
-    );
-    return;
-  }
-
-  const maxNumberOfFolders = 50;
-  if (numberOfFolders > maxNumberOfFolders) {
-    console.error(`Number of folders must be less than or equal to ${maxNumberOfFolders}`);
-    return;
-  }
-
-  const testDatasetsPath = path.join(homeDirectory, "SODA", "test-datasets");
-
-  // return if the root directory does not exist
-  if (!window.fs.existsSync(testDatasetsPath)) {
-    window.fs.mkdirSync(testDatasetsPath);
-  }
-  const newTestDatasetPath = path.join(testDatasetsPath, datasetName);
-  if (window.fs.existsSync(newTestDatasetPath)) {
-    console.error("A test dataset with this name already exists please choose a different name");
-    return;
-  }
-  // Create the test datasets folder
-  window.fs.mkdirSync(newTestDatasetPath);
-
-  const rootFolders = ["primary", "source", "derivative", "docs", "code", "protocol"];
-  // Add folders to each of the high level folders
-  for (const folder of rootFolders) {
-    const folderPath = path.join(newTestDatasetPath, folder);
-    window.fs.mkdirSync(folderPath);
-    createNestedFolders(
-      folderPath,
-      numberOfFolders,
-      depth,
-      fileSize,
-      numberOfFilesInEachFolder,
-      boolIncludeProblematicFileNames
-    );
-  }
-};
-
-const continueHackGm = true;
-
-const doTheHack = async () => {
-  console.log("Doing the hack");
-  // wait for a second
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-  document.getElementById("button-homepage-guided-mode").click();
-  document.getElementById("guided-button-resume-progress-file").click();
-  // wait for 5 seconds
-  await new Promise((resolve) => setTimeout(resolve, 4000));
-
-  // Search the dom for a button with the classes "ui positive button guided--progress-button-resume-curation"
-  const resumeCurationButton = document.querySelector(
-    ".ui.positive.button.guided--progress-button-resume-curation"
-  );
-  if (resumeCurationButton) {
-    resumeCurationButton.click();
-  } else {
-    // wait for 3 more seconds then click
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    document.querySelector(".ui.positive.button.guided--progress-button-resume-curation").click();
-  }
-  // wait for 4 seconds then click the next button
-  await new Promise((resolve) => setTimeout(resolve, 4000));
-  document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
-};
-if (continueHackGm) {
-  doTheHack();
-}
