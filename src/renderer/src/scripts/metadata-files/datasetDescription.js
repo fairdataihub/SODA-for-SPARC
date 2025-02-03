@@ -238,52 +238,6 @@ const convertDropdownToTextBox = (dropdown) => {
 };
 
 // resetting the dataset_description file
-const resetDDUI = (table) => {
-  var rowcount = document.getElementById(table).rows.length;
-  var rowIndex = rowcount - 1;
-  var currentRow =
-    document.getElementById(table).rows[document.getElementById(table).rows.length - 1];
-
-  $("#SPARC-Award-raw-input-div-dd").css("display", "none");
-  $("#dd-description-raw-contributor-list-last-1").css("display", "none");
-  $("#ds-description-contributor-list-last-1").remove();
-  $("#ds-description-contributor-list-first-1").remove();
-  $("#dd-description-raw-contributor-list-first-1").css("display", "none");
-  $($("#ds-description-award-list").parents()[1]).css("display", "flex");
-  $("#add-other-contributors").css("display", "block");
-  $("#add-other-contributors").text("Add contributors not listed above");
-  $("#table-current-contributors").find("tr").slice(1).remove();
-
-  // show generate button again
-  $("#button-generate-dd").show();
-
-  rowIndex = 1;
-  newRowIndex = 1;
-  var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-name" +
-    newRowIndex +
-    "'><td class='grab'><select id='ds-description-contributor-list-last-" +
-    newRowIndex +
-    "' onchange='window.onchangeLastNames(" +
-    newRowIndex +
-    ")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select disabled id='ds-description-contributor-list-first-" +
-    newRowIndex +
-    "' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' id='input-con-ID-" +
-    newRowIndex +
-    "' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-" +
-    newRowIndex +
-    "' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-" +
-    newRowIndex +
-    "'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel(" +
-    newRowIndex +
-    ")' id='ds-contact-person-" +
-    newRowIndex +
-    "' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-    newRowIndex +
-    ")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
-  window.changeAwardInputDsDescription();
-  cloneConNamesSelect("ds-description-contributor-list-last-" + rowIndex.toString());
-};
 
 const checkEmptyConRowInfo = (table, row) => {
   var empty = false;
