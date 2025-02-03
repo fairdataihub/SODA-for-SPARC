@@ -6509,7 +6509,6 @@ const initiate_generate = async (e) => {
   document.getElementById("contact-us-view").style.pointerEvents = "none";
 
   // Initiate curation by calling Python function
-  let manifest_files_requested = false;
   var main_curate_status = "Solving";
   var main_total_generate_dataset_size;
 
@@ -6604,7 +6603,6 @@ const initiate_generate = async (e) => {
     ) {
       window.delete_imported_manifest();
     } else if (window.sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
-      manifest_files_requested = true;
       window.delete_imported_manifest();
     }
   }
@@ -6615,8 +6613,6 @@ const initiate_generate = async (e) => {
   // track the amount of files that have been uploaded/generated
   let uploadedFiles = 0;
   let uploadedBytes = 0;
-  let increaseInFileSize = 0;
-  let generated_dataset_id = undefined;
   let loggedDatasetNameToIdMapping = false;
 
   // determine where the dataset will be generated/uploaded
@@ -6630,7 +6626,6 @@ const initiate_generate = async (e) => {
     datasetUploadSession.startSession();
   }
 
-  let start = performance.now();
   client
     .post(
       `/curate_datasets/curation`,
@@ -6641,8 +6636,6 @@ const initiate_generate = async (e) => {
       { timeout: 0 }
     )
     .then(async (response) => {
-      let end = performance.now();
-      let time = (end - start) / 1000;
       let { data } = response;
 
       $("#party-lottie").show();
@@ -7188,9 +7181,7 @@ const initiate_generate = async (e) => {
 
 window.get_num_files_and_folders = (dataset_folders) => {
   if ("files" in dataset_folders) {
-    for (let file in dataset_folders["files"]) {
-      file_counter += 1;
-    }
+    file_counter += dataset_folders["files"].length;
   }
   if ("folders" in dataset_folders) {
     for (let folder in dataset_folders["folders"]) {
@@ -7231,15 +7222,6 @@ const determineDatasetDestination = () => {
   }
 };
 
-function generateHtmlListFromArray(error_array) {
-  const htmlList = `
-    <ul>
-      ${error_array.map((error) => `<li>${error}</li>`).join("")}
-    </ul>
-  `;
-  return htmlList;
-}
-
 var metadataIndividualFile = "";
 var metadataAllowedExtensions = [];
 var metadataParaElement = "";
@@ -7252,36 +7234,6 @@ window.importMetadataFiles = (ev, metadataFile, extensionList, paraEle, curation
   metadataParaElement = paraEle;
   metadataCurationMode = curationMode;
   window.electron.ipcRenderer.send("open-file-dialog-metadata-curate");
-};
-
-window.importPennsieveMetadataFiles = (ev, metadataFile, extensionList, paraEle) => {
-  extensionList.forEach((file_type) => {
-    let file_name = metadataFile + file_type;
-    if (
-      file_name in window.sodaJSONObj["metadata-files"] &&
-      window.sodaJSONObj["metadata-files"][file_name]["type"] != "bf"
-    ) {
-      delete window.sodaJSONObj["metadata-files"][file_name];
-    }
-    let deleted_file_name = file_name + "-DELETED";
-    if (
-      deleted_file_name in window.sodaJSONObj["metadata-files"] &&
-      window.sodaJSONObj["metadata-files"][deleted_file_name]["type"] === "bf"
-    ) {
-      // update Json object with the restored object
-      let index =
-        window.sodaJSONObj["metadata-files"][deleted_file_name]["action"].indexOf("deleted");
-      window.sodaJSONObj["metadata-files"][deleted_file_name]["action"].splice(index, 1);
-      let deleted_file_name_new_key = deleted_file_name.substring(
-        0,
-        deleted_file_name.lastIndexOf("-")
-      );
-      window.sodaJSONObj["metadata-files"][deleted_file_name_new_key] =
-        window.sodaJSONObj["metadata-files"][deleted_file_name];
-      delete window.sodaJSONObj["metadata-files"][deleted_file_name];
-    }
-  });
-  window.populate_existing_metadata(window.sodaJSONObj);
 };
 
 window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
@@ -7396,14 +7348,14 @@ window.showBFAddAccountSweetalert = async (ev) => {
               key: apiKey,
               secret: apiSecret,
             })
-            .then((response) => {
+            .then(() => {
               $("#bootbox-key-name").val("");
               $("#bootbox-api-key").val("");
               $("#bootbox-api-secret").val("");
               bfAccountOptions[name] = name;
               window.defaultBfAccount = name;
               window.defaultBfDataset = "Select dataset";
-              return new Promise((resolve, reject) => {
+              return new Promise(() => {
                 client
                   .get("/manage_datasets/bf_account_details", {
                     params: {
@@ -8014,10 +7966,8 @@ const directToGuidedMode = () => {
   guidedModeLinkButton.click();
 };
 window.directToFreeFormMode = () => {
-  const freeFormModeLinkButton = document.getElementById("main_tabs_view");
   const directToOrganize = document.getElementById("organize_dataset_btn");
   directToOrganize.click();
-  // freeFormModeLinkButton.click();
 };
 
 document
