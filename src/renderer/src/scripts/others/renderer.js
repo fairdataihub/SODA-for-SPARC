@@ -1165,9 +1165,6 @@ const bfWithdrawReviewDatasetBtn = document.querySelector("#btn-withdraw-review-
 // //////////////////////////////////
 // // Constant parameters
 // //////////////////////////////////
-// const blackColor = "#000";
-// const redColor = "#ff1a1a";
-// const sparcFolderNames = ["code", "derivative", "docs", "primary", "protocol", "source"];
 window.delayAnimation = 250;
 
 //////////////////////////////////
@@ -1175,7 +1172,6 @@ window.delayAnimation = 250;
 //////////////////////////////////
 
 // Sidebar Navigation //
-let open = false;
 
 // Assign dragable area in the code to allow for dragging and selecting items//
 let drag_event_fired = false;
@@ -1186,13 +1182,13 @@ let dragselect_area = new DragSelect({
 });
 
 // Assign the callback event for selecting items
-dragselect_area.subscribe("callback", ({ items, event }) => {
-  select_items(items, event, isDragging);
+dragselect_area.subscribe("callback", ({ items }) => {
+  select_items(items);
 });
 
 // Assign an additional event to allow for ctrl drag behaviour
-dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
-  select_items_ctrl(items, event, isDragging);
+dragselect_area.subscribe("dragstart", ({ event }) => {
+  select_items_ctrl(event);
 });
 
 // ///////////////////// Prepare Metadata Section ////////////////////////////////
@@ -1735,7 +1731,7 @@ window.generateSamplesFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then(() => {});
 
   try {
     let samplesFileResponse = await client.post(
@@ -2068,81 +2064,11 @@ const specimenType = [
   "slide",
   "whole mount",
 ];
-function createSpecimenTypeAutocomplete(id) {
-  var autoCompleteJS3 = new autoComplete({
-    selector: "#" + id,
-    data: {
-      cache: true,
-      src: specimenType,
-    },
-    onSelection: (feedback) => {
-      var selection = feedback.selection.value;
-      document.querySelector("#" + id).value = selection;
-    },
-    trigger: {
-      event: ["input", "focus"],
-      // condition: () => true
-    },
-    resultItem: {
-      destination: "#" + id,
-      highlight: {
-        render: true,
-      },
-    },
-    resultsList: {
-      // id: listID,
-      maxResults: 5,
-    },
-  });
-}
 
 //////////////// Dataset description file ///////////////////////
 //////////////// //////////////// //////////////// ////////////////
 
 //// get datasets and append that to option list for parent datasets
-function getParentDatasets() {
-  var parentDatasets = [];
-  for (var i = 0; i < window.datasetList.length; i++) {
-    parentDatasets.push(window.datasetList[i].name);
-  }
-  return parentDatasets;
-}
-
-window.changeAwardInputDsDescription = () => {
-  if (dsContributorArrayLast1) {
-    window.removeOptions(dsContributorArrayLast1);
-  }
-  if (dsContributorArrayFirst1) {
-    window.removeOptions(dsContributorArrayFirst1);
-    window.addOption(dsContributorArrayFirst1, "Select an option", "Select an option");
-  }
-
-  window.currentContributorsLastNames = [];
-  currentContributorsFirstNames = [];
-  window.globalContributorNameObject = {};
-
-  /// delete old table
-  $("#table-current-contributors").find("tr").slice(1, -1).remove();
-  for (
-    var i = 0;
-    i < document.getElementById("table-current-contributors").rows[1].cells.length;
-    i++
-  ) {
-    $($($("#table-current-contributors").find("tr")[1].cells[i]).find("input")[0]).val("");
-    $($($("#table-current-contributors").find("tr")[1].cells[i]).find("textarea")[0]).val("");
-  }
-
-  var selectID = document.getElementById(
-    $($($("#table-current-contributors").find("tr")[1].cells[1]).find("select")[0]).prop("id")
-  );
-  if (selectID) {
-    window.removeOptions(selectID);
-    $($($("#table-current-contributors").find("tr")[1].cells[1]).find("select")[0]).prop(
-      "disabled",
-      true
-    );
-  }
-};
 
 // on change event when users choose a contributor's last name
 window.onchangeLastNames = () => {
@@ -2560,23 +2486,6 @@ window.displaySIze = 1000;
 window.curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
 window.curateOrganizationDropdown = document.getElementById("curatebforganizationlist");
 
-//// De-populate dataset dropdowns to clear options for CURATE
-function populateDatasetDropdownCurate(datasetDropdown, datasetList) {
-  window.removeOptions(datasetDropdown);
-
-  /// making the first option: "Select" disabled
-  window.addOption(datasetDropdown, "Select dataset", "Select dataset");
-  var options = datasetDropdown.getElementsByTagName("option");
-  options[0].disabled = true;
-
-  for (let myitem of datasetList) {
-    var myitemselect = myitem.name;
-    var option = document.createElement("option");
-    option.textContent = myitemselect;
-    option.value = myitemselect;
-    datasetDropdown.appendChild(option);
-  }
-}
 // ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
 const metadataDatasetlistChange = () => {
@@ -2704,7 +2613,7 @@ const setupPublicationOptionsPopover = () => {
   oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
 
   // initialize the calendar
-  const instance = new DatePicker(container, {
+  new DatePicker(container, {
     input: {
       element: target,
     },
@@ -2738,8 +2647,6 @@ const setupPublicationOptionsPopover = () => {
 };
 
 window.submitReviewDatasetCheck = async (res, curationMode) => {
-  let reviewstatus = res["review_request_status"];
-  let publishingStatus = res["publishing_status"];
   if (res["publishing_status"] === "PUBLISH_IN_PROGRESS") {
     Swal.fire({
       icon: "error",
@@ -2935,20 +2842,6 @@ window.submitReviewDatasetCheck = async (res, curationMode) => {
   }
 };
 
-// window.electron.ipcRenderer.on("warning-publish-dataset-selection", (event, index) => {
-//   if (index === 0) {
-//     window.submitReviewDataset();
-//   }
-//   $("#submit_prepublishing_review-spinner").hide();
-// });
-
-// window.electron.ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
-//   if (index === 0) {
-//     window.submitReviewDataset();
-//   }
-//   $("#submit_prepublishing_review-spinner").hide();
-// });
-
 // Go about removing the feature and see how it effects dataset submissions
 window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   let currentAccount = window.defaultBfAccount;
@@ -3143,7 +3036,6 @@ window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
 
 // // TODO: Dorian -> Remove this feature as we don't allow withdraws anymore
 const withdrawDatasetCheck = async (res, curationMode) => {
-  let reviewstatus = res["publishing_status"];
   let requestStatus = res["review_request_status"];
   if (requestStatus != "requested") {
     Swal.fire({
@@ -3336,7 +3228,7 @@ const refreshBfTeamsList = async (teamList) => {
         );
         teamsThatCanBeGrantedPermissions = window.getSortedTeamStrings(teamsReq.data.teams);
       } catch (error) {
-        const emessage = userErrorMessage(error);
+        clientError(error);
       }
 
       // The window.removeOptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
@@ -3383,7 +3275,6 @@ window.refreshDatasetList = () => {
   });
 
   populateDatasetDropdowns(filteredDatasets);
-  // parentDSTagify.settings.whitelist = getParentDatasets();
   return filteredDatasets.length;
 };
 
@@ -3400,7 +3291,6 @@ window.refreshOrganizationList = () => {
 
   populateOrganizationDropdowns(window.organizationList);
 
-  // parentDSTagify.settings.whitelist = getParentDatasets();
   return window.organizationList.length;
 };
 
@@ -3505,7 +3395,6 @@ window.loadDefaultAccount = async () => {
 };
 
 const showPrePublishingPageElements = () => {
-  let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
@@ -3525,10 +3414,6 @@ const showPrePublishingPageElements = () => {
 // If callback is empty then the dataset status will only be fetched and displayed
 window.showPublishingStatus = async (callback, curationMode = "") => {
   return new Promise(async function (resolve, reject) {
-    if (callback == "noClear") {
-      let nothing;
-    }
-
     let curationModeID = "";
     let currentAccount = $("#current-bf-account").text();
     let currentDataset = $(".bf-dataset-span")
@@ -3614,7 +3499,6 @@ window.showPublishingStatus = async (callback, curationMode = "") => {
 
 const publishStatusOutputConversion = (res) => {
   var reviewStatus = res["review_request_status"];
-  var publishStatus = res["publishing_status"];
 
   var outputMessage = "";
   if (reviewStatus === "draft" || reviewStatus === "cancelled") {
@@ -3630,46 +3514,13 @@ const publishStatusOutputConversion = (res) => {
   return outputMessage;
 };
 
-// const allowedMedataFiles = [
-//   "submission.xlsx",
-//   "submission.csv",
-//   "submission.json",
-//   "dataset_description.xlsx",
-//   "dataset_description.csv",
-//   "dataset_description.json",
-//   "subjects.xlsx",
-//   "subjects.csv",
-//   "subjects.json",
-//   "samples.xlsx",
-//   "samples.csv",
-//   "samples.json",
-//   "README.txt",
-//   "CHANGES.txt",
-// ];
-
 // //////////////////////////////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////////////////////////////
 // ////////////////// ORGANIZE DATASETS NEW FEATURE /////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////////////////////////////
 
-// var backFolder = [];
-// var forwardFolder = [];
-
 window.highLevelFolders = ["code", "derivative", "docs", "source", "primary", "protocol"];
-var highLevelFolderToolTip = {
-  code: "<b>code</b>: This folder contains all the source code used in the study (e.g., Python, MATLAB, etc.)",
-  derivative:
-    "<b>derivative</b>: This folder contains data files derived from raw data (e.g., processed image stacks that are annotated via the MBF tools, segmentation files, smoothed overlays of current and voltage that demonstrate a particular effect, etc.)",
-  docs: "<b>docs</b>: This folder contains all other supporting files that don't belong to any of the other folders (e.g., a representative image for the dataset, figures, etc.)",
-  source:
-    "<b>source</b>: This folder contains very raw data i.e. raw or untouched files from an experiment. For example, this folder may include the “truly” raw k-space data for an MR image that has not yet been reconstructed (the reconstructed DICOM or NIFTI files, for example, would be found within the primary folder). Another example is the unreconstructed images for a microscopy dataset.",
-  primary:
-    "<b>primary</b>: This folder contains all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines 'raw' (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders.",
-  protocol:
-    "<b>protocol</b>: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
-};
-
 window.sodaJSONObj = {};
 
 /// back button Curate
@@ -3690,7 +3541,7 @@ organizeDSbackButton.addEventListener("click", function () {
     // construct UI with files and folders
     $("#items").empty();
     window.already_created_elem = [];
-    let items = window.loadFileFolder(myPath); //array -
+    window.loadFileFolder(myPath); //array -
     //we have some items to display
     window.listItems(myPath, "#items", 500, true);
     window.organizeLandingUIEffect();
@@ -4922,7 +4773,7 @@ window.removeIrregularFolders = (pathElement) => {
 const handleFileImport = (containerID, filePath) => {
   if (containerID === "guided-container-subjects-pools-samples-structure-import") {
     // read the contents of the first worksheet in the excel file at the path using excelToJson
-    const excelFile = excelToJson({
+    excelToJson({
       sourceFile: filePath,
     });
     // log the columnn headers of the first sheet
@@ -5138,7 +4989,6 @@ const showmenu = (ev, category, deleted = false) => {
 
   ev.preventDefault();
   var mouseX;
-  let element = "";
   if (ev.pageX <= 200) {
     mouseX = ev.pageX + 10;
   } else {
@@ -5486,7 +5336,7 @@ $(document).bind("contextmenu", function (event) {
   }
 });
 
-const select_items_ctrl = (items, event, isDragging) => {
+const select_items_ctrl = (event) => {
   if (event["ctrlKey"]) {
   } else {
     $(".selected-item").removeClass("selected-item");
@@ -5494,7 +5344,7 @@ const select_items_ctrl = (items, event, isDragging) => {
   }
 };
 
-const select_items = (items, event, isDragging) => {
+const select_items = (items) => {
   let selected_class = "";
 
   items.forEach((event_item) => {
@@ -5576,57 +5426,13 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
   const rootFolders = ["primary", "source", "derivative"];
   const datasetPath = document.getElementById("guided-input-global-path");
   const pathDisplay = document.getElementById("datasetPathDisplay");
-  const fileExplorerBackButton = document.getElementById("guided-button-back");
   let hideSampleFolders = false;
   let hideSubjectFolders = false;
   let splitPath = datasetPath.value.split("/");
   let fullPath = datasetPath.value;
 
   if (window.organizeDSglobalPath.id === "guided-input-global-path") {
-    const splitPathCheck = (num, button) => {
-      //based on the paths length we will determine if the back button should be disabled/hidden or not
-      if (splitPath.length > num) {
-        //button should be enabled
-        button.disabled = false;
-        button.style.display = "block";
-      } else {
-        //button should be disabled
-        button.disabled = true;
-        button.style.display = "none";
-      }
-    };
-
     let currentPageID = window.CURRENT_PAGE.id;
-    //capsules need to determine if sample or subjects section
-    //subjects initially display two folder levels meanwhile samples will initially only show one folder level
-    let primarySampleCapsule = document.getElementById(
-      "guided-primary-samples-organization-page-capsule"
-    );
-    let primarySubjectCapsule = document.getElementById(
-      "guided-primary-subjects-organization-page-capsule"
-    );
-    let primaryPoolCapsule = document.getElementById(
-      "guided-primary-pools-organization-page-capsule"
-    );
-    let sourceSampleCapsule = document.getElementById(
-      "guided-source-samples-organization-page-capsule"
-    );
-    let sourceSubjectCapsule = document.getElementById(
-      "guided-source-subjects-organization-page-capsule"
-    );
-    let sourcePoolCapsule = document.getElementById(
-      "guided-source-pools-organization-page-capsule"
-    );
-
-    let derivativeSampleCapsule = document.getElementById(
-      "guided-derivative-samples-organization-page-capsule"
-    );
-    let derivativeSubjectCapsule = document.getElementById(
-      "guided-derivative-subjects-organization-page-capsule"
-    );
-    let derivativePoolCapsule = document.getElementById(
-      "guided-derivative-pools-organization-page-capsule"
-    );
 
     //remove my_dataset_folder and if any of the ROOT FOLDER names is included
     if (splitPath[0] === "dataset_root") splitPath.shift();
@@ -5661,7 +5467,6 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
     for (var item in sortedObj["folders"]) {
       //hide samples when on the subjects page
       if (hideSampleFolders) {
-        let currentSampleFolder = splitPath[0];
         let allSamples = window.sodaJSONObj.getAllSamplesFromSubjects();
         let noPoolSamples = [];
         let poolSamples = [];
@@ -5698,7 +5503,6 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
       }
       if (hideSubjectFolders) {
         //hide subject folders when displaying pool page
-        const currentPoolName = splitPath[0];
         let currentSubjects = window.sodaJSONObj.getAllSubjects();
         let poolSubjects = [];
         let noPoolSubjects = [];
@@ -5890,14 +5694,6 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         if (deleted_file) {
           cloud_item = " pennsieve_file_deleted";
         }
-        let element_creation =
-          '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
-          extension +
-          '" oncontextmenu="window.fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-          cloud_item +
-          '">' +
-          item +
-          "</div></div>";
       }
 
       if (
@@ -5971,7 +5767,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
   if (amount_req != undefined) {
     //add items using a different function
     //want the initial files to be imported
-    let itemDisplay = new Promise(async (resolved) => {
+    new Promise(async (resolved) => {
       if (reset != undefined) {
         await window.add_items_to_view(items, amount_req, reset);
         resolved();
@@ -5982,7 +5778,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
     });
   } else {
     //load everything in place
-    let itemDisplay = new Promise(async (resolved) => {
+    new Promise(async (resolved) => {
       // $(uiItem).empty();
       await window.add_items_to_view(items, 500);
       resolved();
@@ -6002,7 +5798,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
   });
 
   dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
-    select_items_ctrl(items, event, isDragging);
+    select_items_ctrl(event);
   });
   drag_event_fired = false;
 
@@ -6061,7 +5857,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
 
     dragDropLottieContainer.innerHTML = ``;
 
-    let dragDropAnimation = lottie.loadAnimation({
+    lottie.loadAnimation({
       container: dragDropLottieContainer,
       animationData: dragDrop,
       renderer: "svg",
@@ -6314,7 +6110,7 @@ const divGenerateProgressBar = document.getElementById("div-new-curate-meter-pro
 const generateProgressBar = document.getElementById("progress-bar-new-curate");
 var progressStatus = document.getElementById("para-new-curate-progress-bar-status");
 
-window.setSodaJSONStartingPoint = (sodaJSONObj) => {
+window.setSodaJSONStartingPoint = () => {
   if (window.sodaJSONObj["starting-point"]["type"] === "local") {
     window.sodaJSONObj["starting-point"]["type"] = "new";
   }
@@ -6390,7 +6186,7 @@ const preGenerateSetup = async (e, elementContext) => {
 
   window.setSodaJSONStartingPoint(sodaJSONObj);
 
-  let [dataset_name, dataset_destination] = setDatasetNameAndDestination(sodaJSONObj);
+  let [_, dataset_destination] = setDatasetNameAndDestination(sodaJSONObj);
 
   let resume = e.target.textContent.trim() == "Retry";
   if (!resume) {
@@ -6477,8 +6273,8 @@ window.dismissStatus = (id) => {
   //document.getElementById("dismiss-status-bar").style = "display: none;";
 };
 
-let file_counter = 0;
-let folder_counter = 0;
+window.file_counter = 0;
+window.folder_counter = 0;
 window.uploadComplete = new Notyf({
   position: { x: "right", y: "bottom" },
   dismissible: true,
@@ -7181,11 +6977,11 @@ const initiate_generate = async (e) => {
 
 window.get_num_files_and_folders = (dataset_folders) => {
   if ("files" in dataset_folders) {
-    file_counter += dataset_folders["files"].length;
+    window.file_counter += dataset_folders["files"].length;
   }
   if ("folders" in dataset_folders) {
     for (let folder in dataset_folders["folders"]) {
-      folder_counter += 1;
+      window.folder_counter += 1;
       window.get_num_files_and_folders(dataset_folders["folders"][folder]);
     }
   }
