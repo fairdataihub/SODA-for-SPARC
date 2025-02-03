@@ -4,7 +4,7 @@ while (!window.baseHtmlLoaded) {
 }
 
 import api from "../others/api/api";
-import { addRows, removeRows } from "../../stores/slices/tableRowSlice";
+import { addRows } from "../../stores/slices/tableRowSlice";
 import { clientError } from "../others/http-error-handler/error-handler";
 import { swalConfirmAction, swalShowError, swalShowInfo } from "../utils/swal-utils";
 
@@ -25,7 +25,7 @@ document
 
 document
   .querySelector("#compare-local-remote-confirm-local-dataset-btn")
-  .addEventListener("click", (e) => {
+  .addEventListener("click", () => {
     document.querySelector("#compare-local-remote-confirm-local-dataset-btn").style.display =
       "none";
     let nextQuestion = document.querySelector("#compare-local-remote-confirm-local-dataset-btn")
