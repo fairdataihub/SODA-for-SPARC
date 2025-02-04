@@ -5,7 +5,6 @@ import "accordion-js/dist/accordion.min.css";
 import { showHideDropdownButtons } from "../globals";
 import client from "../client";
 import { clientError, userErrorMessage } from "./http-error-handler/error-handler";
-import introJs from "intro.js";
 import Swal from "sweetalert2";
 import api from "../others/api/api";
 import { swalShowInfo } from "../utils/swal-utils";
@@ -461,20 +460,6 @@ const addCardDetail = (card_left, card_right, parent_tab = -1, element_id = "", 
   $(parent_element).append(new_card_element);
 };
 
-// helper function to delete empty keys from objects
-const deleteEmptyKeysFromObject = (object) => {
-  for (var key in object) {
-    if (
-      object[key] === null ||
-      object[key] === undefined ||
-      object[key] === "" ||
-      JSON.stringify(object[key]) === "{}"
-    ) {
-      delete object[key];
-    }
-  }
-};
-
 const checkHighLevelFoldersInput = () => {
   $("#nextBtn").prop("disabled", true);
   var optionCards = document.getElementsByClassName("option-card high-level-folders");
@@ -832,30 +817,6 @@ $(".main-tabs.folder-input-check").click(function () {
   }
 });
 
-// function associated with metadata files (show individual metadata file upload div on button click)
-function showSubTab(section, tab, input) {
-  var tabArray;
-  if (section === "metadata") {
-    tabArray = [
-      "div-submission-metadata-file",
-      "div-dataset-description-metadata-file",
-      "div-subjects-metadata-file",
-      "div-samples-metadata-file",
-      "div-changes-metadata-file",
-      "div-readme-metadata-file",
-      "div-manifest-metadata-file",
-    ];
-  }
-  var inActiveTabArray = tabArray.filter((element) => {
-    return ![tab].includes(element);
-  });
-  for (var id of inActiveTabArray) {
-    document.getElementById(id).style.display = "none";
-  }
-  document.getElementById(input).checked = true;
-  document.getElementById(tab).style.display = "block";
-}
-
 // function to check if certain high level folders already chosen and have files/sub-folders
 // then disable the option (users cannot un-choose)
 window.highLevelFoldersDisableOptions = () => {
@@ -915,7 +876,7 @@ window.sodaJSONHasProgress = () => {
 
 // raise warning before wiping out existing window.sodaJSONObj
 // show warning message
-const raiseWarningGettingStarted = (ev) => {
+const raiseWarningGettingStarted = () => {
   return new Promise((resolve) => {
     if (window.sodaJSONHasProgress()) {
       Swal.fire({
@@ -973,18 +934,8 @@ window.handleValidateCardSelection = async (ev) => {
   $("#nextBtn").prop("disabled", false);
 };
 
-var divList = [];
 window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, category) => {
   if (currentDiv === "Question-getting-started-1") {
-    // log the start of a new curation process from scratch
-    // window.logCurationForAnalytics(
-    //   "Success",
-    //   window.PrepareDatasetsAnalyticsPrefix.CURATE,
-    //   window.AnalyticsGranularity.ACTION,
-    //   ["New"],
-    //   "Local",
-    //   true
-    // );
     window.globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
     if (window.globalGettingStarted1stQuestionBool) {
       $("#progress-files-dropdown").val("Select");
@@ -1209,7 +1160,6 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
 
 // Create the dataset structure for window.sodaJSONObj
 window.create_json_object = async (action, sodaJSONObj, root_folder_path) => {
-  let high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"];
   let high_level_metadata_sparc = [
     "submission.xlsx",
     "submission.csv",
@@ -2463,28 +2413,6 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
   }
 };
 
-// handles it when users switch options between Locally and on Pennsieve (Question 2 for each metadata file)
-// 1. Readme and Changes (MetadataRC)
-const switchMetadataRCImportBFQuestions = async (metadataRCFileType) => {
-  if ($(`#textarea-create-${metadataRCFileType}`).val().trim() !== "") {
-    var { value: continueProgress } = await Swal.fire({
-      title: `This will reset your progress so far with the ${metadataRCFileType.toUpperCase()}.txt file. Are you sure you want to continue?`,
-      showCancelButton: true,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-      reverseButtons: window.reverseSwalButtons,
-    });
-    if (!continueProgress) {
-      return;
-    } else {
-      $(`#existing-${metadataRCFileType}-file-destination`).attr("placeholder", "Browse here");
-      $(`#textarea-create-${metadataRCFileType}`).val("");
-    }
-  }
-};
-
 // handles it when users switch options in the first question (Metadata files)
 // 1. Readme and Changes (MetadataRC)
 async function switchMetadataRCQuestion(metadataRCFileType) {
@@ -2925,24 +2853,6 @@ window.populate_existing_metadata = (datasetStructureJSONObj) => {
   }
 };
 
-// TODO: Dorian see if this function is ever used,
-// (not being called anywhere that I can see)
-function obtainDivsbyCategory(category) {
-  let individualQuestions = document.getElementsByClassName("individual-question");
-  let categoryQuestionList = [];
-  for (let i = 0; i < individualQuestions.length; i++) {
-    let question = individualQuestions[i];
-
-    if (
-      question.getAttribute("data-id") !== null &&
-      question.getAttribute("data-id").includes(category)
-    ) {
-      categoryQuestionList.push(question.id);
-    }
-  }
-  return categoryQuestionList;
-}
-
 // Hide showing divs when users click on different option
 const hidePrevDivs = (currentDiv, category) => {
   var individualQuestions = document.getElementsByClassName(category);
@@ -3043,52 +2953,6 @@ const populateMetadataObject = (optionList, metadataFilePath, metadataFile, obje
   }
 };
 
-/// function to populate/reload Organize dataset UI when users move around between tabs and make changes
-// (to high-level folders)
-const populateOrganizeDatasetUI = (currentLocation, datasetFolder) => {
-  var baseName = window.path.basename(datasetFolder);
-  currentLocation = {
-    type: "local",
-    folders: {},
-    files: {},
-    action: ["existing"],
-  };
-
-  var myitems = fs.readdirSync(datasetFolder);
-  myitems.forEach((element) => {
-    var statsObj = fs.statSync(window.path.join(datasetFolder, element));
-    var addedElement = window.path.join(datasetFolder, element);
-    if (statsObj.isDirectory()) {
-      currentLocation["folders"][element] = {
-        type: "local",
-        folders: {},
-        files: {},
-        action: ["existing"],
-      };
-      window.populateJSONObjFolder(jsonObject["folders"][element], addedElement);
-    } else if (statsObj.isFile()) {
-      currentLocation["files"][element] = {
-        path: addedElement,
-        description: "",
-        "additional-metadata": "",
-        type: "local",
-        action: ["existing"],
-      };
-    }
-    var appendString =
-      '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
-      element +
-      "</div></div>";
-    $("#items").html(appendString);
-
-    //dont know here
-    listItems(currentLocation, "#items");
-    getInFolder(".single-item", "#items", organizeDSglobalPath, window.datasetStructureJSONObj);
-    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
-  });
-};
-
 ////////////////////// Functions to update JSON object after each step //////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -3185,113 +3049,13 @@ const updateJSONStructureManifest = () => {
   }
 };
 
-const recursive_remove_local_deleted_files = (dataset_folder) => {
-  if ("files" in dataset_folder) {
-    for (let file in dataset_folder["files"]) {
-      if ("forTreeview" in dataset_folder["files"][file]) {
-        continue;
-      }
-      if (dataset_folder["files"][file]["action"].includes("recursive_deleted")) {
-        let index = dataset_folder["files"][file]["action"].indexOf("recursive_deleted");
-        dataset_folder["files"][file]["action"].splice(index, 1);
-      }
-      if (dataset_folder["files"][file]["action"].includes("deleted")) {
-        delete dataset_folder["files"][file];
-      }
-    }
-  }
-  if ("folders" in dataset_folder && Object.keys(dataset_folder["folders"]).length !== 0) {
-    for (let folder in dataset_folder["folders"]) {
-      recursive_remove_local_deleted_files(dataset_folder["folders"][folder]);
-      if ("action" in dataset_folder["folders"][folder]) {
-        if (dataset_folder["folders"][folder]["action"].includes("recursive_deleted")) {
-          let index = dataset_folder["folders"][folder]["action"].indexOf("recursive_deleted");
-          dataset_folder["folders"][folder]["action"].splice(index, 1);
-        }
-        if (dataset_folder["folders"][folder]["action"].includes("deleted")) {
-          delete dataset_folder["folders"][folder];
-        }
-      }
-    }
-  }
-};
-
 // Step 6: Generate dataset
 // update JSON object after users finish Generate dataset step
-window.updateJSONStructureGenerate = (progress = false, sodaJSONObject) => {
-  let starting_point = sodaJSONObject["starting-point"]["type"];
+window.updateJSONStructureGenerate = (sodaJSONObject) => {
+  let = sodaJSONObject["starting-point"]["type"];
   if (sodaJSONObject["starting-point"]["type"] == "local") {
     sodaJSONObject["starting-point"]["type"] = "new";
   }
-
-  // if (sodaJSONObject["starting-point"]["type"] == "local") {
-  //   var localDestination = window.path.dirname(sodaJSONObject["starting-point"]["local-path"]);
-  //   var newDatasetName = window.path.basename(sodaJSONObject["starting-point"]["local-path"]);
-  //   // if (progress == false) {
-  //   //   delete window.sodaJSONObj["starting-point"]["local-path"];
-  //   // }
-  //   sodaJSONObject["generate-dataset"] = {
-  //     destination: "local",
-  //     path: localDestination,
-  //     "dataset-name": newDatasetName,
-  //     "if-existing": "merge",
-  //     "generate-option": "new",
-  //   };
-  //   // delete bf account and dataset keys
-  //   if ("bf-account-selected" in sodaJSONObject) {
-  //     delete sodaJSONObject["bf-account-selected"];
-  //   }
-  //   if ("bf-dataset-selected" in sodaJSONObject) {
-  //     delete sodaJSONObject["bf-dataset-selected"];
-  //   }
-  //   sodaJSONObject["starting-point"]["type"] = "new";
-  //   // TODO: Do not delete local files if user is in validation step and not in initiate_generate step (validator-phase-4-simple)
-  //   recursive_remove_local_deleted_files(sodaJSONObject["dataset-structure"]);
-  // }
-
-  // if (sodaJSONObject["starting-point"]["type"] == "new") {
-  //   if ($('input[name="generate-1"]:checked').length > 0) {
-  //     if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop") {
-  //       var localDestination = $("#input-destination-generate-dataset-locally")[0].placeholder;
-  //       if (localDestination === "Browse here") {
-  //         localDestination = "";
-  //       }
-  //       var newDatasetName = $("#inputNewNameDataset").val().trim();
-  //       sodaJSONObject["generate-dataset"] = {
-  //         destination: "local",
-  //         path: localDestination,
-  //         "dataset-name": newDatasetName,
-  //         "generate-option": "new",
-  //         "if-existing": "new",
-  //       };
-  //       // delete bf account and dataset keys
-  //       if ("bf-account-selected" in sodaJSONObject) {
-  //         delete sodaJSONObject["bf-account-selected"];
-  //       }
-  //       if ("bf-dataset-selected" in sodaJSONObject) {
-  //         delete sodaJSONObject["bf-dataset-selected"];
-  //       }
-  //     } else if ($('input[name="generate-1"]:checked')[0].id === "generate-upload-BF") {
-  //       sodaJSONObject["generate-dataset"] = {
-  //         destination: "bf",
-  //       };
-
-  //       if ($("#current-bf-account-generate").text() !== "None") {
-  //         if ("bf-account-selected" in sodaJSONObject) {
-  //           sodaJSONObject["bf-account-selected"]["account-name"] = window.defaultBfAccount;
-  //         } else {
-  //           sodaJSONObject["bf-account-selected"] = {
-  //             "account-name": window.defaultBfAccount,
-  //           };
-  //         }
-  //       }
-
-  //     }
-  //   }
-  //   if (progress == true) {
-  //     sodaJSONObject["starting-point"]["type"] = starting_point;
-  //   }
-  // }
 };
 
 const updateJSONStructureBfDestination = () => {
@@ -3373,38 +3137,6 @@ const updateOverallJSONStructure = (id) => {
   }
 };
 //////////////////////////////// END OF Functions to update JSON object //////////////////////////////////////////
-
-var generateExitButtonBool = false;
-function raiseWarningExit(message) {
-  // function associated with the Exit button (Step 6: Generate dataset -> Generate div)
-  return new Promise((resolve) => {
-    Swal.fire({
-      icon: "warning",
-      text: message,
-      showCancelButton: true,
-      focusCancel: true,
-      cancelButtonText: "Cancel",
-      confirmButtonText: "Continue",
-      reverseButtons: window.reverseSwalButtons,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        generateExitButtonBool = true;
-        resolve(generateExitButtonBool);
-      } else {
-        generateExitButtonBool = false;
-        resolve(generateExitButtonBool);
-      }
-    });
-  });
-}
 
 window.resetCuration = () => {
   $("#dataset-loaded-message").hide();
@@ -3533,7 +3265,7 @@ window.resetCurationTabs = () => {
   window.globalGettingStarted1stQuestionBool = false;
 };
 
-window.exitCurate = async (resetProgressTabs, start_over = false) => {
+window.exitCurate = async (resetProgressTabs) => {
   $("#dataset-loaded-message").hide();
   document.getElementById("guided_mode_view").click();
 };
@@ -3662,23 +3394,13 @@ document.getElementById("organize_dataset_btn").addEventListener("click", () => 
   window.showParentTab(window.currentTab, 1);
 });
 
-const hideNextDivs = (currentDiv) => {
-  // make currentDiv current class
-  $(`#${currentDiv}`).removeClass("prev");
-  $(`#${currentDiv}`).removeClass("test2");
-  // hide subsequent divs
-  $($(`#${currentDiv}`).nextAll()).removeClass("prev");
-  $($(`#${currentDiv}`).nextAll()).removeClass("show");
-  $($(`#${currentDiv}`).nextAll()).removeClass("test2");
-};
-
 // save progress up until step 5 for now
 const updateJSONObjectProgress = () => {
   // updateJSONStructureGettingStarted();
   updateJSONStructureMetadataFiles();
   updateJSONStructureManifest();
   window.updateJSONStructureDSstructure();
-  window.updateJSONStructureGenerate(true, window.sodaJSONObj);
+  window.updateJSONStructureGenerate(window.sodaJSONObj);
 };
 
 const saveSODAJSONProgress = (progressFileName) => {
@@ -3769,7 +3491,7 @@ window.saveOrganizeProgressPrompt = () => {
 };
 
 $("#start-over-btn").click(() => {
-  window.exitCurate(true, true);
+  window.exitCurate(true);
 });
 
 const description_text = {
@@ -3980,10 +3702,4 @@ window.transitionFromPrePublishingChecklist = (ev, elementId) => {
   // mark the tab as checked to get the appropriate tab styling
   $("#disseminate_dataset_tab").prop("checked", false);
   $("#manage_dataset_tab").prop("checked", true);
-};
-
-const scrollToElement = (elementIdOrClassname) => {
-  let element = document.querySelector(elementIdOrClassname);
-
-  element.scrollIntoView(true);
 };

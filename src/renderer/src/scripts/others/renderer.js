@@ -6106,7 +6106,7 @@ const preGenerateSetup = async (e, elementContext) => {
   document.getElementById("contact-us-view").style.pointerEvents = "none";
 
   // updateJSON structure after Generate dataset tab
-  window.updateJSONStructureGenerate(false, window.sodaJSONObj);
+  window.updateJSONStructureGenerate(window.sodaJSONObj);
 
   window.setSodaJSONStartingPoint(window.sodaJSONObj);
 
