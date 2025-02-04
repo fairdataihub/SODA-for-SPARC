@@ -3052,7 +3052,6 @@ const updateJSONStructureManifest = () => {
 // Step 6: Generate dataset
 // update JSON object after users finish Generate dataset step
 window.updateJSONStructureGenerate = (sodaJSONObject) => {
-  let = sodaJSONObject["starting-point"]["type"];
   if (sodaJSONObject["starting-point"]["type"] == "local") {
     sodaJSONObject["starting-point"]["type"] = "new";
   }
