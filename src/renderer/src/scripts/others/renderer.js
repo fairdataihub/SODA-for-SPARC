@@ -5059,7 +5059,7 @@ window.folderContextMenu = (event) => {
           window.datasetStructureJSONObj
         );
       } else if ($(this).attr("id") === "folder-move") {
-        window.moveItems(event, "folders");
+        window.moveItems(event);
       }
       // Hide it AFTER the action was triggered
       window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
@@ -5146,7 +5146,7 @@ window.fileContextMenu = (event) => {
             window.datasetStructureJSONObj
           );
         } else if ($(this).attr("id") === "file-move") {
-          window.moveItems(event, "files");
+          window.moveItems(event);
         } else if ($(this).attr("id") === "file-description") {
           manageDesc(event);
         }
