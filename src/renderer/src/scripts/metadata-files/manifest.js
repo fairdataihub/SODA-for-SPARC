@@ -1793,7 +1793,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then(() => {});
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1902,7 +1902,7 @@ const validateSPARCdataset = () => {
           $(".swal-popover").popover();
         },
         footer: footer,
-      }).then((result) => {});
+      }).then(() => {});
       return false;
     } else {
       return true;
@@ -1924,7 +1924,7 @@ const validateSPARCdataset = () => {
       didOpen: () => {
         Swal.hideLoading();
       },
-    }).then((result) => {
+    }).then(() => {
       document.getElementById("input-manifest-local-folder-dataset").placeholder = "Browse here";
       $("#div-confirm-manifest-local-folder-dataset").hide();
       localDatasetFolderPath = "";
@@ -2102,7 +2102,7 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
-      }).then((result) => {});
+      }).then(() => {});
       return;
     }
     createManifestLocally("local", true, "");
@@ -2135,7 +2135,7 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
 
   // create the manifest files based off the user's edits to the manifest files
   try {
-    let generate_local_manifest = await client.post(
+    await client.post(
       `/curate_datasets/manifest_files`,
       {
         generate_purpose: editBoolean ? "edit-manifest" : "",
@@ -2143,8 +2143,6 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
       },
       { timeout: 0 }
     );
-
-    let res = generate_local_manifest.data.success_message_or_manifest_destination;
 
     // if the user wants to edit their manifest files then move them to the dataset folder
     // and then show the the manifest file editor in the UI
@@ -2177,7 +2175,7 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
           hideClass: {
             popup: "animate__animated animate__zoomOut animate__faster",
           },
-        }).then((result) => {});
+        }).then(() => {});
         $("#preview-manifest-fake-confirm").click();
         $("#Question-prepare-manifest-4").removeClass("show");
         $("#Question-prepare-manifest-4").removeClass("prev");
@@ -2278,7 +2276,7 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
       didOpen: () => {
         Swal.hideLoading();
       },
-    }).then((result) => {});
+    }).then(() => {});
     $("#Question-prepare-manifest-4").removeClass("show");
     $("#Question-prepare-manifest-4").removeClass("prev");
     $("#Question-prepare-manifest-3").removeClass("prev");
@@ -2385,8 +2383,6 @@ const createChildNodeManifest = (
         newFormatNode.state.opened = true;
         newFormatNode.state.disabled = disabled;
         var new_node = createChildNodeManifest(value, key, "folder", "", true, selected, disabled);
-
-        let firstNode = false;
       }
       newFormatNode["children"].push(new_node);
       newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
@@ -2513,7 +2509,7 @@ const generateAfterEdits = async () => {
 
   // move the generated manifest files to the user selected location for preview
   if (pennsievePreview) {
-    let [moved, location] = await moveManifestFilesPreview(dir, window.finalManifestGenerationPath);
+    let location = await moveManifestFilesPreview(dir, window.finalManifestGenerationPath)[1];
     openDirectoryAtManifestGenerationLocation(location);
     Swal.fire({
       title: "Successfully generated manifest files at the specified location!",
@@ -2528,7 +2524,7 @@ const generateAfterEdits = async () => {
   initiate_generate_manifest_bf();
 };
 
-document.querySelector("#btn-pull-ds-manifest").addEventListener("click", (e) => {
+document.querySelector("#btn-pull-ds-manifest").addEventListener("click", () => {
   document.querySelector("#div-check-bf-create-manifest").style.visibility = "hidden";
 
   let section = document.querySelector("#manifest-gen-on-pennsieve-section");
@@ -2566,7 +2562,7 @@ document.querySelector("#continue_step_5-manifest").addEventListener("click", (e
   e.target.parentNode.style.visibility = "hidden";
 });
 
-document.querySelector(".manifest-change-current-ds").addEventListener("click", (e) => {
+document.querySelector(".manifest-change-current-ds").addEventListener("click", () => {
   document.querySelector("#div-confirm-manifest-local-folder-dataset").style.visibility = "visible";
 });
 
