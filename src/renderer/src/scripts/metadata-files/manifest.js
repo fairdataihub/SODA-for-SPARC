@@ -315,7 +315,7 @@ $(document).ready(async function () {
       );
       var selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
       if (window.fs.existsSync(selectedManifestFilePath)) {
-        jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
+        let jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
           sourceFile: selectedManifestFilePath,
           columnToKey: {
             "*": "{{columnHeader}}",
