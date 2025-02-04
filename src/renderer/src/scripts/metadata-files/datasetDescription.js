@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
+import { Destinations } from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 import client from "../client";
 import kombuchaEnums from "../analytics/analytics-enums";
@@ -28,23 +28,10 @@ document.querySelectorAll(".dd-change-current-ds").forEach((element) => {
 });
 
 // Prepare Dataset Description File
-const dsAwardArray = document.getElementById("ds-description-award-list");
-const dsContributorArrayLast1 = document.getElementById("ds-description-contributor-list-last-1");
-const dsContributorArrayFirst1 = document.getElementById("ds-description-contributor-list-first-1");
 
 window.currentContributorsLastNames = [];
-var currentContributorsFirstNames = [];
+
 window.globalContributorNameObject = {};
-
-// const affiliationInput = document.getElementById("input-con-affiliation-1");
-const addCurrentContributorsBtn = document.getElementById("button-ds-add-contributor");
-const contactPerson = document.getElementById("ds-contact-person");
-const generateDSBtn = document.getElementById("button-generate-ds-description");
-const addAdditionalLinkBtn = document.getElementById("button-ds-add-link");
-const datasetDescriptionFileDataset = document.getElementById("ds-name");
-const parentDSDropdown = document.getElementById("input-parent-ds");
-
-var sparcAwards = [];
 
 var ddDestinationPath = "";
 
@@ -116,159 +103,7 @@ window.checkForUniqueRowID = (rowID, no) => {
   }
 };
 
-const populateProtocolLink = (ev) => {
-  if ($(ev).val() === "Protocol URL or DOI*") {
-    // display dropdown to select protocol titles
-    if ($("#select-misc-links").length > 0) {
-      $("#select-misc-links").css("display", "block");
-    } else {
-      var divElement =
-        '<select id="select-misc-links" class="form-container-input-bf" style="font-size:13px; line-height:2;margin-top: 20px" onchange="autoPopulateProtocolLink(this, \'\', \'dd\')"></select>';
-      $($(ev).parents()[0]).append(divElement);
-      // populate dropdown with protocolResearcherList
-      window.removeOptions(document.getElementById("select-misc-links"));
-      window.addOption(
-        document.getElementById("select-misc-links"),
-        "Select protocol title",
-        "Select"
-      );
-      for (var key of Object.keys(protocolResearcherList)) {
-        $("#select-misc-links").append(
-          '<option value="' + protocolResearcherList[key] + '">' + key + "</option>"
-        );
-      }
-    }
-  } else {
-    if ($("#select-misc-links").length > 0) {
-      $("#select-misc-links").css("display", "none");
-    }
-  }
-};
-
-// check for duplicates in names of contributors
-const checkContributorNameDuplicates = (table, currentRow) => {
-  var duplicate = false;
-  var currentConLastName = $("#" + currentRow.cells[0].children[0].id).val();
-  var currentConFirstName = $("#" + currentRow.cells[1].children[0].id).val();
-  var rowcount = document.getElementById(table).rows.length;
-  for (var i = 1; i < rowcount - 1; i++) {
-    if (
-      $("#" + document.getElementById(table).rows[i].cells[0].children[0].id).val() ===
-        currentConLastName &&
-      $("#" + document.getElementById(table).rows[i].cells[1].children[0].id).val() ===
-        currentConFirstName
-    ) {
-      duplicate = true;
-      break;
-    }
-  }
-  return duplicate;
-};
-
-// clone Last names of contributors to subsequent selects so we don't have to keep calling Airtable API
-const cloneConNamesSelect = (selectLast) => {
-  window.removeOptions(document.getElementById(selectLast));
-  window.addOption(document.getElementById(selectLast), "Select an option", "Select");
-  for (var i = 0; i < window.currentContributorsLastNames.length; i++) {
-    var opt = window.currentContributorsLastNames[i];
-    if (document.getElementById(selectLast)) {
-      window.addOption(document.getElementById(selectLast), opt, opt);
-    }
-  }
-};
-
-// the below 2 functions initialize Tagify for each input field for a new added row (Role and Affiliation)
-const createConsRoleTagify = (inputField) => {
-  var input = document.getElementById(inputField);
-  // initialize Tagify on the above input node reference
-  var tagify = new Tagify(input, {
-    whitelist: [
-      "PrincipalInvestigator",
-      "Creator",
-      "CoInvestigator",
-      "CorrespondingAuthor",
-      "DataCollector",
-      "DataCurator",
-      "DataManager",
-      "Distributor",
-      "Editor",
-      "Producer",
-      "ProjectLeader",
-      "ProjectManager",
-      "ProjectMember",
-      "RelatedPerson",
-      "Researcher",
-      "ResearchGroup",
-      "Sponsor",
-      "Supervisor",
-      "WorkPackageLeader",
-      "Other",
-    ],
-    enforceWhitelist: true,
-    dropdown: {
-      maxItems: Infinity,
-      enabled: 1,
-      closeOnSelect: true,
-    },
-  });
-  window.createDragSort(tagify);
-};
-
-const createConsAffliationTagify = (inputField) => {
-  var input = document.getElementById(inputField);
-  var tagify = new Tagify(input, {
-    dropdown: {
-      classname: "color-blue",
-      enabled: 0, // show the dropdown immediately on focus
-      maxItems: 25,
-      closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-    },
-    duplicates: false,
-  });
-  window.createDragSort(tagify);
-};
-
-const convertDropdownToTextBox = (dropdown) => {
-  if (document.getElementById(dropdown)) {
-    $($("#" + dropdown).parents()[1]).css("display", "none");
-    if (dropdown == "ds-description-award-list") {
-      $("#SPARC-Award-raw-input-div-dd").css("display", "flex");
-    }
-  }
-};
-
 // resetting the dataset_description file
-
-const checkEmptyConRowInfo = (table, row) => {
-  var empty = false;
-  var type = ["select", "input"];
-  for (var i = 0; i < row.cells.length - 2; i++) {
-    if (row.cells[i].style.display !== "none") {
-      var cell = $(row.cells[i]);
-      for (var item of type) {
-        if ($(cell).find(item).length > 0) {
-          if (
-            $(cell).find(item).val() == "" ||
-            $(cell).find(item).val() == "Select an option" ||
-            $(cell).find(item).val() == "Select"
-          ) {
-            empty = true;
-            $(cell).find(item).addClass("invalid");
-            if ($(cell).find("tags").length > 0) {
-              $(cell).find("tags").addClass("invalid");
-            }
-          } else {
-            $(cell).find(item).removeClass("invalid");
-            if ($(cell).find("tags").length > 0) {
-              $(cell).find("tags").removeClass("invalid");
-            }
-          }
-        }
-      }
-    }
-  }
-  return empty;
-};
 
 window.showExistingDDFile = () => {
   if (
@@ -430,7 +265,7 @@ window.generateDDFile = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then(() => {});
   var datasetInfoValueObj = window.grabDSInfoEntries();
   var studyInfoValueObject = grabStudyInfoEntries();
   //// grab entries from contributor info section and pass values to conSectionArray
@@ -687,11 +522,11 @@ const addProtocolLinktoTableDD = (protocolLink, protocolType, protocolRelation, 
   var rowcount = protocolTable.rows.length;
   /// append row to table from the bottom
   var rowIndex = rowcount;
-  var currentRow = protocolTable.rows[protocolTable.rows.length];
+  protocolTable.rows[protocolTable.rows.length];
   // check for unique row id in case users delete old rows and append new rows (same IDs!)
   var newRowIndex = window.checkForUniqueRowID("row-current-protocol", rowIndex);
   var indexNumber = rowIndex;
-  var row = (protocolTable.insertRow(rowIndex).outerHTML =
+  protocolTable.insertRow(rowIndex).outerHTML =
     "<tr id='row-current-protocol" +
     newRowIndex +
     "' class='row-protocol'><td class='contributor-table-row'>" +
@@ -706,7 +541,7 @@ const addProtocolLinktoTableDD = (protocolLink, protocolType, protocolRelation, 
     protocolRelation +
     "</td><td class='contributor-table-row' style='display:none'>" +
     protocolDesc +
-    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='window.delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='window.delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
 };
 
 window.addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) => {
@@ -716,11 +551,11 @@ window.addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) 
   let rowcount = linkTable.rows.length;
   /// append row to table from the bottom
   let rowIndex = rowcount;
-  let currentRow = linkTable.rows[linkTable.rows.length];
+  linkTable.rows[linkTable.rows.length];
   // check for unique row id in case users delete old rows and append new rows (same IDs!)
   let newRowIndex = window.checkForUniqueRowID("row-current-additional-link", rowIndex);
   let indexNumber = rowIndex;
-  let row = (linkTable.insertRow(rowIndex).outerHTML =
+  linkTable.insertRow(rowIndex).outerHTML =
     "<tr id='row-current-other" +
     newRowIndex +
     "' class='row-protocol'><td class='contributor-table-row'>" +
@@ -735,7 +570,7 @@ window.addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) 
     linkRelation +
     "</td><td class='contributor-table-row' style='display:none'>" +
     description +
-    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
 };
 
 const changeAward = (award) => {
@@ -751,61 +586,9 @@ const changeAward = (award) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then(() => {});
   $("#ds-description-award-input").val(award);
   $("#submission-sparc-award").val(award);
-};
-
-const generateContributorRowElement = (contributorLastName, contributorFirstName) => {
-  return `
-    <tr>
-      <td class="middle aligned collapsing text-center">
-        <div class="ui fitted checkbox">
-          <input type="checkbox" name="contributor">
-          <label></label>
-        </div>
-      </td>
-      <td class="middle aligned">
-        ${contributorLastName}
-      </td>
-      <td class="middle aligned">
-        ${contributorFirstName}
-      </td>
-    </tr>
-  `;
-};
-
-const addContributortoTableDD = (name, contributorObject) => {
-  const contributorIsValid = window.contributorDataIsValid(contributorObject);
-  const conRole = contributorObject.conRole;
-  let conTable = document.getElementById("contributor-table-dd");
-  let rowcount = conTable.rows.length;
-  let rowIndex = rowcount;
-  /// append row to table from the bottom
-  let currentRow = conTable.rows[conTable.rows.length - 1];
-  // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  let newRowIndex = window.checkForUniqueRowID("row-current-con", rowIndex);
-  let indexNumber = rowIndex;
-  let conName = name;
-  // var conContactPerson = contactStatus;
-
-  document.getElementById("div-contributor-table-dd").style.display = "block";
-  document.getElementById("contributor-table-dd").style.display = "table";
-
-  let row = (conTable.insertRow(rowIndex).outerHTML =
-    `<tr id='row-current-con' class='row-protocol'><td class='contributor-table-row'>
-  ${conName}
-    </td><td>
-  
-    ${conRole}
-    </td><td class='contributor-table-row'>
-    ${
-      contributorIsValid
-        ? `<span class="badge badge-pill badge-success">Valid</span>`
-        : `<span class="badge badge-pill badge-warning">Missing Fields</span>`
-    }
-    </td> <td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button></div></td>
-    <td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>`);
 };
 
 var contributorElement = `<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="window.onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" " style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div></div> `;
@@ -815,184 +598,6 @@ var contributorElementRaw =
 
 window.contributorArray = [];
 var affiliationSuggestions = [];
-
-window.showContributorSweetalert = (key) => {
-  var currentContributortagify;
-  var currentAffliationtagify;
-  if (key === false) {
-    if (Object.keys(window.globalContributorNameObject).length !== 0) {
-      var footer =
-        "<a style='text-decoration: none !important' onclick='window.showContributorSweetalert(\"pass\")' target='_blank'>I want to add a contributor not listed above</a>";
-      var element = contributorElement;
-    } else {
-      var footer = "";
-      var element = contributorElementRaw;
-    }
-  } else if (key === "pass") {
-    var element = contributorElementRaw;
-    var footer = "";
-  }
-  Swal.fire({
-    title: "Add a contributor",
-    html: element,
-    showCancelButton: true,
-    focusCancel: true,
-    cancelButtonText: "Cancel",
-    confirmButtonText: "Add contributor",
-    width: "max-content",
-    reverseButtons: window.reverseSwalButtons,
-    backdrop: "rgba(0,0,0, 0.4)",
-    heightAuto: false,
-    allowOutsideClick: false,
-    footer: footer,
-    didOpen: () => {
-      $(".swal-popover").popover();
-      tippy(".tippy-tooltip", {
-        allowHTML: true,
-        interactive: true,
-        placement: "right",
-        theme: "light",
-        interactiveBorder: 30,
-      });
-      // first destroy old tagify
-      $($("#input-con-affiliation").siblings()[0]).remove();
-      $($("#input-con-role").siblings()[0]).remove();
-      /// initiate tagify for contributor roles
-      currentContributortagify = new Tagify(document.getElementById("input-con-role"), {
-        whitelist: [
-          "PrincipalInvestigator",
-          "Creator",
-          "CoInvestigator",
-          "CorrespondingAuthor",
-          "DataCollector",
-          "DataCurator",
-          "DataManager",
-          "Distributor",
-          "Editor",
-          "Producer",
-          "ProjectLeader",
-          "ProjectManager",
-          "ProjectMember",
-          "RelatedPerson",
-          "Researcher",
-          "ResearchGroup",
-          "Sponsor",
-          "Supervisor",
-          "WorkPackageLeader",
-          "Other",
-        ],
-        dropdown: {
-          classname: "color-blue",
-          enabled: 0, // show the dropdown immediately on focus
-          maxItems: 25,
-          closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-        },
-        enforceWhitelist: true,
-        duplicates: false,
-      });
-      window.createDragSort(currentContributortagify);
-
-      currentAffliationtagify = new Tagify(document.getElementById("input-con-affiliation"), {
-        dropdown: {
-          classname: "color-blue",
-          enabled: 0, // show the dropdown immediately on focus
-          maxItems: 25,
-          closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-        },
-        whitelist: affiliationSuggestions,
-        delimiters: null,
-        duplicates: false,
-      });
-      window.createDragSort(currentAffliationtagify);
-
-      // load contributor names onto Select
-      if (Object.keys(window.globalContributorNameObject).length !== 0) {
-        if (key === false) {
-          cloneConNamesSelect("dd-contributor-last-name");
-        }
-      }
-    },
-    showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster",
-    },
-    preConfirm: () => {
-      var affValues = grabCurrentTagifyContributor(currentAffliationtagify);
-      // store affiliation info as suggestions
-      affiliationSuggestions.push.apply(affiliationSuggestions, affValues);
-      var affSet = new Set(affiliationSuggestions);
-      var affArray = [...affSet];
-      affiliationSuggestions = affArray;
-      var affiliationVals = affValues.join(", ");
-      var roleVals = grabCurrentTagifyContributor(currentContributortagify).join(", ");
-
-      var firstName = $("#dd-contributor-first-name").val().trim();
-      var lastName = $("#dd-contributor-last-name").val().trim();
-      if (
-        $("#input-con-ID").val().trim() === "" ||
-        $("#input-con-affiliation").val().trim() === "" ||
-        $("#input-con-role").val().trim() === "" ||
-        firstName === "Select" ||
-        lastName === "Select" ||
-        firstName === "" ||
-        lastName === ""
-      ) {
-        Swal.showValidationMessage(`Please fill in all required fields!`);
-      } else {
-        var duplicateConName = checkDuplicateContributorName(
-          firstName,
-          lastName,
-          $("#contributor-table-dd")
-        );
-        if (!duplicateConName) {
-          var myCurrentCon = {
-            conName: lastName + ", " + firstName,
-            contributorFirstName: firstName,
-            contributorLastName: lastName,
-            conID: $("#input-con-ID").val().trim(),
-            conAffliation: affiliationVals,
-            conRole: roleVals,
-          };
-          window.contributorArray.push(myCurrentCon);
-          return [myCurrentCon];
-          // if ($("#ds-contact-person").prop("checked")) {
-          //   window.contributorArray.push(myCurrentCon);
-          //   return [myCurrentCon.conName, "No"];
-          //   var contactPersonExists = checkContactPersonStatus("add", null);
-          //   // if (contactPersonExists) {
-          //   //   Swal.showValidationMessage(
-          //   //     "One corresponding author is already added. Only one corresponding author is allowed for a dataset."
-          //   //   );
-          //   // } else {
-          //   //   var myCurrentCon = {
-          //   //     conName: lastName + ", " + firstName,
-          //   //     conID: $("#input-con-ID").val().trim(),
-          //   //     conAffliation: affiliationVals,
-          //   //     conRole: roleVals + ", CorrespondingAuthor",
-          //   //   };
-          //   //   window.contributorArray.push(myCurrentCon);
-          //   //   return [myCurrentCon.conName, "Yes"];
-          //   // }
-          // } else {
-
-          // }
-        } else {
-          Swal.showValidationMessage(
-            `The contributor ${lastName + ", " + firstName} is already added.`
-          );
-        }
-      }
-    },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      addContributortoTableDD(result.value[0].conName, result.value[0]);
-      // memorize Affiliation info for next time as suggestions
-      memorizeAffiliationInfo(affiliationSuggestions);
-    }
-  });
-};
 
 window.delete_current_con_id = (ev) => {
   Swal.fire({
@@ -1009,7 +614,6 @@ window.delete_current_con_id = (ev) => {
     if (boolean.isConfirmed) {
       // 1. Delete from table
       var currentRow = $(ev).parents()[2];
-      var currentRowid = $(currentRow).prop("id");
 
       currentRow.remove();
       window.updateIndexForTable(document.getElementById("contributor-table-dd"), false);
@@ -1186,36 +790,6 @@ window.edit_current_con_id = (ev) => {
           }
         }
         return [myCurrentCon];
-        // if ($("#ds-contact-person").prop("checked")) {
-        //   var contactPersonExists = checkContactPersonStatus("edit", ev);
-        //   if (contactPersonExists) {
-        //     Swal.showValidationMessage(
-        //       "One corresponding author is already added above. Only corresponding author person is allowed for a dataset."
-        //     );
-        //   } else {
-        //     var myCurrentCon = {
-        //       conName:
-        //         $("#dd-contributor-first-name").val().trim() +
-        //         ", " +
-        //         $("#dd-contributor-last-name").val().trim(),
-        //       conID: $("#input-con-ID").val().trim(),
-        //       conAffliation: affiliationVals,
-        //       conRole: roleVals + ", CorrespondingAuthor",
-        //       // conContact: "Yes",
-        //     };
-        //     for (var contributor of window.contributorArray) {
-        //       if (contributor.conName === name) {
-        //         window.contributorArray[window.contributorArray.indexOf(contributor)] = myCurrentCon;
-        //         break;
-        //       }
-        //     }
-
-        //     return [myCurrentCon.conName, "Yes"];
-        //   }
-        // } else {
-
-        //   return [myCurrentCon.conName, "No"];
-        // }
       }
     },
   }).then((result) => {
@@ -1252,39 +826,6 @@ const grabCurrentTagifyContributor = (tagify) => {
   return infoArray;
 };
 
-const checkContactPersonStatus = (type, ev) => {
-  //TODO: remove this functionality as it is not needed anymore
-  var allConTable = document.getElementById("contributor-table-dd");
-  if (type === "edit") {
-    var contactPersonExists = false;
-    var currentRow = $(ev).parents()[2];
-    var name = $(currentRow)[0].cells[1].innerText;
-    var rowcount = allConTable.rows.length;
-    for (var i = 1; i < rowcount; i++) {
-      var contactLabel = allConTable.rows[i].cells[2].innerText;
-      var currentContributorName = allConTable.rows[i].cells[1].innerText;
-      if (currentContributorName !== name) {
-        if (contactLabel === "Yes") {
-          contactPersonExists = true;
-          break;
-        }
-      }
-    }
-    return contactPersonExists;
-  } else {
-    var contactPersonExists = false;
-    var rowcount = allConTable.rows.length;
-    for (var i = 1; i < rowcount; i++) {
-      var contactLabel = allConTable.rows[i].cells[2].innerText;
-      if (contactLabel === "Yes") {
-        contactPersonExists = true;
-        break;
-      }
-    }
-    return contactPersonExists;
-  }
-};
-
 window.checkAtLeastOneContactPerson = () => {
   let contactPersonExists = false;
   let allConTable = document.getElementById("contributor-table-dd");
@@ -1309,19 +850,6 @@ const checkDuplicateContributorName = (first, last, contributorsTable) => {
   for (let i = 1; i < rowcount; i++) {
     let currentContributorName = table.rows[i].cells[1].innerText;
     if (currentContributorName === name) {
-      duplicate = true;
-      break;
-    }
-  }
-  return duplicate;
-};
-
-const checkDuplicateLink = (link, table) => {
-  let duplicate = false;
-  let rowcount = document.getElementById(table).rows.length;
-  for (let i = 1; i < rowcount; i++) {
-    let currentLink = document.getElementById(table).rows[i].cells[1].innerText;
-    if (currentLink === link) {
       duplicate = true;
       break;
     }
@@ -1371,92 +899,6 @@ const grabStudyInfoEntries = () => {
   };
 };
 
-// adding row for contributor table
-const addNewRow = (table) => {
-  $("#para-save-link-status").text("");
-  $("#para-save-contributor-status").text("");
-  var rowcount = document.getElementById(table).rows.length;
-  var rowIndex = rowcount;
-  var currentRow =
-    document.getElementById(table).rows[document.getElementById(table).rows.length - 1];
-
-  /// append row to table from the bottom
-  if (table === "doi-table") {
-    if (
-      $(document.getElementById("doi-table").rows[rowIndex - 1].cells[1])
-        .find("input")
-        .val() === "" ||
-      $(document.getElementById("doi-table").rows[rowIndex - 1].cells[0])
-        .find("select")
-        .val() === "Select"
-    ) {
-      $("#para-save-link-status").text("Please enter a link to add!");
-    } else {
-      $(".doi-helper-buttons").css("display", "inline-flex");
-      $(".doi-add-row-button").css("display", "none");
-      $("#select-misc-links").remove();
-      // check for unique row id in case users delete old rows and append new rows (same IDs!)
-      var newRowIndex = window.checkForUniqueRowID("row-current-link", rowIndex);
-      var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
-        "<tr id='row-current-link" +
-        newRowIndex +
-        "'><td><select id='select-misc-link' class='form-container-input-bf' onchange='populateProtocolLink(this)' style='font-size:13px;line-height:2;'><option value='Select'>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button onclick='delete_link(" +
-        rowIndex +
-        ")'' class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
-    }
-  } else if (table === "table-current-contributors") {
-    // check if all the fields are populated before Adding
-    var empty = checkEmptyConRowInfo(table, currentRow);
-    if (empty) {
-      $("#para-save-contributor-status").text("Please fill in all the fields to add!");
-      return;
-    }
-    if ($(currentRow).find("label").find("input")[0].checked) {
-      var currentContactPersonIDNumber = $($(currentRow).find("label").find("input")[0])
-        .prop("id")
-        .slice(-1);
-      var contactPersonBoolean = contactPersonCheck(currentContactPersonIDNumber);
-      if (contactPersonBoolean) {
-        $("#para-save-contributor-status").text(
-          "One corresponding author is already added above. Only one corresponding author is allowed for a dataset."
-        );
-        return;
-      }
-    }
-    var nameDuplicateBoolean = checkContributorNameDuplicates(table, currentRow);
-    if (nameDuplicateBoolean) {
-      $("#para-save-contributor-status").text("Contributor already added!");
-      return;
-    }
-    $("#table-current-contributors .contributor-helper-buttons").css("display", "inline-flex");
-    $("#table-current-contributors .contributor-add-row-button").css("display", "none");
-    // check for unique row id in case users delete old rows and append new rows (same IDs!)
-    var newRowIndex = window.checkForUniqueRowID("row-current-name", rowIndex);
-    var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
-      "<tr id='row-current-name" +
-      newRowIndex +
-      "'><td class='grab'><input id='ds-description-raw-contributor-list-last-" +
-      newRowIndex +
-      "' class='form-container-input-bf' type='text'></input></td><td class='grab'><input id='ds-description-raw-contributor-list-first-" +
-      newRowIndex +
-      "' type='text' class='form-container-input-bf'></input></td><td class='grab'><input name='id' type='text' id='input-con-ID-" +
-      newRowIndex +
-      "' contenteditable='true'></input></td><td class='grab'><input name='affiliation' id='input-con-affiliation-" +
-      newRowIndex +
-      "' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-" +
-      newRowIndex +
-      "'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel(" +
-      newRowIndex +
-      ")' id='ds-contact-person-" +
-      newRowIndex +
-      "' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-      newRowIndex +
-      ")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
-    createConsRoleTagify("input-con-role-" + newRowIndex.toString());
-    createConsAffliationTagify("input-con-affiliation-" + newRowIndex.toString());
-  }
-};
-
 window.importExistingDDFile = () => {
   let filePath = $("#existing-dd-file-destination").prop("placeholder");
   if (filePath === "Browse here") {
@@ -1487,7 +929,7 @@ window.importExistingDDFile = () => {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then(() => {});
       setTimeout(loadDDfileDataframe(filePath), 1000);
     }
   }
@@ -1684,40 +1126,6 @@ const populateTagifyDD = (tagify, values) => {
   for (var value of values) {
     if (value.trim() !== "") {
       tagify.addTags(value.trim());
-    }
-  }
-};
-
-const loadContributorsToTable = (array) => {
-  window.contributorArray = [];
-  $("#contributor-table-dd tr:gt(0)").remove();
-  $("#div-contributor-table-dd").css("display", "none");
-
-  for (var arr of array.splice(1)) {
-    let splitNames = [];
-
-    if (arr[0].trim() !== "") {
-      if (arr[0].trim().includes(", ")) {
-        splitNames = arr[0].trim().split(", ");
-      } else {
-        splitNames = arr[0].trim().split(" ");
-      }
-      var myCurrentCon = {
-        conName: splitNames[0].trim() + ", " + splitNames[1].trim(),
-        contributorFirstName: splitNames[0],
-        contributorLastName: splitNames[1],
-        conID: arr[1].trim(),
-        conAffliation: arr[2].trim(),
-        conRole: arr[3].trim(),
-      };
-      window.contributorArray.push(myCurrentCon);
-      // var contact = "";
-      // if (myCurrentCon.conRole.includes("CorrespondingAuthor")) {
-      //   contact = "Yes";
-      // } else {
-      //   contact = "No";
-      // }
-      addContributortoTableDD(myCurrentCon.conName, myCurrentCon);
     }
   }
 };
