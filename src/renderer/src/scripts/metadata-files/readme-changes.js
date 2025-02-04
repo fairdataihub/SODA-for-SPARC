@@ -1,4 +1,4 @@
-import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
+import { Destinations } from "../analytics/analytics-utils";
 import api from "../others/api/api";
 import Swal from "sweetalert2";
 import client from "../client";
@@ -125,7 +125,7 @@ window.generateRCFiles = async (uploadBFBoolean, fileType) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then(() => {});
 
   if (uploadBFBoolean) {
     let textValue = $(`#textarea-create-${fileType}`).val().trim();
@@ -230,7 +230,6 @@ $(document).ready(function () {
     "selected-destination-generate-readme-locally",
     (event, dirpath, filename) => {
       filename = "README.txt";
-      let data = $("#textarea-create-readme").val().trim();
       if (dirpath.length > 0) {
         var destinationPath = window.path.join(dirpath[0], filename);
         readmeDestinationPath = destinationPath;
@@ -568,7 +567,7 @@ window.getRC = async (type) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then(() => {});
   if (type === "CHANGES.txt") {
     var shortName = "changes";
   } else {
@@ -698,7 +697,7 @@ window.importExistingRCFile = (type) => {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then(() => {});
       setTimeout(loadExistingRCFile(filePath, type), 1000);
     }
   }
