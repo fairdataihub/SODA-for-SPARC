@@ -1,14 +1,10 @@
-import axios from "axios";
 import validator from "validator";
 import doiRegex from "doi-regex";
 import Swal from "sweetalert2";
-import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
+import { Destinations } from "../analytics/analytics-utils";
 import introJs from "intro.js";
-import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
-import kombuchaEnums from "../analytics/analytics-enums";
-import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
+import { clientError } from "../others/http-error-handler/error-handler";
 import client from "../client";
-import { swalConfirmAction } from "../utils/swal-utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -49,9 +45,8 @@ window.samplesTableData = [];
 window.samplesFileData = [];
 var headersArrSubjects = [];
 var headersArrSamples = [];
-let guidedSamplesTableData = [];
 
-window.showForm = (type, editBoolean) => {
+window.showForm = (type) => {
   if (type !== "edit") {
     window.clearAllSubjectFormFields(subjectsFormDiv);
   }
@@ -63,7 +58,7 @@ window.showForm = (type, editBoolean) => {
   $("#sidebarCollapse").prop("disabled", "true");
 };
 
-window.showFormSamples = (type, editBoolean) => {
+window.showFormSamples = (type) => {
   if (type !== "edit") {
     window.clearAllSubjectFormFields(samplesFormDiv);
   }
@@ -75,45 +70,10 @@ window.showFormSamples = (type, editBoolean) => {
   $("#sidebarCollapse").prop("disabled", "true");
 };
 
-var selectHTMLSamples =
-  "<div><select id='previous-subject' class='swal2-input' onchange='displayPreviousSample()'></select><select style='display:none' id='previous-sample' class='swal2-input' onchange='confirmSample()'></select></div>";
 var prevSubID = "";
-var prevSamID = "";
 var prevSubIDSingle = "";
 var selectHTMLSubjects =
   "<div><select id='previous-subject-single' class='swal2-input'></select></div>";
-
-const promptImportPrevInfoSamples = (arr1, arr2) => {
-  Swal.fire({
-    title: "Choose a previous sample:",
-    html: selectHTMLSamples,
-    showCancelButton: true,
-    cancelButtonText: "Cancel",
-    confirmButtonText: "Confirm",
-    reverseButtons: window.reverseSwalButtons,
-    customClass: {
-      confirmButton: "confirm-disabled",
-    },
-    onOpen: function () {
-      $(".swal2-confirm").attr("id", "btn-confirm-previous-import");
-      window.removeOptions(document.getElementById("previous-subject"));
-      window.removeOptions(document.getElementById("previous-sample"));
-      $("#previous-subject").append(`<option value="Select">Select a subject</option>`);
-      $("#previous-sample").append(`<option value="Select">Select a sample</option>`);
-      for (var ele of arr1) {
-        $("#previous-subject").append(`<option value="${ele}">${ele}</option>`);
-      }
-    },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      if ($("#previous-subject").val() !== "Select" && $("#previous-sample").val() !== "Select") {
-        window.populateFormsSamples(prevSubID, prevSamID, "import", "free-form");
-      }
-    } else {
-      hideForm("sample");
-    }
-  });
-};
 
 // onboarding for subjects/samples file
 const onboardingMetadata = (type) => {
@@ -166,63 +126,6 @@ const onboardingMetadata = (type) => {
         introStatus[type] = true;
       })
       .start();
-  }
-};
-
-const promptImportPrevInfoSubject = (arr1) => {
-  Swal.fire({
-    title: "Choose a previous subject:",
-    html: selectHTMLSubjects,
-    showCancelButton: true,
-    cancelButtonText: "Cancel",
-    confirmButtonText: "Confirm",
-    reverseButtons: window.reverseSwalButtons,
-    onOpen: function () {
-      window.removeOptions(document.getElementById("previous-subject-single"));
-      $("#previous-subject-single").append(`<option value="Select">Select a subject</option>`);
-      for (var ele of arr1) {
-        $("#previous-subject-single").append(`<option value="${ele}">${ele}</option>`);
-      }
-    },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      if ($("#previous-subject-single").val() !== "Select") {
-        prevSubIDSingle = $("#previous-subject-single").val();
-        window.populateForms(prevSubIDSingle, "import", "free-form");
-      }
-    } else {
-      hideForm("subject");
-    }
-  });
-};
-
-const displayPreviousSample = () => {
-  if ($("#previous-subject").val() !== "Select") {
-    $("#previous-sample").css("display", "block");
-    prevSubID = $("#previous-subject").val();
-    // load previous sample ids accordingly for a particular subject
-    var prevSampleArr = [];
-    for (var subject of window.samplesTableData.slice(1)) {
-      if (subject[0] === prevSubID) {
-        prevSampleArr.push(subject[1]);
-      }
-    }
-    for (var ele of prevSampleArr) {
-      $("#previous-sample").append(`<option value="${ele}">${ele}</option>`);
-    }
-  } else {
-    $("#previous-sample").css("display", "none");
-    prevSubID = "";
-  }
-};
-
-const confirmSample = () => {
-  if ($("#previous-sample").val() !== "Select") {
-    $("#btn-confirm-previous-import").removeClass("confirm-disabled");
-    prevSamID = $("#previous-sample").val();
-  } else {
-    $("#btn-confirm-previous-import").addClass("confirm-disabled");
-    prevSamID = "";
   }
 };
 
@@ -402,11 +305,10 @@ const addNewIDToTable = (newID, secondaryID, type) => {
   }
   var rowIndex = rowcount;
   var indexNumber = rowIndex;
-  var currentRow = table.rows[table.rows.length - 1];
   // check for unique row id in case users delete old rows and append new rows (same IDs!)
   var newRowIndex = window.checkForUniqueRowID("row-current-" + keyword, rowIndex);
   if (type === "subjects") {
-    var row = (table.insertRow(rowIndex).outerHTML =
+    table.insertRow(rowIndex).outerHTML =
       "<tr id='row-current-" +
       keyword +
       newRowIndex +
@@ -422,9 +324,9 @@ const addNewIDToTable = (newID, secondaryID, type) => {
       keyword +
       "_id(this)'><i class='fas fa-copy' style='color: orange'></i></button><button class='ui button' onclick='window.delete_current_" +
       keyword +
-      "_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+      "_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
   } else if (type === "samples") {
-    var row = (table.insertRow(rowIndex).outerHTML =
+    table.insertRow(rowIndex).outerHTML =
       "<tr id='row-current-" +
       keyword +
       newRowIndex +
@@ -442,7 +344,7 @@ const addNewIDToTable = (newID, secondaryID, type) => {
       keyword +
       "_id(this)'><i class='fas fa-copy' style='color: orange'></i></button><button class='ui button' onclick='window.delete_current_" +
       keyword +
-      "_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+      "_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
   }
   return message;
 };
@@ -484,8 +386,8 @@ const addSubjectIDtoDataBase = (id) => {
     }
   }
   if (!duplicate) {
-    var message = addNewIDToTable(id, null, "subjects");
-    addSubjectIDToJSON(id);
+    addNewIDToTable(id, null, "subjects");
+    addSubjectIDToJSON();
   } else {
     error =
       "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id.";
@@ -508,8 +410,8 @@ const addSampleIDtoDataBase = (samID, subID) => {
     }
   }
   if (!duplicate) {
-    var message = addNewIDToTable(samID, subID, "samples");
-    addSampleIDtoJSON(samID);
+    addNewIDToTable(samID, subID, "samples");
+    addSampleIDtoJSON();
   } else {
     error =
       "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id.";
@@ -532,16 +434,6 @@ window.clearAllSubjectFormFields = (form) => {
 
   // hide Strains and Species
   if (form === subjectsFormDiv || form === window.guidedSubjectsFormDiv) {
-    let curationModeSelectorPrefix = "";
-    if (form === subjectsFormDiv) {
-      curationModeSelectorPrefix = "";
-    }
-    if (form === window.guidedSubjectsFormDiv) {
-      curationModeSelectorPrefix = "guided-";
-    }
-
-    var keyword = "subject";
-
     if (form === window.guidedSubjectsFormDiv) {
       setSubjectSpeciesAndStrainValues("guided-", {
         ["Species"]: "",
@@ -559,7 +451,7 @@ window.clearAllSubjectFormFields = (form) => {
 };
 
 // add new subject ID to JSON file (main file to be converted to excel)
-const addSubjectIDToJSON = (subjectID) => {
+const addSubjectIDToJSON = () => {
   if ($("#form-add-a-subject").length > 0) {
     addSubjectMetadataEntriesIntoJSON("free-form");
   }
@@ -872,7 +764,7 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
     document.getElementById("button-generate-subjects").style.display = "block";
 
     // Clear form fields and hide the form
-    clearAllSubjectFormFields(subjectsFormDiv);
+    window.clearAllSubjectFormFields(subjectsFormDiv);
     hideForm("subject");
   }
 }
@@ -950,7 +842,7 @@ const addSampleMetadataEntriesIntoJSON = (curationMode) => {
   }
 };
 
-const addSampleIDtoJSON = (sampleID) => {
+const addSampleIDtoJSON = () => {
   if ($("#form-add-a-sample").length > 0) {
     addSampleMetadataEntriesIntoJSON("free-form");
   }
@@ -1252,15 +1144,12 @@ window.populateFormsSamples = (subjectID, sampleID, type, curationMode) => {
   //Initialize variables shared between different curation modes and set them
   //based on curationMode passed in as parameter
   let fieldArr;
-  let curationModeSelectorPrefix;
   let infoJson;
 
   if (curationMode === "free-form") {
-    curationModeSelectorPrefix = "";
     fieldArr = $(samplesFormDiv).children().find(".samples-form-entry");
   }
   if (curationMode === "guided") {
-    curationModeSelectorPrefix = "guided-";
     fieldArr = $(window.guidedSamplesFormDiv).children().find(".samples-form-entry");
   }
   if (window.samplesTableData.length > 1) {
@@ -1714,55 +1603,6 @@ window.updateIndexForTable = (table, boolUpdateIndex) => {
   $("#table-samples").css("pointer-events", "auto");
 };
 
-const updateOrderIDTable = (table, json, type) => {
-  var length = table.rows.length;
-  // 1. make a new json object - orderedTableData
-  var orderedTableData = [];
-  // 2. add headers as the first array
-  orderedTableData[0] = json[0];
-  // 3. loop through the UI table by index -> grab subject_id accordingly, find subject_id in json, append that to orderedSubjectsTableData
-  i = 1;
-  if (type === "subjects") {
-    j = 0;
-  } else if (type === "samples") {
-    j = 1;
-  }
-  for (var index = 1; index < length; index++) {
-    var id = table.rows[index].cells[j + 1].innerText;
-    for (var ind of json.slice(1)) {
-      if (ind[j] === id) {
-        orderedTableData[i] = ind;
-        i += 1;
-        break;
-      }
-    }
-  }
-  if (type === "subjects") {
-    window.subjectsTableData = orderedTableData;
-  } else if (type === "samples") {
-    window.samplesTableData = orderedTableData;
-  }
-};
-
-const updateOrderContributorTable = (table, json) => {
-  var length = table.rows.length;
-  // 1. make a new json object - orderedTableData
-  var orderedTableData = [];
-  // 2. loop through the UI table by index -> grab subject_id accordingly, find subject_id in json, append that to orderedSubjectsTableData
-  i = 0;
-  for (var index = 1; index < length; index++) {
-    var name = table.rows[index].cells[1].innerText;
-    for (var con of json) {
-      if (con.conName === name) {
-        orderedTableData[i] = con;
-        i += 1;
-        break;
-      }
-    }
-  }
-  window.contributorArray = orderedTableData;
-};
-
 window.showPrimaryBrowseFolder = () => {
   window.electron.ipcRenderer.send("open-file-dialog-local-primary-folder");
 };
@@ -1944,7 +1784,6 @@ window.importPrimaryFolderSamples = (folderPath) => {
 
 const loadSubjectsDataToTable = () => {
   var iconMessage = "success";
-  var showConfirmButtonBool = false;
   // var text =
   //   "Please add or edit your subject_id(s) in the following subjects table.";
   // delete table rows except headers
@@ -2621,7 +2460,7 @@ window.checkBFImportSubjects = async () => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then(() => {});
   var fieldEntries = [];
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
@@ -2685,7 +2524,7 @@ window.checkBFImportSamples = async () => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then(() => {});
   var fieldEntries = [];
   for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
@@ -2891,34 +2730,4 @@ window.checkLinkDuplicate = (link, table) => {
     }
   }
   return duplicate;
-};
-
-const hideDescriptionForDOIs = () => {
-  $("#DD-additional-link-description").val("");
-  $("#DD-additional-link").val("");
-  if ($("#DD-additional-link-type").val() === "Originating Article DOI") {
-    $("#DD-additional-link-description").css("display", "none");
-    $("#label-additional-link-description").css("display", "none");
-  } else if ($("#DD-additional-link-type").val() === "Additional Link") {
-    $("#DD-additional-link-description").css("display", "block");
-    $("#label-additional-link-description").css("display", "block");
-  }
-};
-
-const showAgeSection = (ev, div, type) => {
-  var allDivsArr = [];
-  if (type === "subjects") {
-    allDivsArr = ["div-exact-age", "div-age-category", "div-age-range"];
-  } else {
-    allDivsArr = ["div-exact-age-samples", "div-age-category-samples", "div-age-range-samples"];
-  }
-  allDivsArr.splice(allDivsArr.indexOf(div), 1);
-  if ($("#" + div).hasClass("hidden")) {
-    $("#" + div).removeClass("hidden");
-  }
-  $(".age.ui").removeClass("positive active");
-  $(ev).addClass("positive active");
-  for (var divEle of allDivsArr) {
-    $("#" + divEle).addClass("hidden");
-  }
 };
