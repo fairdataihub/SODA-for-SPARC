@@ -2643,8 +2643,7 @@ const guidedTransitionFromHome = async () => {
 
   window.CURRENT_PAGE = document.getElementById("guided-select-starting-point-tab");
 
-  $("#guided-footer-div").removeClass("hidden");
-  $("#guided-footer-div").show();
+  document.getElementById("guided-footer-div").classList.remove("hidden");
 
   //Unskip all pages besides the ones that should always be skipped
   guidedResetSkippedPages();
@@ -2661,13 +2660,8 @@ const guidedTransitionToHome = () => {
     guidedParentTab.classList.add("hidden");
   }
   window.CURRENT_PAGE = undefined;
-  $("#guided-footer-div").addClass("hidden");
-  $("#guided-footer-div").hide();
-<<<<<<< HEAD
-  //Hide guided headers and footers
-  document.getElementById("guided-header-div").classList.add("hidden");
-=======
->>>>>>> 029040960dc6aa5fdbb6cd14658d33aceb2ddbce
+
+  document.getElementById("guided-footer-div").classList.add("hidden");
 };
 
 const guidedSaveProgress = async () => {
@@ -3995,269 +3989,6 @@ const folderIsEmpty = (folder) => {
   return Object.keys(folder.folders).length === 0 && Object.keys(folder.files).length === 0;
 };
 
-const cleanUpEmptyGuidedStructureFolders = async (
-  highLevelFolder,
-  subjectsOrSamples,
-  boolCleanUpAllGuidedStructureFolders
-) => {
-  if (subjectsOrSamples === "samples") {
-    //Get samples to check if their folders are
-    const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
-
-    // Case when the user selects that they do not have sample data for the high level folder
-    if (boolCleanUpAllGuidedStructureFolders === true) {
-      //delete all folders for samples in pools
-      for (const sample of samplesInPools) {
-        delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-          sample.poolName
-        ]["folders"][sample.subjectName]["folders"][sample.sampleName];
-      }
-      //delete all folders for samples outside of pools
-      for (const sample of samplesOutsidePools) {
-        delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-          sample.subjectName
-        ]["folders"][sample.sampleName];
-      }
-
-      return true;
-    }
-    // Case when the user selects that they do have sample data for the high level folder
-    if (boolCleanUpAllGuidedStructureFolders === false) {
-      const samplesWithEmptyFolders = [];
-
-      //loop through samplesInPools and add samples with empty folders to samplesWithEmptyFolders
-      for (const sample of samplesInPools) {
-        const sampleFolder =
-          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
-            "folders"
-          ][sample.subjectName]["folders"][sample.sampleName];
-
-        if (sampleFolder && folderIsEmpty(sampleFolder)) {
-          samplesWithEmptyFolders.push(sample);
-        }
-      }
-      //loop through samplesOutsidePools and add samples with empty folders to samplesWithEmptyFolders
-      for (const sample of samplesOutsidePools) {
-        const sampleFolder =
-          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
-            "folders"
-          ][sample.sampleName];
-        if (sampleFolder && folderIsEmpty(sampleFolder)) {
-          samplesWithEmptyFolders.push(sample);
-        }
-      }
-
-      if (samplesWithEmptyFolders.length > 0) {
-        const continueWithoutAddingDataForAllSamples = await swalFileListDoubleAction(
-          samplesWithEmptyFolders.map((sample) => sample.sampleName),
-          `${highLevelFolder} data missing for some samples`,
-          `The samples below did not have folders or files containing ${highLevelFolder} data added to them:`,
-          `Continue without adding ${highLevelFolder} data to all samples`,
-          `Finish adding ${highLevelFolder} data to samples`,
-          `Would you like to continue without adding ${highLevelFolder} data to all samples?`
-        );
-
-        if (continueWithoutAddingDataForAllSamples) {
-          //delete empty samples from the window.datasetStructureJSONObj
-          for (const sample of samplesWithEmptyFolders) {
-            if (sample.poolName) {
-              delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                sample.poolName
-              ]["folders"][sample.subjectName]["folders"][sample.sampleName];
-            }
-            if (!sample.poolName) {
-              delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                sample.subjectName
-              ]["folders"][sample.sampleName];
-            }
-          }
-          // return true to continue without throwing an error
-          return true;
-        }
-      } else {
-        // return true to continue without throwing an error
-        return true;
-      }
-    }
-  }
-
-  if (subjectsOrSamples === "subjects") {
-    //Remove subjects from datsetStructuresJSONObj if they don't exist
-    const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
-
-    if (boolCleanUpAllGuidedStructureFolders === true) {
-      //Delete folders for pools
-      for (const subject of subjectsInPools) {
-        const subjectFolder =
-          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
-            "folders"
-          ][subject.subjectName];
-        if (subjectFolder && folderIsEmpty(subjectFolder)) {
-          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-            subject.poolName
-          ]["folders"][subject.subjectName];
-        }
-      }
-
-      //Delete all folders for subjects outside of pools
-      for (const subject of subjectsOutsidePools) {
-        const subjectFolder =
-          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-            subject.subjectName
-          ];
-        if (subjectFolder && folderIsEmpty(subjectFolder)) {
-          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-            subject.subjectName
-          ];
-        }
-      }
-
-      //Delete all pools with empty folders
-      const pools = window.sodaJSONObj.getPools();
-      for (const pool of Object.keys(pools)) {
-        const poolFolder =
-          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-        if (poolFolder && folderIsEmpty(poolFolder)) {
-          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-        }
-      }
-
-      //Delete the high level folder if no folders or files were added
-      const hlfRoot = window.datasetStructureJSONObj["folders"][highLevelFolder];
-      if (hlfRoot && folderIsEmpty(hlfRoot)) {
-        delete window.datasetStructureJSONObj["folders"][highLevelFolder];
-      }
-
-      return true;
-    } else {
-      const subjectsWithEmptyFolders = [];
-
-      //loop through subjectsInPools and add subjects with empty folders to subjectsWithEmptyFolders
-      for (const subject of subjectsInPools) {
-        const subjectFolder =
-          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
-            "folders"
-          ][subject.subjectName];
-        if (subjectFolder && folderIsEmpty(subjectFolder)) {
-          subjectsWithEmptyFolders.push(subject);
-        }
-      }
-
-      //loop through subjectsOutsidePools and add subjects with empty folders to subjectsWithEmptyFolders
-      for (const subject of subjectsOutsidePools) {
-        const subjectFolder =
-          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-            subject.subjectName
-          ];
-        if (subjectFolder && folderIsEmpty(subjectFolder)) {
-          subjectsWithEmptyFolders.push(subject);
-        }
-      }
-
-      if (subjectsWithEmptyFolders.length > 0) {
-        const continueWithoutAddingDataForAllSubjects = await swalFileListDoubleAction(
-          subjectsWithEmptyFolders.map((subject) => subject.subjectName),
-          `${highLevelFolder} data missing for some subjects`,
-          `The subjects below did not have folders or files containing ${highLevelFolder} data added to them:`,
-          `Continue without adding ${highLevelFolder} data to all subjects`,
-          `Finish adding ${highLevelFolder} data to subjects`,
-          `Would you like to continue without adding ${highLevelFolder} data to all subjects?`
-        );
-
-        if (continueWithoutAddingDataForAllSubjects) {
-          for (const subject of subjectsWithEmptyFolders) {
-            if (subject.poolName) {
-              delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                subject.poolName
-              ]["folders"][subject.subjectName];
-            } else {
-              delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                subject.subjectName
-              ];
-            }
-          }
-          //Delete all pools with empty folders
-          const pools = window.sodaJSONObj.getPools();
-          for (const pool of Object.keys(pools)) {
-            const poolFolder =
-              window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-            if (poolFolder && folderIsEmpty(poolFolder)) {
-              delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-            }
-          }
-          return true;
-        }
-      } else {
-        //Delete all pools with empty folders
-        const pools = window.sodaJSONObj.getPools();
-        for (const pool of Object.keys(pools)) {
-          const poolFolder =
-            window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-          if (poolFolder && folderIsEmpty(poolFolder)) {
-            delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-          }
-        }
-        return true;
-      }
-    }
-  }
-  if (subjectsOrSamples === "pools") {
-    //Get pools to check if their folders are
-    const pools = window.sodaJSONObj.getPools();
-    if (boolCleanUpAllGuidedStructureFolders === true) {
-      //Delete all pools with empty folders
-      for (const pool of Object.keys(pools)) {
-        const poolFolder =
-          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-        if (poolFolder && folderIsEmpty(poolFolder)) {
-          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-        }
-      }
-    } else {
-      const poolsWithNoDataFiles = [];
-
-      for (const pool of Object.keys(pools)) {
-        const poolFolder =
-          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-        const poolFolderFolders = Object.keys(poolFolder["folders"]);
-        const nonSubjectFoldersInPool = poolFolderFolders.filter(
-          (folder) => !folder.startsWith("sub-")
-        );
-        const poolFolderFiles = Object.keys(poolFolder["files"]);
-
-        if (nonSubjectFoldersInPool.length === 0 && poolFolderFiles.length === 0) {
-          poolsWithNoDataFiles.push(pool);
-        }
-      }
-
-      // If metadata files have been added to every pool, no action needed
-      if (poolsWithNoDataFiles.length === 0) {
-        return true;
-      }
-
-      const continueWithoutAddingDataForAllPools = await swalFileListDoubleAction(
-        poolsWithNoDataFiles,
-        `${highLevelFolder} data missing for some pools`,
-        `The pools below did not have folders or files containing ${highLevelFolder} data added to them:`,
-        `Continue without adding ${highLevelFolder} data to all pools`,
-        `Finish adding ${highLevelFolder} data to pools`,
-        `Would you like to continue without adding ${highLevelFolder} data to all pools?`
-      );
-
-      if (continueWithoutAddingDataForAllPools) {
-        for (const pool of poolsWithNoDataFiles) {
-          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-        }
-        //Empty pool folders have been deleted, return true
-        return true;
-      } else {
-        //User has chosen to finish adding data to pools, return false
-        return false;
-      }
-    }
-  }
-};
-
 const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
   const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
   for (const subject of subjectsInPools) {
@@ -4973,13 +4704,6 @@ window.openPage = async (targetPageID) => {
           );
         };
 
-<<<<<<< HEAD
-        const deleteNonExistentFiles = (currentStructure) => {
-          for (const [fileName, fileData] of Object.entries(currentStructure.files || {})) {
-            if (fileData.type === "local" && !window.fs.existsSync(fileData.path)) {
-              log.info(`Deleting reference to non-existent file: ${fileName}`);
-              delete currentStructure.files[fileName];
-=======
         /**
          * Recursively deletes references to non-existent files from the dataset structure.
          * @param {Object} currentStructure - The current level of the dataset structure.
@@ -4999,7 +4723,6 @@ window.openPage = async (targetPageID) => {
                 );
                 delete files[fileName];
               }
->>>>>>> 029040960dc6aa5fdbb6cd14658d33aceb2ddbce
             }
           }
           Object.entries(currentStructure.folders || {}).forEach(([folderName, folder]) =>
@@ -5158,8 +4881,31 @@ window.openPage = async (targetPageID) => {
         return manifestDataRows; // Return updated data
       };
 
+      const updateModalitiesColumn = (manifestDataRows, datasetEntityObj) => {
+        const modalitiesColumnIndex = newManifestData.headers.indexOf("data modality");
+        console.log("modalitiesColumnIndex", modalitiesColumnIndex);
+
+        manifestDataRows.forEach((row) => {
+          const path = row[0]; // Path is in the first column
+          let modalitiesList = [];
+
+          // Check for modalities
+          for (const [modality, paths] of Object.entries(datasetEntityObj.modalities || {})) {
+            if (paths.includes(path)) {
+              modalitiesList.push(modality);
+            }
+          }
+
+          // Update the modalities column (index from headers)
+          row[modalitiesColumnIndex] = modalitiesList.join(" ");
+        });
+
+        return manifestDataRows; // Return updated data
+      };
+
       // Apply the function
       updateEntityColumn(newManifestData.data, datasetEntityObj);
+      updateModalitiesColumn(newManifestData.data, datasetEntityObj);
 
       console.log("After sort: ", newManifestData.data);
       window.sodaJSONObj["guided-manifest-file-data"] = window.sodaJSONObj[
@@ -9311,116 +9057,7 @@ const openAddAdditionLinkSwal = async () => {
     renderAdditionalLinksTable();
   }
 };
-<<<<<<< HEAD
-/*const addOtherLinkField = () => {
-  const otherLinksContainer = document.getElementById("other-links-container");
-  //create a new div to hold other link fields
-  const newOtherLink = document.createElement("div");
-  newOtherLink.classList.add("guided--section");
-  newOtherLink.classList.add("mt-lg");
-  newOtherLink.classList.add("neumorphic");
-  newOtherLink.classList.add("guided-other-links-field-container");
-  newOtherLink.style.position = "relative";
 
-  newOtherLink.innerHTML = `
-    <i
-      class="fas fa-times fa-2x"
-      style="
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        color: black;
-        cursor: pointer;
-      "
-      onclick="removeOtherLinkField(this)"
-    >
-    </i>
-    <h2 class="text-sub-step-title">Enter link information</h2>
-    <label class="guided--form-label mt-lg">Link URL: </label>
-    <input
-      class="guided--input guided-other-link-url-input"
-      type="text"
-      placeholder="Enter link URL here"
-    />
-    <label class="guided--form-label mt-lg"
-      >Link description:</label
-    >
-    <textarea
-      class="guided--input guided--text-area guided-other-link-description-input"
-      type="text"
-      placeholder="Enter link description here"
-      style="height: 7.5em; padding-bottom: 20px"
-    ></textarea>
-    <label class="guided--form-label mt-lg"
-      >Dataset relation:</label
-    >
-    <div style="display: flex; width:100%; align-items: center;">
-      <p class="help-text m-0">
-        Text to put here (A)?
-      </p>
-      <div class="form-group mx-2">
-        <select class="form-control guided-other-link-relation-dropdown" style="background-color: white !important">
-          <option value="Select">Select a relation</option>
-          <option value="IsCitedBy">IsCitedBy</option>
-          <option value="Cites">Cites</option>
-          <option value="IsSupplementTo">IsSupplementTo</option>
-          <option value="IsSupplementedBy">IsSupplementedBy</option>
-          <option value="IsContinuedByContinues">IsContinuedByContinues</option>
-          <option value="IsDescribedBy">IsDescribedBy</option>
-          <option value="Describes">Describes</option>
-          <option value="HasMetadata">HasMetadata</option>
-          <option value="IsMetadataFor">IsMetadataFor</option>
-          <option value="HasVersion">HasVersion</option>
-          <option value="IsVersionOf">IsVersionOf</option>
-          <option value="IsNewVersionOf">IsNewVersionOf</option>
-          <option value="IsPreviousVersionOf">IsPreviousVersionOf</option>
-          <option value="IsPreviousVersionOf">IsPreviousVersionOf</option>
-          <option value="HasPart">HasPart</option>
-          <option value="IsPublishedIn">IsPublishedIn</option>
-          <option value="IsReferencedBy">IsReferencedBy</option>
-          <option value="References">References</option>
-          <option value="IsDocumentedBy">IsDocumentedBy</option>
-          <option value="Documents">Documents</option>
-          <option value="IsCompiledBy">IsCompiledBy</option>
-          <option value="Compiles">Compiles</option>
-          <option value="IsVariantFormOf">IsVariantFormOf</option>
-          <option value="IsOriginalFormOf">IsOriginalFormOf</option>
-          <option value="IsIdenticalTo">IsIdenticalTo</option>
-          <option value="IsReviewedBy">IsReviewedBy</option>
-          <option value="Reviews">Reviews</option>
-          <option value="IsDerivedFrom">IsDerivedFrom</option>
-          <option value="IsSourceOf">IsSourceOf</option>
-          <option value="IsRequiredBy">IsRequiredBy</option>
-          <option value="Requires">Requires</option>
-          <option value="IsObsoletedBy">IsObsoletedBy</option>
-          <option value="Obsoletes">Obsoletes</option>
-        </select>
-      </div>
-          <p class="help-text m-0">
-        Text to put here (B)?
-      </p>
-    </div>
-  `;
-  otherLinksContainer.appendChild(newOtherLink);
-  //select the last protocol field (the one that was just added)
-  const newlyAddedOtherLinkField = otherLinksContainer.lastChild;
-  window.smoothScrollToElement(newlyAddedOtherLinkField);
-};
-
-const removeOtherLinkField = (otherLinkDeleteButton) => {
-  const otherLinkField = protocolDeleteButton.parentElement;
-  otherLinkField.remove();
-};*/
-
-=======
-const returnToSampleMetadataTableFromSampleMetadataForm = () => {
-  //Clear metadata form inputs
-  window.clearAllSubjectFormFields(window.guidedSamplesFormDiv);
-  window.openPage("guided-create-samples-metadata-tab");
-  $("#guided-footer-div").css("display", "flex");
-};
-
->>>>>>> 029040960dc6aa5fdbb6cd14658d33aceb2ddbce
 const renderSubjectSampleAdditionTable = (subject) => {
   return `
     <table
@@ -15320,3 +14957,33 @@ const guidedSaveDescriptionContributorInformation = () => {
     acknowledgment: acknowledgements,
   };
 };
+
+const continueHackGm = true;
+
+const doTheHack = async () => {
+  console.log("Doing the hack");
+  // wait for a second
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+  document.getElementById("button-homepage-guided-mode").click();
+  document.getElementById("guided-button-resume-progress-file").click();
+  // wait for 5 seconds
+  await new Promise((resolve) => setTimeout(resolve, 4000));
+
+  // Search the dom for a button with the classes "ui positive button guided--progress-button-resume-curation"
+  const resumeCurationButton = document.querySelector(
+    ".ui.positive.button.guided--progress-button-resume-curation"
+  );
+  if (resumeCurationButton) {
+    resumeCurationButton.click();
+  } else {
+    // wait for 3 more seconds then click
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    document.querySelector(".ui.positive.button.guided--progress-button-resume-curation").click();
+  }
+  // wait for 4 seconds then click the next button
+  await new Promise((resolve) => setTimeout(resolve, 4000));
+  document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
+};
+if (continueHackGm) {
+  doTheHack();
+}
