@@ -1430,7 +1430,7 @@ window.generateSubjectsFileHelper = async (uploadBFBoolean) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked(window.defaultBfAccount, bfdataset);
+    const isLocked = await api.isDatasetLocked( bfdataset);
 
     if (isLocked) {
       await Swal.fire({
@@ -1587,7 +1587,7 @@ window.generateSamplesFileHelper = async (uploadBFBoolean) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked(window.defaultBfAccount, bfDataset);
+    const isLocked = await api.isDatasetLocked( bfDataset);
     if (isLocked) {
       await Swal.fire({
         icon: "info",

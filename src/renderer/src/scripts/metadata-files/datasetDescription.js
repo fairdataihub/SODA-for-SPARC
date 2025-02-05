@@ -196,7 +196,7 @@ window.generateDDFile = async (uploadBFBoolean) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked(bfaccountname, bf_dataset);
+    const isLocked = await api.isDatasetLocked(bf_dataset);
     if (isLocked) {
       await Swal.fire({
         icon: "info",

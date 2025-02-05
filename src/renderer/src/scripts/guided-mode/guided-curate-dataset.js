@@ -663,7 +663,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
 
         const datasetIsLocked = await api.isDatasetLocked(
-          window.defaultBfAccount,
           selectedPennsieveDataset
         );
         if (datasetIsLocked) {
@@ -7167,7 +7166,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
       if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
         // Check to make sure the dataset is not locked
         const datasetIsLocked = await api.isDatasetLocked(
-          window.defaultBfAccount,
           datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"]
         );
         if (datasetIsLocked) {

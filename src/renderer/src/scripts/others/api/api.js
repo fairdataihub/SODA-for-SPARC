@@ -37,7 +37,7 @@ const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
   return banner_image;
 };
 
-const isDatasetLocked = async (account, datasetNameOrId) => {
+const isDatasetLocked = async (datasetNameOrId) => {
   try {
     // get the logged in user's information which will be used to check if the user is a member of the "Publishers" team
     const currentUserInformation = await getUserInformation();

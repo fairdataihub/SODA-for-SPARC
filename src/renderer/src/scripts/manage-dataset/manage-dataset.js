@@ -3071,7 +3071,7 @@ $("#button-submit-dataset").click(async () => {
   };
 
   // Check if dataset is locked before starting upload
-  const isLocked = await api.isDatasetLocked(window.defaultBfAccount, window.defaultBfDataset);
+  const isLocked = await api.isDatasetLocked( window.defaultBfDataset);
   if (isLocked) {
     $("#upload_local_dataset_progress_div").removeClass("show");
     await Swal.fire({

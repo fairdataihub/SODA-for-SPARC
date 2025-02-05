@@ -797,7 +797,7 @@ window.generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   await window.wait(500);
   if (!localGenerationDifferentDestination) {
     // Check if dataset is locked before generating manifest
-    const isLocked = await api.isDatasetLocked(window.defaultBfAccount, window.defaultBfDataset);
+    const isLocked = await api.isDatasetLocked(window.defaultBfDataset);
 
     if (isLocked) {
       await Swal.fire({

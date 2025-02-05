@@ -76,7 +76,7 @@ window.generateRCFiles = async (uploadBFBoolean, fileType) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked(window.defaultBfAccount, bfDataset);
+    const isLocked = await api.isDatasetLocked(bfDataset);
     if (isLocked) {
       await Swal.fire({
         icon: "info",
