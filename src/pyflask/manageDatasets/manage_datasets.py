@@ -285,7 +285,7 @@ def bf_get_accounts():
 
 
 
-def bf_dataset_account(accountname):
+def bf_dataset_account():
     """
     This function filters dataset dropdowns across SODA by the permissions granted to users.
 
@@ -781,7 +781,7 @@ def ps_get_users(selected_bfaccount):
     return {"users": list_users_first_last}
 
 
-def ps_get_teams(selected_bfaccount):
+def ps_get_teams():
     """
     Args:
       selected_bfaccount: name of selected Pennsieve account (string)
@@ -802,7 +802,7 @@ def ps_get_teams(selected_bfaccount):
 
 
 # Also remove selected_bfaccount from parameters since it isn't used
-def ps_get_permission(selected_bfaccount, selected_bfdataset):
+def ps_get_permission( selected_bfdataset):
 
     """
     Function to get permission for a selected dataset
@@ -1096,7 +1096,7 @@ def ps_add_permission_team(
         raise e
 
 
-def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
+def bf_get_subtitle( selected_bfdataset):
     """
     Function to get current subtitle associated with a selected dataset
 
@@ -1197,7 +1197,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
 
 
 
-def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
+def bf_get_banner_image(selected_bfdataset):
     """
     Function to get url of current banner image associated with a selected dataset
 
@@ -1446,7 +1446,7 @@ def get_dataset_readme(selected_account, selected_dataset):
     return readme
 
 
-def update_dataset_readme(selected_account, selected_dataset, updated_readme):
+def update_dataset_readme(selected_dataset, updated_readme):
     """
     Update the readme of a dataset on Pennsieve with the given readme string.
     """

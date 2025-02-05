@@ -6,7 +6,7 @@ from constants import PENNSIEVE_URL
 from authentication import get_access_token
 
 
-def get_all_collections(account):
+def get_all_collections():
     """
     Function used to get the collections that belong to an organization
     """
@@ -20,7 +20,7 @@ def get_all_collections(account):
 
 
 
-def upload_new_names(account, dataset, tags):
+def upload_new_names( dataset, tags):
     """
     Function is used to upload new collection tags that are not already on Pennsieve
     @params:

@@ -267,7 +267,7 @@ $("#button-create-bf-new-dataset").click(async () => {
       window.log.info(`Requesting list of datasets`);
 
       window.datasetList = [];
-      window.datasetList = await api.getDatasetsForAccount(window.defaultBfAccount);
+      window.datasetList = await api.getDatasetsForAccount();
       window.log.info(`Requested list of datasets successfully`);
 
       $(".bf-dataset-span").html(bfNewDatasetName);
@@ -453,7 +453,7 @@ $("#button-rename-dataset").on("click", async () => {
 
       try {
         window.datasetList = [];
-        window.datasetList = await api.getDatasetsForAccount(window.defaultBfAccount);
+        window.datasetList = await api.getDatasetsForAccount();
         window.refreshDatasetList();
       } catch (error) {
         clientError(error);
@@ -628,7 +628,7 @@ window.showCurrentPermission = async () => {
   window.log.info(`Requesting current permissions for ${selectedBfDataset}.`);
 
   try {
-    let permissions = await api.getDatasetPermissions(selectedBfAccount, selectedBfDataset, false);
+    let permissions = await api.getDatasetPermissions(selectedBfDataset, false);
     let permissionList = "";
     let datasetOwner = "";
 
@@ -1057,7 +1057,7 @@ window.showCurrentSubtitle = async () => {
   document.getElementById("ds-description").disabled = true;
 
   try {
-    let subtitle = await api.getDatasetSubtitle(selectedBfAccount, selectedBfDataset);
+    let subtitle = await api.getDatasetSubtitle(selectedBfDataset);
     window.logGeneralOperationsForAnalytics(
       "Success",
       window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
@@ -1123,7 +1123,7 @@ window.showCurrentDescription = async () => {
   // get the dataset readme
   let readme;
   try {
-    readme = await api.getDatasetReadme(selectedBfAccount, selectedBfDataset);
+    readme = await api.getDatasetReadme(selectedBfDataset);
   } catch (error) {
     clientError(error);
     window.logGeneralOperationsForAnalytics(
@@ -1318,7 +1318,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   // get the dataset readme
   let readme;
   try {
-    readme = await api.getDatasetReadme(window.defaultBfAccount, selectedBfDataset);
+    readme = await api.getDatasetReadme( selectedBfDataset);
   } catch (err) {
     clientError(err);
     Swal.fire({
@@ -1650,7 +1650,7 @@ const showDatasetDescription = async () => {
   );
 
   try {
-    let subtitle = await api.getDatasetSubtitle(selectedBfAccount, selectedBfDataset);
+    let subtitle = await api.getDatasetSubtitle(selectedBfDataset);
     window.electron.ipcRenderer.send(
       "track-event",
       "Success",
@@ -2263,7 +2263,7 @@ window.showCurrentBannerImage = async () => {
   document.getElementById("para-current-banner-img").innerHTML = "";
 
   try {
-    let res = await api.getDatasetBannerImageURL(selectedBfAccount, selectedBfDataset);
+    let res = await api.getDatasetBannerImageURL( selectedBfDataset);
     window.logGeneralOperationsForAnalytics(
       "Success",
       window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,

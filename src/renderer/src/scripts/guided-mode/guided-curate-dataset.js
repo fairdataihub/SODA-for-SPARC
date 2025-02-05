@@ -410,7 +410,6 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
     return { shouldShow: true, changesMetadata: changes_text };
   } catch (error) {
     const datasetInfo = await api.getDatasetInformation(
-      window.defaultBfAccount,
       pennsieveDatasetID
     );
     const isPublished = datasetInfo?.publication?.status === "completed";
@@ -2451,7 +2450,7 @@ window.guidedModifyCurationTeamAccess = async (action) => {
 
 const checkIfDatasetExistsOnPennsieve = async (datasetNameOrID) => {
   let datasetName = null;
-  const datasetList = await api.getDatasetsForAccount(window.defaultBfAccount);
+  const datasetList = await api.getDatasetsForAccount();
   for (const dataset of datasetList) {
     if (dataset.name === datasetNameOrID || dataset.id === datasetNameOrID) {
       datasetName = dataset.name;
@@ -4769,7 +4768,6 @@ window.openPage = async (targetPageID) => {
           //Try to get the dataset name from Pennsieve
           //If the request fails, the subtitle input will remain blank
           const datasetSubtitle = await api.getDatasetSubtitle(
-            window.defaultBfAccount,
             window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
           );
 
@@ -5644,7 +5642,6 @@ window.openPage = async (targetPageID) => {
         if (!studyPurpose && !studyDataCollection && !studyPrimaryConclusion) {
           try {
             const pennsieveDatasetDescription = await api.getDatasetReadme(
-              window.defaultBfAccount,
               window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
             );
             const parsedDescription = createParsedReadme(pennsieveDatasetDescription);
@@ -5846,7 +5843,7 @@ window.openPage = async (targetPageID) => {
         try {
           // pass in the id in case the name of the dataset has been
           // changed from the original Pennsieve dataset name
-          let res = await api.getDatasetBannerImageURL(window.defaultBfAccount, datasetID);
+          let res = await api.getDatasetBannerImageURL( datasetID);
           if (res != "No banner image") {
             //Banner is returned as an s3 bucket url but image needs to be converted as
             //base64 to save and write to users local system
@@ -5985,7 +5982,6 @@ window.openPage = async (targetPageID) => {
           });
 
           const permissions = await api.getDatasetPermissions(
-            window.defaultBfAccount,
             window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
             false
           );

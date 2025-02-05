@@ -2995,7 +2995,7 @@ const withdrawReviewDataset = async (curationMode) => {
   }
 
   try {
-    await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
+    await api.withdrawDatasetReviewSubmission(currentDataset);
 
     window.logGeneralOperationsForAnalytics(
       "Success",

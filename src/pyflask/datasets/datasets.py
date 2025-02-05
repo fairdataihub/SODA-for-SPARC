@@ -47,7 +47,7 @@ def get_dataset_by_id(dataset_name_or_id):
 
 
 
-def get_current_collection_names(account, dataset):
+def get_current_collection_names(dataset):
     """
     Function used to get collection names of the current dataset
     """
@@ -58,7 +58,7 @@ def get_current_collection_names(account, dataset):
 
     return r.json()
 
-def upload_collection_names(account, dataset, tags):
+def upload_collection_names(dataset, tags):
     """
     Function used to upload the collection tags of a dataset to Pennsieve
     @params
@@ -87,7 +87,7 @@ def upload_collection_names(account, dataset, tags):
     return {"collection": store}
 
 
-def remove_collection_names(account, dataset, tags):
+def remove_collection_names(dataset, tags):
     """
     Function used to remove the tags the were assigned to a dataset
     @params

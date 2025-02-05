@@ -17,7 +17,7 @@ namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
 
 
 
-def bf_get_doi(selected_bfaccount, selected_bfdataset):
+def bf_get_doi(selected_bfdataset):
     """
     Function to get current doi for a selected dataset
 
@@ -209,7 +209,7 @@ METADATA_FILES = [
     "subjects.xlsx"
 ]
 
-def get_metadata_files(selected_dataset, pennsieve_account):
+def get_metadata_files(selected_dataset):
     """
     Function to get the metadata files
 

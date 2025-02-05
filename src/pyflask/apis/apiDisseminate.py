@@ -26,18 +26,14 @@ model_get_doi_response = api.model('DOIResponse', {
 @api.route("/datasets/<string:dataset_name>/doi")
 class BfGetDoi(Resource):
     parser = api.parser()
-    parser.add_argument("selected_account", type=str, help="Pennsieve account name", location="args", required=True)
 
     @api.doc(responses={200: "Success", 400: "Validation Error", 500: "Internal Server Error"})
     @api.expect(parser)
     @api.marshal_with(model_get_doi_response)
     def get(self, dataset_name):
-        # get the arguments
-        data = self.parser.parse_args()
-        selected_bfaccount = data.get("selected_account")
 
         try:
-            return bf_get_doi(selected_bfaccount, dataset_name)
+            return bf_get_doi( dataset_name)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -76,12 +72,9 @@ class BfMetadataFiles(Resource):
     @api.expect(parser)
     @api.marshal_with(model_metadata_files_response)
     def get(self, dataset_name):
-        # get the arguments
-        data = self.parser.parse_args()
-        selected_bfaccount = data.get("selected_account")
 
         try:
-            return get_metadata_files(dataset_name,  selected_bfaccount)
+            return get_metadata_files(dataset_name)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
