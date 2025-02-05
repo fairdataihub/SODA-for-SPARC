@@ -141,7 +141,6 @@ const getDatasetMetadataFiles = async (datasetName) => {
   return metadata_files;
 };
 
-const setDatasetPermissions = async (selected_account, selected_dataset, params) => {};
 
 const getDatasetPermissions = async (selected_account, selected_dataset, boolReturnAll) => {
   let getDatasetPermissionsResponse = await client.get(`/manage_datasets/bf_dataset_permissions`, {
@@ -164,7 +163,7 @@ const getDatasetPermissions = async (selected_account, selected_dataset, boolRet
 
 // This function will be call after a dataset has been shared with the curation team
 // Users will be able to reserve DOI's for their datasets
-const reserveDOI = async (account, dataset) => {
+const reserveDOI = async (dataset) => {
   // reference: https://docs.pennsieve.io/reference/reservedoi
   // information: https://docs.pennsieve.io/docs/digital-object-identifiers-dois#assigning-doi-to-your-pennsieve-dataset
 
@@ -181,7 +180,7 @@ const reserveDOI = async (account, dataset) => {
   }
 };
 
-const getDatasetDOI = async (account, dataset) => {
+const getDatasetDOI = async ( dataset) => {
   // reference: https://docs.pennsieve.io/reference/getdoi
 
   try {

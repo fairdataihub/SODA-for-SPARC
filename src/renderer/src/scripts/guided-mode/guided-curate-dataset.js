@@ -2328,12 +2328,11 @@ window.guidedSetCurationTeamUI = () => {
 
 // Function used to reserve a DOI for the current dataset and account
 window.guidedReserveAndSaveDOI = async () => {
-  let account = window.sodaJSONObj["bf-account-selected"]["account-name"];
   let dataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
   $("#curate-button-reserve-doi").addClass("loading");
   $("#curate-button-reserve-doi").disabled = true;
 
-  let doiInformation = await api.reserveDOI(account, dataset);
+  let doiInformation = await api.reserveDOI(dataset);
   window.electron.ipcRenderer.send(
     "track-kombucha",
     kombuchaEnums.Category.DISSEMINATE_DATASETS,
@@ -6563,7 +6562,7 @@ window.openPage = async (targetPageID) => {
         removeEventListener = true;
       }
 
-      let pennsieveDOICheck = await api.getDatasetDOI(currentAccount, currentDataset);
+      let pennsieveDOICheck = await api.getDatasetDOI(currentDataset);
 
       //Set the ui for curation team and DOI information
       await window.showPublishingStatus("", "guided");
