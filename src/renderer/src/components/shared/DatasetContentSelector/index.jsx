@@ -1,77 +1,100 @@
-import { Card, Stack, Text, Group, Tooltip, Checkbox, Box } from "@mantine/core";
-import { IconCheck } from "@tabler/icons-react";
+import { Card, Stack, Text, Group, Tooltip, Checkbox } from "@mantine/core";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 import useGlobalStore from "../../../stores/globalStore";
 import { toggleEntitySelection } from "../../../stores/slices/datasetContentSelectorSlice";
 
-const upperCaseFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+const contentOptionsMap = {
+  subjects: {
+    label: "I collected data from subjects",
+    description:
+      "Subjects are individual entities, such as humans, animals, or other biological specimens from which data was collected during the study.",
+    ml: "0px",
+  },
+  samples: {
+    label: "I collected samples from subjects",
+    description:
+      "Samples are biological or physical specimens collected from subjects, such as tissue samples, blood samples, or other biological materials.",
+    dependsOn: ["subjects"],
+    ml: "20px",
+  },
+  sites: {
+    label: "I collected data from multiple locations from subjects",
+    description:
+      "Samples are biological or physical specimens collected from subjects, such as tissue samples, blood samples, or other biological materials.",
+    dependsOn: ["subjects"],
+    ml: "20px",
+  },
+  "subject-sites": {
+    label: "The locations from which I collected data are related to the subjects",
+    description: "Select this option if...",
+    dependsOn: ["subjects", "samples", "sites"],
+    ml: "40px",
+  },
+  "sample-sites": {
+    label: "The locations from which I collected data are related to the samples",
+    description: "Select this option if...",
+    dependsOn: ["subjects", "samples", "sites"],
+    ml: "40px",
+  },
+  performances: {
+    label: "I collected data from multiple protocol performances",
+    dependsOn: ["subjects"],
+    ml: "20px",
+  },
+  "performances-on-subjects": {
+    label: "The protocol performances are related to the subjects",
+    description: "Select this option if...",
+    dependsOn: ["subjects", "samples", "performances"],
+    ml: "40px",
+  },
+  "performances-on-samples": {
+    label: "The protocol performances are related to the samples",
+    description: "Select this option if...",
+    dependsOn: ["subjects", "samples", "performances"],
+    ml: "40px",
+  },
+  code: {
+    label: "I used code to generate or analyze the collected data",
+    description:
+      "Code includes scripts, computational models, analysis pipelines, or other software used to generate, process, or analyze the data.",
+    ml: "0px",
+  },
+};
 
 const DatasetContentSelector = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
 
-  const contentOptions = [
-    {
-      value: "subjects",
-      label: "I collected data from subjects",
-      description:
-        "Subjects are individual entities, such as humans, animals, or other biological specimens, from which data was collected during the study.",
-    },
-    {
-      value: "samples",
-      label: "I collected samples from subjects",
-      description:
-        "Samples are biological or physical specimens collected from subjects, such as tissue samples, blood samples, or other biological materials.",
-      dependsOn: "subjects",
-    },
-    {
-      value: "sites",
-      label: "I collected data from multiple physical locations on the same subject or sample",
-      dependsOn: "subjects",
-    },
-    {
-      value: "performances",
-      label: "I collected data from multiple performances of the same protocol",
-      dependsOn: "subjects",
-    },
-    {
-      value: "code",
-      label: "I used code to generate or analyze the collected data",
-      description:
-        "Code includes scripts, computational models, analysis pipelines, or other software used to generate, process, or analyze the data.",
-    },
-  ];
-
   const handleEntitySelection = (value) => {
     const isSelected = selectedEntities.includes(value);
 
-    // Deselect dependent entities if the value is deselected
     if (isSelected) {
-      contentOptions.forEach((option) => {
-        if (option.dependsOn === value && selectedEntities.includes(option.value)) {
-          toggleEntitySelection(option.value);
+      Object.keys(contentOptionsMap).forEach((key) => {
+        if (contentOptionsMap[key].dependsOn?.includes(value) && selectedEntities.includes(key)) {
+          toggleEntitySelection(key);
         }
       });
     }
 
-    // Toggle the selection of the current entity
     toggleEntitySelection(value);
   };
 
   return (
     <FullWidthContainer>
       <Stack spacing="md">
-        {contentOptions.map((option) => {
-          const isDisabled = option.dependsOn && !selectedEntities.includes(option.dependsOn);
-          const isSelected = selectedEntities.includes(option.value) && !isDisabled;
+        {Object.keys(contentOptionsMap).map((key) => {
+          const option = contentOptionsMap[key];
+          const isDisabled = option.dependsOn?.some((dep) => !selectedEntities.includes(dep));
+          const isSelected = selectedEntities.includes(key) && !isDisabled;
 
           return (
             <Tooltip
-              key={option.value}
+              key={key}
               label={
-                option.dependsOn &&
-                `${upperCaseFirstLetter(
-                  option.dependsOn
-                )} must be selected before choosing this option.`
+                isDisabled
+                  ? `${option.dependsOn
+                      .map((dep) => contentOptionsMap[dep].label)
+                      .join(" and ")} must be selected first.`
+                  : ""
               }
               disabled={!isDisabled}
               zIndex={2999}
@@ -80,8 +103,9 @@ const DatasetContentSelector = () => {
                 withBorder
                 shadow="sm"
                 padding="lg"
-                ml={option.dependsOn ? "xl" : 0}
+                ml={option.ml}
                 style={{
+                  display: isDisabled ? "none" : "block",
                   opacity: isDisabled ? 0.6 : 1,
                   cursor: isDisabled ? "not-allowed" : "pointer",
                   backgroundColor: isSelected ? "#e8f5e9" : "white",
@@ -89,19 +113,13 @@ const DatasetContentSelector = () => {
                   borderWidth: isSelected ? 2 : 1,
                   borderStyle: "solid",
                 }}
-                onClick={() => {
-                  if (!isDisabled) handleEntitySelection(option.value);
-                }}
+                onClick={() => !isDisabled && handleEntitySelection(key)}
               >
                 <Group position="apart" align="center">
                   <Checkbox
                     checked={isSelected}
-                    onChange={() => {
-                      if (!isDisabled) handleEntitySelection(option.value);
-                    }}
-                    style={{
-                      cursor: isDisabled ? "not-allowed" : "pointer",
-                    }}
+                    onChange={() => !isDisabled && handleEntitySelection(key)}
+                    style={{ cursor: isDisabled ? "not-allowed" : "pointer" }}
                     onClick={(event) => event.stopPropagation()}
                   />
                   <Text fw={600} size="lg">

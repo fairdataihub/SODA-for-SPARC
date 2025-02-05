@@ -8,6 +8,7 @@ import DatasetTreeViewRenderer from "../shared/DatasetTreeViewRenderer";
 import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
+import DatasetEntityStructurePage from "../pages/DatasetEntityStructure";
 import EntitySelectorPage from "../pages/EntitySelector";
 import EntityDataSelectorPage from "../pages/EntityDataSelector";
 import DataImporter from "../shared/DataImporter";
@@ -140,6 +141,7 @@ const componentTypeRenderers = {
       </SodaComponentWrapper>
     );
   },
+
   "entity-selection-page": (componentSlot) => {
     const root = createRoot(componentSlot);
     const props = {
@@ -153,6 +155,14 @@ const componentTypeRenderers = {
     root.render(
       <SodaComponentWrapper>
         <EntityDataSelectorPage {...props} />
+      </SodaComponentWrapper>
+    );
+  },
+  "dataset-entity-structure-page": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper>
+        <DatasetEntityStructurePage />
       </SodaComponentWrapper>
     );
   },

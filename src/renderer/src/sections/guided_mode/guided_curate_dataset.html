@@ -1066,8 +1066,12 @@
           <div class="guided--section">
             <h1 class="text-sub-step-title">Import Your Data</h1>
             <p class="help-text w-100">
-              Use the interface below to import all the experimental data you collected during your
-              study.
+              Import the data that was collected or generated during your study below. This
+              includes: experimental data, code used for analysis, protocol files, documentation
+              supporting your experiment, and any other files that are part of your study. (This
+              text likely needs to be updated styling-wise and to include other things they might
+              want to import here since this will be the only page where they can import data and we
+              don't want them to miss anything)
             </p>
             <p class="help-text">
               <b>Note:</b> If your data is organized into subfolders (e.g., "microscopy,"
@@ -1077,7 +1081,7 @@
           </div>
           <div
             data-component-type="data-importer"
-            data-data-type="experimental"
+            data-data-type="collected"
             data-relative-folder-path-to-import-data-into="data/"
             class="guided--section"
           ></div>
@@ -1197,7 +1201,12 @@
           data-entity-type-string-plural="subjects"
           data-entity-type-prefix="sub-"
         ></div>
-
+        <div
+          id="guided-subjects-entity-selection-tab-mega"
+          data-page-name="Subjects data selection"
+          class="guided--page"
+          data-component-type="dataset-entity-structure-page"
+        ></div>
         <div
           id="guided-subjects-entity-selection-tab"
           data-page-name="Subjects data selection"
