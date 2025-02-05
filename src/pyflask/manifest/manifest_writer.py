@@ -9,12 +9,12 @@ import pathlib
 import shutil 
 from utils import load_metadata_to_dataframe
 from authentication import get_access_token
-import time
+
 
 import pandas as pd
 import requests 
 
-from utils import create_request_headers, column_check, returnFileURL, remove_high_level_folder_from_path, get_name_extension, get_dataset_id, TZLOCAL
+from utils import create_request_headers, column_check, remove_high_level_folder_from_path, get_name_extension, get_dataset_id, TZLOCAL
 from constants import PENNSIEVE_URL
 userpath = expanduser("~")
 

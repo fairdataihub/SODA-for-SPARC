@@ -2,7 +2,6 @@ import os
 import requests
 from authentication import get_access_token
 from utils import create_request_headers
-from os.path import expanduser, join
 
 from namespaces import NamespaceEnum, get_namespace_logger
 

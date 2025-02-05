@@ -4,7 +4,6 @@
 
 import platform
 import os
-import time
 from os.path import (
     isdir,
     join,
@@ -749,13 +748,6 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields, item_id=None,
     return {"sample_file_rows": transposeMatrix(sortMatrix)} if type in ["samples.xlsx", "samples"] else {"subject_file_rows": transposeMatrix(sortMatrix)}
 
 
-def checkEmptyColumn(column):
-    for element in column:
-        if element:
-            break
-        return True
-    return False
-
 
 # needed to sort subjects and samples table data to match the UI fields
 def sortedSubjectsTableData(matrix, fields):
@@ -1146,9 +1138,3 @@ def delete_manifest_dummy_folders(userpath_list):
         shutil.rmtree(userpath) if isdir(userpath) else 0
 
 
-def edit_ps_manifest_file(edit_action, manifest_type):
-    if manifest_type == "bf":
-        manifest_file_location = os.path.join(userpath, "SODA", "manifest_files")
-    else:
-        manifest_file_location = os.path.join(userpath, "SODA", "Manifest Files")
-    return

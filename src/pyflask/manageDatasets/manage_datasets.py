@@ -31,7 +31,7 @@ from utils import (
 )
 from authentication import get_access_token, bf_delete_account, clear_cached_access_token
 from users import get_user_information, update_config_account_name
-from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
+from permissions import has_edit_permissions
 from configUtils import lowercase_account_names, format_agent_profile_name
 from constants import PENNSIEVE_URL
 from pysodaUtils import (
@@ -171,7 +171,7 @@ def bf_add_account_api_key(keyname, key, secret):
 
     # Check key and secret are valid, if not delete account from config
     try:
-        token = get_access_token()
+        get_access_token()
     except Exception as e:
         namespace_logger.error(e)
         bf_delete_account(formatted_key_name)
@@ -181,16 +181,6 @@ def bf_add_account_api_key(keyname, key, secret):
 
     # Check that the Pennsieve account is in the SPARC Organization
     try:
-        org_id = get_user_information(token)["preferredOrganization"]
-
-        ''' Commented out as users should be able to sign in to non-sparc organizations using an API key
-            TODO: Remove this code if it is not needed
-        if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            abort(403,
-                "Please check that your account is within the SPARC Organization"
-            )
-        '''
-
         if not config.has_section("global"):
             config.add_section("global")
 
@@ -206,21 +196,7 @@ def bf_add_account_api_key(keyname, key, secret):
         bf_delete_account(formatted_key_name)
         raise e
     
-def check_forbidden_characters_ps(my_string):
-    """
-    Check for forbidden characters in Pennsieve file/folder name
 
-    Args:
-        my_string: string with characters (string)
-    Returns:
-        False: no forbidden character
-        True: presence of forbidden character(s)
-    """
-    regex = re.compile(f"[{forbidden_characters_bf}]")
-    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
-        return False
-    else:
-        return True
 
 
 def bf_account_list():

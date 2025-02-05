@@ -16,6 +16,5 @@ from .prepare_metadata import (
     delete_manifest_dummy_folders,
     set_template_path, 
     import_ps_manifest_file,
-    manifest_creation_progress,
-    edit_ps_manifest_file
+    manifest_creation_progress
 )

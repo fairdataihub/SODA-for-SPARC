@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
-import requests
 import platform
 import os
 from os import listdir, makedirs, mkdir, walk, rename
@@ -40,8 +39,7 @@ from .manifestSession import UploadManifestSession
 from constants import PENNSIEVE_URL
 
 from pysodaUtils import (
-    check_forbidden_characters_ps,
-    get_agent_installation_location,
+    check_forbidden_characters_ps
 )
 
 from organizeDatasets import import_pennsieve_dataset
@@ -2015,7 +2013,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             """
             global main_total_generate_dataset_size
             global bytes_file_path_dict
-            list_of_local_file_paths = []
             # First loop will take place in the root of the dataset
             if "folders" in dataset_structure.keys():
                 for folder_key, folder in dataset_structure["folders"].items():
@@ -2026,7 +2023,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 list_projected_names = []
                 list_desired_names = []
                 list_final_names = []
-                additional_upload_lists = []
 
                 list_initial_names = []
                 for file_key, file in dataset_structure["files"].items():
@@ -2034,10 +2030,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                     file_path = file["path"]
                     if isfile(file_path) and file["type"] == "local":
                         projected_name = splitext(basename(file_path))[0]
-                        projected_extension = splitext(basename(file_path))[1]
                         projected_name_w_extension = basename(file_path)
                         desired_name = splitext(file_key)[0]
-                        desired_extension = splitext(file_key)[1]
                         desired_name_with_extension = file_key
 
 
@@ -2710,7 +2704,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 # split the key up if there are multiple folders in the relative path
                 relative_path = key.split("/")
                 high_lvl_folder_name = relative_path[0]
-                last_folder_name = relative_path[-1]
                 subfolder_level = 0
                 subfolder_amount = len(relative_path) - 1
 
@@ -2958,12 +2951,6 @@ manifest_id = None
 origin_manifest_id = None
 
 
-
-def handle_duplicate_package_name_error(e, soda_json_structure):
-    if "if-existing-files" in soda_json_structure["generate-dataset"] and soda_json_structure["generate-dataset"]["if-existing-files"] == "create-duplicate" and e.response.text == '{"type":"BadRequest","message":"package name must be unique","code":400}':
-        return
-
-    raise e
 
 def ps_check_dataset_files_validity(soda_json_structure):
     """
@@ -3443,7 +3430,6 @@ def reset_upload_session_environment(resume):
 
     start_generate = 0
     myds = ""
-    error = ""
 
     generate_start_time = time.time()
 
@@ -3681,7 +3667,6 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
                 shutil.copy2(s, d)
 
     dataset_structure = soda_json_structure["dataset-structure"]
-    starting_point = soda_json_structure["starting-point"]["type"]
     manifest_destination = soda_json_structure["manifest-files"]["local-destination"]
 
     recursive_item_path_create(dataset_structure, [])
@@ -3817,8 +3802,4 @@ def generate_manifest_file_data(dataset_structure):
     return manifest_data
 
 
-def handle_duplicate_package_name_error(e, soda_json_structure):
-    if "if-existing-files" in soda_json_structure["generate-dataset"] and (soda_json_structure["generate-dataset"]["if-existing-files"] == "create-duplicate") and (e.response.text== '{"type":"BadRequest","message":"package name must be unique","code":400}'):
-        return
 
-    raise e

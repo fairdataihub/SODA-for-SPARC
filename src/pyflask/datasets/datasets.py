@@ -5,8 +5,8 @@ Routes for performing operations on datasets
 from os import walk
 from flask import abort
 import requests
-from utils import create_request_headers, connect_pennsieve_client, authenticate_user_with_client, get_dataset_id
-from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
+from utils import create_request_headers, get_dataset_id
+from permissions import has_edit_permissions
 from authentication import get_access_token
 from utils.getDataset import get_dataset
 from constants import PENNSIEVE_URL
