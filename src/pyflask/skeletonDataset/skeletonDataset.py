@@ -8,7 +8,6 @@ import os
 import time
 from os.path import expanduser
 from .skeletonDatasetUtils import import_ps_metadata_files_skeleton
-from pennsieve2.pennsieve import Pennsieve
 import pandas as pd 
 import requests
 from namespaces import NamespaceEnum, get_namespace_logger

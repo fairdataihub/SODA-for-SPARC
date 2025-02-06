@@ -616,7 +616,8 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
     let latestPennsieveAgentVersion;
 
     try {
-      latestPennsieveAgentVersion = await getLatestPennsieveAgentVersion()[1];
+      const [_, version] = await getLatestPennsieveAgentVersion();
+      latestPennsieveAgentVersion = version;
     } catch (error) {
       const emessage = userErrorMessage(error);
       setPennsieveAgentCheckError(
@@ -1430,7 +1431,7 @@ window.generateSubjectsFileHelper = async (uploadBFBoolean) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked(window.defaultBfAccount, bfdataset);
+    const isLocked = await api.isDatasetLocked(bfdataset);
 
     if (isLocked) {
       await Swal.fire({
@@ -1587,7 +1588,7 @@ window.generateSamplesFileHelper = async (uploadBFBoolean) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked(window.defaultBfAccount, bfDataset);
+    const isLocked = await api.isDatasetLocked(bfDataset);
     if (isLocked) {
       await Swal.fire({
         icon: "info",
@@ -2995,7 +2996,7 @@ const withdrawReviewDataset = async (curationMode) => {
   }
 
   try {
-    await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
+    await api.withdrawDatasetReviewSubmission(currentDataset);
 
     window.logGeneralOperationsForAnalytics(
       "Success",
@@ -5059,7 +5060,7 @@ window.folderContextMenu = (event) => {
           window.datasetStructureJSONObj
         );
       } else if ($(this).attr("id") === "folder-move") {
-        window.moveItems(event, "folders");
+        window.moveItems(event);
       }
       // Hide it AFTER the action was triggered
       window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
@@ -5146,7 +5147,7 @@ window.fileContextMenu = (event) => {
             window.datasetStructureJSONObj
           );
         } else if ($(this).attr("id") === "file-move") {
-          window.moveItems(event, "files");
+          window.moveItems(event);
         } else if ($(this).attr("id") === "file-description") {
           manageDesc(event);
         }
@@ -6106,7 +6107,7 @@ const preGenerateSetup = async (e, elementContext) => {
   document.getElementById("contact-us-view").style.pointerEvents = "none";
 
   // updateJSON structure after Generate dataset tab
-  window.updateJSONStructureGenerate(false, window.sodaJSONObj);
+  window.updateJSONStructureGenerate(window.sodaJSONObj);
 
   window.setSodaJSONStartingPoint(window.sodaJSONObj);
 

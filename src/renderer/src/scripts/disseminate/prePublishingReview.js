@@ -71,7 +71,7 @@ window.getPrepublishingChecklistStatuses = async (currentDataset) => {
   // set the subtitle's status
   statuses.subtitle = description && description.length ? true : false;
 
-  let readme = await api.getDatasetReadme(window.defaultBfAccount, currentDataset);
+  let readme = await api.getDatasetReadme(currentDataset);
   readme = readme.trim();
 
   // set the readme's status
@@ -80,7 +80,7 @@ window.getPrepublishingChecklistStatuses = async (currentDataset) => {
   // set tags's status
   statuses.tags = tags && tags.length ? true : false;
 
-  let bannerImageURL = await api.getDatasetBannerImageURL(window.defaultBfAccount, currentDataset);
+  let bannerImageURL = await api.getDatasetBannerImageURL(currentDataset);
 
   // set the banner image's url status
   statuses.bannerImageURL = bannerImageURL !== "No banner image" ? true : false;

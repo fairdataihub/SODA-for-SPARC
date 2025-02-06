@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
-from venv import create
 from flask import abort 
 import requests
-from permissions import pennsieve_get_current_user_permissions, has_edit_permissions
-from utils import connect_pennsieve_client, get_dataset_id, authenticate_user_with_client, create_request_headers
+from permissions import  has_edit_permissions
+from utils import  get_dataset_id, create_request_headers
 from errorHandlers import handle_http_error
 from authentication import get_access_token
 from constants import PENNSIEVE_URL
@@ -18,7 +17,7 @@ namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
 
 
 
-def bf_get_doi(selected_bfaccount, selected_bfdataset):
+def bf_get_doi(selected_bfdataset):
     """
     Function to get current doi for a selected dataset
 
@@ -210,7 +209,7 @@ METADATA_FILES = [
     "subjects.xlsx"
 ]
 
-def get_metadata_files(selected_dataset, pennsieve_account):
+def get_metadata_files(selected_dataset):
     """
     Function to get the metadata files
 

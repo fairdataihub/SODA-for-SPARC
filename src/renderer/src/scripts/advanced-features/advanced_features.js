@@ -366,7 +366,7 @@ document.querySelector("#btn-pull-ds-manifest").addEventListener("click", async 
 
 function createAgentCHeckObserver(targetDiv, successCallback) {
   const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
+    mutations.forEach(() => {
       const textToCheck = "The Pennsieve Agent is running and ready to upload!";
       if (targetDiv.textContent.includes(textToCheck)) {
         successCallback();
