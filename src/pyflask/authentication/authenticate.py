@@ -222,7 +222,7 @@ def bf_add_account_username(keyname, key, secret):
 
     # Check key and secret are valid, if not delete account from config
     try:
-        token = get_access_token()
+        get_access_token()
     except Exception as e:
         namespace_logger.error(e)
         bf_delete_account(formatted_account_name)

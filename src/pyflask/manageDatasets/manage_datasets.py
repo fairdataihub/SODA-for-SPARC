@@ -31,7 +31,7 @@ from utils import (
 )
 from authentication import get_access_token, bf_delete_account, clear_cached_access_token
 from users import get_user_information, update_config_account_name
-from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
+from permissions import has_edit_permissions
 from configUtils import lowercase_account_names, format_agent_profile_name
 from constants import PENNSIEVE_URL
 from pysodaUtils import (
@@ -171,7 +171,7 @@ def bf_add_account_api_key(keyname, key, secret):
 
     # Check key and secret are valid, if not delete account from config
     try:
-        token = get_access_token()
+        get_access_token()
     except Exception as e:
         namespace_logger.error(e)
         bf_delete_account(formatted_key_name)
@@ -181,16 +181,6 @@ def bf_add_account_api_key(keyname, key, secret):
 
     # Check that the Pennsieve account is in the SPARC Organization
     try:
-        org_id = get_user_information(token)["preferredOrganization"]
-
-        ''' Commented out as users should be able to sign in to non-sparc organizations using an API key
-            TODO: Remove this code if it is not needed
-        if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            abort(403,
-                "Please check that your account is within the SPARC Organization"
-            )
-        '''
-
         if not config.has_section("global"):
             config.add_section("global")
 
@@ -206,21 +196,7 @@ def bf_add_account_api_key(keyname, key, secret):
         bf_delete_account(formatted_key_name)
         raise e
     
-def check_forbidden_characters_ps(my_string):
-    """
-    Check for forbidden characters in Pennsieve file/folder name
 
-    Args:
-        my_string: string with characters (string)
-    Returns:
-        False: no forbidden character
-        True: presence of forbidden character(s)
-    """
-    regex = re.compile(f"[{forbidden_characters_bf}]")
-    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
-        return False
-    else:
-        return True
 
 
 def bf_account_list():
@@ -309,7 +285,7 @@ def bf_get_accounts():
 
 
 
-def bf_dataset_account(accountname):
+def bf_dataset_account():
     """
     This function filters dataset dropdowns across SODA by the permissions granted to users.
 
@@ -805,7 +781,7 @@ def ps_get_users(selected_bfaccount):
     return {"users": list_users_first_last}
 
 
-def ps_get_teams(selected_bfaccount):
+def ps_get_teams():
     """
     Args:
       selected_bfaccount: name of selected Pennsieve account (string)
@@ -826,7 +802,7 @@ def ps_get_teams(selected_bfaccount):
 
 
 # Also remove selected_bfaccount from parameters since it isn't used
-def ps_get_permission(selected_bfaccount, selected_bfdataset):
+def ps_get_permission( selected_bfdataset):
 
     """
     Function to get permission for a selected dataset
@@ -1120,7 +1096,7 @@ def ps_add_permission_team(
         raise e
 
 
-def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
+def bf_get_subtitle( selected_bfdataset):
     """
     Function to get current subtitle associated with a selected dataset
 
@@ -1221,7 +1197,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
 
 
 
-def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
+def bf_get_banner_image(selected_bfdataset):
     """
     Function to get url of current banner image associated with a selected dataset
 
@@ -1470,7 +1446,7 @@ def get_dataset_readme(selected_account, selected_dataset):
     return readme
 
 
-def update_dataset_readme(selected_account, selected_dataset, updated_readme):
+def update_dataset_readme(selected_dataset, updated_readme):
     """
     Update the readme of a dataset on Pennsieve with the given readme string.
     """

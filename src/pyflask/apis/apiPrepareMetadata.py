@@ -16,8 +16,7 @@ from prepareMetadata import (
     delete_manifest_dummy_folders,
     set_template_path, 
     import_ps_manifest_file,
-    manifest_creation_progress,
-    edit_ps_manifest_file
+    manifest_creation_progress
 )
 from flask import request
 from namespaces import NamespaceEnum, get_namespace
@@ -597,22 +596,6 @@ class GenerateManifestFilesPennsieve(Resource):
 
         try:
             return import_ps_manifest_file(soda_json_object)
-        except Exception as e:
-            api.abort(500, str(e))
-
-
-    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'},
-             description="Edit manifest files that are stored locally. Used in the standalone manifest generator to edit manifest files before uploading to Pennsieve.")
-    def put(self):
-        data = request.get_json()
-        edit_action = data.get("action")
-        manifest_type = data.get("type")
-
-        if not edit_action or not manifest_type:
-            api.abort(400, "Cannot edit manifest files without the action and type provided.")
-
-        try:
-            return edit_ps_manifest_file(edit_action, manifest_type)
         except Exception as e:
             api.abort(500, str(e))
 

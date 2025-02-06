@@ -5,8 +5,8 @@ Routes for performing operations on datasets
 from os import walk
 from flask import abort
 import requests
-from utils import create_request_headers, connect_pennsieve_client, authenticate_user_with_client, get_dataset_id
-from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
+from utils import create_request_headers, get_dataset_id
+from permissions import has_edit_permissions
 from authentication import get_access_token
 from utils.getDataset import get_dataset
 from constants import PENNSIEVE_URL
@@ -47,7 +47,7 @@ def get_dataset_by_id(dataset_name_or_id):
 
 
 
-def get_current_collection_names(account, dataset):
+def get_current_collection_names(dataset):
     """
     Function used to get collection names of the current dataset
     """
@@ -58,7 +58,7 @@ def get_current_collection_names(account, dataset):
 
     return r.json()
 
-def upload_collection_names(account, dataset, tags):
+def upload_collection_names(dataset, tags):
     """
     Function used to upload the collection tags of a dataset to Pennsieve
     @params
@@ -87,7 +87,7 @@ def upload_collection_names(account, dataset, tags):
     return {"collection": store}
 
 
-def remove_collection_names(account, dataset, tags):
+def remove_collection_names(dataset, tags):
     """
     Function used to remove the tags the were assigned to a dataset
     @params

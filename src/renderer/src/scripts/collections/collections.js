@@ -99,7 +99,6 @@ $(document).ready(function () {
         //collection names that are already have an ID
         try {
           let uploadTagsStatus = await api.uploadCollectionTags(
-            window.defaultBfAccount,
             window.defaultBfDataset,
             whiteListTags
           );
@@ -118,7 +117,6 @@ $(document).ready(function () {
         //remove collection names
         try {
           let removeStatus = await api.removeCollectionTags(
-            window.defaultBfAccount,
             window.defaultBfDataset,
             removeTags
           );
@@ -136,7 +134,6 @@ $(document).ready(function () {
         //upload tags that haven't been created on pennsieve (no ID)
         try {
           let newTagsStatus = await api.uploadNewTags(
-            window.defaultBfAccount,
             window.defaultBfDataset,
             newTags
           );
@@ -204,9 +201,8 @@ $(document).ready(function () {
   });
 
   const updateCollectionWhiteList = async () => {
-    let collection_list = await api.getAllCollectionTags(window.defaultBfAccount);
+    let collection_list = await api.getAllCollectionTags();
     let currentCollectionList = await api.getCurrentCollectionTags(
-      window.defaultBfAccount,
       window.defaultBfDataset
     );
 
@@ -248,9 +244,8 @@ $(document).ready(function () {
       });
     }
 
-    let collection_list = await api.getAllCollectionTags(window.defaultBfAccount);
+    let collection_list = await api.getAllCollectionTags();
     let current_tags = await api.getCurrentCollectionTags(
-      window.defaultBfAccount,
       window.defaultBfDataset
     );
 

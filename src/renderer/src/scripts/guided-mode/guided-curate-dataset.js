@@ -411,7 +411,6 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
     return { shouldShow: true, changesMetadata: changes_text };
   } catch (error) {
     const datasetInfo = await api.getDatasetInformation(
-      window.defaultBfAccount,
       pennsieveDatasetID
     );
     const isPublished = datasetInfo?.publication?.status === "completed";
@@ -692,7 +691,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
 
         const datasetIsLocked = await api.isDatasetLocked(
-          window.defaultBfAccount,
           selectedPennsieveDataset
         );
         if (datasetIsLocked) {
@@ -2355,12 +2353,11 @@ window.guidedSetCurationTeamUI = () => {
 
 // Function used to reserve a DOI for the current dataset and account
 window.guidedReserveAndSaveDOI = async () => {
-  let account = window.sodaJSONObj["bf-account-selected"]["account-name"];
   let dataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
   $("#curate-button-reserve-doi").addClass("loading");
   $("#curate-button-reserve-doi").disabled = true;
 
-  let doiInformation = await api.reserveDOI(account, dataset);
+  let doiInformation = await api.reserveDOI(dataset);
   window.electron.ipcRenderer.send(
     "track-kombucha",
     kombuchaEnums.Category.DISSEMINATE_DATASETS,
@@ -2479,7 +2476,7 @@ window.guidedModifyCurationTeamAccess = async (action) => {
 
 const checkIfDatasetExistsOnPennsieve = async (datasetNameOrID) => {
   let datasetName = null;
-  const datasetList = await api.getDatasetsForAccount(window.defaultBfAccount);
+  const datasetList = await api.getDatasetsForAccount();
   for (const dataset of datasetList) {
     if (dataset.name === datasetNameOrID || dataset.id === datasetNameOrID) {
       datasetName = dataset.name;
@@ -4533,7 +4530,6 @@ window.openPage = async (targetPageID) => {
           //Try to get the dataset name from Pennsieve
           //If the request fails, the subtitle input will remain blank
           const datasetSubtitle = await api.getDatasetSubtitle(
-            window.defaultBfAccount,
             window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
           );
 
@@ -5334,7 +5330,6 @@ window.openPage = async (targetPageID) => {
         if (!studyPurpose && !studyDataCollection && !studyPrimaryConclusion) {
           try {
             const pennsieveDatasetDescription = await api.getDatasetReadme(
-              window.defaultBfAccount,
               window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
             );
             const parsedDescription = createParsedReadme(pennsieveDatasetDescription);
@@ -5536,7 +5531,7 @@ window.openPage = async (targetPageID) => {
         try {
           // pass in the id in case the name of the dataset has been
           // changed from the original Pennsieve dataset name
-          let res = await api.getDatasetBannerImageURL(window.defaultBfAccount, datasetID);
+          let res = await api.getDatasetBannerImageURL( datasetID);
           if (res != "No banner image") {
             //Banner is returned as an s3 bucket url but image needs to be converted as
             //base64 to save and write to users local system
@@ -5675,7 +5670,6 @@ window.openPage = async (targetPageID) => {
           });
 
           const permissions = await api.getDatasetPermissions(
-            window.defaultBfAccount,
             window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
             false
           );
@@ -6252,7 +6246,7 @@ window.openPage = async (targetPageID) => {
         removeEventListener = true;
       }
 
-      let pennsieveDOICheck = await api.getDatasetDOI(currentAccount, currentDataset);
+      let pennsieveDOICheck = await api.getDatasetDOI(currentDataset);
 
       //Set the ui for curation team and DOI information
       await window.showPublishingStatus("", "guided");
@@ -6855,7 +6849,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
       if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
         // Check to make sure the dataset is not locked
         const datasetIsLocked = await api.isDatasetLocked(
-          window.defaultBfAccount,
           datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"]
         );
         if (datasetIsLocked) {

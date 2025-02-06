@@ -1,12 +1,12 @@
 from flask import abort
 import requests 
-from permissions import pennsieve_get_current_user_permissions, has_edit_permissions
-from utils import get_dataset_id, connect_pennsieve_client, authenticate_user_with_client, create_request_headers
+from permissions import has_edit_permissions
+from utils import get_dataset_id, create_request_headers
 from constants import PENNSIEVE_URL
 from authentication import get_access_token
 
 
-def get_all_collections(account):
+def get_all_collections():
     """
     Function used to get the collections that belong to an organization
     """
@@ -20,7 +20,7 @@ def get_all_collections(account):
 
 
 
-def upload_new_names(account, dataset, tags):
+def upload_new_names( dataset, tags):
     """
     Function is used to upload new collection tags that are not already on Pennsieve
     @params:

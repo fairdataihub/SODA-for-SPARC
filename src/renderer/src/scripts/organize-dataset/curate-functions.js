@@ -14,14 +14,12 @@ import fileDoc from "/img/doc-file.png";
 import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
-// import * as path from "path";
 import {
   swalConfirmAction,
   swalFileListSingleAction,
   swalFileListTripleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
-// const path = require("path");
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -43,18 +41,6 @@ document
   .addEventListener("click", function () {
     window.openDropdownPrompt(this, "dataset", false);
   });
-
-// document
-//   .querySelector("#Question-generate-dataset-BF-dataset .change-current-account:not(.organization)")
-//   .addEventListener("click", function (event) {
-//     window.openDropdownPrompt(event.target, "dataset", false);
-//   });
-
-// document
-//   .querySelector("#Question-generate-dataset-BF-account .change-current-account")
-//   .addEventListener("click", function () {
-//     window.openDropdownPrompt(this, "bf");
-//   });
 
 $(".button-individual-metadata.remove").click(function () {
   let metadataFileStatus = $($(this).parents()[1]).find(".para-metadata-file-status");
@@ -503,7 +489,6 @@ window.uploadDatasetClickHandler = async (ev) => {
 
 window.handleLocalDatasetImport = async (path) => {
   const list = await getFilesAndFolders(path);
-  const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
   const builtDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
     list.folders,
     "dataset_root/", // Use dataset_root as the root folder since we are importing the root in this case
@@ -905,10 +890,8 @@ window.dropHandler = async (
   curationMode,
   dataDeliverables = false
 ) => {
-  let gettingStartedSection = false;
   if (curationMode === "guided-getting-started") {
     curationMode = "guided";
-    gettingStartedSection = true;
   }
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
@@ -1004,107 +987,6 @@ window.dropHandler = async (
   }
 };
 
-const checkAvailableSpace = async () => {
-  const roundToHundredth = (value) => {
-    return Number(parseFloat(value.toFixed(2)));
-  };
-
-  let location = document
-    .getElementById("input-destination-generate-dataset-locally")
-    .getAttribute("placeholder");
-
-  let freeMemory = await window.electron.ipcRenderer.invoke("getDiskSpace", location);
-  let freeMemoryMB = roundToHundredth(freeMemory / 1024 ** 2);
-
-  let datasetSizeResponse;
-  try {
-    datasetSizeResponse = await client.post(
-      "/curate_datasets/dataset_size",
-      {
-        soda_json_structure: window.sodaJSONObj,
-      },
-      { timeout: 0 }
-    );
-
-    let tempFolderSize = datasetSizeResponse.data.dataset_size;
-    let folderSizeMB = roundToHundredth(tempFolderSize / 1024 ** 2);
-    let warningText =
-      "Please free up " +
-      roundToHundredth(folderSizeMB) +
-      "MB " +
-      "or consider uploading directly to Pennsieve.";
-
-    //converted to MB/GB/TB for user readability
-    if (folderSizeMB > 1000) {
-      //if bigger than a gb then convert to that
-      folderSizeMB = roundToHundredth(folderSizeMB / 1024);
-      freeMemoryMB = roundToHundredth(freeMemoryMB / 1024);
-      warningText =
-        "Please free up " +
-        roundToHundredth(folderSizeMB) +
-        "GB " +
-        "or consider uploading directly to Pennsieve.";
-      //if bigger than a tb then convert to that
-      if (folderSizeMB > 1000) {
-        folderSizeMB = roundToHundredth(folderSizeMB / 1024);
-        freeMemoryMB = roundToHundredth(freeMemoryMB / 1024);
-        warningText =
-          "Please free up " +
-          roundToHundredth(folderSizeMB) +
-          "TB " +
-          "or consider uploading directly to Pennsieve.";
-      }
-    }
-
-    //comparison is done in bytes
-    if (freeMemory < tempFolderSize) {
-      $("#div-confirm-destination-locally button").hide();
-      $("#Question-generate-dataset-choose-ds-name").css("display", "none");
-      document.getElementById("input-destination-generate-dataset-locally").placeholder =
-        "Browse here";
-
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "OK",
-        heightAuto: false,
-        icon: "warning",
-        showCancelButton: false,
-        title: "Not enough space in storage device",
-        text: warningText,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-
-      window.logCurationForAnalytics(
-        "Error",
-        window.PrepareDatasetsAnalyticsPrefix.CURATE,
-        window.AnalyticsGranularity.ACTION_WITH_DESTINATION,
-        ["Step 6", "Check Storage Space", determineDatasetLocation()],
-        determineDatasetLocation()
-      );
-
-      // return to avoid logging that the user passed the storage space check
-      return;
-    }
-
-    window.logCurationForAnalytics(
-      "Success",
-      window.PrepareDatasetsAnalyticsPrefix.CURATE,
-      window.AnalyticsGranularity.ACTION_WITH_DESTINATION,
-      ["Step 6", "Check Storage Space", determineDatasetLocation()],
-      determineDatasetLocation()
-    );
-  } catch (error) {
-    clientError(error);
-  }
-};
-// const btnConfirmLocalDatasetGeneration = document.getElementById("btn-confirm-local-destination");
-// btnConfirmLocalDatasetGeneration.addEventListener("click", checkAvailableSpace, false);
-
 //////////////// IMPORT EXISTING PROGRESS FILES ////////////////////////////////
 window.progressFileDropdown = document.getElementById("progress-files-dropdown");
 
@@ -1119,7 +1001,7 @@ const progressFileParse = (ev) => {
       let contentJson = JSON.parse(content);
       return contentJson;
     } catch (error) {
-      log.error(error);
+      window.log.error(error);
       console.log(error);
       document.getElementById("para-progress-file-status").innerHTML =
         "<span style='color:red'>" + error + "</span>";
@@ -1191,7 +1073,7 @@ const importDatasetStructure = (object) => {
   }
 };
 
-const importGenerateDatasetStep = async (object) => {
+const importGenerateDatasetStep = async () => {
   if ("generate-dataset" in window.sodaJSONObj) {
     // Step 1: Where to generate the dataset
     if (sodaJSONObj["generate-dataset"]["destination"] === "local") {
@@ -1202,11 +1084,13 @@ const importGenerateDatasetStep = async (object) => {
         "placeholder",
         window.sodaJSONObj["generate-dataset"]["path"]
       );
-      $("#input-destination-generate-dataset-locally").val(sodaJSONObj["generate-dataset"]["path"]);
+      $("#input-destination-generate-dataset-locally").val(
+        window.sodaJSONObj["generate-dataset"]["path"]
+      );
       $("#btn-confirm-local-destination").click();
-      $("#inputNewNameDataset").val(sodaJSONObj["generate-dataset"]["dataset-name"]);
+      $("#inputNewNameDataset").val(window.sodaJSONObj["generate-dataset"]["dataset-name"]);
       $("#btn-confirm-new-dataset-name").click();
-    } else if (sodaJSONObj["generate-dataset"]["destination"] === "bf") {
+    } else if (window.sodaJSONObj["generate-dataset"]["destination"] === "bf") {
       $("#generate-upload-BF").prop("checked", true);
       $($("#generate-upload-BF").parents()[2]).click();
       // Step 2: if generate on bf, choose bf account
@@ -1222,8 +1106,8 @@ const importGenerateDatasetStep = async (object) => {
         $("#para-account-detail-curate").html("");
 
         try {
-          log.info(`Loading account details for ${bfAccountSelected}`);
-          let dataset_request = await client.get(`/manage_datasets/bf_account_details`, {
+          window.log.info(`Loading account details for ${bfAccountSelected}`);
+          await client.get(`/manage_datasets/bf_account_details`, {
             params: {
               selected_account: bfAccountSelected,
             },
@@ -1246,7 +1130,6 @@ const importGenerateDatasetStep = async (object) => {
           setTimeout(() => {
             let valid_dataset = false;
             for (const index in window.datasetList) {
-              let x = window.datasetList[index]["name"];
               if (bfDatasetSelected == window.datasetList[index]["name"]) {
                 valid_dataset = true;
               }
@@ -1357,7 +1240,7 @@ window.loadProgressFile = (ev) => {
       importManifest(window.sodaJSONObj);
       importMetadataFilesProgress(window.sodaJSONObj);
       importDatasetStructure(window.sodaJSONObj);
-      importGenerateDatasetStep(window.sodaJSONObj);
+      importGenerateDatasetStep();
       if (missing_dataset_files.length > 0 || missing_metadata_files > 0) {
         verify_missing_files("pre-existing");
       } else {
@@ -1386,7 +1269,7 @@ window.loadProgressFile = (ev) => {
       importManifest(window.sodaJSONObj);
       importMetadataFilesProgress(window.sodaJSONObj);
       importDatasetStructure(window.sodaJSONObj);
-      importGenerateDatasetStep(window.sodaJSONObj);
+      importGenerateDatasetStep();
       if (missing_dataset_files.length > 0 || missing_metadata_files > 0) {
         return_option = verify_missing_files("new");
       } else {
@@ -1597,40 +1480,6 @@ $("#select-permission-list-2").change((e) => {
     updateDatasetList(bfacct);
   }
 });
-
-const checkPrevDivForConfirmButton = (category) => {
-  if (category === "account") {
-    if (!$("#Question-generate-dataset-BF-account").hasClass("prev")) {
-      $("#div-bf-account-btns").css("display", "flex");
-      $("#div-bf-account-btns button").show();
-    } else {
-      $("#div-bf-account-btns").css("display", "none");
-      $("#div-bf-account-btns button").hide();
-    }
-    if (!$("#Question-getting-started-BF-account").hasClass("prev")) {
-      $("#div-bf-account-btns-getting-started").css("display", "flex");
-      $("#div-bf-account-btns-getting-started button").show();
-    } else {
-      $("#div-bf-account-btns-getting-started").css("display", "none");
-      $("#div-bf-account-btns-getting-started button").hide();
-    }
-  } else if (category === "dataset") {
-    if (!$("#Question-generate-dataset-BF-dataset").hasClass("prev")) {
-      $($("#button-confirm-bf-dataset").parent()[0]).css("display", "flex");
-      $("#button-confirm-bf-dataset").show();
-    } else {
-      $($("#button-confirm-bf-dataset").parent()[0]).css("display", "none");
-      $("#button-confirm-bf-dataset").hide();
-    }
-    if (!$("#Question-getting-started-BF-dataset").hasClass("prev")) {
-      $($("#button-confirm-bf-dataset-getting-started").parent()[0]).css("display", "flex");
-      $("#button-confirm-bf-dataset-getting-started").show();
-    } else {
-      $($("#button-confirm-bf-dataset-getting-started").parent()[0]).css("display", "none");
-      $("#button-confirm-bf-dataset-getting-started").hide();
-    }
-  }
-};
 
 let high_lvl_folder_node = "";
 window.create_child_node = (
@@ -1890,7 +1739,7 @@ $(document).ready(function () {
   });
 });
 
-window.moveItems = async (ev, category) => {
+window.moveItems = async (ev) => {
   let filtered = window.getGlobalPath(window.organizeDSglobalPath);
   let myPath = window.getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
   let parentFolder = filtered[1];
@@ -2281,7 +2130,6 @@ $(jstreeInstance).on("changed.jstree", function (e, data) {
   if (data.node) {
     selectedNode = data.node.text;
     selectedPath = data.instance.get_path(data.node, "/");
-    var parentNode = $(jstreeInstance).jstree("get_selected");
   }
 });
 
@@ -2577,7 +2425,6 @@ document
 
 window.ffOpenManifestEditSwal = async (highlevelFolderName) => {
   let saveManifestFiles = false;
-  let guidedManifestTable = [];
   // Function for when user wants to edit the manifest cards
   const existingManifestData = window.sodaCopy["manifest-files"]?.[highlevelFolderName];
 
@@ -2813,7 +2660,7 @@ $("#generate-manifest-curate").change(async function () {
       };
     }
 
-    await window.ffmCreateManifest(sodaJSONObj);
+    await window.ffmCreateManifest(window.sodaJSONObj);
     $("#ffm-manifest-generator").show();
     // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>
     window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
@@ -2823,7 +2670,6 @@ $("#generate-manifest-curate").change(async function () {
       .classList.remove("hidden");
 
     document.getElementById("manifest-information-container").classList.remove("hidden");
-    // document.getElementById("manifest-not-selected").classList.add("hidden");
   } else {
     $("#ffm-manifest-generator").hide();
     $("#manifest-creating-loading").addClass("hidden");
@@ -2836,6 +2682,5 @@ $("#generate-manifest-curate").change(async function () {
     }
     document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
     document.getElementById("manifest-information-container").classList.add("hidden");
-    // document.getElementById("manifest-selected").classList.add("hidden");
   }
 });
