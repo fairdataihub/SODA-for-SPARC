@@ -10,7 +10,7 @@ const DatasetEntityStructurePage = () => {
 
   const addSubject = () => {
     if (newSubject.trim()) {
-      setSubjects([...subjects, { name: newSubject, samples: [], sites: [], performances: [] }]);
+      setSubjects([...subjects, { name: newSubject, samples: [] }]);
       setNewSubject("");
     }
   };
@@ -67,54 +67,50 @@ const DatasetEntityStructurePage = () => {
                 sub-{subject.name}
               </Text>
 
-              {/* Sample Input (disabled for every other subject) */}
-              {subjectIndex % 2 === 0 && (
-                <Group spacing="xs" align="center" width="100%">
-                  <TextInput
-                    placeholder="Add sample"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") addSample(subjectIndex, e.target.value);
-                    }}
-                    flex={1}
-                  />
-                  <Button
-                    onClick={() => addSample(subjectIndex, "")}
-                    leftIcon={<IconPlus />}
-                    variant="outline"
-                  >
-                    Add Sample
-                  </Button>
-                </Group>
-              )}
+              {/* Sample Input */}
+              <Group spacing="xs" align="center" width="100%">
+                <TextInput
+                  placeholder="Add sample"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") addSample(subjectIndex, e.target.value);
+                  }}
+                  flex={1}
+                />
+                <Button
+                  onClick={() => addSample(subjectIndex, "")}
+                  leftIcon={<IconPlus />}
+                  variant="outline"
+                >
+                  Add Sample
+                </Button>
+              </Group>
 
               {/* Sample List */}
               {subject.samples.map((sample, sampleIndex) => (
-                <Box
+                <Card
                   key={sampleIndex}
-                  ml={20}
-                  mt={10}
-                  style={{ border: "1px solid black" }}
+                  shadow="xs"
+                  padding="md"
                   withBorder
-                  mb="sm"
-                  p="sm"
+                  style={{ marginTop: 10 }}
                 >
                   <Text weight={500}>{sample.name}</Text>
 
                   {/* Add Site Button and Input */}
-
-                  <Group spacing="xs" align="center" width="100%">
+                  <Group spacing="xs" align="center" width="100%" mt="sm">
                     <TextInput
                       flex={1}
                       placeholder="Enter site name"
-                      value={newSubject}
-                      onChange={(e) => setNewSubject(e.target.value)}
-                      onKeyDown={(event) => {
-                        if (event.which === 13) {
-                          addSubject();
-                        }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter")
+                          addSiteOrPerformance(subjectIndex, sampleIndex, "sites", e.target.value);
                       }}
                     />
-                    <Button onClick={addSubject} leftIcon={<IconPlus />} variant="outline">
+                    <Button
+                      onClick={() => addSiteOrPerformance(subjectIndex, sampleIndex, "sites", "")}
+                      leftIcon={<IconPlus />}
+                      variant="outline"
+                    >
                       Add Site
                     </Button>
                   </Group>
@@ -124,59 +120,42 @@ const DatasetEntityStructurePage = () => {
                     <TextInput
                       flex={1}
                       placeholder="Enter performance name"
-                      value={newSubject}
-                      onChange={(e) => setNewSubject(e.target.value)}
-                      onKeyDown={(event) => {
-                        if (event.which === 13) {
-                          addSubject();
-                        }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter")
+                          addSiteOrPerformance(
+                            subjectIndex,
+                            sampleIndex,
+                            "performances",
+                            e.target.value
+                          );
                       }}
                     />
-                    <Button onClick={addSubject} leftIcon={<IconPlus />} variant="outline">
+                    <Button
+                      onClick={() =>
+                        addSiteOrPerformance(subjectIndex, sampleIndex, "performances", "")
+                      }
+                      leftIcon={<IconPlus />}
+                      variant="outline"
+                    >
                       Add Performance
                     </Button>
                   </Group>
-                </Box>
+
+                  {/* Sites List */}
+                  {sample.sites.map((site, siteIndex) => (
+                    <Text key={siteIndex} mt="xs" ml={20} color="gray">
+                      Site: {site}
+                    </Text>
+                  ))}
+
+                  {/* Performances List */}
+                  {sample.performances.map((performance, performanceIndex) => (
+                    <Text key={performanceIndex} mt="xs" ml={20} color="gray">
+                      Performance: {performance}
+                    </Text>
+                  ))}
+                </Card>
               ))}
-
-              {/* Site/Performance Inputs */}
-              <Stack spacing="xs">
-                <Group spacing="xs" align="center" w="100%" mt="sm">
-                  <TextInput
-                    flex={1}
-                    placeholder="Add site to subject"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter")
-                        addSiteOrPerformance(subjectIndex, null, "sites", e.target.value);
-                    }}
-                  />
-                  <Button
-                    onClick={() => addSiteOrPerformance(subjectIndex, null, "sites", "")}
-                    leftIcon={<IconPlus />}
-                    variant="outline"
-                  >
-                    Add Site
-                  </Button>
-                </Group>
-
-                <Group spacing="xs" align="center" width="100%">
-                  <TextInput
-                    flex={1}
-                    placeholder="Add performance to subject"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter")
-                        addSiteOrPerformance(subjectIndex, null, "performances", e.target.value);
-                    }}
-                  />
-                  <Button
-                    onClick={() => addSiteOrPerformance(subjectIndex, null, "performances", "")}
-                    leftIcon={<IconPlus />}
-                    variant="outline"
-                  >
-                    Add Performance
-                  </Button>
-                </Group>
-              </Stack>
             </Card>
           ))}
         </Stack>

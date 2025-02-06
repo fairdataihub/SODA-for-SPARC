@@ -148,7 +148,7 @@ const EntityDataSelectorPage = ({
   return (
     <GuidedModePage pageHeader={pageName}>
       <GuidedModeSection>
-        {entityType === "source-derivative-folders-and-files" ? (
+        {entityType === "supporting-data" ? (
           <Stack>
             <Text>
               <b>Source data</b> is raw, unaltered data from an experiment such as recorded neural
@@ -157,7 +157,10 @@ const EntityDataSelectorPage = ({
             <Text>
               <b>Derivative data</b> is data that has been processed or transformed data such as ...
             </Text>
-            <Text>If you have source or derivative data, annotate it in the interface below.</Text>
+            <Text>
+              <b>The rest of the options</b> More info
+            </Text>
+            <Text>Annotate the data below.....</Text>
           </Stack>
         ) : (
           <Stack>

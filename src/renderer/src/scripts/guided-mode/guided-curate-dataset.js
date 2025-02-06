@@ -4947,9 +4947,13 @@ window.openPage = async (targetPageID) => {
       );
       setActiveEntity(null);
     }
-    if (targetPageID === "guided-source-derivative-folders-and-files-selector-tab") {
-      addEntityToEntityList("source-derivative-folders-and-files", "source");
-      addEntityToEntityList("source-derivative-folders-and-files", "derivative");
+    if (targetPageID === "supporting-data-tab") {
+      addEntityToEntityList("supporting-data", "Source data");
+      addEntityToEntityList("supporting-data", "Derivative data");
+      addEntityToEntityList("supporting-data", "Code");
+      addEntityToEntityList("supporting-data", "Protocol data");
+      addEntityToEntityList("supporting-data", "Documentation");
+      addEntityToEntityList("supporting-data", "Auxiliary");
       setActiveEntity(null);
       console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
     }
