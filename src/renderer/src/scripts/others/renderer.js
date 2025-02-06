@@ -616,7 +616,8 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
     let latestPennsieveAgentVersion;
 
     try {
-      latestPennsieveAgentVersion = await getLatestPennsieveAgentVersion()[1];
+      const [_, version] = await getLatestPennsieveAgentVersion();
+      latestPennsieveAgentVersion = version;
     } catch (error) {
       const emessage = userErrorMessage(error);
       setPennsieveAgentCheckError(
@@ -1430,7 +1431,7 @@ window.generateSubjectsFileHelper = async (uploadBFBoolean) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked( bfdataset);
+    const isLocked = await api.isDatasetLocked(bfdataset);
 
     if (isLocked) {
       await Swal.fire({
@@ -1587,7 +1588,7 @@ window.generateSamplesFileHelper = async (uploadBFBoolean) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked( bfDataset);
+    const isLocked = await api.isDatasetLocked(bfDataset);
     if (isLocked) {
       await Swal.fire({
         icon: "info",
