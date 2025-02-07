@@ -157,8 +157,7 @@ const findMatchingRelativePaths = (obj, entityTypeLowerCased, matchingPaths) => 
   for (const fileName in obj?.files || {}) {
     const file = obj.files[fileName];
     const fileRelativePath = file.relativePath.toLowerCase();
-    console.log("fileRelativePath: ", fileRelativePath);
-    console.log("entityTypeLowerCased: ", entityTypeLowerCased);
+
     if (file.relativePath.toLowerCase().includes(entityTypeLowerCased)) {
       console.log("Found matching file: ", file.relativePath);
       matchingPaths.push(file.relativePath);

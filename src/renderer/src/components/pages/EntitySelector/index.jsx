@@ -165,9 +165,7 @@ const EntitySelectorPage = ({
                       `${entityTypeStringPlural} IDs can only contain letters, numbers, and hyphens.`
                     }
                   />
-                  <Button onClick={handleAddEntity} leftIcon={<IconPlus />}>
-                    Add {entityTypeStringSingular}
-                  </Button>
+                  <Button onClick={handleAddEntity}>Add {entityTypeStringSingular}</Button>
                 </Group>
               </Stack>
 
