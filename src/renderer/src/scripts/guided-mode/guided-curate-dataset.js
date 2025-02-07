@@ -38,10 +38,7 @@ import {
 // Import state management stores
 import useGlobalStore from "../../stores/globalStore";
 import { setDropdownState } from "../../stores/slices/dropDownSlice";
-import {
-  setGuidedDatasetName,
-  setGuidedDatasetSubtitle,
-} from "../../stores/slices/guidedModeSlice";
+
 import {
   setEntityType,
   getEntityObjForEntityType,
@@ -4233,26 +4230,7 @@ const checkIfPageIsValid = async (pageID) => {
   }
 };
 
-// Function that checks if the page needs to be updated from Pennsieve
-// This function will be return true if the user is updating a dataset from Pennsieve and
-// the page has not yet been saved
-const pageNeedsUpdateFromPennsieve = (pageID) => {
-  // Add the pages-fetched-from-pennsieve array to the window.sodaJSONObj if it does not exist
-  if (!window.sodaJSONObj["pages-fetched-from-pennsieve"]) {
-    window.sodaJSONObj["pages-fetched-from-pennsieve"] = [];
-  }
 
-  // The following conditions must be met for the page to be updated from Pennsieve:
-  // 1. The user is updating a dataset from Pennsieve
-  // 2. window.sodaJSONObj["pages-fetched-from-pennsieve"] does not include the pageID
-  // Note: window.sodaJSONObj["pages-fetched-from-pennsieve"] gets the page id added to it when the page is fetched from Pennsieve to prevent duplicate page fetches
-  // 3. window.sodaJSONObj["completed-tabs"] does not include the pageID (The page has not been saved yet)
-  return (
-    window.sodaJSONObj["starting-point"]["type"] === "bf" &&
-    !window.sodaJSONObj["pages-fetched-from-pennsieve"].includes(pageID) &&
-    !window.sodaJSONObj["completed-tabs"].includes(pageID)
-  );
-};
 
 // Function that allows the user to retry fetching the page if any errors occur
 // while pulling from Pennsieve. Ultimately, this function just tries to re-open the page
@@ -8590,13 +8568,7 @@ $("#guided-submission-completion-date-manual").change(function () {
 //////////       GUIDED OBJECT ACCESSORS       //////////
 /////////////////////////////////////////////////////////
 
-const getGuidedDatasetName = () => {
-  return window.sodaJSONObj["digital-metadata"]["name"] || "";
-};
 
-const getGuidedDatasetSubtitle = () => {
-  return window.sodaJSONObj["digital-metadata"]["subtitle"] || "";
-};
 
 const guidedShowBannerImagePreview = (imagePath, imported) => {
   const bannerImagePreviewelement = document.getElementById("guided-banner-image-preview");

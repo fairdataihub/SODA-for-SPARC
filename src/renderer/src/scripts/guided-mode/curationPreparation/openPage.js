@@ -1,3 +1,12 @@
+import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "./curationPreparation"; 
+import {
+    setGuidedDatasetName,
+    setGuidedDatasetSubtitle,
+  } from "../../stores/slices/guidedModeSlice";
+  // TODO: Place this inside of a SODAJSONObj accessing file/function that is imported across all guided mode files
+
+import { pageNeedsUpdateFromPennsieve } from "../pennsieveUtils";
+
 export const openPageCurationPreparation = async (targetPageID) => {
     if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
         // if (pageNeedsUpdateFromPennsieve(targetPageID)) {
