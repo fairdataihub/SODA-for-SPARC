@@ -10,7 +10,8 @@ import {
   startNew,
   resumeExisting,
 } from "../../assets/lotties/lotties";
-import {openPage} from "./openPage";
+import { guidedSetNavLoadingState } from "./pageNavigation/pageLoading";
+import { openPage, getNonSkippedGuidedModePages } from "./openPage";
 import { resetLazyLoading, guidedUnLockSideBar } from "../../assets/nav";
 import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
@@ -37,7 +38,6 @@ import {
 
 // Import state management stores
 import useGlobalStore from "../../stores/globalStore";
-import { setDropdownState } from "../../stores/slices/dropDownSlice";
 
 import {
   setEntityType,
@@ -277,29 +277,6 @@ const guidedLicenseOptions = [
   },
 ];
 
-const hideAndShowElementsDependingOnStartType = (pageElement) => {
-  const startingFromPennsieve = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
-  const textToShowWhenStartingFromPennsieve = pageElement.querySelectorAll(
-    ".showWhenStartingFromPennsieve"
-  );
-  const textToShowWhenStartingNew = pageElement.querySelectorAll(".showWhenStartingNew");
-  if (startingFromPennsieve) {
-    textToShowWhenStartingFromPennsieve.forEach((element) => {
-      element.classList.remove("hidden");
-    });
-    textToShowWhenStartingNew.forEach((element) => {
-      element.classList.add("hidden");
-    });
-  } else {
-    textToShowWhenStartingFromPennsieve.forEach((element) => {
-      element.classList.add("hidden");
-    });
-    textToShowWhenStartingNew.forEach((element) => {
-      element.classList.remove("hidden");
-    });
-  }
-};
-
 const guidedResetLocalGenerationUI = () => {
   // Hide the local dataset copy generation section that containst the table/generation progress
   document.getElementById("guided-section-local-generation-status-table").classList.add("hidden");
@@ -407,9 +384,7 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
     const changes_text = changesRes.data.text;
     return { shouldShow: true, changesMetadata: changes_text };
   } catch (error) {
-    const datasetInfo = await api.getDatasetInformation(
-      pennsieveDatasetID
-    );
+    const datasetInfo = await api.getDatasetInformation(pennsieveDatasetID);
     const isPublished = datasetInfo?.publication?.status === "completed";
 
     if (isPublished) {
@@ -417,90 +392,6 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
     } else {
       return { shouldShow: false };
     }
-  }
-};
-
-const setPageLoadingState = (boolLoadingState) => {
-  const pageParentContainers = document.querySelectorAll(".guided--parent-tab");
-
-  if (boolLoadingState === true) {
-    // Add the loading div if it does not exist
-    if (!document.getElementById("guided-loading-div")) {
-      const loadingDivHtml = `
-      <div class="guided--main-tab" id="guided-loading-div">
-        <div class="guided--loading-div">
-          <div class="lds-roller">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-          Fetching data from Pennsieve...
-        </div>
-      </div>
-    `;
-      // Add the loading div as the last child of the guided-body div
-      document.getElementById("guided-body").insertAdjacentHTML("beforeend", loadingDivHtml);
-    }
-
-    // Hide the page parent containers
-    // Note: this class is added so we can easily show and hide the page parent containers without effecting the hidden status on the parent pages
-    pageParentContainers.forEach((container) => {
-      container.classList.add("temporary-hide");
-    });
-  }
-  if (boolLoadingState === false) {
-    // Remove the loading div from the dom if it exists
-    const loadingDiv = document.getElementById("guided-loading-div");
-    if (loadingDiv) {
-      loadingDiv.remove();
-    }
-
-    // Show the page parent containers
-    // Note: this class is added so we can easily show and hide the page parent containers without effecting the hidden status on the parent pages
-    pageParentContainers.forEach((container) => {
-      container.classList.remove("temporary-hide");
-    });
-  }
-};
-
-const guidedSetNavLoadingState = (loadingState) => {
-  //depending on the boolean loading state will determine whether or not
-  //to disable the primary and sub buttons along with the nav menu
-  const mainBackButton = document.getElementById("guided-back-button");
-  const mainContinueButton = document.getElementById("guided-next-button");
-  const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
-
-  const navItems = document.querySelectorAll(".guided--nav-bar-section-page");
-
-  if (loadingState === true) {
-    mainBackButton.disabled = true;
-    mainContinueButton.disabled = true;
-    saveAndExitButton.disabled = true;
-    mainBackButton.classList.add("loading");
-    mainContinueButton.classList.add("loading");
-
-    navItems.forEach((nav) => {
-      nav.classList.add("disabled-nav");
-    });
-  }
-
-  if (loadingState === false) {
-    mainBackButton.disabled = false;
-    mainContinueButton.disabled = false;
-    mainBackButton.classList.remove("loading");
-    mainContinueButton.classList.remove("loading");
-    saveAndExitButton.disabled = false;
-
-    navItems.forEach((nav) => {
-      nav.classList.remove("disabled-nav");
-    });
-    // Hide the lading div if the loading div was showing
-    setPageLoadingState(false);
   }
 };
 
@@ -631,7 +522,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
         // Open the first page
         const firstPage = getNonSkippedGuidedModePages(document)[0];
-        await window.openPage(firstPage.id);
+        await openPage(firstPage.id);
       }
 
       if (resumingExistingProgress) {
@@ -687,9 +578,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
-        const datasetIsLocked = await api.isDatasetLocked(
-          selectedPennsieveDataset
-        );
+        const datasetIsLocked = await api.isDatasetLocked(selectedPennsieveDataset);
         if (datasetIsLocked) {
           errorArray.push({
             type: "swal",
@@ -1880,217 +1769,6 @@ const savePageChanges = async (pageBeingLeftID) => {
   guidedSetNavLoadingState(false);
 };
 
-const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {
-  let allChildPages = Array.from(
-    parentElementToGetChildrenPagesFrom.querySelectorAll(".guided--page")
-  );
-  const nonSkippedChildPages = allChildPages.filter((page) => {
-    return page.dataset.skipPage != "true";
-  });
-
-  return nonSkippedChildPages;
-};
-
-const renderSideBar = (activePage) => {
-  const guidedNavItemsContainer = document.getElementById("guided-nav-items");
-  const guidedPageNavigationHeader = document.getElementById("guided-page-navigation-header");
-
-  if (activePage === "guided-dataset-dissemination-tab") {
-    //Hide the side bar navigawtion and navigation header
-    guidedPageNavigationHeader.classList.add("hidden");
-    guidedNavItemsContainer.innerHTML = ``;
-    return;
-  }
-  //Show the page navigation header if it had been previously hidden
-  guidedPageNavigationHeader.classList.remove("hidden");
-
-  const completedTabs = window.sodaJSONObj["completed-tabs"];
-
-  const pageStructureObject = {};
-
-  const highLevelStepElements = Array.from(document.querySelectorAll(".guided--parent-tab"));
-
-  for (const element of highLevelStepElements) {
-    const highLevelStepName = element.getAttribute("data-parent-tab-name");
-    pageStructureObject[highLevelStepName] = {};
-
-    const notSkippedPages = getNonSkippedGuidedModePages(element);
-
-    for (const page of notSkippedPages) {
-      const pageName = page.getAttribute("data-page-name");
-      const pageID = page.getAttribute("id");
-      pageStructureObject[highLevelStepName][pageID] = {
-        pageName: pageName,
-        completed: completedTabs.includes(pageID),
-      };
-    }
-  }
-  let navBarHTML = "";
-  for (const [highLevelStepName, highLevelStepObject] of Object.entries(pageStructureObject)) {
-    // Add the high level drop down to the nav bar
-    const dropdDown = `
-    <div class="guided--nav-bar-dropdown">
-      <p class="help-text mb-0">
-        ${highLevelStepName}
-      </p>
-      <i class="fas fa-chevron-right"></i>
-    </div>
-  `;
-
-    // Add the high level drop down's children links to the nav bar
-    let dropDownContent = ``;
-    for (const [pageID, pageObject] of Object.entries(highLevelStepObject)) {
-      //add but keep hidden for now!!!!!!!!!!!!!!!!!!
-      dropDownContent += `
-      <div
-        class="
-          guided--nav-bar-section-page
-          hidden
-          ${pageObject.completed ? " completed" : " not-completed"}
-          ${pageID === activePage ? "active" : ""}"
-        data-target-page="${pageID}"
-      >
-        <div class="guided--nav-bar-section-page-title">
-          ${pageObject.pageName}
-        </div>
-      </div>
-    `;
-    }
-
-    // Add each section to the nav bar element
-    const dropDownContainer = `
-      <div class="guided--nav-bar-section">
-        ${dropdDown}
-        ${dropDownContent}  
-      </div>
-    `;
-    navBarHTML += dropDownContainer;
-  }
-  guidedNavItemsContainer.innerHTML = navBarHTML;
-
-  const guidedNavBarDropdowns = Array.from(document.querySelectorAll(".guided--nav-bar-dropdown"));
-  for (const guidedNavBarDropdown of guidedNavBarDropdowns) {
-    guidedNavBarDropdown.addEventListener("click", () => {
-      //remove hidden from child elements with guided--nav-bar-section-page class
-      const guidedNavBarSectionPage = guidedNavBarDropdown.parentElement.querySelectorAll(
-        ".guided--nav-bar-section-page"
-      );
-      for (const guidedNavBarSectionPageElement of guidedNavBarSectionPage) {
-        guidedNavBarSectionPageElement.classList.toggle("hidden");
-      }
-      //toggle the chevron
-      const chevron = guidedNavBarDropdown.querySelector("i");
-      chevron.classList.toggle("fa-chevron-right");
-      chevron.classList.toggle("fa-chevron-down");
-    });
-
-    //click the dropdown if it has a child element with data-target-page that matches the active page
-    if (guidedNavBarDropdown.parentElement.querySelector(`[data-target-page="${activePage}"]`)) {
-      guidedNavBarDropdown.click();
-    }
-  }
-
-  const guidedNavBarSectionPages = Array.from(
-    document.querySelectorAll(".guided--nav-bar-section-page")
-  );
-  for (const guidedNavBarSectionPage of guidedNavBarSectionPages) {
-    guidedNavBarSectionPage.addEventListener("click", async () => {
-      const currentPageUserIsLeaving = window.CURRENT_PAGE.id;
-      const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
-      const pageToNaviatetoName = document
-        .getElementById(pageToNavigateTo)
-        .getAttribute("data-page-name");
-
-      // Do nothing if the user clicks the tab of the page they are currently on
-      if (currentPageUserIsLeaving === pageToNavigateTo) {
-        return;
-      }
-
-      try {
-        await savePageChanges(currentPageUserIsLeaving);
-        const allNonSkippedPages = getNonSkippedGuidedModePages(document).map(
-          (element) => element.id
-        );
-        // Get the pages in the allNonSkippedPages array that cone after the page the user is leaving
-        // and before the page the user is going to
-        const pagesBetweenCurrentAndTargetPage = allNonSkippedPages.slice(
-          allNonSkippedPages.indexOf(currentPageUserIsLeaving),
-          allNonSkippedPages.indexOf(pageToNavigateTo)
-        );
-
-        //If the user is skipping forward with the nav bar, pages between current page and target page
-        //Need to be validated. If they're going backwards, the for loop below will not be ran.
-        for (const page of pagesBetweenCurrentAndTargetPage) {
-          try {
-            await checkIfPageIsValid(page);
-          } catch (error) {
-            const pageWithErrorName = document.getElementById(page).getAttribute("data-page-name");
-            await window.openPage(page);
-            await Swal.fire({
-              title: `An error occured on an intermediate page: ${pageWithErrorName}`,
-              html: `Please address the issues before continuing to ${pageToNaviatetoName}:
-                <br />
-                <br />
-                <ul>
-                  ${error.map((error) => `<li class="text-left">${error.message}</li>`).join("")}
-                </ul>
-              `,
-              icon: "info",
-              confirmButtonText: "Fix the errors on this page",
-              focusConfirm: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              width: 700,
-            });
-            return;
-          }
-        }
-
-        //All pages have been validated. Open the target page.
-        await window.openPage(pageToNavigateTo);
-      } catch (error) {
-        const pageWithErrorName = window.CURRENT_PAGE.dataset.pageName;
-        const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
-          title: "The current page was not able to be saved",
-          html: `The following error${
-            error.length > 1 ? "s" : ""
-          } occurred when attempting to save the ${pageWithErrorName} page:
-            <br />
-            <br />
-            <ul>
-              ${error.map((error) => `<li class="text-left">${error.message}</li>`).join("")}
-            </ul>
-            <br />
-            Would you like to continue without saving the changes to the current page?`,
-          icon: "info",
-          showCancelButton: true,
-          confirmButtonText: "Yes, continue without saving",
-          cancelButtonText: "No, I would like to address the errors",
-          confirmButtonWidth: 255,
-          cancelButtonWidth: 255,
-          focusCancel: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          width: 700,
-        });
-        if (continueWithoutSavingCurrPageChanges) {
-          await window.openPage(pageToNavigateTo);
-        }
-      }
-    });
-  }
-
-  const nextPagetoComplete = guidedNavItemsContainer.querySelector(
-    ".guided--nav-bar-section-page.not-completed"
-  );
-  if (nextPagetoComplete) {
-    nextPagetoComplete.classList.remove("not-completed");
-    //Add pulse blue animation for 3 seconds
-    nextPagetoComplete.style.borderLeft = "3px solid #007bff";
-    nextPagetoComplete.style.animation = "pulse-blue 3s Infinity";
-  }
-};
-
 const updateDatasetUploadProgressTable = (destination, progressObject) => {
   const datasetUploadTableBody = document.getElementById(
     `guided-tbody-${destination}-generation-status`
@@ -2305,28 +1983,6 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
   }
 
   return window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
-};
-
-const guidedLockSideBar = (boolShowNavBar) => {
-  const sidebar = document.getElementById("sidebarCollapse");
-  const guidedModeSection = document.getElementById("guided_mode-section");
-  const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
-  const guidedNav = document.getElementById("guided-nav");
-
-  if (!sidebar.classList.contains("active")) {
-    sidebar.click();
-  }
-
-  sidebar.disabled = true;
-  guidedModeSection.style.marginLeft = "-70px";
-
-  if (boolShowNavBar) {
-    guidedDatsetTab.style.marginLeft = "215px";
-    guidedNav.style.display = "flex";
-  } else {
-    guidedDatsetTab.style.marginLeft = "0px";
-    guidedNav.style.display = "none";
-  }
 };
 
 // This function reads the innerText of the textSharedWithCurationTeamStatus element
@@ -3601,13 +3257,6 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   }
 };
 
-const setActiveProgressionTab = (targetPageID) => {
-  $(".guided--progression-tab").removeClass("selected-tab");
-  let targetPageParentID = $(`#${targetPageID}`).parent().attr("id");
-  let targetProgressionTabID = targetPageParentID.replace("parent-tab", "progression-tab");
-  let targetProgressionTab = $(`#${targetProgressionTabID}`);
-  targetProgressionTab.addClass("selected-tab");
-};
 let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
@@ -4129,44 +3778,6 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
   }
 };
 
-const resetGuidedRadioButtons = (parentPageID) => {
-  const parentPage = document.getElementById(parentPageID);
-  const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
-  for (const guidedRadioButton of guidedRadioButtons) {
-    guidedRadioButton.classList.remove("selected");
-    guidedRadioButton.classList.remove("not-selected");
-    guidedRadioButton.classList.add("basic");
-
-    //get the data-next-element attribute
-    const elementButtonControls = guidedRadioButton.getAttribute("data-next-element");
-    if (elementButtonControls) {
-      const elementToHide = document.getElementById(elementButtonControls);
-      if (!elementToHide) {
-        console.error(`Element with id ${elementButtonControls} does not exist`);
-      }
-      elementToHide.classList.add("hidden");
-    }
-  }
-};
-
-const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
-  const parentPage = document.getElementById(parentPageID);
-  const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
-  for (const guidedRadioButton of guidedRadioButtons) {
-    //Get the button config value from the UI
-    const buttonConfigValue = guidedRadioButton.getAttribute("data-button-config-value");
-    if (buttonConfigValue) {
-      const buttonConfigValueState = guidedRadioButton.getAttribute(
-        "data-button-config-value-state"
-      );
-      if (window.sodaJSONObj["button-config"][buttonConfigValue] === buttonConfigValueState) {
-        //click the button
-        guidedRadioButton.click();
-      }
-    }
-  }
-};
-
 const guidedAddUsersAndTeamsToDropdown = (usersArray, teamsArray) => {
   const guidedUsersAndTeamsDropdown = document.getElementById("guided_bf_list_users_and_teams");
   // Reset the dropdown
@@ -4223,57 +3834,10 @@ const copyLink = (link) => {
 
 const checkIfPageIsValid = async (pageID) => {
   try {
-    await window.openPage(pageID);
+    await openPage(pageID);
     await savePageChanges(pageID);
   } catch (error) {
     throw error;
-  }
-};
-
-
-
-// Function that allows the user to retry fetching the page if any errors occur
-// while pulling from Pennsieve. Ultimately, this function just tries to re-open the page
-const guidedShowOptionalRetrySwal = async (errorMessage, pageIdToRetryOpening) => {
-  const { value: addDataManually } = await Swal.fire({
-    icon: "info",
-    title: "Your dataset is missing a required component",
-    html: `
-      ${errorMessage}
-      <br />
-      <br />
-      You may either add the data in SODA or retry fetching the data from Pennsieve
-    `,
-    width: 700,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    showCancelButton: true,
-    confirmButtonText: "Add data in SODA",
-    cancelButtonText: "Retry",
-    allowOutsideClick: false,
-    allowEscapeKey: false,
-  });
-
-  if (!addDataManually) {
-    await window.openPage(pageIdToRetryOpening);
-  }
-};
-
-// Function that handles the validation state of the dataset
-// When the user goes back to before the validation tab, the dataset is no longer validated
-// This function will reset the dataset-validated value to false so validation will be retriggered
-// when the user goes to the validation tab
-
-const handleGuidedValidationState = (targetPageID) => {
-  if (window.sodaJSONObj["dataset-validated"] === "true") {
-    const nonSkippedPages = getNonSkippedGuidedModePages(document);
-    const indexOfCurrentPage = nonSkippedPages.findIndex((page) => page.id === targetPageID);
-    const indexOfValidationPage = nonSkippedPages.findIndex(
-      (page) => page.id === "guided-dataset-validation-tab"
-    );
-    if (indexOfCurrentPage < indexOfValidationPage) {
-      window.sodaJSONObj["dataset-validated"] = "false";
-    }
   }
 };
 
@@ -4305,32 +3869,6 @@ const handleValidationTableUi = (errors) => {
     validationResultsDiv.classList.remove("hidden");
   }
 };
-
-// Function that handles the visibility of the back button
-const handleBackButtonVisibility = (targetPageID) => {
-  if (
-    targetPageID === "guided-dataset-dissemination-tab" ||
-    targetPageID === "guided-dataset-generation-tab"
-  ) {
-    $("#guided-back-button").css("visibility", "hidden");
-  } else {
-    $("#guided-back-button").css("visibility", "visible");
-  }
-};
-
-// Function that handles the visibility of the next button
-const handleNextButtonVisibility = (targetPageID) => {
-  if (
-    targetPageID === "guided-dataset-generation-confirmation-tab" ||
-    targetPageID === "guided-dataset-generation-tab" ||
-    targetPageID === "guided-dataset-dissemination-tab"
-  ) {
-    $("#guided-next-button").css("visibility", "hidden");
-  } else {
-    $("#guided-next-button").css("visibility", "visible");
-  }
-};
-
 
 const guidedOpenEntityEditSwal = async (entityName) => {
   let preExistingEntities;
@@ -4628,7 +4166,7 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
 };
 
 const guidedGetPageToReturnTo = async () => {
-  // Set by window.openPage function
+  // Set by openPage function
   const usersPageBeforeExit = window.sodaJSONObj["page-before-exit"];
 
   //If the dataset was successfully uploaded, send the user to the share with curation team
@@ -4951,7 +4489,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     // pageToReturnTo will be set to the page the user will return to
     const pageToReturnTo = await guidedGetPageToReturnTo(window.sodaJSONObj);
 
-    await window.openPage(pageToReturnTo);
+    await openPage(pageToReturnTo);
 
     // Close the loading screen, the user should be on the page they left off on now
     loadingSwal.close();
@@ -8568,8 +8106,6 @@ $("#guided-submission-completion-date-manual").change(function () {
 //////////       GUIDED OBJECT ACCESSORS       //////////
 /////////////////////////////////////////////////////////
 
-
-
 const guidedShowBannerImagePreview = (imagePath, imported) => {
   const bannerImagePreviewelement = document.getElementById("guided-banner-image-preview");
 
@@ -9179,6 +8715,7 @@ const freeFormButtons = document.getElementById("organize-path-and-back-button-d
 
 // Guided mode event listener (from curate and share page)
 document.getElementById("button-homepage-guided-mode").addEventListener("click", async () => {
+  console.log("Homepage button called");
   //Transition file explorer elements to guided mode
   window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
   window.organizeDSglobalPath.value = "";
@@ -9197,7 +8734,7 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
   guidedUnLockSideBar();
 
   guidedUnSkipPage("guided-select-starting-point-tab");
-  await window.openPage("guided-select-starting-point-tab");
+  await openPage("guided-select-starting-point-tab");
 });
 
 // Free form mode event listener (from curate and share page)
@@ -9325,202 +8862,6 @@ const showCorrectSpreadsheetInstructionSection = (datasetEntities) => {
       .classList.remove("hidden");
   }
 };
-
-const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
-  const controlledElementContainer = document.getElementById(controlledSectionID);
-  // Hide the children of the controlled element
-  // (There should be logic below that shows the correct child)
-  const controlledElementChildren = controlledElementContainer.querySelectorAll(".sub-section");
-  controlledElementChildren.forEach((child) => {
-    //console log the child id
-    child.classList.add("hidden");
-  });
-
-  if (controlledSectionID === "guided-section-dataset-type") {
-    const previouslySavedDatasetType = window.sodaJSONObj["saved-dataset-type"];
-
-    const buttonDatasetContainsSubjects = document.getElementById(
-      "guided-button-dataset-contains-subjects"
-    );
-    const buttonDatasetDoesNotContainSubjects = document.getElementById(
-      "guided-button-dataset-does-not-contain-subjects"
-    );
-    const buttonDatasetContainsCode = document.getElementById(
-      "guided-button-dataset-contains-code"
-    );
-    const buttonDatasetDoesNotContainCode = document.getElementById(
-      "guided-button-dataset-does-not-contain-code"
-    );
-
-    // If neither button is selected, return
-    if (
-      (!buttonDatasetContainsSubjects.classList.contains("selected") &&
-        !buttonDatasetDoesNotContainSubjects.classList.contains("selected")) ||
-      (!buttonDatasetContainsCode.classList.contains("selected") &&
-        !buttonDatasetDoesNotContainCode.classList.contains("selected"))
-    ) {
-      return;
-    }
-
-    let datasetHasSubjects = buttonDatasetContainsSubjects.classList.contains("selected");
-    let datasetHasCode = buttonDatasetContainsCode.classList.contains("selected");
-
-    window.sodaJSONObj["dataset-contains-subjects"] = datasetHasSubjects;
-    window.sodaJSONObj["dataset-contains-code"] = datasetHasCode;
-
-    let interpredDatasetType;
-
-    if (datasetHasCode && datasetHasSubjects) {
-      interpredDatasetType = "requires-manual-selection";
-    } else if (datasetHasCode && !datasetHasSubjects) {
-      interpredDatasetType = "computational";
-    } else if (!datasetHasCode && datasetHasSubjects) {
-      interpredDatasetType = "experimental";
-    } else {
-      interpredDatasetType = "selection-does-not-make-sense";
-    }
-
-    // set the dataset-type in the window.sodaJSONObj to be used by the page exit handler
-    window.sodaJSONObj["dataset-type"] = interpredDatasetType;
-
-    // If the determined dataset type is not computational or experimental, reset the buttons where the user selects it manually
-    if (window.sodaJSONObj["dataset-type"] === "requires-manual-selection") {
-      if (window.sodaJSONObj["button-config"]["dataset-type"]) {
-        delete window.sodaJSONObj["button-config"]["dataset-type"];
-      }
-    }
-    resetGuidedRadioButtons("guided-sub-section-manual-dataset-type-selection");
-
-    if (interpredDatasetType === "selection-does-not-make-sense") {
-      document.getElementById("guided-sub-section-configuration-error").classList.remove("hidden");
-    }
-    if (interpredDatasetType === "requires-manual-selection") {
-      if (
-        previouslySavedDatasetType === "computational" ||
-        previouslySavedDatasetType === "experimental"
-      ) {
-        document.getElementById(`guided-button-dataset-type-${previouslySavedDatasetType}`).click();
-      } else {
-        // If the user is updating a dataset from Pennsieve, try to get the dataset type from the dataset description file
-        // on Pennsieve and click the appropriate button
-        if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
-          const pennsieveImportLoadingDiv = document.getElementById(
-            "guided-sub-section-loading-dataset-type-import"
-          );
-          // Show the loading div while the dataset type is attempted to be pulled from Pennsieve
-          pennsieveImportLoadingDiv.classList.remove("hidden");
-          try {
-            const descriptionMetadaRes = await client.get(
-              `/prepare_metadata/import_metadata_file`,
-              {
-                params: {
-                  selected_account: window.defaultBfAccount,
-                  selected_dataset: window.sodaJSONObj["bf-dataset-selected"]["dataset-name"],
-                  file_type: "dataset_description.xlsx",
-                },
-              }
-            );
-            const descriptionMetdataData = descriptionMetadaRes.data["Basic information"];
-            if (descriptionMetdataData[0][0] === "Type") {
-              const studyType = descriptionMetdataData[0][1];
-              if (studyType === "computational" || studyType === "experimental") {
-                document.getElementById(`guided-button-dataset-type-${studyType}`).click();
-              }
-            }
-          } catch (error) {
-            // Case where dataset type was not able to be found from Pennsieve so user must manually select
-            console.log(error);
-            clientError(error);
-          }
-          // Hide the loading div after the dataset type has been pulled from Pennsieve
-          pennsieveImportLoadingDiv.classList.add("hidden");
-        }
-      }
-      document
-        .getElementById("guided-sub-section-manual-dataset-type-selection")
-        .classList.remove("hidden");
-    }
-    if (interpredDatasetType === "computational") {
-      document
-        .getElementById("guided-sub-section-computational-confirmation")
-        .classList.remove("hidden");
-    }
-    if (interpredDatasetType === "experimental") {
-      document
-        .getElementById("guided-sub-section-experimental-confirmation")
-        .classList.remove("hidden");
-    }
-  }
-
-  if (controlledSectionID === "guided-section-spreadsheet-import") {
-    const datasetHasPools = document
-      .getElementById("guided-button-spreadsheet-subjects-are-pooled")
-      .classList.contains("selected");
-    const datasetDoesNotHavePools = document
-      .getElementById("guided-button-spreadsheet-subjects-are-not-pooled")
-      .classList.contains("selected");
-    if (!datasetHasPools && !datasetDoesNotHavePools) {
-      return;
-    }
-
-    const datasetHasSamples = document
-      .getElementById("guided-button-spreadsheet-subjects-have-samples")
-      .classList.contains("selected");
-    const datasetDoesNotHaveSamples = document
-      .getElementById("guided-button-spreadsheet-subjects-do-not-have-samples")
-      .classList.contains("selected");
-    if (!datasetHasSamples && !datasetDoesNotHaveSamples) {
-      return;
-    }
-
-    const datasetEntities = ["subjects"];
-    if (datasetHasPools) {
-      datasetEntities.push("pools");
-    }
-    if (datasetHasSamples) {
-      datasetEntities.push("samples");
-    }
-
-    showCorrectSpreadsheetInstructionSection(datasetEntities);
-
-    const textFormattedEntities = convertArrayToCommaSeparatedString(datasetEntities);
-
-    // If a spreadsheet has already been generated, notify the user that they will need to
-    // re-fill out the spreadsheet since the headers will be different.
-    if (window.sodaJSONObj["dataset-structure-spreadsheet-path"]) {
-      if (
-        window.sodaJSONObj["dataset-structure-entities"] &&
-        window.sodaJSONObj["dataset-structure-entities"] != textFormattedEntities
-      ) {
-        // Delete the spreadsheet path since it will need to be re-generated
-        delete window.sodaJSONObj["dataset-structure-spreadsheet-path"];
-        // Reset the UI to show that the dataset structure spreadsheet has not been generated
-        setUiBasedOnSavedDatasetStructurePath(false);
-      }
-    }
-    // Store the dataset entities in the sodaJSONObj to track if a new spreadsheet needs to be generated
-    // when the user changes the dataset structure
-    window.sodaJSONObj["dataset-structure-entities"] = textFormattedEntities;
-
-    const spansToInsertTextInto = document.querySelectorAll(
-      ".sub-pool-sample-structure-description-text"
-    );
-    spansToInsertTextInto.forEach((span) => {
-      span.innerHTML = textFormattedEntities;
-    });
-
-    // If the user has already added subjects but has not chosen to enter them manually
-    // (case for updating a dataset from Pennsieve or old progress files),
-    // Select the option for them
-    if (!sodaJSONObj["button-config"]["subject-addition-method"]) {
-      if (window.getExistingSubjectNames().length > 0) {
-        document.getElementById("guided-button-add-subject-structure-manually").click();
-      }
-    }
-  }
-};
-
-
 
 $("#guided-button-samples-not-same").on("click", () => {
   $("#guided-button-generate-subjects-table").show();
@@ -12285,7 +11626,7 @@ document.getElementById("guided-generate-dataset-button").addEventListener("clic
   if (!supplementary_checks) {
     return;
   }
-  await window.openPage("guided-dataset-generation-tab");
+  await openPage("guided-dataset-generation-tab");
   guidedPennsieveDatasetUpload();
 });
 
@@ -12428,17 +11769,20 @@ const getNextPageNotSkipped = (currentPageID) => {
 
 //next button click handler
 $("#guided-next-button").on("click", async function () {
+  console.log("Next button clicked");
   //Get the ID of the current page to handle actions on page leave (next button pressed)
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
   if (window.pageBeingLeftID === "guided-dataset-generation-tab") {
     guidedUnSkipPage("guided-dataset-dissemination-tab");
-    await window.openPage("guided-dataset-dissemination-tab");
+    await openPage("guided-dataset-dissemination-tab");
     return;
   }
 
   try {
+    console.log("About to save");
     await savePageChanges(window.pageBeingLeftID);
+    console.log("Past save changes");
 
     //Mark page as completed in JSONObj so we know what pages to load when loading local saves
     //(if it hasn't already been marked complete)
@@ -12451,7 +11795,9 @@ $("#guided-next-button").on("click", async function () {
     let targetPage = getNextPageNotSkipped(window.CURRENT_PAGE.id);
     let targetPageID = targetPage.id;
 
-    await window.openPage(targetPageID);
+    console.log("Navigating to next page", targetPageID);
+
+    await openPage(targetPageID);
   } catch (error) {
     window.log.error(error);
     if (Array.isArray(error)) {
@@ -12517,7 +11863,7 @@ $("#guided-back-button").on("click", async () => {
   const targetPageID = targetPage.id;
 
   // open the target page
-  await window.openPage(targetPageID);
+  await openPage(targetPageID);
 });
 
 //tagify initializations

@@ -1,179 +1,488 @@
-import { openPageCurationPreparation } from './curationPreparation/openPage.js';
+import { openPageCurationPreparation } from "./curationPreparation/openPage.js";
+import {
+  resetGuidedRadioButtons,
+  updateGuidedRadioButtonsFromJSON,
+} from "./buttons/radioButtons.js";
+import { externallySetSearchFilterValue } from "../../stores/slices/datasetTreeViewSlice.js";
+import { guidedSetNavLoadingState } from "./pageNavigation/pageLoading";
+import Swal from "sweetalert2";
+import { userErrorMessage } from "../others/http-error-handler/error-handler.js";
+import { setSelectedEntities } from "../../stores/slices/datasetContentSelectorSlice.js";
 
+// Function that handles the visibility of the back button
+const handleBackButtonVisibility = (targetPageID) => {
+  if (
+    targetPageID === "guided-dataset-dissemination-tab" ||
+    targetPageID === "guided-dataset-generation-tab"
+  ) {
+    $("#guided-back-button").css("visibility", "hidden");
+  } else {
+    $("#guided-back-button").css("visibility", "visible");
+  }
+};
 
+// Function that handles the visibility of the next button
+const handleNextButtonVisibility = (targetPageID) => {
+  if (
+    targetPageID === "guided-dataset-generation-confirmation-tab" ||
+    targetPageID === "guided-dataset-generation-tab" ||
+    targetPageID === "guided-dataset-dissemination-tab"
+  ) {
+    $("#guided-next-button").css("visibility", "hidden");
+  } else {
+    $("#guided-next-button").css("visibility", "visible");
+  }
+};
 
+export const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {
+  let allChildPages = Array.from(
+    parentElementToGetChildrenPagesFrom.querySelectorAll(".guided--page")
+  );
+  const nonSkippedChildPages = allChildPages.filter((page) => {
+    return page.dataset.skipPage != "true";
+  });
+
+  return nonSkippedChildPages;
+};
+
+// Function that handles the validation state of the dataset
+// When the user goes back to before the validation tab, the dataset is no longer validated
+// This function will reset the dataset-validated value to false so validation will be retriggered
+// when the user goes to the validation tab
+
+const handleGuidedValidationState = (targetPageID) => {
+  if (window.sodaJSONObj["dataset-validated"] === "true") {
+    const nonSkippedPages = getNonSkippedGuidedModePages(document);
+    const indexOfCurrentPage = nonSkippedPages.findIndex((page) => page.id === targetPageID);
+    const indexOfValidationPage = nonSkippedPages.findIndex(
+      (page) => page.id === "guided-dataset-validation-tab"
+    );
+    if (indexOfCurrentPage < indexOfValidationPage) {
+      window.sodaJSONObj["dataset-validated"] = "false";
+    }
+  }
+};
+
+const guidedLockSideBar = (boolShowNavBar) => {
+  const sidebar = document.getElementById("sidebarCollapse");
+  const guidedModeSection = document.getElementById("guided_mode-section");
+  const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
+  const guidedNav = document.getElementById("guided-nav");
+
+  if (!sidebar.classList.contains("active")) {
+    sidebar.click();
+  }
+
+  sidebar.disabled = true;
+  guidedModeSection.style.marginLeft = "-70px";
+
+  if (boolShowNavBar) {
+    guidedDatsetTab.style.marginLeft = "215px";
+    guidedNav.style.display = "flex";
+  } else {
+    guidedDatsetTab.style.marginLeft = "0px";
+    guidedNav.style.display = "none";
+  }
+};
+
+const hideAndShowElementsDependingOnStartType = (pageElement) => {
+  const startingFromPennsieve = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
+  const textToShowWhenStartingFromPennsieve = pageElement.querySelectorAll(
+    ".showWhenStartingFromPennsieve"
+  );
+  const textToShowWhenStartingNew = pageElement.querySelectorAll(".showWhenStartingNew");
+  if (startingFromPennsieve) {
+    textToShowWhenStartingFromPennsieve.forEach((element) => {
+      element.classList.remove("hidden");
+    });
+    textToShowWhenStartingNew.forEach((element) => {
+      element.classList.add("hidden");
+    });
+  } else {
+    textToShowWhenStartingFromPennsieve.forEach((element) => {
+      element.classList.add("hidden");
+    });
+    textToShowWhenStartingNew.forEach((element) => {
+      element.classList.remove("hidden");
+    });
+  }
+};
+
+const setActiveProgressionTab = (targetPageID) => {
+  $(".guided--progression-tab").removeClass("selected-tab");
+  let targetPageParentID = $(`#${targetPageID}`).parent().attr("id");
+  let targetProgressionTabID = targetPageParentID.replace("parent-tab", "progression-tab");
+  let targetProgressionTab = $(`#${targetProgressionTabID}`);
+  targetProgressionTab.addClass("selected-tab");
+};
+
+// const renderSideBar = (activePage) => {
+//   const guidedNavItemsContainer = document.getElementById("guided-nav-items");
+//   const guidedPageNavigationHeader = document.getElementById("guided-page-navigation-header");
+
+//   if (activePage === "guided-dataset-dissemination-tab") {
+//     //Hide the side bar navigawtion and navigation header
+//     guidedPageNavigationHeader.classList.add("hidden");
+//     guidedNavItemsContainer.innerHTML = ``;
+//     return;
+//   }
+//   //Show the page navigation header if it had been previously hidden
+//   guidedPageNavigationHeader.classList.remove("hidden");
+
+//   const completedTabs = window.sodaJSONObj["completed-tabs"];
+
+//   const pageStructureObject = {};
+
+//   const highLevelStepElements = Array.from(document.querySelectorAll(".guided--parent-tab"));
+
+//   for (const element of highLevelStepElements) {
+//     const highLevelStepName = element.getAttribute("data-parent-tab-name");
+//     pageStructureObject[highLevelStepName] = {};
+
+//     const notSkippedPages = getNonSkippedGuidedModePages(element);
+
+//     for (const page of notSkippedPages) {
+//       const pageName = page.getAttribute("data-page-name");
+//       const pageID = page.getAttribute("id");
+//       pageStructureObject[highLevelStepName][pageID] = {
+//         pageName: pageName,
+//         completed: completedTabs.includes(pageID),
+//       };
+//     }
+//   }
+//   let navBarHTML = "";
+//   for (const [highLevelStepName, highLevelStepObject] of Object.entries(pageStructureObject)) {
+//     // Add the high level drop down to the nav bar
+//     const dropdDown = `
+//         <div class="guided--nav-bar-dropdown">
+//           <p class="help-text mb-0">
+//             ${highLevelStepName}
+//           </p>
+//           <i class="fas fa-chevron-right"></i>
+//         </div>
+//       `;
+
+//     // Add the high level drop down's children links to the nav bar
+//     let dropDownContent = ``;
+//     for (const [pageID, pageObject] of Object.entries(highLevelStepObject)) {
+//       //add but keep hidden for now!!!!!!!!!!!!!!!!!!
+//       dropDownContent += `
+//           <div
+//             class="
+//               guided--nav-bar-section-page
+//               hidden
+//               ${pageObject.completed ? " completed" : " not-completed"}
+//               ${pageID === activePage ? "active" : ""}"
+//             data-target-page="${pageID}"
+//           >
+//             <div class="guided--nav-bar-section-page-title">
+//               ${pageObject.pageName}
+//             </div>
+//           </div>
+//         `;
+//     }
+
+//     // Add each section to the nav bar element
+//     const dropDownContainer = `
+//           <div class="guided--nav-bar-section">
+//             ${dropdDown}
+//             ${dropDownContent}
+//           </div>
+//         `;
+//     navBarHTML += dropDownContainer;
+//   }
+//   guidedNavItemsContainer.innerHTML = navBarHTML;
+
+//   const guidedNavBarDropdowns = Array.from(document.querySelectorAll(".guided--nav-bar-dropdown"));
+//   for (const guidedNavBarDropdown of guidedNavBarDropdowns) {
+//     guidedNavBarDropdown.addEventListener("click", () => {
+//       //remove hidden from child elements with guided--nav-bar-section-page class
+//       const guidedNavBarSectionPage = guidedNavBarDropdown.parentElement.querySelectorAll(
+//         ".guided--nav-bar-section-page"
+//       );
+//       for (const guidedNavBarSectionPageElement of guidedNavBarSectionPage) {
+//         guidedNavBarSectionPageElement.classList.toggle("hidden");
+//       }
+//       //toggle the chevron
+//       const chevron = guidedNavBarDropdown.querySelector("i");
+//       chevron.classList.toggle("fa-chevron-right");
+//       chevron.classList.toggle("fa-chevron-down");
+//     });
+
+//     //click the dropdown if it has a child element with data-target-page that matches the active page
+//     if (guidedNavBarDropdown.parentElement.querySelector(`[data-target-page="${activePage}"]`)) {
+//       guidedNavBarDropdown.click();
+//     }
+//   }
+
+//   const guidedNavBarSectionPages = Array.from(
+//     document.querySelectorAll(".guided--nav-bar-section-page")
+//   );
+//   for (const guidedNavBarSectionPage of guidedNavBarSectionPages) {
+//     guidedNavBarSectionPage.addEventListener("click", async () => {
+//       const currentPageUserIsLeaving = window.CURRENT_PAGE.id;
+//       const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
+//       const pageToNaviatetoName = document
+//         .getElementById(pageToNavigateTo)
+//         .getAttribute("data-page-name");
+
+//       // Do nothing if the user clicks the tab of the page they are currently on
+//       if (currentPageUserIsLeaving === pageToNavigateTo) {
+//         return;
+//       }
+
+//       try {
+//         await savePageChanges(currentPageUserIsLeaving);
+//         const allNonSkippedPages = getNonSkippedGuidedModePages(document).map(
+//           (element) => element.id
+//         );
+//         // Get the pages in the allNonSkippedPages array that cone after the page the user is leaving
+//         // and before the page the user is going to
+//         const pagesBetweenCurrentAndTargetPage = allNonSkippedPages.slice(
+//           allNonSkippedPages.indexOf(currentPageUserIsLeaving),
+//           allNonSkippedPages.indexOf(pageToNavigateTo)
+//         );
+
+//         //If the user is skipping forward with the nav bar, pages between current page and target page
+//         //Need to be validated. If they're going backwards, the for loop below will not be ran.
+//         for (const page of pagesBetweenCurrentAndTargetPage) {
+//           try {
+//             await checkIfPageIsValid(page);
+//           } catch (error) {
+//             const pageWithErrorName = document.getElementById(page).getAttribute("data-page-name");
+//             await window.openPage(page);
+//             await Swal.fire({
+//               title: `An error occured on an intermediate page: ${pageWithErrorName}`,
+//               html: `Please address the issues before continuing to ${pageToNaviatetoName}:
+//                     <br />
+//                     <br />
+//                     <ul>
+//                       ${error
+//                         .map((error) => `<li class="text-left">${error.message}</li>`)
+//                         .join("")}
+//                     </ul>
+//                   `,
+//               icon: "info",
+//               confirmButtonText: "Fix the errors on this page",
+//               focusConfirm: true,
+//               heightAuto: false,
+//               backdrop: "rgba(0,0,0, 0.4)",
+//               width: 700,
+//             });
+//             return;
+//           }
+//         }
+
+//         //All pages have been validated. Open the target page.
+//         await window.openPage(pageToNavigateTo);
+//       } catch (error) {
+//         const pageWithErrorName = window.CURRENT_PAGE.dataset.pageName;
+//         const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
+//           title: "The current page was not able to be saved",
+//           html: `The following error${
+//             error.length > 1 ? "s" : ""
+//           } occurred when attempting to save the ${pageWithErrorName} page:
+//                 <br />
+//                 <br />
+//                 <ul>
+//                   ${error.map((error) => `<li class="text-left">${error.message}</li>`).join("")}
+//                 </ul>
+//                 <br />
+//                 Would you like to continue without saving the changes to the current page?`,
+//           icon: "info",
+//           showCancelButton: true,
+//           confirmButtonText: "Yes, continue without saving",
+//           cancelButtonText: "No, I would like to address the errors",
+//           confirmButtonWidth: 255,
+//           cancelButtonWidth: 255,
+//           focusCancel: true,
+//           heightAuto: false,
+//           backdrop: "rgba(0,0,0, 0.4)",
+//           width: 700,
+//         });
+//         if (continueWithoutSavingCurrPageChanges) {
+//           await window.openPage(pageToNavigateTo);
+//         }
+//       }
+//     });
+//   }
+
+//   const nextPagetoComplete = guidedNavItemsContainer.querySelector(
+//     ".guided--nav-bar-section-page.not-completed"
+//   );
+//   if (nextPagetoComplete) {
+//     nextPagetoComplete.classList.remove("not-completed");
+//     //Add pulse blue animation for 3 seconds
+//     nextPagetoComplete.style.borderLeft = "3px solid #007bff";
+//     nextPagetoComplete.style.animation = "pulse-blue 3s Infinity";
+//   }
+// };
 
 // //Main function that prepares individual pages based on the state of the window.sodaJSONObj
 // //The general flow is to check if there is values for the keys relevant to the page
 // //If the keys exist, extract the data from the window.sodaJSONObj and populate the page
 // //If the keys do not exist, reset the page (inputs, tables etc.) to the default state
 export const openPage = async (targetPageID) => {
-    //NOTE: 2 Bottom back buttons (one handles sub pages, and the other handles main pages)
-    //Back buttons should be disabled and the function setLoading should be (set as false?)
+  console.log("Opening page high level", targetPageID);
+  //NOTE: 2 Bottom back buttons (one handles sub pages, and the other handles main pages)
+  //Back buttons should be disabled and the function setLoading should be (set as false?)
 
-    // This function is used by both the navigation bar and the side buttons,
-    // and whenever it is being called, we know that the user is trying to navigate to a new page
-    // this function is async because we sometimes need to fetch data before the page is ready to be opened
+  // This function is used by both the navigation bar and the side buttons,
+  // and whenever it is being called, we know that the user is trying to navigate to a new page
+  // this function is async because we sometimes need to fetch data before the page is ready to be opened
 
-    let itemsContainer = document.getElementById("items-guided-container");
-    if (itemsContainer.classList.contains("border-styling")) {
-        itemsContainer.classList.remove("border-styling");
+  let itemsContainer = document.getElementById("items-guided-container");
+  if (itemsContainer.classList.contains("border-styling")) {
+    itemsContainer.classList.remove("border-styling");
+  }
+  guidedSetNavLoadingState(true);
+
+  const targetPage = document.getElementById(targetPageID);
+  const targetPageName = targetPage.dataset.pageName || targetPageID;
+  const targetPageParentTab = targetPage.closest(".guided--parent-tab");
+  const targetPageDataset = targetPage.dataset;
+
+  //when the promise completes there is a catch for error handling
+  //upon resolving it will set navLoadingstate to false
+  try {
+    //reset the radio buttons for the page being navigated to
+    resetGuidedRadioButtons(targetPageID);
+    //update the radio buttons using the button config from window.sodaJSONObj
+    updateGuidedRadioButtonsFromJSON(targetPageID);
+
+    // Reset the zustand store search filter value
+    externallySetSearchFilterValue("");
+
+    if (
+      targetPageID === "guided-dataset-generation-tab" ||
+      targetPageID === "guided-dataset-dissemination-tab"
+    ) {
+      $("#guided-next-button").css("visibility", "hidden");
+    } else {
+      $("#guided-next-button").css("visibility", "visible");
     }
-    guidedSetNavLoadingState(true);
 
-    const targetPage = document.getElementById(targetPageID);
-    const targetPageName = targetPage.dataset.pageName || targetPageID;
-    const targetPageParentTab = targetPage.closest(".guided--parent-tab");
-    const targetPageDataset = targetPage.dataset;
+    if (
+      targetPageID === "guided-dataset-dissemination-tab" ||
+      targetPageID === "guided-dataset-generation-tab"
+    ) {
+      $("#guided-back-button").css("visibility", "hidden");
+    } else {
+      $("#guided-back-button").css("visibility", "visible");
+    }
 
-    //when the promise completes there is a catch for error handling
-    //upon resolving it will set navLoadingstate to false
-    try {
-        //reset the radio buttons for the page being navigated to
-        resetGuidedRadioButtons(targetPageID);
-        //update the radio buttons using the button config from window.sodaJSONObj
-        updateGuidedRadioButtonsFromJSON(targetPageID);
+    handleNextButtonVisibility(targetPageID);
+    handleBackButtonVisibility(targetPageID);
+    handleGuidedValidationState(targetPageID);
 
-        // Reset the zustand store search filter value
-        externallySetSearchFilterValue("");
+    // Hide the Header div on the resume existing dataset page
+    const guidedProgressContainer = document.getElementById("guided-header-div");
 
-        if (
-            targetPageID === "guided-dataset-generation-tab" ||
-            targetPageID === "guided-dataset-dissemination-tab"
-        ) {
-            $("#guided-next-button").css("visibility", "hidden");
+    if (targetPageID === "guided-select-starting-point-tab") {
+      guidedProgressContainer.classList.add("hidden");
+    } else {
+      guidedProgressContainer.classList.remove("hidden");
+    }
+
+    // If the user has not saved the dataset name and subtitle, then the next button should say "Continue"
+    // as they are not really saving anything
+    // If they have saved the dataset name and subtitle, then the next button should say "Save and Continue"
+    // as their progress is saved when continuing to the next page
+    const datasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
+    const nextButton = document.getElementById("guided-next-button");
+    const nextButtonSpans = document.querySelectorAll(".next-button-span");
+
+    if (!datasetName) {
+      // set the span inside of nextButton to "Continue"
+      nextButton.querySelector("span.nav-button-text").innerHTML = "Continue";
+      nextButtonSpans.forEach((span) => {
+        span.innerHTML = "Continue";
+      });
+      guidedLockSideBar(false);
+    } else {
+      // Set the dataset name display in the side bar
+      const datasetNameDisplay = document.getElementById("guided-navbar-dataset-name-display");
+      datasetNameDisplay.innerHTML = datasetName;
+
+      nextButton.querySelector("span.nav-button-text").innerHTML = "Save and Continue";
+      nextButtonSpans.forEach((span) => {
+        span.innerHTML = "Save and Continue";
+      });
+      guidedLockSideBar(true);
+    }
+
+    // if (targetPageDataset.componentType) {
+    //     const targetPageComponentType = targetPageDataset.componentType;
+    //     console.log("targetPageDataset", targetPageDataset);
+    //     if (targetPageComponentType === "entity-management-page") {
+    //         // Set the dataset entity object to the saved dataset entity object from the JSON
+    //         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+    //         setDatasetEntityObj(savedDatasetEntityObj);
+    //         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
+    //     }
+    //     if (targetPageComponentType === "entity-selection-page") {
+    //         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+    //         setDatasetEntityObj(savedDatasetEntityObj);
+
+    //         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
+    //         /*
+    //         if (!window.sodaJSONObj["completed-tabs"].includes(targetPageID)) {
+    //           console.log("Calling autoSelectDatasetFoldersAndFilesForEnteredEntityIds");
+    //           autoSelectDatasetFoldersAndFilesForEnteredEntityIds(
+    //             window.datasetStructureJSONObj["folders"]["primary"],
+    //             targetPageDataset.entityType,
+    //             targetPageDataset.entityTypeStringSingular
+    //           );
+    //         }
+    //         */
+    //     }
+    // }
+
+    if (targetPageID === "guided-select-starting-point-tab") {
+      // Hide the pennsieve dataset import progress circle
+      const importProgressCircle = document.querySelector(
+        "#guided_loading_pennsieve_dataset-organize"
+      );
+      importProgressCircle.classList.add("hidden");
+    }
+
+    if (targetPageID === "guided-prepare-dataset-structure-tab") {
+      setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
+      /*
+        // If the user has already added subjects, disallow them from selecting no (they have to go to the subject
+        // page to delete subjects but this would be a very strange case anyways)
+        const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
+        const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+        const subjectQuerySectioin = document.getElementById("guided-section-subject-yes-no");
+        const infoText = document.getElementById("subject-deletion-block-text");
+        if (subjects.length > 0) {
+          subjectQuerySectioin.classList.add("section-disabled");
+          infoText.classList.remove("hidden");
         } else {
-            $("#guided-next-button").css("visibility", "visible");
-        }
+          subjectQuerySectioin.classList.remove("section-disabled");
+          infoText.classList.add("hidden");
+        }*/
+    }
 
-        if (
-            targetPageID === "guided-dataset-dissemination-tab" ||
-            targetPageID === "guided-dataset-generation-tab"
-        ) {
-            $("#guided-back-button").css("visibility", "hidden");
-        } else {
-            $("#guided-back-button").css("visibility", "visible");
-        }
+    await openPageCurationPreparation(targetPageID);
 
-        handleNextButtonVisibility(targetPageID);
-        handleBackButtonVisibility(targetPageID);
-        handleGuidedValidationState(targetPageID);
+    // if (targetPageID === "guided-prepare-helpers-tab") {
+    //   const sparcFundedHelperSections = document
+    //     .getElementById("guided-prepare-helpers-tab")
+    //     .querySelectorAll(".sparc-funded-only");
 
-        // Hide the Header div on the resume existing dataset page
-        const guidedProgressContainer = document.getElementById("guided-header-div");
-
-        if (targetPageID === "guided-select-starting-point-tab") {
-            guidedProgressContainer.classList.add("hidden");
-        } else {
-            guidedProgressContainer.classList.remove("hidden");
-        }
-
-        // If the user has not saved the dataset name and subtitle, then the next button should say "Continue"
-        // as they are not really saving anything
-        // If they have saved the dataset name and subtitle, then the next button should say "Save and Continue"
-        // as their progress is saved when continuing to the next page
-        const datasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
-        const nextButton = document.getElementById("guided-next-button");
-        const nextButtonSpans = document.querySelectorAll(".next-button-span");
-
-        if (!datasetName) {
-            // set the span inside of nextButton to "Continue"
-            nextButton.querySelector("span.nav-button-text").innerHTML = "Continue";
-            nextButtonSpans.forEach((span) => {
-                span.innerHTML = "Continue";
-            });
-            guidedLockSideBar(false);
-        } else {
-            // Set the dataset name display in the side bar
-            const datasetNameDisplay = document.getElementById("guided-navbar-dataset-name-display");
-            datasetNameDisplay.innerHTML = datasetName;
-
-            nextButton.querySelector("span.nav-button-text").innerHTML = "Save and Continue";
-            nextButtonSpans.forEach((span) => {
-                span.innerHTML = "Save and Continue";
-            });
-            guidedLockSideBar(true);
-        }
-
-        if (targetPageDataset.componentType) {
-            const targetPageComponentType = targetPageDataset.componentType;
-            console.log("targetPageDataset", targetPageDataset);
-            if (targetPageComponentType === "entity-management-page") {
-                // Set the dataset entity object to the saved dataset entity object from the JSON
-                const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-                setDatasetEntityObj(savedDatasetEntityObj);
-                setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
-            }
-            if (targetPageComponentType === "entity-selection-page") {
-                const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-                setDatasetEntityObj(savedDatasetEntityObj);
-
-                setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
-                /*
-                if (!window.sodaJSONObj["completed-tabs"].includes(targetPageID)) {
-                  console.log("Calling autoSelectDatasetFoldersAndFilesForEnteredEntityIds");
-                  autoSelectDatasetFoldersAndFilesForEnteredEntityIds(
-                    window.datasetStructureJSONObj["folders"]["primary"],
-                    targetPageDataset.entityType,
-                    targetPageDataset.entityTypeStringSingular
-                  );
-                }
-                */
-            }
-        }
-
-
-
-
-        if (targetPageID === "guided-select-starting-point-tab") {
-            // Hide the pennsieve dataset import progress circle
-            const importProgressCircle = document.querySelector(
-                "#guided_loading_pennsieve_dataset-organize"
-            );
-            importProgressCircle.classList.add("hidden");
-        }
-
-        if (targetPageID === "guided-prepare-dataset-structure-tab") {
-            setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
-            /*
-            // If the user has already added subjects, disallow them from selecting no (they have to go to the subject
-            // page to delete subjects but this would be a very strange case anyways)
-            const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
-            const subjects = [...subjectsInPools, ...subjectsOutsidePools];
-            const subjectQuerySectioin = document.getElementById("guided-section-subject-yes-no");
-            const infoText = document.getElementById("subject-deletion-block-text");
-            if (subjects.length > 0) {
-              subjectQuerySectioin.classList.add("section-disabled");
-              infoText.classList.remove("hidden");
-            } else {
-              subjectQuerySectioin.classList.remove("section-disabled");
-              infoText.classList.add("hidden");
-            }*/
-        }
-
-
-        await openPageCurationPreparation(targetPageID);
-
-        //   if (targetPageID === "guided-prepare-helpers-tab") {
-        //     const sparcFundedHelperSections = document
-        //       .getElementById("guided-prepare-helpers-tab")
-        //       .querySelectorAll(".sparc-funded-only");
-
-        //     if (datasetIsSparcFunded()) {
-        //       // If the dataset is SPARC funded, then show the SPARC funded helper sections
-        //       sparcFundedHelperSections.forEach((element) => {
-        //         element.classList.remove("hidden");
-        //       });
-        //     } else {
-        //       // If the dataset is not SPARC funded, then hide the SPARC funded helper sections
-        //       sparcFundedHelperSections.forEach((element) => {
-        //         element.classList.add("hidden");
-        //       });
-        //     }
-        //   }
-
-
-
+    //   if (datasetIsSparcFunded()) {
+    //     // If the dataset is SPARC funded, then show the SPARC funded helper sections
+    //     sparcFundedHelperSections.forEach((element) => {
+    //       element.classList.remove("hidden");
+    //     });
+    //   } else {
+    //     // If the dataset is not SPARC funded, then hide the SPARC funded helper sections
+    //     sparcFundedHelperSections.forEach((element) => {
+    //       element.classList.add("hidden");
+    //     });
+    //   }
+    // }
 
     //     if (targetPageID === "guided-dataset-structure-intro-tab") {
     //         // Handle whether or not the spreadsheet importation page should be skipped
@@ -241,7 +550,7 @@ export const openPage = async (targetPageID) => {
     //             delete window.datasetStructureJSONObj?.folders?.[folder];
     //           }
     //         });
-      
+
     //         guidedShowTreePreview(
     //           window.sodaJSONObj?.["digital-metadata"]?.name,
     //           "guided-folder-structure-review"
@@ -1827,61 +2136,61 @@ export const openPage = async (targetPageID) => {
     //         guidedSetDOIUI(pennsieveDOICheck);
     //     }
 
-    //     let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
+    let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
 
-    //     //Set all capsules to grey and set capsule of page being traversed to green
-    //     setActiveProgressionTab(targetPageID);
-    //     renderSideBar(targetPageID);
+    //Set all capsules to grey and set capsule of page being traversed to green
+    setActiveProgressionTab(targetPageID);
+    // renderSideBar(targetPageID);
 
-    //     const guidedBody = document.getElementById("guided-body");
-    //     //Check to see if target element has the same parent as current sub step
-    //     if (currentParentTab.id === targetPageParentTab.id) {
-    //         window.CURRENT_PAGE.classList.add("hidden");
-    //         window.CURRENT_PAGE = targetPage;
-    //         window.CURRENT_PAGE.classList.remove("hidden");
-    //         //smooth scroll to top of guidedBody
-    //         guidedBody.scrollTo({
-    //             top: 0,
-    //             behavior: "smooth",
-    //         });
-    //     } else {
-    //         window.CURRENT_PAGE.classList.add("hidden");
-    //         currentParentTab.classList.add("hidden");
-    //         targetPageParentTab.classList.remove("hidden");
-    //         window.CURRENT_PAGE = targetPage;
-    //         window.CURRENT_PAGE.classList.remove("hidden");
-    //         //smooth scroll to top of guidedBody
-    //         guidedBody.scrollTo({
-    //             top: 0,
-    //         });
-    //     }
+    const guidedBody = document.getElementById("guided-body");
+    //Check to see if target element has the same parent as current sub step
+    if (currentParentTab.id === targetPageParentTab.id) {
+      window.CURRENT_PAGE.classList.add("hidden");
+      window.CURRENT_PAGE = targetPage;
+      window.CURRENT_PAGE.classList.remove("hidden");
+      //smooth scroll to top of guidedBody
+      guidedBody.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    } else {
+      window.CURRENT_PAGE.classList.add("hidden");
+      currentParentTab.classList.add("hidden");
+      targetPageParentTab.classList.remove("hidden");
+      window.CURRENT_PAGE = targetPage;
+      window.CURRENT_PAGE.classList.remove("hidden");
+      //smooth scroll to top of guidedBody
+      guidedBody.scrollTo({
+        top: 0,
+      });
+    }
 
     //     // Start any animations that need to be started
     //     startOrStopAnimationsInContainer(targetPageID, "start");
 
-    //     hideAndShowElementsDependingOnStartType(targetPage);
+    hideAndShowElementsDependingOnStartType(targetPage);
 
-    //     // Set the last opened page and save it
-    //     window.sodaJSONObj["page-before-exit"] = targetPageID;
+    // Set the last opened page and save it
+    window.sodaJSONObj["page-before-exit"] = targetPageID;
     //     await guidedSaveProgress();
-    } catch (error) {
-        const eMessage = userErrorMessage(error);
-        Swal.fire({
-            icon: "error",
-            title: `Error opening the ${targetPageName} page`,
-            html: eMessage,
-            width: 600,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: `OK`,
-            focusConfirm: true,
-            allowOutsideClick: false,
-        });
+  } catch (error) {
+    const eMessage = userErrorMessage(error);
+    Swal.fire({
+      icon: "error",
+      title: `Error opening the ${targetPageName} page`,
+      html: eMessage,
+      width: 600,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: `OK`,
+      focusConfirm: true,
+      allowOutsideClick: false,
+    });
 
-        guidedSetNavLoadingState(false);
-        console.log(error);
-        throw error;
-    }
+    guidedSetNavLoadingState(false);
+    console.log(error);
+    throw error;
+  }
 
-    // guidedSetNavLoadingState(false);
+  guidedSetNavLoadingState(false);
 };
