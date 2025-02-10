@@ -9,7 +9,7 @@ import api from "../../../others/api/api";
 import { clientError } from "../../../others/http-error-handler/error-handler";
 import { guidedShowOptionalRetrySwal } from "../../swals/helperSwals";
 import { userErrorMessage } from "../../../others/http-error-handler/error-handler";
-import { setPageLoadingState } from "../../pageNavigation/pageLoading";
+import { setPageLoadingState } from "../pageLoading.js";
 import { setSelectedEntities } from "../../../../stores/slices/datasetContentSelectorSlice.js";
 import client from "../../../client";
 

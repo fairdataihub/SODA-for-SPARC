@@ -1,10 +1,6 @@
-import { guidedSetNavLoadingState } from "../pageNavigation/pageLoading";
+import { guidedSetNavLoadingState } from "./pageLoading";
 import { getDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice";
-import {
-  guidedSkipPage,
-  guidedUnSkipPage,
-  getNonSkippedGuidedModePages,
-} from "../pageNavigation/pageSkipping";
+import { guidedSkipPage, guidedUnSkipPage, getNonSkippedGuidedModePages } from "./pageSkipping";
 import { userErrorMessage } from "../../others/http-error-handler/error-handler";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie";
 import api from "../../others/api/api";

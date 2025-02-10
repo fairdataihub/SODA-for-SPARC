@@ -1,4 +1,4 @@
-import { guidedSkipPage, guidedUnSkipPage } from "../../pageNavigation/pageSkipping";
+import { guidedSkipPage, guidedUnSkipPage } from "../pageSkipping";
 import useGlobalStore from "../../../../stores/globalStore";
 
 let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");

@@ -64,3 +64,29 @@ export const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom
 
   return nonSkippedChildPages;
 };
+
+export const getNextPageNotSkipped = (currentPageID) => {
+  const parentContainer = document.getElementById(currentPageID).closest(".guided--parent-tab");
+  const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
+
+  const currentPageIndex = siblingPages.indexOf(currentPageID);
+  if (currentPageIndex != siblingPages.length - 1) {
+    return document.getElementById(siblingPages[currentPageIndex + 1]);
+  } else {
+    const nextParentContainer = parentContainer.nextElementSibling;
+    return getNonSkippedGuidedModePages(nextParentContainer)[0];
+  }
+};
+
+export const getPrevPageNotSkipped = (currentPageID) => {
+  const parentContainer = document.getElementById(currentPageID).closest(".guided--parent-tab");
+  const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
+  const currentPageIndex = siblingPages.indexOf(currentPageID);
+  if (currentPageIndex != 0) {
+    return document.getElementById(siblingPages[currentPageIndex - 1]);
+  } else {
+    const prevParentContainer = parentContainer.previousElementSibling;
+    const prevParentContainerPages = getNonSkippedGuidedModePages(prevParentContainer);
+    return prevParentContainerPages[prevParentContainerPages.length - 1];
+  }
+};

@@ -4,10 +4,10 @@ import {
   updateGuidedRadioButtonsFromJSON,
 } from "../buttons/radioButtons.js";
 import { externallySetSearchFilterValue } from "../../../stores/slices/datasetTreeViewSlice.js";
-import { guidedSetNavLoadingState } from "../pageNavigation/pageLoading.js";
+import { guidedSetNavLoadingState } from "./pageLoading.js";
 import Swal from "sweetalert2";
 import { userErrorMessage } from "../../others/http-error-handler/error-handler.js";
-import { getNonSkippedGuidedModePages } from "../pageNavigation/pageSkipping.js";
+import { getNonSkippedGuidedModePages } from "./pageSkipping.js";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie.js";
 
 // Function that handles the visibility of the back button
@@ -456,22 +456,6 @@ export const openPage = async (targetPageID) => {
     //     });
     //   }
     // }
-
-    //     if (targetPageID === "guided-dataset-structure-intro-tab") {
-    //         // Handle whether or not the spreadsheet importation page should be skipped
-    //         // Note: this is done here to centralize the logic for skipping the page
-    //         // The page is unskipped only if the user has not added any subjects,
-    //         // indicated that they will be adding subjects, and the user is not starting from Pennsieve
-    //         if (
-    //             window.getExistingSubjectNames().length === 0 &&
-    //             window.sodaJSONObj["starting-point"]["type"] != "bf" &&
-    //             window.sodaJSONObj["button-config"]["dataset-contains-subjects"] === "yes"
-    //         ) {
-    //             guidedUnSkipPage("guided-subject-structure-spreadsheet-importation-tab");
-    //         } else {
-    //             guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
-    //         }
-    //     }
 
     //     if (targetPageID === "guided-subject-structure-spreadsheet-importation-tab") {
     //         const savedSpreadSheetPath = window.sodaJSONObj["dataset-structure-spreadsheet-path"];
