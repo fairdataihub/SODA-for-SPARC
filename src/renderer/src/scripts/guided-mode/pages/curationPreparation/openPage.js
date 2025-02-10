@@ -1,21 +1,20 @@
-import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "./curationPreparation";
+import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "./model";
 // Import state management stores
-import useGlobalStore from "../../../stores/globalStore";
 import {
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
-} from "../../../stores/slices/guidedModeSlice";
-import { setDropdownState } from "../../../stores/slices/dropDownSlice";
-import api from "../../others/api/api";
-import { clientError } from "../../others/http-error-handler/error-handler";
-import { guidedShowOptionalRetrySwal } from "../swals/helperSwals";
-import { userErrorMessage } from "../../others/http-error-handler/error-handler";
-import { setPageLoadingState } from "../pageNavigation/pageLoading";
-import client from "../../client";
+} from "../../../../stores/slices/guidedModeSlice";
+import { setDropdownState } from "../../../../stores/slices/dropDownSlice";
+import api from "../../../others/api/api";
+import { clientError } from "../../../others/http-error-handler/error-handler";
+import { guidedShowOptionalRetrySwal } from "../../swals/helperSwals";
+import { userErrorMessage } from "../../../others/http-error-handler/error-handler";
+import { setPageLoadingState } from "../../pageNavigation/pageLoading";
+import client from "../../../client";
 
 // TODO: Place this inside of a SODAJSONObj accessing file/function that is imported across all guided mode files
 
-import { pageNeedsUpdateFromPennsieve } from "../pennsieveUtils";
+import { pageNeedsUpdateFromPennsieve } from "../../pennsieveUtils";
 
 export const openPageCurationPreparation = async (targetPageID) => {
   console.log("Executing this thang now");

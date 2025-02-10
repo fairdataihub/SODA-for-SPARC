@@ -2,12 +2,13 @@ import { openPageCurationPreparation } from "./curationPreparation/openPage.js";
 import {
   resetGuidedRadioButtons,
   updateGuidedRadioButtonsFromJSON,
-} from "./buttons/radioButtons.js";
-import { externallySetSearchFilterValue } from "../../stores/slices/datasetTreeViewSlice.js";
-import { guidedSetNavLoadingState } from "./pageNavigation/pageLoading";
+} from "../buttons/radioButtons.js";
+import { externallySetSearchFilterValue } from "../../../stores/slices/datasetTreeViewSlice.js";
+import { guidedSetNavLoadingState } from "../pageNavigation/pageLoading.js";
 import Swal from "sweetalert2";
-import { userErrorMessage } from "../others/http-error-handler/error-handler.js";
-import { setSelectedEntities } from "../../stores/slices/datasetContentSelectorSlice.js";
+import { userErrorMessage } from "../../others/http-error-handler/error-handler.js";
+import { setSelectedEntities } from "../../../stores/slices/datasetContentSelectorSlice.js";
+import { getNonSkippedGuidedModePages } from "../pageNavigation/pageSkipping.js";
 
 // Function that handles the visibility of the back button
 const handleBackButtonVisibility = (targetPageID) => {
@@ -32,17 +33,6 @@ const handleNextButtonVisibility = (targetPageID) => {
   } else {
     $("#guided-next-button").css("visibility", "visible");
   }
-};
-
-export const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {
-  let allChildPages = Array.from(
-    parentElementToGetChildrenPagesFrom.querySelectorAll(".guided--page")
-  );
-  const nonSkippedChildPages = allChildPages.filter((page) => {
-    return page.dataset.skipPage != "true";
-  });
-
-  return nonSkippedChildPages;
 };
 
 // Function that handles the validation state of the dataset
@@ -322,6 +312,7 @@ const setActiveProgressionTab = (targetPageID) => {
 // //The general flow is to check if there is values for the keys relevant to the page
 // //If the keys exist, extract the data from the window.sodaJSONObj and populate the page
 // //If the keys do not exist, reset the page (inputs, tables etc.) to the default state
+
 export const openPage = async (targetPageID) => {
   console.log("Opening page high level", targetPageID);
   //NOTE: 2 Bottom back buttons (one handles sub pages, and the other handles main pages)
