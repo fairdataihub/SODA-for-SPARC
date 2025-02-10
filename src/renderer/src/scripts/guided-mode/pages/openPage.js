@@ -7,7 +7,6 @@ import { externallySetSearchFilterValue } from "../../../stores/slices/datasetTr
 import { guidedSetNavLoadingState } from "../pageNavigation/pageLoading.js";
 import Swal from "sweetalert2";
 import { userErrorMessage } from "../../others/http-error-handler/error-handler.js";
-import { setSelectedEntities } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { getNonSkippedGuidedModePages } from "../pageNavigation/pageSkipping.js";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie.js";
 
@@ -436,24 +435,6 @@ export const openPage = async (targetPageID) => {
         "#guided_loading_pennsieve_dataset-organize"
       );
       importProgressCircle.classList.add("hidden");
-    }
-
-    if (targetPageID === "guided-prepare-dataset-structure-tab") {
-      setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
-      /*
-        // If the user has already added subjects, disallow them from selecting no (they have to go to the subject
-        // page to delete subjects but this would be a very strange case anyways)
-        const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
-        const subjects = [...subjectsInPools, ...subjectsOutsidePools];
-        const subjectQuerySectioin = document.getElementById("guided-section-subject-yes-no");
-        const infoText = document.getElementById("subject-deletion-block-text");
-        if (subjects.length > 0) {
-          subjectQuerySectioin.classList.add("section-disabled");
-          infoText.classList.remove("hidden");
-        } else {
-          subjectQuerySectioin.classList.remove("section-disabled");
-          infoText.classList.add("hidden");
-        }*/
     }
 
     await openPageCurationPreparation(targetPageID);

@@ -10,6 +10,7 @@ import { clientError } from "../../../others/http-error-handler/error-handler";
 import { guidedShowOptionalRetrySwal } from "../../swals/helperSwals";
 import { userErrorMessage } from "../../../others/http-error-handler/error-handler";
 import { setPageLoadingState } from "../../pageNavigation/pageLoading";
+import { setSelectedEntities } from "../../../../stores/slices/datasetContentSelectorSlice.js";
 import client from "../../../client";
 
 // TODO: Place this inside of a SODAJSONObj accessing file/function that is imported across all guided mode files
@@ -107,5 +108,23 @@ export const openPageCurationPreparation = async (targetPageID) => {
       const datasetSubtitle = getGuidedDatasetSubtitle();
       setGuidedDatasetSubtitle(datasetSubtitle);
     }
+  }
+
+  if (targetPageID === "guided-prepare-dataset-structure-tab") {
+    setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
+    /*
+      // If the user has already added subjects, disallow them from selecting no (they have to go to the subject
+      // page to delete subjects but this would be a very strange case anyways)
+      const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
+      const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+      const subjectQuerySectioin = document.getElementById("guided-section-subject-yes-no");
+      const infoText = document.getElementById("subject-deletion-block-text");
+      if (subjects.length > 0) {
+        subjectQuerySectioin.classList.add("section-disabled");
+        infoText.classList.remove("hidden");
+      } else {
+        subjectQuerySectioin.classList.remove("section-disabled");
+        infoText.classList.add("hidden");
+      }*/
   }
 };
