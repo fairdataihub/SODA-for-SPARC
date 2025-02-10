@@ -9,6 +9,7 @@ import { userErrorMessage } from "../../others/http-error-handler/error-handler"
 import { startOrStopAnimationsInContainer } from "../lotties/lottie";
 import api from "../../others/api/api";
 import useGlobalStore from "../../../stores/globalStore";
+import { savePageCurationPreparation } from "./curationPreparation/savePage";
 import { openPage } from "../pages/openPage";
 
 while (!window.baseHtmlLoaded) {
@@ -17,6 +18,180 @@ while (!window.baseHtmlLoaded) {
 
 let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
+
+const guidedHighLevelFolders = ["primary", "source", "derivative"];
+
+// This function extracts the pool, subject, and sample structure from an imported dataset
+// and adds the pools, subjects, and samples to the guided mode structure if they exist.
+// This function also handles setting the button config options, for example, if the function
+// detects that there's primary subject data in the dataset, the yes button will be selected.
+const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
+  const guidedFoldersInDataset = guidedHighLevelFolders.filter((folder) =>
+    Object.keys(datasetStructure["folders"]).includes(folder)
+  );
+
+  const addedSubjects = [];
+  const subjectsMovedIntoPools = [];
+  const addedPools = [];
+  const addedSamples = [];
+
+  // Loop through prim, src, and deriv if they exist in the datasetStructure
+  for (const hlf of guidedFoldersInDataset) {
+    //Get the names of the subfolders directly in the hlf
+    const hlfFolderNames = Object.keys(datasetStructure["folders"][hlf]["folders"]);
+    const subjectFoldersInBase = hlfFolderNames.filter((folder) => folder.startsWith("sub-"));
+    const poolFoldersInBase = hlfFolderNames.filter((folder) => folder.startsWith("pool-"));
+
+    // Loop through any folders starting with sub- in the hlf
+    for (const subjectFolder of subjectFoldersInBase) {
+      if (!addedSubjects.includes(subjectFolder)) {
+        try {
+          window.sodaJSONObj.addSubject(subjectFolder);
+          addedSubjects.push(subjectFolder);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      // Get the names of the subfolders directly in the subject folder
+      const potentialSampleFolderNames = Object.keys(
+        datasetStructure["folders"][hlf]["folders"][subjectFolder]["folders"]
+      );
+      const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
+        folder.startsWith("sam-")
+      );
+      if (sampleFoldersInSubject.length > 0) {
+        window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-sample-data`] = "yes";
+      }
+      // Loop through any folders starting with sam- in the subject folder
+      for (const sampleFolder of sampleFoldersInSubject) {
+        if (!addedSamples.includes(sampleFolder)) {
+          try {
+            window.sodaJSONObj.addSampleToSubject(sampleFolder, null, subjectFolder);
+            addedSamples.push(sampleFolder);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
+    }
+
+    if (subjectFoldersInBase.length > 0) {
+      window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-subject-data`] = "yes";
+    }
+
+    // Loop through any folders starting with pool- in the hlf
+    for (const poolFolder of poolFoldersInBase) {
+      if (!addedPools.includes(poolFolder)) {
+        try {
+          window.sodaJSONObj.addPool(poolFolder);
+          addedPools.push(poolFolder);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      // Get the names of the subfolders directly in the pool folder
+      const potentialSubjectFolderNames = Object.keys(
+        datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"]
+      );
+      const subjectFoldersInPool = potentialSubjectFolderNames.filter((folder) =>
+        folder.startsWith("sub-")
+      );
+
+      if (subjectFoldersInPool.length > 0) {
+        window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-subject-data`] = "yes";
+      }
+      // Loop through any folders starting with sub- in the pool folder
+      for (const subjectFolder of subjectFoldersInPool) {
+        if (!addedSubjects.includes(subjectFolder)) {
+          try {
+            window.sodaJSONObj.addSubject(subjectFolder);
+            addedSubjects.push(subjectFolder);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+
+        if (!subjectsMovedIntoPools.includes(subjectFolder)) {
+          try {
+            window.sodaJSONObj.moveSubjectIntoPool(subjectFolder, poolFolder);
+            subjectsMovedIntoPools.push(subjectFolder);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+
+        const potentialSampleFolderNames = Object.keys(
+          datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"][subjectFolder][
+            "folders"
+          ]
+        );
+        const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
+          folder.startsWith("sam-")
+        );
+        if (sampleFoldersInSubject.length > 0) {
+          window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-sample-data`] = "yes";
+        }
+        // Loop through any folders starting with sam- in the subject folder
+        for (const sampleFolder of sampleFoldersInSubject) {
+          if (!addedSamples.includes(sampleFolder)) {
+            try {
+              window.sodaJSONObj.addSampleToSubject(sampleFolder, poolFolder, subjectFolder);
+              addedSamples.push(sampleFolder);
+            } catch (error) {
+              console.log(error);
+            }
+          }
+        }
+      }
+    }
+
+    if (poolFoldersInBase.length > 0) {
+      window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-pool-data`] = "yes";
+    }
+  }
+
+  if (addedSubjects.length > 0) {
+    window.sodaJSONObj["button-config"]["dataset-contains-subjects"] = "yes";
+  }
+  if (addedPools.length > 0) {
+    window.sodaJSONObj["button-config"]["dataset-contains-pools"] = "yes";
+  } else {
+    window.sodaJSONObj["button-config"]["dataset-contains-pools"] = "no";
+  }
+  if (addedSamples.length > 0) {
+    window.sodaJSONObj["button-config"]["dataset-contains-samples"] = "yes";
+  }
+
+  return window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
+};
+
+const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
+  const invalidFolders = [];
+  const invalidFiles = [];
+
+  for (const hlf of guidedHighLevelFolders) {
+    if (datasetStructure["folders"][hlf]) {
+      const hlfFolders = Object.keys(datasetStructure["folders"][hlf]["folders"]);
+      //filter out hlfFolders that do not start with pool- or sub-
+      const invalidBaseFolders = hlfFolders.filter((folder) => {
+        return !folder.startsWith("pool-") && !folder.startsWith("sub-");
+      });
+
+      for (const invalidBaseFolder of invalidBaseFolders) {
+        invalidFolders.push(invalidBaseFolder);
+      }
+
+      const hlfFiles = Object.keys(datasetStructure["folders"][hlf]["files"]);
+      const invalidBaseFiles = hlfFiles.filter((file) => {
+        return !file.startsWith("manifest");
+      });
+      for (const invalidBaseFile of invalidBaseFiles) {
+        invalidFiles.push(invalidBaseFile);
+      }
+    }
+  }
+  return [invalidFolders, invalidFiles];
+};
 
 export const guidedSaveProgress = async () => {
   const guidedProgressFileName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
@@ -49,31 +224,6 @@ export const guidedSaveProgress = async () => {
   window.sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
 
   window.fs.writeFileSync(guidedFilePath, JSON.stringify(window.sodaJSONObj, null, 2));
-};
-
-const getGuidedProgressFileNames = () => {
-  return window.fs
-    .readdirSync(guidedProgressFilePath)
-    .map((progressFileName) => progressFileName.replace(".json", ""));
-};
-
-const updateGuidedDatasetName = (newDatasetName) => {
-  const previousDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
-
-  //update old progress file with new dataset name
-  const oldProgressFilePath = `${guidedProgressFilePath}/${previousDatasetName}.json`;
-  const newProgressFilePath = `${guidedProgressFilePath}/${newDatasetName}.json`;
-  window.fs.renameSync(oldProgressFilePath, newProgressFilePath);
-
-  const bannerImagePathToUpdate = window.sodaJSONObj["digital-metadata"]["banner-image-path"];
-  if (bannerImagePathToUpdate) {
-    const newBannerImagePath = bannerImagePathToUpdate.replace(previousDatasetName, newDatasetName);
-    //Rename the old banner image folder to the new dataset name
-    window.fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
-    //change the banner image path in the JSON obj
-    window.sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
-  }
-  window.sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
 };
 
 export const savePageChanges = async (pageBeingLeftID) => {
@@ -498,252 +648,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
       guidedSkipPage("guided-select-starting-point-tab");
     }
 
-    if (pageBeingLeftID === "guided-ask-if-submission-is-sparc-funded-tab") {
-      // NOTE: We use the button config generated by this page to determine if the dataset is SPARC funded
-      // See the function: datasetIsSparcFunded()
-      const userSelectedDatasetIsSparcFunded = document
-        .getElementById("guided-button-dataset-is-sparc-funded")
-        .classList.contains("selected");
-      const userSelectedDatasetIsReJoinFunded = document
-        .getElementById("guided-button-dataset-is-re-join-funded")
-        .classList.contains("selected");
-      const userSelectedDatasetIsOtherFunded = document
-        .getElementById("guided-button-dataset-is-not-sparc-funded")
-        .classList.contains("selected");
-
-      if (
-        !userSelectedDatasetIsSparcFunded &&
-        !userSelectedDatasetIsReJoinFunded &&
-        !userSelectedDatasetIsOtherFunded
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate the funding source for this dataset.",
-        });
-        throw errorArray;
-      }
-
-      // If the user selected that the dataset is SPARC funded, unskip the submission metadata page
-      if (userSelectedDatasetIsSparcFunded) {
-        // Set the consortium data standard value in the JSON
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
-          "SPARC";
-        const selectedFuncingSourceFromDropdown =
-          useGlobalStore.getState()["dropDownState"]["guided-select-sparc-funding-consortium"]
-            .selectedValue;
-
-        // Throw an error if the user did not select a funding source from the dropdown
-        if (!selectedFuncingSourceFromDropdown) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please select a funding source from the dropdown.",
-          });
-          throw errorArray;
-        } else {
-          // Set the funding consortium value in the JSON
-          window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
-            selectedFuncingSourceFromDropdown;
-        }
-      }
-
-      if (userSelectedDatasetIsReJoinFunded) {
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
-          "HEAL";
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
-          "REJOIN-HEAL";
-      }
-
-      if (userSelectedDatasetIsOtherFunded) {
-        const userSelectedTheyHaveReachedOutToCurationTeam = document
-          .getElementById("guided-button-non-sparc-user-has-contacted-sparc")
-          .classList.contains("selected");
-        const userSelectedTheyHaveNotReachedOutToCurationTeam = document
-          .getElementById("guided-button-non-sparc-user-has-not-contacted-sparc")
-          .classList.contains("selected");
-
-        if (
-          !userSelectedTheyHaveReachedOutToCurationTeam &&
-          !userSelectedTheyHaveNotReachedOutToCurationTeam
-        ) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please indicate if you have reached out to the curation team",
-          });
-          throw errorArray;
-        }
-        if (userSelectedTheyHaveNotReachedOutToCurationTeam) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please reach out to the curation team before continuing the curation process",
-          });
-          throw errorArray;
-        }
-
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
-          "";
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
-          "EXTERNAL";
-      }
-
-      const setConsortiumDataStandard =
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"];
-      // If the set consortium data standard is SPARC, unskip the SPARC specific metadata pages
-      if (setConsortiumDataStandard === "SPARC") {
-        const setFundingConsortium =
-          window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
-        if (setFundingConsortium === "SPARC") {
-          // If the funding consortium is SPARC, unskip the protocols page
-          guidedUnSkipPage("guided-protocols-tab");
-        } else {
-          // If the funding consortium is not SPARC, skip the protocols page
-          guidedSkipPage("guided-protocols-tab");
-        }
-        guidedUnSkipPage("guided-create-submission-metadata-tab");
-      } else {
-        // If the set consortium data standard is not SPARC, skip the SPARC specific metadata pages
-        guidedSkipPage("guided-create-submission-metadata-tab");
-        guidedSkipPage("guided-protocols-tab");
-        // Manually set the SPARC award number to "EXTERNAL" for non-SPARC funded datasets (case for all non-SPARC funded datasets)
-        window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "";
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = [""];
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = "";
-      }
-    }
-
-    if (pageBeingLeftID === "guided-name-subtitle-tab") {
-      const datasetNameInput = useGlobalStore.getState().guidedDatasetName.trim();
-      const datasetSubtitleInput = useGlobalStore.getState().guidedDatasetSubtitle.trim();
-
-      //Throw error if no dataset name or subtitle were added
-      if (!datasetNameInput) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please enter a dataset name.",
-        });
-      }
-
-      const datasetNameContainsForbiddenCharacters = window.evaluateStringAgainstSdsRequirements(
-        datasetNameInput,
-        "string-contains-forbidden-characters"
-      );
-      if (datasetNameContainsForbiddenCharacters) {
-        errorArray.push({
-          type: "notyf",
-          message: `A Pennsieve dataset name cannot contain any of the following characters: @#$%^&*()+=/\|"'~;:<>{}[]?`,
-        });
-      }
-      if (!datasetSubtitleInput) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please enter a dataset subtitle.",
-        });
-      }
-
-      if (errorArray.length > 0) {
-        throw errorArray;
-      }
-
-      const currentDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
-      if (currentDatasetName) {
-        // Update the progress file path name and banner image path if needed
-        if (datasetNameInput !== currentDatasetName) {
-          const currentProgressFileNames = getGuidedProgressFileNames();
-          if (currentProgressFileNames.includes(datasetNameInput)) {
-            errorArray.push({
-              type: "notyf",
-              message: `Unable to change dataset name to: ${datasetNameInput}. A dataset with that name already exists.`,
-            });
-            throw errorArray;
-          }
-          updateGuidedDatasetName(datasetNameInput);
-          window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
-        } else {
-          window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
-        }
-      } else {
-        const currentProgressFileNames = getGuidedProgressFileNames();
-        if (currentProgressFileNames.includes(datasetNameInput)) {
-          errorArray.push({
-            type: "notyf",
-            message: `A progress file already exists for the dataset: ${datasetNameInput}. Please enter a different dataset name.`,
-          });
-          throw errorArray;
-        }
-        window.sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
-        window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
-      }
-    }
-
-    // if (pageBeingLeftID === "guided-prepare-dataset-structure-tab") {
-    //   const selectedEntities = useGlobalStore.getState()["selectedEntities"];
-    //   console.log("selectedEntities", selectedEntities);
-    //   if (selectedEntities.length === 0) {
-    //     errorArray.push({
-    //       type: "notyf",
-    //       message: "Please select at least one option that applies to your dataset",
-    //     });
-    //     throw errorArray;
-    //   }
-    //   console.log("selectedEntities", selectedEntities);
-    //   window.sodaJSONObj["selected-entities"] = selectedEntities;
-    //   console.log("selectedEntities", selectedEntities);
-
-    //   if (!selectedEntities.includes("subjects") && !selectedEntities.includes("code")) {
-    //     errorArray.push({
-    //       type: "notyf",
-    //       message: "You must indicate that your dataset contains subjects and/or code",
-    //     });
-    //     throw errorArray;
-    //   }
-
-    //   if (selectedEntities.includes("subjects")) {
-    //     guidedUnSkipPage("guided-subjects-entity-addition-tab");
-    //     guidedUnSkipPage("guided-subjects-entity-selection-tab");
-    //     guidedUnSkipPage("guided-unstructured-data-import-tab");
-    //     guidedUnSkipPage("guided-create-subjects-metadata-tab");
-    //   } else {
-    //     guidedSkipPage("guided-subjects-entity-addition-tab");
-    //     guidedSkipPage("guided-subjects-entity-selection-tab");
-    //     guidedSkipPage("guided-unstructured-data-import-tab");
-    //     guidedSkipPage("guided-create-subjects-metadata-tab");
-    //   }
-
-    //   if (selectedEntities.includes("samples")) {
-    //     guidedUnSkipPage("guided-samples-entity-addition-tab");
-    //     guidedUnSkipPage("guided-samples-entity-selection-tab");
-    //     guidedUnSkipPage("guided-create-samples-metadata-tab");
-    //   } else {
-    //     guidedSkipPage("guided-samples-entity-addition-tab");
-    //     guidedSkipPage("guided-samples-entity-selection-tab");
-    //     guidedSkipPage("guided-create-samples-metadata-tab");
-    //   }
-
-    //   if (selectedEntities.includes("sites")) {
-    //     guidedUnSkipPage("guided-sites-entity-addition-tab");
-    //     guidedUnSkipPage("guided-sites-entity-selection-tab");
-    //     guidedUnSkipPage("guided-create-sites-metadata-tab");
-    //   } else {
-    //     guidedSkipPage("guided-sites-entity-addition-tab");
-    //     guidedSkipPage("guided-sites-entity-selection-tab");
-    //     guidedSkipPage("guided-create-sites-metadata-tab");
-    //   }
-
-    //   if (selectedEntities.includes("performances")) {
-    //     guidedUnSkipPage("guided-performances-entity-addition-tab");
-    //     guidedUnSkipPage("guided-performances-entity-selection-tab");
-    //     guidedUnSkipPage("guided-create-performances-metadata-tab");
-    //   } else {
-    //     guidedSkipPage("guided-performances-entity-addition-tab");
-    //     guidedSkipPage("guided-performances-entity-selection-tab");
-    //     guidedSkipPage("guided-create-performances-metadata-tab");
-    //   }
-
-    //   if (selectedEntities.includes("code")) {
-    //     guidedUnSkipPage("guided-code-folder-tab");
-    //   } else {
-    //     guidedSkipPage("guided-code-folder-tab");
-    //   }
-    // }
+    await savePageCurationPreparation(pageBeingLeftID);
 
     // if (pageBeingLeftID === "guided-subjects-addition-tab") {
     //   if (window.getExistingSubjectNames().length === 0) {

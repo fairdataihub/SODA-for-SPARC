@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 import { userErrorMessage } from "../../others/http-error-handler/error-handler.js";
 import { setSelectedEntities } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { getNonSkippedGuidedModePages } from "../pageNavigation/pageSkipping.js";
+import { startOrStopAnimationsInContainer } from "../lotties/lottie.js";
 
 // Function that handles the visibility of the back button
 const handleBackButtonVisibility = (targetPageID) => {
@@ -2131,6 +2132,8 @@ export const openPage = async (targetPageID) => {
 
     //Set all capsules to grey and set capsule of page being traversed to green
     setActiveProgressionTab(targetPageID);
+
+    // TODO: Import this
     // renderSideBar(targetPageID);
 
     const guidedBody = document.getElementById("guided-body");
@@ -2156,8 +2159,8 @@ export const openPage = async (targetPageID) => {
       });
     }
 
-    //     // Start any animations that need to be started
-    //     startOrStopAnimationsInContainer(targetPageID, "start");
+    // Start any animations that need to be started
+    startOrStopAnimationsInContainer(targetPageID, "start");
 
     hideAndShowElementsDependingOnStartType(targetPage);
 
