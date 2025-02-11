@@ -148,7 +148,7 @@ const guidedSaveAndExit = async () => {
   }
 };
 
-const guidedTransitionToHome = () => {
+export const guidedTransitionToHome = () => {
   guidedUnLockSideBar();
   window.guidedPrepareHomeScreen();
 
@@ -167,3 +167,8 @@ const guidedTransitionToHome = () => {
 document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
   await guidedSaveAndExit();
 });
+
+export const scrollToBottomOfGuidedBody = () => {
+  const elementToScrollTo = document.querySelector(".guided--body");
+  elementToScrollTo.scrollTop = elementToScrollTo.scrollHeight;
+};

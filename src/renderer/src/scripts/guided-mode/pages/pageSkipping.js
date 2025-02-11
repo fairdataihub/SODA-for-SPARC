@@ -90,3 +90,7 @@ export const getPrevPageNotSkipped = (currentPageID) => {
     return prevParentContainerPages[prevParentContainerPages.length - 1];
   }
 };
+
+export const pageIsSkipped = (pageId) => {
+  return window.sodaJSONObj["skipped-pages"].includes(pageId);
+};
