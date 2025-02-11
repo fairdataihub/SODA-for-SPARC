@@ -2661,12 +2661,13 @@ const guidedTransitionToHome = () => {
   }
   window.CURRENT_PAGE = undefined;
 
+  document.getElementById("guided-header-div").classList.add("hidden");
   document.getElementById("guided-footer-div").classList.add("hidden");
 };
 
 const guidedSaveProgress = async () => {
   const guidedProgressFileName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
-  //return if guidedProgressFileName is not a strnig greater than 0
+  //return if guidedProgressFileName is not a string greater than 0
   if (
     !guidedProgressFileName ||
     typeof guidedProgressFileName !== "string" ||
@@ -4638,6 +4639,56 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-unstructured-data-import-tab") {
+      if (0 === 1) {
+        const responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+          params: {
+            selected_account: window.defaultBfAccount,
+          },
+        });
+        const datasets = responseObject.data.datasets;
+        console.log("Got datasets", datasets);
+
+        let fieldEntries = [];
+        for (const field of $("#guided-form-add-a-subject")
+          .children()
+          .find(".subjects-form-entry")) {
+          fieldEntries.push(field.name.toLowerCase());
+        }
+
+        const foundIDs = [];
+
+        for (const dataset of datasets) {
+          try {
+            const subjectsMetadataResponse = await client.get(
+              `/prepare_metadata/import_metadata_file`,
+              {
+                params: {
+                  selected_account: window.defaultBfAccount,
+                  selected_dataset: dataset.id,
+                  file_type: "subjects.xlsx",
+                  ui_fields: fieldEntries.toString(),
+                },
+              }
+            );
+            const subjectFileRows = subjectsMetadataResponse.data.subject_file_rows;
+            // Get the first element of each row and add it to a new row
+            const newRows = [];
+            for (const row of subjectFileRows) {
+              newRows.push(row[0]);
+            }
+            foundIDs.push({
+              dataset: dataset,
+              rows: newRows,
+            });
+
+            console.log("subjectsMetadataResponse", subjectsMetadataResponse);
+          } catch (error) {
+            console.error("Error fetching subjects metadata", error);
+          }
+        }
+        console.log("Found IDs", foundIDs);
+      }
+
       guidedUpdateFolderStructureUI("data/");
     }
 
