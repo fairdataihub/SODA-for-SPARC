@@ -1053,8 +1053,8 @@
           <h1 class="text-sub-step-title">Describe the content of your dataset</h1>
           <div class="guided--section">
             <p class="help-text">
-              Check the boxes that apply to the data collected or generated during your study in
-              order to help SODA determine the optimal workflow to organize your dataset.
+              Check the boxes that apply to the data collected during your study in order to help
+              SODA determine the optimal workflow to organize your dataset.
             </p>
           </div>
           <div data-component-type="dataset-content-selector" class="guided--section"></div>
@@ -1062,19 +1062,12 @@
         <div
           id="guided-unstructured-data-import-tab"
           class="guided--page"
-          data-page-name="Data importation"
+          data-page-name="Data Importation"
         >
           <div class="guided--section">
-            <h1 class="text-sub-step-title">Import Your Data</h1>
+            <h1 class="text-sub-step-title">Data Importation</h1>
             <p class="help-text w-100">
-              Import the data that was collected or generated during your study below. This
-              includes: experimental data, code used for analysis, protocol files, documentation
-              supporting your experiment, and any other files that are part of your study.
-            </p>
-            <p class="help-text">
-              <b>Note:</b> If your data is organized into subfolders (e.g., "microscopy,"
-              "imaging"), make sure to import the subfolders directly rather than the parent folder
-              they’re in.
+              Import all of the data that you would like to include in your dataset below.
             </p>
           </div>
           <div
@@ -1085,29 +1078,14 @@
           ></div>
         </div>
 
-        <div id="guided-code-folder-tab" class="guided--page" data-page-name="Code import">
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Code importation</h1>
-            <p class="help-text">
-              Import any scripts, computational models, analysis pipelines, or other code/tools used
-              during the study for data processing or analysis below.
-            </p>
-          </div>
-          <div
-            data-component-type="data-importer"
-            data-data-type="code"
-            data-relative-folder-path-to-import-data-into="code/"
-            class="guided--section"
-          ></div>
-        </div>
         <div
-          id="supporting-data-tab"
-          data-page-name="Annotate supporting data"
+          id="data-bucketing-tab"
+          data-page-name="Bucket imported data"
           class="guided--page"
           data-component-type="entity-selection-page"
-          data-entity-type="supporting-data"
-          data-entity-type-string-singular="Supporting Data"
-          data-entity-type-string-plural="Supporting Data"
+          data-entity-type="bucketed-data"
+          data-entity-type-string-singular="Data buckets"
+          data-entity-type-string-plural="Data buckets"
           data-entity-type-prefix=""
         ></div>
         <!--

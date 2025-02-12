@@ -17,15 +17,15 @@ const contentOptionsMap = {
       "Samples are biological or physical specimens like tissue or blood taken from subjects",
     dependsOn: ["subjects"],
     dependsOnNotSatiatedMessage: "You must indicate that you collected data from subjects first.",
-    ml: 20,
+    ml: 10,
   },
   sites: {
-    label: "I collected data from multiple distinct physical sites on subjects or samples.",
+    label: "I collected data from multiple distinct physical sites.",
     description:
       "For example, if you collected data from multiple brain regions, different sections of a tissue sample, or distinct parts of an organ.",
     dependsOn: ["subjects"],
     dependsOnNotSatiatedMessage: "You must indicate that you collected data from subjects first.",
-    ml: 20,
+    ml: 10,
   },
   "subject-sites": {
     label: "I collected data from distinct physical sites on subjects.",
@@ -34,7 +34,7 @@ const contentOptionsMap = {
     dependsOn: ["subjects", "samples", "sites"],
     dependsOnNotSatiatedMessage:
       "You must indicate that you collected data from subjects, samples, and sites first.",
-    ml: 40,
+    ml: 20,
   },
   "sample-sites": {
     label: "I collected data from distinct physical sites on samples.",
@@ -43,7 +43,7 @@ const contentOptionsMap = {
     dependsOn: ["subjects", "samples", "sites"],
     dependsOnNotSatiatedMessage:
       "You must indicate that you collected data from subjects, samples, and sites first.",
-    ml: 40,
+    ml: 20,
   },
   performances: {
     label: "I collected data from multiple performances of the same protocol.",
@@ -51,25 +51,25 @@ const contentOptionsMap = {
       "Select this option if you repeated the same protocol or procedure multiple times (such as running repeated tests or experiments) and collected data from each repetition.",
     dependsOn: ["subjects"],
     dependsOnNotSatiatedMessage: "You must indicate that you collected data from subjects first.",
-    ml: 20,
+    ml: 10,
   },
   "performances-on-subjects": {
     label: "The protocol performances were run on the subjects.",
     description:
-      "Choose this if tasks, tests, or procedures were performed directly on subjects (e.g., humans or animals) and data was collected during these sessions.",
+      "Select this if tasks, tests, or procedures were performed directly on subjects (e.g., humans or animals) and data was collected during these sessions.",
     dependsOn: ["subjects", "samples", "performances"],
     dependsOnNotSatiatedMessage:
       "You must indicate that you collected data from subjects, samples, and performances first.",
-    ml: 40,
+    ml: 20,
   },
   "performances-on-samples": {
     label: "The protocol performances were run on the samples.",
     description:
-      "Choose this if tasks, tests, or procedures were performed directly on samples (e.g., tissues or blood) and data was collected during these sessions.",
+      "Select this if tasks, tests, or procedures were performed directly on samples (e.g., tissues or blood) and data was collected during these sessions.",
     dependsOn: ["subjects", "samples", "performances"],
     dependsOnNotSatiatedMessage:
       "You must indicate that you collected data from subjects, samples, and performances first.",
-    ml: 40,
+    ml: 20,
   },
   code: {
     label: "I used code to generate or analyze the collected data",
@@ -81,8 +81,6 @@ const contentOptionsMap = {
 
 const DatasetContentSelector = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
-
-  // State to track which option descriptions are expanded.
   const [expanded, setExpanded] = useState({});
 
   const toggleExpanded = (key) => {
@@ -106,65 +104,75 @@ const DatasetContentSelector = () => {
     [selectedEntities]
   );
 
-  const renderOption = (key) => {
-    const option = contentOptionsMap[key];
-    const isDisabled = option.dependsOn?.some((dep) => !selectedEntities.includes(dep));
-    const isSelected = selectedEntities.includes(key) && !isDisabled;
-
-    return (
-      <Tooltip
-        key={key}
-        label={isDisabled ? option.dependsOnNotSatiatedMessage : ""}
-        disabled={!isDisabled}
-        zIndex={2999}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            marginLeft: option.ml,
-            borderRadius: "4px",
-            border: "1px solid #ddd",
-            padding: "8px",
-          }}
-        >
-          <Group position="apart" align="center">
-            <Group position="left">
-              <Checkbox
-                checked={isSelected}
-                disabled={isDisabled}
-                onChange={() => !isDisabled && handleEntitySelection(key)}
-              />
-              <Text fw={600} size="md" style={{ color: isDisabled ? "#aaa" : "inherit" }}>
-                {option.label}
-              </Text>
-            </Group>
-            {option.description && (
-              <Tooltip label={expanded[key] ? "Hide details" : "Read more"}>
-                <ActionIcon
-                  onClick={() => toggleExpanded(key)}
-                  aria-label={expanded[key] ? "Hide details" : "Read more"}
-                >
-                  {expanded[key] ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
-                </ActionIcon>
-              </Tooltip>
-            )}
-          </Group>
-          {option.description && (
-            <Collapse in={expanded[key]}>
-              <Text size="sm" color="dimmed" mt="xs">
-                {option.description}
-              </Text>
-            </Collapse>
-          )}
-        </div>
-      </Tooltip>
-    );
-  };
-
   return (
     <FullWidthContainer>
-      <Stack spacing="sm">{Object.keys(contentOptionsMap).map((key) => renderOption(key))}</Stack>
+      <Stack spacing="xs">
+        {Object.entries(contentOptionsMap).map(([key, option]) => {
+          const isDisabled = option.dependsOn?.some((dep) => !selectedEntities.includes(dep));
+          const isSelected = selectedEntities.includes(key) && !isDisabled;
+
+          return (
+            <Tooltip
+              key={key}
+              label={isDisabled ? option.dependsOnNotSatiatedMessage : ""}
+              disabled={!isDisabled}
+              zIndex={2999}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: "6px 10px",
+                  borderRadius: "6px",
+                  transition: "background 0.2s",
+                  cursor: isDisabled ? "not-allowed" : "pointer",
+                  opacity: isDisabled ? 0.6 : 1,
+                }}
+              >
+                <Group position="apart" align="center" ml={option.ml}>
+                  <Group>
+                    <Checkbox
+                      checked={isSelected}
+                      disabled={isDisabled}
+                      onClick={() => !isDisabled && handleEntitySelection(key)}
+                    />
+                    <Text size="md" fw={600}>
+                      {option.label}
+                    </Text>
+                  </Group>
+                  {option.description && (
+                    <Tooltip
+                      disabled={isDisabled}
+                      label={expanded[key] ? "Hide" : "Show"}
+                      zIndex={2999}
+                    >
+                      <ActionIcon
+                        size="sm"
+                        variant="transparent"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleExpanded(key);
+                        }}
+                      >
+                        {expanded[key] ? (
+                          <IconChevronUp size={16} />
+                        ) : (
+                          <IconChevronDown size={16} />
+                        )}
+                      </ActionIcon>
+                    </Tooltip>
+                  )}
+                </Group>
+                {expanded[key] && (
+                  <Text size="sm" mt="xs" ml="60px">
+                    {option.description}
+                  </Text>
+                )}
+              </div>
+            </Tooltip>
+          );
+        })}
+      </Stack>
     </FullWidthContainer>
   );
 };

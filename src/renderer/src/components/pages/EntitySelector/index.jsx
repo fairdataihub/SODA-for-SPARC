@@ -12,7 +12,7 @@ import {
   Stack,
   Group,
   Button,
-  ScrollArea,
+  NumberInput,
   Box,
 } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
@@ -139,7 +139,7 @@ const EntitySelectorPage = ({
                 Instructions
               </Tabs.Tab>
               <Tabs.Tab value="manual">Manual Entry</Tabs.Tab>
-              <Tabs.Tab value="spreadsheet">Spreadsheet Entry</Tabs.Tab>
+              <Tabs.Tab value="autogen">Auto-generate IDs</Tabs.Tab>
               {/*<Tabs.Tab value="folderSelect">Extract from folder names</Tabs.Tab>*/}
             </Tabs.List>
             <Tabs.Panel value="instructions">
@@ -174,23 +174,31 @@ const EntitySelectorPage = ({
               </EntityListContainer>
             </Tabs.Panel>
 
-            <Tabs.Panel value="spreadsheet">
-              <Group spacing="xs" align="start" width="100%">
+            <Tabs.Panel value="autogen">
+              <Group spacing="xs" align="start" flex={1}>
                 <EntityListContainer title={`${entityTypeStringSingular} IDs`}>
                   {renderEntityList("300px")}
                 </EntityListContainer>
-                <Stack>
-                  <Text>
-                    <b>Step 1:</b> Generate a spreadsheet template to input{" "}
-                    {entityTypeStringSingular} IDs.
-                  </Text>
-                  <Button
-                    size="xs"
-                    color="blue"
-                    variant="outline"
-                    onClick={handleImportEntitiesFromLocalFoldersClick}
-                  >
-                    Generate a spreadsheet to add {entityTypeStringPlural} IDs into
+                <Stack flex={1}>
+                  <InstructionalTextSection
+                    textSectionKey={`${entityTypePrefix}-`}
+                    entityTypeStringSingular={entityTypeStringSingular}
+                  />
+                  <Text>In this section, you will</Text>
+                  <TextInput
+                    label="Enter the name of the folder containing the files"
+                    placeholder="Enter folder name"
+                    value={newEntityName}
+                    onChange={(event) => setNewEntityName(event.currentTarget.value)}
+                    w="100%"
+                  />
+                  <NumberInput
+                    label="Input label"
+                    description="Input description"
+                    placeholder="Input placeholder"
+                  />
+                  <Button onClick={handleImportEntitiesFromLocalFoldersClick} mt="lg">
+                    asdf
                   </Button>
                 </Stack>
               </Group>

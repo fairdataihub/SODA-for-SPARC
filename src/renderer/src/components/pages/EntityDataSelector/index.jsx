@@ -140,27 +140,39 @@ const EntityDataSelectorPage = ({
   entityTypeStringPlural,
   entityTypePrefix,
 }) => {
-  console.log("entityType", entityType);
-
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
 
   return (
     <GuidedModePage pageHeader={pageName}>
       <GuidedModeSection>
-        {entityType === "supporting-data" ? (
+        {entityType === "bucketed-data" ? (
           <Stack>
             <Text>
-              <b>Source data</b> is raw, unaltered data from an experiment such as recorded neural
+              SPARC requires you to differentiate the following data types from the rest of the data
+              you imported:
+            </Text>
+            {/*<Text>
+              <b>Source data:</b> Raw, unaltered data from an experiment such as recorded neural
               signals or unprocessed microscope images.
             </Text>
             <Text>
-              <b>Derivative data</b> is data that has been processed or transformed data such as ...
+              <b>Derivative data:</b> Data that has been processed or transformed data such as ...
+            </Text>*/}
+            <Text>
+              <b>Code:</b> Scripts, computational models, analysis pipelines, or other software used
+              to generate, process, or analyze the data.
             </Text>
             <Text>
-              <b>The rest of the options</b> More info
+              <b>Protocol: </b> Instructions for conducting an experiment or analysis.
             </Text>
-            <Text>Annotate the data below.....</Text>
+            <Text>
+              <b>Documentation:</b> Supporting documents for the dataset.
+            </Text>
+            <Text>
+              For each of the data buckets in the list on the left, associate any files on the right
+              that belong to that bucket.
+            </Text>
           </Stack>
         ) : (
           <Stack>

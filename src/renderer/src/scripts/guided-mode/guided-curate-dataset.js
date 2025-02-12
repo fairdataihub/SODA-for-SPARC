@@ -4998,13 +4998,15 @@ window.openPage = async (targetPageID) => {
       );
       setActiveEntity(null);
     }
-    if (targetPageID === "supporting-data-tab") {
-      addEntityToEntityList("supporting-data", "Source data");
-      addEntityToEntityList("supporting-data", "Derivative data");
-      addEntityToEntityList("supporting-data", "Code");
-      addEntityToEntityList("supporting-data", "Protocol data");
-      addEntityToEntityList("supporting-data", "Documentation");
-      addEntityToEntityList("supporting-data", "Auxiliary");
+    if (targetPageID === "data-bucketing-tab") {
+      /*
+      addEntityToEntityList("bucketed-data", "Source data");
+      addEntityToEntityList("bucketed-data", "Derivative data");
+      */
+
+      addEntityToEntityList("bucketed-data", "Code");
+      addEntityToEntityList("bucketed-data", "Protocol");
+      addEntityToEntityList("bucketed-data", "Documentation");
       setActiveEntity(null);
       console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
     }
