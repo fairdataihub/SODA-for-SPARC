@@ -81,7 +81,7 @@ export const guidedCreateSodaJSONObj = () => {
   window.sodaJSONObj["dataset-validated"] = "false";
 };
 
-const attachGuidedMethodsToSodaJSONObj = () => {
+export const attachGuidedMethodsToSodaJSONObj = () => {
   window.sodaJSONObj.addPool = function (poolName, throwErrorIfPoolExists = true) {
     if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName]) {
       if (throwErrorIfPoolExists) {

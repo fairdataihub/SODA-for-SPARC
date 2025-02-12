@@ -1,8 +1,8 @@
 import { openPage } from "./openPage";
 import { savePageChanges } from "./savePageChanges";
-import { guidedUnSkipPage, getNextPageNotSkipped, getPrevPageNotSkipped } from "./pageSkipping";
+import { guidedUnSkipPage, getNextPageNotSkipped, getPrevPageNotSkipped, guidedResetSkippedPages } from "./pageSkipping";
 import { guidedUnLockSideBar, resetLazyLoading } from "../../../assets/nav";
-import { guidedCreateSodaJSONObj } from "../utils/sodaJSONObj";
+import { guidedCreateSodaJSONObj, attachGuidedMethodsToSodaJSONObj } from "../utils/sodaJSONObj";
 import Swal from "sweetalert2";
 
 while (!window.baseHtmlLoaded) {
@@ -190,6 +190,30 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
   guidedUnSkipPage("guided-select-starting-point-tab");
   await openPage("guided-select-starting-point-tab");
 });
+
+const guidedTransitionFromHome = async () => {
+  //Hide the home screen
+  document.getElementById("guided-home").classList.add("hidden");
+  document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
+  document.getElementById("guided-header-div").classList.remove("hidden");
+
+  //Remove the lotties (will be added again upon visting the home page)
+  document.getElementById("existing-dataset-lottie").innerHTML = "";
+  document.getElementById("edit-dataset-component-lottie").innerHTML = "";
+
+  //Hide all guided pages (first one will be unHidden automatically)
+  const guidedPages = document.querySelectorAll(".guided--page");
+  guidedPages.forEach((page) => {
+    page.classList.add("hidden");
+  });
+
+  window.CURRENT_PAGE = document.getElementById("guided-select-starting-point-tab");
+
+  document.getElementById("guided-footer-div").classList.remove("hidden");
+
+  //Unskip all pages besides the ones that should always be skipped
+  guidedResetSkippedPages();
+};
 
 // Save and exit button click handlers
 document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
