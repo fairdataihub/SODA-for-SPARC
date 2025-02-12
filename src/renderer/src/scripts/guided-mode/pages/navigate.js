@@ -1,7 +1,8 @@
 import { openPage } from "./openPage";
 import { savePageChanges } from "./savePageChanges";
 import { guidedUnSkipPage, getNextPageNotSkipped, getPrevPageNotSkipped } from "./pageSkipping";
-import { guidedUnLockSideBar } from "../../../assets/nav";
+import { guidedUnLockSideBar, resetLazyLoading } from "../../../assets/nav";
+import { guidedCreateSodaJSONObj } from "../utils/sodaJSONObj";
 import Swal from "sweetalert2";
 
 while (!window.baseHtmlLoaded) {
@@ -162,6 +163,33 @@ export const guidedTransitionToHome = () => {
 
   document.getElementById("guided-footer-div").classList.add("hidden");
 };
+
+const itemsContainer = document.getElementById("items");
+const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
+const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
+
+document.getElementById("button-homepage-guided-mode").addEventListener("click", async () => {
+  console.log("Homepage button called");
+  //Transition file explorer elements to guided mode
+  window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
+  window.organizeDSglobalPath.value = "";
+  window.dataset_path = document.getElementById("guided-input-global-path");
+  window.scroll_box = document.querySelector("#guided-body");
+  itemsContainer.innerHTML = "";
+  resetLazyLoading();
+  freeFormItemsContainer.classList.remove("freeform-file-explorer");
+  freeFormButtons.classList.remove("freeform-file-explorer-buttons");
+  $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
+
+  guidedCreateSodaJSONObj();
+  attachGuidedMethodsToSodaJSONObj();
+  guidedTransitionFromHome();
+
+  guidedUnLockSideBar();
+
+  guidedUnSkipPage("guided-select-starting-point-tab");
+  await openPage("guided-select-starting-point-tab");
+});
 
 // Save and exit button click handlers
 document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
