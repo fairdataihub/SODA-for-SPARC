@@ -85,7 +85,7 @@ const DatasetEntityStructurePage = () => {
         />
 
         {sampleTypes.map((sampleType, index) => (
-          <Stack key={index} spacing="xs" key={index}>
+          <Stack key={index} spacing="xs">
             <Group align="flex-start" w="100%">
               <TextInput
                 label={`Label for sample type ${index + 1}`}

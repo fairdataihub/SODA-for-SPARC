@@ -1046,20 +1046,6 @@
         </div>
         -->
         <div
-          class="guided--page"
-          id="guided-prepare-dataset-structure-tab"
-          data-page-name="Dataset content"
-        >
-          <h1 class="text-sub-step-title">Describe the content of your dataset</h1>
-          <div class="guided--section">
-            <p class="help-text">
-              Check the boxes that apply to the data collected during your study in order to help
-              SODA determine the optimal workflow to organize your dataset.
-            </p>
-          </div>
-          <div data-component-type="dataset-content-selector" class="guided--section"></div>
-        </div>
-        <div
           id="guided-unstructured-data-import-tab"
           class="guided--page"
           data-page-name="Data Importation"
@@ -1076,6 +1062,20 @@
             data-relative-folder-path-to-import-data-into="data/"
             class="guided--section"
           ></div>
+        </div>
+        <div
+          class="guided--page"
+          id="guided-prepare-dataset-structure-tab"
+          data-page-name="Dataset content"
+        >
+          <h1 class="text-sub-step-title">Describe the content of your dataset</h1>
+          <div class="guided--section">
+            <p class="help-text">
+              Check the boxes that apply to the data collected during your study in order to help
+              SODA determine the optimal workflow to organize your dataset.
+            </p>
+          </div>
+          <div data-component-type="dataset-content-selector" class="guided--section"></div>
         </div>
 
         <div
@@ -1179,12 +1179,14 @@
           data-entity-type-string-plural="subjects"
           data-entity-type-prefix="sub-"
         ></div>
+        <!--
         <div
           id="guided-subjects-entity-selection-tab-mega"
           data-page-name="Generate entity IDs"
           class="guided--page"
           data-component-type="dataset-entity-structure-page"
         ></div>
+        -->
         <div
           id="guided-subjects-entity-selection-tab"
           data-page-name="Subjects data selection"
