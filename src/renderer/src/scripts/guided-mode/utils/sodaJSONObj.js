@@ -1,3 +1,33 @@
+const guidedHighLevelFolders = ["primary", "source", "derivative"];
+
+const guidedWarnBeforeDeletingEntity = async (entityType, entityName) => {
+  let warningMessage;
+  if (entityType === "pool") {
+    warningMessage = `Are you sure you want to delete the pool '${entityName}'? After deleting this pool, all subject folders will be moved directly into their high level folders.`;
+  }
+  if (entityType === "subject") {
+    warningMessage = `Are you sure you want to delete the subject '${entityName}'? ${entityName} has folders and files associated with it, and if you continue with the deletion, the folders and files will be deleted as well.`;
+  }
+  if (entityType === "sample") {
+    warningMessage = `Are you sure you want to delete the sample '${entityName}'? ${entityName} has folders and files associated with it, and if you continue with the deletion, the folders and files will be deleted as well.`;
+  }
+
+  const continueWithDeletion = await Swal.fire({
+    icon: "warning",
+    title: "Are you sure?",
+    html: warningMessage,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showCancelButton: true,
+    focusCancel: true,
+    confirmButtonText: `Delete ${entityType}`,
+    cancelButtonText: "Cancel deletion",
+    reverseButtons: window.reverseSwalButtons,
+  });
+
+  return continueWithDeletion.isConfirmed;
+};
+
 export const guidedGetDatasetId = (sodaJSON) => {
   let datasetId = sodaJSON?.["digital-metadata"]?.["pennsieve-dataset-id"];
   if (datasetId != undefined) {

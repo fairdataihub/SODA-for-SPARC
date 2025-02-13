@@ -4,7 +4,6 @@ import { guidedSkipPage, guidedUnSkipPage, getNonSkippedGuidedModePages } from "
 import { userErrorMessage } from "../../others/http-error-handler/error-handler";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie";
 import api from "../../others/api/api";
-import useGlobalStore from "../../../stores/globalStore";
 import { savePageCurationPreparation } from "./curationPreparation/savePage";
 import { openPage } from "../pages/openPage";
 
@@ -16,6 +15,8 @@ let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
 const guidedHighLevelFolders = ["primary", "source", "derivative"];
+const nonGuidedHighLevelFolders = ["code", "protocol", "docs"];
+
 
 // This function extracts the pool, subject, and sample structure from an imported dataset
 // and adds the pools, subjects, and samples to the guided mode structure if they exist.
