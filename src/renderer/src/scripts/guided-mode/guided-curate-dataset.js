@@ -1,20 +1,10 @@
 // // sourcery skip: merge-nested-ifs
 
-import { existingDataset, modifyDataset } from "../../assets/lotties/lotties";
 import { guidedSetNavLoadingState } from "./pages/pageLoading";
-import { guidedSaveProgress, savePageChanges } from "./pages/savePageChanges";
-import { openPage } from "./pages/openPage";
-import {
-  getNonSkippedGuidedModePages,
-  guidedResetSkippedPages,
-  guidedSkipPage,
-  guidedUnSkipPage,
-} from "./pages/pageSkipping";
-import { resetLazyLoading, guidedUnLockSideBar } from "../../assets/nav";
+import { guidedSaveProgress } from "./pages/savePageChanges";
 import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 import api from "../others/api/api";
-import lottie from "lottie-web";
 import kombuchaEnums from "../analytics/analytics-enums";
 import Swal from "sweetalert2";
 import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
@@ -32,14 +22,12 @@ import {
 } from "../utils/swal-utils";
 
 // Import state management stores
-
 import { getDatasetEntityObj } from "../../stores/slices/datasetEntitySelectorSlice";
 import { setTreeViewDatasetStructure } from "../../stores/slices/datasetTreeViewSlice";
 
 import "bootstrap-select";
 import Cropper from "cropperjs";
 
-import hasConnectedAccountWithPennsieve from "../others/authentication/auth";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -150,77 +138,13 @@ document.getElementById("guided-button-dataset-contains-code").addEventListener(
 });
 */
 
-const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
-  try {
-    const changesRes = await client.get(`/prepare_metadata/readme_changes_file`, {
-      params: {
-        file_type: "CHANGES",
-        selected_account: window.defaultBfAccount,
-        selected_dataset: pennsieveDatasetID,
-      },
-    });
-    const changes_text = changesRes.data.text;
-    return { shouldShow: true, changesMetadata: changes_text };
-  } catch (error) {
-    const datasetInfo = await api.getDatasetInformation(pennsieveDatasetID);
-    const isPublished = datasetInfo?.publication?.status === "completed";
 
-    if (isPublished) {
-      return { shouldShow: true, changesMetadata: "" };
-    } else {
-      return { shouldShow: false };
-    }
-  }
-};
 
-const objectsHaveSameKeys = (...objects) => {
-  const allKeys = objects.reduce((keys, object) => keys.concat(Object.keys(object)), []);
-  const union = new Set(allKeys);
-  return objects.every((object) => union.size === Object.keys(object).length);
-};
+
 
 window.getDatasetEntityObj = getDatasetEntityObj;
 
-const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMetadataRows) => {
-  const poolSubSamStructure = {
-    pools: {},
-    subjects: {},
-  };
 
-  const datasetPools = [
-    ...new Set(
-      subjectsMetadataRows
-        .map((subjectDataArray) => subjectDataArray[1])
-        .filter((pool) => pool !== "")
-    ),
-  ];
-
-  for (const pool of datasetPools) {
-    poolSubSamStructure["pools"][pool] = {};
-  }
-
-  for (const subject of subjectsMetadataRows) {
-    const subjectID = subject[0];
-    const poolID = subject[1];
-    if (poolID !== "") {
-      poolSubSamStructure["pools"][poolID][subjectID] = {};
-    } else {
-      poolSubSamStructure["subjects"][subjectID] = {};
-    }
-  }
-
-  for (const sample of samplesMetadataRows) {
-    const subjectID = sample[0];
-    const sampleID = sample[1];
-    const poolID = sample[3];
-    if (poolID !== "") {
-      poolSubSamStructure["pools"][poolID][subjectID][sampleID] = {};
-    } else {
-      poolSubSamStructure["subjects"][subjectID][sampleID] = {};
-    }
-  }
-  return poolSubSamStructure;
-};
 
 // This function reads the innerText of the textSharedWithCurationTeamStatus element
 // and hides or shows the share and unshare buttons accordingly
@@ -1342,14 +1266,6 @@ const copyLink = (link) => {
   });
 };
 
-const checkIfPageIsValid = async (pageID) => {
-  try {
-    await openPage(pageID);
-    await savePageChanges(pageID);
-  } catch (error) {
-    throw error;
-  }
-};
 
 const handleValidationTableUi = (errors) => {
   const validationResultsDiv = document.getElementById("guided-section-validation-errors-table");

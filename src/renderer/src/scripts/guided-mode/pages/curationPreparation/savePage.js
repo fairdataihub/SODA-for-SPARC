@@ -4,7 +4,7 @@ import useGlobalStore from "../../../../stores/globalStore";
 let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
-const getGuidedProgressFileNames = () => {
+export const getGuidedProgressFileNames = () => {
   return window.fs
     .readdirSync(guidedProgressFilePath)
     .map((progressFileName) => progressFileName.replace(".json", ""));
