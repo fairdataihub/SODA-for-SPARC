@@ -18,7 +18,6 @@ import lottie from "lottie-web";
 import kombuchaEnums from "../analytics/analytics-enums";
 import Swal from "sweetalert2";
 import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
-import tippy from "tippy.js";
 import { v4 as uuid } from "uuid";
 import doiRegex from "doi-regex";
 import validator from "validator";
@@ -439,24 +438,9 @@ document.querySelectorAll(".pass-button-click-to-next-button").forEach((element)
 
 
 
-const readDirAsync = async (path) => {
-  let result = await window.fs.readdir(path);
-  return result;
-};
 
-const readFileAsync = async (path) => {
-  let result = await window.fs.readFile(path, "utf-8");
-  return result;
-};
 
-const getAllProgressFileData = async (progressFiles) => {
-  return Promise.all(
-    progressFiles.map((progressFile) => {
-      let progressFilePath = window.path.join(guidedProgressFilePath, progressFile);
-      return readFileAsync(progressFilePath);
-    })
-  );
-};
+
 
 
 
@@ -1654,74 +1638,8 @@ const getDatasetStructureJsonFolderContentsAtNestedArrayPath = (folderPathArray)
   return currentFolder;
 };
 
-const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
-  if (!window.sodaJSONObj["completed-tabs"].includes("guided-pennsieve-intro-tab")) {
-    return false;
-  }
-  // If the user has changed their Pennsieve account, they need to confirm their new Pennsieve account and workspace
-  if (window.sodaJSONObj?.["last-confirmed-bf-account-details"] !== window.defaultBfAccount) {
-    if (window.sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
-    }
-    if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
-    }
-    return true;
-  }
-  // If the user has changed their Pennsieve workspace, they need to confirm their new workspace
-  if (
-    guidedGetCurrentUserWorkSpace() !=
-    window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]
-  ) {
-    if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
-    }
-    return true;
-  }
-  // Return false if the user does not need to reconfirm their account details
-  return false;
-};
 
-const guidedGetPageToReturnTo = async () => {
-  // Set by openPage function
-  const usersPageBeforeExit = window.sodaJSONObj["page-before-exit"];
 
-  //If the dataset was successfully uploaded, send the user to the share with curation team
-  if (window.sodaJSONObj["previous-guided-upload-dataset-name"]) {
-    return "guided-dataset-dissemination-tab";
-  }
-
-  // returns the id of the first page of guided mode
-  const firstPageID = getNonSkippedGuidedModePages(document)[0].id;
-
-  const currentSodaVersion = document.getElementById("version").innerHTML;
-  const lastVersionOfSodaUsedOnProgressFile = window.sodaJSONObj["last-version-of-soda-used"];
-
-  if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
-    // If the progress file was last edited in a previous SODA version, reset to the first page
-    await swalShowInfo(
-      "SODA has been updated since you last worked on this dataset.",
-      "You'll be taken to the first page to ensure compatibility with the latest workflow. Your previous work is saved and accessible."
-    );
-    return firstPageID;
-  }
-
-  if (guidedCheckIfUserNeedsToReconfirmAccountDetails() === true) {
-    return "guided-pennsieve-intro-tab";
-  }
-
-  // If the page the user was last on no longer exists, return them to the first page
-  if (!document.getElementById(usersPageBeforeExit)) {
-    return firstPageID;
-  }
-
-  // If the user left while the upload was in progress, send the user to the upload confirmation page
-  if (usersPageBeforeExit === "guided-dataset-generation-tab") {
-    return "guided-dataset-generation-confirmation-tab";
-  }
-  // If no special cases apply, return the user to the page they were on before they left
-  return usersPageBeforeExit;
-};
 
 
 

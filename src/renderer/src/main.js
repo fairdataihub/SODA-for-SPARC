@@ -15,6 +15,8 @@ import "./scripts/guided-mode/pages/openPage";
 import "./scripts/guided-mode/guided-curate-dataset";
 import "./scripts/guided-mode/pages/navigate";
 import "./scripts/guided-mode/generateDataset/generate";
+import "./scripts/guided-mode/resumeProgress/progressFile"
+import "./scripts/guided-mode/resumeProgress/resumeProgress"
 import "./scripts/guided-mode/resumeProgress/progressCards"
 import "./scripts/others/renderer";
 import "./scripts/metadata-files/submission";

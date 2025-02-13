@@ -3,11 +3,16 @@ import { savePageChanges } from "./savePageChanges";
 import { guidedUnSkipPage, getNextPageNotSkipped, getPrevPageNotSkipped, guidedResetSkippedPages } from "./pageSkipping";
 import { guidedUnLockSideBar, resetLazyLoading } from "../../../assets/nav";
 import { guidedCreateSodaJSONObj, attachGuidedMethodsToSodaJSONObj } from "../utils/sodaJSONObj";
+import lottie from "lottie-web";
+import { existingDataset, modifyDataset } from "../../../assets/lotties/lotties";
 import Swal from "sweetalert2";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
+
+let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
+let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
 //next button click handler
 $("#guided-next-button").on("click", async function () {
