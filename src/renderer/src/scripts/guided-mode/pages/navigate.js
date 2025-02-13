@@ -191,7 +191,7 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
   await openPage("guided-select-starting-point-tab");
 });
 
-const guidedTransitionFromHome = async () => {
+export const guidedTransitionFromHome = async () => {
   //Hide the home screen
   document.getElementById("guided-home").classList.add("hidden");
   document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
@@ -213,6 +213,46 @@ const guidedTransitionFromHome = async () => {
 
   //Unskip all pages besides the ones that should always be skipped
   guidedResetSkippedPages();
+}; 
+
+
+
+const guidedResetProgressVariables = () => {
+  window.sodaJSONObj = {};
+  window.datasetStructureJSONObj = {};
+  window.subjectsTableData = [];
+  window.samplesTableData = [];
+};
+
+window.guidedPrepareHomeScreen = async () => {
+  //Wipe out existing progress if it exists
+  guidedResetProgressVariables();
+  //Check if Guided-Progress folder exists. If not, create it.
+
+  if (!window.fs.existsSync(guidedProgressFilePath)) {
+    window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+  }
+
+  document.getElementById("existing-dataset-lottie").innerHTML = "";
+  document.getElementById("edit-dataset-component-lottie").innerHTML = "";
+
+  lottie.loadAnimation({
+    container: document.getElementById("existing-dataset-lottie"),
+    animationData: existingDataset,
+    renderer: "svg",
+    loop: true,
+    autoplay: true,
+  });
+
+  lottie.loadAnimation({
+    container: document.getElementById("edit-dataset-component-lottie"),
+    animationData: modifyDataset,
+    renderer: "svg",
+    loop: true,
+    autoplay: true,
+  });
+
+  guidedUnLockSideBar();
 };
 
 // Save and exit button click handlers
