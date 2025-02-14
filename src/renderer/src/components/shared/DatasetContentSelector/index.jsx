@@ -53,7 +53,7 @@ const contentOptionsMap = {
     dependsOnNotSatiatedMessage: "You must indicate that you collected data from subjects first.",
     ml: 10,
   },
-  "performances-on-subjects": {
+  "subject-performances": {
     label: "The protocol performances were run on the subjects.",
     description:
       "Select this if tasks, tests, or procedures were performed directly on subjects (e.g., humans or animals) and data was collected during these sessions.",
@@ -62,7 +62,7 @@ const contentOptionsMap = {
       "You must indicate that you collected data from subjects, samples, and performances first.",
     ml: 20,
   },
-  "performances-on-samples": {
+  "sample-performances": {
     label: "The protocol performances were run on the samples.",
     description:
       "Select this if tasks, tests, or procedures were performed directly on samples (e.g., tissues or blood) and data was collected during these sessions.",
