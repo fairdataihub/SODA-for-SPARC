@@ -1061,17 +1061,14 @@
         <div
           id="guided-unstructured-data-import-tab"
           class="guided--page"
-          data-page-name="Experimental data"
+          data-page-name="Data importation"
         >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Import Your Data</h1>
             <p class="help-text w-100">
               Import the data that was collected or generated during your study below. This
               includes: experimental data, code used for analysis, protocol files, documentation
-              supporting your experiment, and any other files that are part of your study. (This
-              text likely needs to be updated styling-wise and to include other things they might
-              want to import here since this will be the only page where they can import data and we
-              don't want them to miss anything)
+              supporting your experiment, and any other files that are part of your study.
             </p>
             <p class="help-text">
               <b>Note:</b> If your data is organized into subfolders (e.g., "microscopy,"
@@ -1102,6 +1099,17 @@
             class="guided--section"
           ></div>
         </div>
+        <div
+          id="supporting-data-tab"
+          data-page-name="Annotate supporting data"
+          class="guided--page"
+          data-component-type="entity-selection-page"
+          data-entity-type="supporting-data"
+          data-entity-type-string-singular="Supporting Data"
+          data-entity-type-string-plural="Supporting Data"
+          data-entity-type-prefix=""
+        ></div>
+        <!--
         <div id="guided-protocol-folder-tab" class="guided--page" data-page-name="Protocols import">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Protocol importation</h1>
@@ -1130,17 +1138,7 @@
             class="guided--section"
           ></div>
         </div>
-
-        <div
-          id="guided-source-derivative-folders-and-files-selector-tab"
-          data-page-name="Annotate Source and Derivative data"
-          class="guided--page"
-          data-component-type="entity-selection-page"
-          data-entity-type="source-derivative-folders-and-files"
-          data-entity-type-string-singular="Supplementary Data"
-          data-entity-type-string-plural="Supplementary Data"
-          data-entity-type-prefix=""
-        ></div>
+        
         <div
           id="guided-dataset-structure-review-tab"
           class="guided--page"
@@ -1161,6 +1159,7 @@
             class="guided--section"
           ></div>
         </div>
+        -->
       </div>
 
       <div
@@ -1203,7 +1202,7 @@
         ></div>
         <div
           id="guided-subjects-entity-selection-tab-mega"
-          data-page-name="Subjects data selection"
+          data-page-name="Generate entity IDs"
           class="guided--page"
           data-component-type="dataset-entity-structure-page"
         ></div>
