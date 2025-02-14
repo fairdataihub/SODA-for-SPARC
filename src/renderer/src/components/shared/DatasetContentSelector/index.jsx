@@ -81,6 +81,7 @@ const contentOptionsMap = {
 
 const DatasetContentSelector = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  console.log("selectedEntities", selectedEntities);
   const [expanded, setExpanded] = useState({});
 
   const toggleExpanded = (key) => {

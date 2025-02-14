@@ -4474,6 +4474,9 @@ window.openPage = async (targetPageID) => {
         }
         */
       }
+      if (targetPageComponentType === "dataset-entity-structure-page") {
+        setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
+      }
     }
 
     if (targetPageID === "guided-select-starting-point-tab") {
@@ -4486,20 +4489,7 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-prepare-dataset-structure-tab") {
       setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
-      /*
-      // If the user has already added subjects, disallow them from selecting no (they have to go to the subject
-      // page to delete subjects but this would be a very strange case anyways)
-      const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
-      const subjects = [...subjectsInPools, ...subjectsOutsidePools];
-      const subjectQuerySectioin = document.getElementById("guided-section-subject-yes-no");
-      const infoText = document.getElementById("subject-deletion-block-text");
-      if (subjects.length > 0) {
-        subjectQuerySectioin.classList.add("section-disabled");
-        infoText.classList.remove("hidden");
-      } else {
-        subjectQuerySectioin.classList.remove("section-disabled");
-        infoText.classList.add("hidden");
-      }*/
+      console.log("selectedEntities", window.sodaJSONObj["selected-entities"]);
     }
 
     if (targetPageID === "guided-prepare-helpers-tab") {
