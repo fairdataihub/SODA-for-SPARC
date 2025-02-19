@@ -55,6 +55,7 @@ import {
   externallySetSearchFilterValue,
 } from "../../stores/slices/datasetTreeViewSlice";
 import { setSelectedEntities } from "../../stores/slices/datasetContentSelectorSlice";
+import { getZustandStoreDatasetEntityStructure } from "../../stores/slices/datasetEntityStructureSlice";
 
 import "bootstrap-select";
 import Cropper from "cropperjs";
@@ -574,6 +575,11 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
         // Save the dataset entity object to the progress file
         window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
+      }
+
+      if (pageBeingLeftComponentType === "dataset-entity-structure-page") {
+        const datasetEntityStructure = getZustandStoreDatasetEntityStructure();
+        console.log("datasetEntityStructure when leaving", datasetEntityStructure);
       }
       if (pageBeingLeftComponentType === "entity-selection-page") {
         const entityType = pageBeingLeftDataSet.entityType;
@@ -3103,6 +3109,7 @@ const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
 
 window.guidedOpenManifestEditSwal = async () => {
   const existingManifestData = window.sodaJSONObj["guided-manifest-file-data"];
+  console.log("spreadsheet data", existingManifestData);
   //send manifest data to main.js to then send to child window
   window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
 
@@ -4453,10 +4460,42 @@ window.openPage = async (targetPageID) => {
       const targetPageComponentType = targetPageDataset.componentType;
       console.log("targetPageDataset", targetPageDataset);
       if (targetPageComponentType === "entity-management-page") {
+        const pageEntityType = targetPageDataset.entityType;
+        console.log("pageEntityType", pageEntityType);
+
         // Set the dataset entity object to the saved dataset entity object from the JSON
+        console.log("Entered entity-management-page");
+        const datasetEntityStructure = getZustandStoreDatasetEntityStructure();
+
+        console.log("datasetEntityStructure", datasetEntityStructure);
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+        console.log("savedDatasetEntityObj", savedDatasetEntityObj);
         setDatasetEntityObj(savedDatasetEntityObj);
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
+        if (pageEntityType === "subjects") {
+          for (const subject of datasetEntityStructure["subjects"]) {
+            if (!savedDatasetEntityObj?.["subjects"]?.[subject.id]) {
+              addEntityToEntityList("subjects", subject.id);
+            } else {
+              console.log("Already added subject", subject.id);
+            }
+          }
+        }
+        if (pageEntityType === "samples") {
+          for (const subject of datasetEntityStructure["subjects"]) {
+            const subjectsSamples = subject.samples;
+            for (const sample of subjectsSamples) {
+              const sampleID = sample.id;
+              if (!savedDatasetEntityObj?.["samples"]?.[sampleID]) {
+                addEntityToEntityList("samples", sampleID);
+              } else {
+                console.log("Already added sample", sampleID);
+              }
+            }
+          }
+        }
+      }
+      if (targetPageComponentType === "dataset-entity-structure-page") {
       }
       if (targetPageComponentType === "entity-selection-page") {
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
@@ -4912,6 +4951,27 @@ window.openPage = async (targetPageID) => {
             if (paths.includes(path)) {
               entityList.push(entity);
               break; // Stop checking performances after the first match
+            }
+          }
+
+          for (const [bucket, bucketPaths] of Object.entries(
+            datasetEntityObj["bucketed-data"] || {}
+          )) {
+            console.log("bucket", bucket);
+            console.log("bucketPaths", bucketPaths);
+            if (bucketPaths.includes(path)) {
+              if (bucket === "Code") {
+                // replace the first instance of 'data' with 'code'
+                row[0] = row[0].replace("data", "code");
+              }
+              if (bucket === "Documentation") {
+                // replace the first instance of 'data' with 'docs'
+                row[0] = row[0].replace("data", "docs");
+              }
+              if (bucket === "Protocol") {
+                // replace the first instance of 'data' with 'protocol'
+                row[0] = row[0].replace("data", "protocol");
+              }
             }
           }
 

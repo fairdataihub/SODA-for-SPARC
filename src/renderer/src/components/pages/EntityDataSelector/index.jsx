@@ -102,6 +102,8 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
           borderLeft: `3px solid ${isActive ? "#2196f3" : "transparent"}`,
           cursor: "pointer",
           transition: "background-color 0.2s ease, border-color 0.2s ease",
+          wordBreak: "break-word", // Apply word break for better wrapping
+          whiteSpace: "normal", // Allow text wrapping instead of one long line
         }}
       >
         <Group justify="space-between" align="center">
@@ -149,29 +151,22 @@ const EntityDataSelectorPage = ({
         {entityType === "bucketed-data" ? (
           <Stack>
             <Text>
-              SPARC requires you to differentiate the following data types from the rest of the data
-              you imported:
+              SPARC requires you to classify certain types of data separately from the rest of your
+              imported data:
             </Text>
-            {/*<Text>
-              <b>Source data:</b> Raw, unaltered data from an experiment such as recorded neural
-              signals or unprocessed microscope images.
-            </Text>
-            <Text>
-              <b>Derivative data:</b> Data that has been processed or transformed data such as ...
-            </Text>*/}
             <Text>
               <b>Code:</b> Scripts, computational models, analysis pipelines, or other software used
-              to generate, process, or analyze the data.
+              for data processing or analysis.
             </Text>
             <Text>
-              <b>Protocol: </b> Instructions for conducting an experiment or analysis.
+              <b>Protocol:</b> Instructions for conducting an experiment or analysis.
             </Text>
             <Text>
-              <b>Documentation:</b> Supporting documents for the dataset.
+              <b>Documentation:</b> Supporting documents related to the dataset.
             </Text>
             <Text>
-              For each of the data buckets in the list on the left, associate any files on the right
-              that belong to that bucket.
+              To categorize your data, select a data type from the list on the left and associate
+              the relevant files from your imported data on the right.
             </Text>
           </Stack>
         ) : (

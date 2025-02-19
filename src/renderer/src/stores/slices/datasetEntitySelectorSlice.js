@@ -3,15 +3,15 @@ import { filterStructure, addRelativePaths } from "./datasetTreeViewSlice";
 import { swalFileListDoubleAction } from "../../scripts/utils/swal-utils";
 import { produce } from "immer";
 
-// Initial state for managing dataset entities
-const initialState = {
+// Slice initialization for the entity selector state
+export const datasetEntitySelectorSlice = (set) => ({
   activeEntity: null, // Currently active entity
   entityType: null, // Type of the selected entity
   datasetEntityObj: {}, // Stores entities grouped by type
   entityStructureObj: {
     subjects: {},
   }, // Example structure: { sub-01: { samples: { sam-01: { performances: [], sites: [] } } } }
-};
+});
 
 // SUBJECT MANAGEMENT
 export const addSubject = (subjectID) => {
@@ -150,11 +150,6 @@ export const addSampleToEntityStructure = (subjectID, sampleID) => {
     })
   );
 };
-
-// Slice initialization for the entity selector state
-export const datasetEntitySelectorSlice = (set) => ({
-  ...initialState,
-});
 
 // Add an entity to the specified entity type's list
 export const addEntityToEntityList = (entityType, entityName) => {

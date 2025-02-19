@@ -10,16 +10,15 @@ import {
   Group,
   Box,
   Flex,
-  Button,
   Paper,
   Divider,
 } from "@mantine/core";
 import { IconUser, IconFlask, IconClipboard, IconPin } from "@tabler/icons-react";
+import { setZustandStoreDatasetEntityStructure } from "../../../stores/slices/datasetEntityStructureSlice";
 
-// Helper: generates a child ID by replacing the parent's prefix with the given one,
-// then appending "-" and the childLabel. For samples we append an index; for sites/performances,
-// pass appendIndex as false.
+// Helper: Generates a child ID using the parent's ID, a prefix, a label, and an index.
 const generateChildId = (parentId, childPrefix, childLabel, childIndex, appendIndex = true) => {
+  // The label (e.g., a sample type) is used in the generated ID.
   const dashIndex = parentId.indexOf("-");
   const rest = dashIndex >= 0 ? parentId.substring(dashIndex) : "";
   return appendIndex
@@ -28,179 +27,269 @@ const generateChildId = (parentId, childPrefix, childLabel, childIndex, appendIn
 };
 
 const DatasetEntityStructurePage = () => {
-  const [subjectCount, setSubjectCount] = useState(1);
-  const [subjectMiddle, setSubjectMiddle] = useState("mouse");
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
 
-  // Update our initial sampleTypes to include arrays for siteLabels and performanceLabels.
-  const initialSampleTypes = [
-    {
-      count: 1,
-      label: "tissue",
-      siteCount: selectedEntities.includes("sample-sites") ? 1 : 0,
-      siteLabels: selectedEntities.includes("sample-sites") ? ["site"] : [],
-      performanceCount: selectedEntities.includes("sample-performances") ? 1 : 0,
-      performanceLabels: selectedEntities.includes("sample-performances") ? ["performance"] : [],
-    },
-    {
-      count: 2,
-      label: "blood",
-      siteCount: selectedEntities.includes("sample-sites") ? 1 : 0,
-      siteLabels: selectedEntities.includes("sample-sites") ? ["site"] : [],
-      performanceCount: selectedEntities.includes("sample-performances") ? 1 : 0,
-      performanceLabels: selectedEntities.includes("sample-performances") ? ["performance"] : [],
-    },
-  ];
-  const [sampleTypes, setSampleTypes] = useState(initialSampleTypes);
-  const [dataStructure, setDataStructure] = useState({ subjects: [] });
+  // The organism configuration is used to build subjects.
+  // species is used only for ID generation.
+  const initialOrganism = {
+    subjectCount: 1,
+    species: "mouse",
+    metadata: {},
+    // Subject-level sites/performances (if enabled)
+    subjectSiteCount: selectedEntities.includes("subject-sites") ? 1 : 0,
+    subjectPerformanceCount: selectedEntities.includes("subject-performances") ? 1 : 0,
+    // Sample-related configuration
+    sampleTypes: [
+      {
+        label: "tissue", // used only for ID generation
+        count: 1,
+        metadata: {},
+        siteCount: selectedEntities.includes("sample-sites") ? 1 : 0,
+        performanceCount: selectedEntities.includes("sample-performances") ? 1 : 0,
+      },
+      {
+        label: "blood",
+        count: 2,
+        metadata: {},
+        siteCount: selectedEntities.includes("sample-sites") ? 1 : 0,
+        performanceCount: selectedEntities.includes("sample-performances") ? 1 : 0,
+      },
+    ],
+  };
 
-  // Whenever subjects/samples change, re-create the data structure.
+  // Even though the UI groups configuration by organism,
+  // the final JSON is a flat array of subjects.
+  const [organisms, setOrganisms] = useState([initialOrganism]);
+  const [datasetEntityStructure, setDataEntityStructure] = useState({ subjects: [] });
+  console.log("datasetEntityStructure", datasetEntityStructure);
+
   useEffect(() => {
-    if (!subjectMiddle.trim()) return;
+    const newSubjects = organisms
+      .filter((org) => org.species.trim())
+      .flatMap((org) =>
+        Array.from({ length: org.subjectCount }, (_, i) => {
+          // Generate subjectId using the organism's species.
+          const subjectId =
+            org.subjectCount === 1 ? `sub-${org.species}-1` : `sub-${org.species}-${i + 1}`;
+          // Generate subject-level sites and performances if applicable.
+          const subjectSites = selectedEntities.includes("subject-sites")
+            ? createSubjectSites(subjectId, org)
+            : [];
+          const subjectPerformances = selectedEntities.includes("subject-performances")
+            ? createSubjectPerformances(subjectId, org)
+            : [];
+          // Generate samples only if "samples" is selected.
+          const samples = selectedEntities.includes("samples")
+            ? org.sampleTypes
+                .filter((sampleType) => sampleType.label.trim())
+                .flatMap((sampleType) => createSamples(subjectId, sampleType))
+            : [];
+          return {
+            subjectId,
+            metadata: {},
+            ...(selectedEntities.includes("subject-sites") && { subjectSites }),
+            ...(selectedEntities.includes("subject-performances") && { subjectPerformances }),
+            ...(selectedEntities.includes("samples") && { samples }),
+          };
+        })
+      );
+    setDataEntityStructure({ subjects: newSubjects });
+    setZustandStoreDatasetEntityStructure({ subjects: newSubjects });
+  }, [organisms, selectedEntities]);
 
-    const newSubjects = Array.from({ length: subjectCount }, (_, i) => {
-      // Subject ID: always prefixed with "sub"
-      const subjectId =
-        subjectCount === 1 ? `sub-${subjectMiddle}-1` : `sub-${subjectMiddle}-${i + 1}`;
-      // Create samples from each sampleType.
-      const samples = sampleTypes
-        .filter((sampleType) => sampleType.label.trim())
-        .flatMap((sampleType) => createSamples(subjectId, sampleType));
-      return { id: subjectId, samples };
+  // Helper functions for subject-level sites and performances.
+  const createSubjectSites = (subjectId, organism) => {
+    return Array.from({ length: organism.subjectSiteCount }, (_, idx) => {
+      const siteId = `site-${subjectId}-site-${idx + 1}`;
+      return { siteId, metadata: {} };
     });
+  };
 
-    setDataStructure({ subjects: newSubjects });
-  }, [subjectCount, sampleTypes, subjectMiddle, selectedEntities]);
+  const createSubjectPerformances = (subjectId, organism) => {
+    return Array.from({ length: organism.subjectPerformanceCount }, (_, idx) => {
+      const performanceId = `perf-${subjectId}-perf-${idx + 1}`;
+      return { performanceId, metadata: {} };
+    });
+  };
 
-  // Create sample IDs (with auto‑increment) using the subject’s ID as parent.
+  // Create samples for a subject.
   const createSamples = (parentId, sampleType) => {
     return Array.from({ length: sampleType.count }, (_, sampleInstance) => {
       const sampleId = generateChildId(parentId, "sam", sampleType.label, sampleInstance + 1, true);
-      const performances = selectedEntities.includes("sample-performances")
-        ? createPerformances(sampleId, sampleType)
+      const sampleSites = selectedEntities.includes("sample-sites")
+        ? createSampleSites(sampleId, sampleType)
         : [];
-      const sites = selectedEntities.includes("sample-sites")
-        ? createSites(sampleId, sampleType)
+      const samplePerformances = selectedEntities.includes("sample-performances")
+        ? createSamplePerformances(sampleId, sampleType)
         : [];
-      return { id: sampleId, label: sampleType.label, performances, sites };
+      return {
+        sampleId,
+        metadata: {},
+        ...(selectedEntities.includes("sample-sites") && { sites: sampleSites }),
+        ...(selectedEntities.includes("sample-performances") && {
+          performances: samplePerformances,
+        }),
+      };
     });
   };
 
-  // For performances, use the custom labels provided by the user (no auto‑increment).
-  const createPerformances = (parentId, sampleType) => {
-    return sampleType.performanceLabels.map((label) => {
-      const perfId = generateChildId(parentId, "perf", label, 0, false);
-      return { id: perfId, label };
+  const createSampleSites = (parentId, sampleType) => {
+    return Array.from({ length: sampleType.siteCount }, (_, idx) => {
+      const siteId = generateChildId(parentId, "site", sampleType.label, idx + 1, true);
+      return { siteId, metadata: {} };
     });
   };
 
-  // For sites, use the custom labels provided by the user.
-  const createSites = (parentId, sampleType) => {
-    return sampleType.siteLabels.map((label) => {
-      const siteId = generateChildId(parentId, "site", label, 0, false);
-      return { id: siteId, label };
+  const createSamplePerformances = (parentId, sampleType) => {
+    return Array.from({ length: sampleType.performanceCount }, (_, idx) => {
+      const performanceId = generateChildId(parentId, "perf", sampleType.label, idx + 1, true);
+      return { performanceId, metadata: {} };
     });
   };
 
-  // Handlers for top-level sample type fields.
-  const handleSampleTypeChange = (index, field, value) => {
-    setSampleTypes((prev) => {
+  // ─── Organism / Subject Handlers ─────────────────────────────
+
+  const handleOrganismCountChange = (count) => {
+    setOrganisms((prev) => {
+      const newCount = count || 0;
+      const newOrgs = [...prev];
+      while (newOrgs.length < newCount) {
+        newOrgs.push({
+          subjectCount: 1,
+          species: "",
+          metadata: {},
+          subjectSiteCount: selectedEntities.includes("subject-sites") ? 1 : 0,
+          subjectPerformanceCount: selectedEntities.includes("subject-performances") ? 1 : 0,
+          sampleTypes: [
+            {
+              label: "",
+              count: 1,
+              metadata: {},
+              siteCount: selectedEntities.includes("sample-sites") ? 1 : 0,
+              performanceCount: selectedEntities.includes("sample-performances") ? 1 : 0,
+            },
+          ],
+        });
+      }
+      return newOrgs.slice(0, newCount);
+    });
+  };
+
+  const handleSpeciesNameChange = (index, value) => {
+    setOrganisms((prev) => {
       const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
+      updated[index] = { ...updated[index], species: value };
       return updated;
     });
   };
 
-  // When the overall number of sample types changes.
-  const handleSampleCountChange = (count) => {
-    setSampleTypes(
-      Array.from({ length: count }, () => ({
-        label: "",
-        count: 1,
-        siteCount: selectedEntities.includes("sample-sites") ? 1 : 0,
-        siteLabels: selectedEntities.includes("sample-sites") ? ["site"] : [],
-        performanceCount: selectedEntities.includes("sample-performances") ? 1 : 0,
-        performanceLabels: selectedEntities.includes("sample-performances") ? ["performance"] : [],
-      }))
-    );
+  const handleSubjectCountChange = (index, value) => {
+    setOrganisms((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], subjectCount: value || 1 };
+      return updated;
+    });
   };
 
-  // Handlers for updating site labels.
-  const handleSiteCountChange = (sampleIndex, value) => {
-    setSampleTypes((prev) => {
+  // ─── Handlers for Subject-Level Options (sites and performances) ─────
+
+  const handleOrganismSubjectSiteCountChange = (orgIndex, value) => {
+    setOrganisms((prev) => {
       const updated = [...prev];
-      updated[sampleIndex].siteCount = value;
-      const currentLabels = updated[sampleIndex].siteLabels || [];
-      if (value > currentLabels.length) {
-        updated[sampleIndex].siteLabels = [
-          ...currentLabels,
-          ...Array(value - currentLabels.length).fill("site"),
-        ];
+      updated[orgIndex].subjectSiteCount = value;
+      return updated;
+    });
+  };
+
+  const handleOrganismSubjectPerformanceCountChange = (orgIndex, value) => {
+    setOrganisms((prev) => {
+      const updated = [...prev];
+      updated[orgIndex].subjectPerformanceCount = value;
+      return updated;
+    });
+  };
+
+  // ─── Sample Type Handlers for Each Organism ─────────────────────────────
+  // (These controls are only relevant if "samples" is selected.)
+  const handleOrganismSampleCountChange = (orgIndex, count) => {
+    setOrganisms((prev) => {
+      const updated = [...prev];
+      const current = updated[orgIndex].sampleTypes;
+      const newCount = count || 0;
+      if (newCount > current.length) {
+        const defaults = Array(newCount - current.length)
+          .fill(null)
+          .map(() => ({
+            label: "",
+            count: 1,
+            metadata: {},
+            siteCount: selectedEntities.includes("sample-sites") ? 1 : 0,
+            performanceCount: selectedEntities.includes("sample-performances") ? 1 : 0,
+          }));
+        updated[orgIndex].sampleTypes = [...current, ...defaults];
       } else {
-        updated[sampleIndex].siteLabels = currentLabels.slice(0, value);
+        updated[orgIndex].sampleTypes = current.slice(0, newCount);
       }
       return updated;
     });
   };
 
-  const handleSiteLabelChange = (sampleIndex, siteIndex, newValue) => {
-    setSampleTypes((prev) => {
+  const handleOrganismSampleTypeChange = (orgIndex, sampleIndex, field, value) => {
+    setOrganisms((prev) => {
       const updated = [...prev];
-      const labels = updated[sampleIndex].siteLabels;
-      labels[siteIndex] = newValue;
-      updated[sampleIndex].siteLabels = [...labels];
+      updated[orgIndex].sampleTypes[sampleIndex] = {
+        ...updated[orgIndex].sampleTypes[sampleIndex],
+        [field]: value,
+      };
       return updated;
     });
   };
 
-  // Handlers for updating performance labels.
-  const handlePerformanceCountChange = (sampleIndex, value) => {
-    setSampleTypes((prev) => {
+  const handleOrganismSiteCountChange = (orgIndex, sampleIndex, value) => {
+    setOrganisms((prev) => {
       const updated = [...prev];
-      updated[sampleIndex].performanceCount = value;
-      const currentLabels = updated[sampleIndex].performanceLabels || [];
-      if (value > currentLabels.length) {
-        updated[sampleIndex].performanceLabels = [
-          ...currentLabels,
-          ...Array(value - currentLabels.length).fill("performance"),
-        ];
-      } else {
-        updated[sampleIndex].performanceLabels = currentLabels.slice(0, value);
-      }
+      updated[orgIndex].sampleTypes[sampleIndex].siteCount = value;
       return updated;
     });
   };
 
-  const handlePerformanceLabelChange = (sampleIndex, perfIndex, newValue) => {
-    setSampleTypes((prev) => {
+  const handleOrganismPerformanceCountChange = (orgIndex, sampleIndex, value) => {
+    setOrganisms((prev) => {
       const updated = [...prev];
-      const labels = updated[sampleIndex].performanceLabels;
-      labels[perfIndex] = newValue;
-      updated[sampleIndex].performanceLabels = [...labels];
+      updated[orgIndex].sampleTypes[sampleIndex].performanceCount = value;
       return updated;
     });
   };
+
+  // ─── Rendering Functions ─────────────────────────────
 
   // Render inputs for each sample type.
-  const renderSampleTypeInputs = (sampleType, index) => (
-    <Stack key={index} spacing="xs" mb="md">
+  // This section is only rendered if "samples" is in selectedEntities.
+  const renderOrganismSampleTypeInputs = (orgIndex, sampleType, sampleIndex) => (
+    <Stack key={sampleIndex} spacing="xs" my="md">
       <Group align="flex-start" w="100%">
         <TextInput
-          label={`Label for sample type ${index + 1}`}
+          label={`Enter sample type for sample ${sampleIndex + 1}:`}
           value={sampleType.label}
-          onChange={(e) => handleSampleTypeChange(index, "label", e.target.value)}
+          onChange={(e) =>
+            handleOrganismSampleTypeChange(orgIndex, sampleIndex, "label", e.target.value)
+          }
           placeholder="e.g., tissue"
           flex={1}
         />
-        <NumberInput
-          label={`Number of ${sampleType.label || "samples"} collected`}
-          value={sampleType.count}
-          onChange={(value) => handleSampleTypeChange(index, "count", value)}
-          min={1}
-          max={200}
-          step={1}
-          flex={1}
-        />
+        {sampleType.label && (
+          <NumberInput
+            label={`Number of ${sampleType.label} samples per subject:`}
+            value={sampleType.count}
+            onChange={(value) =>
+              handleOrganismSampleTypeChange(orgIndex, sampleIndex, "count", value)
+            }
+            min={1}
+            max={200}
+            step={1}
+            flex={1}
+          />
+        )}
       </Group>
 
       {selectedEntities.includes("sample-sites") && (
@@ -208,19 +297,11 @@ const DatasetEntityStructurePage = () => {
           <NumberInput
             label={`Number of sites for ${sampleType.label || "samples"}`}
             value={sampleType.siteCount}
-            onChange={(value) => handleSiteCountChange(index, value)}
+            onChange={(value) => handleOrganismSiteCountChange(orgIndex, sampleIndex, value)}
             min={0}
             max={10}
             step={1}
           />
-          {Array.from({ length: sampleType.siteCount }).map((_, siteIdx) => (
-            <TextInput
-              key={siteIdx}
-              label={`Label for site ${siteIdx + 1} in ${sampleType.label || "samples"}`}
-              value={sampleType.siteLabels?.[siteIdx] || ""}
-              onChange={(e) => handleSiteLabelChange(index, siteIdx, e.target.value)}
-            />
-          ))}
         </Stack>
       )}
 
@@ -229,59 +310,136 @@ const DatasetEntityStructurePage = () => {
           <NumberInput
             label={`Number of performances for ${sampleType.label || "samples"}`}
             value={sampleType.performanceCount}
-            onChange={(value) => handlePerformanceCountChange(index, value)}
+            onChange={(value) => handleOrganismPerformanceCountChange(orgIndex, sampleIndex, value)}
             min={0}
             max={10}
             step={1}
           />
-          {Array.from({ length: sampleType.performanceCount }).map((_, perfIdx) => (
-            <TextInput
-              key={perfIdx}
-              label={`Label for performance ${perfIdx + 1} in ${sampleType.label || "samples"}`}
-              value={sampleType.performanceLabels?.[perfIdx] || ""}
-              onChange={(e) => handlePerformanceLabelChange(index, perfIdx, e.target.value)}
-            />
-          ))}
         </Stack>
       )}
     </Stack>
   );
 
-  // Render the generated data structure.
+  // Render configuration for a single organism.
+  const renderOrganism = (organism, orgIndex) => (
+    <Paper key={orgIndex} withBorder shadow="xs" p="md" my="sm">
+      <Text size="md" fw={600}>{`Organism ${orgIndex + 1}`}</Text>
+      <TextInput
+        label="Species or Organism Name"
+        placeholder="e.g., mouse"
+        value={organism.species}
+        onChange={(e) => handleSpeciesNameChange(orgIndex, e.target.value)}
+      />
+      <NumberInput
+        label="How many subjects did you collect data from for this species or organism?"
+        value={organism.subjectCount}
+        onChange={(value) => handleSubjectCountChange(orgIndex, value)}
+        min={1}
+        max={100}
+        step={1}
+        mt="sm"
+      />
+      {selectedEntities.includes("subject-sites") && (
+        <NumberInput
+          label="Number of subject sites for this species"
+          value={organism.subjectSiteCount}
+          onChange={(value) => handleOrganismSubjectSiteCountChange(orgIndex, value)}
+          min={0}
+          max={10}
+          step={1}
+        />
+      )}
+      {selectedEntities.includes("subject-performances") && (
+        <NumberInput
+          label="Number of subject performances for this species or organism"
+          value={organism.subjectPerformanceCount}
+          onChange={(value) => handleOrganismSubjectPerformanceCountChange(orgIndex, value)}
+          min={0}
+          max={10}
+          step={1}
+        />
+      )}
+      {selectedEntities.includes("samples") && (
+        <>
+          <Divider my="md" />
+          <Text size="md" fw={600}>
+            {`${organism.species} samples`}
+          </Text>
+          <NumberInput
+            label="How many types of samples did you collect from each subject?"
+            value={organism.sampleTypes.length}
+            onChange={(value) => handleOrganismSampleCountChange(orgIndex, value)}
+            min={1}
+            max={10}
+            step={1}
+          />
+          {organism.sampleTypes.map((sampleType, sampleIndex) =>
+            renderOrganismSampleTypeInputs(orgIndex, sampleType, sampleIndex)
+          )}
+        </>
+      )}
+    </Paper>
+  );
+
+  // Render a preview for a single subject.
   const renderSubjectSamples = (subject) => (
     <Box
-      key={subject.id}
-      sx={{ border: "1px solid #ddd", borderRadius: "8px", padding: "8px", marginBottom: "8px" }}
+      key={subject.subjectId}
+      sx={{
+        border: "1px solid #ddd",
+        borderRadius: "8px",
+        padding: "8px",
+        marginBottom: "8px",
+      }}
     >
-      <Flex gap="xs" justify="flex-start" align="center">
+      <Flex gap="xs" align="center">
         <IconUser size={15} />
-        <Text fw={600}>{subject.id}</Text>
+        <Text fw={600}>{subject.subjectId}</Text>
       </Flex>
-
-      {subject.samples.length > 0 && (
-        <Box ml="sm" pl="xs" style={{ borderLeft: "2px solid green" }}>
+      {subject.subjectSites && subject.subjectSites.length > 0 && (
+        <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid purple" }}>
+          {subject.subjectSites.map((site) => (
+            <Flex key={site.siteId} gap="xs" align="center">
+              <IconPin size={15} />
+              <Text>{site.siteId}</Text>
+            </Flex>
+          ))}
+        </Box>
+      )}
+      {subject.subjectPerformances && subject.subjectPerformances.length > 0 && (
+        <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid teal" }}>
+          {subject.subjectPerformances.map((performance) => (
+            <Flex key={performance.performanceId} gap="xs" align="center">
+              <IconClipboard size={15} />
+              <Text>{performance.performanceId}</Text>
+            </Flex>
+          ))}
+        </Box>
+      )}
+      {selectedEntities.includes("samples") && subject.samples.length > 0 && (
+        <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid green" }}>
           {subject.samples.map((sample) => (
-            <Box key={sample.id} ml="xs" mb="4px">
-              <Flex gap="xs" justify="flex-start" align="center">
+            <Box key={sample.sampleId} ml="xs" mb="4px">
+              <Flex gap="xs" align="center">
                 <IconFlask size={15} />
-                <Text fw={500}>{sample.id}</Text>
+                <Text fw={500}>{sample.sampleId}</Text>
               </Flex>
-              {sample.performances.length > 0 && (
-                <Box ml="sm" pl="xs" style={{ borderLeft: "2px solid blue" }}>
-                  {sample.performances.map((performance) => (
-                    <Flex key={performance.id} gap="xs" justify="flex-start" align="center">
-                      <IconClipboard size={15} />
-                      <Text>{performance.id}</Text>
+              {sample.sites && sample.sites.length > 0 && (
+                <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid orange" }}>
+                  {sample.sites.map((site) => (
+                    <Flex key={site.siteId} gap="xs" align="center">
+                      <IconPin size={15} />
+                      <Text>{site.siteId}</Text>
                     </Flex>
                   ))}
                 </Box>
               )}
-              {sample.sites.length > 0 && (
-                <Box ml="sm" pl="xs" style={{ borderLeft: "2px solid orange" }}>
-                  {sample.sites.map((site) => (
-                    <Flex key={site.id} gap="xs" justify="flex-start" align="center">
-                      <IconPin size={15} />
-                      <Text>{site.id}</Text>
+              {sample.performances && sample.performances.length > 0 && (
+                <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid blue" }}>
+                  {sample.performances.map((performance) => (
+                    <Flex key={performance.performanceId} gap="xs" align="center">
+                      <IconClipboard size={15} />
+                      <Text>{performance.performanceId}</Text>
                     </Flex>
                   ))}
                 </Box>
@@ -294,83 +452,49 @@ const DatasetEntityStructurePage = () => {
   );
 
   return (
-    <GuidedModePage pageHeader="Generate IDs to associate data with">
+    <GuidedModePage pageHeader="Generate IDs to Associate Data With">
+      <GuidedModeSection>
+        <Text>
+          Provide details about the organisms, subjects, and sample types from which you collected
+          data. Depending on the selected options, sites and performances can be configured at both
+          the subject and sample levels. If "samples" is not selected, no sample-related questions
+          will be shown and no sample data will be added.
+        </Text>
+      </GuidedModeSection>
       <GuidedModeSection>
         <Stack spacing="md">
-          {/* Subjects Section */}
+          {/* Organisms / Subjects Configuration */}
           <Paper withBorder shadow="sm" p="md">
-            <Text size="lg" weight={700} mb="sm">
-              Subjects
+            <Text size="lg" fw={700} mb="sm">
+              Organisms / Subjects Configuration
             </Text>
-            {selectedEntities.includes("subjects") && (
-              <Stack spacing="md">
-                <NumberInput
-                  label="How many species of subjects did you collect data from?"
-                  value={subjectCount}
-                  onChange={setSubjectCount}
-                  min={1}
-                  max={100}
-                  step={1}
-                />
-                <TextInput
-                  label="Enter a label to identify the subjects"
-                  placeholder="e.g., mouse"
-                  value={subjectMiddle}
-                  onChange={(e) => setSubjectMiddle(e.target.value)}
-                />
-              </Stack>
-            )}
+            <NumberInput
+              label="How many different organisms or species did you collect data from?"
+              value={organisms.length}
+              onChange={handleOrganismCountChange}
+              min={1}
+              max={10}
+              step={1}
+            />
+            {organisms.map(renderOrganism)}
           </Paper>
 
           <Divider my="md" />
 
-          {/* Samples Section */}
-          <Paper withBorder shadow="sm" p="md">
-            <Text size="lg" weight={700} mb="sm">
-              Samples
-            </Text>
-            {selectedEntities.includes("samples") && (
-              <>
-                <NumberInput
-                  label="How many types of samples did you collect?"
-                  value={sampleTypes.length}
-                  onChange={handleSampleCountChange}
-                  min={1}
-                  max={10}
-                  step={1}
-                />
-                {sampleTypes.map(renderSampleTypeInputs)}
-              </>
-            )}
-          </Paper>
-
-          <Divider my="md" />
-
-          {/* Data Structure Preview Section */}
-          <Paper withBorder shadow="sm" p="md">
-            <Text size="lg" weight={700} mb="sm">
+          {/* Data Structure Preview */}
+          <Paper withBorder shadow="sm" p="md" mb="sm">
+            <Text size="lg" fw={700} mb="sm">
               Data Structure Preview
             </Text>
             <Text mb="md">
-              Please verify the structure of the dataset entities below is correct before
-              proceeding.
+              Please verify that the generated structure below is correct before proceeding.
             </Text>
-            {dataStructure.subjects.length > 0 && (
-              <Stack spacing="3px">{dataStructure.subjects.map(renderSubjectSamples)}</Stack>
+            {datasetEntityStructure.subjects && datasetEntityStructure.subjects.length > 0 && (
+              <Stack spacing="3px">
+                {datasetEntityStructure.subjects.map(renderSubjectSamples)}
+              </Stack>
             )}
           </Paper>
-
-          <Button
-            mt="md"
-            onClick={() => {
-              setDataStructure({ subjects: [] });
-              setSubjectCount(1);
-              setSubjectMiddle("mouse");
-              setSampleTypes(initialSampleTypes);
-            }}
-          >
-            Reset entity structure
-          </Button>
         </Stack>
       </GuidedModeSection>
     </GuidedModePage>

@@ -82,9 +82,10 @@ const EntitySelectorPage = ({
           >
             <Text>{entityName}</Text>
             <Group gap="xs">
+              {/*
               <ActionIcon color="blue">
                 <IconEdit size={16} />
-              </ActionIcon>
+              </ActionIcon>*/}
               <ActionIcon
                 color="red"
                 onClick={() => {
@@ -107,7 +108,7 @@ const EntitySelectorPage = ({
     <GuidedModePage pageHeader={pageName}>
       <GuidedModeSection>
         <Text>
-          Every {entityTypeStringSingular} in your dataset must be assigned a unique{" "}
+          Every {entityTypeStringSingular} in your dataset must be assigned an unique{" "}
           {entityTypeStringSingular} ID. {upperCaseFirstLetter(entityTypeStringSingular)} IDs can be
           added via the two following methods:
         </Text>
@@ -121,6 +122,12 @@ const EntitySelectorPage = ({
           <b>2. Spreadsheet Entry (Recommended for more than 10 {entityTypeStringPlural}):</b>{" "}
           Generate a spreadsheet template to input {entityTypeStringSingular} IDs into and then
           import them in bulk.
+        </Text>
+
+        <Text>
+          {" "}
+          Choose the method you would like to add your {entityTypeStringSingular} IDs below and then
+          enter them in.{" "}
         </Text>
         {/*
         <Text>
@@ -140,7 +147,9 @@ const EntitySelectorPage = ({
                 Instructions
               </Tabs.Tab>
               <Tabs.Tab value="manual">Manual Entry</Tabs.Tab>
-              <Tabs.Tab value="autogen">Auto-generate IDs</Tabs.Tab>
+              <Tabs.Tab value="spreadsheet" disabled>
+                Spreadsheet entry
+              </Tabs.Tab>
               {/*<Tabs.Tab value="folderSelect">Extract from folder names</Tabs.Tab>*/}
             </Tabs.List>
             <Tabs.Panel value="instructions">
@@ -175,7 +184,7 @@ const EntitySelectorPage = ({
               </EntityListContainer>
             </Tabs.Panel>
 
-            <Tabs.Panel value="autogen">
+            <Tabs.Panel value="spreadsheet">
               <Group spacing="xs" align="start" flex={1}>
                 <EntityListContainer title={`${entityTypeStringSingular} IDs`}>
                   {renderEntityList("300px")}

@@ -4,6 +4,7 @@ import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 import useGlobalStore from "../../../stores/globalStore";
 import { toggleEntitySelection } from "../../../stores/slices/datasetContentSelectorSlice";
+import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 
 const contentOptionsMap = {
   subjects: {
@@ -22,7 +23,7 @@ const contentOptionsMap = {
   sites: {
     label: "I collected data from multiple distinct physical sites.",
     description:
-      "For example, if you collected data from multiple brain regions, different sections of a tissue sample, or distinct parts of an organ.",
+      "Select this option if you collected data from multiple brain regions, different sections of a tissue sample, or distinct parts of an organ.",
     dependsOn: ["subjects"],
     dependsOnNotSatiatedMessage: "You must indicate that you collected data from subjects first.",
     ml: 10,
@@ -126,7 +127,7 @@ const DatasetContentSelector = () => {
                   padding: "6px 10px",
                   borderRadius: "6px",
                   transition: "background 0.2s",
-                  cursor: isDisabled ? "not-allowed" : "pointer",
+                  cursor: isDisabled ? "not-allowed" : null,
                   opacity: isDisabled ? 0.6 : 1,
                 }}
               >
@@ -144,7 +145,7 @@ const DatasetContentSelector = () => {
                   {option.description && (
                     <Tooltip
                       disabled={isDisabled}
-                      label={expanded[key] ? "Hide" : "Show"}
+                      label={expanded[key] ? "Hide description" : "Show description"}
                       zIndex={2999}
                     >
                       <ActionIcon
@@ -165,9 +166,9 @@ const DatasetContentSelector = () => {
                   )}
                 </Group>
                 {expanded[key] && (
-                  <Text size="sm" mt="xs" ml="60px">
-                    {option.description}
-                  </Text>
+                  <SodaGreenPaper mt="sm" ml="sm">
+                    <Text>{option.description}</Text>
+                  </SodaGreenPaper>
                 )}
               </div>
             </Tooltip>

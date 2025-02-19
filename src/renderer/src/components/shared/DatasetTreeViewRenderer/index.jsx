@@ -68,7 +68,6 @@ const fileIcons = {
 
 const getIconForFile = (fileName) => {
   const fileExtension = fileName.split(".").pop();
-  console.log("File extension", fileExtension);
   return fileIcons[fileExtension] || <IconFile size={ICON_SETTINGS.fileSize} />;
 };
 
@@ -195,7 +194,6 @@ const FolderItem = ({
   // False return means the folder should be grayed out
   // Null means the folder should be normal
   const folderIsSelected = isFolderSelected ? isFolderSelected(name, content) : null;
-  console.log("Folder is selected", folderIsSelected);
 
   const folderRelativePathEqualsContextMenuItemRelativePath =
     contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath;

@@ -2,7 +2,6 @@ import { useState } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import { TextInput, Button, Text, Stack, Group, Box } from "@mantine/core";
-import { IconUserPlus } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
 import { addSubject } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { IconUser } from "@tabler/icons-react"; // Add this import

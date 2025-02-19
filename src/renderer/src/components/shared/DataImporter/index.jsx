@@ -35,6 +35,7 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
         onClick={handleClick}
         onReject={(files) => console.log("Rejected files:", files)}
         onDragOver={allowDrop}
+        mb="lg"
       >
         <Group justify="center" gap="xl" mih={120} style={{ pointerEvents: "none" }}>
           <Dropzone.Accept>

@@ -1,9 +1,11 @@
 import { Paper } from "@mantine/core";
 
-const SodaGreenPaper = ({ children }) => {
+const SodaGreenPaper = ({ children, mt, ml }) => {
   return (
     <Paper
       p="sm"
+      mt={mt || "0px"}
+      ml={ml || "0px"}
       shadow="sm"
       withBorder
       style={{
