@@ -1,4 +1,4 @@
-import { guidedSetNavLoadingState } from "./pageLoading";
+import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading";
 import { getDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie";
 import { savePageCurationPreparation } from "./curationPreparation/savePage";

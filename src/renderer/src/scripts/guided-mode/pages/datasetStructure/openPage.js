@@ -1,4 +1,4 @@
-import { guidedSkipPage, guidedUnSkipPage } from "../pageSkipping";
+import { guidedSkipPage, guidedUnSkipPage } from "../navigationUtils/pageSkipping";
 
 export const openPageDatasetStructure = async (targetPageID) => {
   if (targetPageID === "guided-dataset-structure-intro-tab") {

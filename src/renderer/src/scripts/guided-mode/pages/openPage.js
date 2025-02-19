@@ -9,10 +9,10 @@ import {
   addEntityToEntityList,
   setActiveEntity,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
-import { guidedSetNavLoadingState } from "./pageLoading.js";
+import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
 import Swal from "sweetalert2";
 import { userErrorMessage } from "../../others/http-error-handler/error-handler.js";
-import { getNonSkippedGuidedModePages } from "./pageSkipping.js";
+import { getNonSkippedGuidedModePages } from "./navigationUtils/pageSkipping.js";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie.js";
 import { renderSideBar } from "./sidebar.js";
 

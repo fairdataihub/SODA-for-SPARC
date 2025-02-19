@@ -1,6 +1,6 @@
 import { setGuidedProgressBarValue, updateDatasetUploadProgressTable } from "./uploadProgressBar";
 import { guidedCreateManifestFilesAndAddToDatasetStructure } from "../manifests/manifest";
-import { guidedSetNavLoadingState } from "../pages/pageLoading";
+import { guidedSetNavLoadingState } from "../pages/navigationUtils/pageLoading";
 import { clientError, userErrorMessage } from "../../others/http-error-handler/error-handler";
 import { guidedTransitionToHome, scrollToBottomOfGuidedBody } from "../pages/navigate";
 import { savePageChanges, guidedSaveProgress } from "../pages/savePageChanges";
@@ -14,7 +14,7 @@ import {
   guidedGetDatasetOrigin,
 } from "../utils/sodaJSONObj";
 import datasetUploadSession from "../../analytics/upload-session-tracker";
-import { pageIsSkipped } from "../pages/pageSkipping";
+import { pageIsSkipped } from "../pages/navigationUtils/pageSkipping";
 import kombuchaEnums from "../../analytics/analytics-enums";
 import Swal from "sweetalert2";
 import lottie from "lottie-web";

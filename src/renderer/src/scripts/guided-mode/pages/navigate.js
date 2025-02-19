@@ -1,7 +1,7 @@
 import { openPage } from "./openPage";
 import { savePageChanges } from "./savePageChanges";
 import { getGuidedProgressFileNames } from "./curationPreparation/savePage";
-import { guidedUnSkipPage, getNextPageNotSkipped, getPrevPageNotSkipped, guidedResetSkippedPages, guidedSkipPage, getNonSkippedGuidedModePages } from "./pageSkipping";
+import { guidedUnSkipPage, getNextPageNotSkipped, getPrevPageNotSkipped, guidedResetSkippedPages, guidedSkipPage, getNonSkippedGuidedModePages } from "./navigationUtils/pageSkipping";
 import { guidedUnLockSideBar, resetLazyLoading } from "../../../assets/nav";
 import { guidedCreateSodaJSONObj, attachGuidedMethodsToSodaJSONObj } from "../utils/sodaJSONObj";
 import api from "../../others/api/api"

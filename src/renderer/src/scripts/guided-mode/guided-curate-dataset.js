@@ -1,6 +1,6 @@
 // // sourcery skip: merge-nested-ifs
 
-import { guidedSetNavLoadingState } from "./pages/pageLoading";
+import { guidedSetNavLoadingState } from "./pages/navigationUtils/pageLoading";
 import { guidedSaveProgress } from "./pages/savePageChanges";
 import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";

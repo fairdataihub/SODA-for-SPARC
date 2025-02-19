@@ -8,7 +8,7 @@ import "./assets/nav";
 import "./scripts/client";
 import "./scripts/globals";
 import "./scripts/guided-mode/buttons/radioButtons";
-import "./scripts/guided-mode/pages/pageLoading";
+import "./scripts/guided-mode/pages/navigationUtils/pageLoading";
 import "./scripts/guided-mode/pages/curationPreparation/openPage";
 import "./scripts/guided-mode/pages/generateDataset/openPage";
 import "./scripts/guided-mode/pages/openPage";

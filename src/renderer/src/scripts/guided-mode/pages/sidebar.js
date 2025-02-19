@@ -1,4 +1,4 @@
-import { getNonSkippedGuidedModePages } from "../pages/pageSkipping";
+import { getNonSkippedGuidedModePages } from "../pages/navigationUtils/pageSkipping";
 import { savePageChanges } from "../pages/savePageChanges";
 import { openPage } from "../pages/openPage";
 import Swal from "sweetalert2";

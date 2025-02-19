@@ -1,5 +1,5 @@
 import { pageNeedsUpdateFromPennsieve } from "../../pennsieveUtils";
-import { setPageLoadingState } from "../pageLoading";
+import { setPageLoadingState } from "../navigationUtils/pageLoading";
 import Swal from "sweetalert2";
 import Cropper from "cropperjs";
 import api from "../../../others/api/api";

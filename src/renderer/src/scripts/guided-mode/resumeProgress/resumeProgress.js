@@ -2,7 +2,7 @@ import Swal from "sweetalert2";
 import { guidedTransitionFromHome } from "../pages/navigate";
 import { checkIfDatasetExistsOnPennsieve } from "../pennsieveUtils";
 import { attachGuidedMethodsToSodaJSONObj } from "../utils/sodaJSONObj";
-import { guidedSkipPage, guidedUnSkipPage, getNonSkippedGuidedModePages } from "../pages/pageSkipping";
+import { guidedSkipPage, guidedUnSkipPage, getNonSkippedGuidedModePages } from "../pages/navigationUtils/pageSkipping";
 import {guidedGetCurrentUserWorkSpace} from "../workspaces/workspaces"
 import { getProgressFileData } from "./progressFile";
 import { openPage } from "../pages/openPage";
