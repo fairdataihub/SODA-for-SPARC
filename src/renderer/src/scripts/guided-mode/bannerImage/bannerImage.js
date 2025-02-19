@@ -1,5 +1,3 @@
-import imageDataURI from "image-data-uri";
-
 export const guidedSaveBannerImage = async () => {
   $("#guided-para-dataset-banner-image-status").html("Please wait...");
   //Save cropped image locally and check size
