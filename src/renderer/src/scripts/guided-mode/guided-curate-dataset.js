@@ -2,6 +2,9 @@
 
 import { guidedSetNavLoadingState } from "./pages/navigationUtils/pageLoading";
 import { guidedSaveProgress } from "./pages/savePageChanges";
+import { getContributorByOrcid, addContributor, renderDatasetDescriptionContributorsTable } from "./metadata/contributors";
+import { renderManifestCards } from "./manifests/manifest";
+import {generateAlertElement} from "./metadata/utils";
 import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 import api from "../others/api/api";
@@ -9,8 +12,6 @@ import kombuchaEnums from "../analytics/analytics-enums";
 import Swal from "sweetalert2";
 import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
 import { v4 as uuid } from "uuid";
-import doiRegex from "doi-regex";
-import validator from "validator";
 import client from "../client";
 
 import {
@@ -390,39 +391,7 @@ window.deleteProgressCard = async (progressCardDeleteButton) => {
   }
 };
 
-const renderManifestCards = () => {
-  const manifestCard = `
-    <div class="dataset-card">        
-      <div class="dataset-card-body shrink">
-        <div class="dataset-card-row">
-          <h1 class="dataset-card-title-text">
-            <span class="manifest-folder-name">View Manifest</span>
-          </h1>
-        </div>
-      </div>
-      <div class="dataset-card-button-container">
-        <button
-          class="ui primary button dataset-card-button-confirm"
-          style="
-            width: 302px !important;
-            height: 40px;
-          "
-          onClick="window.guidedOpenManifestEditSwal()"
-        >
-          Preview/Edit manifest file
-        </button>
-      </div>
-    </div>
-  `;
 
-  const manifestFilesCardsContainer = document.getElementById(
-    "guided-container-manifest-file-cards"
-  );
-
-  manifestFilesCardsContainer.innerHTML = manifestCard;
-
-  window.smoothScrollToElement(manifestFilesCardsContainer);
-};
 
 window.guidedOpenManifestEditSwal = async () => {
   const existingManifestData = window.sodaJSONObj["guided-manifest-file-data"];
@@ -957,7 +926,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
     for (const subject of subjectsInPools) {
       if (
         !window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
-          "folders"
+        "folders"
         ][subject.subjectName]
       ) {
         window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
@@ -993,7 +962,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
        */
       if (
         !window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
-          "folders"
+        "folders"
         ][sample.subjectName]
       ) {
         window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
@@ -1006,7 +975,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
        */
       if (
         !window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
-          "folders"
+        "folders"
         ][sample.subjectName]["folders"][sample.sampleName]
       ) {
         window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
@@ -1031,7 +1000,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
        */
       if (
         !window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
-          "folders"
+        "folders"
         ][sample.sampleName]
       ) {
         window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
@@ -1060,7 +1029,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
         window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-          "folders"
+        "folders"
         ]?.[subjectName]?.["folders"]?.[sample];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
@@ -1074,7 +1043,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
       // Then delete the subject folder if it is empty
       const subjectFolder =
         window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-          "folders"
+        "folders"
         ]?.[subjectName];
       if (subjectFolder) {
         if (folderIsEmpty(subjectFolder)) {
@@ -1103,7 +1072,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
         window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName]?.[
-          "folders"
+        "folders"
         ]?.[sample];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
@@ -1131,7 +1100,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
         window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-          "folders"
+        "folders"
         ]?.[subjectName]?.["folders"]?.[sample];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
@@ -1145,7 +1114,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
       // Then delete the subject folder if it is empty
       const subjectFolder =
         window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-          "folders"
+        "folders"
         ]?.[subjectName];
       if (subjectFolder) {
         if (folderIsEmpty(subjectFolder)) {
@@ -1174,7 +1143,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
         window.datasetStructureJSONObj["folders"]?.["primary"]?.["folders"]?.[subjectName]?.[
-          "folders"
+        "folders"
         ]?.[sample];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
@@ -1328,9 +1297,9 @@ const guidedOpenEntityEditSwal = async (entityName) => {
       <div class="space-between w-100 align-flex-center">
         <p class="help-text m-0 mr-1 no-text-wrap">${entityPrefix}</p>
         <input value="${entityName.replace(
-          entityPrefix,
-          ""
-        )}" id='input-new-entity-name' class='guided--input' type='text' placeholder='Enter new ${entityNameSingular} name and press edit'/>
+      entityPrefix,
+      ""
+    )}" id='input-new-entity-name' class='guided--input' type='text' placeholder='Enter new ${entityNameSingular} name and press edit'/>
       </div>
     `,
     width: 800,
@@ -1514,13 +1483,7 @@ function setGuidedProgressBarValue(destination, value) {
   }
 }
 
-const generateAlertElement = (alertType, warningMessageText) => {
-  return `
-      <div class="alert alert-${alertType} guided--alert mr-2" role="alert">
-        ${warningMessageText}
-      </div>
-    `;
-};
+
 
 const generateAlertMessage = (elementToWarn) => {
   const alertMessage = elementToWarn.data("alert-message");
@@ -1770,50 +1733,7 @@ const getExistingContributorORCiDs = () => {
   );
 };
 
-const addContributor = (
-  contributorFullName,
-  contributorORCID,
-  contributorAffiliationsArray,
-  contributorRolesArray
-) => {
-  //Check if the contributor already exists
 
-  if (getContributorByOrcid(contributorORCID)) {
-    throw new Error("A contributor with the entered ORCID already exists");
-  }
-
-  //If the contributorFullName has one comma, we can successfully split the name into first and last name
-  //If not, they will remain as empty strings until they are edited
-  let contributorFirstName = "";
-  let contributorLastName = "";
-  if (contributorFullName.split(",").length === 2) {
-    [contributorLastName, contributorFirstName] = contributorFullName
-      .split(",")
-      .map((name) => name.trim());
-  }
-
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].push({
-    contributorFirstName: contributorFirstName,
-    contributorLastName: contributorLastName,
-    conName: contributorFullName,
-    conID: contributorORCID,
-    conAffliation: contributorAffiliationsArray,
-    conRole: contributorRolesArray,
-  });
-
-  // Store the contributor locally so they can import the contributor's data in the future
-  try {
-    window.addOrUpdateStoredContributor(
-      contributorFirstName,
-      contributorLastName,
-      contributorORCID,
-      contributorAffiliationsArray,
-      contributorRolesArray
-    );
-  } catch (error) {
-    console.error("Failed to store contributor locally" + error);
-  }
-};
 
 const editContributorByOrcid = (
   prevContributorOrcid,
@@ -1855,14 +1775,7 @@ const editContributorByOrcid = (
   }
 };
 
-const getContributorByOrcid = (orcid) => {
-  const contributors =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
-  const contributor = contributors.find((contributor) => {
-    return contributor.conID == orcid;
-  });
-  return contributor;
-};
+
 
 window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
   const contributorData = getContributorByOrcid(contibuttorOrcidToEdit);
@@ -1893,9 +1806,8 @@ window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
         <label class="guided--form-label centered mb-md">
           Make changes to the contributor's information below.
         </label>
-        ${
-          boolShowIncorrectFullName
-            ? `
+        ${boolShowIncorrectFullName
+        ? `
               <div class="guided--container-warning-text">
                 <p class="guided--help-text">
                   Contributor names should be in the format of "Last name, First name".
@@ -1904,8 +1816,8 @@ window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
                 </p>
               </div>
               `
-            : ``
-        }
+        : ``
+      }
         <div class="space-between w-100">
           <div class="guided--flex-center mt-sm" style="width: 45%">
             <label class="guided--form-label required">First name: </label>
@@ -2506,11 +2418,10 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
         ${contributorRoleString}
       </td>
       <td class="middle aligned collapsing text-center">
-        ${
-          contributorObjIsValid
-            ? `<span class="badge badge-pill badge-success">Valid</span>`
-            : `<span class="badge badge-pill badge-warning">Needs Modification</span>`
-        }
+        ${contributorObjIsValid
+      ? `<span class="badge badge-pill badge-success">Valid</span>`
+      : `<span class="badge badge-pill badge-warning">Needs Modification</span>`
+    }
       </td>
       <td class="middle aligned collapsing text-center">
         <button
@@ -2533,245 +2444,6 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
       </td>
     </tr>
   `;
-};
-const renderDatasetDescriptionContributorsTable = () => {
-  const contributorsTable = document.getElementById("guided-DD-connoributors-table");
-
-  let contributorsTableHTML;
-
-  const contributors =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
-
-  if (contributors.length === 0) {
-    contributorsTableHTML = `
-      <tr>
-        <td colspan="6">
-          <div style="margin-right:.5rem" class="alert alert-warning guided--alert" role="alert">
-            No contributors have been added to your dataset. To add a contributor, click the "Add a new contributor" button below.
-          </div>
-        </td>
-      </tr>
-    `;
-  } else {
-    contributorsTableHTML = contributors
-      .map((contributor, index) => {
-        let contributorIndex = index + 1;
-        return generateContributorTableRow(contributor, contributorIndex);
-      })
-      .join("\n");
-  }
-  contributorsTable.innerHTML = contributorsTableHTML;
-};
-
-const getGuidedProtocolLinks = () => {
-  try {
-    return window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"].map(
-      (protocol) => protocol.link
-    );
-  } catch (error) {
-    // return an empty array if the protocol array doesn't exist yet
-    return [];
-  }
-};
-
-const protocolObjIsFair = (protocolLink, protocoldescription) => {
-  return protocolLink.length > 0 && protocoldescription.length > 0;
-};
-
-const addGuidedProtocol = (link, description, type) => {
-  const currentProtocolLinks = getGuidedProtocolLinks();
-
-  if (currentProtocolLinks.includes(link)) {
-    throw new Error("Protocol link already exists");
-  }
-
-  const isFair = protocolObjIsFair(link, description);
-
-  //add the new protocol to the JSONObj
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [
-    ...window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"],
-    {
-      link: link,
-      type: type,
-      relation: "IsProtocolFor",
-      description: description,
-      isFair: isFair,
-    },
-  ];
-};
-const editGuidedProtocol = (oldLink, newLink, description, type) => {
-  const currentProtocolLinks =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
-  //find the index of the protocol to be edited
-  const protocolIndex = currentProtocolLinks.findIndex((protocol) => protocol.link === oldLink);
-
-  const isFair = protocolObjIsFair(newLink, description);
-
-  //replace the protocol at the index with the new protocol
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"][protocolIndex] = {
-    link: newLink,
-    type: type,
-    relation: "IsProtocolFor",
-    description: description,
-    isFair: isFair,
-  };
-};
-
-const determineIfLinkIsDOIorURL = (link) => {
-  // returns either "DOI" or "URL" or "neither"
-  if (doiRegex.declared({ exact: true }).test(link) === true) {
-    return "DOI";
-  }
-  if (validator.isURL(link) != true) {
-    return "neither";
-  }
-  if (link.includes("doi")) {
-    return "DOI";
-  } else {
-    return "URL";
-  }
-};
-
-window.openProtocolSwal = async (protocolElement) => {
-  // True if adding a new protocol, false if editing an existing protocol
-  let protocolURL = "";
-  let protocolDescription = "";
-  if (protocolElement) {
-    protocolURL = protocolElement.dataset.protocolUrl;
-    protocolDescription = protocolElement.dataset.protocolDescription;
-  }
-  await Swal.fire({
-    title: "Add a protocol",
-    html:
-      `<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory." rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL" value="${protocolURL}">` +
-      `<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description">${protocolDescription}</textarea>`,
-    focusConfirm: false,
-    confirmButtonText: "Add",
-    cancelButtonText: "Cancel",
-    customClass: "swal-content-additional-link",
-    showCancelButton: true,
-    reverseButtons: window.reverseSwalButtons,
-    heightAuto: false,
-    width: "38rem",
-    backdrop: "rgba(0,0,0, 0.4)",
-    didOpen: () => {
-      $(".swal-popover").popover();
-    },
-    preConfirm: () => {
-      const link = $("#DD-protocol-link").val();
-      const protocolDescription = $("#DD-protocol-description").val();
-      if (link === "") {
-        Swal.showValidationMessage(`Please enter a link!`);
-        return;
-      }
-      if (protocolDescription === "") {
-        Swal.showValidationMessage(`Please enter a short description!`);
-        return;
-      }
-      let protocolType = determineIfLinkIsDOIorURL(link);
-      if (protocolType === "neither") {
-        Swal.showValidationMessage(`Please enter a valid URL or DOI!`);
-        return;
-      }
-
-      try {
-        if (!protocolElement) {
-          // Add the protocol
-          addGuidedProtocol(link, protocolDescription, protocolType);
-        } else {
-          // Edit the existing protocol
-          const protocolToEdit = protocolElement.dataset.protocolUrl;
-          editGuidedProtocol(protocolToEdit, link, protocolDescription, protocolType);
-        }
-        renderProtocolsTable();
-      } catch (error) {
-        Swal.showValidationMessage(error);
-      }
-    },
-  });
-};
-
-window.guidedDeleteProtocol = (protocolElement) => {
-  const linkToDelete = protocolElement.dataset.protocolUrl;
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = window.sodaJSONObj[
-    "dataset-metadata"
-  ]["description-metadata"]["protocols"].filter((protocol) => protocol.link !== linkToDelete);
-  renderProtocolsTable();
-};
-
-//TODO: handle new blank protocol fields (when parameter are blank)
-const generateProtocolField = (protocolUrl, protocolType, protocolDescription, isFair) => {
-  return `
-    <tr 
-      class="guided-protocol-field-container"
-    >
-      <td class="middle aligned link-name-cell" >
-        ${protocolUrl}
-      </td>
-      <td class="middle aligned">
-        ${protocolDescription}
-      </td>
-      <td class="middle aligned collapsing text-center">
-        ${
-          isFair
-            ? `<span class="badge badge-pill badge-success">Valid</span>`
-            : `<span class="badge badge-pill badge-warning">Needs modification</span>`
-        }
-      </td>
-      <td class="middle aligned collapsing text-center">
-        <button
-          type="button"
-          class="btn btn-sm"
-          style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
-          data-protocol-url="${protocolUrl}"
-          data-protocol-description="${protocolDescription}"
-          onclick="window.openProtocolSwal(this)"
-        >
-        View/Edit
-        </button>
-      </td>
-      <td class="middle aligned collapsing text-center">
-        <button
-          type="button"
-          class="btn btn-danger btn-sm"
-          data-protocol-url="${protocolUrl}"
-          data-protocol-description="${protocolDescription}"
-          onclick="window.guidedDeleteProtocol(this)"
-        >
-        Delete
-        </button>
-      </td>
-    </tr>
-  `;
-};
-
-const renderProtocolsTable = () => {
-  const protocols = window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
-
-  const protocolsContainer = document.getElementById("protocols-container");
-
-  //protocols is either undefined when brand new dataset or 0 when returning from a saved dataset
-  if (protocols === undefined || protocols.length === 0) {
-    const emptyRowWarning = generateAlertElement(
-      "warning",
-      "You currently have no protocols for your dataset. To add, click the 'Add a new protocol' button"
-    );
-    let warningRowElement = `<tr id="protocolAlert"><td colspan="5">${emptyRowWarning}</td></tr>`;
-    protocolsContainer.innerHTML = warningRowElement;
-    return;
-  }
-
-  const protocolElements = protocols
-    .map((protocol) => {
-      return generateProtocolField(
-        protocol["link"],
-        protocol["type"],
-        protocol["description"],
-        protocol["isFair"]
-      );
-    })
-    .join("\n");
-  protocolsContainer.innerHTML = protocolElements;
 };
 
 const renderAdditionalLinksTable = () => {
@@ -2940,10 +2612,10 @@ const renderSubjectSampleAdditionTable = (subject) => {
       </thead>
       <tbody>
         ${subject.samples
-          .map((sample) => {
-            return generateSampleRowElement(sample);
-          })
-          .join("\n")}
+      .map((sample) => {
+        return generateSampleRowElement(sample);
+      })
+      .join("\n")}
       </tbody>
     </table>
   `;
@@ -2960,10 +2632,10 @@ const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
   document.getElementById("guided-bootbox-wasDerivedFromSample").innerHTML = `
  <option value="">Sample not derived from another sample</option>
  ${samplesBesidesCurrSample
-   .map((sample) => {
-     return `<option value="${sample.sampleName}">${sample.sampleName}</option>`;
-   })
-   .join("\n")}))
+      .map((sample) => {
+        return `<option value="${sample.sampleName}">${sample.sampleName}</option>`;
+      })
+      .join("\n")}))
  `;
 
   //Add protocol titles to the protocol dropdown
@@ -3798,11 +3470,10 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
   };
   `${entityNameSingular} addition`;
   const additionConfirmed = await Swal.fire({
-    title: `${
-      entityName.startsWith("sub-")
+    title: `${entityName.startsWith("sub-")
         ? `Add samples taken from ${entityName}`
         : `${entityNameSingular} addition`
-    }`,
+      }`,
     html: `
       <p class="help-text">
         Enter a unique ${entityNameSingular} ID and press enter or the
@@ -4485,8 +4156,8 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
   for (const [_, subjects] of Object.entries(subjectsWithSamplesInPools)) {
     asideElementTemplateLiteral += `
     ${subjects
-      .map((subject) => {
-        return `
+        .map((subject) => {
+          return `
         <div style="display: flex; flex-direction: column; width: 100%; border-radius: 4px; margin-bottom: 1rem">
             <div class="justify-center" style="background: lightgray; padding: 5px 0 2px 0;">
               <label class="guided--form-label centered" style="color: black;">
@@ -4494,19 +4165,19 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
               </label>
               </div>
                 ${subject.samples
-                  .map((sample) => {
-                    return `
+              .map((sample) => {
+                return `
                     <a 
                       class="${highLevelFolderName}-selection-aside-item selection-aside-item"
                       data-path-suffix="${subject.poolName}/${subject.subjectName}/${sample}"
                       style="padding-left: 1rem; direction: ltr"
                     >${sample}</a>
                   `;
-                  })
-                  .join("\n")}
+              })
+              .join("\n")}
             </div>`;
-      })
-      .join("\n")}`;
+        })
+        .join("\n")}`;
   }
 
   //filter out subjects that are not in a pool
@@ -4523,16 +4194,16 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
         </label>
       </div>
         ${subject.samples
-          .map((sample) => {
-            return `  
+        .map((sample) => {
+          return `  
               <a
                 class="${highLevelFolderName}-selection-aside-item selection-aside-item"
                 style="direction: ltr; padding-left: 1rem;"
                 data-path-suffix="${subject.subjectName}/${sample}"
               >${sample}</a>
 `;
-          })
-          .join("\n")}
+        })
+        .join("\n")}
     `;
   }
 
@@ -4597,9 +4268,8 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
           <a 
             class="${highLevelFolderName}-selection-aside-item selection-aside-item"
             style="align-self: center; width: 97%; direction: ltr;"
-            data-path-suffix="${subject.poolName ? subject.poolName + "/" : ""}${
-              subject.subjectName
-            }"
+            data-path-suffix="${subject.poolName ? subject.poolName + "/" : ""}${subject.subjectName
+        }"
           >${subject.subjectName}</a>
         `;
     })
@@ -4762,7 +4432,7 @@ const renderSubjectsMetadataAsideItems = async () => {
         if (
           !subjectsFormNames.includes(
             window.subjectsTableData[0][i].charAt(0).toUpperCase() +
-              window.subjectsTableData[0][i].slice(1)
+            window.subjectsTableData[0][i].slice(1)
           ) ||
           !subjectsFormNames.includes(window.subjectsTableData[0][i])
         ) {
@@ -4907,7 +4577,7 @@ const renderSamplesMetadataAsideItems = async () => {
         !samplesFormNames.includes(window.samplesTableData[0][i]) ||
         !samplesFormNames.includes(
           window.samplesTableData[0][i].charAt(0).toUpperCase() +
-            window.samplesTableData[0][i].slice(1)
+          window.samplesTableData[0][i].slice(1)
         )
       ) {
         window.addCustomHeader("samples", window.samplesTableData[0][i], "guided");
@@ -5007,8 +4677,8 @@ $("#guided-button-add-permission-user-or-team").on("click", function () {
     ) {
       throw `${newPermissionElement.text().trim()} is designated as the PI owner.
         To designate them as a ${newPermissionRoleElement
-          .val()
-          .trim()}, go back and remove them as the PI owner.`;
+        .val()
+        .trim()}, go back and remove them as the PI owner.`;
     }
 
     if (newPermissionElement[0].getAttribute("permission-type") == "user") {
