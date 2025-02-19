@@ -10,7 +10,6 @@ while (!window.baseHtmlLoaded) {
 let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
-
 export const guidedSaveProgress = async () => {
   const guidedProgressFileName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
   //return if guidedProgressFileName is not a strnig greater than 0
@@ -101,7 +100,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
- 
     await savePageCurationPreparation(pageBeingLeftID);
 
     // if (pageBeingLeftID === "guided-subjects-addition-tab") {

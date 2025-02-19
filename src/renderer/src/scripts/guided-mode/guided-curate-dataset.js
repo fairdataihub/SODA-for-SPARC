@@ -2,9 +2,13 @@
 
 import { guidedSetNavLoadingState } from "./pages/navigationUtils/pageLoading";
 import { guidedSaveProgress } from "./pages/savePageChanges";
-import { getContributorByOrcid, addContributor, renderDatasetDescriptionContributorsTable } from "./metadata/contributors";
+import {
+  getContributorByOrcid,
+  addContributor,
+  renderDatasetDescriptionContributorsTable,
+} from "./metadata/contributors";
 import { renderManifestCards } from "./manifests/manifest";
-import {generateAlertElement} from "./metadata/utils";
+import { generateAlertElement } from "./metadata/utils";
 import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 import api from "../others/api/api";
@@ -390,8 +394,6 @@ window.deleteProgressCard = async (progressCardDeleteButton) => {
     progressCard.remove();
   }
 };
-
-
 
 window.guidedOpenManifestEditSwal = async () => {
   const existingManifestData = window.sodaJSONObj["guided-manifest-file-data"];
@@ -926,7 +928,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
     for (const subject of subjectsInPools) {
       if (
         !window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
-        "folders"
+          "folders"
         ][subject.subjectName]
       ) {
         window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
@@ -962,7 +964,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
        */
       if (
         !window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
-        "folders"
+          "folders"
         ][sample.subjectName]
       ) {
         window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
@@ -975,7 +977,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
        */
       if (
         !window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
-        "folders"
+          "folders"
         ][sample.subjectName]["folders"][sample.sampleName]
       ) {
         window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
@@ -1000,7 +1002,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
        */
       if (
         !window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
-        "folders"
+          "folders"
         ][sample.sampleName]
       ) {
         window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
@@ -1029,7 +1031,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
         window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-        "folders"
+          "folders"
         ]?.[subjectName]?.["folders"]?.[sample];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
@@ -1043,7 +1045,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
       // Then delete the subject folder if it is empty
       const subjectFolder =
         window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-        "folders"
+          "folders"
         ]?.[subjectName];
       if (subjectFolder) {
         if (folderIsEmpty(subjectFolder)) {
@@ -1072,7 +1074,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
         window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName]?.[
-        "folders"
+          "folders"
         ]?.[sample];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
@@ -1100,7 +1102,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
         window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-        "folders"
+          "folders"
         ]?.[subjectName]?.["folders"]?.[sample];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
@@ -1114,7 +1116,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
       // Then delete the subject folder if it is empty
       const subjectFolder =
         window.datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-        "folders"
+          "folders"
         ]?.[subjectName];
       if (subjectFolder) {
         if (folderIsEmpty(subjectFolder)) {
@@ -1143,7 +1145,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
         window.datasetStructureJSONObj["folders"]?.["primary"]?.["folders"]?.[subjectName]?.[
-        "folders"
+          "folders"
         ]?.[sample];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
@@ -1297,9 +1299,9 @@ const guidedOpenEntityEditSwal = async (entityName) => {
       <div class="space-between w-100 align-flex-center">
         <p class="help-text m-0 mr-1 no-text-wrap">${entityPrefix}</p>
         <input value="${entityName.replace(
-      entityPrefix,
-      ""
-    )}" id='input-new-entity-name' class='guided--input' type='text' placeholder='Enter new ${entityNameSingular} name and press edit'/>
+          entityPrefix,
+          ""
+        )}" id='input-new-entity-name' class='guided--input' type='text' placeholder='Enter new ${entityNameSingular} name and press edit'/>
       </div>
     `,
     width: 800,
@@ -1482,8 +1484,6 @@ function setGuidedProgressBarValue(destination, value) {
     console.error(`Could not find progress bar for ${destination}`);
   }
 }
-
-
 
 const generateAlertMessage = (elementToWarn) => {
   const alertMessage = elementToWarn.data("alert-message");
@@ -1733,8 +1733,6 @@ const getExistingContributorORCiDs = () => {
   );
 };
 
-
-
 const editContributorByOrcid = (
   prevContributorOrcid,
   contributorFirstName,
@@ -1775,8 +1773,6 @@ const editContributorByOrcid = (
   }
 };
 
-
-
 window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
   const contributorData = getContributorByOrcid(contibuttorOrcidToEdit);
   const contributorFirstName = contributorData.contributorFirstName;
@@ -1806,8 +1802,9 @@ window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
         <label class="guided--form-label centered mb-md">
           Make changes to the contributor's information below.
         </label>
-        ${boolShowIncorrectFullName
-        ? `
+        ${
+          boolShowIncorrectFullName
+            ? `
               <div class="guided--container-warning-text">
                 <p class="guided--help-text">
                   Contributor names should be in the format of "Last name, First name".
@@ -1816,8 +1813,8 @@ window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
                 </p>
               </div>
               `
-        : ``
-      }
+            : ``
+        }
         <div class="space-between w-100">
           <div class="guided--flex-center mt-sm" style="width: 45%">
             <label class="guided--form-label required">First name: </label>
@@ -2418,10 +2415,11 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
         ${contributorRoleString}
       </td>
       <td class="middle aligned collapsing text-center">
-        ${contributorObjIsValid
-      ? `<span class="badge badge-pill badge-success">Valid</span>`
-      : `<span class="badge badge-pill badge-warning">Needs Modification</span>`
-    }
+        ${
+          contributorObjIsValid
+            ? `<span class="badge badge-pill badge-success">Valid</span>`
+            : `<span class="badge badge-pill badge-warning">Needs Modification</span>`
+        }
       </td>
       <td class="middle aligned collapsing text-center">
         <button
@@ -2612,10 +2610,10 @@ const renderSubjectSampleAdditionTable = (subject) => {
       </thead>
       <tbody>
         ${subject.samples
-      .map((sample) => {
-        return generateSampleRowElement(sample);
-      })
-      .join("\n")}
+          .map((sample) => {
+            return generateSampleRowElement(sample);
+          })
+          .join("\n")}
       </tbody>
     </table>
   `;
@@ -2632,10 +2630,10 @@ const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
   document.getElementById("guided-bootbox-wasDerivedFromSample").innerHTML = `
  <option value="">Sample not derived from another sample</option>
  ${samplesBesidesCurrSample
-      .map((sample) => {
-        return `<option value="${sample.sampleName}">${sample.sampleName}</option>`;
-      })
-      .join("\n")}))
+   .map((sample) => {
+     return `<option value="${sample.sampleName}">${sample.sampleName}</option>`;
+   })
+   .join("\n")}))
  `;
 
   //Add protocol titles to the protocol dropdown
@@ -3470,10 +3468,11 @@ const guidedOpenEntityAdditionSwal = async (entityName) => {
   };
   `${entityNameSingular} addition`;
   const additionConfirmed = await Swal.fire({
-    title: `${entityName.startsWith("sub-")
+    title: `${
+      entityName.startsWith("sub-")
         ? `Add samples taken from ${entityName}`
         : `${entityNameSingular} addition`
-      }`,
+    }`,
     html: `
       <p class="help-text">
         Enter a unique ${entityNameSingular} ID and press enter or the
@@ -4156,8 +4155,8 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
   for (const [_, subjects] of Object.entries(subjectsWithSamplesInPools)) {
     asideElementTemplateLiteral += `
     ${subjects
-        .map((subject) => {
-          return `
+      .map((subject) => {
+        return `
         <div style="display: flex; flex-direction: column; width: 100%; border-radius: 4px; margin-bottom: 1rem">
             <div class="justify-center" style="background: lightgray; padding: 5px 0 2px 0;">
               <label class="guided--form-label centered" style="color: black;">
@@ -4165,19 +4164,19 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
               </label>
               </div>
                 ${subject.samples
-              .map((sample) => {
-                return `
+                  .map((sample) => {
+                    return `
                     <a 
                       class="${highLevelFolderName}-selection-aside-item selection-aside-item"
                       data-path-suffix="${subject.poolName}/${subject.subjectName}/${sample}"
                       style="padding-left: 1rem; direction: ltr"
                     >${sample}</a>
                   `;
-              })
-              .join("\n")}
+                  })
+                  .join("\n")}
             </div>`;
-        })
-        .join("\n")}`;
+      })
+      .join("\n")}`;
   }
 
   //filter out subjects that are not in a pool
@@ -4194,16 +4193,16 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
         </label>
       </div>
         ${subject.samples
-        .map((sample) => {
-          return `  
+          .map((sample) => {
+            return `  
               <a
                 class="${highLevelFolderName}-selection-aside-item selection-aside-item"
                 style="direction: ltr; padding-left: 1rem;"
                 data-path-suffix="${subject.subjectName}/${sample}"
               >${sample}</a>
 `;
-        })
-        .join("\n")}
+          })
+          .join("\n")}
     `;
   }
 
@@ -4268,8 +4267,9 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
           <a 
             class="${highLevelFolderName}-selection-aside-item selection-aside-item"
             style="align-self: center; width: 97%; direction: ltr;"
-            data-path-suffix="${subject.poolName ? subject.poolName + "/" : ""}${subject.subjectName
-        }"
+            data-path-suffix="${subject.poolName ? subject.poolName + "/" : ""}${
+              subject.subjectName
+            }"
           >${subject.subjectName}</a>
         `;
     })
@@ -4432,7 +4432,7 @@ const renderSubjectsMetadataAsideItems = async () => {
         if (
           !subjectsFormNames.includes(
             window.subjectsTableData[0][i].charAt(0).toUpperCase() +
-            window.subjectsTableData[0][i].slice(1)
+              window.subjectsTableData[0][i].slice(1)
           ) ||
           !subjectsFormNames.includes(window.subjectsTableData[0][i])
         ) {
@@ -4577,7 +4577,7 @@ const renderSamplesMetadataAsideItems = async () => {
         !samplesFormNames.includes(window.samplesTableData[0][i]) ||
         !samplesFormNames.includes(
           window.samplesTableData[0][i].charAt(0).toUpperCase() +
-          window.samplesTableData[0][i].slice(1)
+            window.samplesTableData[0][i].slice(1)
         )
       ) {
         window.addCustomHeader("samples", window.samplesTableData[0][i], "guided");
@@ -4677,8 +4677,8 @@ $("#guided-button-add-permission-user-or-team").on("click", function () {
     ) {
       throw `${newPermissionElement.text().trim()} is designated as the PI owner.
         To designate them as a ${newPermissionRoleElement
-        .val()
-        .trim()}, go back and remove them as the PI owner.`;
+          .val()
+          .trim()}, go back and remove them as the PI owner.`;
     }
 
     if (newPermissionElement[0].getAttribute("permission-type") == "user") {

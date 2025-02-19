@@ -1,17 +1,24 @@
 import { pageNeedsUpdateFromPennsieve } from "../../pennsieveUtils";
 import { setPageLoadingState } from "../navigationUtils/pageLoading";
-import { addContributor, renderDatasetDescriptionContributorsTable } from "../../metadata/contributors";
+import {
+  addContributor,
+  renderDatasetDescriptionContributorsTable,
+} from "../../metadata/contributors";
 import { addGuidedProtocol } from "../../metadata/protocols";
 import Swal from "sweetalert2";
 import Cropper from "cropperjs";
-import client from "../../../client"
+import client from "../../../client";
 import api from "../../../others/api/api";
 import { clientError, userErrorMessage } from "../../../others/http-error-handler/error-handler";
 import { guidedShowOptionalRetrySwal } from "../../swals/helperSwals";
 import { guidedShowBannerImagePreview } from "../../bannerImage/bannerImage";
 import { renderManifestCards } from "../../manifests/manifest";
 import { setTreeViewDatasetStructure } from "../../../../stores/slices/datasetTreeViewSlice";
-import { setEntityType, setEntityListForEntityType, setActiveEntity } from "../../../../stores/slices/datasetEntitySelectorSlice";
+import {
+  setEntityType,
+  setEntityListForEntityType,
+  setActiveEntity,
+} from "../../../../stores/slices/datasetEntitySelectorSlice";
 import { dragDrop } from "../../../../assets/lotties/lotties";
 import lottie from "lottie-web";
 
@@ -116,7 +123,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
   }
 
-
   if (targetPageID === "guided-manifest-file-generation-tab") {
     // Delete existing manifest files in the dataset structure
     Object.values(window.datasetStructureJSONObj.folders).forEach((folder) => {
@@ -156,9 +162,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
             const isNonExistent = !window.fs.existsSync(filePath);
 
             if (isNonExistent) {
-              window.log.info(
-                `Deleting reference to non-existent file: ${currentPath}${fileName}`
-              );
+              window.log.info(`Deleting reference to non-existent file: ${currentPath}${fileName}`);
               delete files[fileName];
             }
           }
@@ -188,10 +192,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     const deleteEmptyFolders = (currentStructure) => {
       Object.entries(currentStructure.folders || {}).forEach(([folderName, folder]) => {
         deleteEmptyFolders(folder);
-        if (
-          !Object.keys(folder.files || {}).length &&
-          !Object.keys(folder.folders || {}).length
-        ) {
+        if (!Object.keys(folder.files || {}).length && !Object.keys(folder.folders || {}).length) {
           delete currentStructure.folders[folderName];
         }
       });
@@ -350,9 +351,9 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       "guided-manifest-file-data"
     ]
       ? window.diffCheckManifestFiles(
-        newManifestData,
-        window.sodaJSONObj["guided-manifest-file-data"]
-      )
+          newManifestData,
+          window.sodaJSONObj["guided-manifest-file-data"]
+        )
       : newManifestData;
 
     renderManifestCards();
@@ -385,7 +386,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     );
     setActiveEntity(null);
   }
-
 
   if (targetPageID === "guided-create-submission-metadata-tab") {
     if (pageNeedsUpdateFromPennsieve(targetPageID)) {
@@ -446,8 +446,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     if (sparcAward) {
       sparcAwardInputManual.value = sparcAward;
     }
-    const milestones =
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+    const milestones = window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
     if (milestones) {
       window.guidedSubmissionTagsTagifyManual.addTags(milestones);
     }
@@ -508,7 +507,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       window.hideElementsWithClass("guided-non-sparc-funding-consortium-instructions");
     }
   }
-
 
   if (targetPageID === "guided-contributors-tab") {
     if (pageNeedsUpdateFromPennsieve("guided-contributors-tab")) {
@@ -575,13 +573,11 @@ export const openPagePrepareMetadata = async (targetPageID) => {
           },
         });
         let relatedInformationData = metadata_import.data["Related information"];
-        const protocolsFromPennsieve = relatedInformationData.filter(
-          (relatedInformationArray) => {
-            return (
-              relatedInformationArray[1] === "IsProtocolFor" && relatedInformationArray[2] !== ""
-            );
-          }
-        );
+        const protocolsFromPennsieve = relatedInformationData.filter((relatedInformationArray) => {
+          return (
+            relatedInformationArray[1] === "IsProtocolFor" && relatedInformationArray[2] !== ""
+          );
+        });
 
         for (const protocol of protocolsFromPennsieve) {
           const protocolLink = protocol[2];
@@ -609,8 +605,4 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
     renderProtocolsTable();
   }
-
-
-
-
 };

@@ -329,9 +329,6 @@ export const openPage = async (targetPageID) => {
     //         );*/
     //     }
 
-
-
-
     //     if (targetPageID === "guided-source-derivative-folders-and-files-selector-tab") {
     //         addEntityToEntityList("source-derivative-folders-and-files", "source");
     //         addEntityToEntityList("source-derivative-folders-and-files", "derivative");
@@ -344,12 +341,6 @@ export const openPage = async (targetPageID) => {
     //         setActiveEntity(null);
     //         console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
     //     }
-
-
-
-    
-
-    
 
     //     if (targetPageID === "guided-create-description-metadata-tab") {
     //         if (pageNeedsUpdateFromPennsieve("guided-create-description-metadata-tab")) {

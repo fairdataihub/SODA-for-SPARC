@@ -33,7 +33,6 @@ export const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 };
 
-
 export const renderManifestCards = () => {
   const manifestCard = `
     <div class="dataset-card">        

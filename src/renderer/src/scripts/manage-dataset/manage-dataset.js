@@ -1318,7 +1318,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   // get the dataset readme
   let readme;
   try {
-    readme = await api.getDatasetReadme( selectedBfDataset);
+    readme = await api.getDatasetReadme(selectedBfDataset);
   } catch (err) {
     clientError(err);
     Swal.fire({
@@ -2263,7 +2263,7 @@ window.showCurrentBannerImage = async () => {
   document.getElementById("para-current-banner-img").innerHTML = "";
 
   try {
-    let res = await api.getDatasetBannerImageURL( selectedBfDataset);
+    let res = await api.getDatasetBannerImageURL(selectedBfDataset);
     window.logGeneralOperationsForAnalytics(
       "Success",
       window.ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
@@ -3071,7 +3071,7 @@ $("#button-submit-dataset").click(async () => {
   };
 
   // Check if dataset is locked before starting upload
-  const isLocked = await api.isDatasetLocked( window.defaultBfDataset);
+  const isLocked = await api.isDatasetLocked(window.defaultBfDataset);
   if (isLocked) {
     $("#upload_local_dataset_progress_div").removeClass("show");
     await Swal.fire({

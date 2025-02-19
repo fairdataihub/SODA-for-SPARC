@@ -1,15 +1,22 @@
 import { openPage } from "./openPage";
 import { savePageChanges } from "./savePageChanges";
 import { getGuidedProgressFileNames } from "./curationPreparation/savePage";
-import { guidedUnSkipPage, getNextPageNotSkipped, getPrevPageNotSkipped, guidedResetSkippedPages, guidedSkipPage, getNonSkippedGuidedModePages } from "./navigationUtils/pageSkipping";
+import {
+  guidedUnSkipPage,
+  getNextPageNotSkipped,
+  getPrevPageNotSkipped,
+  guidedResetSkippedPages,
+  guidedSkipPage,
+  getNonSkippedGuidedModePages,
+} from "./navigationUtils/pageSkipping";
 import { guidedUnLockSideBar, resetLazyLoading } from "../../../assets/nav";
 import { guidedCreateSodaJSONObj, attachGuidedMethodsToSodaJSONObj } from "../utils/sodaJSONObj";
-import api from "../../others/api/api"
+import api from "../../others/api/api";
 import lottie from "lottie-web";
 import { existingDataset, modifyDataset } from "../../../assets/lotties/lotties";
 import Swal from "sweetalert2";
 import { clientError } from "../../others/http-error-handler/error-handler";
-import client from "../../client"
+import client from "../../client";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -151,7 +158,7 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
 
         const potentialSampleFolderNames = Object.keys(
           datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"][subjectFolder][
-          "folders"
+            "folders"
           ]
         );
         const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
@@ -222,7 +229,6 @@ const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
   return [invalidFolders, invalidFiles];
 };
 
-
 const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMetadataRows) => {
   const poolSubSamStructure = {
     pools: {},
@@ -264,14 +270,13 @@ const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMe
   return poolSubSamStructure;
 };
 
-
 /**
- * 
- * 
+ *
+ *
  * @returns {Promise<void>}
- * @description This function is called when the user clicks the next button on the guided mode pages. 
- *              It handles the logic for properly determining which page to open first, which 
- *              depends upon whether the user is starting a new curation, resuming an existing progress file, 
+ * @description This function is called when the user clicks the next button on the guided mode pages.
+ *              It handles the logic for properly determining which page to open first, which
+ *              depends upon whether the user is starting a new curation, resuming an existing progress file,
  *              or resuming a Pennsieve dataset.
  */
 const handleStartCuration = async () => {
@@ -304,7 +309,7 @@ const handleStartCuration = async () => {
 
     // Open the first page
     const firstPage = getNonSkippedGuidedModePages(document)[0];
-    console.log(firstPage)
+    console.log(firstPage);
     await openPage(firstPage.id);
   }
 
@@ -398,7 +403,7 @@ const handleStartCuration = async () => {
       );
       window.datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
     } catch (error) {
-      clientError(error)
+      clientError(error);
       errorArray.push({
         type: "swal",
         title: "Error pulling dataset from Pennsieve",
@@ -533,9 +538,7 @@ const handleStartCuration = async () => {
         if (samples.length > 0) {
           try {
             let fieldEntries = [];
-            for (const field of $("#form-add-a-sample")
-              .children()
-              .find(".samples-form-entry")) {
+            for (const field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
               fieldEntries.push(field.name.toLowerCase());
             }
             let samplesMetadataResponse = await client.get(
@@ -632,15 +635,13 @@ const handleStartCuration = async () => {
     }
 
     // Skip the page where they confirm their log in and workspace because we should already have it
-    window.sodaJSONObj["digital-metadata"]["dataset-workspace"] =
-      guidedGetCurrentUserWorkSpace();
+    window.sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
     guidedSkipPage("guided-pennsieve-intro-tab");
   }
 
   //Skip this page becausae we should not come back to it
   guidedSkipPage("guided-select-starting-point-tab");
-
-}
+};
 
 //next button click handler
 $("#guided-next-button").on("click", async function () {
@@ -653,7 +654,6 @@ $("#guided-next-button").on("click", async function () {
     await openPage("guided-dataset-dissemination-tab");
     return;
   }
-
 
   try {
     console.log("About to save");
@@ -758,8 +758,9 @@ const guidedSaveAndExit = async () => {
 
       const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
         title: "The current page was not able to be saved before exiting",
-        html: `The following error${error.length > 1 ? "s" : ""
-          } occurred when attempting to save the ${pageWithErrorName} page:
+        html: `The following error${
+          error.length > 1 ? "s" : ""
+        } occurred when attempting to save the ${pageWithErrorName} page:
             <br />
             <br />
             <ul>
@@ -851,8 +852,6 @@ export const guidedTransitionFromHome = async () => {
   //Unskip all pages besides the ones that should always be skipped
   guidedResetSkippedPages();
 };
-
-
 
 const guidedResetProgressVariables = () => {
   window.sodaJSONObj = {};

@@ -1737,7 +1737,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     $("#bf-dataset-spinner").css("visibility", "visible");
 
     // Check if dataset is locked before trying to import
-    const isDatasetLocked = await api.isDatasetLocked( selectedDataset);
+    const isDatasetLocked = await api.isDatasetLocked(selectedDataset);
     if (isDatasetLocked) {
       Swal.fire({
         icon: "info",

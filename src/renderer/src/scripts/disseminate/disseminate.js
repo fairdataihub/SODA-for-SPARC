@@ -118,7 +118,7 @@ const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
 
   let permissions;
   try {
-    permissions = await api.getDatasetPermissions( bfDS, false);
+    permissions = await api.getDatasetPermissions(bfDS, false);
   } catch (error) {
     clientError(error);
     window.electron.ipcRenderer.send(
