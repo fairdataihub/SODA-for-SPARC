@@ -2,44 +2,11 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-export const resetGuidedRadioButtons = (parentPageID) => {
-  const parentPage = document.getElementById(parentPageID);
-  const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
-  for (const guidedRadioButton of guidedRadioButtons) {
-    guidedRadioButton.classList.remove("selected");
-    guidedRadioButton.classList.remove("not-selected");
-    guidedRadioButton.classList.add("basic");
-
-    //get the data-next-element attribute
-    const elementButtonControls = guidedRadioButton.getAttribute("data-next-element");
-    if (elementButtonControls) {
-      const elementToHide = document.getElementById(elementButtonControls);
-      if (!elementToHide) {
-        console.error(`Element with id ${elementButtonControls} does not exist`);
-      }
-      elementToHide.classList.add("hidden");
-    }
-  }
-};
-
-export const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
-  const parentPage = document.getElementById(parentPageID);
-  const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
-  for (const guidedRadioButton of guidedRadioButtons) {
-    //Get the button config value from the UI
-    const buttonConfigValue = guidedRadioButton.getAttribute("data-button-config-value");
-    if (buttonConfigValue) {
-      const buttonConfigValueState = guidedRadioButton.getAttribute(
-        "data-button-config-value-state"
-      );
-      if (window.sodaJSONObj["button-config"][buttonConfigValue] === buttonConfigValueState) {
-        //click the button
-        guidedRadioButton.click();
-      }
-    }
-  }
-};
-
+/**
+ * @description Adds click handlers to the radio buttons in the Prepare Dataset Step-by-Step workflows.
+ *              The click handlers make the buttons appear selected and deselects the other radio buttons in grouped to the active button.
+ *              The clicked radio button also stores its config value in window.sodaJSONObj for reference when resuming progress.
+ */
 $(".guided--radio-button").on("click", async function () {
   const selectedButton = $(this);
   const notSelectedButton = $(this).siblings(".guided--radio-button");
@@ -93,3 +60,43 @@ $(".guided--radio-button").on("click", async function () {
     }
   }
 });
+
+export const resetGuidedRadioButtons = (parentPageID) => {
+  const parentPage = document.getElementById(parentPageID);
+  const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
+  for (const guidedRadioButton of guidedRadioButtons) {
+    guidedRadioButton.classList.remove("selected");
+    guidedRadioButton.classList.remove("not-selected");
+    guidedRadioButton.classList.add("basic");
+
+    //get the data-next-element attribute
+    const elementButtonControls = guidedRadioButton.getAttribute("data-next-element");
+    if (elementButtonControls) {
+      const elementToHide = document.getElementById(elementButtonControls);
+      if (!elementToHide) {
+        console.error(`Element with id ${elementButtonControls} does not exist`);
+      }
+      elementToHide.classList.add("hidden");
+    }
+  }
+};
+
+export const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
+  const parentPage = document.getElementById(parentPageID);
+  const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
+  for (const guidedRadioButton of guidedRadioButtons) {
+    //Get the button config value from the UI
+    const buttonConfigValue = guidedRadioButton.getAttribute("data-button-config-value");
+    if (buttonConfigValue) {
+      const buttonConfigValueState = guidedRadioButton.getAttribute(
+        "data-button-config-value-state"
+      );
+      if (window.sodaJSONObj["button-config"][buttonConfigValue] === buttonConfigValueState) {
+        //click the button
+        guidedRadioButton.click();
+      }
+    }
+  }
+};
+
+
