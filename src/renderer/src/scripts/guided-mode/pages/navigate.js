@@ -23,7 +23,7 @@ while (!window.baseHtmlLoaded) {
 }
 
 /**
- * @description Navigate to the next page in the active prepare datasets step-by-step workflow. Navigating to the next page saves the 
+ * @description Navigate to the next page in the active prepare datasets step-by-step workflow. Navigating to the next page saves the
  * current page's progress if the page is valid.
  */
 $("#guided-next-button").on("click", async function () {
@@ -90,7 +90,7 @@ $("#guided-next-button").on("click", async function () {
 });
 
 /**
- * @description Navigate to the previous page in the active prepare datasets step-by-step workflow.Navigating 
+ * @description Navigate to the previous page in the active prepare datasets step-by-step workflow.Navigating
  * to the previous page saves the current page's progress if the page is valid.
  */
 $("#guided-back-button").on("click", async () => {
@@ -111,19 +111,16 @@ $("#guided-back-button").on("click", async () => {
   await openPage(targetPageID);
 });
 
-
 // Save and exit button click handlers
 document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
   await guidedSaveAndExit();
 });
-
 
 let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
 const guidedHighLevelFolders = ["primary", "source", "derivative"];
 const nonGuidedHighLevelFolders = ["code", "protocol", "docs"];
-
 
 /**
  *
@@ -499,7 +496,7 @@ const handleStartCuration = async () => {
 };
 
 /**
- * 
+ *
  * @returns {Promise<void>}
  * @description This function is called when the user clicks the save and exit button while working through a prepare datasets step-by-step workflow.
  *              It saves the current page's progress if the page is valid and then transitions the user back to the prepare datasets step-by-step home screen.
@@ -535,8 +532,9 @@ const guidedSaveAndExit = async () => {
 
       const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
         title: "The current page was not able to be saved before exiting",
-        html: `The following error${error.length > 1 ? "s" : ""
-          } occurred when attempting to save the ${pageWithErrorName} page:
+        html: `The following error${
+          error.length > 1 ? "s" : ""
+        } occurred when attempting to save the ${pageWithErrorName} page:
             <br />
             <br />
             <ul>
@@ -579,7 +577,7 @@ export const guidedTransitionToHome = () => {
 };
 
 /**
- * @description Prepares the prepare dataset step-by-step menu page for user interaction. 
+ * @description Prepares the prepare dataset step-by-step menu page for user interaction.
  */
 window.guidedPrepareHomeScreen = async () => {
   //Wipe out existing progress if it exists
@@ -669,7 +667,6 @@ const guidedResetProgressVariables = () => {
   window.subjectsTableData = [];
   window.samplesTableData = [];
 };
-
 
 const objectsHaveSameKeys = (...objects) => {
   const allKeys = objects.reduce((keys, object) => keys.concat(Object.keys(object)), []);
@@ -801,7 +798,7 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
 
         const potentialSampleFolderNames = Object.keys(
           datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"][subjectFolder][
-          "folders"
+            "folders"
           ]
         );
         const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
@@ -912,7 +909,6 @@ const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMe
   }
   return poolSubSamStructure;
 };
-
 
 export const scrollToBottomOfGuidedBody = () => {
   const elementToScrollTo = document.querySelector(".guided--body");

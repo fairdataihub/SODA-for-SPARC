@@ -112,13 +112,12 @@ const setActiveProgressionTab = (targetPageID) => {
   targetProgressionTab.addClass("selected-tab");
 };
 
-
 /**
- * 
+ *
  * Prepares the state of the target page based on the state of the window.sodaJSONObj and then displays the page.
  * Handles page loading and displaying for the 'start new dataset' workflow and the Update existing Pennsieve dataset workflow.
  * @param {string} targetPageID - The html element id of the page to display.
- * 
+ *
  */
 export const openPage = async (targetPageID) => {
   //NOTE: 2 Bottom back buttons (one handles sub pages, and the other handles main pages)
