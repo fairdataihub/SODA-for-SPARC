@@ -21,6 +21,13 @@ const hasConnectedAccountWithPennsieve = () => {
   return true;
 };
 
+
+/**
+ * 
+ * @returns {string | boolean} - the config.ini file's 'default_profile' value. If default_profile is not set, return false.
+ * @description Returns value stored in the default_profile key of the config.ini file if it exists. If it does not exist, return false.
+ *              The value returned is used to retrieve a Pennsieve API Key and Secret pair from the config.ini file.
+ */
 window.getDefaultProfile = () => {
   const homeDir = window.os.homedir();
   const configFilePath = window.path.join(homeDir, ".pennsieve", "config.ini");

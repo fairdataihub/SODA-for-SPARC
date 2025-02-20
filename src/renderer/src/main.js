@@ -23,6 +23,7 @@ import "./scripts/guided-mode/generateDataset/generate";
 import "./scripts/guided-mode/resumeProgress/progressFile";
 import "./scripts/guided-mode/resumeProgress/resumeProgress";
 import "./scripts/guided-mode/resumeProgress/progressCards";
+import "./scripts/startup/initializeRendererProcess"
 import "./scripts/others/renderer";
 import "./scripts/metadata-files/submission";
 import "./scripts/manage-dataset/manage-dataset";
