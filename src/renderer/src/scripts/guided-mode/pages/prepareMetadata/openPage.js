@@ -20,6 +20,8 @@ import {
   setActiveEntity,
 } from "../../../../stores/slices/datasetEntitySelectorSlice";
 import { dragDrop } from "../../../../assets/lotties/lotties";
+import { renderProtocolsTable } from "../../metadata/protocols";
+import { swalFileListSingleAction, swalShowInfo } from "../../../utils/swal-utils";
 import lottie from "lottie-web";
 
 export const openPagePrepareMetadata = async (targetPageID) => {
@@ -605,4 +607,12 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
     renderProtocolsTable();
   }
+};
+
+const getContributorFullNames = () => {
+  return window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].map(
+    (contributor) => {
+      return contributor.conName;
+    }
+  );
 };
