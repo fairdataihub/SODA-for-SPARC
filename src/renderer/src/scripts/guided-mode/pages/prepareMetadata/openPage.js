@@ -19,7 +19,7 @@ import {
   setEntityListForEntityType,
   setActiveEntity,
 } from "../../../../stores/slices/datasetEntitySelectorSlice";
-import { dragDrop } from "../../../../assets/lotties/lotties";
+import { dragDrop, successCheck } from "../../../../assets/lotties/lotties";
 import { renderProtocolsTable } from "../../metadata/protocols";
 import { swalFileListSingleAction, swalShowInfo } from "../../../utils/swal-utils";
 import lottie from "lottie-web";
@@ -606,6 +606,111 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       }
     }
     renderProtocolsTable();
+  }
+
+  if (targetPageID === "guided-create-readme-metadata-tab") {
+    if (pageNeedsUpdateFromPennsieve("guided-create-readme-metadata-tab")) {
+      // Show the loading page while the page's data is being fetched from Pennsieve
+      setPageLoadingState(true);
+      try {
+        let readme_import = await client.get(`/prepare_metadata/readme_changes_file`, {
+          params: {
+            file_type: "README",
+
+            selected_account: window.defaultBfAccount,
+            selected_dataset: window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+          },
+        });
+        let readme_text = readme_import.data.text;
+        window.sodaJSONObj["dataset-metadata"]["README"] = readme_text;
+        window.sodaJSONObj["pages-fetched-from-pennsieve"].push(
+          "guided-create-readme-metadata-tab"
+        );
+      } catch (error) {
+        clientError(error);
+        const emessage = error.response.data.message;
+        await guidedShowOptionalRetrySwal(emessage, "guided-create-readme-metadata-tab");
+        // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+        // so the the fetch does not occur again
+        window.sodaJSONObj["pages-fetched-from-pennsieve"].push(
+          "guided-create-readme-metadata-tab"
+        );
+      }
+    }
+    const readMeTextArea = document.getElementById("guided-textarea-create-readme");
+
+    const readMe = window.sodaJSONObj["dataset-metadata"]["README"];
+
+    if (readMe) {
+      readMeTextArea.value = readMe;
+    } else {
+      readMeTextArea.value = "";
+    }
+  }
+
+  if (targetPageID === "guided-add-code-metadata-tab") {
+    const startNewCodeDescYesNoContainer = document.getElementById(
+      "guided-section-start-new-code-metadata-query"
+    );
+    const startPennsieveCodeDescYesNoContainer = document.getElementById(
+      "guided-section-start-from-pennsieve-code-metadata-query"
+    );
+    if (pageNeedsUpdateFromPennsieve("guided-add-code-metadata-tab")) {
+      // Show the loading page while the page's data is being fetched from Pennsieve
+      setPageLoadingState(true);
+      try {
+        await client.get(`/prepare_metadata/import_metadata_file`, {
+          params: {
+            selected_account: window.defaultBfAccount,
+            selected_dataset: window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+            file_type: "code_description.xlsx",
+          },
+        });
+        window.sodaJSONObj["pennsieve-dataset-has-code-metadata-file"] = "yes";
+      } catch (error) {
+        console.error("code_description file does not exist");
+      }
+    }
+    // If the code_description file has been detected on the dataset on Pennsieve, show the
+    // "Start from Pennsieve" option, otherwise show the "Start new" option
+    if (window.sodaJSONObj["pennsieve-dataset-has-code-metadata-file"] === "yes") {
+      startNewCodeDescYesNoContainer.classList.add("hidden");
+      startPennsieveCodeDescYesNoContainer.classList.remove("hidden");
+    } else {
+      startNewCodeDescYesNoContainer.classList.remove("hidden");
+      startPennsieveCodeDescYesNoContainer.classList.add("hidden");
+    }
+
+    const codeDescriptionPath =
+      window.sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
+
+    const codeDescriptionLottieContainer = document.getElementById(
+      "code-description-lottie-container"
+    );
+    const codeDescriptionParaText = document.getElementById("guided-code-description-para-text");
+
+    if (codeDescriptionPath) {
+      codeDescriptionLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: codeDescriptionLottieContainer,
+        animationData: successCheck,
+        renderer: "svg",
+        loop: false,
+        autoplay: true,
+      });
+      codeDescriptionParaText.innerHTML = codeDescriptionPath;
+    } else {
+      //reset the code metadata lotties and para text
+      codeDescriptionLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: codeDescriptionLottieContainer,
+        animationData: dragDrop,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+      codeDescriptionParaText.innerHTML = "";
+    }
   }
 };
 
