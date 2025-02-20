@@ -2,6 +2,7 @@ import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading";
 import { getDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie";
 import { savePageCurationPreparation } from "./curationPreparation/savePage";
+import {savePagePrepareMetadata} from "./prepareMetadata/savePage";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -173,33 +174,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //   }
     // }
 
-    // if (pageBeingLeftID === "guided-manifest-subject-entity-selector-tab") {
-    //   window.sodaJSONObj["subject-related-folders-and-files"] = getEntityObjForEntityType(
-    //     "subject-related-folders-and-files"
-    //   );
-    //   console.log(
-    //     "subject-related-folders-and-files",
-    //     window.sodaJSONObj["subject-related-folders-and-files"]
-    //   );
-    // }
-    // if (pageBeingLeftID === "guided-manifest-sample-entity-selector-tab") {
-    //   window.sodaJSONObj["sample-related-folders-and-files"] = getEntityObjForEntityType(
-    //     "sample-related-folders-and-files"
-    //   );
-    //   console.log(
-    //     "sample-related-folders-and-files",
-    //     window.sodaJSONObj["sample-related-folders-and-files"]
-    //   );
-    // }
-    // if (pageBeingLeftID === "guided-manifest-performance-entity-selector-tab") {
-    //   window.sodaJSONObj["performance-related-folders-and-files"] = getEntityObjForEntityType(
-    //     "performance-related-folders-and-files"
-    //   );
-    //   console.log(
-    //     "performance-related-folders-and-files",
-    //     window.sodaJSONObj["performance-related-folders-and-files"]
-    //   );
-    // }
+    
 
     // if (pageBeingLeftID === "guided-subject-structure-spreadsheet-importation-tab") {
     //   const userChoseToImportSubsSamsPoolsViaSpreadsheet = document
