@@ -3,6 +3,13 @@ import { savePageChanges } from "../pages/savePageChanges";
 import { openPage } from "../pages/openPage";
 import Swal from "sweetalert2";
 
+
+/**
+ * 
+ * @param {string} activePage - The id of the html page open in the current Prepare Dataset Step-by-Step workflow.
+ * @description - Render the Prepare Dataset Step-by-Step sidebar. The sidebar contains the sections and available pages 
+ *                in the active workflow. Can be used to navigate to different pages in the workflow along with the continue and back buttons.
+ */
 export const renderSideBar = (activePage) => {
   const guidedNavItemsContainer = document.getElementById("guided-nav-items");
   const guidedPageNavigationHeader = document.getElementById("guided-page-navigation-header");

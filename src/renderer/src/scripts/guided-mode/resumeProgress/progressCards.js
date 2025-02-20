@@ -9,6 +9,17 @@ while (!window.baseHtmlLoaded) {
 let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
+
+/**
+ *  @description - Associated with a the 'Continue a dataset saved in SODA' button in the Prepare Dataset Step-by-Step menu page. 
+ *  Once clicked it displays a list of saved progress files that the user can use to resume any workflow progress they have made. 
+ */
+document.getElementById("guided-button-resume-progress-file")
+.addEventListener("click", async () => {
+  await guidedRenderProgressCards();
+});
+
+
 const readDirAsync = async (path) => {
   let result = await window.fs.readdir(path);
   return result;
@@ -281,8 +292,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     `;
 };
 
-document
-  .getElementById("guided-button-resume-progress-file")
-  .addEventListener("click", async () => {
-    await guidedRenderProgressCards();
-  });
+
+
+
+
