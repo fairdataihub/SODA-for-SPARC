@@ -112,12 +112,15 @@ const setActiveProgressionTab = (targetPageID) => {
   targetProgressionTab.addClass("selected-tab");
 };
 
-//Main function that prepares individual pages based on the state of the window.sodaJSONObj
-//The general flow is to check if there is values for the keys relevant to the page
-//If the keys exist, extract the data from the window.sodaJSONObj and populate the page
-//If the keys do not exist, reset the page (inputs, tables etc.) to the default state
+
+/**
+ * 
+ * Prepares the state of the target page based on the state of the window.sodaJSONObj and then displays the page.
+ * Handles page loading and displaying for the 'start new dataset' workflow and the Update existing Pennsieve dataset workflow.
+ * @param {string} targetPageID - The html element id of the page to display.
+ * 
+ */
 export const openPage = async (targetPageID) => {
-  console.log("Opening page high level", targetPageID);
   //NOTE: 2 Bottom back buttons (one handles sub pages, and the other handles main pages)
   //Back buttons should be disabled and the function setLoading should be (set as false?)
 

@@ -22,253 +22,108 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
+/**
+ * @description Navigate to the next page in the active prepare datasets step-by-step workflow. Navigating to the next page saves the 
+ * current page's progress if the page is valid.
+ */
+$("#guided-next-button").on("click", async function () {
+  console.log("Next button clicked");
+  //Get the ID of the current page to handle actions on page leave (next button pressed)
+  window.pageBeingLeftID = window.CURRENT_PAGE.id;
+
+  if (window.pageBeingLeftID === "guided-dataset-generation-tab") {
+    guidedUnSkipPage("guided-dataset-dissemination-tab");
+    await openPage("guided-dataset-dissemination-tab");
+    return;
+  }
+
+  try {
+    console.log("About to save");
+    await savePageChanges(window.pageBeingLeftID);
+    console.log("Past save changes");
+
+    if (pageBeingLeftID === "guided-select-starting-point-tab") {
+      await handleStartCuration(window.pageBeingLeftID);
+    }
+
+    //Mark page as completed in JSONObj so we know what pages to load when loading local saves
+    //(if it hasn't already been marked complete)
+    if (!window.sodaJSONObj["completed-tabs"].includes(window.pageBeingLeftID)) {
+      window.sodaJSONObj["completed-tabs"].push(window.pageBeingLeftID);
+    }
+
+    //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
+    //if more tabs in parent tab, go to next tab and update capsule
+    let targetPage = getNextPageNotSkipped(window.CURRENT_PAGE.id);
+    let targetPageID = targetPage.id;
+
+    await openPage(targetPageID);
+  } catch (error) {
+    window.log.error(error);
+    if (Array.isArray(error)) {
+      error.map((error) => {
+        // get the total number of words in error.message
+        if (error.type === "notyf") {
+          window.notyf.open({
+            duration: "7000",
+            type: "error",
+            message: error.message,
+          });
+        }
+
+        if (error.type === "swal") {
+          Swal.fire({
+            icon: "error",
+            title: error.title,
+            html: error.message,
+            width: 600,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: `OK`,
+            focusConfirm: true,
+            allowOutsideClick: false,
+          });
+        }
+      });
+    }
+  }
+});
+
+/**
+ * @description Navigate to the previous page in the active prepare datasets step-by-step workflow.Navigating 
+ * to the previous page saves the current page's progress if the page is valid.
+ */
+$("#guided-back-button").on("click", async () => {
+  window.pageBeingLeftID = window.CURRENT_PAGE.id;
+  const targetPage = getPrevPageNotSkipped(window.pageBeingLeftID);
+
+  // If the target page when clicking the back button does not exist, then we are on the first not skipped page.
+  // In this case, we want to save and exit guided mode.
+  if (!targetPage) {
+    await guidedSaveAndExit();
+    return;
+  }
+
+  // Get the id of the target page
+  const targetPageID = targetPage.id;
+
+  // open the target page
+  await openPage(targetPageID);
+});
+
+
+// Save and exit button click handlers
+document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
+  await guidedSaveAndExit();
+});
+
+
 let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
 const guidedHighLevelFolders = ["primary", "source", "derivative"];
 const nonGuidedHighLevelFolders = ["code", "protocol", "docs"];
 
-const objectsHaveSameKeys = (...objects) => {
-  const allKeys = objects.reduce((keys, object) => keys.concat(Object.keys(object)), []);
-  const union = new Set(allKeys);
-  return objects.every((object) => union.size === Object.keys(object).length);
-};
-
-const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
-  try {
-    const changesRes = await client.get(`/prepare_metadata/readme_changes_file`, {
-      params: {
-        file_type: "CHANGES",
-        selected_account: window.defaultBfAccount,
-        selected_dataset: pennsieveDatasetID,
-      },
-    });
-    const changes_text = changesRes.data.text;
-    return { shouldShow: true, changesMetadata: changes_text };
-  } catch (error) {
-    const datasetInfo = await api.getDatasetInformation(pennsieveDatasetID);
-    const isPublished = datasetInfo?.publication?.status === "completed";
-
-    if (isPublished) {
-      return { shouldShow: true, changesMetadata: "" };
-    } else {
-      return { shouldShow: false };
-    }
-  }
-};
-
-// This function extracts the pool, subject, and sample structure from an imported dataset
-// and adds the pools, subjects, and samples to the guided mode structure if they exist.
-// This function also handles setting the button config options, for example, if the function
-// detects that there's primary subject data in the dataset, the yes button will be selected.
-const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
-  const guidedFoldersInDataset = guidedHighLevelFolders.filter((folder) =>
-    Object.keys(datasetStructure["folders"]).includes(folder)
-  );
-
-  const addedSubjects = [];
-  const subjectsMovedIntoPools = [];
-  const addedPools = [];
-  const addedSamples = [];
-
-  // Loop through prim, src, and deriv if they exist in the datasetStructure
-  for (const hlf of guidedFoldersInDataset) {
-    //Get the names of the subfolders directly in the hlf
-    const hlfFolderNames = Object.keys(datasetStructure["folders"][hlf]["folders"]);
-    const subjectFoldersInBase = hlfFolderNames.filter((folder) => folder.startsWith("sub-"));
-    const poolFoldersInBase = hlfFolderNames.filter((folder) => folder.startsWith("pool-"));
-
-    // Loop through any folders starting with sub- in the hlf
-    for (const subjectFolder of subjectFoldersInBase) {
-      if (!addedSubjects.includes(subjectFolder)) {
-        try {
-          window.sodaJSONObj.addSubject(subjectFolder);
-          addedSubjects.push(subjectFolder);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      // Get the names of the subfolders directly in the subject folder
-      const potentialSampleFolderNames = Object.keys(
-        datasetStructure["folders"][hlf]["folders"][subjectFolder]["folders"]
-      );
-      const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
-        folder.startsWith("sam-")
-      );
-      if (sampleFoldersInSubject.length > 0) {
-        window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-sample-data`] = "yes";
-      }
-      // Loop through any folders starting with sam- in the subject folder
-      for (const sampleFolder of sampleFoldersInSubject) {
-        if (!addedSamples.includes(sampleFolder)) {
-          try {
-            window.sodaJSONObj.addSampleToSubject(sampleFolder, null, subjectFolder);
-            addedSamples.push(sampleFolder);
-          } catch (error) {
-            console.log(error);
-          }
-        }
-      }
-    }
-
-    if (subjectFoldersInBase.length > 0) {
-      window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-subject-data`] = "yes";
-    }
-
-    // Loop through any folders starting with pool- in the hlf
-    for (const poolFolder of poolFoldersInBase) {
-      if (!addedPools.includes(poolFolder)) {
-        try {
-          window.sodaJSONObj.addPool(poolFolder);
-          addedPools.push(poolFolder);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      // Get the names of the subfolders directly in the pool folder
-      const potentialSubjectFolderNames = Object.keys(
-        datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"]
-      );
-      const subjectFoldersInPool = potentialSubjectFolderNames.filter((folder) =>
-        folder.startsWith("sub-")
-      );
-
-      if (subjectFoldersInPool.length > 0) {
-        window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-subject-data`] = "yes";
-      }
-      // Loop through any folders starting with sub- in the pool folder
-      for (const subjectFolder of subjectFoldersInPool) {
-        if (!addedSubjects.includes(subjectFolder)) {
-          try {
-            window.sodaJSONObj.addSubject(subjectFolder);
-            addedSubjects.push(subjectFolder);
-          } catch (error) {
-            console.log(error);
-          }
-        }
-
-        if (!subjectsMovedIntoPools.includes(subjectFolder)) {
-          try {
-            window.sodaJSONObj.moveSubjectIntoPool(subjectFolder, poolFolder);
-            subjectsMovedIntoPools.push(subjectFolder);
-          } catch (error) {
-            console.log(error);
-          }
-        }
-
-        const potentialSampleFolderNames = Object.keys(
-          datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"][subjectFolder][
-            "folders"
-          ]
-        );
-        const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
-          folder.startsWith("sam-")
-        );
-        if (sampleFoldersInSubject.length > 0) {
-          window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-sample-data`] = "yes";
-        }
-        // Loop through any folders starting with sam- in the subject folder
-        for (const sampleFolder of sampleFoldersInSubject) {
-          if (!addedSamples.includes(sampleFolder)) {
-            try {
-              window.sodaJSONObj.addSampleToSubject(sampleFolder, poolFolder, subjectFolder);
-              addedSamples.push(sampleFolder);
-            } catch (error) {
-              console.log(error);
-            }
-          }
-        }
-      }
-    }
-
-    if (poolFoldersInBase.length > 0) {
-      window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-pool-data`] = "yes";
-    }
-  }
-
-  if (addedSubjects.length > 0) {
-    window.sodaJSONObj["button-config"]["dataset-contains-subjects"] = "yes";
-  }
-  if (addedPools.length > 0) {
-    window.sodaJSONObj["button-config"]["dataset-contains-pools"] = "yes";
-  } else {
-    window.sodaJSONObj["button-config"]["dataset-contains-pools"] = "no";
-  }
-  if (addedSamples.length > 0) {
-    window.sodaJSONObj["button-config"]["dataset-contains-samples"] = "yes";
-  }
-
-  return window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
-};
-
-const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
-  const invalidFolders = [];
-  const invalidFiles = [];
-
-  for (const hlf of guidedHighLevelFolders) {
-    if (datasetStructure["folders"][hlf]) {
-      const hlfFolders = Object.keys(datasetStructure["folders"][hlf]["folders"]);
-      //filter out hlfFolders that do not start with pool- or sub-
-      const invalidBaseFolders = hlfFolders.filter((folder) => {
-        return !folder.startsWith("pool-") && !folder.startsWith("sub-");
-      });
-
-      for (const invalidBaseFolder of invalidBaseFolders) {
-        invalidFolders.push(invalidBaseFolder);
-      }
-
-      const hlfFiles = Object.keys(datasetStructure["folders"][hlf]["files"]);
-      const invalidBaseFiles = hlfFiles.filter((file) => {
-        return !file.startsWith("manifest");
-      });
-      for (const invalidBaseFile of invalidBaseFiles) {
-        invalidFiles.push(invalidBaseFile);
-      }
-    }
-  }
-  return [invalidFolders, invalidFiles];
-};
-
-const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMetadataRows) => {
-  const poolSubSamStructure = {
-    pools: {},
-    subjects: {},
-  };
-
-  const datasetPools = [
-    ...new Set(
-      subjectsMetadataRows
-        .map((subjectDataArray) => subjectDataArray[1])
-        .filter((pool) => pool !== "")
-    ),
-  ];
-
-  for (const pool of datasetPools) {
-    poolSubSamStructure["pools"][pool] = {};
-  }
-
-  for (const subject of subjectsMetadataRows) {
-    const subjectID = subject[0];
-    const poolID = subject[1];
-    if (poolID !== "") {
-      poolSubSamStructure["pools"][poolID][subjectID] = {};
-    } else {
-      poolSubSamStructure["subjects"][subjectID] = {};
-    }
-  }
-
-  for (const sample of samplesMetadataRows) {
-    const subjectID = sample[0];
-    const sampleID = sample[1];
-    const poolID = sample[3];
-    if (poolID !== "") {
-      poolSubSamStructure["pools"][poolID][subjectID][sampleID] = {};
-    } else {
-      poolSubSamStructure["subjects"][subjectID][sampleID] = {};
-    }
-  }
-  return poolSubSamStructure;
-};
 
 /**
  *
@@ -643,91 +498,13 @@ const handleStartCuration = async () => {
   guidedSkipPage("guided-select-starting-point-tab");
 };
 
-//next button click handler
-$("#guided-next-button").on("click", async function () {
-  console.log("Next button clicked");
-  //Get the ID of the current page to handle actions on page leave (next button pressed)
-  window.pageBeingLeftID = window.CURRENT_PAGE.id;
-
-  if (window.pageBeingLeftID === "guided-dataset-generation-tab") {
-    guidedUnSkipPage("guided-dataset-dissemination-tab");
-    await openPage("guided-dataset-dissemination-tab");
-    return;
-  }
-
-  try {
-    console.log("About to save");
-    await savePageChanges(window.pageBeingLeftID);
-    console.log("Past save changes");
-
-    if (pageBeingLeftID === "guided-select-starting-point-tab") {
-      await handleStartCuration(window.pageBeingLeftID);
-    }
-
-    //Mark page as completed in JSONObj so we know what pages to load when loading local saves
-    //(if it hasn't already been marked complete)
-    if (!window.sodaJSONObj["completed-tabs"].includes(window.pageBeingLeftID)) {
-      window.sodaJSONObj["completed-tabs"].push(window.pageBeingLeftID);
-    }
-
-    //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
-    //if more tabs in parent tab, go to next tab and update capsule
-    let targetPage = getNextPageNotSkipped(window.CURRENT_PAGE.id);
-    let targetPageID = targetPage.id;
-
-    console.log("Navigating to next page", targetPageID);
-
-    await openPage(targetPageID);
-  } catch (error) {
-    window.log.error(error);
-    if (Array.isArray(error)) {
-      error.map((error) => {
-        // get the total number of words in error.message
-        if (error.type === "notyf") {
-          window.notyf.open({
-            duration: "7000",
-            type: "error",
-            message: error.message,
-          });
-        }
-
-        if (error.type === "swal") {
-          Swal.fire({
-            icon: "error",
-            title: error.title,
-            html: error.message,
-            width: 600,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: `OK`,
-            focusConfirm: true,
-            allowOutsideClick: false,
-          });
-        }
-      });
-    }
-  }
-});
-
-//back button click handler
-$("#guided-back-button").on("click", async () => {
-  window.pageBeingLeftID = window.CURRENT_PAGE.id;
-  const targetPage = getPrevPageNotSkipped(window.pageBeingLeftID);
-
-  // If the target page when clicking the back button does not exist, then we are on the first not skipped page.
-  // In this case, we want to save and exit guided mode.
-  if (!targetPage) {
-    await guidedSaveAndExit();
-    return;
-  }
-
-  // Get the id of the target page
-  const targetPageID = targetPage.id;
-
-  // open the target page
-  await openPage(targetPageID);
-});
-
+/**
+ * 
+ * @returns {Promise<void>}
+ * @description This function is called when the user clicks the save and exit button while working through a prepare datasets step-by-step workflow.
+ *              It saves the current page's progress if the page is valid and then transitions the user back to the prepare datasets step-by-step home screen.
+ *              Progress is saved to a progress file that can be resumed by the user.
+ */
 const guidedSaveAndExit = async () => {
   if (!window.sodaJSONObj["digital-metadata"]["name"]) {
     // If a progress file has not been created, then we don't need to save anything
@@ -758,9 +535,8 @@ const guidedSaveAndExit = async () => {
 
       const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
         title: "The current page was not able to be saved before exiting",
-        html: `The following error${
-          error.length > 1 ? "s" : ""
-        } occurred when attempting to save the ${pageWithErrorName} page:
+        html: `The following error${error.length > 1 ? "s" : ""
+          } occurred when attempting to save the ${pageWithErrorName} page:
             <br />
             <br />
             <ul>
@@ -800,6 +576,40 @@ export const guidedTransitionToHome = () => {
   window.CURRENT_PAGE = undefined;
 
   document.getElementById("guided-footer-div").classList.add("hidden");
+};
+
+/**
+ * @description Prepares the prepare dataset step-by-step menu page for user interaction. 
+ */
+window.guidedPrepareHomeScreen = async () => {
+  //Wipe out existing progress if it exists
+  guidedResetProgressVariables();
+  //Check if Guided-Progress folder exists. If not, create it.
+
+  if (!window.fs.existsSync(guidedProgressFilePath)) {
+    window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+  }
+
+  document.getElementById("existing-dataset-lottie").innerHTML = "";
+  document.getElementById("edit-dataset-component-lottie").innerHTML = "";
+
+  lottie.loadAnimation({
+    container: document.getElementById("existing-dataset-lottie"),
+    animationData: existingDataset,
+    renderer: "svg",
+    loop: true,
+    autoplay: true,
+  });
+
+  lottie.loadAnimation({
+    container: document.getElementById("edit-dataset-component-lottie"),
+    animationData: modifyDataset,
+    renderer: "svg",
+    loop: true,
+    autoplay: true,
+  });
+
+  guidedUnLockSideBar();
 };
 
 const itemsContainer = document.getElementById("items");
@@ -860,41 +670,249 @@ const guidedResetProgressVariables = () => {
   window.samplesTableData = [];
 };
 
-window.guidedPrepareHomeScreen = async () => {
-  //Wipe out existing progress if it exists
-  guidedResetProgressVariables();
-  //Check if Guided-Progress folder exists. If not, create it.
 
-  if (!window.fs.existsSync(guidedProgressFilePath)) {
-    window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
-  }
-
-  document.getElementById("existing-dataset-lottie").innerHTML = "";
-  document.getElementById("edit-dataset-component-lottie").innerHTML = "";
-
-  lottie.loadAnimation({
-    container: document.getElementById("existing-dataset-lottie"),
-    animationData: existingDataset,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-  });
-
-  lottie.loadAnimation({
-    container: document.getElementById("edit-dataset-component-lottie"),
-    animationData: modifyDataset,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-  });
-
-  guidedUnLockSideBar();
+const objectsHaveSameKeys = (...objects) => {
+  const allKeys = objects.reduce((keys, object) => keys.concat(Object.keys(object)), []);
+  const union = new Set(allKeys);
+  return objects.every((object) => union.size === Object.keys(object).length);
 };
 
-// Save and exit button click handlers
-document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
-  await guidedSaveAndExit();
-});
+const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
+  try {
+    const changesRes = await client.get(`/prepare_metadata/readme_changes_file`, {
+      params: {
+        file_type: "CHANGES",
+        selected_account: window.defaultBfAccount,
+        selected_dataset: pennsieveDatasetID,
+      },
+    });
+    const changes_text = changesRes.data.text;
+    return { shouldShow: true, changesMetadata: changes_text };
+  } catch (error) {
+    const datasetInfo = await api.getDatasetInformation(pennsieveDatasetID);
+    const isPublished = datasetInfo?.publication?.status === "completed";
+
+    if (isPublished) {
+      return { shouldShow: true, changesMetadata: "" };
+    } else {
+      return { shouldShow: false };
+    }
+  }
+};
+
+// This function extracts the pool, subject, and sample structure from an imported dataset
+// and adds the pools, subjects, and samples to the guided mode structure if they exist.
+// This function also handles setting the button config options, for example, if the function
+// detects that there's primary subject data in the dataset, the yes button will be selected.
+const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
+  const guidedFoldersInDataset = guidedHighLevelFolders.filter((folder) =>
+    Object.keys(datasetStructure["folders"]).includes(folder)
+  );
+
+  const addedSubjects = [];
+  const subjectsMovedIntoPools = [];
+  const addedPools = [];
+  const addedSamples = [];
+
+  // Loop through prim, src, and deriv if they exist in the datasetStructure
+  for (const hlf of guidedFoldersInDataset) {
+    //Get the names of the subfolders directly in the hlf
+    const hlfFolderNames = Object.keys(datasetStructure["folders"][hlf]["folders"]);
+    const subjectFoldersInBase = hlfFolderNames.filter((folder) => folder.startsWith("sub-"));
+    const poolFoldersInBase = hlfFolderNames.filter((folder) => folder.startsWith("pool-"));
+
+    // Loop through any folders starting with sub- in the hlf
+    for (const subjectFolder of subjectFoldersInBase) {
+      if (!addedSubjects.includes(subjectFolder)) {
+        try {
+          window.sodaJSONObj.addSubject(subjectFolder);
+          addedSubjects.push(subjectFolder);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      // Get the names of the subfolders directly in the subject folder
+      const potentialSampleFolderNames = Object.keys(
+        datasetStructure["folders"][hlf]["folders"][subjectFolder]["folders"]
+      );
+      const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
+        folder.startsWith("sam-")
+      );
+      if (sampleFoldersInSubject.length > 0) {
+        window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-sample-data`] = "yes";
+      }
+      // Loop through any folders starting with sam- in the subject folder
+      for (const sampleFolder of sampleFoldersInSubject) {
+        if (!addedSamples.includes(sampleFolder)) {
+          try {
+            window.sodaJSONObj.addSampleToSubject(sampleFolder, null, subjectFolder);
+            addedSamples.push(sampleFolder);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
+    }
+
+    if (subjectFoldersInBase.length > 0) {
+      window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-subject-data`] = "yes";
+    }
+
+    // Loop through any folders starting with pool- in the hlf
+    for (const poolFolder of poolFoldersInBase) {
+      if (!addedPools.includes(poolFolder)) {
+        try {
+          window.sodaJSONObj.addPool(poolFolder);
+          addedPools.push(poolFolder);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      // Get the names of the subfolders directly in the pool folder
+      const potentialSubjectFolderNames = Object.keys(
+        datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"]
+      );
+      const subjectFoldersInPool = potentialSubjectFolderNames.filter((folder) =>
+        folder.startsWith("sub-")
+      );
+
+      if (subjectFoldersInPool.length > 0) {
+        window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-subject-data`] = "yes";
+      }
+      // Loop through any folders starting with sub- in the pool folder
+      for (const subjectFolder of subjectFoldersInPool) {
+        if (!addedSubjects.includes(subjectFolder)) {
+          try {
+            window.sodaJSONObj.addSubject(subjectFolder);
+            addedSubjects.push(subjectFolder);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+
+        if (!subjectsMovedIntoPools.includes(subjectFolder)) {
+          try {
+            window.sodaJSONObj.moveSubjectIntoPool(subjectFolder, poolFolder);
+            subjectsMovedIntoPools.push(subjectFolder);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+
+        const potentialSampleFolderNames = Object.keys(
+          datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"][subjectFolder][
+          "folders"
+          ]
+        );
+        const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
+          folder.startsWith("sam-")
+        );
+        if (sampleFoldersInSubject.length > 0) {
+          window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-sample-data`] = "yes";
+        }
+        // Loop through any folders starting with sam- in the subject folder
+        for (const sampleFolder of sampleFoldersInSubject) {
+          if (!addedSamples.includes(sampleFolder)) {
+            try {
+              window.sodaJSONObj.addSampleToSubject(sampleFolder, poolFolder, subjectFolder);
+              addedSamples.push(sampleFolder);
+            } catch (error) {
+              console.log(error);
+            }
+          }
+        }
+      }
+    }
+
+    if (poolFoldersInBase.length > 0) {
+      window.sodaJSONObj["button-config"][`dataset-contains-${hlf}-pool-data`] = "yes";
+    }
+  }
+
+  if (addedSubjects.length > 0) {
+    window.sodaJSONObj["button-config"]["dataset-contains-subjects"] = "yes";
+  }
+  if (addedPools.length > 0) {
+    window.sodaJSONObj["button-config"]["dataset-contains-pools"] = "yes";
+  } else {
+    window.sodaJSONObj["button-config"]["dataset-contains-pools"] = "no";
+  }
+  if (addedSamples.length > 0) {
+    window.sodaJSONObj["button-config"]["dataset-contains-samples"] = "yes";
+  }
+
+  return window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
+};
+
+const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
+  const invalidFolders = [];
+  const invalidFiles = [];
+
+  for (const hlf of guidedHighLevelFolders) {
+    if (datasetStructure["folders"][hlf]) {
+      const hlfFolders = Object.keys(datasetStructure["folders"][hlf]["folders"]);
+      //filter out hlfFolders that do not start with pool- or sub-
+      const invalidBaseFolders = hlfFolders.filter((folder) => {
+        return !folder.startsWith("pool-") && !folder.startsWith("sub-");
+      });
+
+      for (const invalidBaseFolder of invalidBaseFolders) {
+        invalidFolders.push(invalidBaseFolder);
+      }
+
+      const hlfFiles = Object.keys(datasetStructure["folders"][hlf]["files"]);
+      const invalidBaseFiles = hlfFiles.filter((file) => {
+        return !file.startsWith("manifest");
+      });
+      for (const invalidBaseFile of invalidBaseFiles) {
+        invalidFiles.push(invalidBaseFile);
+      }
+    }
+  }
+  return [invalidFolders, invalidFiles];
+};
+
+const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMetadataRows) => {
+  const poolSubSamStructure = {
+    pools: {},
+    subjects: {},
+  };
+
+  const datasetPools = [
+    ...new Set(
+      subjectsMetadataRows
+        .map((subjectDataArray) => subjectDataArray[1])
+        .filter((pool) => pool !== "")
+    ),
+  ];
+
+  for (const pool of datasetPools) {
+    poolSubSamStructure["pools"][pool] = {};
+  }
+
+  for (const subject of subjectsMetadataRows) {
+    const subjectID = subject[0];
+    const poolID = subject[1];
+    if (poolID !== "") {
+      poolSubSamStructure["pools"][poolID][subjectID] = {};
+    } else {
+      poolSubSamStructure["subjects"][subjectID] = {};
+    }
+  }
+
+  for (const sample of samplesMetadataRows) {
+    const subjectID = sample[0];
+    const sampleID = sample[1];
+    const poolID = sample[3];
+    if (poolID !== "") {
+      poolSubSamStructure["pools"][poolID][subjectID][sampleID] = {};
+    } else {
+      poolSubSamStructure["subjects"][subjectID][sampleID] = {};
+    }
+  }
+  return poolSubSamStructure;
+};
+
 
 export const scrollToBottomOfGuidedBody = () => {
   const elementToScrollTo = document.querySelector(".guided--body");

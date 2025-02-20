@@ -11,6 +11,14 @@ while (!window.baseHtmlLoaded) {
 let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
+
+/**
+ * 
+ * @returns {Promise<void>}
+ * @description Save the user's progress in the active Prepare Dataset Step-by-Step workflow to a progress file stored in the user's home directory under the SODA folder.
+ *              Creates the directory if it does not exist. The progress file is named after the dataset the user is working on.
+ *              
+ */
 export const guidedSaveProgress = async () => {
   const guidedProgressFileName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
   //return if guidedProgressFileName is not a strnig greater than 0
@@ -44,6 +52,13 @@ export const guidedSaveProgress = async () => {
   window.fs.writeFileSync(guidedFilePath, JSON.stringify(window.sodaJSONObj, null, 2));
 };
 
+
+/**
+ * 
+ * @param {string} pageBeingLeftID  - The id of the html page that the user is leaving
+ * @description Validate and save user progress for the page being left in the Prepare Dataset Step-by-Step workflow.
+ *              Progress is saved in a progress file the user can access to resume their work after exiting their active workflow.
+ */
 export const savePageChanges = async (pageBeingLeftID) => {
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
