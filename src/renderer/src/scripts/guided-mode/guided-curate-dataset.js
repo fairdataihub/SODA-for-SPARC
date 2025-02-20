@@ -1648,11 +1648,7 @@ const guidedUpdateFolderStructureUI = (folderPathSeperatedBySlashes) => {
   console.log("Updated tree view structure based on current path.");
 };
 
-const getGuidedAdditionalLinks = () => {
-  return window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].map(
-    (link) => link.link
-  );
-};
+
 //Description metadata functions
 
 window.deleteAdditionalLink = (linkName) => {

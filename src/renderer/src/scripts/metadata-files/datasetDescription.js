@@ -265,7 +265,7 @@ window.generateDDFile = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then(() => {});
+  }).then(() => { });
   var datasetInfoValueObj = window.grabDSInfoEntries();
   var studyInfoValueObject = grabStudyInfoEntries();
   //// grab entries from contributor info section and pass values to conSectionArray
@@ -586,7 +586,7 @@ const changeAward = (award) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then(() => {});
+  }).then(() => { });
   $("#ds-description-award-input").val(award);
   $("#submission-sparc-award").val(award);
 };
@@ -929,7 +929,7 @@ window.importExistingDDFile = () => {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then(() => {});
+      }).then(() => { });
       setTimeout(loadDDfileDataframe(filePath), 1000);
     }
   }
@@ -1161,4 +1161,163 @@ const protocolCheck = (array) => {
     boolean = true;
   }
   return boolean;
+};
+
+
+// searches the markdown for key sections and returns them as an easily digestible object
+// returns: {Study Purpose: text/markdown | "", Data Collection: text/markdown | "", Primary Conclusion: text/markdown | "", invalidText: text/markdown | ""}
+export const createParsedReadme = (readme) => {
+  // read in the readme file and store it in a variable ( it is in markdown )
+  let mutableReadme = readme;
+
+  // create the return object
+  const parsedReadme = {
+    "Study Purpose": "",
+    "Data Collection": "",
+    "Primary Conclusion": "",
+    "invalid text": "",
+  };
+
+  // remove the "Study Purpose" section from the readme file and place its value in the parsed readme
+  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "Study Purpose", parsedReadme);
+
+  // remove the "Data Collection" section from the readme file and place its value in the parsed readme
+  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "Data Collection", parsedReadme);
+
+  // search for the "Primary Conclusion" and basic variations of spacing
+  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "Primary Conclusion", parsedReadme);
+
+  // remove the invalid text from the readme contents
+  mutableReadme = stripInvalidTextFromReadme(mutableReadme, parsedReadme);
+
+  // return the parsed readme
+  return parsedReadme;
+};
+
+// strips the required section starting with the given section name from a copy of the given readme string. Returns the mutated string. If given a parsed readme object
+// it will also place the section text in that object.
+// Inputs:
+//      readme: A string with the users dataset description
+//      sectionName: The name of the section the user wants to strip from the readme
+//      parsedReadme: Optional object that gets the stripped section text if provided
+const stripRequiredSectionFromReadme = (readme, sectionName, parsedReadme = undefined) => {
+  // lowercase the readme file text to avoid casing issues with pattern matching
+  let mutableReadme = readme.trim();
+
+  // serch for the start of the given section -- it can have one or more whitespace between the colon
+  let searchRegExp = new RegExp(`[*][*]${sectionName}[ ]*:[*][*]`);
+  let altSearchRegExp = new RegExp(`[*][*]${sectionName}[*][*][ ]*:`);
+  let sectionIdx = mutableReadme.search(searchRegExp);
+  if (sectionIdx === -1) {
+    sectionIdx = mutableReadme.search(altSearchRegExp);
+  }
+  // if the section is not found return the readme unchanged
+  if (sectionIdx === -1) {
+    return mutableReadme;
+  }
+
+  // remove the section title text
+  mutableReadme = mutableReadme.replace(searchRegExp, "");
+  mutableReadme = mutableReadme.replace(altSearchRegExp, "");
+  // search for the end of the removed section's text
+  let endOfSectionIdx;
+  // curator's section is designated by three hyphens in a row
+  let curatorsSectionIdx = mutableReadme.search("---");
+
+  for (endOfSectionIdx = sectionIdx; endOfSectionIdx < mutableReadme.length; endOfSectionIdx++) {
+    // check if we found the start of a new section
+    if (mutableReadme[endOfSectionIdx] === "*" || endOfSectionIdx === curatorsSectionIdx) {
+      // if so stop
+      break;
+    }
+  }
+
+  // store the value of the given section in the parsed readme if one was provided
+  if (parsedReadme) {
+    parsedReadme[`${sectionName}`] = mutableReadme.slice(
+      sectionIdx,
+      endOfSectionIdx >= mutableReadme.length ? undefined : endOfSectionIdx
+    );
+  }
+
+  // strip the section text from the readme
+  mutableReadme = mutableReadme.slice(0, sectionIdx) + mutableReadme.slice(endOfSectionIdx);
+
+  return mutableReadme;
+};
+
+// find invalid text and strip it from a copy of the given readme string. returns the mutated readme.
+// Text is invalid in these scenarios:
+//   1. any text that occurs before an auxillary section is invalid text because we cannot assume it belongs to one of the auxillary sections below
+//   2. any text in a string where there are no sections
+const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
+  // ensure the required sections have been taken out
+  if (
+    readme.search(`[*][*]${requiredSections.studyPurpose}[ ]*:[*][*]`) !== -1 ||
+    readme.search(`[*][*]${requiredSections.studyPurpose}[*][*][ ]*:`) !== -1 ||
+    readme.search(`[*][*]${requiredSections.dataCollection}[ ]*:[*][*]`) !== -1 ||
+    readme.search(`[*][*]${requiredSections.dataCollection}[*][*][ ]*:`) !== -1 ||
+    readme.search(`[*][*]${requiredSections.primaryConclusion}[ ]*:[*][*]`) !== -1 ||
+    readme.search(`[*][*]${requiredSections.primaryConclusion}[*][*][ ]*:`) !== -1
+  ) {
+    throw new Error("There was a problem with reading your description file.");
+  }
+
+  // search for the first occurring auxillary section -- this is a user defined section
+  let auxillarySectionIdx = readme.search("[*][*].*[ ]*:[*][*]");
+
+  // check if there was an auxillary section found that has a colon before the markdown ends
+  if (auxillarySectionIdx !== -1) {
+    let auxillarySectionIdxAltFormat = readme.search("[*][*].*[ ]*[*][*][ ]*:");
+    // check if there is an auxillary section that comes before the current section that uses alternative common syntax
+    if (auxillarySectionIdxAltFormat !== -1 && auxillarySectionIdx > auxillarySectionIdxAltFormat) {
+      auxillarySectionIdx = auxillarySectionIdxAltFormat;
+    }
+  } else {
+    // no auxillary section could be found using the colon before the closing markdown sytnatx so try the alternative common syntax
+    auxillarySectionIdx = readme.search("[*][*].*[ ]*[*][*][ ]*:");
+  }
+
+  // check if there is an auxillary section
+  if (auxillarySectionIdx !== -1) {
+    let curatorsSectionIdx = readme.search("(---)");
+    // check if the curator's section appears before the auxillary section that was found
+    if (curatorsSectionIdx !== -1 && auxillarySectionIdx > curatorsSectionIdx) {
+      auxillarySectionIdx = curatorsSectionIdx;
+    }
+  } else {
+    // set the auxillary section idx to the start of the curator's section idx
+    auxillarySectionIdx = readme.search("(---)");
+  }
+
+  // check if there is an auxillary section
+  if (auxillarySectionIdx !== -1) {
+    // get the text that comes before the auxillary seciton idx
+    let invalidText = readme.slice(0, auxillarySectionIdx);
+
+    // if there is no invalid text then parsing is done
+    if (!invalidText.length) {
+      return readme;
+    }
+
+    // check if the user wants to store the invalid text in a parsed readme
+    if (parsedReadme) {
+      // place the invalid text into the parsed readme
+      parsedReadme[requiredSections.invalidText] = invalidText;
+    }
+
+    // remove the text from the readme
+    readme = readme.slice(auxillarySectionIdx);
+
+    // return the readme file
+    return readme;
+  } else {
+    // there are no auxillary sections so the rest of the string is invalid text -- if there is any string left
+    if (parsedReadme) {
+      parsedReadme[requiredSections.invalidText] = readme;
+    }
+
+    // remove the text from the readme === return an empty string
+    return "";
+  }
 };

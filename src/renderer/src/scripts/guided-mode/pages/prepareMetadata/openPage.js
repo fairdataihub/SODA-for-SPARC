@@ -12,6 +12,7 @@ import api from "../../../others/api/api";
 import { clientError, userErrorMessage } from "../../../others/http-error-handler/error-handler";
 import { guidedShowOptionalRetrySwal } from "../../swals/helperSwals";
 import { guidedShowBannerImagePreview } from "../../bannerImage/bannerImage";
+import { createParsedReadme } from "../../../metadata-files/datasetDescription";
 import { renderManifestCards } from "../../manifests/manifest";
 import { setTreeViewDatasetStructure } from "../../../../stores/slices/datasetTreeViewSlice";
 import {
@@ -353,9 +354,9 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       "guided-manifest-file-data"
     ]
       ? window.diffCheckManifestFiles(
-          newManifestData,
-          window.sodaJSONObj["guided-manifest-file-data"]
-        )
+        newManifestData,
+        window.sodaJSONObj["guided-manifest-file-data"]
+      )
       : newManifestData;
 
     renderManifestCards();
@@ -712,6 +713,303 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       codeDescriptionParaText.innerHTML = "";
     }
   }
+
+  if (targetPageID === "guided-create-description-metadata-tab") {
+    if (pageNeedsUpdateFromPennsieve("guided-create-description-metadata-tab")) {
+      // Show the loading page while the page's data is being fetched from Pennsieve
+      setPageLoadingState(true);
+      try {
+        let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
+          params: {
+            selected_account: window.defaultBfAccount,
+            selected_dataset: window.sodaJSONObj["bf-dataset-selected"]["dataset-name"],
+            file_type: "dataset_description.xlsx",
+          },
+        });
+        // guidedLoadDescriptionDatasetInformation
+        let basicInformation = metadata_import.data["Basic information"];
+
+        // First try to get the keywords from the imported dataset description metadata
+        if (basicInformation[3][0] === "Keywords") {
+          const studyKeywords = basicInformation[3].slice(1).filter((keyword) => keyword !== "");
+
+          // If more than 1 keyword is found, add store them to be loaded into the UI
+          // Otherwise, use the tags on Pennsieve
+          if (studyKeywords.length != 0) {
+            window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"][
+              "keywords"
+            ] = studyKeywords;
+          }
+        }
+
+        // guidedLoadDescriptionStudyInformation
+        let studyInformation = metadata_import.data["Study information"];
+
+        // Declare an object and add all of the study information to it
+        const studyInformationObject = {};
+        for (let i = 0; i < studyInformation.length; i++) {
+          const studyInformationArray = studyInformation[i];
+          // Lowercase the key (e.g. Study approach -> study approach)
+          const studyInformationKey = studyInformationArray[0].toLowerCase();
+          // The value is the second element in the array
+          const studyInformationValue = studyInformationArray[1];
+
+          studyInformationObject[studyInformationKey] = studyInformationValue;
+        }
+
+        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"] =
+          studyInformationObject;
+
+        // guidedLoadDescriptionStudyDesign
+        let awardInformation = metadata_import.data["Award information"];
+        if (
+          awardInformation[0][0] === "Funding" &&
+          awardInformation[1][0] === "Acknowledgments"
+        ) {
+          const studyFunding = awardInformation[1].slice(1).filter((funding) => funding !== "");
+          const studyAcknowledgements = awardInformation[1]
+            .slice(1)
+            .filter((acknowledgement) => acknowledgement !== "");
+
+          window.sodaJSONObj["dataset-metadata"]["description-metadata"][
+            "contributor-information"
+          ] = {
+            funding: studyFunding,
+            acknowledgment: studyAcknowledgements,
+          };
+        }
+        // Add  the related Links
+        let relatedInformationData = metadata_import.data["Related information"];
+
+        // Filter out invalid Links and protocol links
+        const additionalLinksFromPennsieve = relatedInformationData
+          .slice(1)
+          .filter((relatedInformationArray) => {
+            return (
+              relatedInformationArray[0] !== "" &&
+              relatedInformationArray[1] != "IsProtocolFor" &&
+              relatedInformationArray[2] !== "" &&
+              relatedInformationArray[3] !== ""
+            );
+          });
+        const currentAddtionalLinks = getGuidedAdditionalLinks();
+        for (const link of additionalLinksFromPennsieve) {
+          const additionalLinkDescription = link[0];
+          const additionalLinkRelation = link[1];
+          const additionalLinkLink = link[2];
+          const additionalLinkType = link[3];
+          // If the ink has already been added, delete it and add the updated data
+          // from Pennsieve
+          if (currentAddtionalLinks.includes(additionalLinkLink)) {
+            window.deleteAdditionalLink(additionalLinkLink);
+          }
+          window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].push(
+            {
+              link: additionalLinkLink,
+              relation: additionalLinkRelation,
+              description: additionalLinkDescription,
+              type: additionalLinkType,
+              isFair: true,
+            }
+          );
+        }
+        window.sodaJSONObj["pages-fetched-from-pennsieve"].push(
+          "guided-create-description-metadata-tab"
+        );
+      } catch (error) {
+        clientError(error);
+        const emessage = error.response.data.message;
+        await guidedShowOptionalRetrySwal(emessage, "guided-create-description-metadata-tab");
+        // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+        // so the the fetch does not occur again
+        window.sodaJSONObj["pages-fetched-from-pennsieve"].push(
+          "guided-create-description-metadata-tab"
+        );
+      }
+      // If the dataset keywords were not set from the imported metadata, try to get them from the Pennsieve tags
+      const keywordsDerivedFromDescriptionMetadata =
+        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"]?.[
+        "keywords"
+        ];
+      if (!keywordsDerivedFromDescriptionMetadata) {
+        try {
+          const currentDatasetID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+          const tagsReq = await client.get(`/manage_datasets/datasets/${currentDatasetID}/tags`, {
+            params: { selected_account: window.defaultBfAccount },
+          });
+          const { tags } = tagsReq.data;
+          if (tags.length > 0) {
+            window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"][
+              "keywords"
+            ] = tags;
+          }
+        } catch (error) {
+          // We don't need to do anything if this fails, but the user will have to enter the new tags before continuing
+          clientError(error);
+        }
+      }
+
+      // If the study information was not set from the imported metadata, try to extract it from the Pennsieve dataset description
+      const studyPurpose =
+        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        "study purpose"
+        ];
+      const studyDataCollection =
+        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        "study data collection"
+        ];
+      const studyPrimaryConclusion =
+        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        "study primary conclusion"
+        ];
+
+      if (!studyPurpose && !studyDataCollection && !studyPrimaryConclusion) {
+        try {
+          const pennsieveDatasetDescription = await api.getDatasetReadme(
+            window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+          );
+          const parsedDescription = createParsedReadme(pennsieveDatasetDescription);
+          if (parsedDescription["Study Purpose"]) {
+            window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"][
+              "study purpose"
+            ] = parsedDescription["Study Purpose"].replace(/\r?\n|\r/g, "").trim();
+          }
+          if (parsedDescription["Data Collection"]) {
+            window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"][
+              "study data collection"
+            ] = parsedDescription["Data Collection"].replace(/\r?\n|\r/g, "").trim();
+          }
+          if (parsedDescription["Primary Conclusion"]) {
+            window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"][
+              "study primary conclusion"
+            ] = parsedDescription["Primary Conclusion"].replace(/\r?\n|\r/g, "").trim();
+          }
+        } catch (error) {
+          // We don't need to do anything if this fails, but the user will have to enter the study information before continuing
+          clientError(error);
+        }
+      }
+    }
+
+    const guidedLoadDescriptionDatasetInformation = () => {
+      // Reset the keywords tags and add the stored ones if they exist in the JSON
+      guidedDatasetKeywordsTagify.removeAllTags();
+      const datasetKeyWords =
+        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"]?.[
+        "keywords"
+        ];
+      if (datasetKeyWords) {
+        guidedDatasetKeywordsTagify.addTags(datasetKeyWords);
+      }
+    };
+    guidedLoadDescriptionDatasetInformation();
+
+    const guidedLoadDescriptionStudyInformation = () => {
+      const studyPurposeInput = document.getElementById("guided-ds-study-purpose");
+      const studyDataCollectionInput = document.getElementById("guided-ds-study-data-collection");
+      const studyPrimaryConclusionInput = document.getElementById(
+        "guided-ds-study-primary-conclusion"
+      );
+      const studyCollectionTitleInput = document.getElementById(
+        "guided-ds-study-collection-title"
+      );
+
+      //reset the inputs
+      studyPurposeInput.value = "";
+      studyDataCollectionInput.value = "";
+      studyPrimaryConclusionInput.value = "";
+      studyCollectionTitleInput.value = "";
+      guidedStudyOrganSystemsTagify.removeAllTags();
+      guidedStudyApproachTagify.removeAllTags();
+      guidedStudyTechniquesTagify.removeAllTags();
+
+      // Set the inputs if their respective keys exist in the JSON
+      // (if not, the input will remain blank)
+      const studyPurpose =
+        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        "study purpose"
+        ];
+      if (studyPurpose) {
+        studyPurposeInput.value = studyPurpose;
+      }
+
+      const studyDataCollection =
+        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        "study data collection"
+        ];
+      if (studyDataCollection) {
+        studyDataCollectionInput.value = studyDataCollection;
+      }
+
+      const studyPrimaryConclusion =
+        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        "study primary conclusion"
+        ];
+      if (studyPrimaryConclusion) {
+        studyPrimaryConclusionInput.value = studyPrimaryConclusion;
+      }
+
+      const studyCollectionTitle =
+        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        "study collection title"
+        ];
+      if (studyCollectionTitle) {
+        studyCollectionTitleInput.value = studyCollectionTitle;
+      }
+
+      const studyOrganSystems =
+        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        "study organ system"
+        ];
+      if (studyOrganSystems) {
+        guidedStudyOrganSystemsTagify.addTags(studyOrganSystems);
+      }
+
+      const studyApproach =
+        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        "study approach"
+        ];
+      if (studyApproach) {
+        guidedStudyApproachTagify.addTags(studyApproach);
+      }
+
+      const studyTechniques =
+        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        "study technique"
+        ];
+      if (studyTechniques) {
+        guidedStudyTechniquesTagify.addTags(studyTechniques);
+      }
+    };
+    guidedLoadDescriptionStudyInformation();
+
+    const guidedLoadDescriptionContributorInformation = () => {
+      const acknowledgementsInput = document.getElementById("guided-ds-acknowledgements");
+      const contributorInformationMetadata =
+        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributor-information"];
+
+      guidedOtherFundingsourcesTagify.removeAllTags();
+
+      if (contributorInformationMetadata) {
+        acknowledgementsInput.value = contributorInformationMetadata["acknowledgment"];
+        guidedOtherFundingsourcesTagify.addTags(contributorInformationMetadata["funding"]);
+      } else {
+        acknowledgementsInput.value = "";
+        guidedOtherFundingsourcesTagify.removeAllTags();
+      }
+    };
+    guidedLoadDescriptionContributorInformation();
+
+    renderAdditionalLinksTable();
+
+    const otherFundingLabel = document.getElementById("SPARC-award-other-funding-label");
+
+    if (datasetIsSparcFunded()) {
+      otherFundingLabel.innerHTML = ` besides the SPARC Award: ${window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"]}`;
+    } else {
+      otherFundingLabel.innerHTML = "";
+    }
+  }
 };
 
 const getContributorFullNames = () => {
@@ -719,5 +1017,12 @@ const getContributorFullNames = () => {
     (contributor) => {
       return contributor.conName;
     }
+  );
+};
+
+
+const getGuidedAdditionalLinks = () => {
+  return window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].map(
+    (link) => link.link
   );
 };
