@@ -34,7 +34,10 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import DatePicker from "tui-date-picker";
 import datasetUploadSession from "../analytics/upload-session-tracker";
-import { startBackgroundServices, initializeSODARenderer } from "../startup/initializeRendererProcess";
+import {
+  startBackgroundServices,
+  initializeSODARenderer,
+} from "../startup/initializeRendererProcess";
 import kombuchaEnums from "../analytics/analytics-enums";
 import client from "../client";
 import {
@@ -74,7 +77,6 @@ import {
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
 } from "../../stores/slices/backgroundServicesSlice";
-
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -263,13 +265,11 @@ window.notyf = new Notyf({
 let update_available_notification = "";
 let update_downloaded_notification = "";
 
-
 // //////////////////////////////////
 // // Initialize the renderer process
 // //////////////////////////////////
 startBackgroundServices();
 initializeSODARenderer();
-
 
 const abortPennsieveAgentCheck = (pennsieveAgentStatusDivId) => {
   setPennsieveAgentCheckSuccessful(false);
@@ -511,8 +511,6 @@ window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
   }
 };
 
-
-
 window.checkInternetConnection = async () => {
   try {
     await axios.get("https://www.google.com");
@@ -667,7 +665,6 @@ const getLatestPennsieveAgentVersion = async () => {
 
   return [platformSpecificAgentDownloadURL, latestPennsieveAgentVersion];
 };
-
 
 // Check app version on current app and display in the side bar
 window.electron.ipcRenderer.on("app_version", (event, arg) => {
@@ -3404,9 +3401,6 @@ var bfAddAccountBootboxMessage = `<form>
   </form>`;
 
 var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve account using an API key</h3>`;
-
-
-
 
 ////// function to trigger action for each context menu option
 window.hideMenu = (category, menu1, menu2, menu3) => {
