@@ -26,7 +26,8 @@ while (!window.baseHtmlLoaded) {
 /**
  *
  * @returns {Promise<void>}
- * @description This function is called when the user clicks the "Generate Dataset" button in the guided mode. It will create the dataset on Pennsieve and upload the dataset files.
+ * @description This function is called when the user clicks the "Generate Dataset" button at the end of the Prepare Dataset Step-by-Step workflows. 
+ *              It will create the dataset on Pennsieve and upload the dataset files.
  */
 export const guidedPennsieveDatasetUpload = async () => {
   guidedSetNavLoadingState(true);
