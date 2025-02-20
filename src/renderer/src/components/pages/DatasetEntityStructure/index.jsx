@@ -15,6 +15,7 @@ import {
 } from "@mantine/core";
 import { IconUser, IconFlask, IconClipboard, IconPin } from "@tabler/icons-react";
 import { setZustandStoreDatasetEntityStructure } from "../../../stores/slices/datasetEntityStructureSlice";
+import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 
 // Helper: Generates a child ID using the parent's ID, a prefix, a label, and an index.
 const generateChildId = (parentId, childPrefix, childLabel, childIndex, appendIndex = true) => {
@@ -29,8 +30,7 @@ const generateChildId = (parentId, childPrefix, childLabel, childIndex, appendIn
 const DatasetEntityStructurePage = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
 
-  // The organism configuration is used to build subjects.
-  // species is used only for ID generation.
+  // The species configuration is used to build subjects.
   const initialOrganism = {
     subjectCount: 1,
     species: "mouse",
@@ -69,8 +69,7 @@ const DatasetEntityStructurePage = () => {
       .flatMap((org) =>
         Array.from({ length: org.subjectCount }, (_, i) => {
           // Generate subjectId using the organism's species.
-          const subjectId =
-            org.subjectCount === 1 ? `sub-${org.species}-1` : `sub-${org.species}-${i + 1}`;
+          const subjectId = `sub-${org.species}-${i + 1}`;
           // Generate subject-level sites and performances if applicable.
           const subjectSites = selectedEntities.includes("subject-sites")
             ? createSubjectSites(subjectId, org)
@@ -320,18 +319,18 @@ const DatasetEntityStructurePage = () => {
     </Stack>
   );
 
-  // Render configuration for a single organism.
+  // Render configuration for a single species.
   const renderOrganism = (organism, orgIndex) => (
     <Paper key={orgIndex} withBorder shadow="xs" p="md" my="sm">
-      <Text size="md" fw={600}>{`Organism ${orgIndex + 1}`}</Text>
+      <Text size="md" fw={600}>{`Species ${orgIndex + 1}`}</Text>
       <TextInput
-        label="Species or Organism Name"
+        label="Species Name"
         placeholder="e.g., mouse"
         value={organism.species}
         onChange={(e) => handleSpeciesNameChange(orgIndex, e.target.value)}
       />
       <NumberInput
-        label="How many subjects did you collect data from for this species or organism?"
+        label="How many subjects did you collect data from for this species?"
         value={organism.subjectCount}
         onChange={(value) => handleSubjectCountChange(orgIndex, value)}
         min={1}
@@ -416,7 +415,7 @@ const DatasetEntityStructurePage = () => {
           ))}
         </Box>
       )}
-      {selectedEntities.includes("samples") && subject.samples.length > 0 && (
+      {selectedEntities.includes("samples") && subject?.samples.length > 0 && (
         <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid green" }}>
           {subject.samples.map((sample) => (
             <Box key={sample.sampleId} ml="xs" mb="4px">
@@ -455,21 +454,16 @@ const DatasetEntityStructurePage = () => {
     <GuidedModePage pageHeader="Generate IDs to Associate Data With">
       <GuidedModeSection>
         <Text>
-          Provide details about the organisms, subjects, and sample types from which you collected
-          data. Depending on the selected options, sites and performances can be configured at both
-          the subject and sample levels. If "samples" is not selected, no sample-related questions
-          will be shown and no sample data will be added.
+          Provide details about the entities from which you collected data from during your study.
+          This information will be used to generate unique IDs for data association in the following
+          steps.
         </Text>
       </GuidedModeSection>
       <GuidedModeSection>
         <Stack spacing="md">
-          {/* Organisms / Subjects Configuration */}
           <Paper withBorder shadow="sm" p="md">
-            <Text size="lg" fw={700} mb="sm">
-              Organisms / Subjects Configuration
-            </Text>
             <NumberInput
-              label="How many different organisms or species did you collect data from?"
+              label="How many different species did you collect data from?"
               value={organisms.length}
               onChange={handleOrganismCountChange}
               min={1}
@@ -489,11 +483,12 @@ const DatasetEntityStructurePage = () => {
             <Text mb="md">
               Please verify that the generated structure below is correct before proceeding.
             </Text>
-            {datasetEntityStructure.subjects && datasetEntityStructure.subjects.length > 0 && (
+            <EntityHierarchyRenderer datasetEntityStructure={datasetEntityStructure} />
+            {/*{datasetEntityStructure.subjects && datasetEntityStructure.subjects.length > 0 && (
               <Stack spacing="3px">
                 {datasetEntityStructure.subjects.map(renderSubjectSamples)}
               </Stack>
-            )}
+            )}*/}
           </Paper>
         </Stack>
       </GuidedModeSection>

@@ -3,6 +3,7 @@ import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import EntityListContainer from "../../containers/EntityListContainer";
 import { IconSearch } from "@tabler/icons-react";
+import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 import {
   TextInput,
   Textarea,
@@ -31,6 +32,7 @@ import {
   autoSelectDatasetFoldersAndFilesForEnteredEntityIds,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { naturalSort } from "../../shared/utils/util-functions";
+import { get } from "jquery";
 
 const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
 
@@ -135,6 +137,17 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
   });
 };
 
+const getInstructionalTextByEntityType = (entityType) => {
+  console.log("entityType", entityType);
+  const instructionalText = {
+    Code: "Choose all folders and files containing scripts, computational models, analysis pipelines, or any software used for data processing or analysis.",
+    ExperimentalData: "Select the files that contain protocols.",
+    Other: "Select the files that contain documentation.",
+  };
+
+  return instructionalText[entityType] || "Select the files that contain data." + entityType;
+};
+
 const EntityDataSelectorPage = ({
   pageName,
   entityType,
@@ -151,8 +164,8 @@ const EntityDataSelectorPage = ({
         {entityType === "bucketed-data" ? (
           <Stack>
             <Text>
-              SPARC requires you to classify certain types of data separately from the rest of your
-              imported data:
+              The SDS requires you to classify certain types of data separately from the rest of
+              your imported data:
             </Text>
             <Text>
               <b>Code:</b> Scripts, computational models, analysis pipelines, or other software used
@@ -212,6 +225,7 @@ const EntityDataSelectorPage = ({
             {activeEntity ? (
               <Paper shadow="sm" radius="md">
                 <DatasetTreeViewRenderer
+                  itemSelectInstructions={getInstructionalTextByEntityType(activeEntity)}
                   folderActions={{
                     "on-folder-click": (folderName, folderContents, folderIsSelected) => {
                       console.log("on-folder-click");

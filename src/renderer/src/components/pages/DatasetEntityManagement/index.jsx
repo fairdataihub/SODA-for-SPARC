@@ -6,6 +6,8 @@ import useGlobalStore from "../../../stores/globalStore";
 import { addSubject } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { IconUser } from "@tabler/icons-react"; // Add this import
 
+/* THIS IS OLD AND CAN PROBABLY BE DELETED */
+
 const DatasetEntityManagementPage = () => {
   const [subjectID, setSubjectID] = useState("");
   const entityStructureObj = useGlobalStore((state) => state.entityStructureObj);

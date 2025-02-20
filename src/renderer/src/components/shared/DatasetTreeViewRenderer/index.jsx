@@ -12,6 +12,7 @@ import {
   Center,
   Button,
   Loader,
+  Badge,
 } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 import {
@@ -35,6 +36,7 @@ import {
 
 import useGlobalStore from "../../../stores/globalStore";
 import ContextMenu from "./ContextMenu";
+import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 import {
   setDatasetStructureSearchFilter,
   openContextMenu,
@@ -112,6 +114,7 @@ const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEd
       onContextMenu={handleFileContextMenuOpen}
       ml="sm"
       pl="xs"
+      py="1px"
     >
       {/* Checkbox for selection appears first */}
       {onFileClick && (
@@ -139,6 +142,16 @@ const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEd
       >
         {name}
       </Text>
+      {content.relativePath.includes("mouse-1") && (
+        <Badge color="blue" variant="light" size="sm">
+          sub-mouse-1
+        </Badge>
+      )}
+      {content.relativePath.includes("Tissue_1") && (
+        <Badge color="red" variant="light" size="sm">
+          sam-tissue-1
+        </Badge>
+      )}
     </Group>
   );
 };
@@ -220,6 +233,7 @@ const FolderItem = ({
         onContextMenu={handleFolderContextMenuOpen}
         ref={ref}
         bg={getBackgroundColor()}
+        py="1px"
       >
         {folderIsEmpty || !isOpen ? (
           <IconFolder
@@ -261,6 +275,16 @@ const FolderItem = ({
         >
           {name}
         </Text>
+        {content.relativePath.includes("mouse-1") && (
+          <Badge color="blue" variant="light" size="sm">
+            sub-mouse-1
+          </Badge>
+        )}
+        {content.relativePath.includes("Tissue_1") && (
+          <Badge color="red" variant="light" size="sm">
+            sam-tissue-1
+          </Badge>
+        )}
       </Group>
       <Collapse in={isOpen}>
         {naturalSort(Object.keys(content?.folders || {})).map((folderName) => (
@@ -292,7 +316,13 @@ const FolderItem = ({
   );
 };
 
-const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEditing }) => {
+const DatasetTreeViewRenderer = ({
+  folderActions,
+  fileActions,
+  allowStructureEditing,
+  itemSelectInstructions,
+  hideSearchBar,
+}) => {
   const renderDatasetStructureJSONObj = useGlobalStore(
     (state) => state.renderDatasetStructureJSONObj
   );
@@ -302,8 +332,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
   const datasetStructureSearchFilter = useGlobalStore(
     (state) => state.datasetStructureSearchFilter
   );
-  const contextMenuItemType = useGlobalStore((state) => state.contextMenuItemType);
-  const contextMenuItemName = useGlobalStore((state) => state.contextMenuItemName);
+
   const externallySetSearchFilterValue = useGlobalStore(
     (state) => state.externallySetSearchFilterValue
   );
@@ -314,6 +343,7 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
   useEffect(() => {
     setDatasetStructureSearchFilter(inputSearchFilter);
   }, [inputSearchFilter]);
+
   const handleSearchChange = (event) => {
     setInputSearchFilter(event.target.value);
   };
@@ -331,14 +361,20 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
   if (renderObjIsEmpty) {
     return (
       <Paper padding="md" shadow="sm" radius="md" mih={200} p="sm" flex={1} w="100%" withBorder>
-        <TextInput
-          label="Search files and folders:"
-          placeholder="Search files and folders..."
-          value={inputSearchFilter}
-          onChange={handleSearchChange}
-          leftSection={<IconSearch stroke={1.5} />}
-          mb="sm"
-        />
+        {itemSelectInstructions && (
+          <SodaGreenPaper>
+            <Text>{itemSelectInstructions}</Text>
+          </SodaGreenPaper>
+        )}
+        {!hideSearchBar && (
+          <TextInput
+            placeholder="Search files and folders..."
+            value={inputSearchFilter}
+            onChange={handleSearchChange}
+            leftSection={<IconSearch stroke={1.5} />}
+            mt="md"
+          />
+        )}
         <Center mt="md">
           <Text size="sm" c="gray">
             {inputSearchFilter.length > 0
@@ -351,26 +387,21 @@ const DatasetTreeViewRenderer = ({ folderActions, fileActions, allowStructureEdi
   }
 
   return (
-    <Paper
-      padding="md"
-      shadow="sm"
-      radius="md"
-      mih={200}
-      p="sm"
-      flex={1}
-      w="100%"
-      withBorder
-      mt="md"
-    >
-      <TextInput
-        label="Search files and folders:"
-        placeholder="Search files and folders..."
-        value={inputSearchFilter}
-        onChange={handleSearchChange}
-        leftSection={<IconSearch stroke={1.5} />}
-        mb="sm"
-      />
-
+    <Paper padding="md" shadow="sm" radius="md" p="sm" flex={1} w="100%" withBorder>
+      {itemSelectInstructions && (
+        <SodaGreenPaper>
+          <Text>{itemSelectInstructions}</Text>
+        </SodaGreenPaper>
+      )}
+      {!hideSearchBar && (
+        <TextInput
+          placeholder="Search files and folders..."
+          value={inputSearchFilter}
+          onChange={handleSearchChange}
+          leftSection={<IconSearch stroke={1.5} />}
+          mt="md"
+        />
+      )}
       <Stack gap={1} style={{ maxHeight: 700, overflowY: "auto" }} py={3}>
         {renderDatasetStructureJSONObjIsLoading ? (
           <Center w="100%">

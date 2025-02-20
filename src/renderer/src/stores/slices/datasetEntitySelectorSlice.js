@@ -174,6 +174,24 @@ export const addEntityToEntityList = (entityType, entityName) => {
   );
 };
 
+export const setEntityListUsingArray = (entityType, entityArray) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      if (!state.datasetEntityObj) {
+        state.datasetEntityObj = {};
+      }
+
+      if (!state.datasetEntityObj[entityType]) {
+        state.datasetEntityObj[entityType] = {};
+      }
+
+      entityArray.forEach((entity) => {
+        state.datasetEntityObj[entityType][entity] = [];
+      });
+    })
+  );
+};
+
 // Remove an entity from the specified entity type's list
 export const removeEntityFromEntityList = (entityType, entityName) => {
   useGlobalStore.setState(

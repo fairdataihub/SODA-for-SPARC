@@ -49,6 +49,7 @@ import {
   getDatasetEntityObj,
   setDatasetEntityObj,
   addEntityToEntityList,
+  removeEntityFromEntityList,
 } from "../../stores/slices/datasetEntitySelectorSlice";
 import {
   setTreeViewDatasetStructure,
@@ -72,6 +73,7 @@ import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
 import hasConnectedAccountWithPennsieve from "../others/authentication/auth";
 import { data } from "jquery";
+import { remove } from "fs-extra";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -3109,7 +3111,6 @@ const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
 
 window.guidedOpenManifestEditSwal = async () => {
   const existingManifestData = window.sodaJSONObj["guided-manifest-file-data"];
-  console.log("spreadsheet data", existingManifestData);
   //send manifest data to main.js to then send to child window
   window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
 
@@ -4457,8 +4458,8 @@ window.openPage = async (targetPageID) => {
     }
 
     if (targetPageDataset.componentType) {
+      console.log("Entering targetPageDataset.componentType", targetPageDataset.componentType);
       const targetPageComponentType = targetPageDataset.componentType;
-      console.log("targetPageDataset", targetPageDataset);
       if (targetPageComponentType === "entity-management-page") {
         const pageEntityType = targetPageDataset.entityType;
         console.log("pageEntityType", pageEntityType);
@@ -4498,8 +4499,35 @@ window.openPage = async (targetPageID) => {
       if (targetPageComponentType === "dataset-entity-structure-page") {
       }
       if (targetPageComponentType === "entity-selection-page") {
+        const pageEntityType = targetPageDataset.entityType;
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+        setActiveEntity(null);
         setDatasetEntityObj(savedDatasetEntityObj);
+
+        // Make any adjustments to the dataset entity object before setting it in the zustand store
+        /*if (pageEntityType === "bucketed-data") {
+          const bucketTypes = ["Code", "Experimental", "Other"];
+
+          for (const bucketType of Object.keys(savedDatasetEntityObj?.["bucketed-data"] || {})) {
+            if (!bucketTypes.includes(bucketType)) {
+              removeEntityFromEntityList("bucketed-data", bucketType);
+            }
+          }
+
+          for (const bucketType of bucketTypes) {
+            addEntityToEntityList("bucketed-data", bucketType);
+          }
+
+          console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
+        }*/
+
+        console.log("savedDatasetEntityObj", savedDatasetEntityObj);
+        console.log("pageEntityType", pageEntityType);
+
+        console.log(
+          "savedDatasetEntityObj when opening entity-selection-page",
+          savedDatasetEntityObj
+        );
 
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
         /*
@@ -5048,18 +5076,7 @@ window.openPage = async (targetPageID) => {
       );
       setActiveEntity(null);
     }
-    if (targetPageID === "data-bucketing-tab") {
-      /*
-      addEntityToEntityList("bucketed-data", "Source data");
-      addEntityToEntityList("bucketed-data", "Derivative data");
-      */
 
-      addEntityToEntityList("bucketed-data", "Code");
-      addEntityToEntityList("bucketed-data", "Protocol");
-      addEntityToEntityList("bucketed-data", "Documentation");
-      setActiveEntity(null);
-      console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
-    }
     if (targetPageID === "guided-modalities-selection-tab") {
       addEntityToEntityList("modalities", "microscopy");
       addEntityToEntityList("modalities", "electrophysiology");
