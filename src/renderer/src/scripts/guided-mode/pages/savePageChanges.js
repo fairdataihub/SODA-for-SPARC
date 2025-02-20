@@ -102,7 +102,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
     }
 
     await savePageCurationPreparation(pageBeingLeftID);
-
+    await savePagePrepareMetadata(pageBeingLeftID);
     // if (pageBeingLeftID === "guided-subjects-addition-tab") {
     //   if (window.getExistingSubjectNames().length === 0) {
     //     errorArray.push({
