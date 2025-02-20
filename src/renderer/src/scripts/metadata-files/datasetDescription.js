@@ -265,7 +265,7 @@ window.generateDDFile = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then(() => { });
+  }).then(() => {});
   var datasetInfoValueObj = window.grabDSInfoEntries();
   var studyInfoValueObject = grabStudyInfoEntries();
   //// grab entries from contributor info section and pass values to conSectionArray
@@ -586,7 +586,7 @@ const changeAward = (award) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then(() => { });
+  }).then(() => {});
   $("#ds-description-award-input").val(award);
   $("#submission-sparc-award").val(award);
 };
@@ -929,7 +929,7 @@ window.importExistingDDFile = () => {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then(() => { });
+      }).then(() => {});
       setTimeout(loadDDfileDataframe(filePath), 1000);
     }
   }
@@ -1162,7 +1162,6 @@ const protocolCheck = (array) => {
   }
   return boolean;
 };
-
 
 // searches the markdown for key sections and returns them as an easily digestible object
 // returns: {Study Purpose: text/markdown | "", Data Collection: text/markdown | "", Primary Conclusion: text/markdown | "", invalidText: text/markdown | ""}

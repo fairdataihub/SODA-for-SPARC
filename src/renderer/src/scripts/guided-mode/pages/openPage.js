@@ -342,8 +342,6 @@ export const openPage = async (targetPageID) => {
     //         console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
     //     }
 
-    
-
     //     if (targetPageID === "guided-samples-folder-tab") {
     //         renderSamplesTable();
     //     }

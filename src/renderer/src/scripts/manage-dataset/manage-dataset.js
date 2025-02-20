@@ -1438,8 +1438,6 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
   );
 };
 
-
-
 const validateDescription = () => {
   let studyPurpose = $("#ds-description-study-purpose").val().trim();
   let dataCollection = $("#ds-description-data-collection").val().trim();

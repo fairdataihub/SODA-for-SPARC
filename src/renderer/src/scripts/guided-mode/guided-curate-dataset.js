@@ -1648,7 +1648,6 @@ const guidedUpdateFolderStructureUI = (folderPathSeperatedBySlashes) => {
   console.log("Updated tree view structure based on current path.");
 };
 
-
 //Description metadata functions
 
 window.deleteAdditionalLink = (linkName) => {
