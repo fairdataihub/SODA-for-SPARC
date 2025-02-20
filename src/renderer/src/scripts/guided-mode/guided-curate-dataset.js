@@ -1717,14 +1717,6 @@ window.removeContributorField = (contributorDeleteButton) => {
   contributorField.remove();
 };
 
-const getContributorFullNames = () => {
-  return window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].map(
-    (contributor) => {
-      return contributor.conName;
-    }
-  );
-};
-
 const getExistingContributorORCiDs = () => {
   return window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].map(
     (contributor) => {
@@ -2388,60 +2380,6 @@ window.handleContributorDrop = (event) => {
   switchOrderOfContributors(draggedOrcid, targetOrcid);
 
   renderDatasetDescriptionContributorsTable();
-};
-
-const generateContributorTableRow = (contributorObj, contributorIndex) => {
-  const contributorObjIsValid = window.contributorDataIsValid(contributorObj);
-  const contributorFullName = contributorObj["conName"];
-  const contributorOrcid = contributorObj["conID"];
-  const contributorRoleString = contributorObj["conRole"].join(", ");
-
-  return `
-    <tr 
-      data-contributor-orcid=${contributorOrcid}
-      draggable="true"
-      ondragstart="window.handleContributorDragStart(event)"
-      ondragover="window.handleContributorDragOver(event)"
-      ondragend="window.handleContributorDrop(event)"
-      style="cursor: move;"
-    >
-      <td class="middle aligned collapsing text-center">
-        ${contributorIndex}
-      </td>
-      <td class="middle aligned">
-        ${contributorFullName}
-      </td>
-      <td class="middle aligned">
-        ${contributorRoleString}
-      </td>
-      <td class="middle aligned collapsing text-center">
-        ${
-          contributorObjIsValid
-            ? `<span class="badge badge-pill badge-success">Valid</span>`
-            : `<span class="badge badge-pill badge-warning">Needs Modification</span>`
-        }
-      </td>
-      <td class="middle aligned collapsing text-center">
-        <button
-          type="button"
-          class="btn btn-sm"
-          style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
-          onclick="window.openGuidedEditContributorSwal('${contributorOrcid}')"
-        >
-        View/Edit
-        </button>
-      </td>
-      <td class="middle aligned collapsing text-center">
-        <button
-          type="button"
-          class="btn btn-danger btn-sm" 
-          onclick="window.deleteContributor(this, '${contributorOrcid}')"
-        >
-          Delete
-        </button>
-      </td>
-    </tr>
-  `;
 };
 
 const renderAdditionalLinksTable = () => {
