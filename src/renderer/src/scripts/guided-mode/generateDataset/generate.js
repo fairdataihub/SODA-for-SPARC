@@ -29,7 +29,7 @@ while (!window.baseHtmlLoaded) {
  * @description This function is called when the user clicks the "Generate Dataset" button at the end of the Prepare Dataset Step-by-Step workflows.
  *              It will create the dataset on Pennsieve and upload the dataset files. If the upload fails the user will be prompted to retry the upload or save and exit.
  *              When retrying the upload progress is resumed from where last left off - incompletely uploaded files will be restarted but finished files will be skipped.
- *  
+ *
  */
 export const guidedPennsieveDatasetUpload = async () => {
   guidedSetNavLoadingState(true);
