@@ -2,7 +2,7 @@ import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading";
 import { getDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie";
 import { savePageCurationPreparation } from "./curationPreparation/savePage";
-import {savePagePrepareMetadata} from "./prepareMetadata/savePage";
+import { savePagePrepareMetadata } from "./prepareMetadata/savePage";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -173,8 +173,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //       "REJOIN-HEAL";
     //   }
     // }
-
-    
 
     // if (pageBeingLeftID === "guided-subject-structure-spreadsheet-importation-tab") {
     //   const userChoseToImportSubsSamsPoolsViaSpreadsheet = document
