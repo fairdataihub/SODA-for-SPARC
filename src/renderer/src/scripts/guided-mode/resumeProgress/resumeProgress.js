@@ -19,7 +19,7 @@ while (!window.baseHtmlLoaded) {
 }
 
 /**
- * 
+ *
  * @param {string} datasetNameToResume - The name of the dataset associated with the save progress file the user wants to resume.
  * @description Read the given progress file and resume the Prepare Dataset Step-by-Step workflow where the user last left off.
  */
@@ -177,10 +177,9 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
   }
 };
 
-
 /**
- * 
- * @description - Helper function for resuming a saved progress file in the Prepare Dataset Step-by-Step workflow. Determines if a user 
+ *
+ * @description - Helper function for resuming a saved progress file in the Prepare Dataset Step-by-Step workflow. Determines if a user
  *                can continue where they last left off or if a change has occurred that requires they start on a different page.
  */
 const guidedGetPageToReturnTo = async () => {
