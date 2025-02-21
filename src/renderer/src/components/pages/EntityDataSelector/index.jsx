@@ -202,13 +202,8 @@ const EntityDataSelectorPage = ({
         {entityType === "bucketed-data" ? (
           <Stack>
             <Text>
-              The SDS requires you to classify certain types of data separately from the rest of
-              your imported data.
-            </Text>
-
-            <Text>
-              If you have data that fits into the any of the buckets listed on the left, click on
-              the bucket and associate the relevant files from the dataset on the right.
+              The SDS requires data to be classified in three categories: experimental, code, and
+              other. Use the interface below to classify your data files.
             </Text>
           </Stack>
         ) : (

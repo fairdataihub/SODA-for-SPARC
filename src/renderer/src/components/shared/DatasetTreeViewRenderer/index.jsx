@@ -421,7 +421,7 @@ const DatasetTreeViewRenderer = ({
                   onFileClick={fileActions?.["on-file-click"]}
                   folderClickHoverText={
                     folderActions?.["folder-click-hover-text"] ||
-                    "Toggle this folder and its contents"
+                    "Select this folder and its contents"
                   }
                   datasetStructureSearchFilter={datasetStructureSearchFilter}
                   isFolderSelected={folderActions?.["is-folder-selected"]}
