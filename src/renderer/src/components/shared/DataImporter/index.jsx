@@ -53,7 +53,7 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
           <Text size="xl" inline>
             {dataType
               ? `Drag ${dataType} data here or click to import from your computer`
-              : "Drag data here or click to import from your computer"}
+              : "Drag and drop files or folders or click here to import from your computer"}
           </Text>
         </Group>
       </Dropzone>
